@@ -1,0 +1,698 @@
+{
+  "metadata": {
+    "title": "S&P 500 CEO Compensation Data",
+    "description": "CEO compensation data for S&P 500 and major public companies, fiscal year 2024",
+    "sources": [
+      "AFL-CIO Executive Paywatch 2025 (https://aflcio.org/paywatch/highest-paid-ceos)",
+      "AFL-CIO Company Pay Ratios 2025 (https://aflcio.org/paywatch/company-pay-ratios)",
+      "Equilar/Associated Press CEO Pay Study 2025 and 2026",
+      "Equilar/New York Times 100 Highest-Paid CEOs 2025",
+      "Equilar 100: Highest-Paid CEOs in 2024",
+      "SEC EDGAR DEF 14A Proxy Statements",
+      "Harvard Law School Forum on Corporate Governance",
+      "ISS-Corporate CEO Pay Analysis"
+    ],
+    "primary_fiscal_year": 2024,
+    "data_collected": "2026-07-18",
+    "notes": [
+      "Total compensation is from Summary Compensation Table in proxy statements",
+      "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
+      "Stock awards are valued at grant date fair value, not realized value",
+      "Pay ratios from company proxy statements per SEC Regulation S-K Item 402(u)",
+      "Some companies (e.g., Amazon) have low SCT totals because equity grants span multiple years"
+    ],
+    "aggregate_stats": {
+      "s_and_p_500_median_ceo_pay_2024": 17100000,
+      "s_and_p_500_median_ceo_pay_2023": 16300000,
+      "s_and_p_500_median_ceo_pay_2022": 15500000,
+      "s_and_p_500_yoy_change_2024": "9.7%",
+      "s_and_p_500_median_worker_pay_2024": 85419,
+      "s_and_p_500_median_pay_ratio_2024": 192,
+      "equilar_100_median_pay_2024": 30900000,
+      "equilar_100_median_pay_ratio_2024": 348,
+      "stock_awards_pct_of_total_2024": "71.6%",
+      "source": "Equilar/AP CEO Pay Study 2025, Equilar/NYT 100 2025"
+    }
+  },
+  "companies": [
+    {
+      "ticker": "QXO",
+      "company_name": "QXO, Inc.",
+      "ceo_name": "Brad Jacobs",
+      "total_compensation": 189367735,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "VEEV",
+      "company_name": "Veeva Systems Inc",
+      "ceo_name": "Peter Gassner",
+      "total_compensation": 172436133,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "AXON",
+      "company_name": "Axon Enterprise Inc",
+      "ceo_name": "Patrick Smith",
+      "total_compensation": 164525721,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "COHR",
+      "company_name": "Coherent Corp.",
+      "ceo_name": "James Robert Anderson",
+      "total_compensation": 101497009,
+      "fiscal_year": 2024,
+      "median_worker_pay": 14474,
+      "pay_ratio": 1995,
+      "source": "Equilar-NYT 100 / Equilar 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SNOW",
+      "company_name": "Snowflake Inc.",
+      "ceo_name": "Sridhar Ramaswamy",
+      "total_compensation": 101325374,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SBUX",
+      "company_name": "Starbucks Corp",
+      "ceo_name": "Brian Niccol",
+      "total_compensation": 95801676,
+      "fiscal_year": 2024,
+      "median_worker_pay": 14674,
+      "pay_ratio": 6666,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "TVGN",
+      "company_name": "Tevogen Bio Holdings Inc.",
+      "ceo_name": "Ryan Saadi",
+      "total_compensation": 87764783,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "GE",
+      "company_name": "General Electric Co",
+      "ceo_name": "H. Lawrence Culp Jr.",
+      "total_compensation": 87393876,
+      "fiscal_year": 2024,
+      "source": "Equilar-NYT 100 / Equilar-AP 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ARES",
+      "company_name": "Ares Management Corp",
+      "ceo_name": "Michael Arougheti",
+      "total_compensation": 85381842,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PLTK",
+      "company_name": "Playtika Holding Corp.",
+      "ceo_name": "Robert Antokol",
+      "total_compensation": 84141574,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "BX",
+      "company_name": "Blackstone Inc",
+      "ceo_name": "Stephen Schwarzman",
+      "total_compensation": 84027074,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "RIOT",
+      "company_name": "Riot Platforms, Inc.",
+      "ceo_name": "Jason Les",
+      "total_compensation": 83532328,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MSFT",
+      "company_name": "Microsoft Corp",
+      "ceo_name": "Satya Nadella",
+      "total_compensation": 79106183,
+      "fiscal_year": 2024,
+      "median_worker_pay": 245122,
+      "pay_ratio": 323,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "NVDA",
+      "company_name": "NVIDIA Corp",
+      "ceo_name": "Jensen Huang",
+      "total_compensation": 78165000,
+      "fiscal_year": 2024,
+      "salary": 1300000,
+      "source": "NVIDIA Proxy Statement / WebProNews (FY2025 ending Jan 2025)",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc",
+      "ceo_name": "Timothy D. Cook",
+      "total_compensation": 74609802,
+      "fiscal_year": 2024,
+      "median_worker_pay": 391035,
+      "pay_ratio": 191,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "KKR",
+      "company_name": "KKR & Co Inc",
+      "ceo_name": "Joseph Bae",
+      "total_compensation": 73087375,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "LINE",
+      "company_name": "Lineage, Inc.",
+      "ceo_name": "W. Gregory Lehmkuhl",
+      "total_compensation": 69341442,
+      "fiscal_year": 2024,
+      "median_worker_pay": 5340,
+      "pay_ratio": 12990,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "LSCC",
+      "company_name": "Lattice Semiconductor Corp",
+      "ceo_name": "Ford Tamer",
+      "total_compensation": 69154980,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CARR",
+      "company_name": "Carrier Global Corp",
+      "ceo_name": "David L. Gitlin",
+      "total_compensation": 65554845,
+      "fiscal_year": 2024,
+      "median_worker_pay": 22486,
+      "pay_ratio": 2916,
+      "source": "Equilar-NYT 100 / Equilar-AP 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "NFLX",
+      "company_name": "Netflix Inc",
+      "ceo_name": "Theodore A. Sarandos",
+      "total_compensation": 61922397,
+      "fiscal_year": 2024,
+      "median_worker_pay": 39000,
+      "pay_ratio": 1588,
+      "source": "AFL-CIO Paywatch 2025 / Equilar-NYT 100",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "SPG",
+      "company_name": "Simon Property Group Inc",
+      "ceo_name": "David Simon",
+      "total_compensation": 61394770,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "LZ",
+      "company_name": "LegalZoom.com, Inc.",
+      "ceo_name": "Jeffrey Stibel",
+      "total_compensation": 61184704,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "PANW",
+      "company_name": "Palo Alto Networks, Inc.",
+      "ceo_name": "Nikesh Arora",
+      "total_compensation": 58036875,
+      "fiscal_year": 2024,
+      "source": "Equilar-NYT 100 / Equilar 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CRM",
+      "company_name": "Salesforce, Inc.",
+      "ceo_name": "Marc Benioff",
+      "total_compensation": 55074656,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025 / Becker's",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ADBE",
+      "company_name": "Adobe Inc.",
+      "ceo_name": "Shantanu Narayen",
+      "total_compensation": 52390182,
+      "fiscal_year": 2024,
+      "source": "Equilar-NYT 100 / Equilar 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "WBD",
+      "company_name": "Warner Bros. Discovery",
+      "ceo_name": "David Zaslav",
+      "total_compensation": 51918563,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025 / Becker's",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "NTNX",
+      "company_name": "Nutanix, Inc.",
+      "ceo_name": "Rajiv Ramaswami",
+      "total_compensation": 51143711,
+      "fiscal_year": 2024,
+      "source": "Equilar-NYT 100 / Equilar 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CRWD",
+      "company_name": "CrowdStrike Holdings, Inc.",
+      "ceo_name": "George R. Kurtz",
+      "total_compensation": 46983855,
+      "fiscal_year": 2024,
+      "source": "Equilar 100",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "BKNG",
+      "company_name": "Booking Holdings Inc",
+      "ceo_name": "Glenn Fogel",
+      "total_compensation": 44837665,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025 / Becker's",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "OTIS",
+      "company_name": "Otis Worldwide Corp",
+      "ceo_name": "Judith Fran Marks",
+      "total_compensation": 42100000,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "JPM",
+      "company_name": "JPMorgan Chase & Co.",
+      "ceo_name": "Jamie Dimon",
+      "total_compensation": 39000000,
+      "fiscal_year": 2024,
+      "source": "JPMorgan 2025 Proxy Statement / news reports",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MAT",
+      "company_name": "Mattel Inc",
+      "ceo_name": "Ynon Kreiz",
+      "total_compensation": 37800000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 9384,
+      "pay_ratio": 4028,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "ANSS",
+      "company_name": "ANSYS Inc",
+      "ceo_name": "Ajei Gopal",
+      "total_compensation": 32835000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 110125,
+      "pay_ratio": 298,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "ON",
+      "company_name": "ON Semiconductor Corp",
+      "ceo_name": "Hassane El-Khoury",
+      "total_compensation": 31128400,
+      "fiscal_year": 2024,
+      "median_worker_pay": 15580,
+      "pay_ratio": 1998,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "C",
+      "company_name": "Citigroup Inc",
+      "ceo_name": "Jane Nind Fraser",
+      "total_compensation": 31100000,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AMD",
+      "company_name": "Advanced Micro Devices Inc",
+      "ceo_name": "Lisa T. Su",
+      "total_compensation": 31000000,
+      "fiscal_year": 2024,
+      "source": "Equilar-AP 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "KO",
+      "company_name": "Coca-Cola Co",
+      "ceo_name": "James Quincey",
+      "total_compensation": 28000000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 14144,
+      "pay_ratio": 1980,
+      "source": "AFL-CIO Pay Ratios 2025 / AP Equilar",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "AMAT",
+      "company_name": "Applied Materials Inc",
+      "ceo_name": "Gary Dickerson",
+      "total_compensation": 27799212,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ROKU",
+      "company_name": "Roku, Inc",
+      "ceo_name": "Anthony Wood",
+      "total_compensation": 27697846,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "IQV",
+      "company_name": "IQVIA Holdings Inc",
+      "ceo_name": "Ari Bousbib",
+      "total_compensation": 26732998,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "RKT",
+      "company_name": "Rocket Companies, Inc.",
+      "ceo_name": "Varun Krishna",
+      "total_compensation": 25887926,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025"
+    },
+    {
+      "ticker": "IBM",
+      "company_name": "International Business Machines Corp",
+      "ceo_name": "Arvind Krishna",
+      "total_compensation": 25000000,
+      "fiscal_year": 2024,
+      "source": "The Register / IBM Proxy",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "YUM",
+      "company_name": "Yum! Brands Inc",
+      "ceo_name": "David Gibbs",
+      "total_compensation": 24724000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 17160,
+      "pay_ratio": 1440,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "AMGN",
+      "company_name": "Amgen Inc",
+      "ceo_name": "Robert Bradway",
+      "total_compensation": 24428495,
+      "fiscal_year": 2024,
+      "median_worker_pay": 160017,
+      "pay_ratio": 153,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ROP",
+      "company_name": "Roper Technologies Inc",
+      "ceo_name": "Neil Hunn",
+      "total_compensation": 23686622,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SKX",
+      "company_name": "Skechers USA Inc",
+      "ceo_name": "Robert Greenberg",
+      "total_compensation": 23520000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 10918,
+      "pay_ratio": 2155,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "TJX",
+      "company_name": "TJX Cos Inc",
+      "ceo_name": "Ernie Herrman",
+      "total_compensation": 23478000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 15002,
+      "pay_ratio": 1565,
+      "source": "AFL-CIO Pay Ratios 2025 / AP reports"
+    },
+    {
+      "ticker": "RKLB",
+      "company_name": "Rocket Lab Corp",
+      "ceo_name": "Peter Beck",
+      "total_compensation": 20110758,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025"
+    },
+    {
+      "ticker": "RCL",
+      "company_name": "Royal Caribbean Cruises Ltd",
+      "ceo_name": "Jason Liberty",
+      "total_compensation": 19497820,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "GAP",
+      "company_name": "Gap Inc",
+      "ceo_name": "Richard Dickson",
+      "total_compensation": 19430000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 9229,
+      "pay_ratio": 2105,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "APTV",
+      "company_name": "Aptiv PLC",
+      "ceo_name": "Kevin Clark",
+      "total_compensation": 18756000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 9052,
+      "pay_ratio": 2072,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "IRM",
+      "company_name": "Iron Mountain Inc",
+      "ceo_name": "William Meaney",
+      "total_compensation": 18363886,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ISRG",
+      "company_name": "Intuitive Surgical Inc",
+      "ceo_name": "Gary Guthart",
+      "total_compensation": 18196432,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "WDC",
+      "company_name": "Western Digital Corp",
+      "ceo_name": "David Goeckeler",
+      "total_compensation": 17675000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 10726,
+      "pay_ratio": 1649,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "INCY",
+      "company_name": "Incyte Corp",
+      "ceo_name": "Herv\u00e9 Hoppenot",
+      "total_compensation": 17459546,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025"
+    },
+    {
+      "ticker": "APH",
+      "company_name": "Amphenol Corp",
+      "ceo_name": "R. Adam Norwitt",
+      "total_compensation": 17165000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 17712,
+      "pay_ratio": 969,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "ANF",
+      "company_name": "Abercrombie & Fitch Co",
+      "ceo_name": "Fran Horowitz",
+      "total_compensation": 17033000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 2531,
+      "pay_ratio": 6731,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "ROST",
+      "company_name": "Ross Stores Inc",
+      "ceo_name": "Barbara Rentler",
+      "total_compensation": 16994251,
+      "fiscal_year": 2024,
+      "median_worker_pay": 9602,
+      "pay_ratio": 1770,
+      "source": "AFL-CIO Paywatch 2025"
+    },
+    {
+      "ticker": "IR",
+      "company_name": "Ingersoll Rand Inc",
+      "ceo_name": "Vicente Reynal",
+      "total_compensation": 16720080,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ROK",
+      "company_name": "Rockwell Automation Inc",
+      "ceo_name": "Blake Moret",
+      "total_compensation": 16430804,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AEO",
+      "company_name": "American Eagle Outfitters Inc",
+      "ceo_name": "Jay Schottenstein",
+      "total_compensation": 15058000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 7488,
+      "pay_ratio": 2011,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "AME",
+      "company_name": "AMETEK Inc",
+      "ceo_name": "David Zapico",
+      "total_compensation": 14625000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 65294,
+      "pay_ratio": 224,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "IDXX",
+      "company_name": "IDEXX Laboratories Inc",
+      "ceo_name": "Jay Mazelsky",
+      "total_compensation": 13007000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 62855,
+      "pay_ratio": 207,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "HBI",
+      "company_name": "Hanesbrands Inc.",
+      "ceo_name": "Stephen Bratspies",
+      "total_compensation": 12933000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 6831,
+      "pay_ratio": 1893,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "APP",
+      "company_name": "AppLovin Corp",
+      "ceo_name": "Adam Foroughi",
+      "total_compensation": 11202098,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ITW",
+      "company_name": "Illinois Tool Works Inc",
+      "ceo_name": "Christopher O'Herlihy",
+      "total_compensation": 10983000,
+      "fiscal_year": 2024,
+      "median_worker_pay": 69508,
+      "pay_ratio": 158,
+      "source": "AFL-CIO Pay Ratios 2025"
+    },
+    {
+      "ticker": "GOOGL",
+      "company_name": "Alphabet Inc.",
+      "ceo_name": "Sundar Pichai",
+      "total_compensation": 10725000,
+      "fiscal_year": 2024,
+      "salary": 2015000,
+      "stock_awards": 405630,
+      "other_compensation": 8304000,
+      "source": "Alphabet 2025 Proxy Statement (SEC filing)",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "HEI",
+      "company_name": "HEICO Corp",
+      "ceo_name": "Laurans Mendelson",
+      "total_compensation": 10382143,
+      "fiscal_year": 2024,
+      "source": "AFL-CIO Paywatch 2025",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AMZN",
+      "company_name": "Amazon.com, Inc.",
+      "ceo_name": "Andrew R. Jassy",
+      "total_compensation": 1596889,
+      "fiscal_year": 2024,
+      "median_worker_pay": 47990,
+      "pay_ratio": 39,
+      "source": "Amazon 2025 Proxy Statement (SEC filing)",
+      "sector": "Consumer Discretionary"
+    }
+  ]
+}

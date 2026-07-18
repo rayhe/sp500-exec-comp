@@ -1,0 +1,752 @@
+{
+  "metadata": {
+    "title": "S&P 500 Compensation Peer Group Network",
+    "description": "Directional peer group relationships extracted from SEC EDGAR DEF 14A proxy statements",
+    "sources": [
+      "Apple Inc. DEF 14A (Acc: 0001308179-26-000008, filed 2026-01-08)",
+      "Microsoft Corp. DEF 14A (Acc: 0001193125-25-245150, filed 2025-10-21)",
+      "Meta Platforms Inc. DEF 14A (Acc: 000162828026025532, filed 2026-04-16)"
+    ],
+    "methodology": "Company-disclosed compensation peer groups extracted from the Compensation Discussion and Analysis sections of definitive proxy statements. Each directed edge represents: source company selected target company as a compensation benchmarking peer.",
+    "node_count": 34,
+    "edge_count": 66
+  },
+  "nodes": [
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.com Inc.",
+      "sector": "Consumer Discretionary",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "Comcast Corp.",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce Inc.",
+      "sector": "Information Technology",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "CSCO",
+      "name": "Cisco Systems Inc.",
+      "sector": "Information Technology",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "DIS",
+      "name": "Walt Disney Co.",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix Inc.",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corp.",
+      "sector": "Information Technology",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "ORCL",
+      "name": "Oracle Corp.",
+      "sector": "Information Technology",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "T",
+      "name": "AT&T Inc.",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "VZ",
+      "name": "Verizon Communications",
+      "sector": "Communication Services",
+      "in_degree": 3,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Information Technology",
+      "in_degree": 2,
+      "out_degree": 27,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "sector": "Information Technology",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "INTC",
+      "name": "Intel Corp.",
+      "sector": "Information Technology",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "sector": "Health Care",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms Inc.",
+      "sector": "Communication Services",
+      "in_degree": 2,
+      "out_degree": 15,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corp.",
+      "sector": "Information Technology",
+      "in_degree": 2,
+      "out_degree": 24,
+      "market_cap_tier": "mega"
+    },
+    {
+      "ticker": "PFE",
+      "name": "Pfizer Inc.",
+      "sector": "Health Care",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "PG",
+      "name": "Procter & Gamble Co.",
+      "sector": "Consumer Staples",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm Inc.",
+      "sector": "Information Technology",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "V",
+      "name": "Visa Inc.",
+      "sector": "Financials",
+      "in_degree": 2,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie Inc.",
+      "sector": "Health Care",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "ACN",
+      "name": "Accenture plc",
+      "sector": "Information Technology",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe Inc.",
+      "sector": "Information Technology",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "IBM",
+      "name": "IBM Corp.",
+      "sector": "Information Technology",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "KO",
+      "name": "Coca-Cola Co.",
+      "sector": "Consumer Staples",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "MA",
+      "name": "Mastercard Inc.",
+      "sector": "Financials",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "MRK",
+      "name": "Merck & Co.",
+      "sector": "Health Care",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "NKE",
+      "name": "Nike Inc.",
+      "sector": "Consumer Discretionary",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "SBUX",
+      "name": "Starbucks Corp.",
+      "sector": "Consumer Discretionary",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla Inc.",
+      "sector": "Consumer Discretionary",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "UBER",
+      "name": "Uber Technologies",
+      "sector": "Industrials",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "UNH",
+      "name": "UnitedHealth Group",
+      "sector": "Health Care",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    },
+    {
+      "ticker": "WBD",
+      "name": "Warner Bros. Discovery",
+      "sector": "Communication Services",
+      "in_degree": 1,
+      "out_degree": 0,
+      "market_cap_tier": "large"
+    }
+  ],
+  "edges": [
+    {
+      "source": "AAPL",
+      "target": "GOOGL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "AMZN",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "T",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "AVGO",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "CSCO",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "CMCSA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "DIS",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "INTC",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "MA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "META",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "MSFT",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "NFLX",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "NVDA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "ORCL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "QCOM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "CRM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "VZ",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "V",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "WBD",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "ABBV",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "KO",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "JNJ",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "NKE",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "PFE",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "PG",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "SBUX",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "AAPL",
+      "target": "UNH",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2026-01-08"
+    },
+    {
+      "source": "MSFT",
+      "target": "ADBE",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "GOOGL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "AMZN",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "AAPL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "AVGO",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "CSCO",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "IBM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "INTC",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "META",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "NVDA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "ORCL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "QCOM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "CRM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "ACN",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "T",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "CMCSA",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "JNJ",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "MRK",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "NFLX",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "PFE",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "PG",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "TSLA",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "VZ",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "MSFT",
+      "target": "DIS",
+      "year": 2025,
+      "group_type": "secondary",
+      "filing": "DEF 14A 2025-10-21"
+    },
+    {
+      "source": "META",
+      "target": "GOOGL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "AMZN",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "AAPL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "T",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "CSCO",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "CMCSA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "MSFT",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "NFLX",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "NVDA",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "ORCL",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "CRM",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "DIS",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "UBER",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "VZ",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    },
+    {
+      "source": "META",
+      "target": "V",
+      "year": 2025,
+      "group_type": "primary",
+      "filing": "DEF 14A 2026-04-16"
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S&P 500 Executive Compensation Tracker</title>
+  <meta name="description" content="Interactive tracker of CEO compensation across S&P 500 companies. Powered by SEC proxy statement data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="site-title">S&amp;P 500 Executive Compensation Tracker</h1>
+        <span class="site-subtitle">Powered by SEC proxy statement data &middot; FY 2024</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== KEY METRICS ===== -->
+  <div class="metrics-strip">
+    <div class="container">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">S&amp;P 500 Median CEO Pay</div>
+          <div class="metric-value" id="metric-median-pay">—</div>
+          <div class="metric-change" id="metric-yoy-label">FY 2024</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Avg Pay Ratio</div>
+          <div class="metric-value" id="metric-avg-ratio">—</div>
+          <div class="metric-change">CEO vs. median worker</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Comp Tracked</div>
+          <div class="metric-value" id="metric-total-comp">—</div>
+          <div class="metric-change">across all companies</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Companies</div>
+          <div class="metric-value" id="metric-companies">—</div>
+          <div class="metric-change">in dataset</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">YoY Change</div>
+          <div class="metric-value" id="metric-yoy">—</div>
+          <div class="metric-change">median CEO pay growth</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Stock Awards</div>
+          <div class="metric-value" id="metric-stock-pct">—</div>
+          <div class="metric-change">of total compensation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main>
+
+    <!-- ===== PEER NETWORK GRAPH ===== -->
+    <div class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Center of the S&amp;P 500</h2>
+          <p class="section-subtitle">Which companies does everyone consider their compensation peer? Network from SEC DEF 14A filings. Node size = how often a company is cited as a peer. Hover or click a node to explore connections.</p>
+        </div>
+        <div class="network-container" id="network-container">
+          <svg class="network-svg" id="network-svg"></svg>
+          <div class="network-legend" id="network-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COMPENSATION TABLE ===== -->
+    <div class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">CEO Compensation</h2>
+          <p class="section-subtitle">Total compensation from Summary Compensation Table in proxy statements. Click column headers to sort.</p>
+        </div>
+
+        <div class="table-controls">
+          <input type="text" class="search-input" id="table-search" placeholder="Search company, CEO, or ticker…">
+          <div class="filter-chips" id="filter-chips"></div>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-sort="ticker">Ticker <span class="sort-arrow">▼</span></th>
+                <th data-sort="company_name">Company <span class="sort-arrow">▼</span></th>
+                <th data-sort="ceo_name">CEO <span class="sort-arrow">▼</span></th>
+                <th data-sort="total_compensation" class="right">Total Comp <span class="sort-arrow">▼</span></th>
+                <th data-sort="salary" class="right">Salary <span class="sort-arrow">▼</span></th>
+                <th data-sort="pay_ratio" class="right">Pay Ratio <span class="sort-arrow">▼</span></th>
+                <th data-sort="sector">Sector <span class="sort-arrow">▼</span></th>
+              </tr>
+            </thead>
+            <tbody id="comp-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS ===== -->
+    <div class="section">
+      <div class="container">
+        <div class="charts-grid">
+
+          <!-- Sector Analysis -->
+          <div class="chart-card">
+            <div class="chart-title">Median CEO Pay by Sector</div>
+            <div class="chart-desc">S&amp;P 500, FY 2024 — from Equilar/AP CEO Pay Study</div>
+            <div id="sector-chart"></div>
+          </div>
+
+          <!-- Pay Trend -->
+          <div class="chart-card">
+            <div class="chart-title">S&amp;P 500 Median CEO Pay Trend</div>
+            <div class="chart-desc">2020–2025 — total compensation from Equilar/AP studies</div>
+            <div id="trend-chart"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PAY RATIO DISTRIBUTION ===== -->
+    <div class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Pay Ratio Distribution</h2>
+          <p class="section-subtitle">CEO-to-median-worker pay ratios (log scale). Hover dots for detail. Outliers labeled.</p>
+        </div>
+        <div class="chart-card" style="padding:24px">
+          <div id="payratio-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TOP 10 ===== -->
+    <div class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Top 10 Highest-Paid CEOs</h2>
+          <p class="section-subtitle">Ranked by total compensation reported in proxy statements, FY 2024.</p>
+        </div>
+        <div class="top10-list" id="top10-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-sources">
+          <strong>Data sources:</strong> SEC DEF 14A proxy statements, AFL-CIO Executive Paywatch 2025,
+          Equilar/Associated Press CEO Pay Study (2025 &amp; 2026 editions),
+          Equilar/New York Times 100 Highest-Paid CEOs 2025, Equilar 100,
+          Harvard Law School Forum on Corporate Governance.
+        </div>
+        <div class="footer-meta">
+          Built with <a href="https://d3js.org" target="_blank" rel="noopener">D3.js</a>.<br>
+          Last updated: July 18, 2026
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== TOOLTIPS ===== -->
+  <div class="network-tooltip" id="network-tooltip"></div>
+  <div class="chart-tooltip" id="chart-tooltip"></div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="js/network.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

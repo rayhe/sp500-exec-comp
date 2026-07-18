@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "title": "S&P 500 CEO Compensation Trends",
+    "description": "Aggregate trend data on CEO compensation across S&P 500 and Russell 3000",
+    "sources": [
+      "Equilar/Associated Press CEO Pay Study (2022-2026 editions)",
+      "Equilar/New York Times 100 Highest-Paid CEOs (2025 edition)",
+      "Harvard Law School Forum on Corporate Governance - 'CEO and Executive Compensation Practices in the Russell 3000 and S&P 500' (Dec 2025)",
+      "Harvard Law School Forum - '2025 U.S. Compensation Post-Season Review' (2025)",
+      "ISS-Corporate - '2025 Filings Show Robust CEO Pay Increases at U.S. Large Cap Companies' (Apr 2025)",
+      "AP/Equilar CEO Pay Study 2026 (May 2026)"
+    ],
+    "data_collected": "2026-07-18"
+  },
+  "median_ceo_pay_by_year": {
+    "description": "Median total CEO compensation for S&P 500 CEOs (from Equilar/AP studies)",
+    "data": [
+      {
+        "year": 2020,
+        "median_pay": 13400000,
+        "yoy_change": null,
+        "source": "Equilar/AP"
+      },
+      {
+        "year": 2021,
+        "median_pay": 14700000,
+        "yoy_change": "9.7%",
+        "source": "Equilar/AP"
+      },
+      {
+        "year": 2022,
+        "median_pay": 14500000,
+        "yoy_change": "-1.4%",
+        "source": "Equilar/AP"
+      },
+      {
+        "year": 2023,
+        "median_pay": 16300000,
+        "yoy_change": "12.6%",
+        "source": "Equilar/AP"
+      },
+      {
+        "year": 2024,
+        "median_pay": 17100000,
+        "yoy_change": "9.7%",
+        "source": "Equilar/AP 2025"
+      },
+      {
+        "year": 2025,
+        "median_pay": 17700000,
+        "yoy_change": "5.9%",
+        "source": "Equilar/AP 2026"
+      }
+    ]
+  },
+  "median_worker_pay_by_year": {
+    "description": "Median employee compensation at S&P 500 companies",
+    "data": [
+      {
+        "year": 2023,
+        "median_worker_pay": 81000,
+        "source": "Harvard Law/Conference Board"
+      },
+      {
+        "year": 2024,
+        "median_worker_pay": 85419,
+        "yoy_change": "1.7%",
+        "source": "Equilar/AP 2025"
+      },
+      {
+        "year": 2025,
+        "median_worker_pay": 89744,
+        "yoy_change": "4.7%",
+        "source": "Equilar/AP 2026"
+      }
+    ]
+  },
+  "pay_ratio_trend": {
+    "description": "Median CEO-to-worker pay ratio at S&P 500 companies",
+    "data": [
+      {
+        "year": 2018,
+        "median_ratio": 158,
+        "source": "Harvard Law Forum"
+      },
+      {
+        "year": 2023,
+        "median_ratio": 186,
+        "source": "Equilar/AP 2024"
+      },
+      {
+        "year": 2024,
+        "median_ratio": 192,
+        "yoy_change": "3.2%",
+        "source": "Equilar/AP 2025"
+      },
+      {
+        "year": 2025,
+        "median_ratio": 200,
+        "yoy_change": "4.2%",
+        "source": "Equilar/AP 2026"
+      }
+    ],
+    "note": "Average ratio for S&P 500 was 285:1 in 2024 (AFL-CIO); median is lower due to outliers"
+  },
+  "median_pay_by_sector_sp500": {
+    "description": "Median CEO total compensation by sector for S&P 500 companies (FY2025 from Equilar/AP 2026)",
+    "fiscal_year": 2025,
+    "data": [
+      {
+        "sector": "Communication Services",
+        "median_pay": 33900000,
+        "rank": 1
+      },
+      {
+        "sector": "Technology",
+        "median_pay": 22500000,
+        "rank": 2
+      },
+      {
+        "sector": "Financial Services",
+        "median_pay": 21300000,
+        "rank": 3,
+        "num_ceos": 55
+      },
+      {
+        "sector": "Real Estate",
+        "median_pay": 13600000,
+        "rank": "lowest"
+      }
+    ],
+    "source": "Equilar/AP CEO Pay Study 2026"
+  },
+  "median_pay_by_sector_sp500_fy2024": {
+    "description": "Median CEO total compensation by sector for S&P 500 companies (FY2024 from Equilar/AP 2025)",
+    "fiscal_year": 2024,
+    "data": [
+      {
+        "sector": "Communication Services",
+        "median_pay": 24400000,
+        "num_ceos": 13,
+        "rank": 1
+      },
+      {
+        "sector": "Consumer Defensive",
+        "median_pay": 17700000,
+        "num_ceos": 18,
+        "rank": 2
+      },
+      {
+        "sector": "Healthcare",
+        "median_pay": 17290000,
+        "num_ceos": 46,
+        "rank": 3
+      },
+      {
+        "sector": "Consumer Cyclical",
+        "median_pay": 17216000,
+        "num_ceos": 35,
+        "rank": 4
+      },
+      {
+        "sector": "Financial Services",
+        "median_pay": 16814000,
+        "num_ceos": 53,
+        "rank": 5
+      },
+      {
+        "sector": "Energy",
+        "median_pay": 16750000,
+        "num_ceos": 19,
+        "rank": 6
+      },
+      {
+        "sector": "Technology",
+        "median_pay": 16731000,
+        "num_ceos": 46,
+        "rank": 7
+      },
+      {
+        "sector": "Industrials",
+        "median_pay": 15508000,
+        "num_ceos": 48,
+        "rank": 8
+      },
+      {
+        "sector": "Basic Materials",
+        "median_pay": 13603000,
+        "num_ceos": 17,
+        "rank": 9
+      },
+      {
+        "sector": "Real Estate",
+        "median_pay": 12828000,
+        "num_ceos": 28,
+        "rank": 10
+      },
+      {
+        "sector": "Utilities",
+        "median_pay": 10060000,
+        "num_ceos": 18,
+        "rank": 11
+      }
+    ],
+    "source": "Equilar/AP CEO Pay Study 2024 (for FY2023) - sector data from prior year study"
+  },
+  "median_pay_by_sector_russell3000": {
+    "description": "Median CEO total compensation by sector for Russell 3000 companies (from 2025 proxy filings, FY2024)",
+    "fiscal_year": 2024,
+    "data": [
+      {
+        "sector": "Information Technology",
+        "median_pay": 8700000,
+        "yoy_change": "+20.9%"
+      },
+      {
+        "sector": "Communication Services",
+        "median_pay": 8000000,
+        "yoy_change": "+11.7%"
+      },
+      {
+        "sector": "Consumer Staples",
+        "median_pay": 7900000
+      },
+      {
+        "sector": "Financials",
+        "median_pay": 4500000,
+        "yoy_change": "+23.5%",
+        "note": "Lowest median but sharpest YoY rise"
+      },
+      {
+        "sector": "Health Care",
+        "yoy_change": "+22.2%"
+      },
+      {
+        "sector": "Energy",
+        "yoy_change": "+10.9%"
+      },
+      {
+        "sector": "Consumer Discretionary",
+        "yoy_change": "-3.5%",
+        "note": "Only sector with decline"
+      }
+    ],
+    "source": "Harvard Law School Forum on Corporate Governance (Dec 2025)"
+  },
+  "compensation_composition": {
+    "description": "Breakdown of CEO compensation components",
+    "s_and_p_500": {
+      "fiscal_year": 2024,
+      "stock_awards_pct": 71.6,
+      "median_stock_awards": 10300000,
+      "stock_awards_yoy_change": "+14.7%",
+      "median_salary": 1300000,
+      "median_perks": 286343,
+      "perks_yoy_change": "+21.5%",
+      "source": "Equilar/AP 2025"
+    },
+    "equilar_100": {
+      "fiscal_year": 2024,
+      "stock_awards_pct": 73,
+      "median_stock_awards": 18600000,
+      "stock_awards_yoy_change": "+40.5%",
+      "median_cash_compensation": 5700000,
+      "median_perks": 452730,
+      "perks_yoy_change": "+16.9%",
+      "median_pay_ratio": 300,
+      "source": "Equilar 100 (2025 edition)"
+    },
+    "russell_3000_fy2024": {
+      "median_base_salary": 850000,
+      "salary_yoy_change": "+2.5%",
+      "median_performance_stock_awards": 3300000,
+      "perf_stock_yoy_change": "+9%",
+      "median_stock_options": 2400000,
+      "options_yoy_change": "+21%",
+      "source": "Harvard Law School Forum (Dec 2025)"
+    },
+    "s_and_p_500_fy2024_detail": {
+      "median_performance_stock_awards": 7100000,
+      "perf_stock_yoy_change": "+7%",
+      "median_restricted_stock": 3500000,
+      "restricted_stock_yoy_change": "+8%",
+      "median_discretionary_bonus": 3000000,
+      "bonus_yoy_change": "+43%",
+      "median_neip_payout": 2500000,
+      "neip_yoy_change": "flat",
+      "source": "Harvard Law School Forum (Dec 2025)"
+    }
+  },
+  "five_year_trends": {
+    "description": "Five-year CEO pay trajectory",
+    "s_and_p_500_5yr_increase": "26%",
+    "russell_3000_5yr_increase": "51%",
+    "period": "2020-2024",
+    "source": "Harvard Law School Forum - 2025 U.S. Compensation Post-Season Review"
+  },
+  "gender_trends": {
+    "description": "Female CEO compensation trends in S&P 500",
+    "data": [
+      {
+        "fiscal_year": 2024,
+        "num_female_ceos": 27,
+        "total_ceos_in_study": 344,
+        "female_median_pay": 20000000,
+        "overall_median_pay": 17100000,
+        "female_premium_pct": 17.4,
+        "highest_paid_woman": "Judith Fran Marks (Otis Worldwide)",
+        "highest_paid_woman_comp": 42100000,
+        "source": "Equilar/AP 2025"
+      },
+      {
+        "fiscal_year": 2025,
+        "num_female_ceos": 27,
+        "total_ceos_in_study": 337,
+        "female_median_pay": 18100000,
+        "overall_median_pay": 17700000,
+        "highest_paid_woman": "Jane Fraser (Citigroup)",
+        "highest_paid_woman_comp": 95800000,
+        "note": "Highest single-year package ever recorded for a female CEO",
+        "source": "Equilar/AP 2026"
+      }
+    ]
+  },
+  "say_on_pay_trends": {
+    "description": "Shareholder say-on-pay vote trends",
+    "data": [
+      {
+        "year": 2024,
+        "median_support": 94.9,
+        "failure_rate_pct": 1.0
+      },
+      {
+        "year": 2025,
+        "median_support": 94.5,
+        "failure_rate_pct": 1.2,
+        "notable_failures": [
+          {
+            "company": "Warner Bros. Discovery",
+            "support_pct": 40
+          },
+          {
+            "company": "Thermo Fisher Scientific",
+            "support_pct": 35
+          }
+        ],
+        "notable_low_support": [
+          {
+            "company": "Goldman Sachs",
+            "support_pct": 66
+          },
+          {
+            "company": "UnitedHealth Group",
+            "support_pct": 60
+          },
+          {
+            "company": "Pfizer",
+            "support_pct": 54
+          }
+        ]
+      }
+    ],
+    "source": "Harvard Law School Forum / ISS 2025 Proxy Season Review"
+  },
+  "security_perks_trend": {
+    "description": "CEO security perquisites trend (post-Brian Thompson murder Dec 2024)",
+    "data": {
+      "s_and_p_500_ceos_with_security_2025": "25%",
+      "s_and_p_500_ceos_with_security_2024": "18%",
+      "median_home_security_value_increase": "nearly 50% over 3 years",
+      "note": "Sharp increase following the murder of UnitedHealthcare CEO Brian Thompson in December 2024"
+    },
+    "source": "Harvard Law Forum / ISS / Equilar"
+  },
+  "historical_context": {
+    "highest_paid_ceo_fy2024_equilar_100": {
+      "name": "James Robert Anderson",
+      "company": "Coherent Corp.",
+      "ticker": "COHR",
+      "total_compensation": 101497009,
+      "note": "Top of Equilar 100 early look (March filing deadline)"
+    },
+    "highest_paid_ceo_fy2024_equilar_nyt": {
+      "name": "Patrick W. Smith",
+      "company": "Axon Enterprise, Inc.",
+      "ticker": "AXON",
+      "total_compensation": 164525721,
+      "change_in_pay": "410,619%",
+      "note": "Top of Equilar/NYT 100 (April filing deadline)"
+    },
+    "highest_paid_ceo_fy2025_equilar_ap": {
+      "name": "Elon Musk",
+      "company": "Tesla, Inc.",
+      "ticker": "TSLA",
+      "total_compensation": 132300000000,
+      "note": "Historic package consisting entirely of long-term stock award; requires complete achievement of ambitious milestones"
+    },
+    "five_ceos_over_100m_fy2025": true,
+    "note_fy2025": "2025 had the highest concentration of nine-figure CEO packages in the history of the Equilar/AP study"
+  }
+}
