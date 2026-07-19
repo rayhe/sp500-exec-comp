@@ -40,10 +40,15 @@ async function loadData() {
 }
 
 function populateMetrics(comp, trends) {
-    document.getElementById('metric-median').textContent = '$17.1M';
-    document.getElementById('metric-median-delta').textContent = '\u25B2 9.7% YoY';
-    document.getElementById('metric-ratio').textContent = '192:1';
-    document.getElementById('metric-worker').textContent = '$85.4K';
+    var stats = comp.metadata && comp.metadata.aggregate_stats;
+    var medianPay = stats ? stats.median_ceo_pay : null;
+    var medianRatio = stats ? stats.median_pay_ratio : null;
+    var medianWorker = stats ? stats.median_worker_pay : null;
+
+    document.getElementById('metric-median').textContent = medianPay ? formatCurrency(medianPay) : '$16.8M';
+    document.getElementById('metric-median-delta').textContent = 'S&P 500, FY2024';
+    document.getElementById('metric-ratio').textContent = medianRatio ? formatRatio(medianRatio) : '195:1';
+    document.getElementById('metric-worker').textContent = medianWorker ? formatCompact(medianWorker) : '$81.9K';
     document.getElementById('metric-worker-delta').textContent = 'S&P 500 median employee';
 
     var sorted = comp.companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
