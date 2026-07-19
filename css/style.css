@@ -209,6 +209,7 @@ header h1 {
 }
 
 #network-graph svg { width: 100%; height: 100%; }
+#network-graph canvas { display: block; }
 
 .tooltip {
     position: fixed;
