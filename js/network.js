@@ -51,10 +51,21 @@ function initNetwork(peerData) {
         if (adjacency[e.target]) adjacency[e.target].in.push(e.source);
     });
 
-    // Node radius based on in-degree only
+    // Node radius based on in-degree — area-proportional scaling
+    // Range: 4px (0 peers) to 60px (max ~194 peers)
+    // Uses area-proportional mapping so visual size reflects magnitude
+    var maxInDegree = 1;
+    data.nodes.forEach(function(n) { if ((n.in_degree || 0) > maxInDegree) maxInDegree = n.in_degree; });
     function getRadius(node) {
         var inDeg = node.in_degree || 0;
-        return Math.max(4, Math.min(32, 3 + Math.sqrt(inDeg) * 3.5));
+        if (inDeg === 0) return 4;
+        // Normalize to 0-1, then map to area range [minA, maxA]
+        var t = inDeg / maxInDegree;
+        var minR = 5, maxR = 55;
+        // Area-proportional: r = sqrt(lerp(minA, maxA, t))
+        var minA = minR * minR;
+        var maxA = maxR * maxR;
+        return Math.sqrt(minA + t * (maxA - minA));
     }
 
     // Label threshold — only show for high in-degree nodes when zoomed out
