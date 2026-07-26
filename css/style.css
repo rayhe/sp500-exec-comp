@@ -341,9 +341,105 @@ tbody td:nth-child(8) {
     font-variant-numeric: tabular-nums;
 }
 
-tbody tr { transition: background 0.1s; }
+tbody tr { transition: background 0.1s; cursor: pointer; }
 tbody tr:hover { background: rgba(255,255,255,0.03); }
+tbody tr.selected { background: rgba(0,180,216,0.06); }
+tbody tr.detail-row { cursor: default; }
+tbody tr.detail-row:hover { background: none; }
 tbody tr:last-child td { border-bottom: none; }
+
+/* === Detail Panel (expanded row) === */
+.detail-panel {
+    background: var(--bg-surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 4px 0;
+}
+
+.detail-header {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+.detail-ticker {
+    font-weight: 400;
+    color: var(--accent);
+}
+
+.detail-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.detail-stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    min-width: 140px;
+    flex: 1;
+}
+.detail-stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+.detail-stat-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+.detail-stat-value.positive { color: var(--positive); }
+.detail-stat-value.negative { color: var(--negative); }
+.detail-stat-sub {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.detail-peers {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+}
+.detail-peer-group {
+    margin-bottom: 8px;
+}
+.detail-peer-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 6px;
+}
+.detail-peer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.detail-peer-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0,180,216,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,180,216,0.2);
+}
+.detail-peer-more {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    align-self: center;
+}
 
 td .ticker {
     font-weight: 600;

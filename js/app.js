@@ -135,7 +135,7 @@ function renderTable(companies) {
         tbody.appendChild(tr);
     });
 
-    document.getElementById('table-footer').textContent = 'Showing ' + filtered.length + ' of ' + companies.length + ' companies';
+    document.getElementById('table-footer').textContent = 'Showing ' + filtered.length + ' of ' + companies.length + ' companies · Click any row for details';
 }
 
 function setupSorting(companies) {
@@ -165,6 +165,128 @@ function setupSearch(companies) {
     });
 }
 
+/* === Company Detail Panel (click-to-expand) === */
+
+function getPeerInfo(ticker) {
+    if (!peerData || !peerData.edges) return null;
+    var selectedBy = [];
+    var selects = [];
+    peerData.edges.forEach(function(e) {
+        var src = typeof e.source === 'object' ? e.source.ticker : e.source;
+        var tgt = typeof e.target === 'object' ? e.target.ticker : e.target;
+        if (tgt === ticker) selectedBy.push(src);
+        if (src === ticker) selects.push(tgt);
+    });
+    return { selectedBy: selectedBy, selects: selects };
+}
+
+function setupDetailPanel(companies) {
+    var tbody = document.getElementById('comp-tbody');
+
+    tbody.addEventListener('click', function(e) {
+        var row = e.target.closest('tr');
+        if (!row || row.classList.contains('detail-row')) return;
+
+        var tickerEl = row.querySelector('.ticker');
+        if (!tickerEl) return;
+        var ticker = tickerEl.textContent.trim();
+
+        // Close any existing detail
+        var existing = tbody.querySelector('.detail-row');
+        var wasOpen = existing && existing.dataset.ticker === ticker;
+        if (existing) existing.remove();
+        tbody.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+
+        if (wasOpen) return; // toggle off
+
+        row.classList.add('selected');
+        var company = companies.find(function(c) { return c.ticker === ticker; });
+        if (!company) return;
+
+        // Compute S&P 500 rank
+        var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        var overallRank = sorted.findIndex(function(c) { return c.ticker === ticker; }) + 1;
+        var topPct = (overallRank / companies.length * 100).toFixed(0);
+
+        // Compute sector rank
+        var sectorPeers = companies.filter(function(c) { return c.sector === company.sector; })
+            .sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        var sectorRank = sectorPeers.findIndex(function(c) { return c.ticker === ticker; }) + 1;
+
+        // vs sector median
+        var sectorMedian = compData.metadata && compData.metadata.sector_medians && compData.metadata.sector_medians[company.sector];
+        var sectorMedianPay = sectorMedian ? sectorMedian.median_ceo_pay : null;
+        var vsMedianPct = sectorMedianPay && sectorMedianPay > 0
+            ? ((company.total_compensation - sectorMedianPay) / sectorMedianPay * 100).toFixed(0)
+            : null;
+
+        // Pay ratio percentile
+        var ratioText = null;
+        if (company.pay_ratio != null) {
+            var ratioSorted = companies.filter(function(c) { return c.pay_ratio != null; })
+                .sort(function(a, b) { return a.pay_ratio - b.pay_ratio; });
+            var ratioIdx = ratioSorted.findIndex(function(c) { return c.ticker === ticker; }) + 1;
+            var ratioPctile = Math.round(ratioIdx / ratioSorted.length * 100);
+            ratioText = ratioPctile + 'th percentile';
+        }
+
+        // Peer network
+        var peerInfo = getPeerInfo(ticker);
+
+        // Build HTML
+        var html = '<td colspan="8"><div class="detail-panel">';
+        html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
+        html += '<div class="detail-stats">';
+
+        html += '<div class="detail-stat"><div class="detail-stat-label">S&P 500 Rank</div><div class="detail-stat-value">#' + overallRank + '</div><div class="detail-stat-sub">Top ' + topPct + '%</div></div>';
+        html += '<div class="detail-stat"><div class="detail-stat-label">Sector Rank</div><div class="detail-stat-value">#' + sectorRank + ' of ' + sectorPeers.length + '</div><div class="detail-stat-sub">' + (company.sector || '') + '</div></div>';
+
+        if (vsMedianPct !== null) {
+            var sign = parseInt(vsMedianPct) >= 0 ? '+' : '';
+            var cls = parseInt(vsMedianPct) >= 0 ? 'positive' : 'negative';
+            html += '<div class="detail-stat"><div class="detail-stat-label">vs Sector Median</div><div class="detail-stat-value ' + cls + '">' + sign + vsMedianPct + '%</div><div class="detail-stat-sub">Median: ' + formatCurrency(sectorMedianPay) + '</div></div>';
+        }
+
+        if (ratioText) {
+            html += '<div class="detail-stat"><div class="detail-stat-label">Pay Ratio Rank</div><div class="detail-stat-value">' + ratioText + '</div><div class="detail-stat-sub">' + formatRatio(company.pay_ratio) + '</div></div>';
+        }
+
+        if (peerInfo) {
+            html += '<div class="detail-stat"><div class="detail-stat-label">Peer Network</div><div class="detail-stat-value">' + peerInfo.selectedBy.length + ' in · ' + peerInfo.selects.length + ' out</div><div class="detail-stat-sub">Inbound / outbound</div></div>';
+        }
+
+        html += '</div>'; // detail-stats
+
+        // Peer lists as ticker tags
+        if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
+            html += '<div class="detail-peers">';
+            if (peerInfo.selectedBy.length > 0) {
+                html += '<div class="detail-peer-group"><span class="detail-peer-label">Selected as comp peer by:</span>';
+                html += '<div class="detail-peer-tags">';
+                html += peerInfo.selectedBy.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag">' + t + '</span>'; }).join('');
+                if (peerInfo.selectedBy.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selectedBy.length - 20) + ' more</span>';
+                html += '</div></div>';
+            }
+            if (peerInfo.selects.length > 0) {
+                html += '<div class="detail-peer-group"><span class="detail-peer-label">Benchmarks against:</span>';
+                html += '<div class="detail-peer-tags">';
+                html += peerInfo.selects.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag">' + t + '</span>'; }).join('');
+                if (peerInfo.selects.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selects.length - 20) + ' more</span>';
+                html += '</div></div>';
+            }
+            html += '</div>';
+        }
+
+        html += '</div></td>'; // detail-panel
+
+        var detailRow = document.createElement('tr');
+        detailRow.className = 'detail-row';
+        detailRow.dataset.ticker = ticker;
+        detailRow.innerHTML = html;
+        row.after(detailRow);
+    });
+}
+
 (async function init() {
     var data = await loadData();
     var companies = data.comp.companies;
@@ -174,6 +296,7 @@ function setupSearch(companies) {
     renderTable(companies);
     setupSorting(companies);
     setupSearch(companies);
+    setupDetailPanel(companies);
 
     if (typeof initNetwork === 'function') {
         initNetwork(data.peer);
