@@ -464,6 +464,25 @@ function initNetwork(peerData) {
         draw();
     }
 
+    // Expose global API for cross-section linking (table → network)
+    window.focusNetworkNode = function(ticker) {
+        var node = nodeMap[ticker];
+        if (!node) return false;
+
+        // Scroll to the network section
+        var section = document.getElementById('peer-network-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Small delay to let scroll settle, then zoom
+        setTimeout(function() {
+            selectSearchNode(node);
+        }, 400);
+
+        return true;
+    };
+
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             var q = searchInput.value.trim().toLowerCase();

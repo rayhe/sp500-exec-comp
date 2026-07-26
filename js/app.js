@@ -257,6 +257,15 @@ function setupDetailPanel(companies) {
 
         html += '</div>'; // detail-stats
 
+        // "Show in Network" button
+        if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
+            html += '<div class="detail-actions">';
+            html += '<button class="detail-network-btn" onclick="if(window.focusNetworkNode)window.focusNetworkNode(\'' + ticker.replace(/'/g, "\\'") + '\')">';
+            html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 7l4 3M14 10l4-3M6 17l4-3M14 14l4 3"/></svg>';
+            html += ' Show in Network</button>';
+            html += '</div>';
+        }
+
         // Peer lists as ticker tags
         if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
             html += '<div class="detail-peers">';

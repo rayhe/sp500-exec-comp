@@ -517,6 +517,39 @@ tbody tr:last-child td { border-bottom: none; }
     align-self: center;
 }
 
+/* === Detail Panel Actions (Show in Network button) === */
+.detail-actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+}
+
+.detail-network-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--accent);
+    background: rgba(0,180,216,0.1);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.detail-network-btn:hover {
+    background: rgba(0,180,216,0.25);
+    color: #fff;
+    border-color: var(--accent-hover);
+}
+.detail-network-btn svg {
+    flex-shrink: 0;
+}
+
 td .ticker {
     font-weight: 600;
     color: var(--accent);
