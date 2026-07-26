@@ -406,7 +406,7 @@ function drawCompositionChart(trends) {
 
     var svg = d3.select('#composition-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
-        .attr('height', barH + margin.top + margin.bottom + 60)
+        .attr('height', barH + margin.top + margin.bottom)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -437,18 +437,15 @@ function drawCompositionChart(trends) {
         xPos += segW;
     });
 
-    // Legend below
-    var legendG = svg.append('g').attr('transform', 'translate(0,' + (barH + 16) + ')');
-    var lx = 0;
+    // Legend below — HTML flexbox for responsive wrapping
+    var legendDiv = document.createElement('div');
+    legendDiv.className = 'composition-legend';
     segments.forEach(function(seg) {
-        var g = legendG.append('g').attr('transform', 'translate(' + lx + ',0)');
-        g.append('rect').attr('width', 12).attr('height', 12).attr('rx', 2).attr('fill', seg.color);
-        g.append('text')
-            .attr('x', 16).attr('y', 10)
-            .attr('fill', '#a1a1aa')
-            .attr('font-size', '11px')
-            .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text(seg.label + ' (' + seg.pct.toFixed(1) + '%) — ' + seg.value);
-        lx += 250;
+        var item = document.createElement('div');
+        item.className = 'composition-legend-item';
+        item.innerHTML = '<span class="composition-legend-dot" style="background:' + seg.color + '"></span>' +
+            '<span class="composition-legend-text">' + seg.label + ' (' + seg.pct.toFixed(1) + '%) — ' + seg.value + '</span>';
+        legendDiv.appendChild(item);
     });
+    container.appendChild(legendDiv);
 }

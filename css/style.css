@@ -483,7 +483,33 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 20px;
-    min-height: 160px;
+    min-height: 120px;
+}
+
+/* === Composition Legend (HTML flexbox) === */
+.composition-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    padding: 14px 0 0 0;
+}
+.composition-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.composition-legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+.composition-legend-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    white-space: nowrap;
 }
 
 /* === Footer === */
