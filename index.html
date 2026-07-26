@@ -63,6 +63,11 @@
             <p class="section-desc">Directional peer group relationships from SEC EDGAR DEF 14A proxy statements. Arrows show which companies benchmark against which peers. Node size = how many companies selected it as a peer.</p>
         </div>
         <div class="network-controls">
+            <div class="network-search-box">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="network-search" placeholder="Find company in network..." autocomplete="off">
+                <div id="network-search-results" class="network-search-results"></div>
+            </div>
             <button class="control-btn active" data-filter="all">All Peers</button>
             <button class="control-btn" data-filter="primary">Primary Only</button>
             <button class="control-btn" data-filter="secondary">Secondary Only</button>

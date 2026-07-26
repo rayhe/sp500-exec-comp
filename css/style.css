@@ -198,6 +198,82 @@ header h1 {
     display: inline-block;
 }
 
+/* === Network Search Box === */
+.network-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    color: var(--text-secondary);
+    min-width: 240px;
+    position: relative;
+    transition: border-color 0.2s;
+}
+.network-search-box:focus-within { border-color: var(--accent); }
+.network-search-box input {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 0.82rem;
+    outline: none;
+    width: 100%;
+}
+.network-search-box input::placeholder { color: var(--text-muted); }
+
+.network-search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 150;
+    max-height: 240px;
+    overflow-y: auto;
+}
+.network-search-results.visible { display: block; }
+.network-search-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    transition: background 0.1s;
+}
+.network-search-result:hover,
+.network-search-result.active {
+    background: rgba(0,180,216,0.12);
+}
+.network-search-result .nsr-ticker {
+    font-weight: 600;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    min-width: 50px;
+}
+.network-search-result .nsr-name {
+    flex: 1;
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.network-search-result .nsr-sector {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
 #network-graph {
     background: var(--bg-secondary);
     border: 1px solid var(--border);

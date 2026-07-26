@@ -412,4 +412,131 @@ function initNetwork(peerData) {
             simulation.alpha(0.3).restart();
         }, 200);
     });
+
+    /* === Network Search ===
+     * Autocomplete dropdown over the peer network graph.
+     * Selecting a result zooms + highlights that node.
+     */
+    var searchInput = document.getElementById('network-search');
+    var searchResults = document.getElementById('network-search-results');
+    var activeIdx = -1;
+
+    function renderSearchResults(matches) {
+        searchResults.innerHTML = '';
+        activeIdx = -1;
+        if (matches.length === 0) {
+            searchResults.classList.remove('visible');
+            return;
+        }
+        matches.forEach(function(n, i) {
+            var div = document.createElement('div');
+            div.className = 'network-search-result';
+            div.innerHTML = '<span class="nsr-ticker">' + n.ticker + '</span>' +
+                '<span class="nsr-name">' + n.name + '</span>' +
+                '<span class="nsr-sector">' + (n.sector || '') + '</span>';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault(); // prevent blur before click fires
+                selectSearchNode(n);
+            });
+            searchResults.appendChild(div);
+        });
+        searchResults.classList.add('visible');
+    }
+
+    function selectSearchNode(node) {
+        searchInput.value = node.ticker + ' — ' + node.name;
+        searchResults.classList.remove('visible');
+
+        // Zoom to node
+        var scale = 2.5;
+        var tx = width / 2 - node.x * scale;
+        var ty = height / 2 - node.y * scale;
+        var newTransform = d3.zoomIdentity.translate(tx, ty).scale(scale);
+
+        d3.select(canvas)
+            .transition()
+            .duration(750)
+            .call(zoom.transform, newTransform);
+
+        // Set as hovered to highlight connections
+        hoveredNode = node;
+        showTooltip(width / 2 + 12, height / 2 - 10, node);
+        draw();
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = searchInput.value.trim().toLowerCase();
+            if (q.length === 0) {
+                searchResults.classList.remove('visible');
+                // Clear highlight
+                hoveredNode = null;
+                hideTooltip();
+                draw();
+                return;
+            }
+            // Match against ticker and name
+            var matches = nodes.filter(function(n) {
+                return n.ticker.toLowerCase().indexOf(q) >= 0 ||
+                    n.name.toLowerCase().indexOf(q) >= 0;
+            });
+            // Sort: exact ticker match first, then starts-with, then contains
+            matches.sort(function(a, b) {
+                var at = a.ticker.toLowerCase();
+                var bt = b.ticker.toLowerCase();
+                // Exact ticker match
+                if (at === q && bt !== q) return -1;
+                if (bt === q && at !== q) return 1;
+                // Ticker starts with query
+                var aStarts = at.indexOf(q) === 0 ? 0 : 1;
+                var bStarts = bt.indexOf(q) === 0 ? 0 : 1;
+                if (aStarts !== bStarts) return aStarts - bStarts;
+                // Name starts with query
+                var an = a.name.toLowerCase();
+                var bn = b.name.toLowerCase();
+                var anStarts = an.indexOf(q) === 0 ? 0 : 1;
+                var bnStarts = bn.indexOf(q) === 0 ? 0 : 1;
+                if (anStarts !== bnStarts) return anStarts - bnStarts;
+                // Alphabetical by ticker
+                return at < bt ? -1 : at > bt ? 1 : 0;
+            });
+            renderSearchResults(matches.slice(0, 8));
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+            var items = searchResults.querySelectorAll('.network-search-result');
+            if (items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIdx = Math.min(activeIdx + 1, items.length - 1);
+                items.forEach(function(el, i) { el.classList.toggle('active', i === activeIdx); });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIdx = Math.max(activeIdx - 1, 0);
+                items.forEach(function(el, i) { el.classList.toggle('active', i === activeIdx); });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeIdx >= 0 && activeIdx < items.length) {
+                    items[activeIdx].dispatchEvent(new MouseEvent('mousedown'));
+                } else if (items.length > 0) {
+                    items[0].dispatchEvent(new MouseEvent('mousedown'));
+                }
+            } else if (e.key === 'Escape') {
+                searchResults.classList.remove('visible');
+                searchInput.blur();
+            }
+        });
+
+        searchInput.addEventListener('blur', function() {
+            // Small delay to allow click events on results to fire
+            setTimeout(function() { searchResults.classList.remove('visible'); }, 150);
+        });
+
+        searchInput.addEventListener('focus', function() {
+            if (searchInput.value.trim().length > 0) {
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    }
 }
