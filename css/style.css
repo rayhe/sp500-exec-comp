@@ -550,6 +550,55 @@ tbody tr:last-child td { border-bottom: none; }
     flex-shrink: 0;
 }
 
+/* === Outlier Badges === */
+.outlier-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    vertical-align: middle;
+    margin-left: 4px;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    cursor: default;
+}
+.outlier-badge.top-comp {
+    background: rgba(255,209,102,0.15);
+    color: #ffd166;
+    border: 1px solid rgba(255,209,102,0.35);
+    font-family: var(--mono);
+}
+.outlier-badge.extreme-ratio {
+    background: rgba(239,71,111,0.15);
+    color: var(--negative);
+    border: 1px solid rgba(239,71,111,0.35);
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 50%;
+    min-width: 18px;
+}
+.outlier-badge.high-ratio {
+    background: rgba(251,146,60,0.15);
+    color: var(--orange);
+    border: 1px solid rgba(251,146,60,0.35);
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 50%;
+    min-width: 18px;
+}
+.outlier-badge.low-ratio {
+    background: rgba(6,214,160,0.15);
+    color: var(--positive);
+    border: 1px solid rgba(6,214,160,0.35);
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 50%;
+    min-width: 18px;
+}
+
 td .ticker {
     font-weight: 600;
     color: var(--accent);

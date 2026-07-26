@@ -88,7 +88,24 @@ function buildSectorChips(companies) {
     });
 }
 
+/* Pre-compute outlier sets (computed once, stable across filters/sorts) */
+var _outlierTop10 = null;
+var _outlierLowRatio = null;
+function computeOutliers(companies) {
+    if (_outlierTop10) return;
+    var byComp = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+    _outlierTop10 = {};
+    byComp.slice(0, 10).forEach(function(c, i) { _outlierTop10[c.ticker] = i + 1; });
+    // Bottom-5 pay ratio (lowest CEO:worker ratio — "most equitable")
+    var withRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; });
+    withRatio.sort(function(a, b) { return a.pay_ratio - b.pay_ratio; });
+    _outlierLowRatio = {};
+    withRatio.slice(0, 5).forEach(function(c, i) { _outlierLowRatio[c.ticker] = i + 1; });
+}
+
 function renderTable(companies) {
+    computeOutliers(companies);
+
     var filtered = companies.slice();
 
     if (activeSector) {
@@ -121,16 +138,35 @@ function renderTable(companies) {
 
     filtered.forEach(function(c, i) {
         var tr = document.createElement('tr');
+
+        // Compensation value with optional top-10 badge
+        var compHtml = '<span class="comp-value">' + formatCurrency(c.total_compensation) + '</span>';
+        if (_outlierTop10[c.ticker]) {
+            compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
+        }
+
+        // Pay ratio with color class + optional extreme badge
         var ratioClass = c.pay_ratio > 2000 ? 'ratio-high' : c.pay_ratio > 500 ? 'ratio-mid' : 'ratio-low';
-        var ratioCell = c.pay_ratio ? '<span class="' + ratioClass + '">' + formatRatio(c.pay_ratio) + '</span>' : '\u2014';
+        var ratioHtml = '\u2014';
+        if (c.pay_ratio) {
+            ratioHtml = '<span class="' + ratioClass + '">' + formatRatio(c.pay_ratio) + '</span>';
+            if (c.pay_ratio > 2000) {
+                ratioHtml += ' <span class="outlier-badge extreme-ratio" title="Extreme pay ratio: CEO earns ' + c.pay_ratio.toLocaleString() + 'x the median worker">!</span>';
+            } else if (c.pay_ratio > 1000) {
+                ratioHtml += ' <span class="outlier-badge high-ratio" title="High pay ratio: CEO earns ' + c.pay_ratio.toLocaleString() + 'x the median worker">!</span>';
+            } else if (_outlierLowRatio[c.ticker]) {
+                ratioHtml += ' <span class="outlier-badge low-ratio" title="Most equitable: bottom 5 pay ratio in S&amp;P 500">✓</span>';
+            }
+        }
+
         var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : '\u2014';
         tr.innerHTML = '<td>' + (i + 1) + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
             '<td>' + c.ceo_name + '</td>' +
-            '<td><span class="comp-value">' + formatCurrency(c.total_compensation) + '</span></td>' +
+            '<td>' + compHtml + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
-            '<td>' + ratioCell + '</td>' +
+            '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
         tbody.appendChild(tr);
     });
