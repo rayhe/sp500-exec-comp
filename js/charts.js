@@ -169,20 +169,44 @@ function drawTrendChart(trends) {
         .text(function(d) { return fmtCurr(d.median_pay); });
 }
 
-/* --- Pay Ratio Distribution --- */
+/* --- Pay Ratio Distribution (Histogram) --- */
 function drawRatioChart(companies) {
     var container = document.getElementById('ratio-chart');
-    var withRatio = companies.filter(function(c) { return c.pay_ratio != null; })
-        .sort(function(a, b) { return b.pay_ratio - a.pay_ratio; });
+    var withRatio = companies.filter(function(c) { return c.pay_ratio != null; });
 
     if (withRatio.length === 0) {
         container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No pay ratio data available</p>';
         return;
     }
 
-    var margin = { top: 20, right: 60, bottom: 30, left: 80 };
+    // Define buckets with meaningful breakpoints
+    var buckets = [
+        { min: 0, max: 50, label: '0–50', color: '#06d6a0' },
+        { min: 50, max: 100, label: '50–100', color: '#06d6a0' },
+        { min: 100, max: 200, label: '100–200', color: '#34d399' },
+        { min: 200, max: 300, label: '200–300', color: '#ffd166' },
+        { min: 300, max: 500, label: '300–500', color: '#ffd166' },
+        { min: 500, max: 1000, label: '500–1K', color: '#fb923c' },
+        { min: 1000, max: 2000, label: '1K–2K', color: '#ef476f' },
+        { min: 2000, max: Infinity, label: '2K+', color: '#ef476f' }
+    ];
+
+    // Count companies in each bucket and collect names
+    buckets.forEach(function(b) {
+        b.companies = withRatio.filter(function(c) {
+            return c.pay_ratio >= b.min && c.pay_ratio < b.max;
+        });
+        b.count = b.companies.length;
+        // Sort by pay ratio descending within bucket
+        b.companies.sort(function(a, bb) { return bb.pay_ratio - a.pay_ratio; });
+    });
+
+    // Filter out empty buckets
+    var activeBuckets = buckets.filter(function(b) { return b.count > 0; });
+
+    var margin = { top: 20, right: 50, bottom: 50, left: 70 };
     var w = container.clientWidth - margin.left - margin.right;
-    var h = Math.max(280, withRatio.length * 22);
+    var h = 300;
 
     var svg = d3.select('#ratio-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
@@ -190,46 +214,110 @@ function drawRatioChart(companies) {
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    var x = d3.scaleLinear()
-        .domain([0, d3.max(withRatio, function(d) { return d.pay_ratio; }) * 1.05])
-        .range([0, w]);
+    var x = d3.scaleBand()
+        .domain(activeBuckets.map(function(b) { return b.label; }))
+        .range([0, w])
+        .padding(0.2);
 
-    var y = d3.scaleBand()
-        .domain(withRatio.map(function(d) { return d.ticker; }))
-        .range([0, h])
-        .padding(0.25);
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(activeBuckets, function(b) { return b.count; }) * 1.15])
+        .range([h, 0]);
 
     // Grid
     svg.append('g').attr('class', 'grid')
-        .call(d3.axisBottom(x).tickSize(h).tickFormat('').ticks(5));
+        .call(d3.axisLeft(y).tickSize(-w).tickFormat('').ticks(6));
+
+    // X axis
+    svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(d3.axisBottom(x).tickSize(0).tickPadding(10));
+
+    // X axis label
+    svg.append('text')
+        .attr('x', w / 2)
+        .attr('y', h + 42)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('CEO : Worker Pay Ratio');
 
     // Y axis
     svg.append('g').attr('class', 'axis')
-        .call(d3.axisLeft(y).tickSize(0).tickPadding(6));
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return d; }));
 
-    // Bars
-    svg.selectAll('.ratio-bar')
-        .data(withRatio)
-        .join('rect')
-        .attr('x', 0)
-        .attr('y', function(d) { return y(d.ticker); })
-        .attr('width', function(d) { return x(d.pay_ratio); })
-        .attr('height', y.bandwidth())
-        .attr('fill', function(d) {
-            return d.pay_ratio > 2000 ? '#ef476f' : d.pay_ratio > 500 ? '#ffd166' : '#06d6a0';
-        })
-        .attr('rx', 2)
-        .attr('opacity', 0.8);
+    // Y axis label
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -h / 2)
+        .attr('y', -50)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Number of Companies');
 
-    // Labels
-    svg.selectAll('.ratio-label')
-        .data(withRatio)
-        .join('text')
+    // Bars with tooltip area
+    var bars = svg.selectAll('.hist-bar')
+        .data(activeBuckets)
+        .join('g')
+        .attr('class', 'hist-bar');
+
+    bars.append('rect')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return h - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('rx', 3)
+        .attr('opacity', 0.8)
+        .style('cursor', 'default');
+
+    // Count labels on top of bars
+    bars.append('text')
         .attr('class', 'bar-label')
-        .attr('x', function(d) { return x(d.pay_ratio) + 4; })
-        .attr('y', function(d) { return y(d.ticker) + y.bandwidth() / 2; })
-        .attr('dy', '0.35em')
-        .text(function(d) { return d.pay_ratio.toLocaleString() + ':1'; });
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 6; })
+        .attr('text-anchor', 'middle')
+        .attr('font-weight', '600')
+        .text(function(b) { return b.count; });
+
+    // Median line
+    var ratios = withRatio.map(function(c) { return c.pay_ratio; }).sort(function(a, b) { return a - b; });
+    var medianRatio = ratios[Math.floor(ratios.length / 2)];
+
+    // Find which bucket the median falls in, and position the line there
+    var medianBucket = activeBuckets.find(function(b) { return medianRatio >= b.min && medianRatio < b.max; });
+    if (medianBucket) {
+        // Interpolate position within the bucket
+        var bucketFrac = (medianRatio - medianBucket.min) / (Math.min(medianBucket.max, 5000) - medianBucket.min);
+        var medianX = x(medianBucket.label) + bucketFrac * x.bandwidth();
+
+        svg.append('line')
+            .attr('x1', medianX)
+            .attr('x2', medianX)
+            .attr('y1', 0)
+            .attr('y2', h)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '6,4')
+            .attr('opacity', 0.6);
+
+        svg.append('text')
+            .attr('x', medianX + 6)
+            .attr('y', 12)
+            .attr('fill', '#fff')
+            .attr('font-size', '11px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .attr('font-weight', '500')
+            .attr('opacity', 0.8)
+            .text('Median: ' + medianRatio.toLocaleString() + ':1');
+    }
+
+    // Summary stats below chart
+    var statsG = svg.append('g').attr('transform', 'translate(0,' + (h + 48) + ')');
+    var topOutliers = withRatio.sort(function(a, b) { return b.pay_ratio - a.pay_ratio; }).slice(0, 3);
+    // Removed — keep chart clean. Top outliers visible via table sort.
 }
 
 /* --- Top 10 Horizontal Bar Chart --- */

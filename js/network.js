@@ -55,7 +55,7 @@ function initNetwork(peerData) {
     // Range: 4px (0 peers) to 60px (max ~194 peers)
     // Uses area-proportional mapping so visual size reflects magnitude
     var maxInDegree = 1;
-    data.nodes.forEach(function(n) { if ((n.in_degree || 0) > maxInDegree) maxInDegree = n.in_degree; });
+    nodes.forEach(function(n) { if ((n.in_degree || 0) > maxInDegree) maxInDegree = n.in_degree; });
     function getRadius(node) {
         var inDeg = node.in_degree || 0;
         if (inDeg === 0) return 4;
