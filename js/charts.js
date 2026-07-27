@@ -79,6 +79,24 @@ function redrawAllCharts() {
     drawCompositionChart(_chartData.trends);
 }
 
+/* Update sector chart bar highlighting without full redraw */
+window.highlightSectorBar = function(sectorName) {
+    d3.selectAll('#sector-chart .bar').each(function(d) {
+        if (!d || !d.sector) return;
+        if (!sectorName) {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        } else if (d.sector === sectorName) {
+            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+        } else {
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+        }
+    });
+    d3.selectAll('#sector-chart .bar-label').each(function(d) {
+        if (!d || !d.sector) return;
+        d3.select(this).attr('opacity', !sectorName || d.sector === sectorName ? 1 : 0.4);
+    });
+};
+
 /* --- Sector Bar Chart --- */
 function drawSectorChart(trends) {
     var container = document.getElementById('sector-chart');
@@ -126,7 +144,15 @@ function drawSectorChart(trends) {
         .attr('height', y.bandwidth())
         .attr('fill', '#00b4d8')
         .attr('rx', 3)
-        .attr('opacity', 0.8)
+        .attr('opacity', function(d) {
+            if (activeSector) return d.sector === activeSector ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(d) {
+            if (activeSector && d.sector === activeSector) {
+                d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            }
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
@@ -136,8 +162,12 @@ function drawSectorChart(trends) {
                 '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>');
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function() {
-            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        .on('mouseout', function(event, d) {
+            var isActive = activeSector && d.sector === activeSector;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (activeSector ? 0.3 : 0.8))
+                .attr('stroke', isActive ? '#fff' : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
             hideChartTooltip();
         })
         .on('click', function(event, d) {
@@ -152,7 +182,11 @@ function drawSectorChart(trends) {
         .attr('x', function(d) { return x(d.median_pay) + 6; })
         .attr('y', function(d) { return y(d.sector) + y.bandwidth() / 2; })
         .attr('dy', '0.35em')
-        .text(function(d) { return fmtCurr(d.median_pay); });
+        .text(function(d) { return fmtCurr(d.median_pay); })
+        .attr('opacity', function(d) {
+            if (activeSector) return d.sector === activeSector ? 1 : 0.4;
+            return 1;
+        });
 }
 
 /* --- Trend Line Chart --- */

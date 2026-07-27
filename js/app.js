@@ -80,6 +80,7 @@ function buildSectorChips(companies) {
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
         renderTable(companies);
+        if (window.highlightSectorBar) window.highlightSectorBar(null);
     });
     container.appendChild(allChip);
 
@@ -99,6 +100,7 @@ function buildSectorChips(companies) {
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
             renderTable(companies);
+            if (window.highlightSectorBar) window.highlightSectorBar(s);
         });
         container.appendChild(chip);
     });
@@ -559,6 +561,9 @@ function applyHashState(companies) {
 
         renderTable(companies);
 
+        // Highlight active bar in sector chart
+        if (window.highlightSectorBar) window.highlightSectorBar(sectorName);
+
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
@@ -600,6 +605,9 @@ function applyHashState(companies) {
         updateRatioFilterIndicator();
 
         renderTable(companies);
+
+        // Clear sector chart highlight (sector was cleared)
+        if (window.highlightSectorBar) window.highlightSectorBar(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -656,6 +664,7 @@ function applyHashState(companies) {
         });
 
         renderTable(companies);
+        if (window.highlightSectorBar) window.highlightSectorBar(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -688,6 +697,9 @@ function applyHashState(companies) {
     // Restore state from URL hash (after charts/network are initialized)
     applyHashState(companies);
     _stateInitialized = true;
+
+    // Apply sector chart highlight if restored from hash
+    if (activeSector && window.highlightSectorBar) window.highlightSectorBar(activeSector);
 
     // Update ratio filter chip UI if restored from hash
     if (window._activeRatioBucket) {
@@ -733,5 +745,6 @@ function applyHashState(companies) {
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
         });
         applyHashState(companies);
+        if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
     });
 })();
