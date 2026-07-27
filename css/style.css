@@ -661,10 +661,63 @@ td .ratio-mid { color: var(--warning); font-weight: 600; }
 td .ratio-low { color: var(--positive); font-weight: 600; }
 
 .table-footer {
-    padding: 10px 14px;
+    padding: 12px 14px;
     font-size: 0.8rem;
     color: var(--text-muted);
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.table-footer-text {
+    white-space: nowrap;
+}
+
+/* === Pagination === */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.pagination-btn {
+    font-family: var(--font);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.pagination-btn:hover:not(.disabled):not(.active) {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    background: var(--bg-surface);
+}
+.pagination-btn.active {
+    background: rgba(0,180,216,0.18);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+.pagination-btn.disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.pagination-num {
+    min-width: 32px;
+    text-align: center;
+    padding: 5px 4px;
+}
+.pagination-ellipsis {
+    color: var(--text-muted);
+    padding: 0 4px;
+    font-size: 0.78rem;
+    user-select: none;
 }
 
 /* === Charts Grid === */

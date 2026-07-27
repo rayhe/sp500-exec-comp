@@ -6,6 +6,8 @@ let peerData = null;
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
 let searchTerm = '';
+let currentPage = 1;
+var PAGE_SIZE = 50;
 
 function formatCurrency(val) {
     if (val == null) return '—';
@@ -68,6 +70,7 @@ function buildSectorChips(companies) {
     allChip.textContent = 'All';
     allChip.addEventListener('click', function() {
         activeSector = null;
+        currentPage = 1;
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
         renderTable(companies);
@@ -80,6 +83,7 @@ function buildSectorChips(companies) {
         chip.textContent = s;
         chip.addEventListener('click', function() {
             activeSector = s;
+            currentPage = 1;
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
             renderTable(companies);
@@ -133,10 +137,17 @@ function renderTable(companies) {
         return 0;
     });
 
+    // Pagination
+    var totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var startIdx = (currentPage - 1) * PAGE_SIZE;
+    var pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+
     var tbody = document.getElementById('comp-tbody');
     tbody.innerHTML = '';
 
-    filtered.forEach(function(c, i) {
+    pageItems.forEach(function(c, i) {
+        var globalIdx = startIdx + i;
         var tr = document.createElement('tr');
 
         // Compensation value with optional top-10 badge
@@ -160,7 +171,7 @@ function renderTable(companies) {
         }
 
         var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : '\u2014';
-        tr.innerHTML = '<td>' + (i + 1) + '</td>' +
+        tr.innerHTML = '<td>' + (globalIdx + 1) + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
             '<td>' + c.ceo_name + '</td>' +
@@ -171,7 +182,89 @@ function renderTable(companies) {
         tbody.appendChild(tr);
     });
 
-    document.getElementById('table-footer').textContent = 'Showing ' + filtered.length + ' of ' + companies.length + ' companies · Click any row for details';
+    // Footer with pagination controls
+    var footerEl = document.getElementById('table-footer');
+    footerEl.innerHTML = '';
+
+    var footerText = document.createElement('span');
+    footerText.className = 'table-footer-text';
+    footerText.textContent = 'Showing ' + (startIdx + 1) + '–' + Math.min(startIdx + PAGE_SIZE, filtered.length) + ' of ' + filtered.length + ' companies';
+    if (filtered.length < companies.length) footerText.textContent += ' (filtered from ' + companies.length + ')';
+    footerEl.appendChild(footerText);
+
+    if (totalPages > 1) {
+        var paginationDiv = document.createElement('div');
+        paginationDiv.className = 'pagination';
+
+        var prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn' + (currentPage <= 1 ? ' disabled' : '');
+        prevBtn.textContent = '← Prev';
+        prevBtn.disabled = currentPage <= 1;
+        prevBtn.addEventListener('click', function() {
+            if (currentPage > 1) { currentPage--; renderTable(companies); scrollToTable(); }
+        });
+        paginationDiv.appendChild(prevBtn);
+
+        // Page numbers — show max 7 page buttons with ellipsis
+        var pageNums = buildPageNumbers(currentPage, totalPages, 7);
+        pageNums.forEach(function(p) {
+            if (p === '...') {
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '…';
+                paginationDiv.appendChild(ellipsis);
+            } else {
+                var pageBtn = document.createElement('button');
+                pageBtn.className = 'pagination-btn pagination-num' + (p === currentPage ? ' active' : '');
+                pageBtn.textContent = p;
+                pageBtn.addEventListener('click', (function(pg) {
+                    return function() { currentPage = pg; renderTable(companies); scrollToTable(); };
+                })(p));
+                paginationDiv.appendChild(pageBtn);
+            }
+        });
+
+        var nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn' + (currentPage >= totalPages ? ' disabled' : '');
+        nextBtn.textContent = 'Next →';
+        nextBtn.disabled = currentPage >= totalPages;
+        nextBtn.addEventListener('click', function() {
+            if (currentPage < totalPages) { currentPage++; renderTable(companies); scrollToTable(); }
+        });
+        paginationDiv.appendChild(nextBtn);
+
+        footerEl.appendChild(paginationDiv);
+    }
+
+    footerEl.appendChild(document.createTextNode(' · Click any row for details'));
+}
+
+function buildPageNumbers(current, total, maxVisible) {
+    if (total <= maxVisible) {
+        var arr = [];
+        for (var i = 1; i <= total; i++) arr.push(i);
+        return arr;
+    }
+    var pages = [1];
+    var startPage = Math.max(2, current - 1);
+    var endPage = Math.min(total - 1, current + 1);
+    // Ensure at least 3 middle pages
+    if (current <= 3) { startPage = 2; endPage = Math.min(total - 1, 4); }
+    if (current >= total - 2) { startPage = Math.max(2, total - 3); endPage = total - 1; }
+    if (startPage > 2) pages.push('...');
+    for (var j = startPage; j <= endPage; j++) pages.push(j);
+    if (endPage < total - 1) pages.push('...');
+    pages.push(total);
+    return pages;
+}
+
+function scrollToTable() {
+    var section = document.getElementById('compensation-table-section');
+    if (section) {
+        var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+        var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+        window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+    }
 }
 
 function setupSorting(companies) {
@@ -185,6 +278,7 @@ function setupSorting(companies) {
             } else {
                 currentSort = { key: key, dir: typeof companies[0][key] === 'string' ? 'asc' : 'desc' };
             }
+            currentPage = 1;
             document.querySelectorAll('th.sortable').forEach(function(t) {
                 t.classList.remove('sorted-asc', 'sorted-desc');
             });
@@ -197,6 +291,7 @@ function setupSorting(companies) {
 function setupSearch(companies) {
     document.getElementById('table-search').addEventListener('input', function(e) {
         searchTerm = e.target.value;
+        currentPage = 1;
         renderTable(companies);
     });
 }
