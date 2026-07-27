@@ -8,6 +8,39 @@ function fmtCurr(val) {
     return '$' + val;
 }
 
+/* Shared chart tooltip */
+var _chartTooltip = null;
+function getChartTooltip() {
+    if (!_chartTooltip) {
+        _chartTooltip = document.createElement('div');
+        _chartTooltip.className = 'chart-tooltip';
+        document.body.appendChild(_chartTooltip);
+    }
+    return _chartTooltip;
+}
+function showChartTooltip(event, html) {
+    var tip = getChartTooltip();
+    tip.innerHTML = html;
+    tip.classList.add('visible');
+    positionChartTooltip(event);
+}
+function positionChartTooltip(event) {
+    var tip = getChartTooltip();
+    var x = event.clientX + 14;
+    var y = event.clientY - 12;
+    var tw = tip.offsetWidth;
+    var th = tip.offsetHeight;
+    if (x + tw > window.innerWidth - 16) x = event.clientX - tw - 14;
+    if (y + th > window.innerHeight - 16) y = event.clientY - th + 12;
+    if (y < 8) y = 8;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+}
+function hideChartTooltip() {
+    var tip = getChartTooltip();
+    tip.classList.remove('visible');
+}
+
 function initCharts(companies, trends, compData) {
     drawSectorChart(trends);
     drawTrendChart(trends);
@@ -63,7 +96,19 @@ function drawSectorChart(trends) {
         .attr('height', y.bandwidth())
         .attr('fill', '#00b4d8')
         .attr('rx', 3)
-        .attr('opacity', 0.8);
+        .attr('opacity', 0.8)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            showChartTooltip(event,
+                '<div class="ct-title">' + d.sector + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>');
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+            hideChartTooltip();
+        });
 
     // Labels
     svg.selectAll('.bar-label')
@@ -156,7 +201,19 @@ function drawTrendChart(trends) {
         .attr('r', 4)
         .attr('fill', '#00b4d8')
         .attr('stroke', '#0f0f1a')
-        .attr('stroke-width', 2);
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('r', 7).attr('stroke-width', 3);
+            showChartTooltip(event,
+                '<div class="ct-title">FY ' + d.year + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>');
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() {
+            d3.select(this).attr('r', 4).attr('stroke-width', 2);
+            hideChartTooltip();
+        });
 
     // Labels on dots
     svg.selectAll('.dot-label')
@@ -271,7 +328,21 @@ function drawRatioChart(companies) {
         .attr('fill', function(b) { return b.color; })
         .attr('rx', 3)
         .attr('opacity', 0.8)
-        .style('cursor', 'default');
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            var pct = (b.count / withRatio.length * 100).toFixed(1);
+            var topNames = b.companies.slice(0, 3).map(function(c) { return c.ticker + ' (' + c.pay_ratio.toLocaleString() + ':1)'; }).join(', ');
+            var html = '<div class="ct-title">Pay Ratio ' + b.label + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Companies</span><span class="ct-val">' + b.count + ' (' + pct + '%)</span></div>';
+            if (topNames) html += '<div class="ct-row ct-sub"><span class="ct-label">Highest</span><span class="ct-val">' + topNames + '</span></div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+            hideChartTooltip();
+        });
 
     // Count labels on top of bars
     bars.append('text')
@@ -365,7 +436,23 @@ function drawTop10Chart(companies) {
         .attr('height', y.bandwidth())
         .attr('fill', function(d, i) { return colors[i]; })
         .attr('rx', 3)
-        .attr('opacity', 0.85);
+        .attr('opacity', 0.85)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            var rank = top10.indexOf(d) + 1;
+            var html = '<div class="ct-title">#' + rank + ' ' + d.ceo_name + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Company</span><span class="ct-val">' + d.ticker + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Total Compensation</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
+            if (d.sector) html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + d.sector + '</span></div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() {
+            d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
+            hideChartTooltip();
+        });
 
     // Labels
     svg.selectAll('.top-label')
@@ -420,7 +507,20 @@ function drawCompositionChart(trends) {
             .attr('height', barH)
             .attr('fill', seg.color)
             .attr('rx', 4)
-            .attr('opacity', 0.85);
+            .attr('opacity', 0.85)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event) {
+                d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+                showChartTooltip(event,
+                    '<div class="ct-title">' + seg.label + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + seg.pct.toFixed(1) + '%</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Median Value</span><span class="ct-val">' + seg.value + '</span></div>');
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
+                hideChartTooltip();
+            });
 
         if (segW > 50) {
             svg.append('text')

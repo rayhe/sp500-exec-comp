@@ -308,6 +308,56 @@ header h1 {
 .tooltip .tt-label { color: var(--text-secondary); }
 .tooltip .tt-value { font-weight: 500; font-variant-numeric: tabular-nums; }
 
+/* === Chart Tooltip === */
+.chart-tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.12s;
+    max-width: 320px;
+    font-family: var(--font);
+}
+.chart-tooltip.visible { opacity: 1; }
+.chart-tooltip .ct-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+}
+.chart-tooltip .ct-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 2px 0;
+}
+.chart-tooltip .ct-label { color: var(--text-secondary); }
+.chart-tooltip .ct-val {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    text-align: right;
+}
+.chart-tooltip .ct-sub {
+    font-size: 0.75rem;
+    border-top: 1px solid var(--border);
+    padding-top: 4px;
+    margin-top: 2px;
+}
+.chart-tooltip .ct-sub .ct-val {
+    font-weight: 400;
+    font-size: 0.72rem;
+    max-width: 200px;
+    white-space: normal;
+}
+
 /* === Table === */
 .table-controls {
     display: flex;
