@@ -41,12 +41,42 @@ function hideChartTooltip() {
     tip.classList.remove('visible');
 }
 
+/* Store refs for resize redraw */
+var _chartData = null;
+
 function initCharts(companies, trends, compData) {
+    _chartData = { companies: companies, trends: trends, compData: compData };
     drawSectorChart(trends);
     drawTrendChart(trends);
     drawRatioChart(companies);
     drawTop10Chart(companies);
     drawCompositionChart(trends);
+    setupChartResize();
+}
+
+/* Debounced resize handler — clears and redraws all SVG charts */
+function setupChartResize() {
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (!_chartData) return;
+            redrawAllCharts();
+        }, 250);
+    });
+}
+
+function redrawAllCharts() {
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart'];
+    ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+    drawSectorChart(_chartData.trends);
+    drawTrendChart(_chartData.trends);
+    drawRatioChart(_chartData.companies);
+    drawTop10Chart(_chartData.companies);
+    drawCompositionChart(_chartData.trends);
 }
 
 /* --- Sector Bar Chart --- */
