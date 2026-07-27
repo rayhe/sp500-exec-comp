@@ -71,6 +71,12 @@ function buildSectorChips(companies) {
     allChip.addEventListener('click', function() {
         activeSector = null;
         currentPage = 1;
+        // Clear ratio bucket filter if active
+        if (window._activeRatioBucket) {
+            window._activeRatioBucket = null;
+            var rc = document.getElementById('ratio-filter-chip');
+            if (rc) rc.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
         renderTable(companies);
@@ -84,6 +90,12 @@ function buildSectorChips(companies) {
         chip.addEventListener('click', function() {
             activeSector = s;
             currentPage = 1;
+            // Clear ratio bucket filter if active
+            if (window._activeRatioBucket) {
+                window._activeRatioBucket = null;
+                var rc = document.getElementById('ratio-filter-chip');
+                if (rc) rc.remove();
+            }
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
             renderTable(companies);
@@ -122,6 +134,12 @@ function renderTable(companies) {
                 (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
                 (c.ceo_name || '').toLowerCase().indexOf(q) >= 0 ||
                 (c.sector || '').toLowerCase().indexOf(q) >= 0;
+        });
+    }
+    if (window._activeRatioBucket) {
+        var rb = window._activeRatioBucket;
+        filtered = filtered.filter(function(c) {
+            return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
         });
     }
 
@@ -437,6 +455,140 @@ function setupDetailPanel(companies) {
     setupSorting(companies);
     setupSearch(companies);
     setupDetailPanel(companies);
+
+    // Expose global API for chart → table cross-section linking
+    window.filterBySector = function(sectorName) {
+        // Set active sector (null clears filter)
+        activeSector = sectorName || null;
+        currentPage = 1;
+
+        // Update sector chip active states
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (!sectorName && chip.textContent === 'All') chip.classList.add('active');
+            else if (chip.textContent === sectorName) chip.classList.add('active');
+        });
+
+        renderTable(companies);
+
+        // Scroll to the table section
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }
+    };
+
+    // Ratio bucket filter — stores active bucket for renderTable filtering
+    window._activeRatioBucket = null;
+
+    window.filterByRatioBucket = function(minRatio, maxRatio) {
+        // Toggle off if same bucket clicked again
+        if (window._activeRatioBucket && window._activeRatioBucket.min === minRatio && window._activeRatioBucket.max === maxRatio) {
+            window._activeRatioBucket = null;
+        } else {
+            window._activeRatioBucket = { min: minRatio, max: maxRatio };
+        }
+
+        // Clear other filters for clarity
+        activeSector = null;
+        searchTerm = '';
+        currentPage = 1;
+        document.getElementById('table-search').value = '';
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (chip.textContent === 'All') chip.classList.add('active');
+        });
+
+        // Sort by pay ratio descending
+        currentSort = { key: 'pay_ratio', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            if (t.dataset.sort === 'pay_ratio') t.classList.add('sorted-desc');
+        });
+
+        // Update ratio filter indicator
+        updateRatioFilterIndicator();
+
+        renderTable(companies);
+
+        // Scroll to the table section
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }
+    };
+
+    function updateRatioFilterIndicator() {
+        // Add or remove a ratio filter chip in the table controls
+        var existing = document.getElementById('ratio-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeRatioBucket) {
+            var bucket = window._activeRatioBucket;
+            var label = 'Ratio: ' + bucket.min + (bucket.max === Infinity ? '+' : '–' + bucket.max) + ':1';
+            var chip = document.createElement('button');
+            chip.className = 'chip active';
+            chip.id = 'ratio-filter-chip';
+            chip.style.background = 'rgba(239,71,111,0.15)';
+            chip.style.borderColor = 'rgba(239,71,111,0.5)';
+            chip.style.color = '#ef476f';
+            chip.innerHTML = label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = 'Click to clear ratio filter';
+            chip.addEventListener('click', function() {
+                window._activeRatioBucket = null;
+                chip.remove();
+                renderTable(companies);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+
+    // Find a specific company in the table by ticker — used by Top 10 chart click
+    window.findCompanyInTable = function(ticker) {
+        // Clear filters to ensure company is visible
+        activeSector = null;
+        searchTerm = '';
+        if (window._activeRatioBucket) {
+            window._activeRatioBucket = null;
+            var rc = document.getElementById('ratio-filter-chip');
+            if (rc) rc.remove();
+        }
+        document.getElementById('table-search').value = ticker;
+        searchTerm = ticker;
+        currentPage = 1;
+
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (chip.textContent === 'All') chip.classList.add('active');
+        });
+
+        renderTable(companies);
+
+        // Scroll to the table section
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }
+
+        // Auto-click the first matching row after a short delay to expand its detail panel
+        setTimeout(function() {
+            var rows = document.querySelectorAll('#comp-tbody tr:not(.detail-row)');
+            for (var i = 0; i < rows.length; i++) {
+                var tickerEl = rows[i].querySelector('.ticker');
+                if (tickerEl && tickerEl.textContent.trim() === ticker) {
+                    rows[i].click();
+                    break;
+                }
+            }
+        }, 100);
+    };
 
     if (typeof initNetwork === 'function') {
         initNetwork(data.peer);

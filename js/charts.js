@@ -132,12 +132,16 @@ function drawSectorChart(trends) {
             d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
             showChartTooltip(event,
                 '<div class="ct-title">' + d.sector + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>');
+                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>' +
+                '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>');
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
             hideChartTooltip();
+        })
+        .on('click', function(event, d) {
+            if (window.filterBySector) window.filterBySector(d.sector);
         });
 
     // Labels
@@ -366,12 +370,17 @@ function drawRatioChart(companies) {
             var html = '<div class="ct-title">Pay Ratio ' + b.label + '</div>' +
                 '<div class="ct-row"><span class="ct-label">Companies</span><span class="ct-val">' + b.count + ' (' + pct + '%)</span></div>';
             if (topNames) html += '<div class="ct-row ct-sub"><span class="ct-label">Highest</span><span class="ct-val">' + topNames + '</span></div>';
+            html += '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table by ratio range</span></div>';
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
             hideChartTooltip();
+        })
+        .on('click', function(event, b) {
+            // Filter table by searching for companies in this ratio bucket
+            if (window.filterByRatioBucket) window.filterByRatioBucket(b.min, b.max);
         });
 
     // Count labels on top of bars
@@ -476,12 +485,16 @@ function drawTop10Chart(companies) {
                 '<div class="ct-row"><span class="ct-label">Total Compensation</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
             if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
             if (d.sector) html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + d.sector + '</span></div>';
+            html += '<div class="ct-row ct-sub"><span class="ct-label">Click to find in table</span></div>';
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
             d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
             hideChartTooltip();
+        })
+        .on('click', function(event, d) {
+            if (window.findCompanyInTable) window.findCompanyInTable(d.ticker);
         });
 
     // Labels
