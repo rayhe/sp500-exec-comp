@@ -255,6 +255,9 @@ function renderTable(companies) {
     }
 
     footerEl.appendChild(document.createTextNode(' · Click any row for details'));
+
+    // Persist state to URL hash
+    pushState();
 }
 
 function buildPageNumbers(current, total, maxVisible) {
@@ -445,6 +448,91 @@ function setupDetailPanel(companies) {
     });
 }
 
+/* === URL Hash State Management === */
+
+function serializeState() {
+    var params = [];
+    if (currentSort.key !== 'total_compensation' || currentSort.dir !== 'desc') {
+        params.push('sort=' + encodeURIComponent(currentSort.key));
+        params.push('dir=' + encodeURIComponent(currentSort.dir));
+    }
+    if (activeSector) params.push('sector=' + encodeURIComponent(activeSector));
+    if (searchTerm) params.push('q=' + encodeURIComponent(searchTerm));
+    if (currentPage > 1) params.push('page=' + currentPage);
+    if (window._activeRatioBucket) {
+        params.push('rmin=' + window._activeRatioBucket.min);
+        params.push('rmax=' + (window._activeRatioBucket.max === Infinity ? 'inf' : window._activeRatioBucket.max));
+    }
+    return params.length > 0 ? '#' + params.join('&') : '';
+}
+
+var _stateInitialized = false;
+
+function pushState() {
+    if (!_stateInitialized) return; // Don't wipe hash before initial state is restored
+    var hash = serializeState();
+    if (window.location.hash !== hash) {
+        // Use replaceState to avoid polluting history on every keystroke/page click
+        history.replaceState(null, '', hash || window.location.pathname + window.location.search);
+    }
+}
+
+function parseHash() {
+    var hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return null;
+    var state = {};
+    hash.split('&').forEach(function(pair) {
+        var parts = pair.split('=');
+        if (parts.length === 2) state[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+    });
+    return state;
+}
+
+function applyHashState(companies) {
+    var state = parseHash();
+    if (!state) return;
+
+    // Sort
+    if (state.sort) {
+        currentSort.key = state.sort;
+        currentSort.dir = state.dir || 'desc';
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            if (t.dataset.sort === state.sort) {
+                t.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            }
+        });
+    }
+
+    // Sector
+    if (state.sector) {
+        activeSector = state.sector;
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (chip.textContent === state.sector) chip.classList.add('active');
+        });
+    }
+
+    // Search
+    if (state.q) {
+        searchTerm = state.q;
+        document.getElementById('table-search').value = state.q;
+    }
+
+    // Ratio bucket
+    if (state.rmin != null) {
+        var rmax = state.rmax === 'inf' ? Infinity : parseFloat(state.rmax);
+        window._activeRatioBucket = { min: parseFloat(state.rmin), max: rmax };
+    }
+
+    // Page (apply after filters so pagination is computed correctly)
+    if (state.page) {
+        currentPage = parseInt(state.page, 10) || 1;
+    }
+
+    renderTable(companies);
+}
+
 (async function init() {
     var data = await loadData();
     var companies = data.comp.companies;
@@ -596,4 +684,54 @@ function setupDetailPanel(companies) {
     if (typeof initCharts === 'function') {
         initCharts(companies, data.trends, data.comp);
     }
+
+    // Restore state from URL hash (after charts/network are initialized)
+    applyHashState(companies);
+    _stateInitialized = true;
+
+    // Update ratio filter chip UI if restored from hash
+    if (window._activeRatioBucket) {
+        var existing = document.getElementById('ratio-filter-chip');
+        if (!existing) {
+            var bucket = window._activeRatioBucket;
+            var label = 'Ratio: ' + bucket.min + (bucket.max === Infinity ? '+' : '–' + bucket.max) + ':1';
+            var chip = document.createElement('button');
+            chip.className = 'chip active';
+            chip.id = 'ratio-filter-chip';
+            chip.style.background = 'rgba(239,71,111,0.15)';
+            chip.style.borderColor = 'rgba(239,71,111,0.5)';
+            chip.style.color = '#ef476f';
+            chip.innerHTML = label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = 'Click to clear ratio filter';
+            chip.addEventListener('click', function() {
+                window._activeRatioBucket = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+
+    // Listen for browser back/forward
+    window.addEventListener('hashchange', function() {
+        // Reset to defaults first
+        currentSort = { key: 'total_compensation', dir: 'desc' };
+        activeSector = null;
+        searchTerm = '';
+        currentPage = 1;
+        window._activeRatioBucket = null;
+        document.getElementById('table-search').value = '';
+        document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+        var allChip = document.querySelector('.chip');
+        if (allChip && allChip.textContent === 'All') allChip.classList.add('active');
+        var rc = document.getElementById('ratio-filter-chip');
+        if (rc) rc.remove();
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
+        });
+        applyHashState(companies);
+    });
 })();
