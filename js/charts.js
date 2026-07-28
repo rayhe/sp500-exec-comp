@@ -79,6 +79,27 @@ function redrawAllCharts() {
     drawCompositionChart(_chartData.trends);
 }
 
+/* Update ratio histogram bar highlighting without full redraw */
+window.highlightRatioBucket = function(minRatio, maxRatio) {
+    d3.selectAll('#ratio-chart .hist-bar rect').each(function(d) {
+        if (!d) return;
+        if (minRatio == null) {
+            // Clear: restore all to default
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        } else if (d.min === minRatio && d.max === maxRatio) {
+            // Active bucket
+            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+        } else {
+            // Inactive bucket
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+        }
+    });
+    d3.selectAll('#ratio-chart .hist-bar text').each(function(d) {
+        if (!d) return;
+        d3.select(this).attr('opacity', minRatio == null || (d.min === minRatio && d.max === maxRatio) ? 1 : 0.4);
+    });
+};
+
 /* Update sector chart bar highlighting without full redraw */
 window.highlightSectorBar = function(sectorName) {
     d3.selectAll('#sector-chart .bar').each(function(d) {
@@ -395,7 +416,17 @@ function drawRatioChart(companies) {
         .attr('height', function(b) { return h - y(b.count); })
         .attr('fill', function(b) { return b.color; })
         .attr('rx', 3)
-        .attr('opacity', 0.8)
+        .attr('opacity', function(b) {
+            var ab = window._activeRatioBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(b) {
+            var ab = window._activeRatioBucket;
+            if (ab && b.min === ab.min && b.max === ab.max) {
+                d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            }
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
             d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
@@ -408,8 +439,13 @@ function drawRatioChart(companies) {
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function() {
-            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        .on('mouseout', function(event, b) {
+            var ab = window._activeRatioBucket;
+            var isActive = ab && b.min === ab.min && b.max === ab.max;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (ab ? 0.3 : 0.8))
+                .attr('stroke', isActive ? '#fff' : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
             hideChartTooltip();
         })
         .on('click', function(event, b) {
@@ -424,7 +460,12 @@ function drawRatioChart(companies) {
         .attr('y', function(b) { return y(b.count) - 6; })
         .attr('text-anchor', 'middle')
         .attr('font-weight', '600')
-        .text(function(b) { return b.count; });
+        .text(function(b) { return b.count; })
+        .attr('opacity', function(b) {
+            var ab = window._activeRatioBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.4;
+            return 1;
+        });
 
     // Median line
     var ratios = withRatio.map(function(c) { return c.pay_ratio; }).sort(function(a, b) { return a - b; });

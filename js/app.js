@@ -81,6 +81,7 @@ function buildSectorChips(companies) {
         allChip.classList.add('active');
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     });
     container.appendChild(allChip);
 
@@ -101,6 +102,7 @@ function buildSectorChips(companies) {
             chip.classList.add('active');
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
+            if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         });
         container.appendChild(chip);
     });
@@ -564,6 +566,9 @@ function applyHashState(companies) {
         // Highlight active bar in sector chart
         if (window.highlightSectorBar) window.highlightSectorBar(sectorName);
 
+        // Clear ratio bucket highlight (sector filter clears ratio)
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
@@ -609,6 +614,15 @@ function applyHashState(companies) {
         // Clear sector chart highlight (sector was cleared)
         if (window.highlightSectorBar) window.highlightSectorBar(null);
 
+        // Highlight active ratio bucket in histogram
+        if (window.highlightRatioBucket) {
+            if (window._activeRatioBucket) {
+                window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
+            } else {
+                window.highlightRatioBucket(null);
+            }
+        }
+
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
@@ -638,6 +652,7 @@ function applyHashState(companies) {
                 window._activeRatioBucket = null;
                 chip.remove();
                 renderTable(companies);
+                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
@@ -665,6 +680,7 @@ function applyHashState(companies) {
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -701,6 +717,11 @@ function applyHashState(companies) {
     // Apply sector chart highlight if restored from hash
     if (activeSector && window.highlightSectorBar) window.highlightSectorBar(activeSector);
 
+    // Apply ratio bucket highlight if restored from hash
+    if (window._activeRatioBucket && window.highlightRatioBucket) {
+        window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
+    }
+
     // Update ratio filter chip UI if restored from hash
     if (window._activeRatioBucket) {
         var existing = document.getElementById('ratio-filter-chip');
@@ -720,6 +741,7 @@ function applyHashState(companies) {
                 chip.remove();
                 renderTable(companies);
                 pushState();
+                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
@@ -746,5 +768,12 @@ function applyHashState(companies) {
         });
         applyHashState(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
+        if (window.highlightRatioBucket) {
+            if (window._activeRatioBucket) {
+                window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
+            } else {
+                window.highlightRatioBucket(null);
+            }
+        }
     });
 })();
