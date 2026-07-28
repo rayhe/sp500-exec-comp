@@ -227,8 +227,9 @@ function renderTable(companies) {
         });
         paginationDiv.appendChild(prevBtn);
 
-        // Page numbers — show max 7 page buttons with ellipsis
-        var pageNums = buildPageNumbers(currentPage, totalPages, 7);
+        // Page numbers — show max 7 page buttons on desktop, fewer on narrow screens
+        var maxVisiblePages = window.innerWidth <= 480 ? 5 : 7;
+        var pageNums = buildPageNumbers(currentPage, totalPages, maxVisiblePages);
         pageNums.forEach(function(p) {
             if (p === '...') {
                 var ellipsis = document.createElement('span');

@@ -834,6 +834,44 @@ footer li::before {
     .section { padding: 16px; }
     header { padding: 16px; }
     #network-graph { height: 400px; }
+    .table-footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3px;
+    }
+    .pagination-btn {
+        font-size: 0.72rem;
+        padding: 5px 8px;
+    }
+    .pagination-num {
+        min-width: 28px;
+    }
+    .search-box { min-width: 100%; }
+    .table-controls { gap: 8px; }
+    .network-search-box { min-width: 100%; }
+    .network-controls { gap: 6px; }
+    .network-legend {
+        gap: 8px 12px;
+        font-size: 0.68rem;
+    }
+}
+@media (max-width: 400px) {
+    .pagination-btn {
+        font-size: 0.68rem;
+        padding: 4px 6px;
+    }
+    .pagination-num {
+        min-width: 24px;
+    }
+    .pagination-btn:not(.pagination-num) {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
 }
 
 /* === D3 Overrides === */
