@@ -180,7 +180,7 @@ header h1 {
 
 .network-legend {
     display: flex;
-    gap: 14px;
+    gap: 6px 12px;
     margin-left: auto;
     flex-wrap: wrap;
 }
