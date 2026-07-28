@@ -723,6 +723,51 @@ function applyHashState(companies) {
         window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
     }
 
+    // === Table horizontal scroll indicator ===
+    var tableWrapper = document.getElementById('table-wrapper');
+    if (tableWrapper) {
+        function updateScrollIndicator() {
+            var el = tableWrapper;
+            var scrollable = el.scrollWidth > el.clientWidth + 2;
+            var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+            var hasStarted = el.scrollLeft > 10;
+
+            if (scrollable) {
+                el.classList.add('has-scroll-right');
+            } else {
+                el.classList.remove('has-scroll-right');
+            }
+
+            if (atEnd) {
+                el.classList.add('scroll-end');
+            } else {
+                el.classList.remove('scroll-end');
+            }
+
+            if (hasStarted) {
+                el.classList.add('scroll-started');
+            } else {
+                el.classList.remove('scroll-started');
+            }
+        }
+
+        tableWrapper.addEventListener('scroll', updateScrollIndicator, { passive: true });
+        window.addEventListener('resize', function() { setTimeout(updateScrollIndicator, 300); });
+
+        // Check after initial render and after any re-render
+        var origRenderTable = window._renderTableRef;
+        setTimeout(updateScrollIndicator, 100);
+
+        // Observe table for changes (pagination, filter, etc.)
+        var tableObserver = new MutationObserver(function() {
+            setTimeout(updateScrollIndicator, 50);
+        });
+        var tbody = document.getElementById('comp-tbody');
+        if (tbody) {
+            tableObserver.observe(tbody, { childList: true });
+        }
+    }
+
     // Update ratio filter chip UI if restored from hash
     if (window._activeRatioBucket) {
         var existing = document.getElementById('ratio-filter-chip');

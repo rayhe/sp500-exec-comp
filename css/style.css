@@ -421,6 +421,59 @@ header h1 {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow-x: auto;
+    position: relative;
+}
+
+/* Horizontal scroll fade indicator — visible when table overflows */
+.table-wrapper.has-scroll-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48px;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--bg-secondary) 85%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    z-index: 5;
+    transition: opacity 0.25s;
+}
+.table-wrapper.scroll-end::after {
+    opacity: 0;
+}
+
+/* Scroll hint badge — shown on mobile when table is scrollable */
+.scroll-hint {
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    background: rgba(0,180,216,0.18);
+    border: 1px solid rgba(0,180,216,0.35);
+    color: var(--accent);
+    font-family: var(--font);
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    z-index: 6;
+    pointer-events: none;
+    animation: scrollHintPulse 2s ease-in-out 0.5s 3;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+}
+.table-wrapper.has-scroll-right .scroll-hint {
+    display: block;
+}
+.table-wrapper.scroll-end .scroll-hint,
+.table-wrapper.scroll-started .scroll-hint {
+    display: none;
+}
+
+@keyframes scrollHintPulse {
+    0%, 100% { opacity: 0.7; transform: translateY(-50%) translateX(0); }
+    50% { opacity: 1; transform: translateY(-50%) translateX(3px); }
 }
 
 table {
@@ -856,9 +909,31 @@ footer li::before {
     .network-search-box { min-width: 100%; }
     .network-controls { gap: 6px; }
     .network-legend {
-        gap: 8px 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 12px;
         font-size: 0.68rem;
     }
+    /* Detail panel responsive — 2-column stat grid on medium mobile */
+    .detail-panel { padding: 12px 14px; }
+    .detail-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .detail-stat {
+        min-width: 0;
+        padding: 8px 10px;
+    }
+    .detail-stat-value { font-size: 1rem; }
+    .detail-stat-label { font-size: 0.65rem; }
+    .detail-stat-sub { font-size: 0.68rem; }
+    .detail-header { font-size: 0.88rem; margin-bottom: 8px; }
+    .detail-peer-tags { gap: 3px; }
+    .detail-peer-tag { font-size: 0.68rem; padding: 2px 6px; }
+    .detail-peer-label { font-size: 0.72rem; margin-bottom: 4px; }
+    .detail-actions { margin-top: 8px; padding-top: 8px; }
+    .detail-network-btn { font-size: 0.75rem; padding: 6px 12px; }
 }
 @media (max-width: 400px) {
     .pagination-btn {
@@ -872,6 +947,15 @@ footer li::before {
         font-size: 0.7rem;
         padding: 4px 8px;
     }
+    /* Detail panel responsive — single column on narrow mobile */
+    .detail-stats {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .detail-stat { padding: 8px 10px; }
+    .detail-stat-value { font-size: 0.95rem; }
+    .detail-peers { padding-top: 8px; }
+    .detail-peer-tag { font-size: 0.65rem; padding: 1px 5px; }
 }
 
 /* === D3 Overrides === */
