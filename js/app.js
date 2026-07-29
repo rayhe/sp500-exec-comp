@@ -68,6 +68,114 @@ function populateMetrics(comp, trends) {
     document.getElementById('metric-highest-name').textContent = top.ceo_name + ' \u2014 ' + top.ticker;
 }
 
+function populateInsights(comp, trends) {
+    var companies = comp.companies;
+    var grid = document.getElementById('insights-grid');
+    if (!grid) return;
+
+    var insights = [];
+
+    // 1. Pay Concentration — top 10 CEOs share of total
+    var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+    var totalAllPay = companies.reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+    var top10Pay = sorted.slice(0, 10).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+    var top10Pct = totalAllPay > 0 ? (top10Pay / totalAllPay * 100).toFixed(1) : '0';
+    insights.push({
+        icon: '📊',
+        label: 'Pay Concentration',
+        value: formatCurrency(top10Pay) + ' combined',
+        detail: 'The top 10 CEOs earned ' + top10Pct + '% of all S&P 500 CEO compensation. The remaining 490 CEOs share the other ' + (100 - parseFloat(top10Pct)).toFixed(1) + '%.'
+    });
+
+    // 2. $50M+ Club
+    var over50M = companies.filter(function(c) { return c.total_compensation >= 50000000; });
+    insights.push({
+        icon: '💰',
+        label: '$50M+ Club',
+        value: over50M.length + ' companies',
+        detail: over50M.length + ' CEOs received more than $50 million in total compensation — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.'
+    });
+
+    // 3. Extreme Pay Ratios (>1000:1)
+    var extremeRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 1000; });
+    var maxRatioComp = companies.filter(function(c) { return c.pay_ratio != null; }).sort(function(a, b) { return b.pay_ratio - a.pay_ratio; })[0];
+    insights.push({
+        icon: '⚖️',
+        label: 'Extreme Ratios',
+        value: extremeRatio.length + ' above 1,000:1',
+        detail: extremeRatio.length + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : '')
+    });
+
+    // 4. Top Sector by Median Pay
+    var sectorMedians = comp.metadata && comp.metadata.sector_medians;
+    if (sectorMedians) {
+        var topSector = null;
+        var topSectorPay = 0;
+        var bottomSector = null;
+        var bottomSectorPay = Infinity;
+        Object.keys(sectorMedians).forEach(function(s) {
+            var m = sectorMedians[s].median_ceo_pay;
+            if (m > topSectorPay) { topSectorPay = m; topSector = s; }
+            if (m < bottomSectorPay) { bottomSectorPay = m; bottomSector = s; }
+        });
+        var sectorSpread = topSectorPay > 0 && bottomSectorPay > 0 ? (topSectorPay / bottomSectorPay).toFixed(1) : null;
+        insights.push({
+            icon: '🏢',
+            label: 'Sector Spread',
+            value: topSector,
+            detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : '')
+        });
+    }
+
+    // 5. Zero/Near-Zero Pay
+    var zeroPay = companies.filter(function(c) { return c.total_compensation <= 1; });
+    var under1M = companies.filter(function(c) { return c.total_compensation > 1 && c.total_compensation < 1000000; });
+    if (zeroPay.length > 0) {
+        var zeroNames = zeroPay.map(function(c) { return c.ceo_name + ' (' + c.ticker + ')'; }).join(', ');
+        insights.push({
+            icon: '🎯',
+            label: 'Zero Pay',
+            value: zeroPay.length + (zeroPay.length === 1 ? ' CEO' : ' CEOs'),
+            detail: zeroNames + ' reported $0 total compensation — typically founder-CEOs with large equity stakes who forgo traditional pay.'
+        });
+    } else if (under1M.length > 0) {
+        insights.push({
+            icon: '🎯',
+            label: 'Below $1M',
+            value: under1M.length + (under1M.length === 1 ? ' CEO' : ' CEOs'),
+            detail: under1M.length + ' CEOs earned under $1M in total compensation, well below the S&P 500 median of ' + formatCurrency(comp.metadata.aggregate_stats.median_ceo_pay) + '.'
+        });
+    }
+
+    // 6. Pay Range Span
+    var maxPay = sorted[0];
+    var nonZeroSorted = sorted.filter(function(c) { return c.total_compensation > 0; });
+    var minPay = nonZeroSorted[nonZeroSorted.length - 1];
+    if (maxPay && minPay && minPay.total_compensation > 0) {
+        var span = Math.round(maxPay.total_compensation / minPay.total_compensation);
+        insights.push({
+            icon: '📏',
+            label: 'Pay Range',
+            value: span.toLocaleString() + '× span',
+            detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across the S&P 500.'
+        });
+    }
+
+    // Render cards
+    grid.innerHTML = '';
+    insights.forEach(function(ins) {
+        var card = document.createElement('div');
+        card.className = 'insight-card';
+        card.innerHTML = '<div class="insight-icon">' + ins.icon + '</div>' +
+            '<div class="insight-content">' +
+            '<div class="insight-label">' + ins.label + '</div>' +
+            '<div class="insight-value">' + ins.value + '</div>' +
+            '<div class="insight-detail">' + ins.detail + '</div>' +
+            '</div>';
+        grid.appendChild(card);
+    });
+}
+
 function buildSectorChips(companies) {
     var sectorSet = {};
     companies.forEach(function(c) { if (c.sector) sectorSet[c.sector] = true; });
@@ -552,6 +660,7 @@ function applyHashState(companies) {
     var companies = data.comp.companies;
 
     populateMetrics(data.comp, data.trends);
+    populateInsights(data.comp, data.trends);
     buildSectorChips(companies);
     renderTable(companies);
     setupSorting(companies);
