@@ -394,7 +394,10 @@ function renderTable(companies) {
         }
 
         var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : '\u2014';
-        tr.innerHTML = '<td>' + (globalIdx + 1) + '</td>' +
+        var isCompared = window._compareSet && window._compareSet.indexOf(c.ticker) >= 0;
+        var compareBtnHtml = '<button class="compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + c.ticker + '" title="' + (isCompared ? 'Remove from comparison' : 'Add to comparison') + '">' + (isCompared ? '✓' : '+') + '</button>';
+
+        tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
             '<td>' + c.ceo_name + '</td>' +
@@ -402,6 +405,15 @@ function renderTable(companies) {
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
+
+        // Wire up compare button click
+        var cBtn = tr.querySelector('.compare-btn');
+        if (cBtn) {
+            cBtn.addEventListener('click', function(e) {
+                if (window._toggleCompare) window._toggleCompare(this.dataset.ticker, e);
+            });
+        }
+
         tbody.appendChild(tr);
     });
 
@@ -1062,6 +1074,192 @@ function applyHashState(companies) {
             URL.revokeObjectURL(url);
         });
     }
+
+    // === Company Comparison Mode ===
+    var compareSet = []; // array of tickers
+    var MAX_COMPARE = 4;
+
+    function toggleCompare(ticker, event) {
+        if (event) { event.stopPropagation(); event.preventDefault(); }
+        var idx = compareSet.indexOf(ticker);
+        if (idx >= 0) {
+            compareSet.splice(idx, 1);
+        } else {
+            if (compareSet.length >= MAX_COMPARE) return; // max reached
+            compareSet.push(ticker);
+        }
+        updateCompareTray();
+        updateCompareButtons();
+    }
+
+    function updateCompareButtons() {
+        document.querySelectorAll('.compare-btn').forEach(function(btn) {
+            var t = btn.dataset.ticker;
+            if (compareSet.indexOf(t) >= 0) {
+                btn.classList.add('selected');
+                btn.textContent = '✓';
+                btn.title = 'Remove from comparison';
+            } else {
+                btn.classList.remove('selected');
+                btn.textContent = '+';
+                btn.title = compareSet.length >= MAX_COMPARE ? 'Max ' + MAX_COMPARE + ' companies' : 'Add to comparison';
+            }
+        });
+    }
+
+    function updateCompareTray() {
+        var tray = document.getElementById('compare-tray');
+        var itemsEl = document.getElementById('compare-tray-items');
+        if (compareSet.length < 2) {
+            tray.classList.remove('visible');
+            return;
+        }
+        tray.classList.add('visible');
+        itemsEl.innerHTML = '';
+        compareSet.forEach(function(ticker) {
+            var tag = document.createElement('span');
+            tag.className = 'compare-tray-tag';
+            tag.innerHTML = ticker + ' <span class="remove-tag" data-ticker="' + ticker + '">×</span>';
+            tag.querySelector('.remove-tag').addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleCompare(ticker);
+            });
+            itemsEl.appendChild(tag);
+        });
+    }
+
+    function clearCompare() {
+        compareSet.length = 0; // mutate in-place so window._compareSet stays in sync
+        updateCompareTray();
+        updateCompareButtons();
+        var section = document.getElementById('comparison-section');
+        if (section) section.classList.remove('visible');
+    }
+
+    function showComparison() {
+        if (compareSet.length < 2) return;
+        var section = document.getElementById('comparison-section');
+        var grid = document.getElementById('comparison-grid');
+        section.classList.add('visible');
+
+        // Grid columns based on count
+        grid.className = 'comparison-grid cols-' + Math.min(compareSet.length, 4);
+
+        // Get company data for each ticker
+        var selected = compareSet.map(function(ticker) {
+            return companies.find(function(c) { return c.ticker === ticker; });
+        }).filter(Boolean);
+
+        // Pre-compute ranks
+        var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        var rankMap = {};
+        sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
+
+        // Pre-compute sector ranks
+        var sectorRankMap = {};
+        selected.forEach(function(c) {
+            if (sectorRankMap[c.sector]) return;
+            var peers = companies.filter(function(x) { return x.sector === c.sector; })
+                .sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+            sectorRankMap[c.sector] = {};
+            peers.forEach(function(p, i) { sectorRankMap[c.sector][p.ticker] = { rank: i + 1, total: peers.length }; });
+        });
+
+        // Find max/min for relative bars
+        var maxComp = Math.max.apply(null, selected.map(function(c) { return c.total_compensation || 0; }));
+        var maxRatio = Math.max.apply(null, selected.map(function(c) { return c.pay_ratio || 0; }));
+        var maxWorker = Math.max.apply(null, selected.map(function(c) { return c.median_worker_pay || 0; }));
+
+        // Determine best/worst for highlighting
+        var compValues = selected.map(function(c) { return c.total_compensation || 0; });
+        var ratioValues = selected.filter(function(c) { return c.pay_ratio != null; }).map(function(c) { return c.pay_ratio; });
+        var workerValues = selected.filter(function(c) { return c.median_worker_pay != null; }).map(function(c) { return c.median_worker_pay; });
+
+        grid.innerHTML = '';
+        selected.forEach(function(c) {
+            var card = document.createElement('div');
+            card.className = 'comparison-card';
+
+            var rank = rankMap[c.ticker] || '—';
+            var sRank = sectorRankMap[c.sector] && sectorRankMap[c.sector][c.ticker]
+                ? sectorRankMap[c.sector][c.ticker] : { rank: '—', total: '—' };
+
+            // Peer network info
+            var peerInfo = getPeerInfo(c.ticker);
+            var peerIn = peerInfo ? peerInfo.selectedBy.length : 0;
+            var peerOut = peerInfo ? peerInfo.selects.length : 0;
+
+            // Comp bar width
+            var compPct = maxComp > 0 ? (c.total_compensation / maxComp * 100) : 0;
+            var compClass = c.total_compensation === Math.max.apply(null, compValues) ? ' best' : '';
+
+            // Ratio class (lower is better)
+            var ratioClass = '';
+            if (c.pay_ratio != null && ratioValues.length > 1) {
+                if (c.pay_ratio === Math.min.apply(null, ratioValues)) ratioClass = ' best';
+                else if (c.pay_ratio === Math.max.apply(null, ratioValues)) ratioClass = ' worst';
+            }
+            var ratioPct = maxRatio > 0 && c.pay_ratio ? (c.pay_ratio / maxRatio * 100) : 0;
+
+            // Worker pay class (higher is better)
+            var workerClass = '';
+            if (c.median_worker_pay != null && workerValues.length > 1) {
+                if (c.median_worker_pay === Math.max.apply(null, workerValues)) workerClass = ' best';
+                else if (c.median_worker_pay === Math.min.apply(null, workerValues)) workerClass = ' worst';
+            }
+            var workerPct = maxWorker > 0 && c.median_worker_pay ? (c.median_worker_pay / maxWorker * 100) : 0;
+
+            var html = '<div class="comparison-card-rank">#' + rank + ' / 500</div>';
+            html += '<div class="comparison-card-ticker">' + c.ticker + '</div>';
+            html += '<div class="comparison-card-company">' + c.company_name + '</div>';
+            html += '<div class="comparison-card-ceo">' + c.ceo_name + '</div>';
+
+            // Total Compensation
+            html += '<div class="comparison-row"><span class="comparison-row-label">Total Comp</span><span class="comparison-row-value' + compClass + '">' + formatCurrency(c.total_compensation) + '</span></div>';
+            html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + compPct + '%;background:var(--accent)"></div></div>';
+
+            // Sector Rank
+            html += '<div class="comparison-row"><span class="comparison-row-label">Sector</span><span class="comparison-row-value">' + (c.sector || '—') + '</span></div>';
+            html += '<div class="comparison-row"><span class="comparison-row-label">Sector Rank</span><span class="comparison-row-value">#' + sRank.rank + ' of ' + sRank.total + '</span></div>';
+
+            // Pay Ratio
+            html += '<div class="comparison-row"><span class="comparison-row-label">Pay Ratio</span><span class="comparison-row-value' + ratioClass + '">' + (c.pay_ratio ? formatRatio(c.pay_ratio) : '—') + '</span></div>';
+            if (c.pay_ratio) {
+                html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + ratioPct + '%;background:' + (c.pay_ratio > 1000 ? 'var(--negative)' : c.pay_ratio > 500 ? 'var(--warning)' : 'var(--positive)') + '"></div></div>';
+            }
+
+            // Median Worker Pay
+            html += '<div class="comparison-row"><span class="comparison-row-label">Worker Pay</span><span class="comparison-row-value' + workerClass + '">' + (c.median_worker_pay ? formatCompact(c.median_worker_pay) : '—') + '</span></div>';
+            if (c.median_worker_pay) {
+                html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + workerPct + '%;background:var(--positive)"></div></div>';
+            }
+
+            // Peer Network
+            html += '<div class="comparison-row"><span class="comparison-row-label">Peers</span><span class="comparison-row-value">' + peerIn + ' in · ' + peerOut + ' out</span></div>';
+
+            card.innerHTML = html;
+            grid.appendChild(card);
+        });
+
+        // Scroll to comparison section
+        setTimeout(function() {
+            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }, 50);
+    }
+
+    // Wire up tray buttons
+    document.getElementById('compare-go-btn').addEventListener('click', showComparison);
+    document.getElementById('compare-clear-btn').addEventListener('click', clearCompare);
+    document.getElementById('comparison-close-btn').addEventListener('click', function() {
+        document.getElementById('comparison-section').classList.remove('visible');
+    });
+
+    // Expose for use in renderTable
+    window._compareSet = compareSet;
+    window._toggleCompare = toggleCompare;
+    window._updateCompareButtons = updateCompareButtons;
 
     // Listen for browser back/forward
     window.addEventListener('hashchange', function() {
