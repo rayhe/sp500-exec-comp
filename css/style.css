@@ -287,6 +287,24 @@ header h1 {
     gap: 5px;
     font-size: 0.75rem;
     color: var(--text-secondary);
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+.legend-item:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    background: rgba(255,255,255,0.04);
+}
+.legend-item.legend-active {
+    color: var(--text-primary);
+    border-color: var(--accent);
+    background: rgba(0,180,216,0.1);
+}
+.legend-item.legend-dimmed {
+    opacity: 0.35;
 }
 .legend-dot {
     width: 8px;

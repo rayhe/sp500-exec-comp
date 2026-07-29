@@ -39,6 +39,7 @@ function initNetwork(peerData) {
     var hoveredNode = null;
     var dragNode = null;
     var transform = d3.zoomIdentity;
+    var activeLegendSector = null; // sector legend click-to-filter state
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -140,6 +141,15 @@ function initNetwork(peerData) {
             }
         }
 
+        // Build sector node set if legend sector is active
+        var sectorNodeSet = null;
+        if (activeLegendSector) {
+            sectorNodeSet = new Set();
+            nodes.forEach(function(n) {
+                if (n.sector === activeLegendSector) sectorNodeSet.add(n.ticker);
+            });
+        }
+
         // Edges — draw only visible ones, batch by opacity
         if (hoveredNode) {
             // Dim pass
@@ -168,6 +178,38 @@ function initNetwork(peerData) {
                 if (src !== hoveredNode.ticker && tgt !== hoveredNode.ticker) return;
                 var s = nodeMap[src];
                 var t = nodeMap[tgt];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+        } else if (activeLegendSector && sectorNodeSet) {
+            // Sector filter active — dim edges not involving the sector
+            ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+            ctx.lineWidth = 0.3 / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (sectorNodeSet.has(src) || sectorNodeSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            // Highlight edges touching the active sector
+            ctx.strokeStyle = 'rgba(0,180,216,0.35)';
+            ctx.lineWidth = 0.8 / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (!sectorNodeSet.has(src) && !sectorNodeSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
                 ctx.moveTo(s.x, s.y);
                 ctx.lineTo(t.x, t.y);
@@ -202,6 +244,12 @@ function initNetwork(peerData) {
                 } else {
                     alpha = 0.15;
                 }
+            } else if (activeLegendSector && sectorNodeSet) {
+                if (sectorNodeSet.has(d.ticker)) {
+                    alpha = 1;
+                } else {
+                    alpha = 0.1;
+                }
             }
 
             ctx.beginPath();
@@ -213,6 +261,10 @@ function initNetwork(peerData) {
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2 / scale;
                 ctx.stroke();
+            } else if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
+                ctx.strokeStyle = hexToRGBA(color, 0.5);
+                ctx.lineWidth = 1 / scale;
+                ctx.stroke();
             }
         });
 
@@ -223,8 +275,13 @@ function initNetwork(peerData) {
         ctx.font = '600 ' + fontSize + 'px Inter, system-ui, sans-serif';
 
         nodes.forEach(function(d) {
-            if (!shouldShowLabel(d, scale)) return;
+            if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode) return;
+            if (!activeLegendSector && !shouldShowLabel(d, scale)) return;
             if (hoveredNode && !connectedSet.has(d.ticker)) return;
+            // When sector filter is active, show labels for sector nodes based on zoom
+            if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
+                if (!shouldShowLabel(d, scale * 1.5)) return; // more lenient threshold
+            }
             var r = getRadius(d);
             ctx.fillStyle = d === hoveredNode ? '#fff' : 'rgba(255,255,255,0.7)';
             ctx.fillText(d.ticker, d.x, d.y + r + 3);
@@ -558,4 +615,68 @@ function initNetwork(peerData) {
             }
         });
     }
+
+    // === Network Legend Click-to-Filter ===
+    // Clicking a sector in the legend isolates that sector's nodes
+    var legendItems = document.querySelectorAll('.network-legend .legend-item');
+    var sectorNameMap = {
+        'Info Tech': 'Information Technology',
+        'Comm Svcs': 'Communication Services',
+        'Consumer Disc': 'Consumer Discretionary',
+        'Health Care': 'Health Care',
+        'Financials': 'Financials',
+        'Consumer Staples': 'Consumer Staples',
+        'Industrials': 'Industrials',
+        'Energy': 'Energy',
+        'Real Estate': 'Real Estate',
+        'Materials': 'Materials',
+        'Utilities': 'Utilities'
+    };
+
+    legendItems.forEach(function(item) {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function() {
+            // Get sector name from legend item text
+            var text = item.textContent.trim();
+            var sectorFull = sectorNameMap[text] || text;
+
+            // Toggle
+            if (activeLegendSector === sectorFull) {
+                activeLegendSector = null;
+            } else {
+                activeLegendSector = sectorFull;
+            }
+
+            // Update legend item visual state
+            legendItems.forEach(function(li) {
+                li.classList.remove('legend-active');
+                if (activeLegendSector) {
+                    var liText = li.textContent.trim();
+                    var liSector = sectorNameMap[liText] || liText;
+                    if (liSector === activeLegendSector) {
+                        li.classList.add('legend-active');
+                    } else {
+                        li.classList.add('legend-dimmed');
+                    }
+                }
+                if (!activeLegendSector) {
+                    li.classList.remove('legend-dimmed');
+                }
+            });
+            if (!activeLegendSector) {
+                legendItems.forEach(function(li) { li.classList.remove('legend-dimmed'); });
+            }
+
+            draw();
+        });
+    });
+
+    // Expose API for clearing sector filter externally
+    window.clearNetworkSectorFilter = function() {
+        activeLegendSector = null;
+        legendItems.forEach(function(li) {
+            li.classList.remove('legend-active', 'legend-dimmed');
+        });
+        draw();
+    };
 }
