@@ -29,6 +29,15 @@ function formatRatio(val) {
     return val.toLocaleString() + ':1';
 }
 
+function csvEscape(val) {
+    if (val == null) return '';
+    var s = String(val);
+    if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+        return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+}
+
 async function loadData() {
     const [comp, trends, peer] = await Promise.all([
         fetch('data/compensation.json').then(r => r.json()),
@@ -792,6 +801,73 @@ function applyHashState(companies) {
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
         }
+    }
+
+    // === CSV Export ===
+    var csvBtn = document.getElementById('export-csv-btn');
+    if (csvBtn) {
+        csvBtn.addEventListener('click', function() {
+            // Build the same filtered/sorted list that renderTable uses
+            var filtered = companies.slice();
+            if (activeSector) {
+                filtered = filtered.filter(function(c) { return c.sector === activeSector; });
+            }
+            if (searchTerm) {
+                var q = searchTerm.toLowerCase();
+                filtered = filtered.filter(function(c) {
+                    return (c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.ceo_name || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.sector || '').toLowerCase().indexOf(q) >= 0;
+                });
+            }
+            if (window._activeRatioBucket) {
+                var rb = window._activeRatioBucket;
+                filtered = filtered.filter(function(c) {
+                    return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
+                });
+            }
+            filtered.sort(function(a, b) {
+                var av = a[currentSort.key];
+                var bv = b[currentSort.key];
+                if (av == null) av = currentSort.dir === 'asc' ? Infinity : -Infinity;
+                if (bv == null) bv = currentSort.dir === 'asc' ? Infinity : -Infinity;
+                if (typeof av === 'string') av = av.toLowerCase();
+                if (typeof bv === 'string') bv = bv.toLowerCase();
+                if (av < bv) return currentSort.dir === 'asc' ? -1 : 1;
+                if (av > bv) return currentSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // CSV header and rows
+            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)'];
+            var rows = filtered.map(function(c, i) {
+                return [
+                    i + 1,
+                    csvEscape(c.ticker),
+                    csvEscape(c.company_name),
+                    csvEscape(c.ceo_name),
+                    c.total_compensation || '',
+                    csvEscape(c.sector || ''),
+                    c.pay_ratio || '',
+                    c.median_worker_pay || ''
+                ].join(',');
+            });
+
+            var csv = headers.join(',') + '\n' + rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            var fname = 'sp500-exec-comp';
+            if (activeSector) fname += '-' + activeSector.toLowerCase().replace(/\s+/g, '-');
+            if (searchTerm) fname += '-' + searchTerm.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
+            a.download = fname + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
     }
 
     // Listen for browser back/forward
