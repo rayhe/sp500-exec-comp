@@ -200,6 +200,33 @@ header h1 {
     line-height: 1.45;
 }
 
+.insight-clickable {
+    cursor: pointer;
+}
+
+.insight-clickable:hover {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.15), var(--shadow) !important;
+}
+
+.insight-clickable:active {
+    transform: scale(0.99);
+}
+
+.insight-cta {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    letter-spacing: 0.02em;
+}
+
+.insight-clickable:hover .insight-cta {
+    opacity: 1;
+}
+
 /* === Sections === */
 .section {
     max-width: 1440px;

@@ -123,7 +123,8 @@ function populateInsights(comp, trends) {
             icon: '🏢',
             label: 'Sector Spread',
             value: topSector,
-            detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : '')
+            detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : ''),
+            _topSector: topSector
         });
     }
 
@@ -161,17 +162,100 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // Click actions for each insight — use closures over computed data
+    // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
+
+    // Helper: reset table to clean state, apply sort, scroll
+    function insightResetAndSort(sortKey, sortDir) {
+        currentSort = { key: sortKey, dir: sortDir };
+        activeSector = null;
+        searchTerm = '';
+        currentPage = 1;
+        document.getElementById('table-search').value = '';
+        if (window._activeRatioBucket) {
+            window._activeRatioBucket = null;
+            var rc = document.getElementById('ratio-filter-chip');
+            if (rc) rc.remove();
+        }
+        document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+        var allChip = document.querySelector('.chip');
+        if (allChip) allChip.classList.add('active');
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            if (t.dataset.sort === sortKey) t.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+        });
+        renderTable(companies);
+        if (window.highlightSectorBar) window.highlightSectorBar(null);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        scrollToTable();
+    }
+
+    // 1. Pay Concentration → sort by comp desc, show top earners
+    insights[0].action = function() { insightResetAndSort('total_compensation', 'desc'); };
+    insights[0].actionHint = 'View top earners';
+
+    // 2. $50M+ Club → find the #1 earner in the table with detail panel
+    var topTicker = sorted[0] ? sorted[0].ticker : null;
+    insights[1].action = function() {
+        if (topTicker && window.findCompanyInTable) window.findCompanyInTable(topTicker);
+    };
+    insights[1].actionHint = 'Explore top CEO';
+
+    // 3. Extreme Ratios → filter to ratio > 1000:1
+    insights[2].action = function() {
+        if (window.filterByRatioBucket) window.filterByRatioBucket(1000, Infinity);
+    };
+    insights[2].actionHint = 'Filter extreme ratios';
+
+    // 4. Sector Spread → filter to highest-paying sector
+    if (insights[3]) {
+        var spreadSector = insights[3]._topSector || null;
+        insights[3].action = function() {
+            if (spreadSector && window.filterBySector) window.filterBySector(spreadSector);
+        };
+        insights[3].actionHint = 'Filter by sector';
+    }
+
+    // 5. Zero Pay / Below $1M → sort by comp asc to show lowest-paid
+    if (insights[4]) {
+        if (zeroPay.length > 0 && zeroPay.length <= 3) {
+            // Search for first zero-pay CEO
+            var zeroTicker = zeroPay[0].ticker;
+            insights[4].action = function() {
+                if (window.findCompanyInTable) window.findCompanyInTable(zeroTicker);
+            };
+            insights[4].actionHint = 'View details';
+        } else {
+            insights[4].action = function() { insightResetAndSort('total_compensation', 'asc'); };
+            insights[4].actionHint = 'View lowest paid';
+        }
+    }
+
+    // 6. Pay Range → sort by comp asc to show from minimum
+    if (insights[5]) {
+        insights[5].action = function() { insightResetAndSort('total_compensation', 'asc'); };
+        insights[5].actionHint = 'View full range';
+    }
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
         var card = document.createElement('div');
-        card.className = 'insight-card';
-        card.innerHTML = '<div class="insight-icon">' + ins.icon + '</div>' +
+        card.className = 'insight-card' + (ins.action ? ' insight-clickable' : '');
+        var html = '<div class="insight-icon">' + ins.icon + '</div>' +
             '<div class="insight-content">' +
             '<div class="insight-label">' + ins.label + '</div>' +
             '<div class="insight-value">' + ins.value + '</div>' +
-            '<div class="insight-detail">' + ins.detail + '</div>' +
-            '</div>';
+            '<div class="insight-detail">' + ins.detail + '</div>';
+        if (ins.action && ins.actionHint) {
+            html += '<div class="insight-cta">' + ins.actionHint + ' →</div>';
+        }
+        html += '</div>';
+        card.innerHTML = html;
+        if (ins.action) {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', ins.action);
+        }
         grid.appendChild(card);
     });
 }
