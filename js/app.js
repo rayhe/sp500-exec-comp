@@ -1,5 +1,46 @@
 /* === S&P 500 Executive Compensation Tracker — Main App === */
 
+/* === Theme Management === */
+function initTheme() {
+    var saved = localStorage.getItem('sp500-theme');
+    if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+}
+// Apply theme immediately (before DOMContentLoaded) to prevent flash
+initTheme();
+
+function toggleTheme() {
+    var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('sp500-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('sp500-theme', 'light');
+    }
+    // Re-render charts with updated CSS variable colors
+    if (typeof redrawAllCharts === 'function') redrawAllCharts();
+    // Re-render network canvas
+    if (window._redrawNetwork) window._redrawNetwork();
+}
+
+function isDarkTheme() {
+    return document.documentElement.getAttribute('data-theme') !== 'light';
+}
+
+function getThemeTextColor() {
+    return isDarkTheme() ? '#e4e4e7' : '#1a1a2e';
+}
+
+function getThemeMutedColor() {
+    return isDarkTheme() ? '#6b7280' : '#6b7280';
+}
+
+function getThemeSecondaryColor() {
+    return isDarkTheme() ? '#a1a1aa' : '#4b5563';
+}
+
 let compData = null;
 let trendsData = null;
 let peerData = null;
@@ -1102,6 +1143,12 @@ function hideMetricSkeletons() {
     }
 
     // === CSV Export ===
+    // Wire up theme toggle
+    var themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', toggleTheme);
+    }
+
     var csvBtn = document.getElementById('export-csv-btn');
     if (csvBtn) {
         csvBtn.addEventListener('click', function() {

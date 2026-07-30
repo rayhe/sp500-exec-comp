@@ -123,6 +123,16 @@ function initNetwork(peerData) {
     function draw() {
         ctx.save();
         ctx.clearRect(0, 0, width, height);
+
+        // Theme-aware colors for canvas
+        var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        var labelColor = _dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)';
+        var labelHoverColor = _dark ? '#fff' : '#000';
+        var nodeHoverStroke = _dark ? '#fff' : '#000';
+        var edgeDimColor = _dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)';
+        var edgeDefaultColor = _dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+        var edgeSectorDimColor = _dark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.025)';
+
         ctx.translate(transform.x, transform.y);
         ctx.scale(transform.k, transform.k);
 
@@ -153,7 +163,7 @@ function initNetwork(peerData) {
         // Edges — draw only visible ones, batch by opacity
         if (hoveredNode) {
             // Dim pass
-            ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+            ctx.strokeStyle = edgeDimColor;
             ctx.lineWidth = 0.5 / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
@@ -185,7 +195,7 @@ function initNetwork(peerData) {
             ctx.stroke();
         } else if (activeLegendSector && sectorNodeSet) {
             // Sector filter active — dim edges not involving the sector
-            ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+            ctx.strokeStyle = edgeSectorDimColor;
             ctx.lineWidth = 0.3 / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
@@ -217,7 +227,7 @@ function initNetwork(peerData) {
             ctx.stroke();
         } else {
             // Default — batch all edges in one path
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = edgeDefaultColor;
             ctx.lineWidth = 0.5 / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
@@ -258,7 +268,7 @@ function initNetwork(peerData) {
             ctx.fill();
 
             if (d === hoveredNode) {
-                ctx.strokeStyle = '#fff';
+                ctx.strokeStyle = nodeHoverStroke;
                 ctx.lineWidth = 2 / scale;
                 ctx.stroke();
             } else if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
@@ -283,7 +293,7 @@ function initNetwork(peerData) {
                 if (!shouldShowLabel(d, scale * 1.5)) return; // more lenient threshold
             }
             var r = getRadius(d);
-            ctx.fillStyle = d === hoveredNode ? '#fff' : 'rgba(255,255,255,0.7)';
+            ctx.fillStyle = d === hoveredNode ? labelHoverColor : labelColor;
             ctx.fillText(d.ticker, d.x, d.y + r + 3);
         });
 
@@ -522,6 +532,7 @@ function initNetwork(peerData) {
     }
 
     // Expose global API for cross-section linking (table → network)
+    window._redrawNetwork = draw;
     window.focusNetworkNode = function(ticker) {
         var node = nodeMap[ticker];
         if (!node) return false;

@@ -1,5 +1,9 @@
 /* === D3 Charts === */
 
+function chartStrokeColor() {
+    return typeof isDarkTheme === 'function' && !isDarkTheme() ? '#333' : '#fff';
+}
+
 function fmtCurr(val) {
     if (val == null) return '';
     if (val >= 1e9) return '$' + (val / 1e9).toFixed(1) + 'B';
@@ -88,7 +92,7 @@ window.highlightRatioBucket = function(minRatio, maxRatio) {
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
         } else if (d.min === minRatio && d.max === maxRatio) {
             // Active bucket
-            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
         } else {
             // Inactive bucket
             d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
@@ -107,7 +111,7 @@ window.highlightSectorBar = function(sectorName) {
         if (!sectorName) {
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
         } else if (d.sector === sectorName) {
-            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
         } else {
             d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
         }
@@ -171,12 +175,12 @@ function drawSectorChart(trends) {
         })
         .each(function(d) {
             if (activeSector && d.sector === activeSector) {
-                d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1.5);
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
-            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
             showChartTooltip(event,
                 '<div class="ct-title">' + d.sector + '</div>' +
                 '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>' +
@@ -187,7 +191,7 @@ function drawSectorChart(trends) {
             var isActive = activeSector && d.sector === activeSector;
             d3.select(this)
                 .attr('opacity', isActive ? 1 : (activeSector ? 0.3 : 0.8))
-                .attr('stroke', isActive ? '#fff' : 'none')
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
                 .attr('stroke-width', isActive ? 1.5 : 0);
             hideChartTooltip();
         })
@@ -383,7 +387,7 @@ function drawRatioChart(companies) {
         .attr('x', w / 2)
         .attr('y', h + 42)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#6b7280')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
         .attr('font-size', '11px')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text('CEO : Worker Pay Ratio');
@@ -398,7 +402,7 @@ function drawRatioChart(companies) {
         .attr('x', -h / 2)
         .attr('y', -50)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#6b7280')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
         .attr('font-size', '11px')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text('Number of Companies');
@@ -424,12 +428,12 @@ function drawRatioChart(companies) {
         .each(function(b) {
             var ab = window._activeRatioBucket;
             if (ab && b.min === ab.min && b.max === ab.max) {
-                d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1.5);
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
-            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
             var pct = (b.count / withRatio.length * 100).toFixed(1);
             var topNames = b.companies.slice(0, 3).map(function(c) { return c.ticker + ' (' + c.pay_ratio.toLocaleString() + ':1)'; }).join(', ');
             var html = '<div class="ct-title">Pay Ratio ' + b.label + '</div>' +
@@ -444,7 +448,7 @@ function drawRatioChart(companies) {
             var isActive = ab && b.min === ab.min && b.max === ab.max;
             d3.select(this)
                 .attr('opacity', isActive ? 1 : (ab ? 0.3 : 0.8))
-                .attr('stroke', isActive ? '#fff' : 'none')
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
                 .attr('stroke-width', isActive ? 1.5 : 0);
             hideChartTooltip();
         })
@@ -483,7 +487,7 @@ function drawRatioChart(companies) {
             .attr('x2', medianX)
             .attr('y1', 0)
             .attr('y2', h)
-            .attr('stroke', '#fff')
+            .attr('stroke', chartStrokeColor())
             .attr('stroke-width', 1.5)
             .attr('stroke-dasharray', '6,4')
             .attr('opacity', 0.6);
@@ -491,7 +495,7 @@ function drawRatioChart(companies) {
         svg.append('text')
             .attr('x', medianX + 6)
             .attr('y', 12)
-            .attr('fill', '#fff')
+            .attr('fill', chartStrokeColor())
             .attr('font-size', '11px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .attr('font-weight', '500')
@@ -553,7 +557,7 @@ function drawTop10Chart(companies) {
         .attr('opacity', 0.85)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
-            d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1);
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
             var rank = top10.indexOf(d) + 1;
             var html = '<div class="ct-title">#' + rank + ' ' + d.ceo_name + '</div>' +
                 '<div class="ct-row"><span class="ct-label">Company</span><span class="ct-val">' + d.ticker + '</span></div>' +
@@ -628,7 +632,7 @@ function drawCompositionChart(trends) {
             .attr('opacity', 0.85)
             .style('cursor', 'pointer')
             .on('mouseover', function(event) {
-                d3.select(this).attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+                d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
                 showChartTooltip(event,
                     '<div class="ct-title">' + seg.label + '</div>' +
                     '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + seg.pct.toFixed(1) + '%</span></div>' +
