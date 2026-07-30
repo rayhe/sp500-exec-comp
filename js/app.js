@@ -1429,4 +1429,17 @@ function hideMetricSkeletons() {
             }
         }
     });
+
+    // === Print Support: show all rows during print ===
+    var _savedPageSize = PAGE_SIZE;
+    window.addEventListener('beforeprint', function() {
+        _savedPageSize = PAGE_SIZE;
+        PAGE_SIZE = 99999;
+        currentPage = 1;
+        renderTable(companies);
+    });
+    window.addEventListener('afterprint', function() {
+        PAGE_SIZE = _savedPageSize;
+        renderTable(companies);
+    });
 })();

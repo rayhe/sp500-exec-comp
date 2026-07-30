@@ -1588,3 +1588,241 @@ footer li::before {
     .skeleton-metrics-grid { grid-template-columns: 1fr !important; }
     .skeleton-insights-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ============================================================
+   PRINT STYLESHEET
+   Forces light colors, hides interactive-only elements,
+   simplifies layout for clean printed / PDF output.
+   ============================================================ */
+@media print {
+    /* ---- Force light-mode palette ---- */
+    :root, [data-theme="light"], html {
+        --bg-primary: #fff !important;
+        --bg-secondary: #fff !important;
+        --bg-surface: #f8f8fa !important;
+        --bg-elevated: #f0f1f4 !important;
+        --text-primary: #111 !important;
+        --text-secondary: #333 !important;
+        --text-muted: #666 !important;
+        --accent: #0077b6 !important;
+        --positive: #059669 !important;
+        --negative: #dc2626 !important;
+        --warning: #b45309 !important;
+        --border: rgba(0,0,0,0.12) !important;
+        --shadow: none !important;
+        --shadow-lg: none !important;
+    }
+
+    body {
+        background: #fff !important;
+        color: #111 !important;
+        font-size: 11px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* ---- Hide interactive-only elements ---- */
+    .theme-toggle,
+    .compare-tray,
+    .compare-btn,
+    .export-csv-btn,
+    .scroll-hint,
+    .network-search-box,
+    .control-btn,
+    .insight-cta,
+    .detail-network-btn,
+    .detail-actions,
+    .comparison-close-btn,
+    .compare-go-btn,
+    .compare-clear-btn,
+    #ratio-filter-chip,
+    .table-wrapper::after {
+        display: none !important;
+    }
+
+    /* ---- Header ---- */
+    header {
+        position: static !important;
+        background: #fff !important;
+        border-bottom: 2px solid #111 !important;
+        backdrop-filter: none !important;
+        padding: 12px 20px !important;
+    }
+    .header-inner { max-width: 100% !important; }
+    header h1 { color: #111 !important; font-size: 18px !important; }
+    .subtitle { color: #444 !important; }
+    .badge { background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; }
+    .badge.accent { background: #e0f0f8 !important; color: #0077b6 !important; border-color: #b0d8ee !important; }
+
+    /* ---- Metrics strip ---- */
+    .metrics-strip {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+        padding: 8px 0 !important;
+    }
+    .metric-card {
+        background: #f8f8fa !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        padding: 8px 10px !important;
+    }
+    .metric-value { color: #111 !important; font-size: 1.2rem !important; }
+    .metric-label { color: #555 !important; }
+    .metric-delta { color: #666 !important; }
+
+    /* ---- Insights ---- */
+    .insights-section { break-inside: avoid; }
+    .insights-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+    }
+    .insight-card {
+        background: #f8f8fa !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        padding: 8px 10px !important;
+        cursor: default !important;
+    }
+    .insight-value { color: #0077b6 !important; }
+    .insight-detail { color: #444 !important; }
+
+    /* ---- Peer network: hide canvas, show note ---- */
+    #peer-network-section {
+        break-before: page;
+    }
+    #network-graph {
+        display: none !important;
+    }
+    .network-controls {
+        display: none !important;
+    }
+    #peer-network-section .section-header::after {
+        content: "[Interactive peer network graph — view online at rayhe.github.io/sp500-exec-comp]";
+        display: block;
+        font-style: italic;
+        color: #888;
+        margin-top: 4px;
+        font-size: 0.85em;
+    }
+    #network-tooltip { display: none !important; }
+
+    /* ---- Table ---- */
+    #compensation-table-section { break-before: page; }
+
+    .table-controls {
+        flex-wrap: wrap !important;
+    }
+    .search-box { display: none !important; }
+    .sector-chips { display: none !important; }
+
+    .table-wrapper {
+        overflow: visible !important;
+        max-height: none !important;
+    }
+
+    #comp-table {
+        width: 100% !important;
+        font-size: 9px !important;
+        border-collapse: collapse !important;
+    }
+    #comp-table th {
+        background: #f0f0f0 !important;
+        color: #111 !important;
+        border-bottom: 2px solid #333 !important;
+        padding: 4px 5px !important;
+        font-size: 9px !important;
+        white-space: nowrap !important;
+    }
+    #comp-table td {
+        padding: 3px 5px !important;
+        border-bottom: 1px solid #ddd !important;
+        color: #111 !important;
+    }
+    tbody tr:hover { background: transparent !important; }
+    tbody tr.selected { background: transparent !important; }
+    .detail-row { display: none !important; }
+    .ticker { color: #0077b6 !important; }
+    .ratio-high { color: #dc2626 !important; }
+    .ratio-mid { color: #b45309 !important; }
+    .ratio-low { color: #059669 !important; }
+    .outlier-badge {
+        border: 1px solid !important;
+        font-size: 8px !important;
+    }
+    .outlier-badge.top-comp { border-color: #b8860b !important; color: #8B6914 !important; background: #fff8e1 !important; }
+    .outlier-badge.extreme-ratio { border-color: #dc2626 !important; color: #dc2626 !important; background: #fef2f2 !important; }
+    .outlier-badge.high-ratio { border-color: #b45309 !important; color: #b45309 !important; background: #fffbeb !important; }
+    .outlier-badge.low-ratio { border-color: #059669 !important; color: #059669 !important; background: #f0fdf4 !important; }
+
+    /* Show all rows — disable pagination */
+    .table-footer { display: none !important; }
+    .pagination { display: none !important; }
+
+    /* ---- Comparison section ---- */
+    .comparison-section { break-before: page; }
+    .comparison-card {
+        background: #f8f8fa !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    .comparison-card-ticker { color: #0077b6 !important; }
+    .comparison-row-value.best { color: #059669 !important; }
+    .comparison-row-value.worst { color: #dc2626 !important; }
+
+    /* ---- Charts ---- */
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+        break-inside: avoid;
+    }
+    .chart-panel {
+        background: #fff !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .chart-panel .section-header h2 { color: #111 !important; }
+    .chart-panel .section-desc { color: #555 !important; }
+    .chart-tooltip { display: none !important; }
+
+    /* SVG chart styling for print */
+    svg text { fill: #333 !important; }
+    svg .grid line { stroke: #e0e0e0 !important; }
+    svg .axis text { fill: #333 !important; }
+    svg .axis line, svg .axis path { stroke: #999 !important; }
+
+    /* ---- Composition section ---- */
+    #composition-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .composition-legend-text { color: #333 !important; }
+
+    /* ---- Footer ---- */
+    footer {
+        background: #fff !important;
+        border-top: 2px solid #111 !important;
+        color: #333 !important;
+        break-before: auto;
+    }
+    footer h3 { color: #111 !important; }
+    footer ul li { color: #444 !important; }
+    .footer-note { color: #888 !important; }
+
+    /* ---- General print helpers ---- */
+    section { box-shadow: none !important; }
+    .section { padding: 12px 0 !important; }
+    .section-header h2 { color: #111 !important; font-size: 14px !important; }
+    .section-desc { color: #555 !important; font-size: 10px !important; }
+
+    /* Links: show URL for external links in print */
+    a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        color: #888;
+    }
+
+    /* Avoid blank pages from margins */
+    * { margin-top: 0 !important; }
+    section + section { margin-top: 8px !important; }
+}
