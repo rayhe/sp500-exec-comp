@@ -751,9 +751,102 @@ function applyHashState(companies) {
     renderTable(companies);
 }
 
+/* === Skeleton Loading State === */
+function showSkeletons() {
+    // Metrics strip — show shimmer overlay on metric values
+    document.querySelectorAll('.metric-value').forEach(function(el) {
+        el.dataset.originalText = el.textContent;
+        el.innerHTML = '<span class="skeleton-bar" style="display:inline-block;width:70%;height:1.3em;vertical-align:middle"></span>';
+    });
+    document.querySelectorAll('.metric-delta').forEach(function(el) {
+        el.dataset.originalText = el.textContent;
+        el.innerHTML = '<span class="skeleton-bar" style="display:inline-block;width:50%;height:0.75em;vertical-align:middle"></span>';
+    });
+
+    // Insights grid
+    var insGrid = document.getElementById('insights-grid');
+    if (insGrid) {
+        var insHtml = '';
+        for (var i = 0; i < 6; i++) {
+            insHtml += '<div class="skeleton-insight-card">' +
+                '<div class="skeleton-bar skeleton-insight-icon"></div>' +
+                '<div class="skeleton-insight-body">' +
+                '<div class="skeleton-bar skeleton-insight-label-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-value-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-detail-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-detail-bar2"></div>' +
+                '</div></div>';
+        }
+        insGrid.innerHTML = insHtml;
+    }
+
+    // Network graph
+    var netGraph = document.getElementById('network-graph');
+    if (netGraph) {
+        netGraph.innerHTML = '<div class="skeleton-network"><div class="skeleton-network-inner">' +
+            '<div class="skeleton-network-spinner"></div>' +
+            '<div class="skeleton-network-label">Loading peer network…</div>' +
+            '</div></div>';
+    }
+
+    // Table body
+    var tbody = document.getElementById('comp-tbody');
+    if (tbody) {
+        var tHtml = '';
+        for (var r = 0; r < 10; r++) {
+            // Vary bar widths slightly for visual interest
+            var wTicker = 45 + (r % 3) * 10;
+            var wCompany = 130 + (r % 4) * 20;
+            var wCeo = 100 + (r % 3) * 25;
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="8"><div class="skeleton-table-row">' +
+                '<div class="skeleton-bar skeleton-cell-sm"></div>' +
+                '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
+                '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
+                '<div class="skeleton-bar skeleton-cell-md" style="width:' + wCeo + 'px"></div>' +
+                '<div class="skeleton-bar skeleton-cell-comp"></div>' +
+                '<div class="skeleton-bar skeleton-cell-sector"></div>' +
+                '<div class="skeleton-bar skeleton-cell-comp"></div>' +
+                '<div class="skeleton-bar skeleton-cell-comp"></div>' +
+                '</div></td></tr>';
+        }
+        tbody.innerHTML = tHtml;
+    }
+
+    // Charts
+    var chartIds = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart'];
+    chartIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = '<div class="skeleton-bar skeleton-chart"></div>';
+        }
+    });
+
+    // Table footer placeholder
+    var footerEl = document.getElementById('table-footer');
+    if (footerEl) {
+        footerEl.innerHTML = '<span class="skeleton-bar" style="display:inline-block;width:200px;height:12px"></span>';
+    }
+}
+
+function hideMetricSkeletons() {
+    // Restore metric text that was replaced — actual values will overwrite in populateMetrics
+    document.querySelectorAll('.metric-value').forEach(function(el) {
+        if (el.dataset.originalText) el.textContent = el.dataset.originalText;
+    });
+    document.querySelectorAll('.metric-delta').forEach(function(el) {
+        if (el.dataset.originalText) el.textContent = el.dataset.originalText;
+    });
+}
+
 (async function init() {
+    // Show skeletons immediately before data loads
+    showSkeletons();
+
     var data = await loadData();
     var companies = data.comp.companies;
+
+    // Remove metric skeletons before populating with real data
+    hideMetricSkeletons();
 
     populateMetrics(data.comp, data.trends);
     populateInsights(data.comp, data.trends);
