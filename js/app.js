@@ -107,6 +107,30 @@ function populateMetrics(comp, trends) {
     var top = sorted[0];
     document.getElementById('metric-highest').textContent = formatCurrency(top.total_compensation);
     document.getElementById('metric-highest-name').textContent = top.ceo_name + ' \u2014 ' + top.ticker;
+
+    // Dynamic metrics from trends.json
+    var stockPctEl = document.getElementById('metric-stock-pct');
+    var stockSubEl = document.getElementById('metric-stock-sub');
+    var growthEl = document.getElementById('metric-5yr-growth');
+    var growthSubEl = document.getElementById('metric-5yr-sub');
+
+    if (trends && trends.compensation_composition && trends.compensation_composition.s_and_p_500) {
+        var stockPct = trends.compensation_composition.s_and_p_500.stock_awards_pct;
+        var stockFY = trends.compensation_composition.s_and_p_500.fiscal_year;
+        if (stockPct != null) {
+            stockPctEl.textContent = stockPct + '%';
+            stockSubEl.textContent = 'Equity dominates pay (FY' + stockFY + ')';
+        }
+    }
+
+    if (trends && trends.five_year_trends) {
+        var sp500Pct = trends.five_year_trends.s_and_p_500_5yr_increase;
+        var period = trends.five_year_trends.period;
+        if (sp500Pct) {
+            growthEl.textContent = '+' + sp500Pct.replace('%', '') + '%';
+            growthSubEl.textContent = 'S&P 500, ' + (period || '2020–2024');
+        }
+    }
 }
 
 function populateInsights(comp, trends) {
@@ -298,6 +322,155 @@ function populateInsights(comp, trends) {
             card.addEventListener('click', ins.action);
         }
         grid.appendChild(card);
+    });
+}
+
+function populateTrends(trends) {
+    var grid = document.getElementById('trends-grid');
+    if (!grid || !trends) return;
+
+    var cards = [];
+
+    // 1. Gender Pay Gap
+    if (trends.gender_trends && trends.gender_trends.data) {
+        var latest = trends.gender_trends.data[trends.gender_trends.data.length - 1];
+        var prev = trends.gender_trends.data.length > 1 ? trends.gender_trends.data[0] : null;
+        if (latest) {
+            var premiumPct = prev && prev.female_premium_pct ? prev.female_premium_pct : '';
+            var femalePay = latest.female_median_pay || (prev && prev.female_median_pay);
+            var overallPay = latest.overall_median_pay;
+            var detail = latest.num_female_ceos + ' female CEOs in the S&P 500';
+            if (femalePay && overallPay) {
+                detail += ' (median ' + formatCurrency(femalePay) + ' vs ' + formatCurrency(overallPay) + ' overall).';
+            } else {
+                detail += '.';
+            }
+            if (latest.highest_paid_woman) {
+                detail += ' Highest: ' + latest.highest_paid_woman;
+                if (latest.highest_paid_woman_comp) detail += ' at ' + formatCurrency(latest.highest_paid_woman_comp);
+                detail += '.';
+                if (latest.note) detail += ' ' + latest.note + '.';
+            }
+            cards.push({
+                icon: '👩‍💼',
+                label: 'Gender Pay Gap',
+                value: premiumPct ? premiumPct + '% female premium' : latest.num_female_ceos + ' female CEOs',
+                detail: detail,
+                source: 'Equilar/AP ' + (latest.source || '')
+            });
+        }
+    }
+
+    // 2. Say-on-Pay Voting
+    if (trends.say_on_pay_trends && trends.say_on_pay_trends.data) {
+        var sopData = trends.say_on_pay_trends.data;
+        var latestSop = sopData[sopData.length - 1];
+        if (latestSop) {
+            var detail2 = latestSop.median_support + '% median shareholder support (' + latestSop.year + '). ';
+            detail2 += latestSop.failure_rate_pct + '% failure rate.';
+            if (latestSop.notable_failures && latestSop.notable_failures.length > 0) {
+                detail2 += ' Notable failures: ';
+                detail2 += latestSop.notable_failures.map(function(f) {
+                    return f.company + ' (' + f.support_pct + '%)';
+                }).join(', ') + '.';
+            }
+            if (latestSop.notable_low_support && latestSop.notable_low_support.length > 0) {
+                detail2 += ' Low support: ';
+                detail2 += latestSop.notable_low_support.map(function(f) {
+                    return f.company + ' (' + f.support_pct + '%)';
+                }).join(', ') + '.';
+            }
+            cards.push({
+                icon: '🗳️',
+                label: 'Say-on-Pay Voting',
+                value: latestSop.median_support + '% median approval',
+                detail: detail2,
+                source: 'Harvard Law Forum / ISS'
+            });
+        }
+    }
+
+    // 3. Security Perks
+    if (trends.security_perks_trend && trends.security_perks_trend.data) {
+        var sec = trends.security_perks_trend.data;
+        var detail3 = sec.s_and_p_500_ceos_with_security_2025 + ' of S&P 500 CEOs receive personal security perks in 2025, up from ' + sec.s_and_p_500_ceos_with_security_2024 + ' in 2024.';
+        if (sec.note) detail3 += ' ' + sec.note + '.';
+        cards.push({
+            icon: '🛡️',
+            label: 'Security Perks Surge',
+            value: sec.s_and_p_500_ceos_with_security_2025 + ' of CEOs (2025)',
+            detail: detail3,
+            source: 'Harvard Law Forum / ISS / Equilar'
+        });
+    }
+
+    // 4. Five-Year Growth: S&P 500 vs Russell 3000
+    if (trends.five_year_trends) {
+        var fyt = trends.five_year_trends;
+        var detail4 = 'S&P 500 CEO median pay rose ' + fyt.s_and_p_500_5yr_increase + ' over ' + fyt.period + '. ';
+        detail4 += 'Russell 3000 CEOs grew even faster at +' + fyt.russell_3000_5yr_increase.replace('+', '') + ' — smaller companies closing the gap.';
+        cards.push({
+            icon: '📈',
+            label: '5-Year Growth Gap',
+            value: 'S&P +' + fyt.s_and_p_500_5yr_increase + ' vs R3K +' + fyt.russell_3000_5yr_increase,
+            detail: detail4,
+            source: fyt.source || 'Harvard Law Forum'
+        });
+    }
+
+    // 5. Detailed Composition Breakdown
+    if (trends.compensation_composition && trends.compensation_composition.s_and_p_500_fy2024_detail) {
+        var cd = trends.compensation_composition.s_and_p_500_fy2024_detail;
+        var detail5 = 'Performance stock: ' + formatCurrency(cd.median_performance_stock_awards) + ' (' + cd.perf_stock_yoy_change + ' YoY). ';
+        detail5 += 'Restricted stock: ' + formatCurrency(cd.median_restricted_stock) + ' (' + cd.restricted_stock_yoy_change + '). ';
+        detail5 += 'Discretionary bonus: ' + formatCurrency(cd.median_discretionary_bonus) + ' (' + cd.bonus_yoy_change + '). ';
+        detail5 += 'NEIP payout: ' + formatCurrency(cd.median_neip_payout) + ' (' + cd.neip_yoy_change + ').';
+        cards.push({
+            icon: '💎',
+            label: 'Compensation Mix Detail',
+            value: 'Bonus surging +' + cd.bonus_yoy_change,
+            detail: detail5,
+            source: cd.source || 'Harvard Law Forum'
+        });
+    }
+
+    // 6. Historic Peak
+    if (trends.historical_context) {
+        var hc = trends.historical_context;
+        var detail6 = '';
+        if (hc.five_ceos_over_100m_fy2025) {
+            detail6 += '5 CEOs exceeded $100M in FY2025 — the highest concentration of nine-figure packages ever recorded. ';
+        }
+        if (hc.highest_paid_ceo_fy2025_equilar_ap) {
+            var top = hc.highest_paid_ceo_fy2025_equilar_ap;
+            detail6 += 'Led by ' + top.name + ' (' + top.ticker + ') at ' + formatCurrency(top.total_compensation) + '. ';
+            if (top.note) detail6 += top.note + '.';
+        }
+        if (detail6) {
+            cards.push({
+                icon: '🏆',
+                label: 'Historic Peak (FY2025)',
+                value: '5 CEOs over $100M',
+                detail: detail6,
+                source: 'Equilar/AP 2026'
+            });
+        }
+    }
+
+    // Render cards
+    grid.innerHTML = '';
+    cards.forEach(function(card) {
+        var el = document.createElement('div');
+        el.className = 'trend-card';
+        var html = '<div class="trend-icon">' + card.icon + '</div>' +
+            '<div class="trend-content">' +
+            '<div class="trend-label">' + card.label + '</div>' +
+            '<div class="trend-value">' + card.value + '</div>' +
+            '<div class="trend-detail">' + card.detail + '</div>' +
+            '<div class="trend-source">' + card.source + '</div>' +
+            '</div>';
+        el.innerHTML = html;
+        grid.appendChild(el);
     });
 }
 
@@ -862,6 +1035,23 @@ function showSkeletons() {
         }
     });
 
+    // Trends grid
+    var trendsGrid = document.getElementById('trends-grid');
+    if (trendsGrid) {
+        var trendHtml = '';
+        for (var t = 0; t < 6; t++) {
+            trendHtml += '<div class="skeleton-insight-card">' +
+                '<div class="skeleton-bar skeleton-insight-icon"></div>' +
+                '<div class="skeleton-insight-body">' +
+                '<div class="skeleton-bar skeleton-insight-label-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-value-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-detail-bar"></div>' +
+                '<div class="skeleton-bar skeleton-insight-detail-bar2"></div>' +
+                '</div></div>';
+        }
+        trendsGrid.innerHTML = trendHtml;
+    }
+
     // Table footer placeholder
     var footerEl = document.getElementById('table-footer');
     if (footerEl) {
@@ -891,6 +1081,7 @@ function hideMetricSkeletons() {
 
     populateMetrics(data.comp, data.trends);
     populateInsights(data.comp, data.trends);
+    populateTrends(data.trends);
     buildSectorChips(companies);
     renderTable(companies);
     setupSorting(companies);

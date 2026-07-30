@@ -51,13 +51,13 @@
         </div>
         <div class="metric-card">
             <div class="metric-label">Stock Awards % of Total</div>
-            <div class="metric-value" id="metric-stock-pct">71.6%</div>
-            <div class="metric-delta">Equity dominates pay</div>
+            <div class="metric-value" id="metric-stock-pct">—</div>
+            <div class="metric-delta" id="metric-stock-sub">Equity dominates pay</div>
         </div>
         <div class="metric-card">
             <div class="metric-label">5-Year Pay Growth</div>
-            <div class="metric-value positive">+26%</div>
-            <div class="metric-delta">S&P 500, 2020–2024</div>
+            <div class="metric-value positive" id="metric-5yr-growth">—</div>
+            <div class="metric-delta" id="metric-5yr-sub">S&amp;P 500</div>
         </div>
     </section>
 
@@ -187,6 +187,14 @@
             <p class="section-desc">Breakdown of how CEO pay is structured — stock dominates</p>
         </div>
         <div id="composition-chart"></div>
+    </section>
+
+    <section class="section trends-section" id="trends-section">
+        <div class="section-header">
+            <h2>Trends &amp; Context</h2>
+            <p class="section-desc">Deeper patterns from Equilar/AP, Harvard Law Forum, and ISS research across S&amp;P 500 and Russell 3000</p>
+        </div>
+        <div class="trends-grid" id="trends-grid"></div>
     </section>
 
     <footer>

@@ -1044,6 +1044,75 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     white-space: nowrap;
 }
 
+/* === Trends & Context Section === */
+.trends-section {
+    margin-top: 24px;
+}
+
+.trends-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.trend-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.trend-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow);
+}
+
+.trend-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.trend-content {
+    min-width: 0;
+}
+
+.trend-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.trend-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-feature-settings: 'tnum';
+}
+
+.trend-detail {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.trend-source {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.7;
+}
+
 /* === Footer === */
 footer {
     margin-top: 32px;
@@ -1093,10 +1162,12 @@ footer li::before {
 @media (max-width: 1200px) {
     .metrics-strip { grid-template-columns: repeat(3, 1fr); }
     .insights-grid { grid-template-columns: repeat(2, 1fr); }
+    .trends-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
     .metrics-strip { grid-template-columns: repeat(2, 1fr); }
     .insights-grid { grid-template-columns: repeat(2, 1fr); }
+    .trends-grid { grid-template-columns: repeat(2, 1fr); }
     .charts-grid { grid-template-columns: 1fr; }
     .footer-inner { grid-template-columns: 1fr; }
     .header-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -1106,6 +1177,7 @@ footer li::before {
     .metrics-strip { grid-template-columns: 1fr; padding: 12px 16px; }
     .insights-section { padding: 12px 16px; }
     .insights-grid { grid-template-columns: 1fr; }
+    .trends-grid { grid-template-columns: 1fr; }
     .section { padding: 16px; }
     header { padding: 16px; }
     #network-graph { height: 400px; }
@@ -1797,6 +1869,24 @@ footer li::before {
         page-break-inside: avoid;
     }
     .composition-legend-text { color: #333 !important; }
+
+    /* ---- Trends & Context ---- */
+    .trends-section {
+        break-before: page;
+    }
+    .trends-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .trend-card {
+        background: #fff !important;
+        border-color: #ddd !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .trend-label { color: #555 !important; }
+    .trend-value { color: #0077b6 !important; }
+    .trend-detail { color: #444 !important; }
+    .trend-source { color: #888 !important; }
 
     /* ---- Footer ---- */
     footer {
