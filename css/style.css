@@ -67,6 +67,7 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .comparison-chart-container { background: #fff; border-color: rgba(0,0,0,0.08); }
 [data-theme="light"] .detail-panel { background: #f0f1f5; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-stat { background: #fff; border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .detail-stat-distbar-dot { box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(0,119,182,0.3); }
 [data-theme="light"] .detail-peer-tag { background: #e8e9ee; color: #1a1a2e; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .network-search-results { background: #fff; border-color: rgba(0,0,0,0.1); }
 [data-theme="light"] .network-search-result:hover,
@@ -816,6 +817,41 @@ tbody tr:last-child td { border-bottom: none; }
     color: var(--text-secondary);
     margin-top: 2px;
 }
+/* Distribution position indicator */
+.detail-stat-distbar {
+    position: relative;
+    height: 3px;
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: visible;
+}
+.detail-stat-distbar-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(6,214,160,0.2) 0%, rgba(255,209,102,0.2) 50%, rgba(239,71,111,0.2) 100%);
+}
+.detail-stat-distbar-dot {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    top: -3px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 6px rgba(0,180,216,0.35);
+    z-index: 1;
+    transition: left 0.3s ease-out;
+}
+.detail-stat-distbar-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
 
 .detail-peers {
     border-top: 1px solid var(--border);
@@ -1265,6 +1301,7 @@ footer li::before {
     .detail-stat-value { font-size: 1rem; }
     .detail-stat-label { font-size: 0.65rem; }
     .detail-stat-sub { font-size: 0.68rem; }
+    .detail-stat-distbar-labels { font-size: 0.55rem; }
     .detail-header { font-size: 0.88rem; margin-bottom: 8px; }
     .detail-peer-tags { gap: 3px; }
     .detail-peer-tag { font-size: 0.68rem; padding: 2px 6px; }

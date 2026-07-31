@@ -899,8 +899,19 @@ function setupDetailPanel(companies) {
         html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
         html += '<div class="detail-stats">';
 
-        html += '<div class="detail-stat"><div class="detail-stat-label">S&P 500 Rank</div><div class="detail-stat-value">#' + overallRank + '</div><div class="detail-stat-sub">Top ' + topPct + '%</div></div>';
-        html += '<div class="detail-stat"><div class="detail-stat-label">Sector Rank</div><div class="detail-stat-value">#' + sectorRank + ' of ' + sectorPeers.length + '</div><div class="detail-stat-sub">' + (company.sector || '') + '</div></div>';
+        // Helper: build distribution bar HTML
+        function distBar(pctLeft, leftLabel, rightLabel) {
+            return '<div class="detail-stat-distbar"><div class="detail-stat-distbar-track"></div><div class="detail-stat-distbar-dot" style="left:' + Math.max(2, Math.min(98, pctLeft)).toFixed(1) + '%"></div></div>' +
+                '<div class="detail-stat-distbar-labels"><span>' + leftLabel + '</span><span>' + rightLabel + '</span></div>';
+        }
+
+        // S&P 500 Rank — left = #1 (highest paid), right = #500
+        var rankPct = (overallRank - 1) / (companies.length - 1) * 100;
+        html += '<div class="detail-stat"><div class="detail-stat-label">S&P 500 Rank</div><div class="detail-stat-value">#' + overallRank + '</div>' + distBar(rankPct, '#1', '#500') + '<div class="detail-stat-sub">Top ' + topPct + '%</div></div>';
+
+        // Sector Rank — left = #1 in sector, right = #N
+        var sectorPct = sectorPeers.length > 1 ? (sectorRank - 1) / (sectorPeers.length - 1) * 100 : 50;
+        html += '<div class="detail-stat"><div class="detail-stat-label">Sector Rank</div><div class="detail-stat-value">#' + sectorRank + ' of ' + sectorPeers.length + '</div>' + distBar(sectorPct, '#1', '#' + sectorPeers.length) + '<div class="detail-stat-sub">' + (company.sector || '') + '</div></div>';
 
         if (vsMedianPct !== null) {
             var sign = parseInt(vsMedianPct) >= 0 ? '+' : '';
@@ -909,7 +920,12 @@ function setupDetailPanel(companies) {
         }
 
         if (ratioText) {
-            html += '<div class="detail-stat"><div class="detail-stat-label">Pay Ratio Rank</div><div class="detail-stat-value">' + ratioText + '</div><div class="detail-stat-sub">' + formatRatio(company.pay_ratio) + '</div></div>';
+            // Pay Ratio Rank — left = lowest ratio (most equitable), right = highest ratio
+            var ratioSortedForBar = companies.filter(function(c) { return c.pay_ratio != null; })
+                .sort(function(a, b) { return a.pay_ratio - b.pay_ratio; });
+            var ratioBarIdx = ratioSortedForBar.findIndex(function(c) { return c.ticker === ticker; });
+            var ratioPctBar = ratioSortedForBar.length > 1 ? ratioBarIdx / (ratioSortedForBar.length - 1) * 100 : 50;
+            html += '<div class="detail-stat"><div class="detail-stat-label">Pay Ratio Rank</div><div class="detail-stat-value">' + ratioText + '</div>' + distBar(ratioPctBar, 'Low', 'High') + '<div class="detail-stat-sub">' + formatRatio(company.pay_ratio) + '</div></div>';
         }
 
         if (peerInfo) {
