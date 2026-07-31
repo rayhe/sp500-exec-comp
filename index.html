@@ -110,7 +110,7 @@
         <div class="table-controls">
             <div class="search-box">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers...">
+                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)">
             </div>
             <button class="export-csv-btn" id="export-csv-btn" title="Download current view as CSV">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -225,6 +225,41 @@
             <button class="compare-go-btn" id="compare-go-btn">Compare</button>
             <button class="compare-clear-btn" id="compare-clear-btn">Clear</button>
         </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help Modal -->
+    <div class="kbd-modal-overlay" id="kbd-modal-overlay">
+        <div class="kbd-modal">
+            <div class="kbd-modal-header">
+                <h3>Keyboard Shortcuts</h3>
+                <button class="kbd-modal-close" id="kbd-modal-close">✕</button>
+            </div>
+            <div class="kbd-modal-body">
+                <div class="kbd-group">
+                    <div class="kbd-group-title">Navigation</div>
+                    <div class="kbd-row"><kbd>/</kbd><span>Focus search</span></div>
+                    <div class="kbd-row"><kbd>T</kbd><span>Jump to table</span></div>
+                    <div class="kbd-row"><kbd>N</kbd><span>Jump to network</span></div>
+                    <div class="kbd-row"><kbd>C</kbd><span>Jump to charts</span></div>
+                </div>
+                <div class="kbd-group">
+                    <div class="kbd-group-title">Table</div>
+                    <div class="kbd-row"><kbd>←</kbd><span>Previous page</span></div>
+                    <div class="kbd-row"><kbd>→</kbd><span>Next page</span></div>
+                    <div class="kbd-row"><kbd>Esc</kbd><span>Clear filters &amp; close panels</span></div>
+                </div>
+                <div class="kbd-group">
+                    <div class="kbd-group-title">Display</div>
+                    <div class="kbd-row"><kbd>D</kbd><span>Toggle dark/light mode</span></div>
+                    <div class="kbd-row"><kbd>?</kbd><span>Show this help</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard hint badge -->
+    <div class="kbd-hint" id="kbd-hint" title="Press ? for keyboard shortcuts">
+        <kbd>?</kbd> Shortcuts
     </div>
 
     <script src="js/app.js"></script>

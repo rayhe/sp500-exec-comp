@@ -1708,4 +1708,205 @@ function hideMetricSkeletons() {
         PAGE_SIZE = _savedPageSize;
         renderTable(companies);
     });
+
+    // === Keyboard Shortcuts ===
+    var kbdOverlay = document.getElementById('kbd-modal-overlay');
+    var kbdCloseBtn = document.getElementById('kbd-modal-close');
+    var kbdHint = document.getElementById('kbd-hint');
+
+    function showKbdModal() {
+        if (kbdOverlay) kbdOverlay.classList.add('visible');
+    }
+    function hideKbdModal() {
+        if (kbdOverlay) kbdOverlay.classList.remove('visible');
+    }
+    function isKbdModalOpen() {
+        return kbdOverlay && kbdOverlay.classList.contains('visible');
+    }
+
+    if (kbdCloseBtn) kbdCloseBtn.addEventListener('click', hideKbdModal);
+    if (kbdOverlay) {
+        kbdOverlay.addEventListener('click', function(e) {
+            if (e.target === kbdOverlay) hideKbdModal();
+        });
+    }
+    if (kbdHint) kbdHint.addEventListener('click', showKbdModal);
+
+    // Dismiss kbd hint after first interaction (localStorage)
+    var kbdHintDismissed = localStorage.getItem('sp500-kbd-hint-dismissed');
+    if (kbdHintDismissed && kbdHint) kbdHint.style.display = 'none';
+
+    document.addEventListener('keydown', function(e) {
+        var tag = (e.target.tagName || '').toLowerCase();
+        var inInput = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+
+        // Escape works everywhere
+        if (e.key === 'Escape') {
+            // Priority: close kbd modal → close comparison → close detail panel → clear filters
+            if (isKbdModalOpen()) {
+                hideKbdModal();
+                e.preventDefault();
+                return;
+            }
+            var compSection = document.getElementById('comparison-section');
+            if (compSection && compSection.classList.contains('visible')) {
+                compSection.classList.remove('visible');
+                e.preventDefault();
+                return;
+            }
+            var detailRow = document.querySelector('.detail-row');
+            if (detailRow) {
+                detailRow.remove();
+                document.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+                e.preventDefault();
+                return;
+            }
+            // Clear all filters and search
+            if (activeSector || searchTerm || window._activeRatioBucket) {
+                activeSector = null;
+                searchTerm = '';
+                currentPage = 1;
+                document.getElementById('table-search').value = '';
+                if (window._activeRatioBucket) {
+                    window._activeRatioBucket = null;
+                    var rc = document.getElementById('ratio-filter-chip');
+                    if (rc) rc.remove();
+                }
+                document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+                var allChip = document.querySelector('.chip');
+                if (allChip) allChip.classList.add('active');
+                currentSort = { key: 'total_compensation', dir: 'desc' };
+                document.querySelectorAll('th.sortable').forEach(function(t) {
+                    t.classList.remove('sorted-asc', 'sorted-desc');
+                    if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
+                });
+                renderTable(companies);
+                if (window.highlightSectorBar) window.highlightSectorBar(null);
+                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+                e.preventDefault();
+                return;
+            }
+            // If in search, blur it
+            if (inInput) {
+                e.target.blur();
+                e.preventDefault();
+            }
+            return;
+        }
+
+        // All other shortcuts only fire when not in an input field
+        if (inInput) return;
+
+        // Don't fire with Ctrl/Cmd/Alt modifiers (except for our specific combos)
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+        switch (e.key) {
+            case '/':
+                // Focus table search
+                e.preventDefault();
+                var searchInput = document.getElementById('table-search');
+                if (searchInput) {
+                    var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var tableSection = document.getElementById('compensation-table-section');
+                    if (tableSection) {
+                        var sectionTop = tableSection.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+                        window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+                    }
+                    setTimeout(function() { searchInput.focus(); searchInput.select(); }, 150);
+                }
+                // Dismiss the hint badge permanently
+                if (kbdHint && !kbdHintDismissed) {
+                    kbdHint.style.display = 'none';
+                    localStorage.setItem('sp500-kbd-hint-dismissed', '1');
+                    kbdHintDismissed = '1';
+                }
+                break;
+
+            case '?':
+                e.preventDefault();
+                if (isKbdModalOpen()) {
+                    hideKbdModal();
+                } else {
+                    showKbdModal();
+                }
+                if (kbdHint && !kbdHintDismissed) {
+                    kbdHint.style.display = 'none';
+                    localStorage.setItem('sp500-kbd-hint-dismissed', '1');
+                    kbdHintDismissed = '1';
+                }
+                break;
+
+            case 'ArrowLeft':
+                // Previous table page
+                if (currentPage > 1) {
+                    e.preventDefault();
+                    currentPage--;
+                    renderTable(companies);
+                    scrollToTable();
+                }
+                break;
+
+            case 'ArrowRight':
+                // Next table page
+                var totalFiltered = companies.slice();
+                if (activeSector) totalFiltered = totalFiltered.filter(function(c) { return c.sector === activeSector; });
+                if (searchTerm) {
+                    var sq = searchTerm.toLowerCase();
+                    totalFiltered = totalFiltered.filter(function(c) {
+                        return (c.ticker || '').toLowerCase().indexOf(sq) >= 0 ||
+                            (c.company_name || '').toLowerCase().indexOf(sq) >= 0 ||
+                            (c.ceo_name || '').toLowerCase().indexOf(sq) >= 0 ||
+                            (c.sector || '').toLowerCase().indexOf(sq) >= 0;
+                    });
+                }
+                if (window._activeRatioBucket) {
+                    var arb = window._activeRatioBucket;
+                    totalFiltered = totalFiltered.filter(function(c) {
+                        return c.pay_ratio != null && c.pay_ratio >= arb.min && c.pay_ratio < arb.max;
+                    });
+                }
+                var maxPages = Math.max(1, Math.ceil(totalFiltered.length / PAGE_SIZE));
+                if (currentPage < maxPages) {
+                    e.preventDefault();
+                    currentPage++;
+                    renderTable(companies);
+                    scrollToTable();
+                }
+                break;
+
+            case 't':
+            case 'T':
+                e.preventDefault();
+                scrollToTable();
+                break;
+
+            case 'n':
+            case 'N':
+                e.preventDefault();
+                var netSection = document.getElementById('peer-network-section');
+                if (netSection) {
+                    var hh = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var nt = netSection.getBoundingClientRect().top + window.scrollY - hh - 12;
+                    window.scrollTo({ top: nt, behavior: 'smooth' });
+                }
+                break;
+
+            case 'c':
+            case 'C':
+                e.preventDefault();
+                var chartPanel = document.getElementById('sector-chart-panel');
+                if (chartPanel) {
+                    var hh2 = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var ct = chartPanel.getBoundingClientRect().top + window.scrollY - hh2 - 12;
+                    window.scrollTo({ top: ct, behavior: 'smooth' });
+                }
+                break;
+
+            case 'd':
+            case 'D':
+                e.preventDefault();
+                toggleTheme();
+                break;
+        }
+    });
 })();
