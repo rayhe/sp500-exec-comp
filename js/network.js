@@ -690,4 +690,171 @@ function initNetwork(peerData) {
         });
         draw();
     };
+
+    // === Mini-Map (Overview Indicator) ===
+    // Small canvas in the bottom-right showing all nodes and the current viewport
+    var MM_W = 160, MM_H = 110, MM_PAD = 10;
+    var mmCanvas = document.createElement('canvas');
+    mmCanvas.className = 'network-minimap';
+    mmCanvas.width = MM_W * dpr;
+    mmCanvas.height = MM_H * dpr;
+    mmCanvas.style.width = MM_W + 'px';
+    mmCanvas.style.height = MM_H + 'px';
+    container.appendChild(mmCanvas);
+    var mmCtx = mmCanvas.getContext('2d');
+    mmCtx.scale(dpr, dpr);
+
+    // Compute node extent for mapping world coords → mini-map coords
+    var mmExtent = { xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity };
+    var mmExtentReady = false;
+
+    function updateMiniMapExtent() {
+        mmExtent.xMin = Infinity; mmExtent.xMax = -Infinity;
+        mmExtent.yMin = Infinity; mmExtent.yMax = -Infinity;
+        nodes.forEach(function(n) {
+            if (n.x < mmExtent.xMin) mmExtent.xMin = n.x;
+            if (n.x > mmExtent.xMax) mmExtent.xMax = n.x;
+            if (n.y < mmExtent.yMin) mmExtent.yMin = n.y;
+            if (n.y > mmExtent.yMax) mmExtent.yMax = n.y;
+        });
+        // Add padding
+        var pw = (mmExtent.xMax - mmExtent.xMin) * 0.08 || 50;
+        var ph = (mmExtent.yMax - mmExtent.yMin) * 0.08 || 50;
+        mmExtent.xMin -= pw; mmExtent.xMax += pw;
+        mmExtent.yMin -= ph; mmExtent.yMax += ph;
+        mmExtentReady = true;
+    }
+
+    // Map world coord to mini-map pixel
+    function mmMapX(wx) {
+        return MM_PAD + (wx - mmExtent.xMin) / (mmExtent.xMax - mmExtent.xMin) * (MM_W - 2 * MM_PAD);
+    }
+    function mmMapY(wy) {
+        return MM_PAD + (wy - mmExtent.yMin) / (mmExtent.yMax - mmExtent.yMin) * (MM_H - 2 * MM_PAD);
+    }
+
+    function drawMiniMap() {
+        if (!mmExtentReady) updateMiniMapExtent();
+
+        var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        mmCtx.clearRect(0, 0, MM_W, MM_H);
+
+        // Background
+        mmCtx.fillStyle = _dark ? 'rgba(15,15,26,0.88)' : 'rgba(244,245,247,0.92)';
+        mmCtx.fillRect(0, 0, MM_W, MM_H);
+
+        // Border
+        mmCtx.strokeStyle = _dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
+        mmCtx.lineWidth = 1;
+        mmCtx.strokeRect(0.5, 0.5, MM_W - 1, MM_H - 1);
+
+        // Draw nodes as small dots
+        nodes.forEach(function(n) {
+            var mx = mmMapX(n.x);
+            var my = mmMapY(n.y);
+            var color = SECTOR_COLORS[n.sector] || '#94a3b8';
+            var dotR = Math.max(1.2, getRadius(n) / 18);
+            mmCtx.beginPath();
+            mmCtx.arc(mx, my, dotR, 0, 2 * Math.PI);
+            mmCtx.fillStyle = color;
+            mmCtx.fill();
+        });
+
+        // Draw viewport rectangle
+        // The main canvas shows world coords from transform.invert([0,0]) to transform.invert([width, height])
+        var topLeft = transform.invert([0, 0]);
+        var bottomRight = transform.invert([width, height]);
+        var vx1 = mmMapX(topLeft[0]);
+        var vy1 = mmMapY(topLeft[1]);
+        var vx2 = mmMapX(bottomRight[0]);
+        var vy2 = mmMapY(bottomRight[1]);
+
+        // Clamp to mini-map bounds
+        vx1 = Math.max(0, vx1); vy1 = Math.max(0, vy1);
+        vx2 = Math.min(MM_W, vx2); vy2 = Math.min(MM_H, vy2);
+
+        var vw = vx2 - vx1;
+        var vh = vy2 - vy1;
+
+        // Only draw viewport rect if it's smaller than the full mini-map (i.e., user is zoomed in)
+        if (vw < MM_W - 2 || vh < MM_H - 2) {
+            mmCtx.strokeStyle = _dark ? 'rgba(0,180,216,0.8)' : 'rgba(0,119,182,0.8)';
+            mmCtx.lineWidth = 1.5;
+            mmCtx.strokeRect(vx1, vy1, vw, vh);
+
+            // Semi-transparent fill
+            mmCtx.fillStyle = _dark ? 'rgba(0,180,216,0.06)' : 'rgba(0,119,182,0.06)';
+            mmCtx.fillRect(vx1, vy1, vw, vh);
+        }
+    }
+
+    // Hook drawMiniMap into the main draw cycle
+    var _origDraw = draw;
+    draw = function() {
+        _origDraw();
+        drawMiniMap();
+    };
+    window._redrawNetwork = draw;
+
+    // Update extent periodically during simulation warmup
+    var mmExtentTimer = setInterval(function() {
+        updateMiniMapExtent();
+        drawMiniMap();
+    }, 500);
+    setTimeout(function() { clearInterval(mmExtentTimer); }, 8000);
+
+    // Mini-map click/drag to pan the main view
+    var mmDragging = false;
+
+    function mmPanTo(px, py) {
+        // Convert mini-map pixel to world coord
+        var wx = mmExtent.xMin + (px - MM_PAD) / (MM_W - 2 * MM_PAD) * (mmExtent.xMax - mmExtent.xMin);
+        var wy = mmExtent.yMin + (py - MM_PAD) / (MM_H - 2 * MM_PAD) * (mmExtent.yMax - mmExtent.yMin);
+
+        // Center the main view on this world point at the current zoom level
+        var newTx = width / 2 - wx * transform.k;
+        var newTy = height / 2 - wy * transform.k;
+        var newTransform = d3.zoomIdentity.translate(newTx, newTy).scale(transform.k);
+
+        d3.select(canvas)
+            .transition()
+            .duration(mmDragging ? 0 : 300)
+            .call(zoom.transform, newTransform);
+    }
+
+    function mmGetPos(event) {
+        var r = mmCanvas.getBoundingClientRect();
+        return { x: event.clientX - r.left, y: event.clientY - r.top };
+    }
+
+    mmCanvas.addEventListener('mousedown', function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        mmDragging = true;
+        var pos = mmGetPos(event);
+        mmPanTo(pos.x, pos.y);
+    });
+
+    mmCanvas.addEventListener('mousemove', function(event) {
+        if (!mmDragging) return;
+        event.stopPropagation();
+        var pos = mmGetPos(event);
+        mmPanTo(pos.x, pos.y);
+    });
+
+    mmCanvas.addEventListener('mouseup', function(event) {
+        mmDragging = false;
+        event.stopPropagation();
+    });
+
+    mmCanvas.addEventListener('mouseleave', function() {
+        mmDragging = false;
+    });
+
+    // Prevent mini-map clicks from triggering main canvas zoom
+    mmCanvas.addEventListener('wheel', function(event) {
+        event.stopPropagation();
+    });
+
+    mmCanvas.style.cursor = 'crosshair';
 }
