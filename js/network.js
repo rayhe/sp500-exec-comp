@@ -851,6 +851,38 @@ function initNetwork(peerData) {
         mmDragging = false;
     });
 
+    // Touch event handlers for mobile mini-map interaction
+    function mmGetTouchPos(event) {
+        var touch = event.touches[0] || event.changedTouches[0];
+        var r = mmCanvas.getBoundingClientRect();
+        return { x: touch.clientX - r.left, y: touch.clientY - r.top };
+    }
+
+    mmCanvas.addEventListener('touchstart', function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        mmDragging = true;
+        var pos = mmGetTouchPos(event);
+        mmPanTo(pos.x, pos.y);
+    }, { passive: false });
+
+    mmCanvas.addEventListener('touchmove', function(event) {
+        if (!mmDragging) return;
+        event.stopPropagation();
+        event.preventDefault();
+        var pos = mmGetTouchPos(event);
+        mmPanTo(pos.x, pos.y);
+    }, { passive: false });
+
+    mmCanvas.addEventListener('touchend', function(event) {
+        mmDragging = false;
+        event.stopPropagation();
+    });
+
+    mmCanvas.addEventListener('touchcancel', function() {
+        mmDragging = false;
+    });
+
     // Prevent mini-map clicks from triggering main canvas zoom
     mmCanvas.addEventListener('wheel', function(event) {
         event.stopPropagation();
