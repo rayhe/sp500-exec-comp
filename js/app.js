@@ -23,6 +23,8 @@ function toggleTheme() {
     if (typeof redrawAllCharts === 'function') redrawAllCharts();
     // Re-render network canvas
     if (window._redrawNetwork) window._redrawNetwork();
+    // Re-render comparison chart if visible
+    if (window._redrawComparisonChart) window._redrawComparisonChart();
 }
 
 function isDarkTheme() {
@@ -1366,7 +1368,11 @@ function hideMetricSkeletons() {
         }
 
         tableWrapper.addEventListener('scroll', updateScrollIndicator, { passive: true });
-        window.addEventListener('resize', function() { setTimeout(updateScrollIndicator, 300); });
+        window.addEventListener('resize', function() {
+            setTimeout(updateScrollIndicator, 300);
+            // Redraw comparison chart on resize
+            if (window._redrawComparisonChart) setTimeout(window._redrawComparisonChart, 260);
+        });
 
         // Check after initial render and after any re-render
         var origRenderTable = window._renderTableRef;
@@ -1542,6 +1548,169 @@ function hideMetricSkeletons() {
         if (section) section.classList.remove('visible');
     }
 
+    /* === Comparison Summary Chart === */
+    var COMP_COLORS = ['#00b4d8', '#06d6a0', '#ffd166', '#a78bfa'];
+
+    function renderComparisonChart(container, selected, rankMap) {
+        container.innerHTML = '';
+        if (selected.length < 2) return;
+
+        var cWidth = container.clientWidth || 600;
+        var barH = 28;
+        var groupGap = 32;
+        var labelW = 60;
+        var valueW = 90;
+        var chartLeft = labelW + 8;
+        var chartRight = cWidth - valueW - 8;
+        var barAreaW = chartRight - chartLeft;
+        if (barAreaW < 100) barAreaW = 100;
+        var n = selected.length;
+        var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        var textCol = dark ? '#e4e4e7' : '#1a1a2e';
+        var mutedCol = dark ? '#6b7280' : '#6b7280';
+        var gridCol = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+        // Three metric groups
+        var metrics = [
+            {
+                label: 'Total Compensation',
+                key: 'total_compensation',
+                format: function(v) { return formatCurrency(v); },
+                color: function(v, max, min) {
+                    return v === max ? (dark ? '#00b4d8' : '#0077b6') : null;
+                },
+                higherBetter: true
+            },
+            {
+                label: 'CEO:Worker Pay Ratio',
+                key: 'pay_ratio',
+                format: function(v) { return v != null ? v.toLocaleString() + ':1' : 'N/A'; },
+                color: function(v, max, min) {
+                    if (v == null) return null;
+                    if (v > 1000) return '#ef476f';
+                    if (v > 500) return '#ffd166';
+                    return '#06d6a0';
+                },
+                higherBetter: false
+            },
+            {
+                label: 'Median Worker Pay',
+                key: 'median_worker_pay',
+                format: function(v) { return v != null ? formatCompact(v) : 'N/A'; },
+                color: function(v, max, min) {
+                    return v === max ? (dark ? '#06d6a0' : '#059669') : null;
+                },
+                higherBetter: true
+            }
+        ];
+
+        var totalH = metrics.length * (n * (barH + 4) + 28 + groupGap) - groupGap + 16;
+
+        var svg = d3.select(container).append('svg')
+            .attr('width', cWidth)
+            .attr('height', totalH)
+            .style('display', 'block');
+
+        var yOffset = 8;
+
+        metrics.forEach(function(metric) {
+            // Group label
+            svg.append('text')
+                .attr('x', 0)
+                .attr('y', yOffset + 14)
+                .attr('fill', mutedCol)
+                .attr('font-size', '11px')
+                .attr('font-weight', '600')
+                .attr('letter-spacing', '0.5px')
+                .attr('font-family', "'Inter', sans-serif")
+                .style('text-transform', 'uppercase')
+                .text(metric.label);
+
+            yOffset += 24;
+
+            // Compute max for this metric
+            var vals = selected.map(function(c) { return c[metric.key]; }).filter(function(v) { return v != null && v > 0; });
+            var maxVal = vals.length > 0 ? Math.max.apply(null, vals) : 1;
+            var minVal = vals.length > 0 ? Math.min.apply(null, vals) : 0;
+
+            // Gridline at max
+            svg.append('line')
+                .attr('x1', chartLeft)
+                .attr('y1', yOffset - 2)
+                .attr('x2', chartRight)
+                .attr('y2', yOffset - 2)
+                .attr('stroke', gridCol)
+                .attr('stroke-width', 1);
+
+            selected.forEach(function(c, i) {
+                var val = c[metric.key];
+                var barY = yOffset + i * (barH + 4);
+                var barW = (val != null && val > 0 && maxVal > 0) ? (val / maxVal * barAreaW) : 0;
+
+                // Determine bar color
+                var barColor = COMP_COLORS[i % COMP_COLORS.length];
+                var specialColor = metric.color(val, maxVal, minVal);
+
+                // Ticker label
+                svg.append('text')
+                    .attr('x', labelW)
+                    .attr('y', barY + barH / 2 + 4)
+                    .attr('text-anchor', 'end')
+                    .attr('fill', COMP_COLORS[i % COMP_COLORS.length])
+                    .attr('font-size', '12px')
+                    .attr('font-weight', '700')
+                    .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+                    .text(c.ticker);
+
+                // Bar background
+                svg.append('rect')
+                    .attr('x', chartLeft)
+                    .attr('y', barY)
+                    .attr('width', barAreaW)
+                    .attr('height', barH)
+                    .attr('rx', 4)
+                    .attr('fill', gridCol);
+
+                // Bar fill
+                if (barW > 0) {
+                    svg.append('rect')
+                        .attr('x', chartLeft)
+                        .attr('y', barY)
+                        .attr('width', barW)
+                        .attr('height', barH)
+                        .attr('rx', 4)
+                        .attr('fill', barColor)
+                        .attr('opacity', 0.85);
+                }
+
+                // Value label
+                svg.append('text')
+                    .attr('x', chartRight + 8)
+                    .attr('y', barY + barH / 2 + 4)
+                    .attr('text-anchor', 'start')
+                    .attr('fill', specialColor || textCol)
+                    .attr('font-size', '12px')
+                    .attr('font-weight', '600')
+                    .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+                    .style('font-variant-numeric', 'tabular-nums')
+                    .text(metric.format(val));
+
+                // Best/worst indicator for the last bar bottom gridline
+                if (i === n - 1) {
+                    svg.append('line')
+                        .attr('x1', chartLeft)
+                        .attr('y1', barY + barH + 2)
+                        .attr('x2', chartRight)
+                        .attr('y2', barY + barH + 2)
+                        .attr('stroke', gridCol)
+                        .attr('stroke-width', 1);
+                }
+            });
+
+            yOffset += n * (barH + 4) + groupGap;
+        });
+    }
+
     function showComparison() {
         if (compareSet.length < 2) return;
         var section = document.getElementById('comparison-section');
@@ -1580,6 +1749,16 @@ function hideMetricSkeletons() {
         var compValues = selected.map(function(c) { return c.total_compensation || 0; });
         var ratioValues = selected.filter(function(c) { return c.pay_ratio != null; }).map(function(c) { return c.pay_ratio; });
         var workerValues = selected.filter(function(c) { return c.median_worker_pay != null; }).map(function(c) { return c.median_worker_pay; });
+
+        // === Comparison Summary Chart (SVG) ===
+        var chartContainer = document.getElementById('comparison-chart');
+        if (!chartContainer) {
+            chartContainer = document.createElement('div');
+            chartContainer.id = 'comparison-chart';
+            chartContainer.className = 'comparison-chart-container';
+            grid.parentNode.insertBefore(chartContainer, grid);
+        }
+        renderComparisonChart(chartContainer, selected, rankMap);
 
         grid.innerHTML = '';
         selected.forEach(function(c) {
@@ -1660,12 +1839,30 @@ function hideMetricSkeletons() {
     document.getElementById('compare-clear-btn').addEventListener('click', clearCompare);
     document.getElementById('comparison-close-btn').addEventListener('click', function() {
         document.getElementById('comparison-section').classList.remove('visible');
+        var chartEl = document.getElementById('comparison-chart');
+        if (chartEl) chartEl.innerHTML = '';
     });
 
     // Expose for use in renderTable
     window._compareSet = compareSet;
     window._toggleCompare = toggleCompare;
     window._updateCompareButtons = updateCompareButtons;
+
+    // Expose comparison chart redraw for theme toggle
+    window._redrawComparisonChart = function() {
+        var section = document.getElementById('comparison-section');
+        if (!section || !section.classList.contains('visible')) return;
+        var chartEl = document.getElementById('comparison-chart');
+        if (!chartEl) return;
+        var selected = compareSet.map(function(ticker) {
+            return companies.find(function(c) { return c.ticker === ticker; });
+        }).filter(Boolean);
+        if (selected.length < 2) return;
+        var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        var rankMap = {};
+        sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
+        renderComparisonChart(chartEl, selected, rankMap);
+    };
 
     // Listen for browser back/forward
     window.addEventListener('hashchange', function() {
