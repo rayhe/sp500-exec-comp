@@ -458,18 +458,93 @@ function populateTrends(trends) {
     }
 
     // Render cards
+    // Add click actions and CTA hints to trend cards
+    // Helper: find a company ticker by matching CEO name or company name
+    function findTickerByName(nameStr) {
+        if (!compData || !compData.companies || !nameStr) return null;
+        var lower = nameStr.toLowerCase().replace(/[.,']/g, '');
+        // First try CEO name match
+        for (var i = 0; i < compData.companies.length; i++) {
+            var c = compData.companies[i];
+            if (c.ceo_name && c.ceo_name.toLowerCase().replace(/[.,']/g, '').indexOf(lower) >= 0) return c.ticker;
+        }
+        // Then try company name match
+        for (var i = 0; i < compData.companies.length; i++) {
+            var c = compData.companies[i];
+            if (c.company_name && c.company_name.toLowerCase().replace(/[.,']/g, '').indexOf(lower) >= 0) return c.ticker;
+        }
+        return null;
+    }
+
+    // Helper: scroll to a section by ID
+    function scrollToSection(sectionId) {
+        var section = document.getElementById(sectionId);
+        if (section) {
+            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }
+    }
+
+    cards.forEach(function(card) {
+        if (card.label === 'Gender Pay Gap') {
+            // Extract company name from "Name (Company)" pattern in highest_paid_woman
+            var latestGender = trends.gender_trends && trends.gender_trends.data ? trends.gender_trends.data[trends.gender_trends.data.length - 1] : null;
+            if (latestGender && latestGender.highest_paid_woman) {
+                var match = latestGender.highest_paid_woman.match(/\(([^)]+)\)/);
+                var companyName = match ? match[1] : null;
+                var ticker = companyName ? findTickerByName(companyName) : null;
+                if (ticker) {
+                    card.action = function() { if (window.findCompanyInTable) window.findCompanyInTable(ticker); };
+                    card.actionHint = 'View ' + ticker + ' details';
+                }
+            }
+        } else if (card.label === 'Say-on-Pay Voting') {
+            // Link to the worst failure company
+            var sopData = trends.say_on_pay_trends && trends.say_on_pay_trends.data;
+            var latestSop = sopData ? sopData[sopData.length - 1] : null;
+            if (latestSop && latestSop.notable_failures && latestSop.notable_failures.length > 0) {
+                var worstCompany = latestSop.notable_failures[0].company;
+                var worstTicker = findTickerByName(worstCompany);
+                if (worstTicker) {
+                    card.action = function() { if (window.findCompanyInTable) window.findCompanyInTable(worstTicker); };
+                    card.actionHint = 'View ' + worstTicker + ' details';
+                }
+            }
+        } else if (card.label === '5-Year Growth Gap') {
+            card.action = function() { scrollToSection('trend-chart-panel'); };
+            card.actionHint = 'View trend chart';
+        } else if (card.label === 'Compensation Mix Detail') {
+            card.action = function() { scrollToSection('composition-section'); };
+            card.actionHint = 'View composition chart';
+        } else if (card.label === 'Historic Peak (FY2025)') {
+            var hc = trends.historical_context;
+            if (hc && hc.highest_paid_ceo_fy2024_equilar_nyt && hc.highest_paid_ceo_fy2024_equilar_nyt.ticker) {
+                var peakTicker = hc.highest_paid_ceo_fy2024_equilar_nyt.ticker;
+                card.action = function() { if (window.findCompanyInTable) window.findCompanyInTable(peakTicker); };
+                card.actionHint = 'View ' + peakTicker + ' details';
+            }
+        }
+    });
+
     grid.innerHTML = '';
     cards.forEach(function(card) {
         var el = document.createElement('div');
-        el.className = 'trend-card';
+        el.className = 'trend-card' + (card.action ? ' trend-clickable' : '');
         var html = '<div class="trend-icon">' + card.icon + '</div>' +
             '<div class="trend-content">' +
             '<div class="trend-label">' + card.label + '</div>' +
             '<div class="trend-value">' + card.value + '</div>' +
             '<div class="trend-detail">' + card.detail + '</div>' +
-            '<div class="trend-source">' + card.source + '</div>' +
-            '</div>';
+            '<div class="trend-source">' + card.source + '</div>';
+        if (card.action && card.actionHint) {
+            html += '<div class="trend-cta">' + card.actionHint + ' →</div>';
+        }
+        html += '</div>';
         el.innerHTML = html;
+        if (card.action) {
+            el.addEventListener('click', card.action);
+        }
         grid.appendChild(el);
     });
 }

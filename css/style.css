@@ -1071,6 +1071,33 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     box-shadow: var(--shadow);
 }
 
+.trend-clickable {
+    cursor: pointer;
+}
+
+.trend-clickable:hover {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.15), var(--shadow) !important;
+}
+
+.trend-clickable:active {
+    transform: scale(0.99);
+}
+
+.trend-cta {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    letter-spacing: 0.02em;
+}
+
+.trend-clickable:hover .trend-cta {
+    opacity: 1;
+}
+
 .trend-icon {
     font-size: 1.5rem;
     line-height: 1;
@@ -1702,6 +1729,7 @@ footer li::before {
     .network-search-box,
     .control-btn,
     .insight-cta,
+    .trend-cta,
     .detail-network-btn,
     .detail-actions,
     .comparison-close-btn,
@@ -1882,6 +1910,7 @@ footer li::before {
         border-color: #ddd !important;
         break-inside: avoid;
         page-break-inside: avoid;
+        cursor: default !important;
     }
     .trend-label { color: #555 !important; }
     .trend-value { color: #0077b6 !important; }
