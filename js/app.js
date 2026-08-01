@@ -46,6 +46,21 @@ function getThemeSecondaryColor() {
 let compData = null;
 let trendsData = null;
 let peerData = null;
+
+/* Data completeness — reasons for missing pay ratio / median worker pay */
+var MISSING_DATA_REASONS = {
+    'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
+    'GEV':  'GE Vernova spun off from GE in April 2024 — no full-year proxy data available for FY2024.',
+    'SW':   'Smurfit WestRock formed via merger in July 2024 — no full-year proxy data available for FY2024.',
+    'TSLA': 'Tesla reports $0 CEO compensation (Elon Musk). Pay ratio not computed by Tesla in proxy filings.'
+};
+
+function getMissingDataHtml(ticker, field) {
+    var reason = MISSING_DATA_REASONS[ticker];
+    if (!reason) return '<span class="data-na">N/A</span>';
+    var title = field === 'pay_ratio' ? 'Pay ratio unavailable' : 'Worker pay unavailable';
+    return '<span class="data-na" title="' + title + ': ' + reason.replace(/"/g, '&quot;') + '"><span class="data-na-icon">⚠</span> N/A</span>';
+}
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
 let searchTerm = '';
@@ -672,8 +687,8 @@ function renderTable(companies) {
 
         // Pay ratio with color class + optional extreme badge
         var ratioClass = c.pay_ratio > 2000 ? 'ratio-high' : c.pay_ratio > 500 ? 'ratio-mid' : 'ratio-low';
-        var ratioHtml = '\u2014';
-        if (c.pay_ratio) {
+        var ratioHtml = '';
+        if (c.pay_ratio != null && c.pay_ratio > 0) {
             ratioHtml = '<span class="' + ratioClass + '">' + formatRatio(c.pay_ratio) + '</span>';
             if (c.pay_ratio > 2000) {
                 ratioHtml += ' <span class="outlier-badge extreme-ratio" title="Extreme pay ratio: CEO earns ' + c.pay_ratio.toLocaleString() + 'x the median worker">!</span>';
@@ -682,9 +697,11 @@ function renderTable(companies) {
             } else if (_outlierLowRatio[c.ticker]) {
                 ratioHtml += ' <span class="outlier-badge low-ratio" title="Most equitable: bottom 5 pay ratio in S&amp;P 500">✓</span>';
             }
+        } else {
+            ratioHtml = getMissingDataHtml(c.ticker, 'pay_ratio');
         }
 
-        var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : '\u2014';
+        var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : getMissingDataHtml(c.ticker, 'median_worker_pay');
         var isCompared = window._compareSet && window._compareSet.indexOf(c.ticker) >= 0;
         var compareBtnHtml = '<button class="compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + c.ticker + '" title="' + (isCompared ? 'Remove from comparison' : 'Add to comparison') + '">' + (isCompared ? '✓' : '+') + '</button>';
 
@@ -933,6 +950,12 @@ function setupDetailPanel(companies) {
         }
 
         html += '</div>'; // detail-stats
+
+        // Data completeness notice for companies with missing fields
+        if (company.pay_ratio == null || company.median_worker_pay == null) {
+            var missingReason = MISSING_DATA_REASONS[ticker] || 'Pay ratio and median worker pay data not available for this company.';
+            html += '<div class="detail-data-notice"><span class="detail-data-notice-icon">⚠</span> <strong>Incomplete data:</strong> ' + missingReason + '</div>';
+        }
 
         // "Show in Network" button
         if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
@@ -1824,13 +1847,15 @@ function hideMetricSkeletons() {
             html += '<div class="comparison-row"><span class="comparison-row-label">Sector Rank</span><span class="comparison-row-value">#' + sRank.rank + ' of ' + sRank.total + '</span></div>';
 
             // Pay Ratio
-            html += '<div class="comparison-row"><span class="comparison-row-label">Pay Ratio</span><span class="comparison-row-value' + ratioClass + '">' + (c.pay_ratio ? formatRatio(c.pay_ratio) : '—') + '</span></div>';
+            var ratioDisplay = c.pay_ratio ? formatRatio(c.pay_ratio) : '<span class="data-na"><span class="data-na-icon">⚠</span> N/A</span>';
+            html += '<div class="comparison-row"><span class="comparison-row-label">Pay Ratio</span><span class="comparison-row-value' + ratioClass + '">' + ratioDisplay + '</span></div>';
             if (c.pay_ratio) {
                 html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + ratioPct + '%;background:' + (c.pay_ratio > 1000 ? 'var(--negative)' : c.pay_ratio > 500 ? 'var(--warning)' : 'var(--positive)') + '"></div></div>';
             }
 
             // Median Worker Pay
-            html += '<div class="comparison-row"><span class="comparison-row-label">Worker Pay</span><span class="comparison-row-value' + workerClass + '">' + (c.median_worker_pay ? formatCompact(c.median_worker_pay) : '—') + '</span></div>';
+            var workerDisplay = c.median_worker_pay ? formatCompact(c.median_worker_pay) : '<span class="data-na"><span class="data-na-icon">⚠</span> N/A</span>';
+            html += '<div class="comparison-row"><span class="comparison-row-label">Worker Pay</span><span class="comparison-row-value' + workerClass + '">' + workerDisplay + '</span></div>';
             if (c.median_worker_pay) {
                 html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + workerPct + '%;background:var(--positive)"></div></div>';
             }
