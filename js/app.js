@@ -630,6 +630,114 @@ function computeOutliers(companies) {
     withRatio.slice(0, 5).forEach(function(c, i) { _outlierLowRatio[c.ticker] = i + 1; });
 }
 
+/* === Table Summary Statistics Bar === */
+function computeMedian(arr) {
+    if (arr.length === 0) return null;
+    var sorted = arr.slice().sort(function(a, b) { return a - b; });
+    var mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function renderSummaryBar(filtered, allCompanies) {
+    var bar = document.getElementById('table-summary-bar');
+    if (!bar) return;
+
+    // Don't show summary if displaying the full unfiltered set
+    var isFiltered = filtered.length !== allCompanies.length;
+    if (!isFiltered) {
+        bar.innerHTML = '';
+        return;
+    }
+
+    if (filtered.length === 0) {
+        bar.innerHTML = '<span class="summary-stat"><span class="summary-stat-label">No companies match current filters</span></span>';
+        return;
+    }
+
+    // Compute statistics
+    var comps = filtered.map(function(c) { return c.total_compensation || 0; });
+    var totalComp = comps.reduce(function(s, v) { return s + v; }, 0);
+    var meanComp = totalComp / comps.length;
+    var medianComp = computeMedian(comps);
+
+    var ratios = filtered.filter(function(c) { return c.pay_ratio != null; }).map(function(c) { return c.pay_ratio; });
+    var meanRatio = ratios.length > 0 ? Math.round(ratios.reduce(function(s, v) { return s + v; }, 0) / ratios.length) : null;
+    var medianRatio = ratios.length > 0 ? Math.round(computeMedian(ratios)) : null;
+
+    var workers = filtered.filter(function(c) { return c.median_worker_pay != null; }).map(function(c) { return c.median_worker_pay; });
+    var medianWorker = workers.length > 0 ? computeMedian(workers) : null;
+
+    // Count unique sectors
+    var sectors = {};
+    filtered.forEach(function(c) { if (c.sector) sectors[c.sector] = true; });
+    var sectorCount = Object.keys(sectors).length;
+
+    // Build HTML
+    var html = '';
+
+    // Company count
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + filtered.length + '</span>';
+    html += '<span class="summary-stat-label">companies';
+    if (sectorCount === 1) html += ' · ' + Object.keys(sectors)[0];
+    else html += ' · ' + sectorCount + ' sectors';
+    html += '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median Total Comp
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median comp</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(medianComp) + '</span>';
+    html += '</span>';
+
+    // Mean Total Comp
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(meanComp) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median Pay Ratio
+    if (medianRatio != null) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Median ratio</span>';
+        html += '<span class="summary-stat-value">' + medianRatio.toLocaleString() + ':1</span>';
+        html += '</span>';
+    }
+
+    // Mean Pay Ratio
+    if (meanRatio != null) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Mean</span>';
+        html += '<span class="summary-stat-value">' + meanRatio.toLocaleString() + ':1</span>';
+        html += '</span>';
+    }
+
+    if (medianRatio != null || meanRatio != null) {
+        html += '<span class="summary-divider"></span>';
+    }
+
+    // Median Worker Pay
+    if (medianWorker != null) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Median worker pay</span>';
+        html += '<span class="summary-stat-value">' + formatCompact(medianWorker) + '</span>';
+        html += '</span>';
+    }
+
+    // Total combined compensation
+    html += '<span class="summary-divider"></span>';
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Combined total</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(totalComp) + '</span>';
+    html += '</span>';
+
+    bar.innerHTML = html;
+}
+
 function renderTable(companies) {
     computeOutliers(companies);
 
@@ -653,6 +761,9 @@ function renderTable(companies) {
             return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
         });
     }
+
+    // Render summary statistics bar
+    renderSummaryBar(filtered, companies);
 
     filtered.sort(function(a, b) {
         var av = a[currentSort.key];

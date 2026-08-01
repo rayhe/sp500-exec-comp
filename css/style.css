@@ -79,6 +79,8 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .data-na-icon { color: #b45309; }
 [data-theme="light"] .detail-data-notice { background: rgba(180, 83, 9, 0.04); border-color: rgba(180, 83, 9, 0.12); border-left-color: rgba(180, 83, 9, 0.4); }
 [data-theme="light"] .detail-data-notice strong { color: #b45309; }
+[data-theme="light"] .table-summary-bar { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .summary-divider { background: rgba(0,0,0,0.1); }
 [data-theme="light"] .skeleton-bar {
     background: linear-gradient(90deg, #e8e9ee 25%, #d8d9de 50%, #e8e9ee 75%);
     background-size: 800px 100%;
@@ -572,6 +574,56 @@ header h1 {
 }
 
 /* === Table === */
+.table-summary-bar {
+    display: flex;
+    gap: 6px 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    line-height: 1.4;
+}
+.table-summary-bar:empty { display: none; }
+.summary-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+.summary-stat-label {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 0.72rem;
+    letter-spacing: 0.01em;
+}
+.summary-stat-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+}
+.summary-stat-value.accent { color: var(--accent); }
+.summary-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+.summary-stat-sub {
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
 .table-controls {
     display: flex;
     gap: 12px;
@@ -1325,6 +1377,10 @@ footer li::before {
     }
     .search-box { min-width: 100%; }
     .table-controls { gap: 8px; }
+    .table-summary-bar { padding: 8px 12px; gap: 4px 10px; font-size: 0.72rem; }
+    .summary-stat-value { font-size: 0.72rem; }
+    .summary-stat-label { font-size: 0.66rem; }
+    .summary-divider { height: 14px; }
     .network-search-box { min-width: 100%; }
     .network-controls { gap: 6px; }
     .network-legend {
@@ -1927,6 +1983,16 @@ footer li::before {
     }
     .search-box { display: none !important; }
     .sector-chips { display: none !important; }
+    .table-summary-bar {
+        background: #f8f8fa !important;
+        border: 1px solid #ddd !important;
+        color: #333 !important;
+        font-size: 8px !important;
+        padding: 6px 10px !important;
+    }
+    .summary-stat-value { color: #111 !important; }
+    .summary-stat-label { color: #555 !important; }
+    .summary-divider { background: #ccc !important; }
 
     .table-wrapper {
         overflow: visible !important;
