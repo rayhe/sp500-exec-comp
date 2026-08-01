@@ -994,6 +994,10 @@ function getPeerInfo(ticker) {
     return { selectedBy: selectedBy, selects: selects };
 }
 
+/* === Focus Management — track previous focus for panels === */
+var _detailTriggerRow = null;  // row that opened the detail panel
+var _preFocusElement = null;   // element focused before modal/comparison opens
+
 function setupDetailPanel(companies) {
     var tbody = document.getElementById('comp-tbody');
 
@@ -1011,9 +1015,19 @@ function setupDetailPanel(companies) {
         if (existing) existing.remove();
         tbody.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
 
-        if (wasOpen) return; // toggle off
+        if (wasOpen) {
+            // Return focus to the triggering row
+            if (_detailTriggerRow && _detailTriggerRow.isConnected) {
+                _detailTriggerRow.focus();
+            }
+            _detailTriggerRow = null;
+            return; // toggle off
+        }
 
         row.classList.add('selected');
+        // Track trigger row for focus return and ensure it's focusable
+        _detailTriggerRow = row;
+        if (!row.hasAttribute('tabindex')) row.setAttribute('tabindex', '-1');
         var company = companies.find(function(c) { return c.ticker === ticker; });
         if (!company) return;
 
@@ -1048,7 +1062,7 @@ function setupDetailPanel(companies) {
         var peerInfo = getPeerInfo(ticker);
 
         // Build HTML
-        var html = '<td colspan="8"><div class="detail-panel">';
+        var html = '<td colspan="8"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
         html += '<div class="detail-stats">';
 
@@ -1132,6 +1146,12 @@ function setupDetailPanel(companies) {
 
         // ARIA announcement for detail panel
         announce(company.company_name + ' detail panel. Rank ' + overallRank + ' of ' + companies.length + ', ' + formatCurrency(company.total_compensation) + ' total compensation.');
+
+        // Move focus to the detail panel for keyboard/screen reader users
+        var panelEl = detailRow.querySelector('.detail-panel');
+        if (panelEl) {
+            setTimeout(function() { panelEl.focus({ preventScroll: true }); }, 50);
+        }
     });
 }
 
@@ -1893,6 +1913,8 @@ function hideMetricSkeletons() {
         if (compareSet.length < 2) return;
         var section = document.getElementById('comparison-section');
         var grid = document.getElementById('comparison-grid');
+        // Store focus for return on close
+        _preFocusElement = document.activeElement;
         section.classList.add('visible');
 
         // ARIA announcement for comparison
@@ -2009,11 +2031,14 @@ function hideMetricSkeletons() {
             grid.appendChild(card);
         });
 
-        // Scroll to comparison section
+        // Scroll to comparison section and focus it
         setTimeout(function() {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            // Focus the comparison section for keyboard/screen reader users
+            if (!section.hasAttribute('tabindex')) section.setAttribute('tabindex', '-1');
+            setTimeout(function() { section.focus({ preventScroll: true }); }, 400);
         }, 50);
     }
 
@@ -2024,6 +2049,11 @@ function hideMetricSkeletons() {
         document.getElementById('comparison-section').classList.remove('visible');
         var chartEl = document.getElementById('comparison-chart');
         if (chartEl) chartEl.innerHTML = '';
+        // Return focus to the element that triggered the comparison
+        if (_preFocusElement && _preFocusElement.isConnected) {
+            _preFocusElement.focus();
+            _preFocusElement = null;
+        }
     });
 
     // Expose for use in renderTable
@@ -2095,10 +2125,22 @@ function hideMetricSkeletons() {
     var kbdHint = document.getElementById('kbd-hint');
 
     function showKbdModal() {
-        if (kbdOverlay) kbdOverlay.classList.add('visible');
+        if (kbdOverlay) {
+            _preFocusElement = document.activeElement;
+            kbdOverlay.classList.add('visible');
+            // Focus the close button so keyboard users can dismiss immediately
+            if (kbdCloseBtn) setTimeout(function() { kbdCloseBtn.focus(); }, 50);
+        }
     }
     function hideKbdModal() {
-        if (kbdOverlay) kbdOverlay.classList.remove('visible');
+        if (kbdOverlay) {
+            kbdOverlay.classList.remove('visible');
+            // Return focus to the element that was focused before the modal opened
+            if (_preFocusElement && _preFocusElement.isConnected) {
+                _preFocusElement.focus();
+                _preFocusElement = null;
+            }
+        }
     }
     function isKbdModalOpen() {
         return kbdOverlay && kbdOverlay.classList.contains('visible');
@@ -2131,7 +2173,14 @@ function hideMetricSkeletons() {
             var compSection = document.getElementById('comparison-section');
             if (compSection && compSection.classList.contains('visible')) {
                 compSection.classList.remove('visible');
+                var chartEl = document.getElementById('comparison-chart');
+                if (chartEl) chartEl.innerHTML = '';
                 announce('Comparison panel closed');
+                // Return focus to the element that triggered the comparison
+                if (_preFocusElement && _preFocusElement.isConnected) {
+                    _preFocusElement.focus();
+                    _preFocusElement = null;
+                }
                 e.preventDefault();
                 return;
             }
@@ -2140,6 +2189,11 @@ function hideMetricSkeletons() {
                 detailRow.remove();
                 document.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
                 announce('Detail panel closed');
+                // Return focus to the row that opened the detail panel
+                if (_detailTriggerRow && _detailTriggerRow.isConnected) {
+                    _detailTriggerRow.focus();
+                    _detailTriggerRow = null;
+                }
                 e.preventDefault();
                 return;
             }

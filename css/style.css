@@ -14,6 +14,30 @@
     border: 0;
 }
 
+/* Focus management — visible outlines for keyboard-focused panels */
+.detail-panel:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+#comparison-section:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+.kbd-modal-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+#comp-tbody tr[tabindex]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+/* Hide focus ring for mouse clicks (only show for keyboard) */
+.detail-panel:focus:not(:focus-visible),
+#comparison-section:focus:not(:focus-visible),
+#comp-tbody tr[tabindex]:focus:not(:focus-visible) {
+    outline: none;
+}
+
 :root {
     --bg-primary: #0f0f1a;
     --bg-secondary: #1a1a2e;
