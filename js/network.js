@@ -444,8 +444,25 @@ function initNetwork(peerData) {
         draw();
     }, { passive: true });
 
-    // Filter buttons
+    // Check which edge types actually exist in the data
+    var edgeTypesPresent = {};
+    allEdges.forEach(function(e) {
+        edgeTypesPresent[e.group_type || 'primary'] = true;
+    });
+
+    // Filter buttons — disable those with no matching data
     document.querySelectorAll('.control-btn[data-filter]').forEach(function(btn) {
+        var filterType = btn.dataset.filter;
+
+        // Disable filter buttons for edge types not present in data
+        if (filterType !== 'all' && !edgeTypesPresent[filterType]) {
+            btn.classList.add('control-btn-disabled');
+            btn.setAttribute('disabled', 'true');
+            btn.setAttribute('title', 'No ' + filterType + ' peer data available in this dataset');
+            btn.setAttribute('aria-disabled', 'true');
+            return; // skip adding click handler
+        }
+
         btn.addEventListener('click', function() {
             document.querySelectorAll('.control-btn[data-filter]').forEach(function(b) { b.classList.remove('active'); });
             btn.classList.add('active');

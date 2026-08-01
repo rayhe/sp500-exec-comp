@@ -397,6 +397,16 @@ header h1 {
     border-color: var(--accent);
     color: var(--accent);
 }
+.control-btn.control-btn-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    border-style: dashed;
+}
+.control-btn.control-btn-disabled:hover {
+    border-color: var(--border);
+    color: var(--text-secondary);
+}
 
 .network-legend {
     display: flex;
