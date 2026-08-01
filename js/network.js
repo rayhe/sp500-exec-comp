@@ -514,6 +514,14 @@ function initNetwork(peerData) {
         searchInput.value = node.ticker + ' — ' + node.name;
         searchResults.classList.remove('visible');
 
+        // ARIA announcement for network node focus
+        var adj = adjacency[node.ticker];
+        var inCount = adj ? adj.in.length : 0;
+        var outCount = adj ? adj.out.length : 0;
+        if (typeof announce === 'function') {
+            announce('Focused on ' + node.name + ' (' + node.ticker + ') in ' + node.sector + '. ' + inCount + ' inbound peers, ' + outCount + ' outbound peers.');
+        }
+
         // Zoom to node
         var scale = 2.5;
         var tx = width / 2 - node.x * scale;

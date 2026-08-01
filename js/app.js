@@ -1,5 +1,16 @@
 /* === S&P 500 Executive Compensation Tracker — Main App === */
 
+/* === Accessibility — ARIA live region announcements === */
+var _announceTimer = null;
+function announce(msg) {
+    var el = document.getElementById('sr-announce');
+    if (!el) return;
+    // Clear first so repeated identical messages still fire
+    el.textContent = '';
+    clearTimeout(_announceTimer);
+    _announceTimer = setTimeout(function() { el.textContent = msg; }, 80);
+}
+
 /* === Theme Management === */
 function initTheme() {
     var saved = localStorage.getItem('sp500-theme');
@@ -15,9 +26,11 @@ function toggleTheme() {
     if (isLight) {
         document.documentElement.removeAttribute('data-theme');
         localStorage.setItem('sp500-theme', 'dark');
+        announce('Dark mode enabled');
     } else {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('sp500-theme', 'light');
+        announce('Light mode enabled');
     }
     // Re-render charts with updated CSS variable colors
     if (typeof redrawAllCharts === 'function') redrawAllCharts();
@@ -846,6 +859,14 @@ function renderTable(companies) {
     if (filtered.length < companies.length) footerText.textContent += ' (filtered from ' + companies.length + ')';
     footerEl.appendChild(footerText);
 
+    // ARIA announcement for filter/page changes
+    var announceMsg = 'Showing ' + (startIdx + 1) + ' to ' + Math.min(startIdx + PAGE_SIZE, filtered.length) + ' of ' + filtered.length + ' companies';
+    if (activeSector) announceMsg += ', filtered to ' + activeSector;
+    if (searchTerm) announceMsg += ', search: ' + searchTerm;
+    if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
+    if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
+    announce(announceMsg);
+
     if (totalPages > 1) {
         var paginationDiv = document.createElement('div');
         paginationDiv.className = 'pagination';
@@ -939,8 +960,12 @@ function setupSorting(companies) {
             currentPage = 1;
             document.querySelectorAll('th.sortable').forEach(function(t) {
                 t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
             });
             th.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            th.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
+            var sortLabel = th.textContent.replace(/[↑↓▲▼]/g, '').trim();
+            announce('Table sorted by ' + sortLabel + ', ' + (currentSort.dir === 'asc' ? 'ascending' : 'descending'));
             renderTable(companies);
         });
     });
@@ -1104,6 +1129,9 @@ function setupDetailPanel(companies) {
         detailRow.dataset.ticker = ticker;
         detailRow.innerHTML = html;
         row.after(detailRow);
+
+        // ARIA announcement for detail panel
+        announce(company.company_name + ' detail panel. Rank ' + overallRank + ' of ' + companies.length + ', ' + formatCurrency(company.total_compensation) + ' total compensation.');
     });
 }
 
@@ -1867,6 +1895,9 @@ function hideMetricSkeletons() {
         var grid = document.getElementById('comparison-grid');
         section.classList.add('visible');
 
+        // ARIA announcement for comparison
+        announce('Comparing ' + compareSet.length + ' companies: ' + compareSet.join(', '));
+
         // Grid columns based on count
         grid.className = 'comparison-grid cols-' + Math.min(compareSet.length, 4);
 
@@ -2100,6 +2131,7 @@ function hideMetricSkeletons() {
             var compSection = document.getElementById('comparison-section');
             if (compSection && compSection.classList.contains('visible')) {
                 compSection.classList.remove('visible');
+                announce('Comparison panel closed');
                 e.preventDefault();
                 return;
             }
@@ -2107,6 +2139,7 @@ function hideMetricSkeletons() {
             if (detailRow) {
                 detailRow.remove();
                 document.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+                announce('Detail panel closed');
                 e.preventDefault();
                 return;
             }
@@ -2127,8 +2160,13 @@ function hideMetricSkeletons() {
                 currentSort = { key: 'total_compensation', dir: 'desc' };
                 document.querySelectorAll('th.sortable').forEach(function(t) {
                     t.classList.remove('sorted-asc', 'sorted-desc');
-                    if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'none');
+                    if (t.dataset.sort === 'total_compensation') {
+                        t.classList.add('sorted-desc');
+                        t.setAttribute('aria-sort', 'descending');
+                    }
                 });
+                announce('All filters cleared');
                 renderTable(companies);
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);

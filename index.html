@@ -29,7 +29,7 @@
         </div>
     </header>
 
-    <section class="metrics-strip">
+    <section class="metrics-strip" role="region" aria-label="Key compensation metrics">
         <div class="metric-card">
             <div class="metric-label">S&P 500 Median CEO Pay</div>
             <div class="metric-value" id="metric-median"></div>
@@ -62,7 +62,7 @@
         </div>
     </section>
 
-    <section class="insights-section" id="insights-section">
+    <section class="insights-section" id="insights-section" role="region" aria-label="Key insights">
         <div class="insights-header">
             <h2>Key Insights</h2>
             <p class="section-desc">Statistical highlights computed from the full S&P 500 dataset</p>
@@ -70,7 +70,7 @@
         <div class="insights-grid" id="insights-grid"></div>
     </section>
 
-    <section class="section" id="peer-network-section">
+    <section class="section" id="peer-network-section" role="region" aria-label="Compensation peer network graph">
         <div class="section-header">
             <h2>Compensation Peer Network</h2>
             <p class="section-desc">Directional peer group relationships from SEC EDGAR DEF 14A proxy statements. Arrows show which companies benchmark against which peers. Node size = how many companies selected it as a peer.</p>
@@ -78,7 +78,7 @@
         <div class="network-controls">
             <div class="network-search-box">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="network-search" placeholder="Find company in network..." autocomplete="off">
+                <input type="text" id="network-search" placeholder="Find company in network..." autocomplete="off" aria-label="Search for a company in the peer network">
                 <div id="network-search-results" class="network-search-results"></div>
             </div>
             <button class="control-btn active" data-filter="all">All Peers</button>
@@ -102,7 +102,7 @@
         <div id="network-tooltip" class="tooltip"></div>
     </section>
 
-    <section class="section" id="compensation-table-section">
+    <section class="section" id="compensation-table-section" role="region" aria-label="CEO compensation table">
         <div class="section-header">
             <h2>CEO Compensation Table</h2>
             <p class="section-desc">Sortable table of CEO total compensation from Summary Compensation Table in proxy statements.</p>
@@ -110,7 +110,7 @@
         <div class="table-controls">
             <div class="search-box">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)">
+                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)" aria-label="Search companies, CEOs, or tickers">
             </div>
             <button class="export-csv-btn" id="export-csv-btn" title="Download current view as CSV">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -121,17 +121,17 @@
         <div class="table-summary-bar" id="table-summary-bar"></div>
         <div class="table-wrapper" id="table-wrapper">
             <span class="scroll-hint">Scroll →</span>
-            <table id="comp-table">
+            <table id="comp-table" aria-label="S&amp;P 500 CEO compensation data">
                 <thead>
                     <tr>
-                        <th class="sortable" data-sort="rank">#</th>
-                        <th class="sortable" data-sort="ticker">Ticker</th>
-                        <th class="sortable" data-sort="company_name">Company</th>
-                        <th class="sortable" data-sort="ceo_name">CEO</th>
-                        <th class="sortable sorted-desc" data-sort="total_compensation">Total Comp</th>
-                        <th class="sortable" data-sort="sector">Sector</th>
-                        <th class="sortable" data-sort="pay_ratio">Pay Ratio</th>
-                        <th class="sortable" data-sort="median_worker_pay">Median Worker Pay</th>
+                        <th class="sortable" data-sort="rank" role="columnheader" aria-sort="none" tabindex="0">#</th>
+                        <th class="sortable" data-sort="ticker" role="columnheader" aria-sort="none" tabindex="0">Ticker</th>
+                        <th class="sortable" data-sort="company_name" role="columnheader" aria-sort="none" tabindex="0">Company</th>
+                        <th class="sortable" data-sort="ceo_name" role="columnheader" aria-sort="none" tabindex="0">CEO</th>
+                        <th class="sortable sorted-desc" data-sort="total_compensation" role="columnheader" aria-sort="descending" tabindex="0">Total Comp</th>
+                        <th class="sortable" data-sort="sector" role="columnheader" aria-sort="none" tabindex="0">Sector</th>
+                        <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
+                        <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
                     </tr>
                 </thead>
                 <tbody id="comp-tbody"></tbody>
@@ -140,7 +140,7 @@
         <div class="table-footer" id="table-footer"></div>
     </section>
 
-    <section class="section comparison-section" id="comparison-section">
+    <section class="section comparison-section" id="comparison-section" role="region" aria-label="Company comparison">
         <div class="section-header">
             <button class="comparison-close-btn" id="comparison-close-btn">Close ✕</button>
             <h2>Company Comparison</h2>
@@ -183,7 +183,7 @@
         </div>
     </section>
 
-    <section class="section" id="composition-section">
+    <section class="section" id="composition-section" role="region" aria-label="Compensation composition">
         <div class="section-header">
             <h2>Compensation Composition</h2>
             <p class="section-desc">Breakdown of how CEO pay is structured — stock dominates</p>
@@ -191,7 +191,7 @@
         <div id="composition-chart"></div>
     </section>
 
-    <section class="section trends-section" id="trends-section">
+    <section class="section trends-section" id="trends-section" role="region" aria-label="Trends and context">
         <div class="section-header">
             <h2>Trends &amp; Context</h2>
             <p class="section-desc">Deeper patterns from Equilar/AP, Harvard Law Forum, and ISS research across S&amp;P 500 and Russell 3000</p>
@@ -262,6 +262,9 @@
     <div class="kbd-hint" id="kbd-hint" title="Press ? for keyboard shortcuts">
         <kbd>?</kbd> Shortcuts
     </div>
+
+    <!-- Screen-reader live region for dynamic announcements -->
+    <div id="sr-announce" class="sr-only" aria-live="polite" aria-atomic="true" role="status"></div>
 
     <script src="js/app.js"></script>
     <script src="js/network.js"></script>
