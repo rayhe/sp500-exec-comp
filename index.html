@@ -230,10 +230,10 @@
 
     <!-- Keyboard Shortcuts Help Modal -->
     <div class="kbd-modal-overlay" id="kbd-modal-overlay">
-        <div class="kbd-modal">
+        <div class="kbd-modal" role="dialog" aria-modal="true" aria-labelledby="kbd-modal-title">
             <div class="kbd-modal-header">
-                <h3>Keyboard Shortcuts</h3>
-                <button class="kbd-modal-close" id="kbd-modal-close">✕</button>
+                <h3 id="kbd-modal-title">Keyboard Shortcuts</h3>
+                <button class="kbd-modal-close" id="kbd-modal-close" aria-label="Close keyboard shortcuts">✕</button>
             </div>
             <div class="kbd-modal-body">
                 <div class="kbd-group">

@@ -2142,6 +2142,41 @@ function hideMetricSkeletons() {
             }
         }
     }
+
+    // === Focus Trap for Keyboard Modal ===
+    // Trap Tab/Shift+Tab within the modal so focus doesn't escape to the page behind the overlay.
+    // Collects all focusable elements inside .kbd-modal at trap time and cycles between them.
+    if (kbdOverlay) {
+        kbdOverlay.addEventListener('keydown', function(e) {
+            if (e.key !== 'Tab') return;
+            if (!isKbdModalOpen()) return;
+
+            var modal = kbdOverlay.querySelector('.kbd-modal');
+            if (!modal) return;
+
+            var focusable = modal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusable.length === 0) return;
+
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+
+            if (e.shiftKey) {
+                // Shift+Tab: if on first element, wrap to last
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                // Tab: if on last element, wrap to first
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+    }
     function isKbdModalOpen() {
         return kbdOverlay && kbdOverlay.classList.contains('visible');
     }
