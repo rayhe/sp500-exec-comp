@@ -479,10 +479,53 @@ function initNetwork(peerData) {
     var _lpStartY = 0;
     var LP_DELAY = 400; // ms hold before tooltip fires
     var LP_MOVE_THRESHOLD = 10; // px movement cancels long-press
+    var _lpStartTime = 0; // timestamp when long-press began
+    var _lpAnimFrame = null; // requestAnimationFrame handle for progress ring
 
     function cancelLongPress() {
         if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+        if (_lpAnimFrame) { cancelAnimationFrame(_lpAnimFrame); _lpAnimFrame = null; }
         _lpNode = null;
+        _lpStartTime = 0;
+    }
+
+    // Draw a circular progress ring around the long-press target node
+    function drawLongPressRing() {
+        if (!_lpNode || !_lpStartTime) return;
+        var elapsed = Date.now() - _lpStartTime;
+        var progress = Math.min(elapsed / LP_DELAY, 1);
+        if (progress >= 1) { _lpAnimFrame = null; return; }
+
+        var t = d3.zoomTransform(canvas);
+        var cx = t.applyX(_lpNode.x) * dpr;
+        var cy = t.applyY(_lpNode.y) * dpr;
+        var baseR = getRadius(_lpNode) * t.k * dpr;
+        var ringR = baseR + 6 * dpr;
+
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset to pixel space
+
+        // Background track ring (subtle)
+        ctx.beginPath();
+        ctx.arc(cx, cy, ringR, 0, 2 * Math.PI);
+        ctx.strokeStyle = (typeof isDarkTheme === 'function' ? isDarkTheme() : true) ? 'rgba(0,180,216,0.15)' : 'rgba(0,119,182,0.15)';
+        ctx.lineWidth = 3 * dpr;
+        ctx.stroke();
+
+        // Progress arc (accent color, fills clockwise from top)
+        ctx.beginPath();
+        ctx.arc(cx, cy, ringR, -Math.PI / 2, -Math.PI / 2 + progress * 2 * Math.PI);
+        ctx.strokeStyle = (typeof isDarkTheme === 'function' ? isDarkTheme() : true) ? 'rgba(0,180,216,0.7)' : 'rgba(0,119,182,0.7)';
+        ctx.lineWidth = 3 * dpr;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        ctx.restore();
+
+        // Continue animation
+        _lpAnimFrame = requestAnimationFrame(function() {
+            draw(); // triggers full redraw which includes this ring via the hook
+        });
     }
 
     canvas.addEventListener('touchstart', function(event) {
@@ -513,10 +556,16 @@ function initNetwork(peerData) {
 
         if (found) {
             _lpNode = found;
+            _lpStartTime = Date.now();
             var capturedX = touch.clientX;
             var capturedY = touch.clientY;
+            // Start the progress ring animation
+            _lpAnimFrame = requestAnimationFrame(function() { draw(); });
             _lpTimer = setTimeout(function() {
                 if (_lpNode) {
+                    // Stop the progress ring animation
+                    if (_lpAnimFrame) { cancelAnimationFrame(_lpAnimFrame); _lpAnimFrame = null; }
+                    _lpStartTime = 0;
                     hoveredNode = _lpNode;
                     showTooltip(capturedX, capturedY, _lpNode);
                     _lpActive = true;
@@ -952,6 +1001,7 @@ function initNetwork(peerData) {
     var _origDraw = draw;
     draw = function() {
         _origDraw();
+        drawLongPressRing();
         drawMiniMap();
     };
     window._redrawNetwork = draw;
