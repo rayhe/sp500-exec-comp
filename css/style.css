@@ -1,6 +1,39 @@
 /* === Reset & Base === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* === Skip to Content — WCAG 2.4.1 bypass block === */
+.skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: top 0.15s ease;
+    white-space: nowrap;
+}
+.skip-to-content:focus {
+    top: 0;
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+[data-theme="light"] .skip-to-content {
+    background: #0077b6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+/* Suppress focus ring on skip-link target (section receives focus programmatically) */
+#metrics-strip:focus {
+    outline: none;
+}
+
 /* === Screen-reader only (visually hidden, announced by assistive tech) === */
 .sr-only {
     position: absolute;
@@ -1955,6 +1988,8 @@ footer li::before {
    simplifies layout for clean printed / PDF output.
    ============================================================ */
 @media print {
+    /* Hide skip-to-content link */
+    .skip-to-content { display: none !important; }
     /* ---- Force light-mode palette ---- */
     :root, [data-theme="light"], html {
         --bg-primary: #fff !important;
