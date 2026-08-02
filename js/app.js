@@ -947,26 +947,33 @@ function scrollToTable() {
 }
 
 function setupSorting(companies) {
+    function activateSort(th) {
+        var key = th.dataset.sort;
+        if (key === 'rank') {
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+        } else if (currentSort.key === key) {
+            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort = { key: key, dir: typeof companies[0][key] === 'string' ? 'asc' : 'desc' };
+        }
+        currentPage = 1;
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+        });
+        th.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+        th.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
+        var sortLabel = th.textContent.replace(/[↑↓▲▼]/g, '').trim();
+        announce('Table sorted by ' + sortLabel + ', ' + (currentSort.dir === 'asc' ? 'ascending' : 'descending'));
+        renderTable(companies);
+    }
     document.querySelectorAll('th.sortable').forEach(function(th) {
-        th.addEventListener('click', function() {
-            var key = th.dataset.sort;
-            if (key === 'rank') {
-                currentSort = { key: 'total_compensation', dir: 'desc' };
-            } else if (currentSort.key === key) {
-                currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
-            } else {
-                currentSort = { key: key, dir: typeof companies[0][key] === 'string' ? 'asc' : 'desc' };
+        th.addEventListener('click', function() { activateSort(th); });
+        th.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                activateSort(th);
             }
-            currentPage = 1;
-            document.querySelectorAll('th.sortable').forEach(function(t) {
-                t.classList.remove('sorted-asc', 'sorted-desc');
-                t.setAttribute('aria-sort', 'none');
-            });
-            th.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
-            th.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
-            var sortLabel = th.textContent.replace(/[↑↓▲▼]/g, '').trim();
-            announce('Table sorted by ' + sortLabel + ', ' + (currentSort.dir === 'asc' ? 'ascending' : 'descending'));
-            renderTable(companies);
         });
     });
 }

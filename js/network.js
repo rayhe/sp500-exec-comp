@@ -130,7 +130,6 @@ function initNetwork(peerData) {
         var labelHoverColor = _dark ? '#fff' : '#000';
         var nodeHoverStroke = _dark ? '#fff' : '#000';
         var edgeDimColor = _dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)';
-        var edgeDefaultColor = _dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
         var edgeSectorDimColor = _dark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.025)';
 
         ctx.translate(transform.x, transform.y);
@@ -226,14 +225,37 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
         } else {
-            // Default — batch all edges in one path
-            ctx.strokeStyle = edgeDefaultColor;
-            ctx.lineWidth = 0.5 / scale;
+            // Default — differentiate same-sector vs cross-sector edges
+            var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
+            var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
+
+            // Cross-sector edges (dimmer, thinner)
+            ctx.strokeStyle = edgeCrossColor;
+            ctx.lineWidth = 0.4 / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
-                var s = nodeMap[e.source] || nodeMap[e.source.ticker];
-                var t = nodeMap[e.target] || nodeMap[e.target.ticker];
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
+                if (s.sector && t.sector && s.sector === t.sector) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            // Same-sector edges (brighter, slightly thicker, accent-tinted)
+            ctx.strokeStyle = edgeSameColor;
+            ctx.lineWidth = 0.7 / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                if (!s.sector || !t.sector || s.sector !== t.sector) return;
                 ctx.moveTo(s.x, s.y);
                 ctx.lineTo(t.x, t.y);
             });
