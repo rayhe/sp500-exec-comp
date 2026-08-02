@@ -600,6 +600,16 @@ header h1 {
 .tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; }
 .tooltip .tt-label { color: var(--text-secondary); }
 .tooltip .tt-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+.tooltip .tt-peer-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin: 3px 0 2px; }
+.tooltip .tt-peer-bar-fill.tt-same { background: rgba(0,180,216,0.7); }
+.tooltip .tt-peer-bar-fill.tt-cross { background: rgba(148,163,184,0.4); }
+.tooltip .tt-peer-detail { display: flex; justify-content: space-between; gap: 8px; font-size: 0.68rem; margin-bottom: 3px; }
+.tooltip .tt-peer-same { color: #00b4d8; }
+.tooltip .tt-peer-cross { color: #94a3b8; }
+[data-theme="light"] .tooltip .tt-peer-bar-fill.tt-same { background: rgba(0,120,180,0.6); }
+[data-theme="light"] .tooltip .tt-peer-bar-fill.tt-cross { background: rgba(0,0,0,0.15); }
+[data-theme="light"] .tooltip .tt-peer-same { color: #0077b6; }
+[data-theme="light"] .tooltip .tt-peer-cross { color: #6b7280; }
 
 /* === Chart Tooltip === */
 .chart-tooltip {

@@ -332,10 +332,36 @@ function initNetwork(peerData) {
     // Tooltip
     var tooltip = document.getElementById('network-tooltip');
     function showTooltip(mx, my, d) {
+        // Count same-sector vs cross-sector peers
+        var adj = adjacency[d.ticker] || { in: [], out: [] };
+        var inSame = 0, inCross = 0, outSame = 0, outCross = 0;
+        adj.in.forEach(function(t) {
+            var peer = nodeMap[t];
+            if (peer && peer.sector && d.sector && peer.sector === d.sector) inSame++;
+            else inCross++;
+        });
+        adj.out.forEach(function(t) {
+            var peer = nodeMap[t];
+            if (peer && peer.sector && d.sector && peer.sector === d.sector) outSame++;
+            else outCross++;
+        });
+        var inTotal = inSame + inCross;
+        var outTotal = outSame + outCross;
+
         var html = '<div class="tt-title">' + d.ticker + ' — ' + d.name + '</div>';
         html += '<div class="tt-row"><span class="tt-label">Sector</span><span class="tt-value">' + d.sector + '</span></div>';
         html += '<div class="tt-row"><span class="tt-label">Selected by</span><span class="tt-value">' + d.in_degree + ' companies</span></div>';
+        if (inTotal > 0) {
+            var inSamePct = Math.round(inSame / inTotal * 100);
+            html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + inSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - inSamePct) + '%"></div></div>';
+            html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + inSame + ' same-sector</span><span class="tt-peer-cross">' + inCross + ' cross-sector</span></div>';
+        }
         html += '<div class="tt-row"><span class="tt-label">Selects</span><span class="tt-value">' + d.out_degree + ' peers</span></div>';
+        if (outTotal > 0) {
+            var outSamePct = Math.round(outSame / outTotal * 100);
+            html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + outSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - outSamePct) + '%"></div></div>';
+            html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + outSame + ' same-sector</span><span class="tt-peer-cross">' + outCross + ' cross-sector</span></div>';
+        }
         html += '<div class="tt-row"><span class="tt-label">Market cap</span><span class="tt-value">' + d.market_cap_tier + '</span></div>';
         tooltip.innerHTML = html;
         tooltip.classList.add('visible');
@@ -557,8 +583,19 @@ function initNetwork(peerData) {
         var adj = adjacency[node.ticker];
         var inCount = adj ? adj.in.length : 0;
         var outCount = adj ? adj.out.length : 0;
+        var inSameCount = 0, inCrossCount = 0;
+        if (adj) {
+            adj.in.forEach(function(t) {
+                var peer = nodeMap[t];
+                if (peer && peer.sector && node.sector && peer.sector === node.sector) inSameCount++;
+                else inCrossCount++;
+            });
+        }
         if (typeof announce === 'function') {
-            announce('Focused on ' + node.name + ' (' + node.ticker + ') in ' + node.sector + '. ' + inCount + ' inbound peers, ' + outCount + ' outbound peers.');
+            var msg = 'Focused on ' + node.name + ' (' + node.ticker + ') in ' + node.sector + '. ' + inCount + ' inbound peers';
+            if (inCount > 0) msg += ' (' + inSameCount + ' same-sector, ' + inCrossCount + ' cross-sector)';
+            msg += ', ' + outCount + ' outbound peers.';
+            announce(msg);
         }
 
         // Zoom to node
