@@ -470,23 +470,99 @@ function initNetwork(peerData) {
         draw();
     });
 
-    // Touch support for mobile
+    // Long-press touch support for mobile node details
+    // Tap = pan/zoom (handled by D3). Hold 400ms on a node = show tooltip.
+    var _lpTimer = null;
+    var _lpNode = null;
+    var _lpActive = false; // true while a long-press tooltip is showing
+    var _lpStartX = 0;
+    var _lpStartY = 0;
+    var LP_DELAY = 400; // ms hold before tooltip fires
+    var LP_MOVE_THRESHOLD = 10; // px movement cancels long-press
+
+    function cancelLongPress() {
+        if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+        _lpNode = null;
+    }
+
     canvas.addEventListener('touchstart', function(event) {
-        if (event.touches.length === 1) {
-            var touch = event.touches[0];
-            var rect = canvas.getBoundingClientRect();
-            var mx = touch.clientX - rect.left;
-            var my = touch.clientY - rect.top;
-            var found = findNode(mx, my);
-            if (found) {
-                hoveredNode = found;
-                showTooltip(touch.clientX, touch.clientY, found);
-                draw();
-            }
+        // Multi-touch (pinch zoom) cancels long-press
+        if (event.touches.length !== 1) {
+            cancelLongPress();
+            return;
+        }
+
+        // If a long-press tooltip is already visible, dismiss it on next tap
+        if (_lpActive) {
+            _lpActive = false;
+            hoveredNode = null;
+            hideTooltip();
+            draw();
+            cancelLongPress();
+            return;
+        }
+
+        var touch = event.touches[0];
+        _lpStartX = touch.clientX;
+        _lpStartY = touch.clientY;
+
+        var rect = canvas.getBoundingClientRect();
+        var mx = touch.clientX - rect.left;
+        var my = touch.clientY - rect.top;
+        var found = findNode(mx, my);
+
+        if (found) {
+            _lpNode = found;
+            var capturedX = touch.clientX;
+            var capturedY = touch.clientY;
+            _lpTimer = setTimeout(function() {
+                if (_lpNode) {
+                    hoveredNode = _lpNode;
+                    showTooltip(capturedX, capturedY, _lpNode);
+                    _lpActive = true;
+                    draw();
+                    // Haptic feedback if supported
+                    if (navigator.vibrate) navigator.vibrate(30);
+                }
+                _lpTimer = null;
+            }, LP_DELAY);
+        }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', function(event) {
+        if (event.touches.length < 1) return;
+        var touch = event.touches[0];
+        var dx = touch.clientX - _lpStartX;
+        var dy = touch.clientY - _lpStartY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Cancel pending long-press if finger moved too far
+        if (_lpTimer && dist > LP_MOVE_THRESHOLD) {
+            cancelLongPress();
+        }
+
+        // Dismiss active tooltip if user starts panning
+        if (_lpActive && dist > LP_MOVE_THRESHOLD) {
+            _lpActive = false;
+            hoveredNode = null;
+            hideTooltip();
+            draw();
         }
     }, { passive: true });
 
     canvas.addEventListener('touchend', function() {
+        cancelLongPress();
+        // Keep tooltip visible after long-press — user dismisses with next tap
+        if (!_lpActive) {
+            hoveredNode = null;
+            hideTooltip();
+            draw();
+        }
+    }, { passive: true });
+
+    canvas.addEventListener('touchcancel', function() {
+        cancelLongPress();
+        _lpActive = false;
         hoveredNode = null;
         hideTooltip();
         draw();

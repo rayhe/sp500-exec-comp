@@ -510,6 +510,22 @@ header h1 {
     border-top: 1.5px solid rgba(255,255,255,0.2);
 }
 
+/* Touch hint — visible only on touch devices */
+.touch-hint {
+    display: none;
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    opacity: 0.6;
+    font-style: italic;
+    padding: 2px 0 0;
+}
+@media (hover: none) and (pointer: coarse) {
+    .touch-hint { display: block; }
+}
+@media print {
+    .touch-hint { display: none !important; }
+}
+
 /* === Network Search Box === */
 .network-search-box {
     display: flex;
