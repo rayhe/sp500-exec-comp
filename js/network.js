@@ -326,16 +326,28 @@ function initNetwork(peerData) {
 
         // Cluster sector labels — floating sector names at centroids when zoomed out
         // Provides orientation without requiring users to match colors to the legend
-        if (!hoveredNode && !activeLegendSector) {
+        // When a sector filter is active, show ONLY that sector's label (at full opacity)
+        // to reinforce which sector the user is viewing
+        if (!hoveredNode) {
             var clusterAlpha = 0;
-            if (scale <= 0.55) clusterAlpha = 0.9;
-            else if (scale < 1.2) clusterAlpha = 0.9 * (1 - (scale - 0.55) / 0.65);
+            var _showFilteredSectorLabel = false;
+            if (activeLegendSector) {
+                // When sector filter is active, show the filtered sector's label at all zoom levels
+                clusterAlpha = 0.85;
+                _showFilteredSectorLabel = true;
+            } else if (scale <= 0.55) {
+                clusterAlpha = 0.9;
+            } else if (scale < 1.2) {
+                clusterAlpha = 0.9 * (1 - (scale - 0.55) / 0.65);
+            }
 
             if (clusterAlpha > 0.02) {
                 // Compute sector centroids from current node positions
                 var _cSums = {};
                 nodes.forEach(function(n) {
                     if (!n.sector) return;
+                    // When filtering by sector, only compute centroid for the active sector
+                    if (_showFilteredSectorLabel && n.sector !== activeLegendSector) return;
                     if (!_cSums[n.sector]) _cSums[n.sector] = { x: 0, y: 0, c: 0 };
                     _cSums[n.sector].x += n.x;
                     _cSums[n.sector].y += n.y;
@@ -356,7 +368,7 @@ function initNetwork(peerData) {
                     'Utilities': 'Utilities'
                 };
 
-                var clusterFontSize = Math.max(13, Math.min(24, 16 / scale));
+                var clusterFontSize = Math.max(13, Math.min(24, _showFilteredSectorLabel ? 18 / scale : 16 / scale));
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.font = (_hiContrast ? '800 ' : '700 ') + clusterFontSize + 'px Inter, system-ui, sans-serif';
