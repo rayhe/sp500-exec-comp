@@ -300,6 +300,62 @@ function initNetwork(peerData) {
             }
         });
 
+        // Cluster sector labels — floating sector names at centroids when zoomed out
+        // Provides orientation without requiring users to match colors to the legend
+        if (!hoveredNode && !activeLegendSector) {
+            var clusterAlpha = 0;
+            if (scale <= 0.55) clusterAlpha = 0.9;
+            else if (scale < 1.2) clusterAlpha = 0.9 * (1 - (scale - 0.55) / 0.65);
+
+            if (clusterAlpha > 0.02) {
+                // Compute sector centroids from current node positions
+                var _cSums = {};
+                nodes.forEach(function(n) {
+                    if (!n.sector) return;
+                    if (!_cSums[n.sector]) _cSums[n.sector] = { x: 0, y: 0, c: 0 };
+                    _cSums[n.sector].x += n.x;
+                    _cSums[n.sector].y += n.y;
+                    _cSums[n.sector].c++;
+                });
+
+                var _clusterShort = {
+                    'Information Technology': 'Info Tech',
+                    'Communication Services': 'Comm Svcs',
+                    'Consumer Discretionary': 'Consumer Disc',
+                    'Health Care': 'Health Care',
+                    'Consumer Staples': 'Staples',
+                    'Financials': 'Financials',
+                    'Industrials': 'Industrials',
+                    'Real Estate': 'Real Estate',
+                    'Energy': 'Energy',
+                    'Materials': 'Materials',
+                    'Utilities': 'Utilities'
+                };
+
+                var clusterFontSize = Math.max(13, Math.min(24, 16 / scale));
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '700 ' + clusterFontSize + 'px Inter, system-ui, sans-serif';
+
+                for (var _cs in _cSums) {
+                    var _cd = _cSums[_cs];
+                    var _cx = _cd.x / _cd.c;
+                    var _cy = _cd.y / _cd.c;
+                    var _cc = SECTOR_COLORS[_cs] || '#94a3b8';
+                    var _cn = _clusterShort[_cs] || _cs;
+
+                    // Text shadow for readability against nodes
+                    ctx.shadowColor = _dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.85)';
+                    ctx.shadowBlur = 8 / scale;
+                    ctx.fillStyle = hexToRGBA(_cc, clusterAlpha);
+                    ctx.fillText(_cn, _cx, _cy);
+                }
+                // Reset shadow state
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+        }
+
         // Labels
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
