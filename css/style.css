@@ -2443,3 +2443,315 @@ footer li::before {
 @media print {
     .kbd-modal-overlay, .kbd-hint { display: none !important; }
 }
+
+/* === High Contrast Mode — WCAG 1.4.11 non-text contrast === */
+@media (prefers-contrast: high) {
+    /* --- Root variable overrides --- */
+    :root {
+        --border: rgba(255,255,255,0.25);
+        --border-hover: rgba(255,255,255,0.5);
+        --text-secondary: #c8c8cc;
+        --text-muted: #9ca3af;
+        --shadow: 0 1px 3px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+        --shadow-lg: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    [data-theme="light"] {
+        --border: rgba(0,0,0,0.2);
+        --border-hover: rgba(0,0,0,0.4);
+        --text-secondary: #374151;
+        --text-muted: #4b5563;
+        --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15);
+        --shadow-lg: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    /* --- Global border strengthening (1px → 2px) --- */
+    .metric-card,
+    .insight-card,
+    .table-wrapper,
+    .search-box,
+    .network-search-box,
+    #network-graph,
+    .detail-stat,
+    .comparison-card,
+    .comparison-chart-container,
+    .table-summary-bar,
+    .trend-card,
+    .tooltip,
+    .chart-tooltip,
+    .badge,
+    .control-btn,
+    .chip,
+    .export-csv-btn,
+    .kbd-modal,
+    .kbd-hint,
+    .compare-tray {
+        border-width: 2px;
+    }
+
+    /* --- Stronger focus indicators (2px → 3px) --- */
+    .skip-to-content:focus {
+        outline-width: 3px;
+    }
+    .detail-panel:focus,
+    #comparison-section:focus,
+    #comp-tbody tr[tabindex]:focus,
+    .kbd-modal-close:focus-visible {
+        outline-width: 3px;
+    }
+    *:focus-visible {
+        outline: 3px solid var(--accent) !important;
+        outline-offset: 2px;
+    }
+
+    /* --- Header: stronger separator --- */
+    header {
+        border-bottom-width: 2px;
+    }
+
+    /* --- Metrics: bolder labels --- */
+    .metric-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    /* --- Insights: stronger cards --- */
+    .insight-label {
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+    .insight-detail {
+        color: var(--text-secondary);
+    }
+    .insight-clickable:hover {
+        box-shadow: 0 0 0 2px var(--accent) !important;
+    }
+
+    /* --- Section descriptions --- */
+    .section-desc {
+        color: var(--text-secondary);
+    }
+
+    /* --- Network controls --- */
+    .control-btn {
+        font-weight: 600;
+    }
+    .control-btn.active {
+        border-width: 2px;
+        font-weight: 700;
+    }
+    .control-btn.control-btn-disabled {
+        opacity: 0.5;
+    }
+    .legend-item {
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+    .legend-item.legend-dimmed {
+        opacity: 0.5;
+    }
+    .legend-dot {
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    [data-theme="light"] .legend-dot {
+        border-color: rgba(0,0,0,0.2);
+    }
+    .edge-legend-item {
+        color: var(--text-secondary);
+    }
+
+    /* --- Mini-map: stronger border --- */
+    .network-minimap {
+        opacity: 0.85;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    /* --- Table --- */
+    thead th {
+        border-bottom-width: 2px;
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+    tbody td {
+        border-bottom-width: 2px;
+    }
+    .chip {
+        font-weight: 600;
+    }
+    .chip.active {
+        font-weight: 700;
+    }
+
+    /* --- Detail panel: stronger left accent border --- */
+    .detail-panel {
+        border-left-width: 4px;
+    }
+    .detail-stat-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .detail-stat-sub {
+        color: var(--text-secondary);
+    }
+    .detail-peer-tag {
+        border-width: 2px;
+        font-weight: 600;
+    }
+    .detail-stat-distbar-track {
+        height: 4px;
+        background: linear-gradient(90deg, rgba(6,214,160,0.35) 0%, rgba(255,209,102,0.35) 50%, rgba(239,71,111,0.35) 100%);
+    }
+    .detail-stat-distbar-dot {
+        width: 11px;
+        height: 11px;
+        top: -3.5px;
+        box-shadow: 0 0 0 3px var(--bg-elevated), 0 0 8px rgba(0,180,216,0.5);
+    }
+
+    /* --- Data completeness badges --- */
+    .data-na {
+        border-width: 2px;
+        font-weight: 600;
+    }
+    .detail-data-notice {
+        border-width: 2px;
+        border-left-width: 4px;
+    }
+
+    /* --- Outlier badges --- */
+    .outlier-badge {
+        border-width: 2px;
+        font-weight: 700;
+    }
+
+    /* --- Comparison --- */
+    .comparison-card {
+        border-width: 2px;
+    }
+    .compare-tray-tag {
+        border-width: 2px;
+        font-weight: 600;
+    }
+
+    /* --- Summary bar --- */
+    .summary-stat-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+    .summary-divider {
+        width: 2px;
+        background: var(--border);
+    }
+
+    /* --- Chart panels: visible borders --- */
+    .chart-panel {
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+    }
+
+    /* --- Composition legend --- */
+    .composition-legend-dot {
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    [data-theme="light"] .composition-legend-dot {
+        border-color: rgba(0,0,0,0.2);
+    }
+    .composition-legend-text {
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    /* --- Trends --- */
+    .trend-card {
+        border-width: 2px;
+    }
+    .trend-label {
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+    .trend-detail {
+        color: var(--text-secondary);
+    }
+    .trend-source {
+        color: var(--text-secondary);
+    }
+    .trend-clickable:hover {
+        box-shadow: 0 0 0 2px var(--accent) !important;
+    }
+
+    /* --- Keyboard shortcuts --- */
+    .kbd-modal {
+        border-width: 2px;
+    }
+    .kbd-row kbd {
+        border-width: 2px;
+        font-weight: 700;
+    }
+    .kbd-group-title {
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+
+    /* --- Pagination --- */
+    .pagination-btn,
+    .pagination-num {
+        border-width: 2px;
+        font-weight: 600;
+    }
+    .pagination-num.active {
+        font-weight: 700;
+    }
+
+    /* --- CSV export button --- */
+    .export-csv-btn {
+        font-weight: 700;
+        border-width: 2px;
+    }
+
+    /* --- Footer --- */
+    footer {
+        border-top-width: 2px;
+    }
+    .footer-note {
+        color: var(--text-secondary);
+    }
+
+    /* --- Skeleton loading bars — stronger shimmer contrast --- */
+    .skeleton-bar {
+        background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 40%, var(--bg-surface) 65%);
+        background-size: 800px 100%;
+        opacity: 0.8;
+    }
+
+    /* --- Search input borders on focus --- */
+    .search-box:focus-within,
+    .network-search-box:focus-within {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    /* --- Table row hover: more visible --- */
+    tbody tr:hover {
+        background: rgba(255,255,255,0.06);
+    }
+    tbody tr.selected {
+        background: rgba(0,180,216,0.1);
+    }
+    [data-theme="light"] tbody tr:hover {
+        background: rgba(0,0,0,0.06);
+    }
+    [data-theme="light"] tbody tr.selected {
+        background: rgba(0,119,182,0.1);
+    }
+
+    /* --- Scroll hint: stronger --- */
+    .scroll-hint {
+        border-width: 2px;
+        font-weight: 700;
+    }
+
+    /* --- Ratio filter chip --- */
+    .ratio-filter-chip {
+        border-width: 2px;
+        font-weight: 600;
+    }
+}
