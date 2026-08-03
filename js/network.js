@@ -126,11 +126,20 @@ function initNetwork(peerData) {
 
         // Theme-aware colors for canvas
         var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        var _hiContrast = window.matchMedia && window.matchMedia('(prefers-contrast: high)').matches;
+
         var labelColor = _dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.65)';
         var labelHoverColor = _dark ? '#fff' : '#000';
         var nodeHoverStroke = _dark ? '#fff' : '#000';
         var edgeDimColor = _dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)';
         var edgeSectorDimColor = _dark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.025)';
+
+        // High-contrast overrides — stronger edges, labels, and node strokes
+        if (_hiContrast) {
+            labelColor = _dark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.88)';
+            edgeDimColor = _dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+            edgeSectorDimColor = _dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)';
+        }
 
         ctx.translate(transform.x, transform.y);
         ctx.scale(transform.k, transform.k);
@@ -163,7 +172,7 @@ function initNetwork(peerData) {
         if (hoveredNode) {
             // Dim pass
             ctx.strokeStyle = edgeDimColor;
-            ctx.lineWidth = 0.5 / scale;
+            ctx.lineWidth = (_hiContrast ? 0.7 : 0.5) / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var s = nodeMap[e.source] || nodeMap[e.source.ticker];
@@ -178,8 +187,8 @@ function initNetwork(peerData) {
             ctx.stroke();
 
             // Highlight pass
-            ctx.strokeStyle = 'rgba(0,180,216,0.6)';
-            ctx.lineWidth = 1.5 / scale;
+            ctx.strokeStyle = _hiContrast ? 'rgba(0,180,216,0.85)' : 'rgba(0,180,216,0.6)';
+            ctx.lineWidth = (_hiContrast ? 2.5 : 1.5) / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
@@ -195,7 +204,7 @@ function initNetwork(peerData) {
         } else if (activeLegendSector && sectorNodeSet) {
             // Sector filter active — dim edges not involving the sector
             ctx.strokeStyle = edgeSectorDimColor;
-            ctx.lineWidth = 0.3 / scale;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
@@ -210,8 +219,8 @@ function initNetwork(peerData) {
             ctx.stroke();
 
             // Highlight edges touching the active sector
-            ctx.strokeStyle = 'rgba(0,180,216,0.35)';
-            ctx.lineWidth = 0.8 / scale;
+            ctx.strokeStyle = _hiContrast ? 'rgba(0,180,216,0.55)' : 'rgba(0,180,216,0.35)';
+            ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
@@ -228,10 +237,20 @@ function initNetwork(peerData) {
             // Default — differentiate same-sector vs cross-sector edges
             var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
             var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
+            var edgeCrossWidth = 0.4;
+            var edgeSameWidth = 0.7;
+
+            // High-contrast: significantly increase edge visibility
+            if (_hiContrast) {
+                edgeCrossColor = _dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)';
+                edgeSameColor = _dark ? 'rgba(0,180,216,0.25)' : 'rgba(0,120,180,0.3)';
+                edgeCrossWidth = 0.6;
+                edgeSameWidth = 1.0;
+            }
 
             // Cross-sector edges (dimmer, thinner)
             ctx.strokeStyle = edgeCrossColor;
-            ctx.lineWidth = 0.4 / scale;
+            ctx.lineWidth = edgeCrossWidth / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
@@ -247,7 +266,7 @@ function initNetwork(peerData) {
 
             // Same-sector edges (brighter, slightly thicker, accent-tinted)
             ctx.strokeStyle = edgeSameColor;
-            ctx.lineWidth = 0.7 / scale;
+            ctx.lineWidth = edgeSameWidth / scale;
             ctx.beginPath();
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
@@ -274,13 +293,13 @@ function initNetwork(peerData) {
                 } else if (connectedSet && connectedSet.has(d.ticker)) {
                     alpha = 0.9;
                 } else {
-                    alpha = 0.15;
+                    alpha = _hiContrast ? 0.25 : 0.15;
                 }
             } else if (activeLegendSector && sectorNodeSet) {
                 if (sectorNodeSet.has(d.ticker)) {
                     alpha = 1;
                 } else {
-                    alpha = 0.1;
+                    alpha = _hiContrast ? 0.18 : 0.1;
                 }
             }
 
@@ -291,10 +310,15 @@ function initNetwork(peerData) {
 
             if (d === hoveredNode) {
                 ctx.strokeStyle = nodeHoverStroke;
-                ctx.lineWidth = 2 / scale;
+                ctx.lineWidth = (_hiContrast ? 3 : 2) / scale;
                 ctx.stroke();
             } else if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
-                ctx.strokeStyle = hexToRGBA(color, 0.5);
+                ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.7 : 0.5);
+                ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
+                ctx.stroke();
+            } else if (_hiContrast && alpha > 0.2) {
+                // High-contrast: add subtle outline to all visible nodes for separation
+                ctx.strokeStyle = _dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)';
                 ctx.lineWidth = 1 / scale;
                 ctx.stroke();
             }
@@ -335,7 +359,7 @@ function initNetwork(peerData) {
                 var clusterFontSize = Math.max(13, Math.min(24, 16 / scale));
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.font = '700 ' + clusterFontSize + 'px Inter, system-ui, sans-serif';
+                ctx.font = (_hiContrast ? '800 ' : '700 ') + clusterFontSize + 'px Inter, system-ui, sans-serif';
 
                 for (var _cs in _cSums) {
                     var _cd = _cSums[_cs];
@@ -346,8 +370,8 @@ function initNetwork(peerData) {
 
                     // Text shadow for readability against nodes
                     ctx.shadowColor = _dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.85)';
-                    ctx.shadowBlur = 8 / scale;
-                    ctx.fillStyle = hexToRGBA(_cc, clusterAlpha);
+                    ctx.shadowBlur = (_hiContrast ? 12 : 8) / scale;
+                    ctx.fillStyle = hexToRGBA(_cc, _hiContrast ? Math.min(clusterAlpha * 1.3, 1) : clusterAlpha);
                     ctx.fillText(_cn, _cx, _cy);
                 }
                 // Reset shadow state
@@ -360,7 +384,7 @@ function initNetwork(peerData) {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         var fontSize = Math.max(9, Math.min(12, 11 / scale));
-        ctx.font = '600 ' + fontSize + 'px Inter, system-ui, sans-serif';
+        ctx.font = (_hiContrast ? '700 ' : '600 ') + fontSize + 'px Inter, system-ui, sans-serif';
 
         nodes.forEach(function(d) {
             if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode) return;
@@ -1002,23 +1026,26 @@ function initNetwork(peerData) {
         if (!mmExtentReady) updateMiniMapExtent();
 
         var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        var _mmHiContrast = window.matchMedia && window.matchMedia('(prefers-contrast: high)').matches;
         mmCtx.clearRect(0, 0, MM_W, MM_H);
 
         // Background
         mmCtx.fillStyle = _dark ? 'rgba(15,15,26,0.88)' : 'rgba(244,245,247,0.92)';
         mmCtx.fillRect(0, 0, MM_W, MM_H);
 
-        // Border
-        mmCtx.strokeStyle = _dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
-        mmCtx.lineWidth = 1;
+        // Border — stronger in high-contrast
+        mmCtx.strokeStyle = _mmHiContrast
+            ? (_dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)')
+            : (_dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)');
+        mmCtx.lineWidth = _mmHiContrast ? 2 : 1;
         mmCtx.strokeRect(0.5, 0.5, MM_W - 1, MM_H - 1);
 
-        // Draw nodes as small dots
+        // Draw nodes as small dots — slightly larger in high-contrast
         nodes.forEach(function(n) {
             var mx = mmMapX(n.x);
             var my = mmMapY(n.y);
             var color = SECTOR_COLORS[n.sector] || '#94a3b8';
-            var dotR = Math.max(1.2, getRadius(n) / 18);
+            var dotR = Math.max(_mmHiContrast ? 1.5 : 1.2, getRadius(n) / (_mmHiContrast ? 15 : 18));
             mmCtx.beginPath();
             mmCtx.arc(mx, my, dotR, 0, 2 * Math.PI);
             mmCtx.fillStyle = color;
@@ -1044,7 +1071,7 @@ function initNetwork(peerData) {
         // Only draw viewport rect if it's smaller than the full mini-map (i.e., user is zoomed in)
         if (vw < MM_W - 2 || vh < MM_H - 2) {
             mmCtx.strokeStyle = _dark ? 'rgba(0,180,216,0.8)' : 'rgba(0,119,182,0.8)';
-            mmCtx.lineWidth = 1.5;
+            mmCtx.lineWidth = _mmHiContrast ? 2.5 : 1.5;
             mmCtx.strokeRect(vx1, vy1, vw, vh);
 
             // Semi-transparent fill
