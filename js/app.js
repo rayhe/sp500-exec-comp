@@ -10,6 +10,15 @@ function getScrollBehavior() {
     return prefersReducedMotion() ? 'instant' : 'smooth';
 }
 
+/* Total height of sticky elements (header + section nav) for scroll offset calculations */
+function getStickyOffset() {
+    var header = document.querySelector('header');
+    var sectionNav = document.getElementById('section-nav');
+    var h = header ? header.offsetHeight : 0;
+    var n = sectionNav ? sectionNav.offsetHeight : 0;
+    return h + n;
+}
+
 /* === Accessibility — ARIA live region announcements === */
 var _announceTimer = null;
 function announce(msg) {
@@ -520,8 +529,8 @@ function populateTrends(trends) {
     function scrollToSection(sectionId) {
         var section = document.getElementById(sectionId);
         if (section) {
-            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
-            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            var stickyH = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - stickyH - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
     }
@@ -950,8 +959,8 @@ function buildPageNumbers(current, total, maxVisible) {
 function scrollToTable() {
     var section = document.getElementById('compensation-table-section');
     if (section) {
-        var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
-        var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+        var stickyH = getStickyOffset();
+        var sectionTop = section.getBoundingClientRect().top + window.scrollY - stickyH - 8;
         window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
     }
 }
@@ -1404,7 +1413,7 @@ function hideMetricSkeletons() {
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
-            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var headerHeight = getStickyOffset();
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
@@ -1458,7 +1467,7 @@ function hideMetricSkeletons() {
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
-            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var headerHeight = getStickyOffset();
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
@@ -1517,7 +1526,7 @@ function hideMetricSkeletons() {
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
         if (section) {
-            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var headerHeight = getStickyOffset();
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
@@ -2050,7 +2059,7 @@ function hideMetricSkeletons() {
 
         // Scroll to comparison section and focus it
         setTimeout(function() {
-            var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+            var headerHeight = getStickyOffset();
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
             // Focus the comparison section for keyboard/screen reader users
@@ -2299,7 +2308,7 @@ function hideMetricSkeletons() {
                 e.preventDefault();
                 var searchInput = document.getElementById('table-search');
                 if (searchInput) {
-                    var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var headerHeight = getStickyOffset();
                     var tableSection = document.getElementById('compensation-table-section');
                     if (tableSection) {
                         var sectionTop = tableSection.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
@@ -2378,7 +2387,7 @@ function hideMetricSkeletons() {
                 e.preventDefault();
                 var netSection = document.getElementById('peer-network-section');
                 if (netSection) {
-                    var hh = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var hh = getStickyOffset();
                     var nt = netSection.getBoundingClientRect().top + window.scrollY - hh - 12;
                     window.scrollTo({ top: nt, behavior: getScrollBehavior() });
                 }
@@ -2389,7 +2398,7 @@ function hideMetricSkeletons() {
                 e.preventDefault();
                 var chartPanel = document.getElementById('sector-chart-panel');
                 if (chartPanel) {
-                    var hh2 = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+                    var hh2 = getStickyOffset();
                     var ct = chartPanel.getBoundingClientRect().top + window.scrollY - hh2 - 12;
                     window.scrollTo({ top: ct, behavior: getScrollBehavior() });
                 }
@@ -2402,4 +2411,142 @@ function hideMetricSkeletons() {
                 break;
         }
     });
+
+    // === Section Navigation Bar — scroll tracking + click handlers ===
+    (function initSectionNav() {
+        var nav = document.getElementById('section-nav');
+        if (!nav) return;
+        var links = nav.querySelectorAll('.section-nav-link');
+        if (!links.length) return;
+
+        // Dynamic top position based on actual header height
+        var header = document.querySelector('header');
+        function updateNavTop() {
+            if (header) {
+                nav.style.top = header.offsetHeight + 'px';
+            }
+        }
+        updateNavTop();
+        window.addEventListener('resize', function() {
+            setTimeout(updateNavTop, 100);
+        });
+
+        // Map of section IDs to their link elements
+        var sectionIds = [];
+        links.forEach(function(link) {
+            sectionIds.push(link.dataset.section);
+        });
+
+        // Smooth scroll to section on click
+        links.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                var targetId = link.dataset.section;
+                var target = document.getElementById(targetId);
+                if (!target) return;
+
+                var stickyH = getStickyOffset();
+                var targetTop = target.getBoundingClientRect().top + window.scrollY - stickyH - 8;
+                window.scrollTo({ top: targetTop, behavior: getScrollBehavior() });
+
+                // Update active state immediately
+                links.forEach(function(l) { l.classList.remove('active'); });
+                link.classList.add('active');
+
+                // ARIA announcement
+                var sectionName = link.textContent.trim();
+                announce('Navigated to ' + sectionName + ' section');
+            });
+        });
+
+        // IntersectionObserver to track which section is currently visible
+        // Use a rootMargin that accounts for the sticky header + nav bar height
+        var _navUpdatePending = false;
+        var _visibleSections = {};
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                _visibleSections[entry.target.id] = entry.isIntersecting ? entry.intersectionRatio : 0;
+            });
+
+            if (_navUpdatePending) return;
+            _navUpdatePending = true;
+            requestAnimationFrame(function() {
+                _navUpdatePending = false;
+
+                // Find the topmost visible section
+                var bestSection = null;
+                var bestTop = Infinity;
+
+                sectionIds.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    var rect = el.getBoundingClientRect();
+                    // Consider a section "active" if its top is above the viewport midpoint
+                    // and it's partially visible (not entirely scrolled past)
+                    var viewportMid = window.innerHeight * 0.4;
+                    if (rect.top < viewportMid && rect.bottom > 0) {
+                        if (rect.top < bestTop || (rect.top === bestTop)) {
+                            // Pick the one whose top is closest to the nav bar (most recently scrolled into)
+                            bestSection = id;
+                            bestTop = rect.top;
+                        }
+                    }
+                });
+
+                // Fallback: if nothing is above midpoint, use the first section
+                if (!bestSection) {
+                    for (var i = 0; i < sectionIds.length; i++) {
+                        var el = document.getElementById(sectionIds[i]);
+                        if (el && el.getBoundingClientRect().top < window.innerHeight) {
+                            bestSection = sectionIds[i];
+                            break;
+                        }
+                    }
+                }
+
+                if (bestSection) {
+                    links.forEach(function(l) {
+                        l.classList.toggle('active', l.dataset.section === bestSection);
+                    });
+
+                    // Scroll the active link into view within the nav bar (for narrow screens)
+                    var activeLink = nav.querySelector('.section-nav-link.active');
+                    if (activeLink) {
+                        var navInner = nav.querySelector('.section-nav-inner');
+                        if (navInner && navInner.scrollWidth > navInner.clientWidth) {
+                            var linkLeft = activeLink.offsetLeft;
+                            var linkRight = linkLeft + activeLink.offsetWidth;
+                            var scrollLeft = navInner.scrollLeft;
+                            var visibleRight = scrollLeft + navInner.clientWidth;
+                            if (linkLeft < scrollLeft + 20) {
+                                navInner.scrollTo({ left: Math.max(0, linkLeft - 20), behavior: 'auto' });
+                            } else if (linkRight > visibleRight - 20) {
+                                navInner.scrollTo({ left: linkRight - navInner.clientWidth + 20, behavior: 'auto' });
+                            }
+                        }
+                    }
+                }
+            });
+        }, {
+            rootMargin: '-80px 0px -40% 0px',
+            threshold: [0, 0.1, 0.25]
+        });
+
+        // Observe each tracked section
+        sectionIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+
+        // Add scrolled shadow class to nav when page scrolls past metrics strip
+        var _navScrolledTimer = null;
+        window.addEventListener('scroll', function() {
+            if (_navScrolledTimer) return;
+            _navScrolledTimer = requestAnimationFrame(function() {
+                _navScrolledTimer = null;
+                nav.classList.toggle('scrolled', window.scrollY > 120);
+            });
+        }, { passive: true });
+    })();
 })();
