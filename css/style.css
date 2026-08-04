@@ -2755,3 +2755,58 @@ footer li::before {
         font-weight: 600;
     }
 }
+
+
+/* === Reduced Motion — WCAG 2.3.3 Motion from Animation === */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable all CSS transitions */
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    /* Skeleton loading: static fill instead of shimmer */
+    .skeleton-bar {
+        background: var(--bg-elevated) !important;
+        animation: none !important;
+    }
+
+    /* Skeleton spinner: static instead of rotating */
+    .network-skeleton-spinner {
+        animation: none !important;
+        border-color: transparent !important;
+        border-top-color: var(--accent) !important;
+    }
+
+    /* Scroll hint: static instead of pulsing */
+    .scroll-hint {
+        animation: none !important;
+        opacity: 0.7 !important;
+    }
+
+    /* Skip-to-content: instant position change */
+    .skip-to-content { transition: none !important; }
+    .skip-to-content:focus { transition: none !important; }
+
+    /* Smooth scroll override for page-level scrolling */
+    html { scroll-behavior: auto !important; }
+
+    /* Distribution bar dot: no transitions */
+    .detail-stat-distbar-dot { transition: none !important; }
+
+    /* Compare tray: instant show/hide */
+    .compare-tray { transition: none !important; }
+
+    /* Insight/trend CTA fade: instant */
+    .insight-cta, .trend-cta { transition: none !important; }
+
+    /* Theme toggle and other buttons: instant hover */
+    .theme-toggle, .control-btn, .pagination-btn, .export-csv-btn,
+    .chip, .badge, .insight-card, .trend-card {
+        transition: none !important;
+    }
+
+    /* Keyboard shortcuts hint badge: instant */
+    .kbd-hint { transition: none !important; }
+}

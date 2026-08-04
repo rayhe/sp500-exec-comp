@@ -1,5 +1,15 @@
 /* === S&P 500 Executive Compensation Tracker — Main App === */
 
+/* === Accessibility — prefers-reduced-motion support === */
+function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/* Scroll behavior respecting reduced motion preference */
+function getScrollBehavior() {
+    return prefersReducedMotion() ? 'instant' : 'smooth';
+}
+
 /* === Accessibility — ARIA live region announcements === */
 var _announceTimer = null;
 function announce(msg) {
@@ -512,7 +522,7 @@ function populateTrends(trends) {
         if (section) {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
     }
 
@@ -942,7 +952,7 @@ function scrollToTable() {
     if (section) {
         var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
         var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
-        window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
     }
 }
 
@@ -1396,7 +1406,7 @@ function hideMetricSkeletons() {
         if (section) {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
     };
 
@@ -1450,7 +1460,7 @@ function hideMetricSkeletons() {
         if (section) {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
     };
 
@@ -1509,7 +1519,7 @@ function hideMetricSkeletons() {
         if (section) {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
 
         // Auto-click the first matching row after a short delay to expand its detail panel
@@ -2042,7 +2052,7 @@ function hideMetricSkeletons() {
         setTimeout(function() {
             var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
             // Focus the comparison section for keyboard/screen reader users
             if (!section.hasAttribute('tabindex')) section.setAttribute('tabindex', '-1');
             setTimeout(function() { section.focus({ preventScroll: true }); }, 400);
@@ -2293,7 +2303,7 @@ function hideMetricSkeletons() {
                     var tableSection = document.getElementById('compensation-table-section');
                     if (tableSection) {
                         var sectionTop = tableSection.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
-                        window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+                        window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
                     }
                     setTimeout(function() { searchInput.focus(); searchInput.select(); }, 150);
                 }
@@ -2370,7 +2380,7 @@ function hideMetricSkeletons() {
                 if (netSection) {
                     var hh = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
                     var nt = netSection.getBoundingClientRect().top + window.scrollY - hh - 12;
-                    window.scrollTo({ top: nt, behavior: 'smooth' });
+                    window.scrollTo({ top: nt, behavior: getScrollBehavior() });
                 }
                 break;
 
@@ -2381,7 +2391,7 @@ function hideMetricSkeletons() {
                 if (chartPanel) {
                     var hh2 = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
                     var ct = chartPanel.getBoundingClientRect().top + window.scrollY - hh2 - 12;
-                    window.scrollTo({ top: ct, behavior: 'smooth' });
+                    window.scrollTo({ top: ct, behavior: getScrollBehavior() });
                 }
                 break;
 

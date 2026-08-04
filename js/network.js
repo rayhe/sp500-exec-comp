@@ -584,6 +584,8 @@ function initNetwork(peerData) {
     // Draw a circular progress ring around the long-press target node
     function drawLongPressRing() {
         if (!_lpNode || !_lpStartTime) return;
+        // Skip ring animation when user prefers reduced motion
+        if (typeof prefersReducedMotion === 'function' && prefersReducedMotion()) return;
         var elapsed = Date.now() - _lpStartTime;
         var progress = Math.min(elapsed / LP_DELAY, 1);
         if (progress >= 1) { _lpAnimFrame = null; return; }
@@ -651,8 +653,11 @@ function initNetwork(peerData) {
             _lpStartTime = Date.now();
             var capturedX = touch.clientX;
             var capturedY = touch.clientY;
-            // Start the progress ring animation
-            _lpAnimFrame = requestAnimationFrame(function() { draw(); });
+            // Start the progress ring animation (skip animation if reduced motion)
+            var _reducedMotion = typeof prefersReducedMotion === 'function' && prefersReducedMotion();
+            if (!_reducedMotion) {
+                _lpAnimFrame = requestAnimationFrame(function() { draw(); });
+            }
             _lpTimer = setTimeout(function() {
                 if (_lpNode) {
                     // Stop the progress ring animation
@@ -666,7 +671,7 @@ function initNetwork(peerData) {
                     if (navigator.vibrate) navigator.vibrate(30);
                 }
                 _lpTimer = null;
-            }, LP_DELAY);
+            }, _reducedMotion ? 100 : LP_DELAY);
         }
     }, { passive: true });
 
@@ -823,7 +828,7 @@ function initNetwork(peerData) {
 
         d3.select(canvas)
             .transition()
-            .duration(750)
+            .duration(prefersReducedMotion() ? 0 : 750)
             .call(zoom.transform, newTransform);
 
         // Set as hovered to highlight connections
@@ -841,13 +846,13 @@ function initNetwork(peerData) {
         // Scroll to the network section
         var section = document.getElementById('peer-network-section');
         if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
         }
 
-        // Small delay to let scroll settle, then zoom
+        // Small delay to let scroll settle, then zoom (instant when reduced motion)
         setTimeout(function() {
             selectSearchNode(node);
-        }, 400);
+        }, prefersReducedMotion() ? 50 : 400);
 
         return true;
     };
@@ -1123,7 +1128,7 @@ function initNetwork(peerData) {
 
         d3.select(canvas)
             .transition()
-            .duration(mmDragging ? 0 : 300)
+            .duration(mmDragging ? 0 : (prefersReducedMotion() ? 0 : 300))
             .call(zoom.transform, newTransform);
     }
 
