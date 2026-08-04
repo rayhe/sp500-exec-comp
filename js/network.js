@@ -997,6 +997,40 @@ function initNetwork(peerData) {
         draw();
     };
 
+    // === Node Size Legend ===
+    // Populate with data-driven sample circles showing the in-degree scale
+    (function populateNodeSizeLegend() {
+        var samplesEl = document.getElementById('node-size-legend-samples');
+        if (!samplesEl) return;
+
+        // Pick 3 representative in-degree values: low, mid, high
+        var lowDeg = 1;
+        var midDeg = Math.round(maxInDegree / 2);
+        var highDeg = maxInDegree;
+
+        var samples = [
+            { deg: lowDeg, label: lowDeg + '' },
+            { deg: midDeg, label: midDeg + '' },
+            { deg: highDeg, label: highDeg + '' }
+        ];
+
+        // Scale factor: map getRadius px to a visual legend size (capped for layout)
+        // getRadius returns 5–55px; scale down so the largest sample fits ~22px diameter
+        var maxR = getRadius({ in_degree: highDeg });
+        var scaleFactor = 11 / maxR; // largest circle = 11px radius = 22px diameter
+
+        var html = '';
+        samples.forEach(function(s) {
+            var r = getRadius({ in_degree: s.deg }) * scaleFactor;
+            var d = Math.max(Math.round(r * 2), 6); // diameter in px, min 6
+            html += '<span class="node-size-sample">' +
+                '<span class="node-size-sample-circle" style="width:' + d + 'px;height:' + d + 'px"></span>' +
+                '<span class="node-size-sample-text">' + s.label + '</span>' +
+                '</span>';
+        });
+        samplesEl.innerHTML = html;
+    })();
+
     // === Mini-Map (Overview Indicator) ===
     // Small canvas in the bottom-right showing all nodes and the current viewport
     var MM_W = 160, MM_H = 110, MM_PAD = 10;

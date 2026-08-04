@@ -583,6 +583,45 @@ header h1 {
     border-top: 1.5px solid rgba(255,255,255,0.2);
 }
 
+/* Node size legend */
+.node-size-legend {
+    display: flex;
+    gap: 8px 14px;
+    margin-left: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+}
+.node-size-legend-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+.node-size-legend-samples {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.node-size-sample {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.node-size-sample-circle {
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.55;
+    flex-shrink: 0;
+}
+.node-size-sample-text {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
 /* Touch hint — visible only on touch devices */
 .touch-hint {
     display: none;
@@ -1607,6 +1646,12 @@ footer li::before {
         font-size: 0.64rem;
         gap: 4px 10px;
     }
+    .node-size-legend {
+        font-size: 0.64rem;
+        gap: 4px 8px;
+    }
+    .node-size-legend-label { font-size: 0.64rem; }
+    .node-size-sample-text { font-size: 0.58rem; }
     /* Detail panel responsive — 2-column stat grid on medium mobile */
     .detail-panel { padding: 12px 14px; }
     .detail-stats {
@@ -2634,6 +2679,17 @@ footer li::before {
         border-color: rgba(0,0,0,0.2);
     }
     .edge-legend-item {
+        color: var(--text-secondary);
+    }
+    .node-size-legend-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .node-size-sample-circle {
+        opacity: 0.75;
+        border: 1px solid var(--accent);
+    }
+    .node-size-sample-text {
         color: var(--text-secondary);
     }
 
