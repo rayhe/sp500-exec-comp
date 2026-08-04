@@ -1954,6 +1954,19 @@ footer li::before {
     transition: width 0.3s ease;
 }
 
+/* Comparison card actions (Show in Network button) */
+.comparison-card-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+}
+.comparison-card-actions .detail-network-btn {
+    font-size: 0.75rem;
+    padding: 5px 14px;
+}
+
 /* Responsive comparison */
 @media (max-width: 900px) {
     .comparison-grid.cols-3,
