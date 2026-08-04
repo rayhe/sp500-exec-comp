@@ -1227,6 +1227,30 @@ tbody tr:last-child td { border-bottom: none; }
     flex-shrink: 0;
 }
 
+.detail-table-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--secondary);
+    background: rgba(161,161,170,0.1);
+    color: var(--secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.detail-table-btn:hover {
+    background: rgba(161,161,170,0.25);
+    color: #fff;
+    border-color: #d4d4d8;
+}
+.detail-table-btn svg {
+    flex-shrink: 0;
+}
+
 /* === Outlier Badges === */
 .outlier-badge {
     display: inline-flex;
@@ -1672,7 +1696,7 @@ footer li::before {
     .detail-peer-tag { font-size: 0.68rem; padding: 2px 6px; }
     .detail-peer-label { font-size: 0.72rem; margin-bottom: 4px; }
     .detail-actions { margin-top: 8px; padding-top: 8px; }
-    .detail-network-btn { font-size: 0.75rem; padding: 6px 12px; }
+    .detail-network-btn, .detail-table-btn { font-size: 0.75rem; padding: 6px 12px; }
     .detail-data-notice { font-size: 0.72rem; padding: 6px 10px; margin-top: 8px; }
 }
 @media (max-width: 400px) {
@@ -1961,8 +1985,11 @@ footer li::before {
     border-top: 1px solid var(--border);
     display: flex;
     justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
-.comparison-card-actions .detail-network-btn {
+.comparison-card-actions .detail-network-btn,
+.comparison-card-actions .detail-table-btn {
     font-size: 0.75rem;
     padding: 5px 14px;
 }
@@ -2179,6 +2206,7 @@ footer li::before {
     .insight-cta,
     .trend-cta,
     .detail-network-btn,
+    .detail-table-btn,
     .detail-actions,
     .comparison-close-btn,
     .compare-go-btn,

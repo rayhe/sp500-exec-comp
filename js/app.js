@@ -2053,18 +2053,35 @@ function hideMetricSkeletons() {
             // Peer Network
             html += '<div class="comparison-row"><span class="comparison-row-label">Peers</span><span class="comparison-row-value">' + peerIn + ' in · ' + peerOut + ' out</span></div>';
 
-            // "Show in Network" button — matches the detail panel button
+            // Action buttons row — always shown (Find in Table is always available)
+            html += '<div class="comparison-card-actions">';
+
+            // "Find in Table" button — searches the table for this company and expands its detail panel
+            html += '<button class="detail-table-btn" data-ticker="' + c.ticker.replace(/"/g, '&quot;') + '">';
+            html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>';
+            html += ' Find in Table</button>';
+
+            // "Show in Network" button — only shown for companies with peer connections
             if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
-                html += '<div class="comparison-card-actions">';
                 html += '<button class="detail-network-btn" data-ticker="' + c.ticker.replace(/"/g, '&quot;') + '">';
                 html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 7l4 3M14 10l4-3M6 17l4-3M14 14l4 3"/></svg>';
                 html += ' Show in Network</button>';
-                html += '</div>';
             }
+
+            html += '</div>';
 
             card.innerHTML = html;
 
-            // Attach click handler for the "Show in Network" button via event delegation
+            // Attach click handler for the "Find in Table" button
+            var tableBtn = card.querySelector('.detail-table-btn[data-ticker]');
+            if (tableBtn) {
+                tableBtn.addEventListener('click', function() {
+                    var ticker = this.getAttribute('data-ticker');
+                    if (window.findCompanyInTable) window.findCompanyInTable(ticker);
+                });
+            }
+
+            // Attach click handler for the "Show in Network" button
             var netBtn = card.querySelector('.detail-network-btn[data-ticker]');
             if (netBtn) {
                 netBtn.addEventListener('click', function() {
