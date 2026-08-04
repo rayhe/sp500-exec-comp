@@ -1935,6 +1935,123 @@ function hideMetricSkeletons() {
         });
     }
 
+    /* === Peer Overlap Analysis for Comparison View === */
+    function renderPeerOverlap(selected, gridEl) {
+        // Remove existing overlap panel if present
+        var existingPanel = document.getElementById('peer-overlap-panel');
+        if (existingPanel) existingPanel.remove();
+
+        if (selected.length < 2) return;
+
+        // Gather each company's full peer set (union of inbound + outbound, excluding self and other compared companies)
+        var comparedTickers = selected.map(function(c) { return c.ticker; });
+        var peerSets = {};
+        selected.forEach(function(c) {
+            var info = getPeerInfo(c.ticker);
+            if (!info) { peerSets[c.ticker] = []; return; }
+            var allPeers = {};
+            info.selectedBy.forEach(function(t) { if (comparedTickers.indexOf(t) === -1) allPeers[t] = true; });
+            info.selects.forEach(function(t) { if (comparedTickers.indexOf(t) === -1) allPeers[t] = true; });
+            peerSets[c.ticker] = Object.keys(allPeers);
+        });
+
+        // Compute pairwise overlap
+        var pairs = [];
+        for (var i = 0; i < selected.length; i++) {
+            for (var j = i + 1; j < selected.length; j++) {
+                var a = selected[i].ticker;
+                var b = selected[j].ticker;
+                var setA = peerSets[a];
+                var setB = peerSets[b];
+                var shared = setA.filter(function(t) { return setB.indexOf(t) !== -1; });
+                var unionCount = setA.length + setB.length - shared.length;
+                var similarity = unionCount > 0 ? Math.round(shared.length / unionCount * 100) : 0;
+                pairs.push({
+                    tickerA: a,
+                    tickerB: b,
+                    shared: shared.sort(),
+                    countA: setA.length,
+                    countB: setB.length,
+                    similarity: similarity
+                });
+            }
+        }
+
+        // Find peers common to ALL compared companies
+        var commonToAll = [];
+        if (selected.length >= 2) {
+            var firstSet = peerSets[selected[0].ticker];
+            commonToAll = firstSet.filter(function(t) {
+                return selected.every(function(c) { return peerSets[c.ticker].indexOf(t) !== -1; });
+            }).sort();
+        }
+
+        // Build the panel
+        var panel = document.createElement('div');
+        panel.id = 'peer-overlap-panel';
+        panel.className = 'peer-overlap-panel';
+
+        var html = '<div class="peer-overlap-header">';
+        html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="12" r="6" opacity="0.6"/><circle cx="15" cy="12" r="6" opacity="0.6"/></svg>';
+        html += ' Peer Overlap Analysis</div>';
+
+        // Pairwise overlap rows
+        html += '<div class="peer-overlap-pairs">';
+        pairs.forEach(function(p) {
+            var simColor = p.similarity >= 50 ? 'var(--accent)' : p.similarity >= 25 ? 'var(--warning)' : 'var(--text-secondary)';
+            var simLabel = p.similarity >= 50 ? 'High' : p.similarity >= 25 ? 'Moderate' : 'Low';
+
+            html += '<div class="peer-overlap-pair">';
+            html += '<div class="peer-overlap-pair-header">';
+            html += '<span class="peer-overlap-tickers">' + p.tickerA + ' ↔ ' + p.tickerB + '</span>';
+            html += '<span class="peer-overlap-sim" style="color:' + simColor + '">' + p.shared.length + ' shared · ' + p.similarity + '% similarity</span>';
+            html += '</div>';
+
+            // Similarity bar
+            html += '<div class="peer-overlap-bar">';
+            html += '<div class="peer-overlap-bar-fill" style="width:' + Math.max(p.similarity, 2) + '%;background:' + simColor + '"></div>';
+            html += '</div>';
+
+            // Show shared peer tickers (up to 12, then "+N more")
+            if (p.shared.length > 0) {
+                html += '<div class="peer-overlap-tags">';
+                var showCount = Math.min(p.shared.length, 12);
+                for (var k = 0; k < showCount; k++) {
+                    html += '<span class="peer-overlap-tag">' + p.shared[k] + '</span>';
+                }
+                if (p.shared.length > 12) {
+                    html += '<span class="peer-overlap-tag more">+' + (p.shared.length - 12) + ' more</span>';
+                }
+                html += '</div>';
+            } else {
+                html += '<div class="peer-overlap-empty">No shared compensation peers</div>';
+            }
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Common to all (only shown when 3+ companies and at least 1 common peer)
+        if (selected.length >= 3 && commonToAll.length > 0) {
+            html += '<div class="peer-overlap-common">';
+            html += '<div class="peer-overlap-common-header">Common to all ' + selected.length + ' companies: ' + commonToAll.length + ' peer' + (commonToAll.length !== 1 ? 's' : '') + '</div>';
+            html += '<div class="peer-overlap-tags">';
+            var showCommon = Math.min(commonToAll.length, 16);
+            for (var m = 0; m < showCommon; m++) {
+                html += '<span class="peer-overlap-tag common">' + commonToAll[m] + '</span>';
+            }
+            if (commonToAll.length > 16) {
+                html += '<span class="peer-overlap-tag more">+' + (commonToAll.length - 16) + ' more</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+        }
+
+        panel.innerHTML = html;
+
+        // Insert between comparison chart and grid
+        gridEl.parentNode.insertBefore(panel, gridEl);
+    }
+
     function showComparison() {
         if (compareSet.length < 2) return;
         var section = document.getElementById('comparison-section');
@@ -1988,6 +2105,9 @@ function hideMetricSkeletons() {
             grid.parentNode.insertBefore(chartContainer, grid);
         }
         renderComparisonChart(chartContainer, selected, rankMap);
+
+        // === Peer Overlap Analysis ===
+        renderPeerOverlap(selected, grid);
 
         grid.innerHTML = '';
         selected.forEach(function(c) {
@@ -2111,6 +2231,8 @@ function hideMetricSkeletons() {
         document.getElementById('comparison-section').classList.remove('visible');
         var chartEl = document.getElementById('comparison-chart');
         if (chartEl) chartEl.innerHTML = '';
+        var overlapEl = document.getElementById('peer-overlap-panel');
+        if (overlapEl) overlapEl.remove();
         // Return focus to the element that triggered the comparison
         if (_preFocusElement && _preFocusElement.isConnected) {
             _preFocusElement.focus();
