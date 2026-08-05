@@ -373,7 +373,7 @@ function populateInsights(comp, trends) {
             html += '<div class="insight-compare-actions">';
             ins._tickers.forEach(function(t) {
                 var isCompared = window._compareSet && window._compareSet.indexOf(t) >= 0;
-                html += '<button class="insight-compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + t + '" title="' + (isCompared ? 'Remove ' + t + ' from comparison' : 'Add ' + t + ' to comparison') + '"><span class="icb-icon">' + (isCompared ? '✓' : '+') + '</span> ' + t + '</button>';
+                html += '<button class="insight-compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + t + '" aria-pressed="' + (isCompared ? 'true' : 'false') + '" title="' + (isCompared ? 'Remove ' + t + ' from comparison' : 'Add ' + t + ' to comparison') + '"><span class="icb-icon">' + (isCompared ? '✓' : '+') + '</span> ' + t + '</button>';
             });
             html += '</div>';
         }
@@ -1168,14 +1168,14 @@ function setupDetailPanel(companies) {
             if (peerInfo.selectedBy.length > 0) {
                 html += '<div class="detail-peer-group"><span class="detail-peer-label">Selected as comp peer by:</span>';
                 html += '<div class="detail-peer-tags">';
-                html += peerInfo.selectedBy.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
+                html += peerInfo.selectedBy.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" tabindex="0" role="button" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
                 if (peerInfo.selectedBy.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selectedBy.length - 20) + ' more</span>';
                 html += '</div></div>';
             }
             if (peerInfo.selects.length > 0) {
                 html += '<div class="detail-peer-group"><span class="detail-peer-label">Benchmarks against:</span>';
                 html += '<div class="detail-peer-tags">';
-                html += peerInfo.selects.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
+                html += peerInfo.selects.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" tabindex="0" role="button" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
                 if (peerInfo.selects.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selects.length - 20) + ' more</span>';
                 html += '</div></div>';
             }
@@ -1200,6 +1200,19 @@ function setupDetailPanel(companies) {
                     if (window.focusNetworkNode) window.focusNetworkNode(peerTicker);
                 } else {
                     if (window.findCompanyInTable) window.findCompanyInTable(peerTicker);
+                }
+            });
+            tag.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var peerTicker = tag.getAttribute('data-ticker');
+                    if (!peerTicker) return;
+                    if (e.shiftKey) {
+                        if (window.focusNetworkNode) window.focusNetworkNode(peerTicker);
+                    } else {
+                        if (window.findCompanyInTable) window.findCompanyInTable(peerTicker);
+                    }
                 }
             });
         });
@@ -1781,10 +1794,12 @@ function hideMetricSkeletons() {
             var icon = btn.querySelector('.icb-icon');
             if (compareSet.indexOf(t) >= 0) {
                 btn.classList.add('selected');
+                btn.setAttribute('aria-pressed', 'true');
                 if (icon) icon.textContent = '✓';
                 btn.title = 'Remove ' + t + ' from comparison';
             } else {
                 btn.classList.remove('selected');
+                btn.setAttribute('aria-pressed', 'false');
                 if (icon) icon.textContent = '+';
                 btn.title = compareSet.length >= MAX_COMPARE ? 'Max ' + MAX_COMPARE + ' companies' : 'Add ' + t + ' to comparison';
             }
@@ -2065,7 +2080,7 @@ function hideMetricSkeletons() {
                 html += '<div class="peer-overlap-tags">';
                 var showCount = Math.min(p.shared.length, 12);
                 for (var k = 0; k < showCount; k++) {
-                    html += '<span class="peer-overlap-tag peer-overlap-tag-link" data-ticker="' + p.shared[k] + '" title="Click to find in table · Shift+click to show in network">' + p.shared[k] + '</span>';
+                    html += '<span class="peer-overlap-tag peer-overlap-tag-link" data-ticker="' + p.shared[k] + '" tabindex="0" role="button" title="Click to find in table · Shift+click to show in network">' + p.shared[k] + '</span>';
                 }
                 if (p.shared.length > 12) {
                     html += '<span class="peer-overlap-tag more">+' + (p.shared.length - 12) + ' more</span>';
@@ -2085,7 +2100,7 @@ function hideMetricSkeletons() {
             html += '<div class="peer-overlap-tags">';
             var showCommon = Math.min(commonToAll.length, 16);
             for (var m = 0; m < showCommon; m++) {
-                html += '<span class="peer-overlap-tag common peer-overlap-tag-link" data-ticker="' + commonToAll[m] + '" title="Click to find in table · Shift+click to show in network">' + commonToAll[m] + '</span>';
+                html += '<span class="peer-overlap-tag common peer-overlap-tag-link" data-ticker="' + commonToAll[m] + '" tabindex="0" role="button" title="Click to find in table · Shift+click to show in network">' + commonToAll[m] + '</span>';
             }
             if (commonToAll.length > 16) {
                 html += '<span class="peer-overlap-tag more">+' + (commonToAll.length - 16) + ' more</span>';
@@ -2108,6 +2123,18 @@ function hideMetricSkeletons() {
                 } else {
                     // Regular click: find in table and expand detail panel
                     if (window.findCompanyInTable) window.findCompanyInTable(ticker);
+                }
+            });
+            tag.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    var ticker = tag.getAttribute('data-ticker');
+                    if (!ticker) return;
+                    if (e.shiftKey) {
+                        if (window.focusNetworkNode) window.focusNetworkNode(ticker);
+                    } else {
+                        if (window.findCompanyInTable) window.findCompanyInTable(ticker);
+                    }
                 }
             });
         });
