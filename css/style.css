@@ -139,6 +139,7 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .detail-stat { background: #fff; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-stat-distbar-dot { box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(0,119,182,0.3); }
 [data-theme="light"] .detail-peer-tag { background: #e8e9ee; color: #1a1a2e; border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .detail-peer-tag-link:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.12); }
 [data-theme="light"] .network-search-results { background: #fff; border-color: rgba(0,0,0,0.1); }
 [data-theme="light"] .network-search-result:hover,
 [data-theme="light"] .network-search-result.active { background: #f0f1f5; }
@@ -1186,6 +1187,19 @@ tbody tr:last-child td { border-bottom: none; }
     background: rgba(0,180,216,0.1);
     color: var(--accent);
     border: 1px solid rgba(0,180,216,0.2);
+}
+.detail-peer-tag-link {
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.detail-peer-tag-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(0, 180, 216, 0.22);
+    transform: translateY(-1px);
+}
+.detail-peer-tag-link:active {
+    transform: translateY(0);
 }
 .detail-peer-more {
     font-size: 0.72rem;

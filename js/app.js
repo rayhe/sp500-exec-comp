@@ -1148,14 +1148,14 @@ function setupDetailPanel(companies) {
             if (peerInfo.selectedBy.length > 0) {
                 html += '<div class="detail-peer-group"><span class="detail-peer-label">Selected as comp peer by:</span>';
                 html += '<div class="detail-peer-tags">';
-                html += peerInfo.selectedBy.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag">' + t + '</span>'; }).join('');
+                html += peerInfo.selectedBy.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
                 if (peerInfo.selectedBy.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selectedBy.length - 20) + ' more</span>';
                 html += '</div></div>';
             }
             if (peerInfo.selects.length > 0) {
                 html += '<div class="detail-peer-group"><span class="detail-peer-label">Benchmarks against:</span>';
                 html += '<div class="detail-peer-tags">';
-                html += peerInfo.selects.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag">' + t + '</span>'; }).join('');
+                html += peerInfo.selects.slice(0, 20).map(function(t) { return '<span class="detail-peer-tag detail-peer-tag-link" data-ticker="' + t + '" title="Click to find in table · Shift+click to show in network">' + t + '</span>'; }).join('');
                 if (peerInfo.selects.length > 20) html += '<span class="detail-peer-more">+' + (peerInfo.selects.length - 20) + ' more</span>';
                 html += '</div></div>';
             }
@@ -1169,6 +1169,20 @@ function setupDetailPanel(companies) {
         detailRow.dataset.ticker = ticker;
         detailRow.innerHTML = html;
         row.after(detailRow);
+
+        // Wire up clickable detail peer tags — click to find in table, shift+click to show in network
+        detailRow.querySelectorAll('.detail-peer-tag-link').forEach(function(tag) {
+            tag.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var peerTicker = tag.getAttribute('data-ticker');
+                if (!peerTicker) return;
+                if (e.shiftKey) {
+                    if (window.focusNetworkNode) window.focusNetworkNode(peerTicker);
+                } else {
+                    if (window.findCompanyInTable) window.findCompanyInTable(peerTicker);
+                }
+            });
+        });
 
         // ARIA announcement for detail panel
         announce(company.company_name + ' detail panel. Rank ' + overallRank + ' of ' + companies.length + ', ' + formatCurrency(company.total_compensation) + ' total compensation.');
