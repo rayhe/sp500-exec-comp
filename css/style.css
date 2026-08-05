@@ -2112,6 +2112,23 @@ footer li::before {
     font-style: italic;
     border-style: dashed;
 }
+.peer-overlap-tag-link {
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.peer-overlap-tag-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(0, 180, 216, 0.12);
+    transform: translateY(-1px);
+}
+.peer-overlap-tag-link:active {
+    transform: translateY(0);
+}
+.peer-overlap-tag-link.common:hover {
+    background: rgba(0, 180, 216, 0.18);
+    border-color: var(--accent);
+}
 .peer-overlap-empty {
     font-size: 0.78rem;
     color: var(--text-muted);
@@ -2135,6 +2152,8 @@ footer li::before {
 [data-theme="light"] .peer-overlap-bar { background: rgba(0,0,0,0.06); }
 [data-theme="light"] .peer-overlap-tag { background: #f0f1f3; border-color: rgba(0,0,0,0.08); color: #4b5563; }
 [data-theme="light"] .peer-overlap-tag.common { background: rgba(0, 119, 182, 0.08); border-color: rgba(0, 119, 182, 0.2); color: #0077b6; }
+[data-theme="light"] .peer-overlap-tag-link:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.1); }
+[data-theme="light"] .peer-overlap-tag-link.common:hover { background: rgba(0, 119, 182, 0.15); border-color: #0077b6; }
 
 /* Responsive */
 @media (max-width: 600px) {

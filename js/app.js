@@ -2012,12 +2012,12 @@ function hideMetricSkeletons() {
             html += '<div class="peer-overlap-bar-fill" style="width:' + Math.max(p.similarity, 2) + '%;background:' + simColor + '"></div>';
             html += '</div>';
 
-            // Show shared peer tickers (up to 12, then "+N more")
+            // Show shared peer tickers (up to 12, then "+N more") — clickable
             if (p.shared.length > 0) {
                 html += '<div class="peer-overlap-tags">';
                 var showCount = Math.min(p.shared.length, 12);
                 for (var k = 0; k < showCount; k++) {
-                    html += '<span class="peer-overlap-tag">' + p.shared[k] + '</span>';
+                    html += '<span class="peer-overlap-tag peer-overlap-tag-link" data-ticker="' + p.shared[k] + '" title="Click to find in table · Shift+click to show in network">' + p.shared[k] + '</span>';
                 }
                 if (p.shared.length > 12) {
                     html += '<span class="peer-overlap-tag more">+' + (p.shared.length - 12) + ' more</span>';
@@ -2037,7 +2037,7 @@ function hideMetricSkeletons() {
             html += '<div class="peer-overlap-tags">';
             var showCommon = Math.min(commonToAll.length, 16);
             for (var m = 0; m < showCommon; m++) {
-                html += '<span class="peer-overlap-tag common">' + commonToAll[m] + '</span>';
+                html += '<span class="peer-overlap-tag common peer-overlap-tag-link" data-ticker="' + commonToAll[m] + '" title="Click to find in table · Shift+click to show in network">' + commonToAll[m] + '</span>';
             }
             if (commonToAll.length > 16) {
                 html += '<span class="peer-overlap-tag more">+' + (commonToAll.length - 16) + ' more</span>';
@@ -2047,6 +2047,22 @@ function hideMetricSkeletons() {
         }
 
         panel.innerHTML = html;
+
+        // Wire up clickable peer overlap tags — click to find in table, shift+click to show in network
+        var tagLinks = panel.querySelectorAll('.peer-overlap-tag-link');
+        tagLinks.forEach(function(tag) {
+            tag.addEventListener('click', function(e) {
+                var ticker = tag.getAttribute('data-ticker');
+                if (!ticker) return;
+                if (e.shiftKey) {
+                    // Shift+click: show in network graph
+                    if (window.focusNetworkNode) window.focusNetworkNode(ticker);
+                } else {
+                    // Regular click: find in table and expand detail panel
+                    if (window.findCompanyInTable) window.findCompanyInTable(ticker);
+                }
+            });
+        });
 
         // Insert between comparison chart and grid
         gridEl.parentNode.insertBefore(panel, gridEl);
