@@ -140,6 +140,9 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .detail-stat-distbar-dot { box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(0,119,182,0.3); }
 [data-theme="light"] .detail-peer-tag { background: #e8e9ee; color: #1a1a2e; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-peer-tag-link:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.12); }
+[data-theme="light"] .insight-compare-btn:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.08); }
+[data-theme="light"] .insight-compare-btn.selected { color: #059669; border-color: #059669; background: rgba(5, 150, 105, 0.08); }
+[data-theme="light"] .insight-compare-btn.selected:hover { color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.08); }
 [data-theme="light"] .network-search-results { background: #fff; border-color: rgba(0,0,0,0.1); }
 [data-theme="light"] .network-search-result:hover,
 [data-theme="light"] .network-search-result.active { background: #f0f1f5; }
@@ -456,6 +459,58 @@ header h1 {
 
 .insight-clickable:hover .insight-cta {
     opacity: 1;
+}
+
+/* Insight compare buttons */
+.insight-compare-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.insight-compare-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--secondary);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    line-height: 1.4;
+}
+
+.insight-compare-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 180, 216, 0.08);
+    transform: translateY(-1px);
+}
+
+.insight-compare-btn:active {
+    transform: translateY(0);
+}
+
+.insight-compare-btn.selected {
+    border-color: var(--positive);
+    color: var(--positive);
+    background: rgba(6, 214, 160, 0.08);
+}
+
+.insight-compare-btn.selected:hover {
+    border-color: var(--negative);
+    color: var(--negative);
+    background: rgba(239, 71, 111, 0.08);
+}
+
+.icb-icon {
+    font-weight: 700;
+    font-size: 0.75rem;
 }
 
 /* === Sections === */
@@ -2360,6 +2415,7 @@ footer li::before {
     .section-nav,
     .control-btn,
     .insight-cta,
+    .insight-compare-actions,
     .trend-cta,
     .detail-network-btn,
     .detail-table-btn,

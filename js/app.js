@@ -207,7 +207,8 @@ function populateInsights(comp, trends) {
         icon: '💰',
         label: '$50M+ Club',
         value: over50M.length + ' companies',
-        detail: over50M.length + ' CEOs received more than $50 million in total compensation — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.'
+        detail: over50M.length + ' CEOs received more than $50 million in total compensation — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.',
+        _tickers: sorted[0] ? [sorted[0].ticker] : []
     });
 
     // 3. Extreme Pay Ratios (>1000:1)
@@ -217,7 +218,8 @@ function populateInsights(comp, trends) {
         icon: '⚖️',
         label: 'Extreme Ratios',
         value: extremeRatio.length + ' above 1,000:1',
-        detail: extremeRatio.length + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : '')
+        detail: extremeRatio.length + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : ''),
+        _tickers: maxRatioComp ? [maxRatioComp.ticker] : []
     });
 
     // 4. Top Sector by Median Pay
@@ -251,7 +253,8 @@ function populateInsights(comp, trends) {
             icon: '🎯',
             label: 'Zero Pay',
             value: zeroPay.length + (zeroPay.length === 1 ? ' CEO' : ' CEOs'),
-            detail: zeroNames + ' reported $0 total compensation — typically founder-CEOs with large equity stakes who forgo traditional pay.'
+            detail: zeroNames + ' reported $0 total compensation — typically founder-CEOs with large equity stakes who forgo traditional pay.',
+            _tickers: zeroPay.slice(0, 3).map(function(c) { return c.ticker; })
         });
     } else if (under1M.length > 0) {
         insights.push({
@@ -272,7 +275,8 @@ function populateInsights(comp, trends) {
             icon: '📏',
             label: 'Pay Range',
             value: span.toLocaleString() + '× span',
-            detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across the S&P 500.'
+            detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across the S&P 500.',
+            _tickers: [maxPay.ticker, minPay.ticker]
         });
     }
 
@@ -364,12 +368,28 @@ function populateInsights(comp, trends) {
         if (ins.action && ins.actionHint) {
             html += '<div class="insight-cta">' + ins.actionHint + ' →</div>';
         }
+        // Add compare buttons for insights that reference specific tickers
+        if (ins._tickers && ins._tickers.length > 0) {
+            html += '<div class="insight-compare-actions">';
+            ins._tickers.forEach(function(t) {
+                var isCompared = window._compareSet && window._compareSet.indexOf(t) >= 0;
+                html += '<button class="insight-compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + t + '" title="' + (isCompared ? 'Remove ' + t + ' from comparison' : 'Add ' + t + ' to comparison') + '"><span class="icb-icon">' + (isCompared ? '✓' : '+') + '</span> ' + t + '</button>';
+            });
+            html += '</div>';
+        }
         html += '</div>';
         card.innerHTML = html;
         if (ins.action) {
             card.style.cursor = 'pointer';
             card.addEventListener('click', ins.action);
         }
+        // Wire compare button click handlers (stop propagation to avoid triggering card action)
+        card.querySelectorAll('.insight-compare-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (window._toggleCompare) window._toggleCompare(btn.dataset.ticker, e);
+            });
+        });
         grid.appendChild(card);
     });
 }
@@ -1753,6 +1773,20 @@ function hideMetricSkeletons() {
                 btn.classList.remove('selected');
                 btn.textContent = '+';
                 btn.title = compareSet.length >= MAX_COMPARE ? 'Max ' + MAX_COMPARE + ' companies' : 'Add to comparison';
+            }
+        });
+        // Update insight card compare buttons (show ticker label, not just icon)
+        document.querySelectorAll('.insight-compare-btn').forEach(function(btn) {
+            var t = btn.dataset.ticker;
+            var icon = btn.querySelector('.icb-icon');
+            if (compareSet.indexOf(t) >= 0) {
+                btn.classList.add('selected');
+                if (icon) icon.textContent = '✓';
+                btn.title = 'Remove ' + t + ' from comparison';
+            } else {
+                btn.classList.remove('selected');
+                if (icon) icon.textContent = '+';
+                btn.title = compareSet.length >= MAX_COMPARE ? 'Max ' + MAX_COMPARE + ' companies' : 'Add ' + t + ' to comparison';
             }
         });
     }
