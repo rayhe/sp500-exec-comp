@@ -180,6 +180,97 @@ function populateMetrics(comp, trends) {
             growthSubEl.textContent = 'S&P 500, ' + (period || '2020–2024');
         }
     }
+
+    // === Interactive Metric Cards ===
+    // Each metric card becomes a navigation entry point into the data
+    var metricCards = document.querySelectorAll('.metric-card');
+    var topTicker = top.ticker;
+    var metricActions = [
+        { cta: 'Sort by compensation →', action: function() { sortTableByKey('total_compensation', 'desc'); } },
+        { cta: 'Sort by pay ratio →', action: function() { sortTableByKey('pay_ratio', 'desc'); } },
+        { cta: 'Sort by worker pay →', action: function() { sortTableByKey('median_worker_pay', 'desc'); } },
+        { cta: 'View ' + topTicker + ' details →', action: function() { if (window.findCompanyInTable) window.findCompanyInTable(topTicker); } },
+        { cta: 'View composition →', action: function() { scrollToSectionById('composition-section'); } },
+        { cta: 'View trends →', action: function() { scrollToSectionById('trends-section'); } }
+    ];
+
+    metricCards.forEach(function(card, i) {
+        if (i >= metricActions.length) return;
+        var def = metricActions[i];
+
+        // Add CTA text element
+        var ctaEl = document.createElement('div');
+        ctaEl.className = 'metric-card-cta';
+        ctaEl.textContent = def.cta;
+        card.appendChild(ctaEl);
+
+        // Make card focusable and interactive
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', card.querySelector('.metric-label').textContent + ': ' + card.querySelector('.metric-value').textContent + '. ' + def.cta.replace(' →', ''));
+
+        card.addEventListener('click', function() {
+            def.action();
+        });
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                def.action();
+            }
+        });
+    });
+}
+
+/* Metric card helper: sort table by a key and scroll to table section */
+function sortTableByKey(key, dir) {
+    currentSort = { key: key, dir: dir };
+    currentPage = 1;
+    activeSector = null;
+    searchTerm = '';
+    window._activeRatioBucket = null;
+
+    // Remove ratio filter chip if present
+    var ratioChip = document.getElementById('ratio-filter-chip');
+    if (ratioChip) ratioChip.remove();
+
+    // Clear search input
+    var searchInput = document.getElementById('table-search');
+    if (searchInput) searchInput.value = '';
+
+    // Clear sector chips
+    document.querySelectorAll('.chip').forEach(function(chip) {
+        chip.classList.remove('active');
+    });
+    var allChip = document.querySelector('.chip[data-sector="all"]');
+    if (allChip) allChip.classList.add('active');
+
+    // Update sort header indicators
+    document.querySelectorAll('th.sortable').forEach(function(t) {
+        t.classList.remove('sorted-asc', 'sorted-desc');
+        t.setAttribute('aria-sort', 'none');
+        if (t.dataset.sort === key) {
+            t.classList.add(dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            t.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : 'descending');
+        }
+    });
+
+    // Re-render and scroll
+    if (compData && compData.companies) renderTable(compData.companies);
+    if (window.highlightSectorBar) window.highlightSectorBar(null);
+    if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+    scrollToTable();
+    announce('Table sorted by ' + key.replace(/_/g, ' ') + ', ' + (dir === 'asc' ? 'ascending' : 'descending'));
+}
+
+/* Metric card helper: scroll to any section by ID */
+function scrollToSectionById(sectionId) {
+    var section = document.getElementById(sectionId);
+    if (section) {
+        var stickyH = getStickyOffset();
+        var sectionTop = section.getBoundingClientRect().top + window.scrollY - stickyH - 12;
+        window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        announce('Scrolled to ' + (section.querySelector('h2') ? section.querySelector('h2').textContent : sectionId));
+    }
 }
 
 function populateInsights(comp, trends) {
