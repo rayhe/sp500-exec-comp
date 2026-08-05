@@ -838,15 +838,21 @@ function renderTable(companies) {
     var tbody = document.getElementById('comp-tbody');
     tbody.innerHTML = '';
 
+    // Compute max compensation in filtered view for inline data bars
+    var maxFilteredComp = 0;
+    filtered.forEach(function(c) { if (c.total_compensation > maxFilteredComp) maxFilteredComp = c.total_compensation; });
+
     pageItems.forEach(function(c, i) {
         var globalIdx = startIdx + i;
         var tr = document.createElement('tr');
 
-        // Compensation value with optional top-10 badge
-        var compHtml = '<span class="comp-value">' + formatCurrency(c.total_compensation) + '</span>';
+        // Compensation value with inline data bar + optional top-10 badge
+        var barPct = maxFilteredComp > 0 ? Math.max(0, Math.min(100, (c.total_compensation || 0) / maxFilteredComp * 100)) : 0;
+        var compHtml = '<div class="comp-bar-cell"><div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(c.total_compensation) + '</span>';
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
+        compHtml += '</div>';
 
         // Pay ratio with color class + optional extreme badge
         var ratioClass = c.pay_ratio > 2000 ? 'ratio-high' : c.pay_ratio > 500 ? 'ratio-mid' : 'ratio-low';

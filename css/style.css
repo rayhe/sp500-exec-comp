@@ -1392,7 +1392,27 @@ td .ticker {
     font-size: 0.85rem;
 }
 td .company { font-weight: 500; }
-td .comp-value { font-weight: 600; }
+/* Inline data bar for compensation magnitude */
+.comp-bar-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+.comp-bar {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, rgba(0, 180, 216, 0.18) 0%, rgba(0, 180, 216, 0.08) 100%);
+    pointer-events: none;
+    transition: width 0.3s ease;
+}
+[data-theme="light"] .comp-bar {
+    background: linear-gradient(90deg, rgba(0, 119, 182, 0.14) 0%, rgba(0, 119, 182, 0.05) 100%);
+}
+td .comp-value { font-weight: 600; position: relative; z-index: 1; }
 td .ratio-high { color: var(--negative); font-weight: 600; }
 td .ratio-mid { color: var(--warning); font-weight: 600; }
 td .ratio-low { color: var(--positive); font-weight: 600; }
@@ -2578,6 +2598,7 @@ footer li::before {
     .outlier-badge.high-ratio { border-color: #b45309 !important; color: #b45309 !important; background: #fffbeb !important; }
     .outlier-badge.low-ratio { border-color: #059669 !important; color: #059669 !important; background: #f0fdf4 !important; }
     .data-na { background: #fffbeb !important; border-color: #b45309 !important; color: #6b7280 !important; }
+    .comp-bar { display: none !important; }
     .data-na-icon { color: #b45309 !important; }
     .detail-data-notice { background: #fffbeb !important; border-color: #b45309 !important; border-left-color: #b45309 !important; color: #374151 !important; }
     .detail-data-notice strong { color: #b45309 !important; }
@@ -3056,6 +3077,14 @@ footer li::before {
     .outlier-badge {
         border-width: 2px;
         font-weight: 700;
+    }
+
+    /* --- Inline data bars (higher contrast) --- */
+    .comp-bar {
+        background: linear-gradient(90deg, rgba(0, 180, 216, 0.3) 0%, rgba(0, 180, 216, 0.15) 100%);
+    }
+    [data-theme="light"] .comp-bar {
+        background: linear-gradient(90deg, rgba(0, 119, 182, 0.22) 0%, rgba(0, 119, 182, 0.08) 100%);
     }
 
     /* --- Comparison --- */
