@@ -298,9 +298,17 @@ function drawTrendChart(trends) {
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('r', 7).attr('stroke-width', 3);
+            var yoyHtml = '';
+            if (d.yoy_change) {
+                var isNeg = d.yoy_change.indexOf('-') === 0;
+                var yoyColor = isNeg ? '#ef476f' : '#06d6a0';
+                var yoyPrefix = isNeg ? '' : '+';
+                yoyHtml = '<div class="ct-row"><span class="ct-label">YoY Change</span><span class="ct-val" style="color:' + yoyColor + '">' + yoyPrefix + d.yoy_change + '</span></div>';
+            }
             showChartTooltip(event,
                 '<div class="ct-title">FY ' + d.year + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>');
+                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>' +
+                yoyHtml);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
@@ -317,6 +325,57 @@ function drawTrendChart(trends) {
         .attr('y', function(d) { return y(d.median_pay) - 12; })
         .attr('text-anchor', 'middle')
         .text(function(d) { return fmtCurr(d.median_pay); });
+
+    // YoY growth annotations between consecutive dots
+    var yoyPairs = [];
+    for (var i = 1; i < data.length; i++) {
+        if (data[i].yoy_change) {
+            yoyPairs.push({
+                fromYear: data[i - 1].year,
+                toYear: data[i].year,
+                fromPay: data[i - 1].median_pay,
+                toPay: data[i].median_pay,
+                change: data[i].yoy_change
+            });
+        }
+    }
+
+    var yoyGroup = svg.append('g').attr('class', 'yoy-annotations');
+
+    yoyPairs.forEach(function(d) {
+        var midX = (x(d.fromYear) + x(d.toYear)) / 2;
+        var midY = (y(d.fromPay) + y(d.toPay)) / 2;
+        var isNeg = d.change.indexOf('-') === 0;
+        var labelColor = isNeg ? '#ef476f' : '#06d6a0';
+        var labelText = isNeg ? d.change : '+' + d.change;
+        var arrow = isNeg ? '▼' : '▲';
+        // Position below line to avoid dot value labels above
+        var labelY = midY + 22;
+
+        var annGroup = yoyGroup.append('g');
+
+        // Render text first to measure bounding box, then prepend rect behind it
+        var textNode = annGroup.append('text')
+            .attr('x', midX)
+            .attr('y', labelY)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '9.5px')
+            .attr('font-weight', '600')
+            .attr('font-family', 'JetBrains Mono, monospace')
+            .attr('fill', labelColor)
+            .text(arrow + ' ' + labelText);
+
+        // Background pill behind text for contrast
+        var bbox = textNode.node().getBBox();
+        var padX = 5, padY = 2;
+        annGroup.insert('rect', 'text')
+            .attr('x', bbox.x - padX)
+            .attr('y', bbox.y - padY)
+            .attr('width', bbox.width + padX * 2)
+            .attr('height', bbox.height + padY * 2)
+            .attr('rx', 6)
+            .attr('fill', typeof isDarkTheme === 'function' && !isDarkTheme() ? 'rgba(255,255,255,0.85)' : 'rgba(15,15,26,0.8)');
+    });
 }
 
 /* --- Pay Ratio Distribution (Histogram) --- */
