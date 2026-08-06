@@ -2798,6 +2798,39 @@ function hideMetricSkeletons() {
                 }
                 break;
 
+            case 'i':
+            case 'I':
+                e.preventDefault();
+                var insightsSection = document.getElementById('insights-section');
+                if (insightsSection) {
+                    var hh3 = getStickyOffset();
+                    var it = insightsSection.getBoundingClientRect().top + window.scrollY - hh3 - 12;
+                    window.scrollTo({ top: it, behavior: getScrollBehavior() });
+                }
+                break;
+
+            case 'o':
+            case 'O':
+                e.preventDefault();
+                var compSection2 = document.getElementById('composition-section');
+                if (compSection2) {
+                    var hh4 = getStickyOffset();
+                    var ot = compSection2.getBoundingClientRect().top + window.scrollY - hh4 - 12;
+                    window.scrollTo({ top: ot, behavior: getScrollBehavior() });
+                }
+                break;
+
+            case 'r':
+            case 'R':
+                e.preventDefault();
+                var trendsSection = document.getElementById('trends-section');
+                if (trendsSection) {
+                    var hh5 = getStickyOffset();
+                    var rt = trendsSection.getBoundingClientRect().top + window.scrollY - hh5 - 12;
+                    window.scrollTo({ top: rt, behavior: getScrollBehavior() });
+                }
+                break;
+
             case 'd':
             case 'D':
                 e.preventDefault();
