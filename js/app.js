@@ -1340,6 +1340,9 @@ function serializeState() {
         params.push('rmin=' + window._activeRatioBucket.min);
         params.push('rmax=' + (window._activeRatioBucket.max === Infinity ? 'inf' : window._activeRatioBucket.max));
     }
+    if (window._compareSet && window._compareSet.length > 0) {
+        params.push('cmp=' + window._compareSet.map(encodeURIComponent).join(','));
+    }
     return params.length > 0 ? '#' + params.join('&') : '';
 }
 
@@ -1870,6 +1873,7 @@ function hideMetricSkeletons() {
         }
         updateCompareTray();
         updateCompareButtons();
+        pushState();
     }
 
     function updateCompareButtons() {
@@ -1930,6 +1934,7 @@ function hideMetricSkeletons() {
         updateCompareButtons();
         var section = document.getElementById('comparison-section');
         if (section) section.classList.remove('visible');
+        pushState();
     }
 
     /* === Comparison Summary Chart === */
@@ -2433,6 +2438,25 @@ function hideMetricSkeletons() {
     window._toggleCompare = toggleCompare;
     window._updateCompareButtons = updateCompareButtons;
 
+    // Restore comparison set from URL hash (after comparison system is initialized)
+    (function restoreCompareFromHash() {
+        var state = parseHash();
+        if (!state || !state.cmp) return;
+        var tickers = state.cmp.split(',').map(decodeURIComponent).filter(function(t) {
+            return t && companies.some(function(c) { return c.ticker === t; });
+        }).slice(0, MAX_COMPARE);
+        if (tickers.length === 0) return;
+        tickers.forEach(function(t) {
+            if (compareSet.indexOf(t) < 0) compareSet.push(t);
+        });
+        updateCompareTray();
+        updateCompareButtons();
+        // Auto-show comparison view if 2+ valid tickers
+        if (compareSet.length >= 2) {
+            setTimeout(function() { showComparison(); }, 150);
+        }
+    })();
+
     // Expose comparison chart redraw for theme toggle
     window._redrawComparisonChart = function() {
         var section = document.getElementById('comparison-section');
@@ -2475,6 +2499,30 @@ function hideMetricSkeletons() {
             } else {
                 window.highlightRatioBucket(null);
             }
+        }
+
+        // Restore or clear comparison set from hash
+        var hashState = parseHash();
+        var hashCmp = hashState && hashState.cmp
+            ? hashState.cmp.split(',').map(decodeURIComponent).filter(function(t) {
+                return t && companies.some(function(c) { return c.ticker === t; });
+            }).slice(0, MAX_COMPARE)
+            : [];
+        // Sync compareSet with hash
+        compareSet.length = 0;
+        hashCmp.forEach(function(t) { compareSet.push(t); });
+        updateCompareTray();
+        updateCompareButtons();
+        // Show or hide comparison section
+        var compSection = document.getElementById('comparison-section');
+        if (compareSet.length >= 2) {
+            showComparison();
+        } else if (compSection) {
+            compSection.classList.remove('visible');
+            var chartEl = document.getElementById('comparison-chart');
+            if (chartEl) chartEl.innerHTML = '';
+            var overlapEl = document.getElementById('peer-overlap-panel');
+            if (overlapEl) overlapEl.remove();
         }
     });
 
