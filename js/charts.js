@@ -50,7 +50,7 @@ var _chartData = null;
 
 function initCharts(companies, trends, compData) {
     _chartData = { companies: companies, trends: trends, compData: compData };
-    drawSectorChart(trends);
+    drawSectorChart(trends, companies);
     drawTrendChart(trends);
     drawRatioChart(companies);
     drawTop10Chart(companies);
@@ -76,7 +76,7 @@ function redrawAllCharts() {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
     });
-    drawSectorChart(_chartData.trends);
+    drawSectorChart(_chartData.trends, _chartData.companies);
     drawTrendChart(_chartData.trends);
     drawRatioChart(_chartData.companies);
     drawTop10Chart(_chartData.companies);
@@ -120,10 +120,11 @@ window.highlightSectorBar = function(sectorName) {
         if (!d || !d.sector) return;
         d3.select(this).attr('opacity', !sectorName || d.sector === sectorName ? 1 : 0.4);
     });
+    // Distribution elements update on full redraw via redrawAllCharts
 };
 
-/* --- Sector Bar Chart --- */
-function drawSectorChart(trends) {
+/* --- Sector Bar Chart with Distribution Box Plot --- */
+function drawSectorChart(trends, companies) {
     var container = document.getElementById('sector-chart');
     var data = trends.median_pay_by_sector_sp500_fy2024 && trends.median_pay_by_sector_sp500_fy2024.data
         ? trends.median_pay_by_sector_sp500_fy2024.data.filter(function(d) { return d.median_pay; })
@@ -134,9 +135,52 @@ function drawSectorChart(trends) {
         return;
     }
 
+    // Compute per-sector distribution from company data
+    var sectorDist = {};
+    if (companies && companies.length > 0) {
+        companies.forEach(function(c) {
+            if (!c.sector || c.total_compensation == null) return;
+            if (!sectorDist[c.sector]) sectorDist[c.sector] = [];
+            sectorDist[c.sector].push(c.total_compensation);
+        });
+        Object.keys(sectorDist).forEach(function(s) {
+            var vals = sectorDist[s].sort(function(a, b) { return a - b; });
+            var n = vals.length;
+            var q1Idx = Math.floor(n * 0.25);
+            var q3Idx = Math.floor(n * 0.75);
+            sectorDist[s] = {
+                min: vals[0],
+                q1: vals[q1Idx],
+                median: vals[Math.floor(n * 0.5)],
+                q3: vals[q3Idx],
+                max: vals[n - 1],
+                count: n,
+                values: vals
+            };
+        });
+    }
+
+    // Merge distribution data into chart data
+    data.forEach(function(d) {
+        if (sectorDist[d.sector]) {
+            d._dist = sectorDist[d.sector];
+        }
+    });
+
     data.sort(function(a, b) { return b.median_pay - a.median_pay; });
 
-    var margin = { top: 20, right: 80, bottom: 30, left: 160 };
+    // Use Q3 (75th pct) for x-axis max to show distribution without extreme outlier stretching
+    var xMax = d3.max(data, function(d) {
+        return d._dist ? d._dist.q3 : d.median_pay;
+    });
+    // But ensure max doesn't clip — extend to cover max values with capped whiskers
+    var absMax = d3.max(data, function(d) {
+        return d._dist ? d._dist.max : d.median_pay;
+    });
+    // Use the larger of Q3*1.25 or median_pay*1.1 to give room for whiskers
+    xMax = Math.max(xMax * 1.25, d3.max(data, function(d) { return d.median_pay; }) * 1.3);
+
+    var margin = { top: 20, right: 100, bottom: 30, left: 160 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = Math.max(280, data.length * 32);
 
@@ -146,7 +190,7 @@ function drawSectorChart(trends) {
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    var x = d3.scaleLinear().domain([0, d3.max(data, function(d) { return d.median_pay; }) * 1.1]).range([0, w]);
+    var x = d3.scaleLinear().domain([0, xMax]).range([0, w]);
     var y = d3.scaleBand().domain(data.map(function(d) { return d.sector; })).range([0, h]).padding(0.3);
 
     // Grid
@@ -158,7 +202,76 @@ function drawSectorChart(trends) {
     svg.append('g').attr('class', 'axis')
         .call(d3.axisLeft(y).tickSize(0).tickPadding(8));
 
-    // Bars
+    // Draw box plot elements for each sector
+    var bandH = y.bandwidth();
+    var boxH = bandH * 0.6;
+    var boxOffset = (bandH - boxH) / 2;
+
+    data.forEach(function(d) {
+        if (!d._dist) return;
+        var dist = d._dist;
+        var cy = y(d.sector) + bandH / 2;
+        var byTop = y(d.sector) + boxOffset;
+
+        var isActive = activeSector && d.sector === activeSector;
+        var isDimmed = activeSector && d.sector !== activeSector;
+        var baseOpacity = isDimmed ? 0.15 : 0.5;
+
+        // Whisker line: min → max (capped at chart width)
+        var whiskerMax = Math.min(x(dist.max), w);
+        svg.append('line')
+            .attr('class', 'dist-whisker')
+            .attr('x1', x(dist.min))
+            .attr('x2', whiskerMax)
+            .attr('y1', cy)
+            .attr('y2', cy)
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 1)
+            .attr('opacity', baseOpacity)
+            .attr('stroke-dasharray', '3,3');
+
+        // Whisker caps (short vertical lines at min and max)
+        var capH = boxH * 0.4;
+        svg.append('line')
+            .attr('class', 'dist-cap')
+            .attr('x1', x(dist.min)).attr('x2', x(dist.min))
+            .attr('y1', cy - capH / 2).attr('y2', cy + capH / 2)
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', baseOpacity);
+        svg.append('line')
+            .attr('class', 'dist-cap')
+            .attr('x1', whiskerMax).attr('x2', whiskerMax)
+            .attr('y1', cy - capH / 2).attr('y2', cy + capH / 2)
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', baseOpacity);
+
+        // IQR box: Q1 → Q3
+        svg.append('rect')
+            .attr('class', 'dist-box')
+            .attr('x', x(dist.q1))
+            .attr('y', byTop)
+            .attr('width', Math.max(x(dist.q3) - x(dist.q1), 2))
+            .attr('height', boxH)
+            .attr('fill', '#00b4d8')
+            .attr('opacity', isDimmed ? 0.08 : 0.18)
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', isDimmed ? 0.5 : 1)
+            .attr('stroke-opacity', isDimmed ? 0.15 : 0.4)
+            .attr('rx', 2);
+
+        // Median line inside box
+        svg.append('line')
+            .attr('class', 'dist-median')
+            .attr('x1', x(dist.median)).attr('x2', x(dist.median))
+            .attr('y1', byTop).attr('y2', byTop + boxH)
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 2)
+            .attr('opacity', isDimmed ? 0.2 : 0.7);
+    });
+
+    // Bars (median) — drawn on top of distribution
     svg.selectAll('.bar')
         .data(data)
         .join('rect')
@@ -181,10 +294,16 @@ function drawSectorChart(trends) {
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
-            showChartTooltip(event,
-                '<div class="ct-title">' + d.sector + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>' +
-                '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>');
+            var html = '<div class="ct-title">' + d.sector + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>';
+            if (d._dist) {
+                html += '<div class="ct-row"><span class="ct-label">25th Percentile</span><span class="ct-val">' + fmtCurr(d._dist.q1) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">75th Percentile</span><span class="ct-val">' + fmtCurr(d._dist.q3) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Range</span><span class="ct-val">' + fmtCurr(d._dist.min) + ' — ' + fmtCurr(d._dist.max) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Companies</span><span class="ct-val">' + d._dist.count + '</span></div>';
+            }
+            html += '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+            showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function(event, d) {
@@ -199,7 +318,7 @@ function drawSectorChart(trends) {
             if (window.filterBySector) window.filterBySector(d.sector);
         });
 
-    // Labels
+    // Labels — show median and count
     svg.selectAll('.bar-label')
         .data(data)
         .join('text')
@@ -207,11 +326,68 @@ function drawSectorChart(trends) {
         .attr('x', function(d) { return x(d.median_pay) + 6; })
         .attr('y', function(d) { return y(d.sector) + y.bandwidth() / 2; })
         .attr('dy', '0.35em')
-        .text(function(d) { return fmtCurr(d.median_pay); })
+        .text(function(d) {
+            var label = fmtCurr(d.median_pay);
+            if (d._dist) label += ' (' + d._dist.count + ')';
+            return label;
+        })
         .attr('opacity', function(d) {
             if (activeSector) return d.sector === activeSector ? 1 : 0.4;
             return 1;
         });
+
+    // Distribution legend below chart
+    var legendG = svg.append('g')
+        .attr('class', 'dist-legend')
+        .attr('transform', 'translate(0,' + (h + 8) + ')');
+
+    var legendItems = [
+        { type: 'bar', label: 'Median', color: '#00b4d8', opacity: 0.8 },
+        { type: 'box', label: 'IQR (25th–75th)', color: '#00b4d8', opacity: 0.18 },
+        { type: 'whisker', label: 'Min–Max range', color: '#00b4d8', opacity: 0.5 }
+    ];
+
+    var lx = 0;
+    var textColor = typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280';
+    legendItems.forEach(function(item) {
+        if (item.type === 'bar') {
+            legendG.append('rect')
+                .attr('x', lx).attr('y', 2)
+                .attr('width', 16).attr('height', 10)
+                .attr('fill', item.color).attr('opacity', item.opacity)
+                .attr('rx', 2);
+        } else if (item.type === 'box') {
+            legendG.append('rect')
+                .attr('x', lx).attr('y', 2)
+                .attr('width', 16).attr('height', 10)
+                .attr('fill', item.color).attr('opacity', item.opacity)
+                .attr('stroke', item.color).attr('stroke-width', 1).attr('stroke-opacity', 0.4)
+                .attr('rx', 2);
+        } else if (item.type === 'whisker') {
+            legendG.append('line')
+                .attr('x1', lx).attr('x2', lx + 16)
+                .attr('y1', 7).attr('y2', 7)
+                .attr('stroke', item.color).attr('stroke-width', 1)
+                .attr('opacity', item.opacity).attr('stroke-dasharray', '3,3');
+            legendG.append('line')
+                .attr('x1', lx).attr('x2', lx)
+                .attr('y1', 4).attr('y2', 10)
+                .attr('stroke', item.color).attr('stroke-width', 1.5)
+                .attr('opacity', item.opacity);
+            legendG.append('line')
+                .attr('x1', lx + 16).attr('x2', lx + 16)
+                .attr('y1', 4).attr('y2', 10)
+                .attr('stroke', item.color).attr('stroke-width', 1.5)
+                .attr('opacity', item.opacity);
+        }
+        legendG.append('text')
+            .attr('x', lx + 22).attr('y', 11)
+            .attr('fill', textColor)
+            .attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(item.label);
+        lx += item.label.length * 6 + 36;
+    });
 }
 
 /* --- Trend Line Chart --- */
