@@ -822,9 +822,10 @@ function drawTop10Chart(companies) {
         .text(function(d) { return fmtCurr(d.total_compensation); });
 }
 
-/* --- Compensation Composition (Stacked Horizontal Bar) --- */
+/* --- Compensation Composition (Donut Chart with Granular Breakdown) --- */
 function drawCompositionChart(trends) {
     var container = document.getElementById('composition-chart');
+    container.innerHTML = '';
     var compComp = trends.compensation_composition;
     if (!compComp || !compComp.s_and_p_500) {
         container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No composition data</p>';
@@ -832,77 +833,202 @@ function drawCompositionChart(trends) {
     }
 
     var sp = compComp.s_and_p_500;
-    var stockPct = sp.stock_awards_pct || 71.6;
-    var salaryPct = 7.6; // ~$1.3M / $17.1M
-    var perksPct = 1.7; // ~$286K / $17.1M
-    var otherPct = 100 - stockPct - salaryPct - perksPct;
+    var detail = compComp.s_and_p_500_fy2024_detail;
 
-    var segments = [
-        { label: 'Stock Awards', pct: stockPct, color: '#00b4d8', value: '$10.3M median' },
-        { label: 'Non-Equity Incentive', pct: otherPct, color: '#a78bfa', value: 'Performance-based cash' },
-        { label: 'Base Salary', pct: salaryPct, color: '#06d6a0', value: '$1.3M median' },
-        { label: 'Perks & Other', pct: perksPct, color: '#ffd166', value: '$286K median' }
-    ];
+    // Build segments from granular detail data when available
+    var segments;
+    if (detail && detail.median_performance_stock_awards) {
+        segments = [
+            { label: 'Performance Stock', value: detail.median_performance_stock_awards, yoy: detail.perf_stock_yoy_change, color: '#00b4d8', desc: 'Performance-based equity awards' },
+            { label: 'Restricted Stock / RSUs', value: detail.median_restricted_stock, yoy: detail.restricted_stock_yoy_change, color: '#0096c7', desc: 'Time-vesting restricted stock units' },
+            { label: 'Discretionary Bonus', value: detail.median_discretionary_bonus, yoy: detail.bonus_yoy_change, color: '#a78bfa', desc: 'Board-approved cash bonuses' },
+            { label: 'Non-Equity Incentive', value: detail.median_neip_payout, yoy: detail.neip_yoy_change, color: '#8b5cf6', desc: 'Formula-based incentive plan payouts' },
+            { label: 'Base Salary', value: sp.median_salary, color: '#06d6a0', desc: 'Fixed annual cash compensation' },
+            { label: 'Perks & Other', value: sp.median_perks, yoy: sp.perks_yoy_change, color: '#ffd166', desc: 'Security, travel, insurance, etc.' }
+        ];
+    } else {
+        // Fallback: 4-segment approximation from aggregate data
+        var stockPct = sp.stock_awards_pct || 71.6;
+        var impliedTotal = sp.median_stock_awards ? sp.median_stock_awards / (stockPct / 100) : 17100000;
+        var salaryPct = sp.median_salary ? (sp.median_salary / impliedTotal * 100) : 7.6;
+        var perksPct = sp.median_perks ? (sp.median_perks / impliedTotal * 100) : 1.7;
+        var otherPct = 100 - stockPct - salaryPct - perksPct;
+        segments = [
+            { label: 'Stock Awards', value: sp.median_stock_awards || impliedTotal * stockPct / 100, yoy: sp.stock_awards_yoy_change, color: '#00b4d8', desc: 'Equity-based compensation' },
+            { label: 'Non-Equity Incentive', value: impliedTotal * otherPct / 100, color: '#a78bfa', desc: 'Performance-based cash' },
+            { label: 'Base Salary', value: sp.median_salary || impliedTotal * salaryPct / 100, color: '#06d6a0', desc: 'Fixed annual cash' },
+            { label: 'Perks & Other', value: sp.median_perks || impliedTotal * perksPct / 100, yoy: sp.perks_yoy_change, color: '#ffd166', desc: 'Benefits and perquisites' }
+        ];
+    }
 
-    var margin = { top: 10, right: 20, bottom: 10, left: 20 };
-    var w = container.clientWidth - margin.left - margin.right;
-    var barH = 40;
-
-    var svg = d3.select('#composition-chart').append('svg')
-        .attr('width', w + margin.left + margin.right)
-        .attr('height', barH + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-    var xPos = 0;
+    // Filter out zero-value segments and compute percentages
+    segments = segments.filter(function(s) { return s.value && s.value > 0; });
+    var total = segments.reduce(function(s, seg) { return s + seg.value; }, 0);
     segments.forEach(function(seg) {
-        var segW = (seg.pct / 100) * w;
-        svg.append('rect')
-            .attr('x', xPos)
-            .attr('y', 0)
-            .attr('width', Math.max(segW - 2, 0))
-            .attr('height', barH)
-            .attr('fill', seg.color)
-            .attr('rx', 4)
-            .attr('opacity', 0.85)
-            .style('cursor', 'pointer')
-            .on('mouseover', function(event) {
-                d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
-                showChartTooltip(event,
-                    '<div class="ct-title">' + seg.label + '</div>' +
-                    '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + seg.pct.toFixed(1) + '%</span></div>' +
-                    '<div class="ct-row"><span class="ct-label">Median Value</span><span class="ct-val">' + seg.value + '</span></div>');
-            })
-            .on('mousemove', function(event) { positionChartTooltip(event); })
-            .on('mouseout', function() {
-                d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
-                hideChartTooltip();
-            });
-
-        if (segW > 50) {
-            svg.append('text')
-                .attr('x', xPos + segW / 2)
-                .attr('y', barH / 2)
-                .attr('dy', '0.35em')
-                .attr('text-anchor', 'middle')
-                .attr('fill', '#fff')
-                .attr('font-size', '12px')
-                .attr('font-weight', '600')
-                .attr('font-family', 'Inter, system-ui, sans-serif')
-                .text(seg.pct.toFixed(1) + '%');
-        }
-        xPos += segW;
+        seg.pct = total > 0 ? (seg.value / total * 100) : 0;
     });
 
-    // Legend below — HTML flexbox for responsive wrapping
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#6b7280';
+    var bgStroke = dark ? 'rgba(15,15,26,0.6)' : 'rgba(255,255,255,0.8)';
+
+    // Donut chart dimensions — responsive to container
+    var containerW = container.clientWidth;
+    var chartSize = Math.min(300, containerW - 60);
+    if (chartSize < 200) chartSize = 200;
+    var outerRadius = chartSize / 2;
+    var innerRadius = outerRadius * 0.55;
+    var hoverExpand = 8;
+
+    // Wrapper for centering chart + legend
+    var wrapper = document.createElement('div');
+    wrapper.className = 'composition-donut-wrapper';
+    container.appendChild(wrapper);
+
+    // SVG element
+    var svgW = chartSize + hoverExpand * 2 + 4;
+    var svgH = svgW;
+    var svgEl = d3.select(wrapper).append('svg')
+        .attr('width', svgW)
+        .attr('height', svgH)
+        .attr('class', 'composition-donut-svg');
+
+    var g = svgEl.append('g')
+        .attr('transform', 'translate(' + (svgW / 2) + ',' + (svgH / 2) + ')');
+
+    // Pie layout
+    var pie = d3.pie()
+        .value(function(d) { return d.value; })
+        .sort(null)
+        .padAngle(0.025);
+
+    var arc = d3.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius)
+        .cornerRadius(3);
+
+    var arcHover = d3.arc()
+        .innerRadius(innerRadius - 2)
+        .outerRadius(outerRadius + hoverExpand)
+        .cornerRadius(4);
+
+    var arcs = pie(segments);
+
+    // Draw donut segments
+    g.selectAll('.donut-seg')
+        .data(arcs)
+        .join('path')
+        .attr('class', 'donut-seg')
+        .attr('d', arc)
+        .attr('fill', function(d) { return d.data.color; })
+        .attr('opacity', 0.88)
+        .attr('stroke', bgStroke)
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .style('transition', 'opacity 0.15s')
+        .on('mouseover', function(event, d) {
+            d3.select(this)
+                .attr('d', arcHover)
+                .attr('opacity', 1)
+                .attr('stroke-width', 0);
+
+            // Dim other segments
+            g.selectAll('.donut-seg').filter(function(dd) { return dd !== d; })
+                .attr('opacity', 0.4);
+
+            var yoyHtml = '';
+            if (d.data.yoy) {
+                var isNeg = d.data.yoy.indexOf('-') === 0;
+                var isFlat = d.data.yoy.toLowerCase() === 'flat';
+                var yoyColor = isNeg ? '#ef476f' : (isFlat ? mutedColor : '#06d6a0');
+                var yoyPrefix = (!isNeg && !isFlat && d.data.yoy.indexOf('+') !== 0) ? '+' : '';
+                yoyHtml = '<div class="ct-row"><span class="ct-label">YoY Change</span><span class="ct-val" style="color:' + yoyColor + '">' + yoyPrefix + d.data.yoy + '</span></div>';
+            }
+
+            showChartTooltip(event,
+                '<div class="ct-title">' + d.data.label + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median Value</span><span class="ct-val">' + fmtCurr(d.data.value) + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + d.data.pct.toFixed(1) + '%</span></div>' +
+                yoyHtml +
+                '<div class="ct-row ct-sub"><span class="ct-label">' + d.data.desc + '</span></div>');
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() {
+            g.selectAll('.donut-seg')
+                .attr('d', arc)
+                .attr('opacity', 0.88)
+                .attr('stroke', bgStroke)
+                .attr('stroke-width', 2);
+            hideChartTooltip();
+        });
+
+    // Percentage labels on larger segments (> 8%)
+    g.selectAll('.donut-label')
+        .data(arcs)
+        .join('text')
+        .attr('class', 'donut-label')
+        .attr('transform', function(d) {
+            var labelArc = d3.arc().innerRadius(innerRadius + (outerRadius - innerRadius) * 0.45).outerRadius(outerRadius);
+            return 'translate(' + labelArc.centroid(d) + ')';
+        })
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.35em')
+        .attr('fill', '#fff')
+        .attr('font-size', function(d) { return d.data.pct >= 15 ? '12px' : '10px'; })
+        .attr('font-weight', '700')
+        .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+        .attr('pointer-events', 'none')
+        .attr('opacity', function(d) { return d.data.pct >= 8 ? 0.95 : 0; })
+        .text(function(d) { return d.data.pct.toFixed(0) + '%'; });
+
+    // Center text: total compensation
+    g.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-0.2em')
+        .attr('fill', textColor)
+        .attr('font-size', '22px')
+        .attr('font-weight', '700')
+        .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+        .text(fmtCurr(total));
+
+    g.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '1.3em')
+        .attr('fill', mutedColor)
+        .attr('font-size', '11px')
+        .attr('font-weight', '500')
+        .attr('font-family', "'Inter', sans-serif")
+        .attr('letter-spacing', '0.5px')
+        .text('MEDIAN TOTAL');
+
+    // Legend with YoY badges — HTML for responsive wrapping
     var legendDiv = document.createElement('div');
     legendDiv.className = 'composition-legend';
     segments.forEach(function(seg) {
         var item = document.createElement('div');
         item.className = 'composition-legend-item';
-        item.innerHTML = '<span class="composition-legend-dot" style="background:' + seg.color + '"></span>' +
-            '<span class="composition-legend-text">' + seg.label + ' (' + seg.pct.toFixed(1) + '%) — ' + seg.value + '</span>';
+
+        var yoyBadge = '';
+        if (seg.yoy) {
+            var isNeg = seg.yoy.indexOf('-') === 0;
+            var isFlat = seg.yoy.toLowerCase() === 'flat';
+            var badgeClass = isNeg ? 'comp-yoy-neg' : (isFlat ? 'comp-yoy-flat' : 'comp-yoy-pos');
+            var prefix = (!isNeg && !isFlat && seg.yoy.indexOf('+') !== 0) ? '+' : '';
+            yoyBadge = '<span class="comp-yoy-badge ' + badgeClass + '">' + prefix + seg.yoy + '</span>';
+        }
+
+        item.innerHTML =
+            '<span class="composition-legend-dot" style="background:' + seg.color + '"></span>' +
+            '<span class="composition-legend-label">' + seg.label + '</span>' +
+            '<span class="composition-legend-val">' + fmtCurr(seg.value) + ' <span class="composition-legend-pct">(' + seg.pct.toFixed(1) + '%)</span>' + yoyBadge + '</span>';
         legendDiv.appendChild(item);
     });
-    container.appendChild(legendDiv);
+    wrapper.appendChild(legendDiv);
+
+    // Source note
+    var sourceNote = document.createElement('div');
+    sourceNote.className = 'composition-source';
+    sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2025') + ' · FY' + (sp.fiscal_year || 2024);
+    wrapper.appendChild(sourceNote);
 }

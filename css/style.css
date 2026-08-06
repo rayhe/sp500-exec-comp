@@ -1576,27 +1576,102 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
 /* === Composition Legend (HTML flexbox) === */
 .composition-legend {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px 24px;
-    padding: 14px 0 0 0;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    width: 100%;
+    max-width: 440px;
 }
 .composition-legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 .composition-legend-dot {
     width: 12px;
     height: 12px;
-    border-radius: 2px;
+    border-radius: 3px;
     flex-shrink: 0;
     display: inline-block;
 }
-.composition-legend-text {
-    font-size: 0.75rem;
+.composition-legend-label {
+    font-size: 0.78rem;
     color: var(--text-secondary);
     font-family: var(--font);
     white-space: nowrap;
+    min-width: 130px;
+}
+.composition-legend-val {
+    font-size: 0.78rem;
+    color: var(--text);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.composition-legend-pct {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* YoY badges for composition */
+.comp-yoy-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.comp-yoy-pos {
+    background: rgba(6,214,160,0.15);
+    color: #06d6a0;
+    border: 1px solid rgba(6,214,160,0.3);
+}
+.comp-yoy-neg {
+    background: rgba(239,71,111,0.15);
+    color: #ef476f;
+    border: 1px solid rgba(239,71,111,0.3);
+}
+.comp-yoy-flat {
+    background: rgba(107,114,128,0.15);
+    color: #6b7280;
+    border: 1px solid rgba(107,114,128,0.3);
+}
+
+/* Donut chart wrapper */
+.composition-donut-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.composition-donut-svg {
+    display: block;
+}
+.composition-source {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    opacity: 0.6;
+    text-align: center;
+}
+
+/* Light theme overrides for composition */
+[data-theme="light"] .comp-yoy-pos {
+    background: rgba(5,150,105,0.1);
+    color: #059669;
+    border-color: rgba(5,150,105,0.25);
+}
+[data-theme="light"] .comp-yoy-neg {
+    background: rgba(220,38,38,0.1);
+    color: #dc2626;
+    border-color: rgba(220,38,38,0.25);
+}
+[data-theme="light"] .composition-legend-label {
+    color: #4b5563;
 }
 
 /* === Trends & Context Section === */
@@ -2442,6 +2517,9 @@ footer li::before {
 @media (max-width: 600px) {
     .skeleton-metrics-grid { grid-template-columns: 1fr !important; }
     .skeleton-insights-grid { grid-template-columns: 1fr !important; }
+    .composition-legend-label { min-width: 100px; font-size: 0.72rem; }
+    .composition-legend-val { font-size: 0.72rem; }
+    .comp-yoy-badge { font-size: 0.6rem; padding: 1px 4px; margin-left: 4px; }
 }
 
 /* ============================================================
@@ -2702,7 +2780,7 @@ footer li::before {
         break-inside: avoid;
         page-break-inside: avoid;
     }
-    .composition-legend-text { color: #333 !important; }
+    .composition-legend-label, .composition-legend-val { color: #333 !important; }
 
     /* ---- Trends & Context ---- */
     .trends-section {
@@ -3147,7 +3225,7 @@ footer li::before {
     [data-theme="light"] .composition-legend-dot {
         border-color: rgba(0,0,0,0.2);
     }
-    .composition-legend-text {
+    .composition-legend-label {
         font-weight: 500;
         color: var(--text-secondary);
     }
