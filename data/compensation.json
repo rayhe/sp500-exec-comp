@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 147 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings.",
+    "description": "Executive compensation data for S&P 500 companies. 158 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings.",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -95,7 +95,7 @@
         "max": 23885173
       }
     },
-    "edgar_coverage": 147,
+    "edgar_coverage": 158,
     "total_companies": 500,
     "last_updated": "2026-08-07"
   },
@@ -22964,7 +22964,7 @@
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "executives": [
         {
-          "name": "Michael J Lisman Co-Chief",
+          "name": "Michael J Lisman",
           "title": null,
           "year": 2025,
           "salary": 768140,
@@ -22975,7 +22975,7 @@
           "total": 33877872
         },
         {
-          "name": "Michael J Lisman Co-Chief",
+          "name": "Michael J Lisman",
           "title": null,
           "year": 2024,
           "salary": 762750,
@@ -22986,7 +22986,7 @@
           "total": 24816927
         },
         {
-          "name": "Michael J Lisman Co-Chief",
+          "name": "Michael J Lisman",
           "title": null,
           "year": 2023,
           "salary": 720000,
@@ -22997,7 +22997,7 @@
           "total": 12997589
         },
         {
-          "name": "Joel B Reiss Co-Chief",
+          "name": "Joel B Reiss",
           "title": null,
           "year": 2025,
           "salary": 768140,
@@ -23008,7 +23008,7 @@
           "total": 39496212
         },
         {
-          "name": "Joel B Reiss Co-Chief",
+          "name": "Joel B Reiss",
           "title": null,
           "year": 2024,
           "salary": 747750,
@@ -23019,7 +23019,7 @@
           "total": 21424730
         },
         {
-          "name": "Joel B Reiss Co-Chief",
+          "name": "Joel B Reiss",
           "title": null,
           "year": 2023,
           "salary": 568333,
@@ -23807,7 +23807,151 @@
       "median_worker_pay": 45447,
       "pay_ratio": 467,
       "sector": "Information Technology",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Stephanie L Ferris",
+          "title": null,
+          "year": 2025,
+          "salary": 1250000,
+          "bonus": 0,
+          "stock_awards": 18741367,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 2812500,
+          "all_other": 124545,
+          "total": 22928412
+        },
+        {
+          "name": "Stephanie L Ferris",
+          "title": null,
+          "year": 2024,
+          "salary": 1200000,
+          "bonus": 0,
+          "stock_awards": 17571281,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 2301600,
+          "all_other": 170604,
+          "total": 21243485
+        },
+        {
+          "name": "Stephanie L Ferris",
+          "title": null,
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 9005347,
+          "non_equity_incentive": 6479998,
+          "pension_nqdc": 2856220,
+          "all_other": 92177,
+          "total": 19433742
+        },
+        {
+          "name": "James Kehoe",
+          "title": null,
+          "year": 2025,
+          "salary": 975000,
+          "bonus": 0,
+          "stock_awards": 6078310,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 1462500,
+          "all_other": 10500,
+          "total": 8526310
+        },
+        {
+          "name": "James Kehoe",
+          "title": null,
+          "year": 2024,
+          "salary": 975000,
+          "stock_awards": 0,
+          "non_equity_incentive": 6312006,
+          "pension_nqdc": 1402538,
+          "all_other": 10350,
+          "total": 8699894
+        },
+        {
+          "name": "Firdaus Bhathena",
+          "title": null,
+          "year": 2025,
+          "salary": 700000,
+          "bonus": 0,
+          "stock_awards": 4040163,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 980000,
+          "all_other": 10500,
+          "total": 5730663
+        },
+        {
+          "name": "Firdaus Bhathena",
+          "title": null,
+          "year": 2024,
+          "salary": 700000,
+          "bonus": 0,
+          "stock_awards": 3431975,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 872690,
+          "all_other": 10350,
+          "total": 5015015
+        },
+        {
+          "name": "Robert Toohey",
+          "title": null,
+          "year": 2025,
+          "salary": 700000,
+          "bonus": 250000,
+          "stock_awards": 3030157,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 980000,
+          "all_other": 18251,
+          "total": 4978408
+        },
+        {
+          "name": "Caroline Tsai",
+          "title": null,
+          "year": 2025,
+          "salary": 700000,
+          "bonus": 0,
+          "stock_awards": 4040163,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 980000,
+          "all_other": 10500,
+          "total": 5730663
+        },
+        {
+          "name": "Caroline Tsai",
+          "title": null,
+          "year": 2024,
+          "salary": 665000,
+          "bonus": 0,
+          "stock_awards": 5639221,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 863042,
+          "all_other": 10350,
+          "total": 7177613
+        },
+        {
+          "name": "Caroline Tsai",
+          "title": null,
+          "year": 2023,
+          "salary": 630000,
+          "bonus": 250000,
+          "stock_awards": 2876455,
+          "non_equity_incentive": 1755008,
+          "pension_nqdc": 1169622,
+          "all_other": 10817,
+          "total": 6691902
+        }
+      ],
+      "cik": "0001136893",
+      "filing_date": "2026-04-28",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1136893/000113689326000026/fis-20260428.htm",
+      "total_neo_compensation": 47894456,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "MMM",
@@ -23819,7 +23963,163 @@
       "median_worker_pay": 74417,
       "pay_ratio": 369,
       "sector": "Industrials",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "William M Brown",
+          "title": null,
+          "year": 2025,
+          "salary": 1800000,
+          "bonus": 0,
+          "stock_awards": 7753852,
+          "option_awards": 7001242,
+          "non_equity_incentive": 3745322,
+          "pension_nqdc": 0,
+          "all_other": 704593,
+          "total": 21005009
+        },
+        {
+          "name": "William M Brown",
+          "title": null,
+          "year": 2024,
+          "salary": 1200000,
+          "bonus": 3000000,
+          "stock_awards": 9333492,
+          "option_awards": 4333801,
+          "non_equity_incentive": 2711725,
+          "pension_nqdc": 0,
+          "all_other": 612013,
+          "total": 21191031
+        },
+        {
+          "name": "Anurag Maheshwari",
+          "title": null,
+          "year": 2025,
+          "salary": 1071263,
+          "bonus": 0,
+          "stock_awards": 3456678,
+          "option_awards": 1075188,
+          "non_equity_incentive": 1529419,
+          "pension_nqdc": 0,
+          "all_other": 349752,
+          "total": 7482301
+        },
+        {
+          "name": "Anurag Maheshwari",
+          "title": null,
+          "year": 2024,
+          "salary": 350000,
+          "bonus": 3150000,
+          "stock_awards": 5833685,
+          "option_awards": 0,
+          "non_equity_incentive": 495070,
+          "pension_nqdc": 0,
+          "all_other": 120953,
+          "total": 9949708
+        },
+        {
+          "name": "Wendy A Bauer",
+          "title": null,
+          "year": 2025,
+          "salary": 828778,
+          "bonus": 0,
+          "stock_awards": 2524306,
+          "option_awards": 785163,
+          "non_equity_incentive": 911655,
+          "pension_nqdc": 0,
+          "all_other": 112875,
+          "total": 5162777
+        },
+        {
+          "name": "Wendy A Bauer",
+          "title": null,
+          "year": 2024,
+          "salary": 434215,
+          "bonus": 1200000,
+          "stock_awards": 3431707,
+          "option_awards": 0,
+          "non_equity_incentive": 608301,
+          "pension_nqdc": 0,
+          "all_other": 141301,
+          "total": 5815524
+        },
+        {
+          "name": "Christian T Goralski",
+          "title": null,
+          "year": 2025,
+          "salary": 804728,
+          "bonus": 0,
+          "stock_awards": 2524306,
+          "option_awards": 785163,
+          "non_equity_incentive": 1094414,
+          "pension_nqdc": 0,
+          "all_other": 180967,
+          "total": 5389578
+        },
+        {
+          "name": "Christian T Goralski",
+          "title": null,
+          "year": 2024,
+          "salary": 769500,
+          "bonus": 0,
+          "stock_awards": 4000054,
+          "option_awards": 0,
+          "non_equity_incentive": 923426,
+          "pension_nqdc": 0,
+          "all_other": 164372,
+          "total": 5857352
+        },
+        {
+          "name": "Kevin H Rhodes",
+          "title": null,
+          "year": 2025,
+          "salary": 932531,
+          "bonus": 0,
+          "stock_awards": 2355346,
+          "option_awards": 732629,
+          "non_equity_incentive": 997894,
+          "pension_nqdc": 1620163,
+          "all_other": 98243,
+          "total": 6736806
+        },
+        {
+          "name": "Kevin H Rhodes",
+          "title": null,
+          "year": 2024,
+          "salary": 907367,
+          "bonus": 0,
+          "stock_awards": 3430172,
+          "option_awards": 0,
+          "non_equity_incentive": 1050206,
+          "pension_nqdc": 1353342,
+          "all_other": 97487,
+          "total": 6838574
+        },
+        {
+          "name": "Kevin H Rhodes",
+          "title": null,
+          "year": 2023,
+          "salary": 872787,
+          "bonus": 0,
+          "stock_awards": 3809184,
+          "option_awards": 0,
+          "non_equity_incentive": 816928,
+          "pension_nqdc": 1121163,
+          "all_other": 87951,
+          "total": 6708013
+        }
+      ],
+      "cik": "0000066740",
+      "filing_date": "2026-03-25",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/66740/000006674026000151/mmm-20260324.htm",
+      "total_neo_compensation": 45776471,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "WAB",
@@ -23914,7 +24214,215 @@
       "median_worker_pay": 113639,
       "pay_ratio": 183,
       "sector": "Industrials",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Christopher Kubasik",
+          "title": null,
+          "year": 2025,
+          "salary": 1550000,
+          "bonus": 0,
+          "stock_awards": 11028701,
+          "option_awards": 3543778,
+          "non_equity_incentive": 6200000,
+          "pension_nqdc": 0,
+          "all_other": 3295111,
+          "total": 25617590
+        },
+        {
+          "name": "Christopher Kubasik",
+          "title": null,
+          "year": 2024,
+          "salary": 1582788,
+          "bonus": 0,
+          "stock_awards": 10454281,
+          "option_awards": 3375010,
+          "non_equity_incentive": 4185000,
+          "pension_nqdc": 0,
+          "all_other": 1242144,
+          "total": 20839223
+        },
+        {
+          "name": "Christopher Kubasik",
+          "title": null,
+          "year": 2023,
+          "salary": 1542308,
+          "bonus": 0,
+          "stock_awards": 10114106,
+          "option_awards": 3375035,
+          "non_equity_incentive": 3735500,
+          "pension_nqdc": 0,
+          "all_other": 1057298,
+          "total": 19824247
+        },
+        {
+          "name": "Kenneth Bedingfield",
+          "title": null,
+          "year": 2025,
+          "salary": 937163,
+          "bonus": 0,
+          "stock_awards": 3501403,
+          "option_awards": 1125007,
+          "non_equity_incentive": 1600000,
+          "pension_nqdc": 0,
+          "all_other": 157211,
+          "total": 7320784
+        },
+        {
+          "name": "Missile Solutions",
+          "title": null,
+          "year": 2024,
+          "salary": 889664,
+          "bonus": 0,
+          "stock_awards": 2904188,
+          "option_awards": 3127695,
+          "non_equity_incentive": 1181300,
+          "pension_nqdc": 0,
+          "all_other": 160005,
+          "total": 8262852
+        },
+        {
+          "name": "Missile Solutions",
+          "title": null,
+          "year": 2023,
+          "salary": 49038,
+          "bonus": 200000,
+          "stock_awards": 0,
+          "option_awards": 0,
+          "non_equity_incentive": 53500,
+          "pension_nqdc": 0,
+          "all_other": 212,
+          "total": 302750
+        },
+        {
+          "name": "Samir Mehta",
+          "title": null,
+          "year": 2025,
+          "salary": 812163,
+          "bonus": 0,
+          "stock_awards": 2723337,
+          "option_awards": 875022,
+          "non_equity_incentive": 1250000,
+          "pension_nqdc": 0,
+          "all_other": 268340,
+          "total": 5928862
+        },
+        {
+          "name": "Mission Systems",
+          "title": null,
+          "year": 2024,
+          "salary": 762019,
+          "bonus": 0,
+          "stock_awards": 2013841,
+          "option_awards": 650028,
+          "non_equity_incentive": 922500,
+          "pension_nqdc": 0,
+          "all_other": 142798,
+          "total": 4491186
+        },
+        {
+          "name": "Spectrum Dominance",
+          "title": null,
+          "year": 2023,
+          "salary": 721863,
+          "bonus": 850000,
+          "stock_awards": 5911070,
+          "option_awards": 1387597,
+          "non_equity_incentive": 928700,
+          "pension_nqdc": 0,
+          "all_other": 85335,
+          "total": 9884565
+        },
+        {
+          "name": "Edward Zoiss",
+          "title": null,
+          "year": 2025,
+          "salary": 770721,
+          "bonus": 0,
+          "stock_awards": 2178754,
+          "option_awards": 700018,
+          "non_equity_incentive": 1030800,
+          "pension_nqdc": 0,
+          "all_other": 253036,
+          "total": 4933329
+        },
+        {
+          "name": "Edward Zoiss",
+          "title": null,
+          "year": 2024,
+          "salary": 756611,
+          "bonus": 0,
+          "stock_awards": 2013841,
+          "option_awards": 650028,
+          "non_equity_incentive": 832500,
+          "pension_nqdc": 0,
+          "all_other": 224032,
+          "total": 4477012
+        },
+        {
+          "name": "Edward Zoiss",
+          "title": null,
+          "year": 2023,
+          "salary": 718846,
+          "bonus": 0,
+          "stock_awards": 1910722,
+          "option_awards": 637550,
+          "non_equity_incentive": 1130300,
+          "pension_nqdc": 0,
+          "all_other": 169547,
+          "total": 4566965
+        },
+        {
+          "name": "Jonathan Rambeau",
+          "title": null,
+          "year": 2025,
+          "salary": 770721,
+          "bonus": 0,
+          "stock_awards": 2178754,
+          "option_awards": 700018,
+          "non_equity_incentive": 1432000,
+          "pension_nqdc": 0,
+          "all_other": 264797,
+          "total": 5346290
+        },
+        {
+          "name": "Jonathan Rambeau",
+          "title": null,
+          "year": 2024,
+          "salary": 762019,
+          "bonus": 0,
+          "stock_awards": 2013841,
+          "option_awards": 650028,
+          "non_equity_incentive": 1005000,
+          "pension_nqdc": 0,
+          "all_other": 100161,
+          "total": 4531049
+        },
+        {
+          "name": "Spectrum Dominance",
+          "title": null,
+          "year": 2023,
+          "salary": 725000,
+          "bonus": 0,
+          "stock_awards": 1910722,
+          "option_awards": 637550,
+          "non_equity_incentive": 605400,
+          "pension_nqdc": 0,
+          "all_other": 22651,
+          "total": 3901323
+        }
+      ],
+      "cik": "0000202058",
+      "filing_date": "2026-04-01",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/202058/000110465926038170/tmb-20260511xdef14a.htm",
+      "total_neo_compensation": 49146855,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "IP",
@@ -23926,7 +24434,163 @@
       "median_worker_pay": 78960,
       "pay_ratio": 278,
       "sector": "Materials",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Andrew K Silvernail",
+          "title": null,
+          "year": 2025,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 12174818,
+          "option_awards": 1318500,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 345006,
+          "total": 14838324
+        },
+        {
+          "name": "Andrew K Silvernail",
+          "title": null,
+          "year": 2024,
+          "salary": 666667,
+          "bonus": 0,
+          "stock_awards": 17193607,
+          "option_awards": 1791000,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 1081296,
+          "total": 20732570
+        },
+        {
+          "name": "Lance T Loeffler",
+          "title": null,
+          "year": 2025,
+          "salary": 637500,
+          "bonus": 0,
+          "stock_awards": 6162766,
+          "option_awards": 560360,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 266400,
+          "total": 7627026
+        },
+        {
+          "name": "Lance T Loeffler",
+          "title": null,
+          "year": 2025,
+          "salary": 750000,
+          "bonus": 0,
+          "stock_awards": 2727170,
+          "option_awards": 659250,
+          "non_equity_incentive": 177320,
+          "pension_nqdc": 0,
+          "all_other": 191179,
+          "total": 4504919
+        },
+        {
+          "name": "Lance T Loeffler",
+          "title": null,
+          "year": 2024,
+          "salary": 675000,
+          "bonus": 0,
+          "stock_awards": 3966737,
+          "option_awards": 1104460,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 75821,
+          "total": 5822018
+        },
+        {
+          "name": "Lance T Loeffler",
+          "title": null,
+          "year": 2023,
+          "salary": 600000,
+          "bonus": 0,
+          "stock_awards": 2328651,
+          "option_awards": 113300,
+          "non_equity_incentive": 213997,
+          "pension_nqdc": 0,
+          "all_other": 86817,
+          "total": 3342765
+        },
+        {
+          "name": "Timothy S Nicholls",
+          "title": null,
+          "year": 2025,
+          "salary": 900000,
+          "bonus": 0,
+          "stock_awards": 3408962,
+          "option_awards": 791100,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 1205278,
+          "total": 6305340
+        },
+        {
+          "name": "Timothy S Nicholls",
+          "title": null,
+          "year": 2024,
+          "salary": 801250,
+          "bonus": 0,
+          "stock_awards": 2886532,
+          "option_awards": 1516080,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 138008,
+          "total": 5341870
+        },
+        {
+          "name": "Timothy S Nicholls",
+          "title": null,
+          "year": 2023,
+          "salary": 775000,
+          "bonus": 0,
+          "stock_awards": 2813803,
+          "option_awards": 181400,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 173253,
+          "total": 3943456
+        },
+        {
+          "name": "Joseph R Saab",
+          "title": null,
+          "year": 2025,
+          "salary": 650000,
+          "bonus": 0,
+          "stock_awards": 1947997,
+          "option_awards": 527400,
+          "non_equity_incentive": 81047,
+          "pension_nqdc": 0,
+          "all_other": 130698,
+          "total": 3337142
+        },
+        {
+          "name": "Joseph R Saab",
+          "title": null,
+          "year": 2023,
+          "salary": 541667,
+          "bonus": 0,
+          "stock_awards": 1953910,
+          "option_awards": 90600,
+          "non_equity_incentive": 101166,
+          "pension_nqdc": 0,
+          "all_other": 71045,
+          "total": 2758388
+        }
+      ],
+      "cik": "0000051434",
+      "filing_date": "2026-03-27",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/51434/000162828026021729/ipc-20260327.htm",
+      "total_neo_compensation": 36612751,
+      "neo_count": 4,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "LIN",
@@ -23938,7 +24602,164 @@
       "median_worker_pay": 52889,
       "pay_ratio": 391,
       "sector": "Materials",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Sanjiv Lamba",
+          "title": null,
+          "year": 2025,
+          "salary": 1575000,
+          "bonus": 11680804,
+          "stock_awards": 4938908,
+          "non_equity_incentive": 3197250,
+          "pension_nqdc": 198000,
+          "all_other": 187908,
+          "total": 21777870
+        },
+        {
+          "name": "Sanjiv Lamba",
+          "title": null,
+          "year": 2024,
+          "salary": 1475000,
+          "bonus": 11473602,
+          "stock_awards": 4677524,
+          "non_equity_incentive": 2698070,
+          "pension_nqdc": 221748,
+          "all_other": 150144,
+          "total": 20696088
+        },
+        {
+          "name": "Sanjiv Lamba",
+          "title": null,
+          "year": 2023,
+          "salary": 1375000,
+          "bonus": 9409791,
+          "stock_awards": 3880751,
+          "non_equity_incentive": 3480263,
+          "pension_nqdc": 868883,
+          "all_other": 185567,
+          "total": 19200255
+        },
+        {
+          "name": "Matthew J White",
+          "title": null,
+          "year": 2025,
+          "salary": 944750,
+          "bonus": 5007108,
+          "stock_awards": 2116738,
+          "non_equity_incentive": 1386326,
+          "pension_nqdc": 173000,
+          "all_other": 42238,
+          "total": 9670160
+        },
+        {
+          "name": "Matthew J White",
+          "title": null,
+          "year": 2024,
+          "salary": 910000,
+          "bonus": 4702961,
+          "stock_awards": 1916399,
+          "non_equity_incentive": 1292491,
+          "pension_nqdc": 161000,
+          "all_other": 40250,
+          "total": 9023101
+        },
+        {
+          "name": "Matthew J White",
+          "title": null,
+          "year": 2023,
+          "salary": 870000,
+          "bonus": 3849416,
+          "stock_awards": 1587789,
+          "non_equity_incentive": 1791006,
+          "pension_nqdc": 156000,
+          "all_other": 38500,
+          "total": 8292712
+        },
+        {
+          "name": "Guillermo Bichara",
+          "title": null,
+          "year": 2025,
+          "salary": 830250,
+          "bonus": 2960304,
+          "stock_awards": 1251523,
+          "non_equity_incentive": 1006429,
+          "pension_nqdc": 126000,
+          "all_other": 57428,
+          "total": 6231934
+        },
+        {
+          "name": "Guillermo Bichara",
+          "title": null,
+          "year": 2024,
+          "salary": 798750,
+          "bonus": 2812145,
+          "stock_awards": 1146010,
+          "non_equity_incentive": 914460,
+          "pension_nqdc": 116000,
+          "all_other": 68788,
+          "total": 5856153
+        },
+        {
+          "name": "Guillermo Bichara",
+          "title": null,
+          "year": 2023,
+          "salary": 758750,
+          "bonus": 2253317,
+          "stock_awards": 927815,
+          "non_equity_incentive": 1271585,
+          "pension_nqdc": 115000,
+          "all_other": 67028,
+          "total": 5393494
+        },
+        {
+          "name": "Sean F Durbin",
+          "title": null,
+          "year": 2025,
+          "salary": 789000,
+          "bonus": 2845953,
+          "stock_awards": 1203235,
+          "non_equity_incentive": 1058167,
+          "pension_nqdc": 112000,
+          "all_other": 67059,
+          "total": 6075414
+        },
+        {
+          "name": "Sean F Durbin",
+          "title": null,
+          "year": 2024,
+          "salary": 737500,
+          "bonus": 2658769,
+          "stock_awards": 1082374,
+          "non_equity_incentive": 859247,
+          "pension_nqdc": 105000,
+          "all_other": 48575,
+          "total": 5491465
+        },
+        {
+          "name": "Benjamin W Glazer",
+          "title": null,
+          "year": 2025,
+          "salary": 625000,
+          "bonus": 1952919,
+          "stock_awards": 825214,
+          "non_equity_incentive": 769998,
+          "pension_nqdc": 90000,
+          "all_other": 100498,
+          "total": 4363629
+        }
+      ],
+      "cik": "0001707925",
+      "filing_date": "2026-04-29",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1707925/000119312526192209/lin-20260429.htm",
+      "total_neo_compensation": 48119007,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "NXPI",
@@ -23950,7 +24771,185 @@
       "median_worker_pay": 46891,
       "pay_ratio": 441,
       "sector": "Information Technology",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Rafael Sotomayor",
+          "title": null,
+          "year": 2025,
+          "salary": 770795,
+          "stock_awards": 13383486,
+          "non_equity_incentive": 549780,
+          "pension_nqdc": 0,
+          "all_other": 31958,
+          "total": 14736019
+        },
+        {
+          "name": "William Betz",
+          "title": null,
+          "year": 2025,
+          "salary": 667644,
+          "stock_awards": 3961484,
+          "non_equity_incentive": 210980,
+          "pension_nqdc": 0,
+          "all_other": 27464,
+          "total": 4867572
+        },
+        {
+          "name": "William Betz",
+          "title": null,
+          "year": 2024,
+          "salary": 625000,
+          "stock_awards": 3830919,
+          "non_equity_incentive": 399100,
+          "pension_nqdc": 0,
+          "all_other": 27450,
+          "total": 4882469
+        },
+        {
+          "name": "William Betz",
+          "title": null,
+          "year": 2023,
+          "salary": 570000,
+          "stock_awards": 3283044,
+          "non_equity_incentive": 735600,
+          "pension_nqdc": 0,
+          "all_other": 24412,
+          "total": 4613056
+        },
+        {
+          "name": "Christopher Jensen",
+          "title": null,
+          "year": 2025,
+          "salary": 550082,
+          "stock_awards": 3533319,
+          "non_equity_incentive": 137984,
+          "pension_nqdc": 0,
+          "all_other": 21050,
+          "total": 4242435
+        },
+        {
+          "name": "Christopher Jensen",
+          "title": null,
+          "year": 2024,
+          "salary": 525000,
+          "stock_awards": 3283800,
+          "non_equity_incentive": 265248,
+          "pension_nqdc": 0,
+          "all_other": 20650,
+          "total": 4094698
+        },
+        {
+          "name": "Christopher Jensen",
+          "title": null,
+          "year": 2023,
+          "salary": 510000,
+          "stock_awards": 3009558,
+          "non_equity_incentive": 500208,
+          "pension_nqdc": 0,
+          "all_other": 20233,
+          "total": 4039999
+        },
+        {
+          "name": "Andrew Micallef",
+          "title": null,
+          "year": 2025,
+          "salary": 570082,
+          "stock_awards": 3533319,
+          "non_equity_incentive": 142912,
+          "pension_nqdc": 0,
+          "all_other": 46144,
+          "total": 4292457
+        },
+        {
+          "name": "Andrew Micallef",
+          "title": null,
+          "year": 2024,
+          "salary": 547500,
+          "stock_awards": 3283800,
+          "non_equity_incentive": 275072,
+          "pension_nqdc": 0,
+          "all_other": 42304,
+          "total": 4148676
+        },
+        {
+          "name": "Andrew Micallef",
+          "title": null,
+          "year": 2023,
+          "salary": 535000,
+          "stock_awards": 2954875,
+          "non_equity_incentive": 524728,
+          "pension_nqdc": 0,
+          "all_other": 43843,
+          "total": 4058446
+        },
+        {
+          "name": "Jennifer Wuamett",
+          "title": null,
+          "year": 2025,
+          "salary": 600082,
+          "stock_awards": 3212282,
+          "non_equity_incentive": 150304,
+          "pension_nqdc": 0,
+          "all_other": 21050,
+          "total": 3983719
+        },
+        {
+          "name": "Jennifer Wuamett",
+          "title": null,
+          "year": 2024,
+          "salary": 583750,
+          "stock_awards": 3283800,
+          "non_equity_incentive": 289808,
+          "pension_nqdc": 0,
+          "all_other": 20834,
+          "total": 4178192
+        },
+        {
+          "name": "Jennifer Wuamett",
+          "title": null,
+          "year": 2023,
+          "salary": 563750,
+          "stock_awards": 3009558,
+          "non_equity_incentive": 566412,
+          "pension_nqdc": 0,
+          "all_other": 19600,
+          "total": 4159320
+        },
+        {
+          "name": "Kurt Sievers",
+          "title": null,
+          "year": 2025,
+          "salary": 1363718,
+          "stock_awards": 0,
+          "non_equity_incentive": 714043,
+          "pension_nqdc": 1006223,
+          "all_other": 292179,
+          "total": 3376163
+        },
+        {
+          "name": "Kurt Sievers",
+          "title": null,
+          "year": 2024,
+          "salary": 1262863,
+          "stock_awards": 17950484,
+          "non_equity_incentive": 1368876,
+          "pension_nqdc": 0,
+          "all_other": 112549,
+          "total": 20694772
+        }
+      ],
+      "cik": "0001413447",
+      "filing_date": "2026-04-27",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000026/nxpi-20260427.htm",
+      "total_neo_compensation": 35498365,
+      "neo_count": 6,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "CNC",
@@ -24084,8 +25083,7 @@
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 55372,
       "pay_ratio": 370,
-      "sector": "Health Care",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "sector": "Health Care"
     },
     {
       "ticker": "TGT",
@@ -24097,7 +25095,128 @@
       "median_worker_pay": 27090,
       "pay_ratio": 753,
       "sector": "Consumer Discretionary",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Jim Lee",
+          "title": null,
+          "year": 2025,
+          "salary": 850000,
+          "bonus": 140250,
+          "stock_awards": 5130567,
+          "non_equity_incentive": 239190,
+          "pension_nqdc": 0,
+          "all_other": 74493,
+          "total": 6434500
+        },
+        {
+          "name": "Jim Lee",
+          "title": null,
+          "year": 2024,
+          "salary": 310577,
+          "bonus": 2287117,
+          "stock_awards": 8527406,
+          "non_equity_incentive": 170631,
+          "pension_nqdc": 0,
+          "all_other": 12134,
+          "total": 11307865
+        },
+        {
+          "name": "Michael J Fiddelke",
+          "title": null,
+          "year": 2025,
+          "salary": 1065385,
+          "bonus": 176423,
+          "stock_awards": 7853253,
+          "non_equity_incentive": 300882,
+          "pension_nqdc": 18507,
+          "all_other": 183621,
+          "total": 9598071
+        },
+        {
+          "name": "Michael J Fiddelke",
+          "title": null,
+          "year": 2024,
+          "salary": 900000,
+          "bonus": 252450,
+          "stock_awards": 4942063,
+          "non_equity_incentive": 494460,
+          "pension_nqdc": 17524,
+          "all_other": 134946,
+          "total": 6741443
+        },
+        {
+          "name": "Michael J Fiddelke",
+          "title": null,
+          "year": 2023,
+          "salary": 771226,
+          "bonus": 229054,
+          "stock_awards": 3259800,
+          "non_equity_incentive": 490886,
+          "pension_nqdc": 16433,
+          "all_other": 98819,
+          "total": 4866218
+        },
+        {
+          "name": "Richard H Gomez",
+          "title": null,
+          "year": 2025,
+          "salary": 837019,
+          "bonus": 138346,
+          "stock_awards": 4828084,
+          "non_equity_incentive": 235943,
+          "pension_nqdc": 0,
+          "all_other": 146321,
+          "total": 6185713
+        },
+        {
+          "name": "Richard H Gomez",
+          "title": null,
+          "year": 2024,
+          "salary": 764423,
+          "bonus": 214421,
+          "stock_awards": 2628759,
+          "non_equity_incentive": 419974,
+          "pension_nqdc": 0,
+          "all_other": 162478,
+          "total": 4190055
+        },
+        {
+          "name": "Melissa K Kremer",
+          "title": null,
+          "year": 2025,
+          "salary": 787019,
+          "bonus": 130096,
+          "stock_awards": 4122104,
+          "non_equity_incentive": 221873,
+          "pension_nqdc": 17502,
+          "all_other": 124337,
+          "total": 5402931
+        },
+        {
+          "name": "Amy Tu",
+          "title": null,
+          "year": 2025,
+          "salary": 285577,
+          "bonus": 0,
+          "stock_awards": 4525490,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 1009043,
+          "total": 5820110
+        }
+      ],
+      "cik": "0000027419",
+      "filing_date": "2026-04-27",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/27419/000162828026027508/tgt-20260426.htm",
+      "total_neo_compensation": 33441325,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "EBAY",
@@ -24109,7 +25228,227 @@
       "median_worker_pay": 167976,
       "pay_ratio": 121,
       "sector": "Consumer Discretionary",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Jamie Iannone",
+          "title": null,
+          "year": 2025,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 23518310,
+          "non_equity_incentive": 3570000,
+          "pension_nqdc": 0,
+          "all_other": 375580,
+          "total": 28463890
+        },
+        {
+          "name": "Jamie Iannone",
+          "title": null,
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 16315235,
+          "option_awards": 0,
+          "non_equity_incentive": 2895000,
+          "pension_nqdc": 0,
+          "all_other": 139415,
+          "total": 20349650
+        },
+        {
+          "name": "Jamie Iannone",
+          "title": null,
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 12904448,
+          "option_awards": 4141196,
+          "non_equity_incentive": 3330000,
+          "pension_nqdc": 0,
+          "all_other": 185025,
+          "total": 21560669
+        },
+        {
+          "name": "Peggy Alford",
+          "title": null,
+          "year": 2025,
+          "salary": 539423,
+          "bonus": 3925000,
+          "stock_awards": 10520416,
+          "option_awards": 0,
+          "non_equity_incentive": 962870,
+          "pension_nqdc": 0,
+          "all_other": 25135,
+          "total": 15972844
+        },
+        {
+          "name": "Julie Loeger",
+          "title": null,
+          "year": 2025,
+          "salary": 725442,
+          "bonus": 0,
+          "stock_awards": 8130417,
+          "option_awards": 0,
+          "non_equity_incentive": 971186,
+          "pension_nqdc": 0,
+          "all_other": 54073,
+          "total": 9881118
+        },
+        {
+          "name": "Julie Loeger",
+          "title": null,
+          "year": 2024,
+          "salary": 700000,
+          "bonus": 0,
+          "stock_awards": 6154541,
+          "option_awards": 0,
+          "non_equity_incentive": 759938,
+          "pension_nqdc": 0,
+          "all_other": 14800,
+          "total": 7629278
+        },
+        {
+          "name": "Julie Loeger",
+          "title": null,
+          "year": 2023,
+          "salary": 700000,
+          "bonus": 500000,
+          "stock_awards": 3805581,
+          "option_awards": 1232517,
+          "non_equity_incentive": 905625,
+          "pension_nqdc": 0,
+          "all_other": 27665,
+          "total": 7171388
+        },
+        {
+          "name": "Jordan Sweetnam",
+          "title": null,
+          "year": 2025,
+          "salary": 721539,
+          "bonus": 0,
+          "stock_awards": 8736889,
+          "option_awards": 0,
+          "non_equity_incentive": 965960,
+          "pension_nqdc": 0,
+          "all_other": 25135,
+          "total": 10449522
+        },
+        {
+          "name": "Samantha Wellington",
+          "title": null,
+          "year": 2025,
+          "salary": 704077,
+          "bonus": 2575000,
+          "stock_awards": 4107856,
+          "option_awards": 0,
+          "non_equity_incentive": 942583,
+          "pension_nqdc": 0,
+          "all_other": 25135,
+          "total": 8354651
+        },
+        {
+          "name": "Samantha Wellington",
+          "title": null,
+          "year": 2024,
+          "salary": 142788,
+          "bonus": 2500000,
+          "stock_awards": 3788477,
+          "option_awards": 0,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 1000,
+          "total": 6432265
+        },
+        {
+          "name": "Steve Priest",
+          "title": null,
+          "year": 2025,
+          "salary": 489231,
+          "bonus": 0,
+          "stock_awards": 3517668,
+          "option_awards": 0,
+          "non_equity_incentive": 748523,
+          "pension_nqdc": 0,
+          "all_other": 9350616,
+          "total": 14106037
+        },
+        {
+          "name": "Steve Priest",
+          "title": null,
+          "year": 2024,
+          "salary": 800000,
+          "bonus": 0,
+          "stock_awards": 6277449,
+          "option_awards": 0,
+          "non_equity_incentive": 978000,
+          "pension_nqdc": 0,
+          "all_other": 26000,
+          "total": 8081449
+        },
+        {
+          "name": "Steve Priest",
+          "title": null,
+          "year": 2023,
+          "salary": 800000,
+          "bonus": 0,
+          "stock_awards": 4979143,
+          "option_awards": 1577614,
+          "non_equity_incentive": 1320000,
+          "pension_nqdc": 0,
+          "all_other": 50327,
+          "total": 8727085
+        },
+        {
+          "name": "Eddie Garcia",
+          "title": null,
+          "year": 2025,
+          "salary": 389423,
+          "bonus": 0,
+          "stock_awards": 2741465,
+          "option_awards": 0,
+          "non_equity_incentive": 446863,
+          "pension_nqdc": 0,
+          "all_other": 6493554,
+          "total": 10071305
+        },
+        {
+          "name": "Eddie Garcia",
+          "title": null,
+          "year": 2024,
+          "salary": 675000,
+          "bonus": 0,
+          "stock_awards": 4916838,
+          "option_awards": 0,
+          "non_equity_incentive": 732797,
+          "pension_nqdc": 0,
+          "all_other": 19650,
+          "total": 6344285
+        },
+        {
+          "name": "Eddie Garcia",
+          "title": null,
+          "year": 2023,
+          "salary": 675000,
+          "bonus": 2250000,
+          "stock_awards": 3918664,
+          "option_awards": 1232517,
+          "non_equity_incentive": 842906,
+          "pension_nqdc": 0,
+          "all_other": 19050,
+          "total": 8938137
+        }
+      ],
+      "cik": "0001065088",
+      "filing_date": "2026-04-30",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1065088/000155278126000285/e26002_ebay-def14a.htm",
+      "total_neo_compensation": 97299367,
+      "neo_count": 7,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "NWSA",
@@ -24121,7 +25460,163 @@
       "median_worker_pay": 82701,
       "pay_ratio": 246,
       "sector": "Communication Services",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Robert J Thomson",
+          "title": null,
+          "year": 2025,
+          "salary": 3000000,
+          "stock_awards": 10039381,
+          "non_equity_incentive": 6806667,
+          "pension_nqdc": 233539,
+          "all_other": 544142,
+          "total": 20623729
+        },
+        {
+          "name": "Robert J Thomson",
+          "title": null,
+          "year": 2024,
+          "salary": 3000000,
+          "stock_awards": 10382002,
+          "non_equity_incentive": 6166667,
+          "pension_nqdc": 262624,
+          "all_other": 518413,
+          "total": 20329706
+        },
+        {
+          "name": "Robert J Thomson",
+          "title": null,
+          "year": 2023,
+          "salary": 3000000,
+          "stock_awards": 10380976,
+          "non_equity_incentive": 5426667,
+          "pension_nqdc": 0,
+          "all_other": 496944,
+          "total": 19304587
+        },
+        {
+          "name": "Lavanya Chandrashekar",
+          "title": null,
+          "year": 2025,
+          "salary": 689231,
+          "stock_awards": 2601721,
+          "non_equity_incentive": 1641759,
+          "pension_nqdc": 0,
+          "all_other": 532307,
+          "total": 5465018
+        },
+        {
+          "name": "David B Pitofsky",
+          "title": null,
+          "year": 2025,
+          "salary": 1400000,
+          "stock_awards": 2065088,
+          "non_equity_incentive": 2589333,
+          "pension_nqdc": 0,
+          "all_other": 163073,
+          "total": 6217494
+        },
+        {
+          "name": "David B Pitofsky",
+          "title": null,
+          "year": 2024,
+          "salary": 1310400,
+          "stock_awards": 1947167,
+          "non_equity_incentive": 1572480,
+          "pension_nqdc": 0,
+          "all_other": 144524,
+          "total": 4974571
+        },
+        {
+          "name": "David B Pitofsky",
+          "title": null,
+          "year": 2023,
+          "salary": 1260000,
+          "stock_awards": 1874244,
+          "non_equity_incentive": 1325520,
+          "pension_nqdc": 0,
+          "all_other": 171222,
+          "total": 4630986
+        },
+        {
+          "name": "Ruth Allen",
+          "title": null,
+          "year": 2025,
+          "salary": 825000,
+          "stock_awards": 978769,
+          "non_equity_incentive": 1040600,
+          "pension_nqdc": 0,
+          "all_other": 112900,
+          "total": 2957269
+        },
+        {
+          "name": "Susan Panuccio",
+          "title": null,
+          "year": 2025,
+          "salary": 1700000,
+          "stock_awards": 2809473,
+          "non_equity_incentive": 3495600,
+          "pension_nqdc": 13626,
+          "all_other": 281887,
+          "total": 8300586
+        },
+        {
+          "name": "Susan Panuccio",
+          "title": null,
+          "year": 2024,
+          "salary": 1700000,
+          "stock_awards": 3133338,
+          "non_equity_incentive": 3240000,
+          "pension_nqdc": 51761,
+          "all_other": 244118,
+          "total": 8369217
+        },
+        {
+          "name": "Susan Panuccio",
+          "title": null,
+          "year": 2023,
+          "salary": 1540000,
+          "stock_awards": 2756782,
+          "non_equity_incentive": 2442000,
+          "pension_nqdc": 0,
+          "all_other": 274264,
+          "total": 7013046
+        },
+        {
+          "name": "David R Kline",
+          "title": null,
+          "year": 2025,
+          "salary": 1076400,
+          "stock_awards": 980522,
+          "non_equity_incentive": 1321819,
+          "pension_nqdc": 0,
+          "all_other": 119162,
+          "total": 3497903
+        },
+        {
+          "name": "David R Kline",
+          "title": null,
+          "year": 2024,
+          "salary": 1040000,
+          "stock_awards": 967777,
+          "non_equity_incentive": 1092000,
+          "pension_nqdc": 0,
+          "all_other": 93224,
+          "total": 3193001
+        }
+      ],
+      "cik": "0001564708",
+      "filing_date": "2025-10-08",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1564708/000114036125037696/ny20055386x3_def14a.htm",
+      "total_neo_compensation": 47061999,
+      "neo_count": 6,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "MET",
@@ -24133,7 +25628,128 @@
       "median_worker_pay": 82703,
       "pay_ratio": 246,
       "sector": "Financials",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Michel A Khalaf",
+          "title": null,
+          "year": 2025,
+          "salary": 1500000,
+          "bonus": 14797601,
+          "stock_awards": 0,
+          "non_equity_incentive": 4600000,
+          "pension_nqdc": 1095186,
+          "all_other": 371486,
+          "total": 22364273
+        },
+        {
+          "name": "Michel A Khalaf",
+          "title": null,
+          "year": 2024,
+          "salary": 1500000,
+          "bonus": 11590462,
+          "stock_awards": 1672128,
+          "non_equity_incentive": 4600000,
+          "pension_nqdc": 636545,
+          "all_other": 322044,
+          "total": 20321179
+        },
+        {
+          "name": "Michel A Khalaf",
+          "title": null,
+          "year": 2023,
+          "salary": 1475000,
+          "bonus": 11285532,
+          "stock_awards": 1597381,
+          "non_equity_incentive": 4800000,
+          "pension_nqdc": 1088180,
+          "all_other": 279916,
+          "total": 20526009
+        },
+        {
+          "name": "Bill Pappas",
+          "title": null,
+          "year": 2025,
+          "salary": 963750,
+          "bonus": 4365808,
+          "stock_awards": 0,
+          "non_equity_incentive": 2100000,
+          "pension_nqdc": 367298,
+          "all_other": 122550,
+          "total": 7919406
+        },
+        {
+          "name": "Bill Pappas",
+          "title": null,
+          "year": 2024,
+          "salary": 930625,
+          "bonus": 3322679,
+          "stock_awards": 479349,
+          "non_equity_incentive": 2100000,
+          "pension_nqdc": 286343,
+          "all_other": 125225,
+          "total": 7244221
+        },
+        {
+          "name": "Bill Pappas",
+          "title": null,
+          "year": 2023,
+          "salary": 901250,
+          "bonus": 3624013,
+          "stock_awards": 448921,
+          "non_equity_incentive": 2200000,
+          "pension_nqdc": 343987,
+          "all_other": 128050,
+          "total": 7646221
+        },
+        {
+          "name": "Ramy Tadros",
+          "title": null,
+          "year": 2025,
+          "salary": 941250,
+          "bonus": 4365808,
+          "stock_awards": 0,
+          "non_equity_incentive": 2100000,
+          "pension_nqdc": 393642,
+          "all_other": 121650,
+          "total": 7922350
+        },
+        {
+          "name": "Ramy Tadros",
+          "title": null,
+          "year": 2024,
+          "salary": 907500,
+          "bonus": 3338083,
+          "stock_awards": 481576,
+          "non_equity_incentive": 2100000,
+          "pension_nqdc": 230028,
+          "all_other": 124300,
+          "total": 7181487
+        },
+        {
+          "name": "Ramy Tadros",
+          "title": null,
+          "year": 2023,
+          "salary": 876250,
+          "bonus": 3643454,
+          "stock_awards": 451678,
+          "non_equity_incentive": 2200000,
+          "pension_nqdc": 360686,
+          "all_other": 127050,
+          "total": 7659118
+        }
+      ],
+      "cik": "0001099219",
+      "filing_date": "2026-04-29",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000026/met-20260429.htm",
+      "total_neo_compensation": 38206029,
+      "neo_count": 3,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "PM",
@@ -24145,7 +25761,123 @@
       "median_worker_pay": 47109,
       "pay_ratio": 430,
       "sector": "Consumer Staples",
-      "data_source": "AFL-CIO Paywatch 2025"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "executives": [
+        {
+          "name": "Massimo Andolina",
+          "title": null,
+          "year": 2025,
+          "salary": 1040496,
+          "stock_awards": 2768866,
+          "non_equity_incentive": 1956529,
+          "pension_nqdc": 2104557,
+          "all_other": 12334,
+          "total": 7882782
+        },
+        {
+          "name": "Stacey Kennedy",
+          "title": null,
+          "year": 2025,
+          "salary": 977868,
+          "stock_awards": 2413046,
+          "non_equity_incentive": 1115217,
+          "pension_nqdc": 854943,
+          "all_other": 1260178,
+          "total": 6621252
+        },
+        {
+          "name": "Stacey Kennedy",
+          "title": null,
+          "year": 2024,
+          "salary": 904926,
+          "stock_awards": 1572090,
+          "non_equity_incentive": 1513600,
+          "pension_nqdc": 1016815,
+          "all_other": 2313631,
+          "total": 7321062
+        },
+        {
+          "name": "Jacek Olczak",
+          "title": null,
+          "year": 2025,
+          "salary": 0,
+          "total": 27080
+        },
+        {
+          "name": "Jacek Olczak",
+          "title": null,
+          "year": 2024,
+          "salary": 0,
+          "total": 26314
+        },
+        {
+          "name": "Jacek Olczak",
+          "title": null,
+          "year": 2023,
+          "salary": 0,
+          "total": 18599
+        },
+        {
+          "name": "Emmanuel Babeau",
+          "title": null,
+          "year": 2025,
+          "salary": 0,
+          "total": 23149
+        },
+        {
+          "name": "Emmanuel Babeau",
+          "title": null,
+          "year": 2024,
+          "salary": 0,
+          "total": 39630
+        },
+        {
+          "name": "Emmanuel Babeau",
+          "title": null,
+          "year": 2023,
+          "salary": 2661,
+          "total": 28934
+        },
+        {
+          "name": "Massimo Andolina",
+          "title": null,
+          "year": 2025,
+          "salary": 0,
+          "total": 12334
+        },
+        {
+          "name": "Stacey Kennedy",
+          "title": null,
+          "year": 2025,
+          "salary": 1227026,
+          "total": 1260178
+        },
+        {
+          "name": "Stacey Kennedy",
+          "title": null,
+          "year": 2024,
+          "salary": 2272108,
+          "total": 2313631
+        },
+        {
+          "name": "Stacey Kennedy",
+          "title": null,
+          "year": 2023,
+          "salary": 2335645,
+          "total": 2407624
+        }
+      ],
+      "cik": "0001413329",
+      "filing_date": "2026-03-26",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1413329/000162828026021169/pmi-20260325.htm",
+      "total_neo_compensation": 15826775,
+      "neo_count": 4,
+      "proxy_fiscal_year": 2025,
+      "available_years": [
+        2025,
+        2024,
+        2023
+      ]
     },
     {
       "ticker": "WELL",
