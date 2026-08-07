@@ -995,6 +995,9 @@ function renderTable(companies) {
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
+        // Make row keyboard-accessible for detail panel expansion
+        tr.setAttribute('tabindex', '0');
+
         // Wire up compare button click
         var cBtn = tr.querySelector('.compare-btn');
         if (cBtn) {
@@ -1179,6 +1182,7 @@ function setupDetailPanel(companies) {
         var wasOpen = existing && existing.dataset.ticker === ticker;
         if (existing) existing.remove();
         tbody.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+        tbody.querySelectorAll('tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
 
         if (wasOpen) {
             // Return focus to the triggering row
@@ -1190,6 +1194,7 @@ function setupDetailPanel(companies) {
         }
 
         row.classList.add('selected');
+        row.setAttribute('aria-expanded', 'true');
         // Track trigger row for focus return and ensure it's focusable
         _detailTriggerRow = row;
         if (!row.hasAttribute('tabindex')) row.setAttribute('tabindex', '-1');
@@ -1344,6 +1349,18 @@ function setupDetailPanel(companies) {
         if (panelEl) {
             setTimeout(function() { panelEl.focus({ preventScroll: true }); }, 50);
         }
+    });
+
+    // Keyboard handler: Enter/Space on a row expands/collapses its detail panel
+    tbody.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var row = e.target.closest('tr');
+        if (!row || row.classList.contains('detail-row')) return;
+        // Don't intercept if focus is on an interactive child element (buttons, links, inputs)
+        var tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'button' || tag === 'a' || tag === 'input') return;
+        e.preventDefault();
+        row.click();
     });
 }
 
