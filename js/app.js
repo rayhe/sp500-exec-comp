@@ -2059,6 +2059,12 @@ function hideMetricSkeletons() {
                     return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
                 });
             }
+            if (window._activeDistFilter) {
+                var df = window._activeDistFilter;
+                filtered = filtered.filter(function(c) {
+                    return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
+                });
+            }
             filtered.sort(function(a, b) {
                 var av = a[currentSort.key];
                 var bv = b[currentSort.key];
@@ -2094,6 +2100,8 @@ function hideMetricSkeletons() {
             var fname = 'sp500-exec-comp';
             if (activeSector) fname += '-' + activeSector.toLowerCase().replace(/\s+/g, '-');
             if (searchTerm) fname += '-' + searchTerm.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
+            if (window._activeDistFilter) fname += '-dist-' + window._activeDistFilter.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+            if (window._activeRatioBucket) fname += '-ratio-' + window._activeRatioBucket.min + '-' + (window._activeRatioBucket.max === Infinity ? 'max' : window._activeRatioBucket.max);
             a.download = fname + '.csv';
             document.body.appendChild(a);
             a.click();
@@ -3015,6 +3023,12 @@ function hideMetricSkeletons() {
                     var arb = window._activeRatioBucket;
                     totalFiltered = totalFiltered.filter(function(c) {
                         return c.pay_ratio != null && c.pay_ratio >= arb.min && c.pay_ratio < arb.max;
+                    });
+                }
+                if (window._activeDistFilter) {
+                    var adf = window._activeDistFilter;
+                    totalFiltered = totalFiltered.filter(function(c) {
+                        return c.total_compensation != null && c.total_compensation >= adf.min && c.total_compensation <= adf.max;
                     });
                 }
                 var maxPages = Math.max(1, Math.ceil(totalFiltered.length / PAGE_SIZE));
