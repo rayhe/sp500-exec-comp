@@ -907,10 +907,17 @@ function renderTable(companies) {
     if (searchTerm) {
         var q = searchTerm.toLowerCase();
         filtered = filtered.filter(function(c) {
-            return (c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
+            if ((c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
                 (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
                 (c.ceo_name || '').toLowerCase().indexOf(q) >= 0 ||
-                (c.sector || '').toLowerCase().indexOf(q) >= 0;
+                (c.sector || '').toLowerCase().indexOf(q) >= 0) return true;
+            // Also search NEO names when EDGAR data is available
+            if (c.executives) {
+                for (var ei = 0; ei < c.executives.length; ei++) {
+                    if (c.executives[ei].name && c.executives[ei].name.toLowerCase().indexOf(q) >= 0) return true;
+                }
+            }
+            return false;
         });
     }
     if (window._activeRatioBucket) {
@@ -961,6 +968,9 @@ function renderTable(companies) {
         // Compensation value with inline data bar + optional top-10 badge
         var barPct = maxFilteredComp > 0 ? Math.max(0, Math.min(100, (c.total_compensation || 0) / maxFilteredComp * 100)) : 0;
         var compHtml = '<div class="comp-bar-cell"><div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(c.total_compensation) + '</span>';
+        if (c.neo_count) {
+            compHtml += ' <span class="neo-badge" title="' + c.neo_count + ' Named Executive Officers from SEC EDGAR">' + c.neo_count + ' NEOs</span>';
+        }
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
@@ -1269,7 +1279,76 @@ function setupDetailPanel(companies) {
             html += '<div class="detail-stat"><div class="detail-stat-label">Peer Network</div><div class="detail-stat-value">' + peerInfo.selectedBy.length + ' in · ' + peerInfo.selects.length + ' out</div><div class="detail-stat-sub">Inbound / outbound</div></div>';
         }
 
+        // Total NEO compensation stat
+        if (company.total_neo_compensation) {
+            html += '<div class="detail-stat"><div class="detail-stat-label">Total NEO Comp</div><div class="detail-stat-value">' + formatCurrency(company.total_neo_compensation) + '</div><div class="detail-stat-sub">' + (company.neo_count || '—') + ' Named Executives, FY' + (company.proxy_fiscal_year || '') + '</div></div>';
+        }
+
         html += '</div>'; // detail-stats
+
+        // NEO Executive Compensation Breakdown (from EDGAR data)
+        if (company.executives && company.executives.length > 0) {
+            var allYears = [];
+            company.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+            allYears.sort(function(a,b) { return b - a; });
+            var latestYear = allYears[0];
+            var latestExecs = company.executives.filter(function(e) { return e.year === latestYear; });
+
+            html += '<div class="neo-section">';
+            html += '<div class="neo-section-header">';
+            html += '<span class="neo-section-title">Named Executive Officers — FY' + latestYear + '</span>';
+            if (company.filing_url) {
+                html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="View DEF 14A proxy statement on SEC EDGAR">📄 SEC Filing</a>';
+            }
+            if (allYears.length > 1) {
+                html += '<span class="neo-years-available">Data for: ' + allYears.join(', ') + '</span>';
+            }
+            html += '</div>';
+
+            html += '<div class="neo-table-wrap"><table class="neo-table">';
+            html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th><th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th><th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
+            html += '<tbody>';
+
+            var neoTotal = 0;
+            latestExecs.forEach(function(exec) {
+                var total = exec.total || 0;
+                neoTotal += total;
+                var isCeo = exec.title && (/chief executive/i.test(exec.title) || /\bceo\b/i.test(exec.title));
+                html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + '>';
+                html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
+                html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
+                html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
+                html += '<td class="neo-num">' + (exec.stock_awards ? formatCompact(exec.stock_awards) : '—') + '</td>';
+                html += '<td class="neo-num">' + (exec.option_awards ? formatCompact(exec.option_awards) : '—') + '</td>';
+                html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
+                html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
+                html += '<td class="neo-num neo-total">' + formatCompact(total) + '</td>';
+                html += '</tr>';
+            });
+
+            // Total row
+            html += '<tr class="neo-total-row"><td colspan="7" class="neo-total-label">Total NEO Compensation</td>';
+            html += '<td class="neo-num neo-total">' + formatCurrency(neoTotal) + '</td></tr>';
+
+            html += '</tbody></table></div>';
+
+            // Year-over-year comparison if multiple years available
+            if (allYears.length > 1) {
+                var prevYear = allYears[1];
+                var prevExecs = company.executives.filter(function(e) { return e.year === prevYear; });
+                var prevTotal = 0;
+                prevExecs.forEach(function(e) { prevTotal += (e.total || 0); });
+                if (prevTotal > 0) {
+                    var yoyChange = ((neoTotal - prevTotal) / prevTotal * 100).toFixed(1);
+                    var yoySign = parseFloat(yoyChange) >= 0 ? '+' : '';
+                    var yoyCls = parseFloat(yoyChange) >= 0 ? 'positive' : 'negative';
+                    html += '<div class="neo-yoy"><span class="neo-yoy-label">Total NEO comp FY' + prevYear + ':</span> ' + formatCurrency(prevTotal) + ' <span class="' + yoyCls + '">(' + yoySign + yoyChange + '% YoY)</span></div>';
+                }
+            }
+
+            html += '<div class="neo-source">Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '') + '</div>';
+            html += '</div>'; // neo-section
+        }
 
         // Data completeness notice for companies with missing fields
         if (company.pay_ratio == null || company.median_worker_pay == null) {

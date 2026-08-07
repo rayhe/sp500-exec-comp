@@ -3380,3 +3380,140 @@ footer li::before {
     /* Keyboard shortcuts hint badge: instant */
     .kbd-hint { transition: none !important; }
 }
+
+/* === NEO Executive Compensation Section === */
+.neo-section {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+.neo-section-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.neo-section-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+.neo-filing-link {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+}
+.neo-filing-link:hover { opacity: 1; text-decoration: underline; }
+.neo-years-available {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+.neo-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 0.5rem;
+}
+.neo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+.neo-table thead th {
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card-bg);
+}
+.neo-table tbody td {
+    padding: 0.35rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+.neo-table .neo-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.neo-table .neo-total {
+    font-weight: 600;
+}
+.neo-table .neo-name {
+    font-weight: 500;
+    min-width: 140px;
+}
+.neo-table .neo-title {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    min-width: 120px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.neo-ceo-row {
+    background: rgba(0, 180, 216, 0.06);
+}
+[data-theme="light"] .neo-ceo-row {
+    background: rgba(0, 180, 216, 0.08);
+}
+.neo-total-row td {
+    font-weight: 600;
+    border-top: 2px solid var(--border);
+    padding-top: 0.5rem;
+}
+.neo-total-label {
+    text-align: right;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+.neo-yoy {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    background: var(--bg);
+    border-radius: 0.375rem;
+}
+.neo-yoy .positive { color: #22c55e; }
+.neo-yoy .negative { color: #ef4444; }
+.neo-source {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    opacity: 0.7;
+}
+.neo-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    background: rgba(0, 180, 216, 0.15);
+    color: #00b4d8;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+}
+[data-theme="light"] .neo-badge {
+    background: rgba(0, 100, 150, 0.1);
+    color: #0077a8;
+}
+
+@media (max-width: 640px) {
+    .neo-table { font-size: 0.75rem; }
+    .neo-table thead th,
+    .neo-table tbody td { padding: 0.3rem 0.4rem; }
+    .neo-section-header { flex-direction: column; align-items: flex-start; }
+    .neo-years-available { margin-left: 0; }
+}
