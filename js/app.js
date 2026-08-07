@@ -2047,10 +2047,17 @@ function hideMetricSkeletons() {
             if (searchTerm) {
                 var q = searchTerm.toLowerCase();
                 filtered = filtered.filter(function(c) {
-                    return (c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
+                    if ((c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
                         (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
                         (c.ceo_name || '').toLowerCase().indexOf(q) >= 0 ||
-                        (c.sector || '').toLowerCase().indexOf(q) >= 0;
+                        (c.sector || '').toLowerCase().indexOf(q) >= 0) return true;
+                    // Also search NEO names when EDGAR data is available
+                    if (c.executives) {
+                        for (var ei = 0; ei < c.executives.length; ei++) {
+                            if (c.executives[ei].name && c.executives[ei].name.toLowerCase().indexOf(q) >= 0) return true;
+                        }
+                    }
+                    return false;
                 });
             }
             if (window._activeRatioBucket) {
@@ -3013,10 +3020,17 @@ function hideMetricSkeletons() {
                 if (searchTerm) {
                     var sq = searchTerm.toLowerCase();
                     totalFiltered = totalFiltered.filter(function(c) {
-                        return (c.ticker || '').toLowerCase().indexOf(sq) >= 0 ||
+                        if ((c.ticker || '').toLowerCase().indexOf(sq) >= 0 ||
                             (c.company_name || '').toLowerCase().indexOf(sq) >= 0 ||
                             (c.ceo_name || '').toLowerCase().indexOf(sq) >= 0 ||
-                            (c.sector || '').toLowerCase().indexOf(sq) >= 0;
+                            (c.sector || '').toLowerCase().indexOf(sq) >= 0) return true;
+                        // Also search NEO names when EDGAR data is available
+                        if (c.executives) {
+                            for (var ei = 0; ei < c.executives.length; ei++) {
+                                if (c.executives[ei].name && c.executives[ei].name.toLowerCase().indexOf(sq) >= 0) return true;
+                            }
+                        }
+                        return false;
                     });
                 }
                 if (window._activeRatioBucket) {
