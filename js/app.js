@@ -258,11 +258,11 @@ function sortTableByKey(key, dir) {
     });
 
     // Re-render and scroll
-    if (compData && compData.companies) renderTable(compData.companies);
+    if (compData && compData.companies) renderTable(compData.companies, { suppressAnnounce: true });
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    announce('Table sorted by ' + key.replace(/_/g, ' ') + ', ' + (dir === 'asc' ? 'ascending' : 'descending'));
+    announce('Table sorted by ' + key.replace(/_/g, ' ') + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
 
 /* Metric card helper: scroll to any section by ID */
@@ -896,7 +896,10 @@ function renderSummaryBar(filtered, allCompanies) {
     bar.innerHTML = html;
 }
 
-function renderTable(companies) {
+/* _lastTableAnnounce: stores the last renderTable announce message for callers that suppress and combine */
+var _lastTableAnnounce = '';
+
+function renderTable(companies, options) {
     computeOutliers(companies);
 
     var filtered = companies.slice();
@@ -1036,7 +1039,8 @@ function renderTable(companies) {
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
-    announce(announceMsg);
+    _lastTableAnnounce = announceMsg;
+    if (!options || !options.suppressAnnounce) announce(announceMsg);
 
     if (totalPages > 1) {
         var paginationDiv = document.createElement('div');
@@ -1135,8 +1139,8 @@ function setupSorting(companies) {
         th.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
         th.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
         var sortLabel = th.textContent.replace(/[↑↓▲▼]/g, '').trim();
-        announce('Table sorted by ' + sortLabel + ', ' + (currentSort.dir === 'asc' ? 'ascending' : 'descending'));
-        renderTable(companies);
+        renderTable(companies, { suppressAnnounce: true });
+        announce('Table sorted by ' + sortLabel + ', ' + (currentSort.dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
     }
     document.querySelectorAll('th.sortable').forEach(function(th) {
         th.addEventListener('click', function() { activateSort(th); });
