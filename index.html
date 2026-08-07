@@ -131,7 +131,8 @@
         <div class="table-controls">
             <div class="search-box">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)" aria-label="Search companies, CEOs, or tickers">
+                <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)" aria-label="Search companies, CEOs, or tickers" autocomplete="off">
+                <div id="table-search-results" class="table-search-results"></div>
             </div>
             <button class="export-csv-btn" id="export-csv-btn" title="Download current view as CSV">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

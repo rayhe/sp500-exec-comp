@@ -1154,10 +1154,181 @@ function setupSorting(companies) {
 }
 
 function setupSearch(companies) {
-    document.getElementById('table-search').addEventListener('input', function(e) {
+    var searchInput = document.getElementById('table-search');
+    var searchResultsEl = document.getElementById('table-search-results');
+    var tsrActiveIdx = -1;
+    var _tsrDebounce = null;
+
+    function renderSearchSuggestions(query) {
+        if (!searchResultsEl) return;
+        searchResultsEl.innerHTML = '';
+        tsrActiveIdx = -1;
+
+        if (!query || query.length === 0) {
+            searchResultsEl.classList.remove('visible');
+            return;
+        }
+
+        var q = query.toLowerCase();
+
+        // Match against ticker, company name, CEO name
+        var matches = companies.filter(function(c) {
+            return (c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
+                (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
+                (c.ceo_name || '').toLowerCase().indexOf(q) >= 0;
+        });
+
+        // Smart sort: exact ticker → ticker starts-with → company starts-with → CEO starts-with → contains
+        matches.sort(function(a, b) {
+            var at = (a.ticker || '').toLowerCase();
+            var bt = (b.ticker || '').toLowerCase();
+            // Exact ticker match
+            if (at === q && bt !== q) return -1;
+            if (bt === q && at !== q) return 1;
+            // Ticker starts with query
+            var aTS = at.indexOf(q) === 0 ? 0 : 1;
+            var bTS = bt.indexOf(q) === 0 ? 0 : 1;
+            if (aTS !== bTS) return aTS - bTS;
+            // Company name starts with query
+            var an = (a.company_name || '').toLowerCase();
+            var bn = (b.company_name || '').toLowerCase();
+            var aNS = an.indexOf(q) === 0 ? 0 : 1;
+            var bNS = bn.indexOf(q) === 0 ? 0 : 1;
+            if (aNS !== bNS) return aNS - bNS;
+            // CEO name starts with query
+            var ac = (a.ceo_name || '').toLowerCase();
+            var bc = (b.ceo_name || '').toLowerCase();
+            var aCS = ac.indexOf(q) === 0 ? 0 : 1;
+            var bCS = bc.indexOf(q) === 0 ? 0 : 1;
+            if (aCS !== bCS) return aCS - bCS;
+            // Alphabetical by ticker
+            return at < bt ? -1 : at > bt ? 1 : 0;
+        });
+
+        var shown = matches.slice(0, 8);
+
+        if (shown.length === 0) {
+            searchResultsEl.classList.remove('visible');
+            return;
+        }
+
+        shown.forEach(function(c) {
+            var div = document.createElement('div');
+            div.className = 'table-search-result';
+            div.setAttribute('data-ticker', c.ticker);
+            div.innerHTML = '<span class="tsr-ticker">' + c.ticker + '</span>' +
+                '<span class="tsr-info">' +
+                '<span class="tsr-company">' + (c.company_name || '') + '</span>' +
+                '<span class="tsr-ceo">' + (c.ceo_name || '') + '</span>' +
+                '</span>' +
+                '<span class="tsr-comp">' + formatCurrency(c.total_compensation) + '</span>' +
+                '<span class="tsr-sector">' + (c.sector || '') + '</span>';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault(); // prevent blur before click fires
+                selectSearchCompany(c);
+            });
+            searchResultsEl.appendChild(div);
+        });
+
+        // Show remaining count hint
+        if (matches.length > 8) {
+            var hint = document.createElement('div');
+            hint.className = 'table-search-result';
+            hint.style.justifyContent = 'center';
+            hint.style.color = 'var(--text-muted)';
+            hint.style.fontStyle = 'italic';
+            hint.style.cursor = 'default';
+            hint.style.fontSize = '0.76rem';
+            hint.textContent = '+' + (matches.length - 8) + ' more — keep typing to narrow';
+            searchResultsEl.appendChild(hint);
+        }
+
+        searchResultsEl.classList.add('visible');
+    }
+
+    function selectSearchCompany(company) {
+        searchInput.value = company.ticker;
+        searchResultsEl.classList.remove('visible');
+        searchTerm = company.ticker;
+        currentPage = 1;
+        renderTable(companies);
+
+        // Scroll to table
+        scrollToTable();
+
+        // Auto-expand the company detail panel after render
+        setTimeout(function() {
+            var rows = document.querySelectorAll('#comp-tbody tr:not(.detail-row)');
+            for (var i = 0; i < rows.length; i++) {
+                var tickerEl = rows[i].querySelector('.ticker');
+                if (tickerEl && tickerEl.textContent.trim() === company.ticker) {
+                    rows[i].click();
+                    break;
+                }
+            }
+        }, 100);
+
+        announce('Selected ' + company.company_name + ' (' + company.ticker + '), ' + formatCurrency(company.total_compensation));
+    }
+
+    searchInput.addEventListener('input', function(e) {
         searchTerm = e.target.value;
         currentPage = 1;
         renderTable(companies);
+
+        // Debounce autocomplete rendering
+        clearTimeout(_tsrDebounce);
+        _tsrDebounce = setTimeout(function() {
+            renderSearchSuggestions(e.target.value.trim());
+        }, 80);
+    });
+
+    searchInput.addEventListener('keydown', function(e) {
+        if (!searchResultsEl) return;
+        var items = searchResultsEl.querySelectorAll('.table-search-result[data-ticker]');
+        if (items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            tsrActiveIdx = Math.min(tsrActiveIdx + 1, items.length - 1);
+            items.forEach(function(el, i) { el.classList.toggle('active', i === tsrActiveIdx); });
+            // Scroll active item into view within the dropdown
+            if (items[tsrActiveIdx]) items[tsrActiveIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            tsrActiveIdx = Math.max(tsrActiveIdx - 1, 0);
+            items.forEach(function(el, i) { el.classList.toggle('active', i === tsrActiveIdx); });
+            if (items[tsrActiveIdx]) items[tsrActiveIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            if (tsrActiveIdx >= 0 && tsrActiveIdx < items.length) {
+                e.preventDefault();
+                items[tsrActiveIdx].dispatchEvent(new MouseEvent('mousedown'));
+            } else if (items.length > 0 && searchResultsEl.classList.contains('visible')) {
+                // If dropdown is visible but no item selected, select first
+                e.preventDefault();
+                items[0].dispatchEvent(new MouseEvent('mousedown'));
+            }
+            // Otherwise let the default input behavior proceed (filter-as-you-type)
+        } else if (e.key === 'Escape') {
+            if (searchResultsEl.classList.contains('visible')) {
+                searchResultsEl.classList.remove('visible');
+                e.stopPropagation(); // Don't let the outer Escape handler fire
+            }
+        }
+    });
+
+    searchInput.addEventListener('blur', function() {
+        // Small delay to allow mousedown events on results to fire
+        setTimeout(function() {
+            if (searchResultsEl) searchResultsEl.classList.remove('visible');
+        }, 150);
+    });
+
+    searchInput.addEventListener('focus', function() {
+        // Re-show suggestions if there's a query
+        if (searchInput.value.trim().length > 0) {
+            renderSearchSuggestions(searchInput.value.trim());
+        }
     });
 }
 
