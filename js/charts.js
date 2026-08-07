@@ -343,8 +343,8 @@ function drawSectorChart(trends, companies) {
 
     var legendItems = [
         { type: 'bar', label: 'Median', color: '#00b4d8', opacity: 0.8 },
-        { type: 'box', label: 'IQR (25th–75th)', color: '#00b4d8', opacity: 0.18 },
-        { type: 'whisker', label: 'Min–Max range', color: '#00b4d8', opacity: 0.5 }
+        { type: 'box', label: 'IQR (25th–75th) — click to filter', color: '#00b4d8', opacity: 0.18 },
+        { type: 'whisker', label: 'Min–Max range — click to filter', color: '#00b4d8', opacity: 0.5 }
     ];
 
     var lx = 0;
@@ -387,6 +387,102 @@ function drawSectorChart(trends, companies) {
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text(item.label);
         lx += item.label.length * 6 + 36;
+    });
+
+    // Clickable distribution hit zones — transparent rects over IQR and whisker regions
+    var hitZoneG = svg.append('g').attr('class', 'dist-hit-zones');
+    data.forEach(function(d) {
+        if (!d._dist) return;
+        var dist = d._dist;
+        var cy = y(d.sector);
+        var bh = y.bandwidth();
+        var whiskerMax = Math.min(x(dist.max), w);
+
+        // Left whisker zone: min → Q1 (bottom 25%)
+        if (x(dist.q1) - x(dist.min) > 4) {
+            hitZoneG.append('rect')
+                .attr('class', 'dist-hit-zone')
+                .attr('x', x(dist.min))
+                .attr('y', cy)
+                .attr('width', Math.max(x(dist.q1) - x(dist.min), 4))
+                .attr('height', bh)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .datum({ sector: d.sector, min: dist.min, max: dist.q1, label: d.sector + ': Bottom 25%', zone: 'bottom' })
+                .on('mouseover', function(event, zd) {
+                    d3.select(this).attr('fill', 'rgba(0,180,216,0.12)');
+                    var html = '<div class="ct-title">' + zd.sector + ' — Bottom 25%</div>' +
+                        '<div class="ct-row"><span class="ct-label">Range</span><span class="ct-val">' + fmtCurr(zd.min) + ' — ' + fmtCurr(zd.max) + '</span></div>' +
+                        '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+                    showChartTooltip(event, html);
+                })
+                .on('mousemove', function(event) { positionChartTooltip(event); })
+                .on('mouseout', function() {
+                    d3.select(this).attr('fill', 'transparent');
+                    hideChartTooltip();
+                })
+                .on('click', function(event, zd) {
+                    event.stopPropagation();
+                    if (window.filterByDistribution) window.filterByDistribution(zd.sector, zd.min, zd.max, zd.label);
+                });
+        }
+
+        // IQR zone: Q1 → Q3 (middle 50%)
+        hitZoneG.append('rect')
+            .attr('class', 'dist-hit-zone')
+            .attr('x', x(dist.q1))
+            .attr('y', cy)
+            .attr('width', Math.max(x(dist.q3) - x(dist.q1), 6))
+            .attr('height', bh)
+            .attr('fill', 'transparent')
+            .style('cursor', 'pointer')
+            .datum({ sector: d.sector, min: dist.q1, max: dist.q3, label: d.sector + ': IQR (25th–75th)', zone: 'iqr' })
+            .on('mouseover', function(event, zd) {
+                d3.select(this).attr('fill', 'rgba(0,180,216,0.15)');
+                var html = '<div class="ct-title">' + zd.sector + ' — IQR (Middle 50%)</div>' +
+                    '<div class="ct-row"><span class="ct-label">25th Percentile</span><span class="ct-val">' + fmtCurr(zd.min) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">75th Percentile</span><span class="ct-val">' + fmtCurr(zd.max) + '</span></div>' +
+                    '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('fill', 'transparent');
+                hideChartTooltip();
+            })
+            .on('click', function(event, zd) {
+                event.stopPropagation();
+                if (window.filterByDistribution) window.filterByDistribution(zd.sector, zd.min, zd.max, zd.label);
+            });
+
+        // Right whisker zone: Q3 → max (top 25%)
+        if (whiskerMax - x(dist.q3) > 4) {
+            hitZoneG.append('rect')
+                .attr('class', 'dist-hit-zone')
+                .attr('x', x(dist.q3))
+                .attr('y', cy)
+                .attr('width', Math.max(whiskerMax - x(dist.q3), 4))
+                .attr('height', bh)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .datum({ sector: d.sector, min: dist.q3, max: dist.max, label: d.sector + ': Top 25%', zone: 'top' })
+                .on('mouseover', function(event, zd) {
+                    d3.select(this).attr('fill', 'rgba(0,180,216,0.12)');
+                    var html = '<div class="ct-title">' + zd.sector + ' — Top 25%</div>' +
+                        '<div class="ct-row"><span class="ct-label">Range</span><span class="ct-val">' + fmtCurr(zd.min) + ' — ' + fmtCurr(zd.max) + '</span></div>' +
+                        '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+                    showChartTooltip(event, html);
+                })
+                .on('mousemove', function(event) { positionChartTooltip(event); })
+                .on('mouseout', function() {
+                    d3.select(this).attr('fill', 'transparent');
+                    hideChartTooltip();
+                })
+                .on('click', function(event, zd) {
+                    event.stopPropagation();
+                    if (window.filterByDistribution) window.filterByDistribution(zd.sector, zd.min, zd.max, zd.label);
+                });
+        }
     });
 }
 

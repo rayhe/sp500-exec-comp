@@ -228,10 +228,13 @@ function sortTableByKey(key, dir) {
     activeSector = null;
     searchTerm = '';
     window._activeRatioBucket = null;
+    window._activeDistFilter = null;
 
-    // Remove ratio filter chip if present
+    // Remove filter chips if present
     var ratioChip = document.getElementById('ratio-filter-chip');
     if (ratioChip) ratioChip.remove();
+    var distChip = document.getElementById('dist-filter-chip');
+    if (distChip) distChip.remove();
 
     // Clear search input
     var searchInput = document.getElementById('table-search');
@@ -727,6 +730,12 @@ function buildSectorChips(companies) {
             var rc = document.getElementById('ratio-filter-chip');
             if (rc) rc.remove();
         }
+        // Clear distribution filter if active
+        if (window._activeDistFilter) {
+            window._activeDistFilter = null;
+            var dc = document.getElementById('dist-filter-chip');
+            if (dc) dc.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
         renderTable(companies);
@@ -747,6 +756,12 @@ function buildSectorChips(companies) {
                 window._activeRatioBucket = null;
                 var rc = document.getElementById('ratio-filter-chip');
                 if (rc) rc.remove();
+            }
+            // Clear distribution filter if active
+            if (window._activeDistFilter) {
+                window._activeDistFilter = null;
+                var dc = document.getElementById('dist-filter-chip');
+                if (dc) dc.remove();
             }
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
@@ -904,6 +919,12 @@ function renderTable(companies) {
             return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
         });
     }
+    if (window._activeDistFilter) {
+        var df = window._activeDistFilter;
+        filtered = filtered.filter(function(c) {
+            return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
+        });
+    }
 
     // Render summary statistics bar
     renderSummaryBar(filtered, companies);
@@ -1000,6 +1021,7 @@ function renderTable(companies) {
     if (activeSector) announceMsg += ', filtered to ' + activeSector;
     if (searchTerm) announceMsg += ', search: ' + searchTerm;
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
+    if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     announce(announceMsg);
 
@@ -1343,6 +1365,12 @@ function serializeState() {
     if (window._compareSet && window._compareSet.length > 0) {
         params.push('cmp=' + window._compareSet.map(encodeURIComponent).join(','));
     }
+    if (window._activeDistFilter) {
+        params.push('dmin=' + window._activeDistFilter.min);
+        params.push('dmax=' + window._activeDistFilter.max);
+        params.push('dsec=' + encodeURIComponent(window._activeDistFilter.sector));
+        params.push('dlbl=' + encodeURIComponent(window._activeDistFilter.label));
+    }
     return params.length > 0 ? '#' + params.join('&') : '';
 }
 
@@ -1403,6 +1431,16 @@ function applyHashState(companies) {
     if (state.rmin != null) {
         var rmax = state.rmax === 'inf' ? Infinity : parseFloat(state.rmax);
         window._activeRatioBucket = { min: parseFloat(state.rmin), max: rmax };
+    }
+
+    // Distribution filter
+    if (state.dmin != null && state.dmax != null && state.dsec) {
+        window._activeDistFilter = {
+            min: parseFloat(state.dmin),
+            max: parseFloat(state.dmax),
+            sector: state.dsec,
+            label: state.dlbl || state.dsec + ' (filtered)'
+        };
     }
 
     // Page (apply after filters so pagination is computed correctly)
@@ -1542,6 +1580,11 @@ function hideMetricSkeletons() {
         activeSector = sectorName || null;
         currentPage = 1;
 
+        // Clear distribution filter when sector filter changes directly
+        window._activeDistFilter = null;
+        var distChip = document.getElementById('dist-filter-chip');
+        if (distChip) distChip.remove();
+
         // Update sector chip active states
         document.querySelectorAll('.chip').forEach(function(chip) {
             chip.classList.remove('active');
@@ -1550,6 +1593,7 @@ function hideMetricSkeletons() {
         });
 
         renderTable(companies);
+        pushState();
 
         // Highlight active bar in sector chart
         if (window.highlightSectorBar) window.highlightSectorBar(sectorName);
@@ -1566,6 +1610,98 @@ function hideMetricSkeletons() {
         }
     };
 
+    // Distribution percentile filter — stores active comp range for renderTable
+    window._activeDistFilter = null;
+
+    window.filterByDistribution = function(sector, minComp, maxComp, label) {
+        // Toggle off if same filter clicked again
+        if (window._activeDistFilter &&
+            window._activeDistFilter.sector === sector &&
+            window._activeDistFilter.min === minComp &&
+            window._activeDistFilter.max === maxComp) {
+            window._activeDistFilter = null;
+        } else {
+            window._activeDistFilter = { sector: sector, min: minComp, max: maxComp, label: label };
+        }
+
+        // Set sector to the clicked sector
+        activeSector = window._activeDistFilter ? sector : null;
+        searchTerm = '';
+        currentPage = 1;
+        document.getElementById('table-search').value = '';
+
+        // Clear ratio filter
+        window._activeRatioBucket = null;
+        var rc = document.getElementById('ratio-filter-chip');
+        if (rc) rc.remove();
+
+        // Sort by total compensation descending
+        currentSort = { key: 'total_compensation', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === 'total_compensation') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        // Update sector chip active states
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (window._activeDistFilter && chip.textContent === sector) chip.classList.add('active');
+            else if (!window._activeDistFilter && chip.textContent === 'All') chip.classList.add('active');
+        });
+
+        // Update distribution filter indicator chip
+        updateDistFilterIndicator();
+
+        renderTable(companies);
+        pushState();
+
+        // Highlight active bar in sector chart
+        if (window.highlightSectorBar) window.highlightSectorBar(window._activeDistFilter ? sector : null);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+
+        // Scroll to the table section
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updateDistFilterIndicator() {
+        var existing = document.getElementById('dist-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeDistFilter) {
+            var df = window._activeDistFilter;
+            var chip = document.createElement('button');
+            chip.className = 'chip active';
+            chip.id = 'dist-filter-chip';
+            chip.style.background = 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = 'rgba(0,180,216,0.5)';
+            chip.style.color = '#00b4d8';
+            chip.innerHTML = df.label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = 'Click to clear distribution filter';
+            chip.addEventListener('click', function() {
+                window._activeDistFilter = null;
+                activeSector = null;
+                chip.remove();
+                document.querySelectorAll('.chip').forEach(function(c) {
+                    c.classList.remove('active');
+                    if (c.textContent === 'All') c.classList.add('active');
+                });
+                renderTable(companies);
+                if (window.highlightSectorBar) window.highlightSectorBar(null);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+
     // Ratio bucket filter — stores active bucket for renderTable filtering
     window._activeRatioBucket = null;
 
@@ -1581,6 +1717,9 @@ function hideMetricSkeletons() {
         activeSector = null;
         searchTerm = '';
         currentPage = 1;
+        window._activeDistFilter = null;
+        var distChip = document.getElementById('dist-filter-chip');
+        if (distChip) distChip.remove();
         document.getElementById('table-search').value = '';
         document.querySelectorAll('.chip').forEach(function(chip) {
             chip.classList.remove('active');
@@ -1656,6 +1795,11 @@ function hideMetricSkeletons() {
             window._activeRatioBucket = null;
             var rc = document.getElementById('ratio-filter-chip');
             if (rc) rc.remove();
+        }
+        if (window._activeDistFilter) {
+            window._activeDistFilter = null;
+            var dc = document.getElementById('dist-filter-chip');
+            if (dc) dc.remove();
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -2481,12 +2625,15 @@ function hideMetricSkeletons() {
         searchTerm = '';
         currentPage = 1;
         window._activeRatioBucket = null;
+        window._activeDistFilter = null;
         document.getElementById('table-search').value = '';
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip && allChip.textContent === 'All') allChip.classList.add('active');
         var rc = document.getElementById('ratio-filter-chip');
         if (rc) rc.remove();
+        var dc = document.getElementById('dist-filter-chip');
+        if (dc) dc.remove();
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
@@ -2499,6 +2646,10 @@ function hideMetricSkeletons() {
             } else {
                 window.highlightRatioBucket(null);
             }
+        }
+        // Restore dist filter chip if present in hash state
+        if (window._activeDistFilter) {
+            updateDistFilterIndicator();
         }
 
         // Restore or clear comparison set from hash
@@ -2653,7 +2804,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter) {
                 activeSector = null;
                 searchTerm = '';
                 currentPage = 1;
@@ -2662,6 +2813,11 @@ function hideMetricSkeletons() {
                     window._activeRatioBucket = null;
                     var rc = document.getElementById('ratio-filter-chip');
                     if (rc) rc.remove();
+                }
+                if (window._activeDistFilter) {
+                    window._activeDistFilter = null;
+                    var dc = document.getElementById('dist-filter-chip');
+                    if (dc) dc.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
