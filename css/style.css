@@ -1107,6 +1107,28 @@ header h1 {
 .export-csv-btn:active {
     background: rgba(0,180,216,0.25);
 }
+.export-btn-group {
+    display: flex;
+    gap: 0;
+    flex-shrink: 0;
+}
+.export-btn-group .export-csv-btn {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+.export-btn-group .export-neo-btn {
+    border-radius: 0 var(--radius) var(--radius) 0;
+    border-left: none;
+    color: var(--positive);
+    background: rgba(6,214,160,0.08);
+    border-color: rgba(6,214,160,0.25);
+}
+.export-btn-group .export-neo-btn:hover {
+    background: rgba(6,214,160,0.18);
+    border-color: rgba(6,214,160,0.5);
+}
+.export-btn-group .export-neo-btn:active {
+    background: rgba(6,214,160,0.25);
+}
 
 .sector-chips {
     display: flex;
@@ -3361,6 +3383,15 @@ footer li::before {
     .export-csv-btn {
         font-weight: 700;
         border-width: 2px;
+    }
+    .export-btn-group .export-neo-btn {
+        color: #059669;
+        background: rgba(5,150,105,0.08);
+        border-color: rgba(5,150,105,0.3);
+    }
+    .export-btn-group .export-neo-btn:hover {
+        background: rgba(5,150,105,0.16);
+        border-color: rgba(5,150,105,0.5);
     }
 
     /* --- Footer --- */

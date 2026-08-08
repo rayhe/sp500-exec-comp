@@ -134,10 +134,16 @@
                 <input type="text" id="table-search" placeholder="Search companies, CEOs, tickers... (/)" aria-label="Search companies, CEOs, or tickers" autocomplete="off">
                 <div id="table-search-results" class="table-search-results"></div>
             </div>
-            <button class="export-csv-btn" id="export-csv-btn" title="Download current view as CSV">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                CSV
-            </button>
+            <div class="export-btn-group">
+                <button class="export-csv-btn" id="export-csv-btn" title="Download current view as CSV (summary — one row per company)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    CSV
+                </button>
+                <button class="export-csv-btn export-neo-btn" id="export-neo-btn" title="Download full NEO breakdown — one row per Named Executive Officer per company">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    NEO CSV
+                </button>
+            </div>
             <div class="sector-chips" id="sector-chips"></div>
         </div>
         <div class="table-summary-bar" id="table-summary-bar"></div>

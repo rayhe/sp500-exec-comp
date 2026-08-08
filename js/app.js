@@ -2288,6 +2288,132 @@ function hideMetricSkeletons() {
         });
     }
 
+    // === Full NEO CSV Export ===
+    var neoBtn = document.getElementById('export-neo-btn');
+    if (neoBtn) {
+        neoBtn.addEventListener('click', function() {
+            // Build the same filtered/sorted list that renderTable uses
+            var filtered = companies.slice();
+            if (activeSector) {
+                filtered = filtered.filter(function(c) { return c.sector === activeSector; });
+            }
+            if (searchTerm) {
+                var q = searchTerm.toLowerCase();
+                filtered = filtered.filter(function(c) {
+                    if ((c.ticker || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.company_name || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.ceo_name || '').toLowerCase().indexOf(q) >= 0 ||
+                        (c.sector || '').toLowerCase().indexOf(q) >= 0) return true;
+                    if (c.executives) {
+                        for (var ei = 0; ei < c.executives.length; ei++) {
+                            if (c.executives[ei].name && c.executives[ei].name.toLowerCase().indexOf(q) >= 0) return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+            if (window._activeRatioBucket) {
+                var rb = window._activeRatioBucket;
+                filtered = filtered.filter(function(c) {
+                    return c.pay_ratio != null && c.pay_ratio >= rb.min && c.pay_ratio < rb.max;
+                });
+            }
+            if (window._activeDistFilter) {
+                var df = window._activeDistFilter;
+                filtered = filtered.filter(function(c) {
+                    return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
+                });
+            }
+            filtered.sort(function(a, b) {
+                var av = a[currentSort.key];
+                var bv = b[currentSort.key];
+                if (av == null) av = currentSort.dir === 'asc' ? Infinity : -Infinity;
+                if (bv == null) bv = currentSort.dir === 'asc' ? Infinity : -Infinity;
+                if (typeof av === 'string') av = av.toLowerCase();
+                if (typeof bv === 'string') bv = bv.toLowerCase();
+                if (av < bv) return currentSort.dir === 'asc' ? -1 : 1;
+                if (av > bv) return currentSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // CSV header — expanded with NEO fields
+            var headers = [
+                'Rank', 'Ticker', 'Company', 'CEO', 'CEO Total Comp ($)',
+                'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+                'Exec Name', 'Exec Title', 'Salary ($)', 'Stock Awards ($)',
+                'Option Awards ($)', 'Non-Equity Incentive ($)', 'All Other Comp ($)',
+                'Exec Total ($)', 'Fiscal Year', 'Filing Date', 'Filing URL'
+            ];
+
+            var rows = [];
+            filtered.forEach(function(c, i) {
+                var rank = i + 1;
+                var baseFields = [
+                    rank,
+                    csvEscape(c.ticker),
+                    csvEscape(c.company_name),
+                    csvEscape(c.ceo_name),
+                    c.total_compensation || '',
+                    csvEscape(c.sector || ''),
+                    c.pay_ratio || '',
+                    c.median_worker_pay || ''
+                ];
+
+                if (c.executives && c.executives.length > 0) {
+                    // Get all years and find the latest
+                    var allYears = [];
+                    c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+                    allYears.sort(function(a, b) { return b - a; });
+                    var latestYear = allYears[0];
+                    var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+
+                    // One row per executive
+                    latestExecs.forEach(function(exec) {
+                        rows.push(baseFields.concat([
+                            csvEscape(exec.name || ''),
+                            csvEscape(exec.title || ''),
+                            exec.salary || '',
+                            exec.stock_awards || '',
+                            exec.option_awards || '',
+                            exec.non_equity_incentive || '',
+                            exec.all_other || '',
+                            exec.total || '',
+                            exec.year || c.proxy_fiscal_year || '',
+                            csvEscape(c.filing_date || ''),
+                            csvEscape(c.filing_url || '')
+                        ]).join(','));
+                    });
+                } else {
+                    // No NEO data — single summary row with empty exec fields
+                    rows.push(baseFields.concat([
+                        '', '', '', '', '', '', '', '',
+                        c.proxy_fiscal_year || '',
+                        csvEscape(c.filing_date || ''),
+                        csvEscape(c.filing_url || '')
+                    ]).join(','));
+                }
+            });
+
+            var csv = headers.join(',') + '\n' + rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            var fname = 'sp500-neo-comp';
+            if (activeSector) fname += '-' + activeSector.toLowerCase().replace(/\s+/g, '-');
+            if (searchTerm) fname += '-' + searchTerm.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
+            if (window._activeDistFilter) fname += '-dist-' + window._activeDistFilter.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+            if (window._activeRatioBucket) fname += '-ratio-' + window._activeRatioBucket.min + '-' + (window._activeRatioBucket.max === Infinity ? 'max' : window._activeRatioBucket.max);
+            a.download = fname + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            announce('Downloaded full NEO compensation data for ' + filtered.length + ' companies');
+        });
+    }
+
     // === Company Comparison Mode ===
     var compareSet = []; // array of tickers
     var MAX_COMPARE = 4;
