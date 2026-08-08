@@ -2998,6 +2998,63 @@ function hideMetricSkeletons() {
             // Peer Network
             html += '<div class="comparison-row"><span class="comparison-row-label">Peers</span><span class="comparison-row-value">' + peerIn + ' in · ' + peerOut + ' out</span></div>';
 
+            // CEO Pay Composition mini stacked bar
+            if (c.executives && c.executives.length > 0) {
+                var ccAllYears = [];
+                c.executives.forEach(function(e) { if (ccAllYears.indexOf(e.year) < 0) ccAllYears.push(e.year); });
+                ccAllYears.sort(function(a, b) { return b - a; });
+                var ccLatestYear = ccAllYears[0];
+                var ccLatestExecs = c.executives.filter(function(e) { return e.year === ccLatestYear; });
+                var ccCeo = ccLatestExecs.find(function(e) {
+                    return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                });
+                if (!ccCeo && ccLatestExecs.length > 0) {
+                    ccCeo = ccLatestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                }
+                if (ccCeo && ccCeo.total && ccCeo.total > 0) {
+                    var ccSegs = [];
+                    var ccColors = {
+                        'Salary': '#06d6a0', 'Stock': '#00b4d8', 'Options': '#0096c7',
+                        'Incentive': '#a78bfa', 'Bonus': '#8b5cf6', 'Pension': '#fb923c', 'Other': '#ffd166'
+                    };
+                    if (ccCeo.salary) ccSegs.push({ l: 'Salary', v: ccCeo.salary, c: ccColors['Salary'] });
+                    if (ccCeo.stock_awards) ccSegs.push({ l: 'Stock', v: ccCeo.stock_awards, c: ccColors['Stock'] });
+                    if (ccCeo.option_awards) ccSegs.push({ l: 'Options', v: ccCeo.option_awards, c: ccColors['Options'] });
+                    if (ccCeo.non_equity_incentive) ccSegs.push({ l: 'Incentive', v: ccCeo.non_equity_incentive, c: ccColors['Incentive'] });
+                    if (ccCeo.bonus) ccSegs.push({ l: 'Bonus', v: ccCeo.bonus, c: ccColors['Bonus'] });
+                    if (ccCeo.pension_nqdc) ccSegs.push({ l: 'Pension', v: ccCeo.pension_nqdc, c: ccColors['Pension'] });
+                    if (ccCeo.all_other) ccSegs.push({ l: 'Other', v: ccCeo.all_other, c: ccColors['Other'] });
+
+                    if (ccSegs.length > 0) {
+                        var ccTotal = ccSegs.reduce(function(s, seg) { return s + seg.v; }, 0);
+                        ccSegs.forEach(function(seg) { seg.p = ccTotal > 0 ? (seg.v / ccTotal * 100) : 0; });
+                        ccSegs.sort(function(a, b) { return b.v - a.v; });
+
+                        html += '<div class="comparison-comp-breakdown">';
+                        html += '<div class="comparison-comp-label">Pay Composition</div>';
+                        html += '<div class="comparison-comp-bar">';
+                        ccSegs.forEach(function(seg) {
+                            if (seg.p < 0.5) return;
+                            html += '<div class="comparison-comp-seg" style="width:' + seg.p.toFixed(1) + '%;background:' + seg.c + '" title="' + seg.l + ': ' + formatCurrency(seg.v) + ' (' + seg.p.toFixed(1) + '%)"></div>';
+                        });
+                        html += '</div>';
+                        html += '<div class="comparison-comp-legend">';
+                        // Show top 3 components
+                        ccSegs.slice(0, 3).forEach(function(seg) {
+                            html += '<span class="comparison-comp-item"><span class="comparison-comp-dot" style="background:' + seg.c + '"></span>' + seg.l + ' ' + seg.p.toFixed(0) + '%</span>';
+                        });
+                        if (ccSegs.length > 3) {
+                            var otherPct = ccSegs.slice(3).reduce(function(s, seg) { return s + seg.p; }, 0);
+                            if (otherPct >= 1) {
+                                html += '<span class="comparison-comp-item"><span class="comparison-comp-dot" style="background:var(--text-muted)"></span>Other ' + otherPct.toFixed(0) + '%</span>';
+                            }
+                        }
+                        html += '</div>';
+                        html += '</div>';
+                    }
+                }
+            }
+
             // Action buttons row — always shown (Find in Table is always available)
             html += '<div class="comparison-card-actions">';
 
