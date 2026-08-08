@@ -1461,6 +1461,82 @@ function setupDetailPanel(companies) {
 
         html += '</div>'; // detail-stats
 
+        // CEO Compensation Breakdown — visual stacked bar
+        if (company.executives && company.executives.length > 0) {
+            var _cbAllYears = [];
+            company.executives.forEach(function(e) { if (_cbAllYears.indexOf(e.year) < 0) _cbAllYears.push(e.year); });
+            _cbAllYears.sort(function(a,b) { return b - a; });
+            var _cbLatestYear = _cbAllYears[0];
+            var _cbLatestExecs = company.executives.filter(function(e) { return e.year === _cbLatestYear; });
+
+            // Find the CEO executive
+            var ceoExec = _cbLatestExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            // Fallback: if no title match, use the executive with highest total
+            if (!ceoExec && _cbLatestExecs.length > 0) {
+                ceoExec = _cbLatestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+
+            if (ceoExec && ceoExec.total && ceoExec.total > 0) {
+                var cbSegments = [];
+                var cbColorMap = {
+                    'Base Salary': '#06d6a0',
+                    'Stock Awards': '#00b4d8',
+                    'Option Awards': '#0096c7',
+                    'Non-Equity Incentive': '#a78bfa',
+                    'Bonus': '#8b5cf6',
+                    'Pension/NQDC': '#fb923c',
+                    'All Other': '#ffd166'
+                };
+
+                if (ceoExec.salary) cbSegments.push({ label: 'Base Salary', value: ceoExec.salary, color: cbColorMap['Base Salary'] });
+                if (ceoExec.stock_awards) cbSegments.push({ label: 'Stock Awards', value: ceoExec.stock_awards, color: cbColorMap['Stock Awards'] });
+                if (ceoExec.option_awards) cbSegments.push({ label: 'Option Awards', value: ceoExec.option_awards, color: cbColorMap['Option Awards'] });
+                if (ceoExec.non_equity_incentive) cbSegments.push({ label: 'Non-Equity Incentive', value: ceoExec.non_equity_incentive, color: cbColorMap['Non-Equity Incentive'] });
+                if (ceoExec.bonus) cbSegments.push({ label: 'Bonus', value: ceoExec.bonus, color: cbColorMap['Bonus'] });
+                if (ceoExec.pension_nqdc) cbSegments.push({ label: 'Pension/NQDC', value: ceoExec.pension_nqdc, color: cbColorMap['Pension/NQDC'] });
+                if (ceoExec.all_other) cbSegments.push({ label: 'All Other', value: ceoExec.all_other, color: cbColorMap['All Other'] });
+
+                if (cbSegments.length > 0) {
+                    var cbTotal = cbSegments.reduce(function(s, seg) { return s + seg.value; }, 0);
+                    cbSegments.forEach(function(seg) { seg.pct = cbTotal > 0 ? (seg.value / cbTotal * 100) : 0; });
+                    // Sort by value descending for visual clarity
+                    cbSegments.sort(function(a, b) { return b.value - a.value; });
+
+                    html += '<div class="ceo-comp-breakdown">';
+                    html += '<div class="ceo-comp-breakdown-header">';
+                    html += '<span class="ceo-comp-breakdown-title">CEO Pay Composition</span>';
+                    html += '<span class="ceo-comp-breakdown-name">' + (ceoExec.name || company.ceo_name) + ' · FY' + _cbLatestYear + '</span>';
+                    html += '</div>';
+
+                    // Stacked bar
+                    html += '<div class="ceo-comp-bar">';
+                    cbSegments.forEach(function(seg) {
+                        if (seg.pct < 0.5) return; // Skip tiny segments in the bar
+                        html += '<div class="ceo-comp-bar-seg" style="width:' + seg.pct.toFixed(1) + '%;background:' + seg.color + '" title="' + seg.label + ': ' + formatCurrency(seg.value) + ' (' + seg.pct.toFixed(1) + '%)">';
+                        if (seg.pct >= 8) {
+                            html += '<span class="ceo-comp-bar-seg-label">' + seg.pct.toFixed(0) + '%</span>';
+                        }
+                        html += '</div>';
+                    });
+                    html += '</div>';
+
+                    // Legend items
+                    html += '<div class="ceo-comp-legend">';
+                    cbSegments.forEach(function(seg) {
+                        html += '<div class="ceo-comp-legend-item">';
+                        html += '<span class="ceo-comp-legend-dot" style="background:' + seg.color + '"></span>';
+                        html += '<span class="ceo-comp-legend-label">' + seg.label + '</span>';
+                        html += '<span class="ceo-comp-legend-val">' + formatCurrency(seg.value) + ' <span class="ceo-comp-legend-pct">(' + seg.pct.toFixed(1) + '%)</span></span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+            }
+        }
+
         // NEO Executive Compensation Breakdown (from EDGAR data)
         if (company.executives && company.executives.length > 0) {
             var allYears = [];

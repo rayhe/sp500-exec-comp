@@ -1358,6 +1358,111 @@ tbody tr:last-child td { border-bottom: none; }
     letter-spacing: 0.02em;
 }
 
+/* === CEO Compensation Breakdown (stacked bar in detail panel) === */
+.ceo-comp-breakdown {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.ceo-comp-breakdown-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.ceo-comp-breakdown-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+}
+.ceo-comp-breakdown-name {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+.ceo-comp-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    gap: 1px;
+    background: var(--bg-primary);
+}
+.ceo-comp-bar-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3px;
+    transition: opacity 0.15s, filter 0.15s;
+    cursor: default;
+    position: relative;
+}
+.ceo-comp-bar-seg:hover {
+    opacity: 1 !important;
+    filter: brightness(1.2);
+    z-index: 1;
+}
+.ceo-comp-bar:hover .ceo-comp-bar-seg:not(:hover) {
+    opacity: 0.5;
+}
+.ceo-comp-bar-seg-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    font-family: var(--mono);
+    pointer-events: none;
+    white-space: nowrap;
+}
+.ceo-comp-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 10px;
+}
+.ceo-comp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+.ceo-comp-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+.ceo-comp-legend-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+.ceo-comp-legend-val {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.72rem;
+}
+.ceo-comp-legend-pct {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+}
+
+/* Light mode overrides */
+[data-theme="light"] .ceo-comp-breakdown {
+    background: #fff;
+    border-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .ceo-comp-bar {
+    background: #f0f1f5;
+}
+
 .detail-peers {
     border-top: 1px solid var(--border);
     padding-top: 12px;
@@ -2014,6 +2119,15 @@ footer li::before {
     .detail-actions { margin-top: 8px; padding-top: 8px; }
     .detail-network-btn, .detail-table-btn { font-size: 0.75rem; padding: 6px 12px; }
     .detail-data-notice { font-size: 0.72rem; padding: 6px 10px; margin-top: 8px; }
+    .ceo-comp-breakdown { margin-top: 10px; padding: 10px 12px; }
+    .ceo-comp-breakdown-header { flex-direction: column; gap: 2px; }
+    .ceo-comp-breakdown-title { font-size: 0.76rem; }
+    .ceo-comp-breakdown-name { font-size: 0.68rem; }
+    .ceo-comp-bar { height: 24px; }
+    .ceo-comp-bar-seg-label { font-size: 9px; }
+    .ceo-comp-legend { gap: 4px 12px; }
+    .ceo-comp-legend-item { font-size: 0.68rem; }
+    .ceo-comp-legend-val { font-size: 0.68rem; }
 }
 @media (max-width: 400px) {
     .pagination-btn {
