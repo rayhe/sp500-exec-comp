@@ -1543,59 +1543,73 @@ function setupDetailPanel(companies) {
             company.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
             allYears.sort(function(a,b) { return b - a; });
             var latestYear = allYears[0];
-            var latestExecs = company.executives.filter(function(e) { return e.year === latestYear; });
 
             html += '<div class="neo-section">';
             html += '<div class="neo-section-header">';
-            html += '<span class="neo-section-title">Named Executive Officers — FY' + latestYear + '</span>';
+            html += '<span class="neo-section-title">Named Executive Officers</span>';
             if (company.filing_url) {
                 html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="View DEF 14A proxy statement on SEC EDGAR">📄 SEC Filing</a>';
             }
-            if (allYears.length > 1) {
-                html += '<span class="neo-years-available">Data for: ' + allYears.join(', ') + '</span>';
-            }
             html += '</div>';
 
-            html += '<div class="neo-table-wrap"><table class="neo-table">';
-            html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th><th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th><th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
-            html += '<tbody>';
-
-            var neoTotal = 0;
-            latestExecs.forEach(function(exec) {
-                var total = exec.total || 0;
-                neoTotal += total;
-                var isCeo = exec.title && (/chief executive/i.test(exec.title) || /\bceo\b/i.test(exec.title));
-                html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + '>';
-                html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
-                html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
-                html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
-                html += '<td class="neo-num">' + (exec.stock_awards ? formatCompact(exec.stock_awards) : '—') + '</td>';
-                html += '<td class="neo-num">' + (exec.option_awards ? formatCompact(exec.option_awards) : '—') + '</td>';
-                html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
-                html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
-                html += '<td class="neo-num neo-total">' + formatCompact(total) + '</td>';
-                html += '</tr>';
-            });
-
-            // Total row
-            html += '<tr class="neo-total-row"><td colspan="7" class="neo-total-label">Total NEO Compensation</td>';
-            html += '<td class="neo-num neo-total">' + formatCurrency(neoTotal) + '</td></tr>';
-
-            html += '</tbody></table></div>';
-
-            // Year-over-year comparison if multiple years available
+            // Year tabs (if multiple years available)
             if (allYears.length > 1) {
-                var prevYear = allYears[1];
-                var prevExecs = company.executives.filter(function(e) { return e.year === prevYear; });
-                var prevTotal = 0;
-                prevExecs.forEach(function(e) { prevTotal += (e.total || 0); });
-                if (prevTotal > 0) {
-                    var yoyChange = ((neoTotal - prevTotal) / prevTotal * 100).toFixed(1);
-                    var yoySign = parseFloat(yoyChange) >= 0 ? '+' : '';
-                    var yoyCls = parseFloat(yoyChange) >= 0 ? 'positive' : 'negative';
-                    html += '<div class="neo-yoy"><span class="neo-yoy-label">Total NEO comp FY' + prevYear + ':</span> ' + formatCurrency(prevTotal) + ' <span class="' + yoyCls + '">(' + yoySign + yoyChange + '% YoY)</span></div>';
-                }
+                html += '<div class="neo-year-tabs" role="tablist" aria-label="Select fiscal year">';
+                allYears.forEach(function(yr, idx) {
+                    html += '<button class="neo-year-tab' + (idx === 0 ? ' active' : '') + '" data-year="' + yr + '" role="tab" aria-selected="' + (idx === 0 ? 'true' : 'false') + '" tabindex="' + (idx === 0 ? '0' : '-1') + '">FY' + yr + '</button>';
+                });
+                html += '</div>';
             }
+
+            // Render a table for each year (only first visible)
+            allYears.forEach(function(yr, yrIdx) {
+                var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
+                var yrTotal = 0;
+
+                html += '<div class="neo-year-panel" data-year="' + yr + '"' + (yrIdx > 0 ? ' style="display:none"' : '') + '>';
+                html += '<div class="neo-table-wrap"><table class="neo-table">';
+                html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th><th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th><th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
+                html += '<tbody>';
+
+                yrExecs.forEach(function(exec) {
+                    var total = exec.total || 0;
+                    yrTotal += total;
+                    var isCeo = exec.title && (/chief executive/i.test(exec.title) || /\bceo\b/i.test(exec.title));
+                    html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + '>';
+                    html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
+                    html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
+                    html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
+                    html += '<td class="neo-num">' + (exec.stock_awards ? formatCompact(exec.stock_awards) : '—') + '</td>';
+                    html += '<td class="neo-num">' + (exec.option_awards ? formatCompact(exec.option_awards) : '—') + '</td>';
+                    html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
+                    html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
+                    html += '<td class="neo-num neo-total">' + formatCompact(total) + '</td>';
+                    html += '</tr>';
+                });
+
+                // Total row
+                html += '<tr class="neo-total-row"><td colspan="7" class="neo-total-label">Total NEO Compensation</td>';
+                html += '<td class="neo-num neo-total">' + formatCurrency(yrTotal) + '</td></tr>';
+
+                html += '</tbody></table></div>';
+
+                // Year-over-year comparison vs next year (if exists)
+                var nextYrIdx = yrIdx + 1;
+                if (nextYrIdx < allYears.length) {
+                    var nextYr = allYears[nextYrIdx];
+                    var nextYrExecs = company.executives.filter(function(e) { return e.year === nextYr; });
+                    var nextYrTotal = 0;
+                    nextYrExecs.forEach(function(e) { nextYrTotal += (e.total || 0); });
+                    if (nextYrTotal > 0) {
+                        var yoyChange = ((yrTotal - nextYrTotal) / nextYrTotal * 100).toFixed(1);
+                        var yoySign = parseFloat(yoyChange) >= 0 ? '+' : '';
+                        var yoyCls = parseFloat(yoyChange) >= 0 ? 'positive' : 'negative';
+                        html += '<div class="neo-yoy"><span class="neo-yoy-label">vs FY' + nextYr + ':</span> ' + formatCurrency(nextYrTotal) + ' <span class="' + yoyCls + '">(' + yoySign + yoyChange + '% YoY)</span></div>';
+                    }
+                }
+
+                html += '</div>'; // neo-year-panel
+            });
 
             html += '<div class="neo-source">Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '') + '</div>';
             html += '</div>'; // neo-section
@@ -1643,6 +1657,39 @@ function setupDetailPanel(companies) {
         detailRow.dataset.ticker = ticker;
         detailRow.innerHTML = html;
         row.after(detailRow);
+
+        // Wire up NEO year tabs — switch between fiscal years
+        detailRow.querySelectorAll('.neo-year-tab').forEach(function(tab) {
+            tab.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var yr = tab.getAttribute('data-year');
+                var section = tab.closest('.neo-section');
+                if (!section) return;
+                // Update tab active states
+                section.querySelectorAll('.neo-year-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                    t.setAttribute('tabindex', '-1');
+                });
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+                tab.setAttribute('tabindex', '0');
+                // Show/hide year panels
+                section.querySelectorAll('.neo-year-panel').forEach(function(panel) {
+                    panel.style.display = panel.getAttribute('data-year') === yr ? '' : 'none';
+                });
+            });
+            // Arrow key navigation between tabs
+            tab.addEventListener('keydown', function(e) {
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                e.preventDefault();
+                var tabs = Array.from(tab.closest('.neo-year-tabs').querySelectorAll('.neo-year-tab'));
+                var idx = tabs.indexOf(tab);
+                var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+                tabs[next].click();
+                tabs[next].focus();
+            });
+        });
 
         // Wire up clickable detail peer tags — click to find in table, shift+click to show in network
         detailRow.querySelectorAll('.detail-peer-tag-link').forEach(function(tag) {

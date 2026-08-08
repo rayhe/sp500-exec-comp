@@ -143,6 +143,9 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .detail-peer-tag { background: #e8e9ee; color: #1a1a2e; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-peer-tag-link:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.12); }
 [data-theme="light"] .detail-peer-tag-link:focus-visible { outline-color: #0077b6; color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.12); }
+[data-theme="light"] .neo-year-tab { border-color: rgba(0,0,0,0.12); color: #6b7280; }
+[data-theme="light"] .neo-year-tab:hover { color: #1a1a2e; border-color: #0077b6; background: rgba(0, 119, 182, 0.04); }
+[data-theme="light"] .neo-year-tab.active { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.08); }
 [data-theme="light"] .insight-compare-btn:hover { color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.08); }
 [data-theme="light"] .insight-compare-btn:focus-visible { outline-color: #0077b6; color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.08); }
 [data-theme="light"] .insight-compare-btn.selected { color: #059669; border-color: #059669; background: rgba(5, 150, 105, 0.08); }
@@ -2862,9 +2865,14 @@ footer li::before {
     .compare-clear-btn,
     #ratio-filter-chip,
     .table-wrapper::after,
-    .metric-card-cta {
+    .metric-card-cta,
+    .neo-year-tabs {
         display: none !important;
     }
+
+    /* Show all NEO year panels in print (not just the active tab) */
+    .neo-year-panel { display: block !important; }
+    .neo-year-panel + .neo-year-panel { margin-top: 1rem; border-top: 1px solid #ccc; padding-top: 0.5rem; }
 
     /* ---- Header ---- */
     header {
@@ -3707,6 +3715,39 @@ footer li::before {
     color: var(--text-muted);
     margin-left: auto;
 }
+/* NEO year tab strip */
+.neo-year-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0.75rem;
+}
+.neo-year-tab {
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.3px;
+}
+.neo-year-tab:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: rgba(0,180,216,0.06);
+}
+.neo-year-tab.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(0,180,216,0.12);
+}
+.neo-year-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 .neo-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -3811,4 +3852,5 @@ footer li::before {
     .neo-table tbody td { padding: 0.3rem 0.4rem; }
     .neo-section-header { flex-direction: column; align-items: flex-start; }
     .neo-years-available { margin-left: 0; }
+    .neo-year-tabs { flex-wrap: wrap; }
 }
