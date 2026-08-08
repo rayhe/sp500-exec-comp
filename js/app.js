@@ -3136,6 +3136,43 @@ function hideMetricSkeletons() {
             html += '<div class="comparison-row"><span class="comparison-row-label">Total Comp</span><span class="comparison-row-value' + compClass + '">' + formatCurrency(c.total_compensation) + '</span></div>';
             html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + compPct + '%;background:var(--accent)"></div></div>';
 
+            // CEO Comp YoY change badge (from multi-year NEO data)
+            if (c.executives && c.executives.length > 0) {
+                var yoyAllYears = [];
+                c.executives.forEach(function(e) { if (yoyAllYears.indexOf(e.year) < 0) yoyAllYears.push(e.year); });
+                yoyAllYears.sort(function(a, b) { return b - a; });
+                if (yoyAllYears.length >= 2) {
+                    var yoyYr1 = yoyAllYears[0];
+                    var yoyYr2 = yoyAllYears[1];
+                    var yoyExecs1 = c.executives.filter(function(e) { return e.year === yoyYr1; });
+                    var yoyExecs2 = c.executives.filter(function(e) { return e.year === yoyYr2; });
+                    // Find CEO in each year
+                    var yoyCeo1 = yoyExecs1.find(function(e) {
+                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                    });
+                    if (!yoyCeo1 && yoyExecs1.length > 0) {
+                        yoyCeo1 = yoyExecs1.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    }
+                    var yoyCeo2 = yoyExecs2.find(function(e) {
+                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                    });
+                    if (!yoyCeo2 && yoyExecs2.length > 0) {
+                        yoyCeo2 = yoyExecs2.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    }
+                    if (yoyCeo1 && yoyCeo2 && yoyCeo1.total > 0 && yoyCeo2.total > 0) {
+                        var yoyPctChange = ((yoyCeo1.total - yoyCeo2.total) / yoyCeo2.total * 100);
+                        var yoyIsPos = yoyPctChange >= 0;
+                        var yoyArrow = yoyIsPos ? '▲' : '▼';
+                        var yoySign = yoyIsPos ? '+' : '';
+                        var yoyCls = yoyIsPos ? 'positive' : 'negative';
+                        html += '<div class="comparison-yoy-badge ' + yoyCls + '">';
+                        html += '<span class="comparison-yoy-arrow">' + yoyArrow + '</span> ';
+                        html += yoySign + yoyPctChange.toFixed(1) + '% vs FY' + yoyYr2;
+                        html += '</div>';
+                    }
+                }
+            }
+
             // Sector Rank
             html += '<div class="comparison-row"><span class="comparison-row-label">Sector</span><span class="comparison-row-value">' + (c.sector || '—') + '</span></div>';
             html += '<div class="comparison-row"><span class="comparison-row-label">Sector Rank</span><span class="comparison-row-value">#' + sRank.rank + ' of ' + sRank.total + '</span></div>';

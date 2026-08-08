@@ -2423,6 +2423,39 @@ footer li::before {
 }
 
 /* Comparison card — CEO Pay Composition mini stacked bar */
+/* Comparison card CEO comp YoY badge */
+.comparison-yoy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+}
+.comparison-yoy-badge.positive {
+    color: var(--positive, #06d6a0);
+    background: rgba(6, 214, 160, 0.12);
+}
+.comparison-yoy-badge.negative {
+    color: var(--negative, #ef476f);
+    background: rgba(239, 71, 111, 0.12);
+}
+.comparison-yoy-arrow {
+    font-size: 0.6rem;
+}
+[data-theme="light"] .comparison-yoy-badge.positive {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+}
+[data-theme="light"] .comparison-yoy-badge.negative {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+}
+
 .comparison-comp-breakdown {
     margin-top: 10px;
     padding-top: 10px;
