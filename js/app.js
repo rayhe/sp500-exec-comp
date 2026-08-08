@@ -2590,6 +2590,18 @@ function hideMetricSkeletons() {
         var textCol = dark ? '#e4e4e7' : '#1a1a2e';
         var mutedCol = dark ? '#6b7280' : '#6b7280';
         var gridCol = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+        var hoverBg = dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
+
+        // Pre-compute S&P 500 ranks for all 3 metrics
+        var ratioRankMap = {};
+        var workerRankMap = {};
+        var companiesWithRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; })
+            .sort(function(a, b) { return b.pay_ratio - a.pay_ratio; });
+        companiesWithRatio.forEach(function(c, i) { ratioRankMap[c.ticker] = { rank: i + 1, total: companiesWithRatio.length }; });
+        var companiesWithWorker = companies.filter(function(c) { return c.median_worker_pay != null && c.median_worker_pay > 0; })
+            .sort(function(a, b) { return b.median_worker_pay - a.median_worker_pay; });
+        companiesWithWorker.forEach(function(c, i) { workerRankMap[c.ticker] = { rank: i + 1, total: companiesWithWorker.length }; });
+        var totalCompanies = companies.length;
 
         // Three metric groups
         var metrics = [
@@ -2600,7 +2612,9 @@ function hideMetricSkeletons() {
                 color: function(v, max, min) {
                     return v === max ? (dark ? '#00b4d8' : '#0077b6') : null;
                 },
-                higherBetter: true
+                higherBetter: true,
+                getRank: function(ticker) { var r = rankMap[ticker]; return r ? { rank: r, total: totalCompanies } : null; },
+                unit: ''
             },
             {
                 label: 'CEO:Worker Pay Ratio',
@@ -2612,7 +2626,9 @@ function hideMetricSkeletons() {
                     if (v > 500) return '#ffd166';
                     return '#06d6a0';
                 },
-                higherBetter: false
+                higherBetter: false,
+                getRank: function(ticker) { return ratioRankMap[ticker] || null; },
+                unit: ':1'
             },
             {
                 label: 'Median Worker Pay',
@@ -2621,7 +2637,9 @@ function hideMetricSkeletons() {
                 color: function(v, max, min) {
                     return v === max ? (dark ? '#06d6a0' : '#059669') : null;
                 },
-                higherBetter: true
+                higherBetter: true,
+                getRank: function(ticker) { return workerRankMap[ticker] || null; },
+                unit: ''
             }
         ];
 
@@ -2654,6 +2672,14 @@ function hideMetricSkeletons() {
             var maxVal = vals.length > 0 ? Math.max.apply(null, vals) : 1;
             var minVal = vals.length > 0 ? Math.min.apply(null, vals) : 0;
 
+            // Determine best/worst in comparison set for context
+            var bestVal = metric.higherBetter ? maxVal : minVal;
+            var bestTicker = '';
+            selected.forEach(function(c) {
+                var v = c[metric.key];
+                if (v != null && v === bestVal) bestTicker = c.ticker;
+            });
+
             // Gridline at max
             svg.append('line')
                 .attr('x1', chartLeft)
@@ -2672,8 +2698,13 @@ function hideMetricSkeletons() {
                 var barColor = COMP_COLORS[i % COMP_COLORS.length];
                 var specialColor = metric.color(val, maxVal, minVal);
 
+                // Create a group for this bar row for hover coordination
+                var barGroup = svg.append('g')
+                    .attr('class', 'comp-chart-bar-group')
+                    .style('cursor', 'pointer');
+
                 // Ticker label
-                svg.append('text')
+                barGroup.append('text')
                     .attr('x', labelW)
                     .attr('y', barY + barH / 2 + 4)
                     .attr('text-anchor', 'end')
@@ -2684,7 +2715,7 @@ function hideMetricSkeletons() {
                     .text(c.ticker);
 
                 // Bar background
-                svg.append('rect')
+                barGroup.append('rect')
                     .attr('x', chartLeft)
                     .attr('y', barY)
                     .attr('width', barAreaW)
@@ -2692,20 +2723,27 @@ function hideMetricSkeletons() {
                     .attr('rx', 4)
                     .attr('fill', gridCol);
 
-                // Bar fill
+                // Bar fill with transition
+                var barFill = null;
                 if (barW > 0) {
-                    svg.append('rect')
+                    barFill = barGroup.append('rect')
                         .attr('x', chartLeft)
                         .attr('y', barY)
-                        .attr('width', barW)
+                        .attr('width', 0)
                         .attr('height', barH)
                         .attr('rx', 4)
                         .attr('fill', barColor)
                         .attr('opacity', 0.85);
+                    // Animate bar growth
+                    barFill.transition()
+                        .duration(500)
+                        .delay(i * 80)
+                        .ease(d3.easeCubicOut)
+                        .attr('width', barW);
                 }
 
                 // Value label
-                svg.append('text')
+                var valueLabel = barGroup.append('text')
                     .attr('x', chartRight + 8)
                     .attr('y', barY + barH / 2 + 4)
                     .attr('text-anchor', 'start')
@@ -2715,6 +2753,80 @@ function hideMetricSkeletons() {
                     .attr('font-family', "'SF Mono', 'Fira Code', monospace")
                     .style('font-variant-numeric', 'tabular-nums')
                     .text(metric.format(val));
+
+                // Invisible hit-area rect covering the entire bar row (for consistent hover)
+                barGroup.append('rect')
+                    .attr('x', 0)
+                    .attr('y', barY - 1)
+                    .attr('width', cWidth)
+                    .attr('height', barH + 2)
+                    .attr('fill', 'transparent')
+                    .style('cursor', 'pointer');
+
+                // Build tooltip content
+                var rankInfo = metric.getRank(c.ticker);
+                var rankStr = rankInfo ? '#' + rankInfo.rank + ' / ' + rankInfo.total : 'N/A';
+                var pctile = rankInfo ? Math.round((1 - (rankInfo.rank - 1) / rankInfo.total) * 100) : null;
+                var pctileStr = pctile != null ? pctile + 'th percentile' : '';
+
+                // Comparison context
+                var compContext = '';
+                if (val != null && val > 0 && bestVal > 0 && n > 1) {
+                    if (val === bestVal) {
+                        compContext = metric.higherBetter ? '🏆 Highest in comparison' : '⚠️ Highest in comparison';
+                    } else {
+                        var diff = Math.abs((val - bestVal) / bestVal * 100);
+                        if (metric.higherBetter) {
+                            compContext = Math.round(diff) + '% less than ' + bestTicker;
+                        } else {
+                            // For pay ratio (lower is better), show how much higher than the lowest
+                            var worstInComparison = maxVal;
+                            var bestInComparison = minVal > 0 ? minVal : maxVal;
+                            if (val === bestInComparison) {
+                                compContext = '✅ Lowest in comparison';
+                            } else {
+                                var diffFromBest = Math.abs((val - bestInComparison) / bestInComparison * 100);
+                                var bestRatioTicker = '';
+                                selected.forEach(function(sc) { if (sc[metric.key] === bestInComparison) bestRatioTicker = sc.ticker; });
+                                compContext = Math.round(diffFromBest) + '% higher than ' + bestRatioTicker;
+                            }
+                        }
+                    }
+                }
+
+                // Hover interactions
+                barGroup
+                    .on('mouseover', function(event) {
+                        // Highlight bar
+                        if (barFill) barFill.attr('opacity', 1);
+                        // Highlight value label
+                        valueLabel.attr('font-weight', '800');
+
+                        // Build tooltip HTML
+                        var tipHtml = '<div class="ct-title">' + c.company_name + '</div>';
+                        tipHtml += '<div class="ct-row"><span class="ct-label">' + metric.label + '</span><span class="ct-val">' + metric.format(val) + '</span></div>';
+                        tipHtml += '<div class="ct-row"><span class="ct-label">S&P 500 Rank</span><span class="ct-val">' + rankStr + '</span></div>';
+                        if (pctileStr) {
+                            tipHtml += '<div class="ct-row"><span class="ct-label">Percentile</span><span class="ct-val">' + pctileStr + '</span></div>';
+                        }
+                        if (compContext) {
+                            tipHtml += '<div class="ct-sub"><div class="ct-row"><span class="ct-val">' + compContext + '</span></div></div>';
+                        }
+                        tipHtml += '<div class="ct-sub"><div class="ct-row"><span class="ct-val" style="color:var(--accent);font-size:0.68rem">Click to view in table</span></div></div>';
+                        showChartTooltip(event, tipHtml);
+                    })
+                    .on('mousemove', function(event) {
+                        positionChartTooltip(event);
+                    })
+                    .on('mouseout', function() {
+                        if (barFill) barFill.attr('opacity', 0.85);
+                        valueLabel.attr('font-weight', '600');
+                        hideChartTooltip();
+                    })
+                    .on('click', function() {
+                        hideChartTooltip();
+                        if (window.findCompanyInTable) window.findCompanyInTable(c.ticker);
+                    });
 
                 // Best/worst indicator for the last bar bottom gridline
                 if (i === n - 1) {
