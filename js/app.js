@@ -3008,6 +3008,8 @@ function hideMetricSkeletons() {
         ];
 
         var totalH = metrics.length * (n * (barH + 4) + 28 + groupGap) - groupGap + 16;
+        // Reserve extra space for 4th group (composition) — adjusted dynamically later if rendered
+        totalH += n * (barH + 4) + 28 + groupGap + 24;
 
         var svg = d3.select(container).append('svg')
             .attr('width', cWidth)
@@ -3206,6 +3208,224 @@ function hideMetricSkeletons() {
 
             yOffset += n * (barH + 4) + groupGap;
         });
+
+        // === 4th metric group: CEO Pay Composition (stacked bars) ===
+        // Build composition data for each selected company
+        var compCompColors = {
+            'Salary': '#06d6a0', 'Stock': '#00b4d8', 'Options': '#0096c7',
+            'Incentive': '#a78bfa', 'Bonus': '#8b5cf6', 'Pension': '#fb923c', 'Other': '#ffd166'
+        };
+        var compCompKeys = [
+            { key: 'salary', label: 'Salary' },
+            { key: 'stock_awards', label: 'Stock' },
+            { key: 'option_awards', label: 'Options' },
+            { key: 'non_equity_incentive', label: 'Incentive' },
+            { key: 'bonus', label: 'Bonus' },
+            { key: 'pension_nqdc', label: 'Pension' },
+            { key: 'all_other', label: 'Other' }
+        ];
+
+        // Get CEO breakdown for each company
+        var compBreakdowns = selected.map(function(c) {
+            if (!c.executives || c.executives.length === 0) return null;
+            var allYears = [];
+            c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+            allYears.sort(function(a, b) { return b - a; });
+            var latestExecs = c.executives.filter(function(e) { return e.year === allYears[0]; });
+            var ceo = latestExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo) ceo = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            if (!ceo) return null;
+            var segs = [];
+            var segTotal = 0;
+            compCompKeys.forEach(function(kd) {
+                var val = ceo[kd.key] || 0;
+                if (val > 0) {
+                    segs.push({ label: kd.label, value: val, color: compCompColors[kd.label] });
+                    segTotal += val;
+                }
+            });
+            if (segs.length === 0 || segTotal === 0) return null;
+            segs.forEach(function(s) { s.pct = s.value / segTotal * 100; });
+            return { segs: segs, total: segTotal, ceoName: ceo.name || c.ceo_name, year: allYears[0] };
+        });
+
+        var hasCompData = compBreakdowns.some(function(b) { return b !== null; });
+
+        if (hasCompData) {
+            // Extend SVG height for the composition section
+            var compSectionH = n * (barH + 4) + 48; // bars + header + legend
+            var legendH = 24;
+
+            // Group label
+            svg.append('text')
+                .attr('x', 0)
+                .attr('y', yOffset + 14)
+                .attr('fill', mutedCol)
+                .attr('font-size', '11px')
+                .attr('font-weight', '600')
+                .attr('letter-spacing', '0.5px')
+                .attr('font-family', "'Inter', sans-serif")
+                .style('text-transform', 'uppercase')
+                .text('Pay Composition');
+
+            yOffset += 24;
+
+            // Gridline
+            svg.append('line')
+                .attr('x1', chartLeft)
+                .attr('y1', yOffset - 2)
+                .attr('x2', chartRight)
+                .attr('y2', yOffset - 2)
+                .attr('stroke', gridCol)
+                .attr('stroke-width', 1);
+
+            selected.forEach(function(c, i) {
+                var bd = compBreakdowns[i];
+                var barY = yOffset + i * (barH + 4);
+
+                // Ticker label
+                svg.append('text')
+                    .attr('x', labelW)
+                    .attr('y', barY + barH / 2 + 4)
+                    .attr('text-anchor', 'end')
+                    .attr('fill', COMP_COLORS[i % COMP_COLORS.length])
+                    .attr('font-size', '12px')
+                    .attr('font-weight', '700')
+                    .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+                    .text(c.ticker);
+
+                // Bar background
+                svg.append('rect')
+                    .attr('x', chartLeft)
+                    .attr('y', barY)
+                    .attr('width', barAreaW)
+                    .attr('height', barH)
+                    .attr('rx', 4)
+                    .attr('fill', gridCol);
+
+                if (bd) {
+                    // Stacked segments
+                    var xCursor = chartLeft;
+                    bd.segs.forEach(function(seg, si) {
+                        var segW = seg.pct / 100 * barAreaW;
+                        if (segW < 1) return;
+                        var segGroup = svg.append('g').style('cursor', 'pointer');
+                        var segRect = segGroup.append('rect')
+                            .attr('x', xCursor)
+                            .attr('y', barY)
+                            .attr('width', segW)
+                            .attr('height', barH)
+                            .attr('fill', seg.color)
+                            .attr('opacity', 0.85);
+                        // First and last segments get rounded corners
+                        if (si === 0) segRect.attr('rx', 4).attr('ry', 4).attr('clip-path', 'inset(0 0 0 0 round 4px 0 0 4px)');
+                        if (si === bd.segs.length - 1) segRect.attr('rx', 4).attr('ry', 4);
+
+                        // Percentage label on segment if wide enough
+                        if (segW > 28) {
+                            segGroup.append('text')
+                                .attr('x', xCursor + segW / 2)
+                                .attr('y', barY + barH / 2 + 4)
+                                .attr('text-anchor', 'middle')
+                                .attr('fill', '#fff')
+                                .attr('font-size', '9px')
+                                .attr('font-weight', '700')
+                                .attr('font-family', "'Inter', sans-serif")
+                                .text(seg.pct.toFixed(0) + '%');
+                        }
+
+                        // Hover tooltip
+                        segGroup
+                            .on('mouseover', function(event) {
+                                segRect.attr('opacity', 1);
+                                var tipHtml = '<div class="ct-title">' + c.company_name + '</div>';
+                                tipHtml += '<div class="ct-row"><span class="ct-label">' + seg.label + '</span><span class="ct-val">' + formatCurrency(seg.value) + '</span></div>';
+                                tipHtml += '<div class="ct-row"><span class="ct-label">% of Total</span><span class="ct-val">' + seg.pct.toFixed(1) + '%</span></div>';
+                                tipHtml += '<div class="ct-sub"><div class="ct-row"><span class="ct-val" style="font-size:0.68rem">' + (bd.ceoName || c.ceo_name) + ' · FY' + bd.year + '</span></div></div>';
+                                showChartTooltip(event, tipHtml);
+                            })
+                            .on('mousemove', function(event) { positionChartTooltip(event); })
+                            .on('mouseout', function() {
+                                segRect.attr('opacity', 0.85);
+                                hideChartTooltip();
+                            })
+                            .on('click', function() {
+                                hideChartTooltip();
+                                if (window.findCompanyInTable) window.findCompanyInTable(c.ticker);
+                            });
+
+                        xCursor += segW;
+                    });
+
+                    // Total label on right
+                    svg.append('text')
+                        .attr('x', chartRight + 8)
+                        .attr('y', barY + barH / 2 + 4)
+                        .attr('text-anchor', 'start')
+                        .attr('fill', textCol)
+                        .attr('font-size', '12px')
+                        .attr('font-weight', '600')
+                        .attr('font-family', "'SF Mono', 'Fira Code', monospace")
+                        .style('font-variant-numeric', 'tabular-nums')
+                        .text(formatCurrency(bd.total));
+                } else {
+                    svg.append('text')
+                        .attr('x', chartLeft + barAreaW / 2)
+                        .attr('y', barY + barH / 2 + 4)
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', mutedCol)
+                        .attr('font-size', '11px')
+                        .attr('font-family', "'Inter', sans-serif")
+                        .text('No breakdown data');
+                }
+            });
+
+            yOffset += n * (barH + 4) + 8;
+
+            // Bottom gridline
+            svg.append('line')
+                .attr('x1', chartLeft)
+                .attr('y1', yOffset - 6)
+                .attr('x2', chartRight)
+                .attr('y2', yOffset - 6)
+                .attr('stroke', gridCol)
+                .attr('stroke-width', 1);
+
+            // Shared legend
+            var legendItems = ['Salary', 'Stock', 'Options', 'Incentive', 'Bonus', 'Pension', 'Other'];
+            var legendUsed = {};
+            compBreakdowns.forEach(function(bd) {
+                if (!bd) return;
+                bd.segs.forEach(function(s) { legendUsed[s.label] = true; });
+            });
+            var activeLegend = legendItems.filter(function(l) { return legendUsed[l]; });
+            var legendX = chartLeft;
+            activeLegend.forEach(function(label) {
+                var g = svg.append('g');
+                g.append('rect')
+                    .attr('x', legendX)
+                    .attr('y', yOffset)
+                    .attr('width', 8)
+                    .attr('height', 8)
+                    .attr('rx', 2)
+                    .attr('fill', compCompColors[label]);
+                g.append('text')
+                    .attr('x', legendX + 12)
+                    .attr('y', yOffset + 8)
+                    .attr('fill', mutedCol)
+                    .attr('font-size', '10px')
+                    .attr('font-family', "'Inter', sans-serif")
+                    .text(label);
+                legendX += label.length * 6 + 22;
+            });
+
+            yOffset += legendH + groupGap;
+
+            // Resize SVG to fit new content
+            svg.attr('height', yOffset);
+        }
     }
 
     /* === Peer Overlap Analysis for Comparison View === */
