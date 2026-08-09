@@ -2694,9 +2694,43 @@ function hideMetricSkeletons() {
             });
 
             // CSV header and rows
-            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)'];
+            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+                'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
+                'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
+                'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
             var rows = filtered.map(function(c, i) {
                 var yoyVal = c._ceoYoY ? (c._ceoYoY.pct >= 0 ? '+' : '') + c._ceoYoY.pct.toFixed(1) + '%' : '';
+                // Find CEO executive record for composition data
+                var ceoExec = null;
+                if (c.executives && c.executives.length > 0) {
+                    var latestYear = 0;
+                    c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+                    var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+                    // CEO by title match
+                    ceoExec = latestExecs.find(function(e) {
+                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                    });
+                    // Fallback: highest total
+                    if (!ceoExec && latestExecs.length > 0) {
+                        ceoExec = latestExecs.reduce(function(a, b) { return (a.total || 0) > (b.total || 0) ? a : b; });
+                    }
+                }
+                var sal = ceoExec ? (ceoExec.salary || 0) : '';
+                var stk = ceoExec ? (ceoExec.stock_awards || 0) : '';
+                var opt = ceoExec ? (ceoExec.option_awards || 0) : '';
+                var bon = ceoExec ? (ceoExec.bonus || 0) : '';
+                var inc = ceoExec ? (ceoExec.non_equity_incentive || 0) : '';
+                var pen = ceoExec ? (ceoExec.pension_nqdc || ceoExec.pension_change || 0) : '';
+                var oth = ceoExec ? (ceoExec.all_other || 0) : '';
+                var tot = ceoExec ? (ceoExec.total || 0) : 0;
+                // Percentages
+                var salP = tot > 0 && ceoExec ? ((sal / tot) * 100).toFixed(1) + '%' : '';
+                var stkP = tot > 0 && ceoExec ? ((stk / tot) * 100).toFixed(1) + '%' : '';
+                var optP = tot > 0 && ceoExec ? ((opt / tot) * 100).toFixed(1) + '%' : '';
+                var bonP = tot > 0 && ceoExec ? ((bon / tot) * 100).toFixed(1) + '%' : '';
+                var incP = tot > 0 && ceoExec ? ((inc / tot) * 100).toFixed(1) + '%' : '';
+                var penP = tot > 0 && ceoExec ? ((pen / tot) * 100).toFixed(1) + '%' : '';
+                var othP = tot > 0 && ceoExec ? ((oth / tot) * 100).toFixed(1) + '%' : '';
                 return [
                     i + 1,
                     csvEscape(c.ticker),
@@ -2706,7 +2740,10 @@ function hideMetricSkeletons() {
                     csvEscape(yoyVal),
                     csvEscape(c.sector || ''),
                     c.pay_ratio || '',
-                    c.median_worker_pay || ''
+                    c.median_worker_pay || '',
+                    sal, stk, opt, bon, inc, pen, oth,
+                    csvEscape(salP), csvEscape(stkP), csvEscape(optP), csvEscape(bonP),
+                    csvEscape(incP), csvEscape(penP), csvEscape(othP)
                 ].join(',');
             });
 
@@ -2780,8 +2817,8 @@ function hideMetricSkeletons() {
             var headers = [
                 'Rank', 'Ticker', 'Company', 'CEO', 'CEO Total Comp ($)',
                 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
-                'Exec Name', 'Exec Title', 'Salary ($)', 'Stock Awards ($)',
-                'Option Awards ($)', 'Non-Equity Incentive ($)', 'All Other Comp ($)',
+                'Exec Name', 'Exec Title', 'Salary ($)', 'Bonus ($)', 'Stock Awards ($)',
+                'Option Awards ($)', 'Non-Equity Incentive ($)', 'Pension/NQDC ($)', 'All Other Comp ($)',
                 'Exec Total ($)', 'Fiscal Year', 'Filing Date', 'Filing URL'
             ];
 
@@ -2813,9 +2850,11 @@ function hideMetricSkeletons() {
                             csvEscape(exec.name || ''),
                             csvEscape(exec.title || ''),
                             exec.salary || '',
+                            exec.bonus || '',
                             exec.stock_awards || '',
                             exec.option_awards || '',
                             exec.non_equity_incentive || '',
+                            exec.pension_nqdc || exec.pension_change || '',
                             exec.all_other || '',
                             exec.total || '',
                             exec.year || c.proxy_fiscal_year || '',
@@ -2826,7 +2865,7 @@ function hideMetricSkeletons() {
                 } else {
                     // No NEO data — single summary row with empty exec fields
                     rows.push(baseFields.concat([
-                        '', '', '', '', '', '', '', '',
+                        '', '', '', '', '', '', '', '', '', '',
                         c.proxy_fiscal_year || '',
                         csvEscape(c.filing_date || ''),
                         csvEscape(c.filing_url || '')

@@ -29523,43 +29523,137 @@
     {
       "ticker": "TROW",
       "company_name": "T Rowe Price Group Inc",
-      "ceo_name": "Robert Sharps",
-      "total_compensation": 19389829,
-      "fiscal_year": 2024,
+      "ceo_name": "Robert W. Sharps",
+      "total_compensation": 17245792,
+      "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 163864,
       "pay_ratio": 118,
       "sector": "Financials",
       "executives": [
         {
-          "name": "Robert W. Sharps Chair, Chief Executive Officer, and President",
+          "name": "Robert W. Sharps",
+          "title": "Chair, Chief Executive Officer, and President",
           "year": 2025,
           "salary": 350000,
+          "stock_awards": 8401689,
+          "non_equity_incentive": 8401500,
+          "all_other": 92603,
           "total": 17245792
         },
         {
-          "name": "Jennifer B. Dardis Chief Financial Officer and Treasurer",
+          "name": "Robert W. Sharps",
+          "title": "Chair, Chief Executive Officer, and President",
+          "year": 2024,
+          "salary": 350000,
+          "stock_awards": 9420078,
+          "non_equity_incentive": 9522000,
+          "all_other": 97751,
+          "total": 19389829
+        },
+        {
+          "name": "Robert W. Sharps",
+          "title": "Chair, Chief Executive Officer, and President",
+          "year": 2023,
+          "salary": 350000,
+          "stock_awards": 5100097,
+          "non_equity_incentive": 7300000,
+          "all_other": 91834,
+          "total": 12841931
+        },
+        {
+          "name": "Jennifer B. Dardis",
+          "title": "Chief Financial Officer and Treasurer",
           "year": 2025,
           "salary": 350000,
+          "stock_awards": 1600122,
+          "non_equity_incentive": 2400000,
+          "all_other": 73234,
           "total": 4423356
         },
         {
-          "name": "Glenn R. August Chief Executive Officer of Oak Hill Advisors L.P.",
+          "name": "Jennifer B. Dardis",
+          "title": "Chief Financial Officer and Treasurer",
+          "year": 2024,
+          "salary": 350000,
+          "stock_awards": 1650168,
+          "non_equity_incentive": 2500000,
+          "all_other": 92779,
+          "total": 4592947
+        },
+        {
+          "name": "Jennifer B. Dardis",
+          "title": "Chief Financial Officer and Treasurer",
+          "year": 2023,
+          "salary": 350000,
+          "stock_awards": 1275175,
+          "non_equity_incentive": 2175000,
+          "all_other": 91603,
+          "total": 3891778
+        },
+        {
+          "name": "Glenn R. August",
+          "title": "Chief Executive Officer of Oak Hill Advisors L.P.",
           "year": 2025,
           "salary": 350000,
+          "all_other": 8367502,
           "total": 8717502
         },
         {
-          "name": "S\u00e9bastien Page Head of Global Multi-Asset and Chief Investment Officer",
+          "name": "Glenn R. August",
+          "title": "Chief Executive Officer of Oak Hill Advisors L.P.",
+          "year": 2024,
+          "salary": 350000,
+          "all_other": 7559940,
+          "total": 7909940
+        },
+        {
+          "name": "Glenn R. August",
+          "title": "Chief Executive Officer of Oak Hill Advisors L.P.",
+          "year": 2023,
+          "salary": 350000,
+          "all_other": 12082629,
+          "total": 12432629
+        },
+        {
+          "name": "S\u00e9bastien Page",
+          "title": "Head of Global Multi-Asset and Chief Investment Officer",
           "year": 2025,
           "salary": 350000,
+          "stock_awards": 2150163,
+          "non_equity_incentive": 4300000,
+          "all_other": 53361,
           "total": 6853524
         },
         {
-          "name": "Eric L. Veiel Head of Global Investments and Chief Investment Officer",
+          "name": "Eric L. Veiel",
+          "title": "Head of Global Investments and Chief Investment Officer",
           "year": 2025,
           "salary": 350000,
+          "stock_awards": 3450052,
+          "non_equity_incentive": 5650000,
+          "all_other": 94451,
           "total": 9544503
+        },
+        {
+          "name": "Eric L. Veiel",
+          "title": "Head of Global Investments and Chief Investment Officer",
+          "year": 2024,
+          "salary": 350000,
+          "stock_awards": 3850146,
+          "non_equity_incentive": 6300000,
+          "all_other": 99312,
+          "total": 10599458
+        },
+        {
+          "name": "Eric L. Veiel",
+          "title": "Head of Global Investments and Chief Investment Officer",
+          "year": 2023,
+          "salary": 350000,
+          "stock_awards": 3000010,
+          "non_equity_incentive": 5500000,
+          "all_other": 92924,
+          "total": 8942934
         }
       ],
       "cik": "0001113169",
@@ -29569,9 +29663,11 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
+        2023,
+        2024,
         2025
       ],
-      "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
+      "data_source": "def14a_manual"
     },
     {
       "ticker": "HPQ",
@@ -31226,8 +31322,8 @@
       "ticker": "TXN",
       "company_name": "Texas Instruments Inc",
       "ceo_name": "Haviv Ilan",
-      "total_compensation": 19061519,
-      "fiscal_year": 2024,
+      "total_compensation": 22669509,
+      "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 80568,
       "pay_ratio": 237,
@@ -31239,86 +31335,192 @@
       "executives": [
         {
           "name": "Haviv Ilan",
+          "title": "Director, President & Chief Executive Officer",
           "year": 2025,
           "salary": 1295833,
-          "total": 1295833
+          "bonus": 2625000,
+          "stock_awards": 9000071,
+          "option_awards": 9000017,
+          "non_equity_incentive": 246986,
+          "all_other": 501602,
+          "total": 22669509
         },
         {
           "name": "Haviv Ilan",
+          "title": "Director, President & Chief Executive Officer",
           "year": 2024,
           "salary": 1241667,
-          "total": 1241667
+          "bonus": 2380000,
+          "stock_awards": 7500081,
+          "option_awards": 7500003,
+          "non_equity_incentive": 247588,
+          "all_other": 192180,
+          "total": 19061519
         },
         {
           "name": "Haviv Ilan",
+          "title": "Director, President & Chief Executive Officer",
           "year": 2023,
           "salary": 1099583,
-          "total": 1099583
+          "bonus": 2500000,
+          "stock_awards": 6000008,
+          "option_awards": 6000001,
+          "non_equity_incentive": 219917,
+          "all_other": 379528,
+          "total": 16199037
         },
         {
           "name": "Rafael Lizardi",
+          "title": "Senior Vice President & Chief Financial Officer",
           "year": 2025,
           "salary": 872500,
-          "total": 872500
+          "bonus": 1140000,
+          "stock_awards": 2400156,
+          "option_awards": 2400022,
+          "non_equity_incentive": 166298,
+          "all_other": 134143,
+          "total": 7113119
         },
         {
           "name": "Rafael Lizardi",
+          "title": "Senior Vice President & Chief Financial Officer",
           "year": 2024,
           "salary": 842083,
-          "total": 842083
+          "bonus": 1035000,
+          "stock_awards": 2400133,
+          "option_awards": 2400021,
+          "non_equity_incentive": 167911,
+          "all_other": 138311,
+          "total": 6983459
         },
         {
           "name": "Rafael Lizardi",
+          "title": "Senior Vice President & Chief Financial Officer",
           "year": 2023,
           "salary": 806667,
-          "total": 806667
+          "bonus": 1090000,
+          "stock_awards": 2400143,
+          "option_awards": 2400001,
+          "non_equity_incentive": 161333,
+          "all_other": 136074,
+          "total": 6994218
         },
         {
           "name": "Richard Templeton",
+          "title": "Chairman of the board",
           "year": 2025,
           "salary": 600000,
-          "bonus": 3750139,
-          "total": 4350139
+          "stock_awards": 3750139,
+          "option_awards": 3750041,
+          "non_equity_incentive": 114360,
+          "all_other": 73831,
+          "total": 8288371
         },
         {
           "name": "Richard Templeton",
+          "title": "Chairman of the board",
           "year": 2024,
           "salary": 600000,
-          "total": 600000
+          "bonus": 1000000,
+          "stock_awards": 3750041,
+          "option_awards": 3750020,
+          "non_equity_incentive": 119640,
+          "all_other": 268156,
+          "total": 9487857
+        },
+        {
+          "name": "Richard Templeton",
+          "title": "Chairman of the board",
+          "year": 2023,
+          "salary": 808750,
+          "bonus": 2000000,
+          "stock_awards": 8750092,
+          "option_awards": 8750017,
+          "non_equity_incentive": 161750,
+          "all_other": 421709,
+          "total": 20892318
         },
         {
           "name": "Hagop Kozanian",
+          "title": "Senior Vice President",
           "year": 2025,
           "salary": 827500,
-          "total": 827500
+          "bonus": 1375000,
+          "stock_awards": 2550154,
+          "option_awards": 2550029,
+          "non_equity_incentive": 157721,
+          "all_other": 37725,
+          "total": 7498129
         },
         {
           "name": "Hagop Kozanian",
+          "title": "Senior Vice President",
           "year": 2024,
           "salary": 797500,
-          "total": 797500
+          "bonus": 1250000,
+          "stock_awards": 2550141,
+          "option_awards": 2550029,
+          "non_equity_incentive": 159021,
+          "all_other": 36825,
+          "total": 7343516
+        },
+        {
+          "name": "Hagop Kozanian",
+          "title": "Senior Vice President",
+          "year": 2023,
+          "salary": 766667,
+          "bonus": 1315000,
+          "stock_awards": 2550043,
+          "option_awards": 2550001,
+          "non_equity_incentive": 153333,
+          "all_other": 89216,
+          "total": 7424260
         },
         {
           "name": "Amichai Ron",
+          "title": "Senior Vice President",
           "year": 2025,
           "salary": 807500,
-          "total": 807500
+          "bonus": 1265000,
+          "stock_awards": 2550154,
+          "option_awards": 2550029,
+          "non_equity_incentive": 153910,
+          "all_other": 102235,
+          "total": 7428828
         },
         {
           "name": "Amichai Ron",
+          "title": "Senior Vice President",
           "year": 2024,
           "salary": 776667,
-          "total": 776667
+          "bonus": 1150000,
+          "stock_awards": 2550141,
+          "option_awards": 2550029,
+          "non_equity_incentive": 154867,
+          "all_other": 79893,
+          "total": 7261597
+        },
+        {
+          "name": "Amichai Ron",
+          "title": "Senior Vice President",
+          "year": 2023,
+          "salary": 736667,
+          "bonus": 1210000,
+          "stock_awards": 2400143,
+          "option_awards": 2400001,
+          "non_equity_incentive": 147333,
+          "all_other": 82075,
+          "total": 6976219
         }
       ],
       "neo_count": 5,
       "available_years": [
-        2025,
+        2023,
         2024,
-        2023
+        2025
       ],
-      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "total_neo_compensation": 8153472
+      "data_source": "def14a_manual",
+      "total_neo_compensation": 52997956
     },
     {
       "ticker": "NUE",
@@ -63318,53 +63520,187 @@
     {
       "ticker": "ITW",
       "company_name": "Illinois Tool Works Inc",
-      "ceo_name": "Christopher O'Herlihy",
-      "total_compensation": 10932645,
-      "fiscal_year": 2024,
+      "ceo_name": "Christopher A. O'Herlihy",
+      "total_compensation": 15211011,
+      "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 69508,
       "pay_ratio": 158,
       "sector": "Industrials",
-      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "data_source": "def14a_manual",
       "cik": "0000049826",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/49826/000119312526127599/itw-20260325.htm",
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Christopher A. O\u2019Herlihy",
+          "name": "Christopher A. O'Herlihy",
+          "title": "President & Chief Executive Officer",
           "year": 2025,
-          "salary": 133635,
-          "non_equity_incentive": 290197,
-          "total": 1194632
+          "salary": 1337271,
+          "stock_awards": 5249957,
+          "option_awards": 5249996,
+          "non_equity_incentive": 2702389,
+          "pension_nqdc": 255793,
+          "all_other": 415605,
+          "total": 15211011
+        },
+        {
+          "name": "Christopher A. O'Herlihy",
+          "title": "President & Chief Executive Officer",
+          "year": 2024,
+          "salary": 1300000,
+          "stock_awards": 2187430,
+          "option_awards": 4374988,
+          "non_equity_incentive": 2514128,
+          "pension_nqdc": 156627,
+          "all_other": 399472,
+          "total": 10932645
+        },
+        {
+          "name": "Christopher A. O'Herlihy",
+          "title": "President & Chief Executive Officer",
+          "year": 2023,
+          "salary": 919770,
+          "stock_awards": 1024983,
+          "option_awards": 2049992,
+          "non_equity_incentive": 2401550,
+          "pension_nqdc": 213183,
+          "all_other": 289363,
+          "total": 6898841
         },
         {
           "name": "Michael M. Larsen",
+          "title": "Senior Vice President and Chief Financial Officer",
           "year": 2025,
-          "salary": 58625,
-          "non_equity_incentive": 35044,
-          "total": 93669
+          "salary": 977860,
+          "stock_awards": 2074946,
+          "option_awards": 2074967,
+          "non_equity_incentive": 1994062,
+          "all_other": 238666,
+          "total": 7360501
+        },
+        {
+          "name": "Michael M. Larsen",
+          "title": "Senior Vice President and Chief Financial Officer",
+          "year": 2024,
+          "salary": 942227,
+          "stock_awards": 974919,
+          "option_awards": 1949996,
+          "non_equity_incentive": 1872085,
+          "all_other": 235926,
+          "total": 5975153
+        },
+        {
+          "name": "Michael M. Larsen",
+          "title": "Senior Vice President and Chief Financial Officer",
+          "year": 2023,
+          "salary": 909761,
+          "stock_awards": 937370,
+          "option_awards": 1874973,
+          "non_equity_incentive": 2256573,
+          "all_other": 244616,
+          "total": 6223293
+        },
+        {
+          "name": "Axel R.J. Beck",
+          "title": "Executive Vice President",
+          "year": 2025,
+          "salary": 665769,
+          "stock_awards": 774846,
+          "option_awards": 774973,
+          "non_equity_incentive": 924742,
+          "pension_nqdc": 53263,
+          "all_other": 32716,
+          "total": 3226309
+        },
+        {
+          "name": "Axel R.J. Beck",
+          "title": "Executive Vice President",
+          "year": 2024,
+          "salary": 618918,
+          "stock_awards": 362398,
+          "option_awards": 724980,
+          "non_equity_incentive": 706559,
+          "pension_nqdc": 159678,
+          "all_other": 22181,
+          "total": 2594714
+        },
+        {
+          "name": "Axel R.J. Beck",
+          "title": "Executive Vice President",
+          "year": 2023,
+          "salary": 597878,
+          "stock_awards": 349983,
+          "option_awards": 699942,
+          "non_equity_incentive": 1033438,
+          "pension_nqdc": 156136,
+          "all_other": 24126,
+          "total": 2861503
         },
         {
           "name": "T. Kenneth Escoe",
+          "title": "Executive Vice President",
           "year": 2025,
-          "salary": 34034,
-          "non_equity_incentive": 23706,
-          "total": 57740
+          "salary": 567570,
+          "stock_awards": 749810,
+          "option_awards": 749999,
+          "non_equity_incentive": 808698,
+          "all_other": 151652,
+          "total": 3027729
+        },
+        {
+          "name": "T. Kenneth Escoe",
+          "title": "Executive Vice President",
+          "year": 2024,
+          "salary": 551655,
+          "stock_awards": 312271,
+          "option_awards": 624959,
+          "non_equity_incentive": 1024373,
+          "all_other": 175929,
+          "total": 2689187
         },
         {
           "name": "Mary K. Lawler",
+          "title": "Senior Vice President and Chief Human Resources Officer",
           "year": 2025,
-          "salary": 40269,
-          "non_equity_incentive": 72943,
-          "total": 113212
+          "salary": 671685,
+          "stock_awards": 899771,
+          "option_awards": 899985,
+          "non_equity_incentive": 893373,
+          "all_other": 146940,
+          "total": 3511754
+        },
+        {
+          "name": "Mary K. Lawler",
+          "title": "Senior Vice President and Chief Human Resources Officer",
+          "year": 2024,
+          "salary": 647209,
+          "stock_awards": 412269,
+          "option_awards": 824932,
+          "non_equity_incentive": 844095,
+          "all_other": 148021,
+          "total": 2876526
+        },
+        {
+          "name": "Mary K. Lawler",
+          "title": "Senior Vice President and Chief Human Resources Officer",
+          "year": 2023,
+          "salary": 624908,
+          "stock_awards": 399913,
+          "option_awards": 799943,
+          "non_equity_incentive": 1044797,
+          "all_other": 156690,
+          "total": 3026251
         }
       ],
-      "neo_count": 4,
+      "neo_count": 5,
       "available_years": [
+        2023,
+        2024,
         2025
       ],
-      "total_neo_compensation": 1459253,
+      "total_neo_compensation": 32337304,
       "proxy_fiscal_year": 2025
     },
     {
