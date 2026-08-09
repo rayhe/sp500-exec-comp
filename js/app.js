@@ -2104,6 +2104,71 @@ function setupDetailPanel(companies) {
             }
         }
 
+        // CEO Pay Trend — mini bar chart showing CEO total comp across fiscal years
+        if (company.executives && company.executives.length > 0) {
+            var _trendYears = [];
+            company.executives.forEach(function(e) { if (_trendYears.indexOf(e.year) < 0) _trendYears.push(e.year); });
+            _trendYears.sort(function(a, b) { return a - b; }); // ascending for left-to-right display
+
+            if (_trendYears.length >= 2) {
+                var ceoTrendData = [];
+                _trendYears.forEach(function(yr) {
+                    var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
+                    var ceoCand = yrExecs.find(function(e) {
+                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                    });
+                    if (!ceoCand && yrExecs.length > 0) {
+                        ceoCand = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    }
+                    if (ceoCand && ceoCand.total > 0) {
+                        ceoTrendData.push({ year: yr, total: ceoCand.total, name: ceoCand.name || company.ceo_name });
+                    }
+                });
+
+                if (ceoTrendData.length >= 2) {
+                    var maxTrend = Math.max.apply(null, ceoTrendData.map(function(d) { return d.total; }));
+                    var firstTrend = ceoTrendData[0];
+                    var lastTrend = ceoTrendData[ceoTrendData.length - 1];
+                    var overallPctChange = ((lastTrend.total - firstTrend.total) / firstTrend.total * 100);
+                    var overallAbsStr = Math.abs(overallPctChange) >= 100 ? Math.round(Math.abs(overallPctChange)) + '%' : Math.abs(overallPctChange).toFixed(1) + '%';
+                    var overallCls = overallPctChange >= 0 ? 'positive' : 'negative';
+                    var overallSign = overallPctChange >= 0 ? '+' : '\u2212';
+
+                    html += '<div class="ceo-trend-mini">';
+                    html += '<div class="ceo-trend-mini-header">';
+                    html += '<span class="ceo-trend-mini-title">CEO Pay Trend</span>';
+                    html += '<span class="ceo-trend-mini-change ' + overallCls + '" title="FY' + firstTrend.year + ' to FY' + lastTrend.year + '">' + overallSign + overallAbsStr + ' over ' + ceoTrendData.length + ' years</span>';
+                    html += '</div>';
+
+                    html += '<div class="ceo-trend-mini-bars">';
+                    ceoTrendData.forEach(function(d, i) {
+                        var barH = maxTrend > 0 ? Math.max(8, Math.round(d.total / maxTrend * 64)) : 8;
+                        var isLatest = (i === ceoTrendData.length - 1);
+
+                        html += '<div class="ceo-trend-mini-col">';
+                        html += '<div class="ceo-trend-mini-val">' + formatCurrency(d.total) + '</div>';
+
+                        // YoY change label between bars
+                        if (i > 0) {
+                            var prev = ceoTrendData[i - 1];
+                            var yoyPct = ((d.total - prev.total) / prev.total * 100);
+                            var yoyCls = yoyPct >= 0 ? 'positive' : 'negative';
+                            var yoyAbsStr = Math.abs(yoyPct) >= 100 ? Math.round(Math.abs(yoyPct)) + '%' : Math.abs(yoyPct).toFixed(1) + '%';
+                            html += '<div class="ceo-trend-mini-yoy ' + yoyCls + '">' + (yoyPct >= 0 ? '\u25B2' : '\u25BC') + ' ' + (yoyPct >= 0 ? '+' : '\u2212') + yoyAbsStr + '</div>';
+                        } else {
+                            html += '<div class="ceo-trend-mini-yoy">\u00A0</div>';
+                        }
+
+                        html += '<div class="ceo-trend-mini-bar" style="height:' + barH + 'px' + (isLatest ? '' : ';opacity:0.55') + '" title="' + (d.name || '') + ' FY' + d.year + ': ' + formatCurrency(d.total) + '"></div>';
+                        html += '<div class="ceo-trend-mini-year">FY' + d.year + '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+            }
+        }
+
         // NEO Executive Compensation Breakdown (from EDGAR data)
         if (company.executives && company.executives.length > 0) {
             var allYears = [];
