@@ -116,6 +116,35 @@ function computeCeoYoY(companies) {
     });
 }
 
+/* Pre-compute CEO stock awards as percentage of total compensation.
+   Sets c._ceoStockPct (0-100 or null) for the latest fiscal year. */
+function computeCeoStockPct(companies) {
+    companies.forEach(function(c) {
+        c._ceoStockPct = null;
+        c._ceoStockPctSort = null;
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return b - a; });
+        var latestYear = allYears[0];
+        var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+
+        // Find CEO
+        var ceo = latestExecs.find(function(e) {
+            return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+        });
+        if (!ceo && latestExecs.length > 0) {
+            ceo = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+        }
+        if (!ceo || !ceo.total || ceo.total <= 0) return;
+
+        var stockAwards = (ceo.stock_awards || 0) + (ceo.option_awards || 0);
+        var pct = stockAwards / ceo.total * 100;
+        c._ceoStockPct = Math.round(pct * 10) / 10;
+        c._ceoStockPctSort = pct;
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -299,7 +328,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -431,6 +460,23 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // 8. Equity-Heavy Pay — most equity-reliant CEOs
+    var stockPctCompanies = companies.filter(function(c) { return c._ceoStockPct != null; });
+    if (stockPctCompanies.length > 0) {
+        var stockSorted = stockPctCompanies.slice().sort(function(a, b) { return b._ceoStockPctSort - a._ceoStockPctSort; });
+        var above90 = stockSorted.filter(function(c) { return c._ceoStockPct >= 90; });
+        var topEquity = stockSorted[0];
+        var allPcts = stockPctCompanies.map(function(c) { return c._ceoStockPct; });
+        var medStockPct = Math.round(computeMedian(allPcts));
+        insights.push({
+            icon: '📊',
+            label: 'Equity-Heavy Pay',
+            value: above90.length + ' CEOs ≥90% equity',
+            detail: above90.length + ' CEOs receive ≥90% of their compensation in stock/options — led by ' + topEquity.ceo_name + ' (' + topEquity.ticker + ') at ' + Math.round(topEquity._ceoStockPct) + '%. S&P 500 median: ' + medStockPct + '% equity.',
+            _tickers: stockSorted.slice(0, 2).map(function(c) { return c.ticker; })
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -510,6 +556,12 @@ function populateInsights(comp, trends) {
     if (insights[6]) {
         insights[6].action = function() { insightResetAndSort('_ceoYoYSort', 'desc'); };
         insights[6].actionHint = 'Sort by YoY change';
+    }
+
+    // 8. Equity-Heavy Pay → sort by stock % desc
+    if (insights[7]) {
+        insights[7].action = function() { insightResetAndSort('_ceoStockPctSort', 'desc'); };
+        insights[7].actionHint = 'Sort by equity %';
     }
 
     // Render cards
@@ -870,6 +922,9 @@ function renderSortContextSummary(companies) {
     if (currentSort.key === 'median_worker_pay') {
         return renderWorkerPaySortSummary(companies);
     }
+    if (currentSort.key === '_ceoStockPctSort') {
+        return renderStockPctSortSummary(companies);
+    }
     return null;
 }
 
@@ -1071,6 +1126,71 @@ function renderWorkerPaySortSummary(companies) {
     return html;
 }
 
+function renderStockPctSortSummary(companies) {
+    var withData = companies.filter(function(c) { return c._ceoStockPct != null; });
+    if (withData.length === 0) return null;
+
+    var vals = withData.map(function(c) { return c._ceoStockPct; });
+    var medianPct = Math.round(computeMedian(vals) * 10) / 10;
+    var meanPct = Math.round(vals.reduce(function(s, v) { return s + v; }, 0) / vals.length * 10) / 10;
+
+    var above80 = withData.filter(function(c) { return c._ceoStockPct >= 80; });
+    var below20 = withData.filter(function(c) { return c._ceoStockPct < 20; });
+
+    var sorted = withData.slice().sort(function(a, b) { return b._ceoStockPctSort - a._ceoStockPctSort; });
+    var highest = sorted[0];
+    var lowest = sorted[sorted.length - 1];
+
+    var html = '';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + withData.length + '</span>';
+    html += '<span class="summary-stat-label">with equity data</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + medianPct + '%</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + meanPct + '%</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value stock-pct-high">' + above80.length + '</span>';
+    html += '<span class="summary-stat-label">≥80% equity</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value stock-pct-low">' + below20.length + '</span>';
+    html += '<span class="summary-stat-label">&lt;20% equity</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    if (highest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Most equity-heavy</span>';
+        html += '<span class="summary-stat-value stock-pct-high">' + highest.ticker + ' ' + Math.round(highest._ceoStockPct) + '%</span>';
+        html += '</span>';
+    }
+
+    if (lowest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Least equity-heavy</span>';
+        html += '<span class="summary-stat-value stock-pct-low">' + lowest.ticker + ' ' + Math.round(lowest._ceoStockPct) + '%</span>';
+        html += '</span>';
+    }
+
+    return html;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -1187,6 +1307,21 @@ function renderSummaryBar(filtered, allCompanies) {
             html += '<span class="summary-stat"><span class="summary-stat-value positive">▲ ' + fInc + '</span><span class="summary-stat-label">up</span></span>';
             html += '<span class="summary-stat"><span class="summary-stat-value negative">▼ ' + fDec + '</span><span class="summary-stat-label">down</span></span>';
             html += '<span class="summary-stat"><span class="summary-stat-label">Median Δ</span><span class="summary-stat-value ' + (fMedianYoY >= 0 ? 'positive' : 'negative') + '">' + (fMedianYoY >= 0 ? '+' : '\u2212') + fmtPct(fMedianYoY) + '</span></span>';
+        }
+    }
+
+    // Append sort-contextual Stock % stats when filtered AND sorted by Stock %
+    if (currentSort.key === '_ceoStockPctSort') {
+        var fSP = filtered.filter(function(c) { return c._ceoStockPct != null; });
+        if (fSP.length > 0) {
+            var fAbove80 = fSP.filter(function(c) { return c._ceoStockPct >= 80; }).length;
+            var fBelow20 = fSP.filter(function(c) { return c._ceoStockPct < 20; }).length;
+            var fSPVals = fSP.map(function(c) { return c._ceoStockPct; });
+            var fMedianSP = Math.round(computeMedian(fSPVals) * 10) / 10;
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value stock-pct-high">' + fAbove80 + '</span><span class="summary-stat-label">≥80%</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value stock-pct-low">' + fBelow20 + '</span><span class="summary-stat-label">&lt;20%</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Median</span><span class="summary-stat-value">' + fMedianSP + '%</span></span>';
         }
     }
 
@@ -1307,6 +1442,16 @@ function renderTable(companies, options) {
         }
 
         var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : getMissingDataHtml(c.ticker, 'median_worker_pay');
+
+        // Stock % cell
+        var stockPctCell = '\u2014';
+        if (c._ceoStockPct != null) {
+            var spVal = c._ceoStockPct;
+            var spCls = spVal >= 80 ? 'stock-pct-high' : spVal >= 50 ? 'stock-pct-mid' : 'stock-pct-low';
+            var spTitle = 'CEO equity (stock + options) = ' + spVal.toFixed(1) + '% of total comp';
+            stockPctCell = '<span class="stock-pct-badge ' + spCls + '" title="' + spTitle + '">' + Math.round(spVal) + '%</span>';
+        }
+
         var isCompared = window._compareSet && window._compareSet.indexOf(c.ticker) >= 0;
         var compareBtnHtml = '<button class="compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + c.ticker + '" title="' + (isCompared ? 'Remove from comparison' : 'Add to comparison') + '">' + (isCompared ? '✓' : '+') + '</button>';
 
@@ -1316,6 +1461,7 @@ function renderTable(companies, options) {
             '<td>' + c.ceo_name + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
+            '<td class="stock-pct-cell">' + stockPctCell + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
@@ -1729,7 +1875,7 @@ function setupDetailPanel(companies) {
         var peerInfo = getPeerInfo(ticker);
 
         // Build HTML
-        var html = '<td colspan="9"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="10"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
         html += '<div class="detail-stats">';
 
@@ -2204,7 +2350,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="9"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="10"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
@@ -2270,6 +2416,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute CEO YoY change for inline table badges
     computeCeoYoY(companies);
+
+    // Pre-compute CEO stock % for sortable column
+    computeCeoStockPct(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
@@ -2837,15 +2986,8 @@ function hideMetricSkeletons() {
                 ];
 
                 if (c.executives && c.executives.length > 0) {
-                    // Get all years and find the latest
-                    var allYears = [];
-                    c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
-                    allYears.sort(function(a, b) { return b - a; });
-                    var latestYear = allYears[0];
-                    var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
-
-                    // One row per executive
-                    latestExecs.forEach(function(exec) {
+                    // Export ALL exec records across all years (multi-year)
+                    c.executives.forEach(function(exec) {
                         rows.push(baseFields.concat([
                             csvEscape(exec.name || ''),
                             csvEscape(exec.title || ''),
@@ -2889,7 +3031,7 @@ function hideMetricSkeletons() {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            announce('Downloaded full NEO compensation data for ' + filtered.length + ' companies');
+            announce('Downloaded full multi-year NEO compensation data for ' + filtered.length + ' companies');
         });
     }
 

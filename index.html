@@ -139,9 +139,9 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     CSV
                 </button>
-                <button class="export-csv-btn export-neo-btn" id="export-neo-btn" title="Download full NEO breakdown — one row per Named Executive Officer per company">
+                <button class="export-csv-btn export-neo-btn" id="export-neo-btn" title="Download full multi-year NEO breakdown — one row per Named Executive Officer per fiscal year per company">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    NEO CSV
+                    NEO CSV (all years)
                 </button>
             </div>
             <div class="sector-chips" id="sector-chips"></div>
@@ -158,6 +158,7 @@
                         <th class="sortable" data-sort="ceo_name" role="columnheader" aria-sort="none" tabindex="0">CEO</th>
                         <th class="sortable sorted-desc" data-sort="total_compensation" role="columnheader" aria-sort="descending" tabindex="0">Total Comp</th>
                         <th class="sortable" data-sort="_ceoYoYSort" role="columnheader" aria-sort="none" tabindex="0">YoY</th>
+                        <th class="sortable" data-sort="_ceoStockPctSort" role="columnheader" aria-sort="none" tabindex="0">Stock %</th>
                         <th class="sortable" data-sort="sector" role="columnheader" aria-sort="none" tabindex="0">Sector</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
                         <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
