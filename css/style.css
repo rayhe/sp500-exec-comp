@@ -2497,68 +2497,6 @@ footer li::before {
     background: rgba(220, 38, 38, 0.1);
 }
 
-.comparison-comp-breakdown {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
-}
-.comparison-comp-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    margin-bottom: 6px;
-}
-.comparison-comp-bar {
-    display: flex;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    background: var(--border);
-    gap: 1px;
-}
-.comparison-comp-seg {
-    min-width: 3px;
-    transition: opacity 0.15s ease;
-}
-.comparison-comp-seg:first-child {
-    border-radius: 5px 0 0 5px;
-}
-.comparison-comp-seg:last-child {
-    border-radius: 0 5px 5px 0;
-}
-.comparison-comp-seg:only-child {
-    border-radius: 5px;
-}
-.comparison-comp-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
-    margin-top: 6px;
-}
-.comparison-comp-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.68rem;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    font-family: var(--mono);
-}
-.comparison-comp-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-[data-theme="light"] .comparison-comp-label {
-    color: #4b5563;
-}
-[data-theme="light"] .comparison-comp-item {
-    color: #4b5563;
-}
 .comparison-card-actions .detail-network-btn,
 .comparison-card-actions .detail-table-btn {
     font-size: 0.75rem;
