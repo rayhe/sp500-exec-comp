@@ -79,6 +79,41 @@ let compData = null;
 let trendsData = null;
 let peerData = null;
 
+/* Pre-compute CEO compensation year-over-year change for each company.
+   Sets c._ceoYoY = { pct, fromYear, toYear, fromComp, toComp } or null. */
+function computeCeoYoY(companies) {
+    companies.forEach(function(c) {
+        c._ceoYoY = null;
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return b - a; });
+        if (allYears.length < 2) return;
+
+        var yr1 = allYears[0], yr2 = allYears[1];
+        var execs1 = c.executives.filter(function(e) { return e.year === yr1; });
+        var execs2 = c.executives.filter(function(e) { return e.year === yr2; });
+
+        function findCeo(execs) {
+            var ceo = execs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo && execs.length > 0) {
+                ceo = execs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            return ceo;
+        }
+
+        var ceo1 = findCeo(execs1);
+        var ceo2 = findCeo(execs2);
+
+        if (ceo1 && ceo2 && ceo1.total > 0 && ceo2.total > 0) {
+            var pct = (ceo1.total - ceo2.total) / ceo2.total * 100;
+            c._ceoYoY = { pct: pct, fromYear: yr2, toYear: yr1, fromComp: ceo2.total, toComp: ceo1.total };
+        }
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -976,6 +1011,17 @@ function renderTable(companies, options) {
         }
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
+        }
+        if (c._ceoYoY) {
+            var yoy = c._ceoYoY;
+            var isPos = yoy.pct >= 0;
+            var yoyAbs = Math.abs(yoy.pct);
+            var yoyStr = yoyAbs >= 100 ? Math.round(yoyAbs) + '%' : yoyAbs.toFixed(1) + '%';
+            var yoyArrow = isPos ? '▲' : '▼';
+            var yoySign = isPos ? '+' : '\u2212';
+            var yoyCls = isPos ? 'positive' : 'negative';
+            var yoyTitle = 'CEO comp ' + (isPos ? '+' : '-') + yoyStr + ' vs FY' + yoy.fromYear + ' (' + formatCurrency(yoy.fromComp) + ' → ' + formatCurrency(yoy.toComp) + ')';
+            compHtml += ' <span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span>';
         }
         compHtml += '</div>';
 
@@ -1956,6 +2002,9 @@ function hideMetricSkeletons() {
     var data = await loadData();
     var companies = data.comp.companies;
 
+    // Pre-compute CEO YoY change for inline table badges
+    computeCeoYoY(companies);
+
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
 
@@ -2379,14 +2428,16 @@ function hideMetricSkeletons() {
             });
 
             // CSV header and rows
-            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)'];
+            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)'];
             var rows = filtered.map(function(c, i) {
+                var yoyVal = c._ceoYoY ? (c._ceoYoY.pct >= 0 ? '+' : '') + c._ceoYoY.pct.toFixed(1) + '%' : '';
                 return [
                     i + 1,
                     csvEscape(c.ticker),
                     csvEscape(c.company_name),
                     csvEscape(c.ceo_name),
                     c.total_compensation || '',
+                    csvEscape(yoyVal),
                     csvEscape(c.sector || ''),
                     c.pay_ratio || '',
                     c.median_worker_pay || ''
