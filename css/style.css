@@ -955,6 +955,8 @@ header h1 {
     font-size: 0.78rem;
 }
 .summary-stat-value.accent { color: var(--accent); }
+.summary-stat-value.positive { color: var(--positive); }
+.summary-stat-value.negative { color: var(--negative); }
 .summary-divider {
     width: 1px;
     height: 18px;

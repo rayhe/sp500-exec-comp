@@ -859,13 +859,231 @@ function computeMedian(arr) {
     return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+/* Sort-contextual summary — shows distributional stats when sorting by a non-default column */
+function renderSortContextSummary(companies) {
+    if (currentSort.key === '_ceoYoYSort') {
+        return renderYoYSortSummary(companies);
+    }
+    if (currentSort.key === 'pay_ratio') {
+        return renderRatioSortSummary(companies);
+    }
+    if (currentSort.key === 'median_worker_pay') {
+        return renderWorkerPaySortSummary(companies);
+    }
+    return null;
+}
+
+function renderYoYSortSummary(companies) {
+    var withYoY = companies.filter(function(c) { return c._ceoYoY != null; });
+    if (withYoY.length === 0) return null;
+
+    var increases = withYoY.filter(function(c) { return c._ceoYoY.pct > 0; });
+    var decreases = withYoY.filter(function(c) { return c._ceoYoY.pct < 0; });
+    var unchanged = withYoY.filter(function(c) { return c._ceoYoY.pct === 0; });
+    var yoyVals = withYoY.map(function(c) { return c._ceoYoY.pct; });
+    var medianYoY = computeMedian(yoyVals);
+
+    var sorted = withYoY.slice().sort(function(a, b) { return b._ceoYoYSort - a._ceoYoYSort; });
+    var topInc = sorted[0];
+    var topDec = sorted[sorted.length - 1];
+
+    var fmtPct = function(v) {
+        var abs = Math.abs(v);
+        return (abs >= 100 ? Math.round(abs) : abs.toFixed(1)) + '%';
+    };
+
+    var html = '';
+
+    // YoY data count
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + withYoY.length + '</span>';
+    html += '<span class="summary-stat-label">with YoY data</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Increases / decreases
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value positive">▲ ' + increases.length + '</span>';
+    html += '<span class="summary-stat-label">increased</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value negative">▼ ' + decreases.length + '</span>';
+    html += '<span class="summary-stat-label">decreased</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median change
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median Δ</span>';
+    html += '<span class="summary-stat-value ' + (medianYoY >= 0 ? 'positive' : 'negative') + '">' + (medianYoY >= 0 ? '+' : '\u2212') + fmtPct(medianYoY) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Biggest increase
+    if (topInc && topInc._ceoYoY.pct > 0) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Biggest ▲</span>';
+        html += '<span class="summary-stat-value positive">' + topInc.ticker + ' +' + fmtPct(topInc._ceoYoY.pct) + '</span>';
+        html += '</span>';
+    }
+
+    // Biggest decrease
+    if (topDec && topDec._ceoYoY.pct < 0) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Biggest ▼</span>';
+        html += '<span class="summary-stat-value negative">' + topDec.ticker + ' \u2212' + fmtPct(topDec._ceoYoY.pct) + '</span>';
+        html += '</span>';
+    }
+
+    return html;
+}
+
+function renderRatioSortSummary(companies) {
+    var withRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; });
+    if (withRatio.length === 0) return null;
+
+    var ratioVals = withRatio.map(function(c) { return c.pay_ratio; });
+    var medianR = Math.round(computeMedian(ratioVals));
+    var meanR = Math.round(ratioVals.reduce(function(s, v) { return s + v; }, 0) / ratioVals.length);
+    var extreme = withRatio.filter(function(c) { return c.pay_ratio > 1000; });
+    var equitable = withRatio.filter(function(c) { return c.pay_ratio < 50; });
+
+    var sorted = withRatio.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; });
+    var highest = sorted[0];
+    var lowest = sorted[sorted.length - 1];
+
+    var html = '';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + withRatio.length + '</span>';
+    html += '<span class="summary-stat-label">with ratio data</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + medianR.toLocaleString() + ':1</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + meanR.toLocaleString() + ':1</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value negative">' + extreme.length + '</span>';
+    html += '<span class="summary-stat-label">above 1,000:1</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value positive">' + equitable.length + '</span>';
+    html += '<span class="summary-stat-label">below 50:1</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    if (highest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Highest</span>';
+        html += '<span class="summary-stat-value negative">' + highest.ticker + ' ' + highest.pay_ratio.toLocaleString() + ':1</span>';
+        html += '</span>';
+    }
+
+    if (lowest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Lowest</span>';
+        html += '<span class="summary-stat-value positive">' + lowest.ticker + ' ' + lowest.pay_ratio.toLocaleString() + ':1</span>';
+        html += '</span>';
+    }
+
+    return html;
+}
+
+function renderWorkerPaySortSummary(companies) {
+    var withWorker = companies.filter(function(c) { return c.median_worker_pay != null && c.median_worker_pay > 0; });
+    if (withWorker.length === 0) return null;
+
+    var vals = withWorker.map(function(c) { return c.median_worker_pay; });
+    var medianW = computeMedian(vals);
+    var meanW = Math.round(vals.reduce(function(s, v) { return s + v; }, 0) / vals.length);
+
+    var above100K = withWorker.filter(function(c) { return c.median_worker_pay >= 100000; });
+    var below50K = withWorker.filter(function(c) { return c.median_worker_pay < 50000; });
+
+    var sorted = withWorker.slice().sort(function(a, b) { return b.median_worker_pay - a.median_worker_pay; });
+    var highest = sorted[0];
+    var lowest = sorted[sorted.length - 1];
+
+    var html = '';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + withWorker.length + '</span>';
+    html += '<span class="summary-stat-label">with worker pay data</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + formatCompact(medianW) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + formatCompact(meanW) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value positive">' + above100K.length + '</span>';
+    html += '<span class="summary-stat-label">above $100K</span>';
+    html += '</span>';
+
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value negative">' + below50K.length + '</span>';
+    html += '<span class="summary-stat-label">below $50K</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    if (highest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Highest</span>';
+        html += '<span class="summary-stat-value positive">' + highest.ticker + ' ' + formatCompact(highest.median_worker_pay) + '</span>';
+        html += '</span>';
+    }
+
+    if (lowest) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Lowest</span>';
+        html += '<span class="summary-stat-value negative">' + lowest.ticker + ' ' + formatCompact(lowest.median_worker_pay) + '</span>';
+        html += '</span>';
+    }
+
+    return html;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
 
-    // Don't show summary if displaying the full unfiltered set
+    // Show sort-contextual summary for non-default sorts, or filter summary when filtered
     var isFiltered = filtered.length !== allCompanies.length;
     if (!isFiltered) {
+        // Show sort-contextual summary for certain sort keys even when unfiltered
+        var sortCtx = renderSortContextSummary(filtered);
+        if (sortCtx) {
+            bar.innerHTML = sortCtx;
+            return;
+        }
         bar.innerHTML = '';
         return;
     }
@@ -955,6 +1173,22 @@ function renderSummaryBar(filtered, allCompanies) {
     html += '<span class="summary-stat-label">Combined total</span>';
     html += '<span class="summary-stat-value">' + formatCurrency(totalComp) + '</span>';
     html += '</span>';
+
+    // Append sort-contextual YoY stats when filtered AND sorted by YoY
+    if (currentSort.key === '_ceoYoYSort') {
+        var fYoY = filtered.filter(function(c) { return c._ceoYoY != null; });
+        if (fYoY.length > 0) {
+            var fInc = fYoY.filter(function(c) { return c._ceoYoY.pct > 0; }).length;
+            var fDec = fYoY.filter(function(c) { return c._ceoYoY.pct < 0; }).length;
+            var fYoYVals = fYoY.map(function(c) { return c._ceoYoY.pct; });
+            var fMedianYoY = computeMedian(fYoYVals);
+            var fmtPct = function(v) { var abs = Math.abs(v); return (abs >= 100 ? Math.round(abs) : abs.toFixed(1)) + '%'; };
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value positive">▲ ' + fInc + '</span><span class="summary-stat-label">up</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value negative">▼ ' + fDec + '</span><span class="summary-stat-label">down</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Median Δ</span><span class="summary-stat-value ' + (fMedianYoY >= 0 ? 'positive' : 'negative') + '">' + (fMedianYoY >= 0 ? '+' : '\u2212') + fmtPct(fMedianYoY) + '</span></span>';
+        }
+    }
 
     bar.innerHTML = html;
 }
