@@ -913,6 +913,9 @@ function computeMedian(arr) {
 
 /* Sort-contextual summary — shows distributional stats when sorting by a non-default column */
 function renderSortContextSummary(companies) {
+    if (currentSort.key === 'total_compensation' || currentSort.key === 'rank') {
+        return renderCompDistSummary(companies);
+    }
     if (currentSort.key === '_ceoYoYSort') {
         return renderYoYSortSummary(companies);
     }
@@ -926,6 +929,105 @@ function renderSortContextSummary(companies) {
         return renderStockPctSortSummary(companies);
     }
     return null;
+}
+
+/* Compensation distribution summary — shown in default sort (total_compensation) and rank sort.
+   Displays total combined pay, median vs mean skewness, bracket distribution with inline mini histogram,
+   and min/max range context. */
+function renderCompDistSummary(companies) {
+    var comps = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
+    if (comps.length === 0) return null;
+
+    var vals = comps.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var totalCombined = vals.reduce(function(s, v) { return s + v; }, 0);
+    var mean = totalCombined / vals.length;
+    var median = computeMedian(vals);
+    var skewRatio = mean / median;
+
+    // Quartiles
+    var q25 = vals[Math.floor(vals.length * 0.25)];
+    var q75 = vals[Math.floor(vals.length * 0.75)];
+    var p90 = vals[Math.floor(vals.length * 0.90)];
+    var minComp = vals[0];
+    var maxComp = vals[vals.length - 1];
+
+    // Bracket distribution
+    var brackets = [
+        { label: '<$5M', min: 0, max: 5e6, count: 0, color: '#06d6a0' },
+        { label: '$5-10M', min: 5e6, max: 10e6, count: 0, color: '#00b4d8' },
+        { label: '$10-20M', min: 10e6, max: 20e6, count: 0, color: '#a78bfa' },
+        { label: '$20-50M', min: 20e6, max: 50e6, count: 0, color: '#ffd166' },
+        { label: '$50M+', min: 50e6, max: Infinity, count: 0, color: '#ef476f' }
+    ];
+    comps.forEach(function(c) {
+        var v = c.total_compensation;
+        for (var bi = brackets.length - 1; bi >= 0; bi--) {
+            if (v >= brackets[bi].min) { brackets[bi].count++; break; }
+        }
+    });
+    var maxBracketCount = Math.max.apply(null, brackets.map(function(b) { return b.count; }));
+
+    var html = '';
+
+    // Total combined
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Total combined</span>';
+    html += '<span class="summary-stat-value accent">' + formatCurrency(totalCombined) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(median) + '</span>';
+    html += '</span>';
+
+    // Mean with skewness indicator
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(mean) + '</span>';
+    html += '</span>';
+
+    // Skewness indicator
+    if (skewRatio > 1.05) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Skew</span>';
+        html += '<span class="summary-stat-value comp-dist-skew" title="Mean/median ratio of ' + skewRatio.toFixed(2) + ' — pay is concentrated at the top">';
+        html += skewRatio.toFixed(1) + '× right-skewed';
+        html += '</span></span>';
+    }
+
+    html += '<span class="summary-divider"></span>';
+
+    // Range
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">Range</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(minComp) + ' – ' + formatCurrency(maxComp) + '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Mini inline histogram
+    html += '<span class="summary-stat comp-dist-histogram">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="comp-dist-bars">';
+    brackets.forEach(function(b) {
+        var barH = maxBracketCount > 0 ? Math.max(3, Math.round(b.count / maxBracketCount * 24)) : 3;
+        html += '<span class="comp-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies">';
+        html += '<span class="comp-dist-bar" style="height:' + barH + 'px;background:' + b.color + '"></span>';
+        html += '<span class="comp-dist-bar-label">' + b.count + '</span>';
+        html += '</span>';
+    });
+    html += '</span>';
+    html += '<span class="comp-dist-bracket-labels">';
+    brackets.forEach(function(b) {
+        html += '<span class="comp-dist-bracket-label">' + b.label + '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
+
+    return html;
 }
 
 function renderYoYSortSummary(companies) {

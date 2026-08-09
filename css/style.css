@@ -971,6 +971,62 @@ header h1 {
     opacity: 0.7;
 }
 
+/* Compensation distribution summary — inline mini histogram */
+.comp-dist-histogram {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+.comp-dist-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+}
+.comp-dist-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    cursor: default;
+}
+.comp-dist-bar {
+    width: 20px;
+    border-radius: 2px 2px 0 0;
+    min-height: 3px;
+    transition: opacity 0.15s;
+}
+.comp-dist-bar-group:hover .comp-dist-bar {
+    opacity: 0.8;
+}
+.comp-dist-bar-label {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1;
+}
+.comp-dist-bracket-labels {
+    display: inline-flex;
+    gap: 3px;
+}
+.comp-dist-bracket-label {
+    width: 20px;
+    text-align: center;
+    font-size: 0.52rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    line-height: 1;
+}
+.comp-dist-skew {
+    font-size: 0.7rem !important;
+    color: var(--text-secondary) !important;
+    font-weight: 400 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-style: italic;
+}
+
 .table-controls {
     display: flex;
     gap: 12px;
@@ -2171,6 +2227,12 @@ footer li::before {
     .summary-stat-value { font-size: 0.72rem; }
     .summary-stat-label { font-size: 0.66rem; }
     .summary-divider { height: 14px; }
+    .comp-dist-bar { width: 14px; }
+    .comp-dist-bracket-label { width: 14px; font-size: 0.48rem; }
+    .comp-dist-bars { gap: 2px; height: 22px; }
+    .comp-dist-bracket-labels { gap: 2px; }
+    .comp-dist-bar-label { font-size: 0.55rem; }
+    .comp-dist-histogram .summary-stat-label { display: none; }
     .network-search-box { min-width: 100%; }
     .network-controls { gap: 6px; }
     .network-legend {
