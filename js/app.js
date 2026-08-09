@@ -1729,7 +1729,7 @@ function setupDetailPanel(companies) {
         var peerInfo = getPeerInfo(ticker);
 
         // Build HTML
-        var html = '<td colspan="8"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="9"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
         html += '<div class="detail-stats">';
 
@@ -2204,7 +2204,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="8"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="9"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
