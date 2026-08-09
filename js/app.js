@@ -1012,11 +1012,18 @@ function renderCompDistSummary(companies) {
     html += '<span class="summary-stat comp-dist-histogram">';
     html += '<span class="summary-stat-label">Distribution</span>';
     html += '<span class="comp-dist-bars">';
+    var activeMin = window._activeDistFilter && !window._activeDistFilter.sector ? window._activeDistFilter.min : null;
+    var activeMax = window._activeDistFilter && !window._activeDistFilter.sector ? window._activeDistFilter.max : null;
     brackets.forEach(function(b) {
         var barH = maxBracketCount > 0 ? Math.max(3, Math.round(b.count / maxBracketCount * 24)) : 3;
-        html += '<span class="comp-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies">';
-        html += '<span class="comp-dist-bar" style="height:' + barH + 'px;background:' + b.color + '"></span>';
-        html += '<span class="comp-dist-bar-label">' + b.count + '</span>';
+        var maxVal = b.max === Infinity ? 1e15 : b.max;
+        var isActive = (activeMin !== null && b.min === activeMin && maxVal === activeMax);
+        var isDimmed = (activeMin !== null && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
+        html += '<span class="comp-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.label + ': ' + b.count + ' companies — click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByCompBracket(' + b.min + ',' + maxVal + ',\'' + b.label.replace("'","\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="comp-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
+        html += '<span class="comp-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
         html += '</span>';
     });
     html += '</span>';
@@ -2322,7 +2329,7 @@ function serializeState() {
     if (window._activeDistFilter) {
         params.push('dmin=' + window._activeDistFilter.min);
         params.push('dmax=' + window._activeDistFilter.max);
-        params.push('dsec=' + encodeURIComponent(window._activeDistFilter.sector));
+        params.push('dsec=' + encodeURIComponent(window._activeDistFilter.sector || ''));
         params.push('dlbl=' + encodeURIComponent(window._activeDistFilter.label));
     }
     return params.length > 0 ? '#' + params.join('&') : '';
@@ -2661,6 +2668,50 @@ function hideMetricSkeletons() {
             if (controls) controls.appendChild(chip);
         }
     }
+
+    // Compensation bracket filter — filter table by clicking histogram bars
+    window.filterByCompBracket = function(minComp, maxComp, label) {
+        // Toggle off if same bracket clicked again
+        if (window._activeDistFilter &&
+            window._activeDistFilter.min === minComp &&
+            window._activeDistFilter.max === maxComp &&
+            !window._activeDistFilter.sector) {
+            window._activeDistFilter = null;
+        } else {
+            window._activeDistFilter = { sector: null, min: minComp, max: maxComp, label: label };
+        }
+
+        // Clear other filters
+        activeSector = null;
+        searchTerm = '';
+        currentPage = 1;
+        document.getElementById('table-search').value = '';
+        window._activeRatioBucket = null;
+        var rc = document.getElementById('ratio-filter-chip');
+        if (rc) rc.remove();
+
+        // Sort by total compensation descending
+        currentSort = { key: 'total_compensation', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === 'total_compensation') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        // Reset sector chips
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (chip.textContent === 'All') chip.classList.add('active');
+        });
+
+        updateDistFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeDistFilter ? 'Filtered to ' + label + ' compensation bracket' : 'Filter cleared');
+    };
 
     // Ratio bucket filter — stores active bucket for renderTable filtering
     window._activeRatioBucket = null;
