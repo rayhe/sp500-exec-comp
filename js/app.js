@@ -84,6 +84,7 @@ let peerData = null;
 function computeCeoYoY(companies) {
     companies.forEach(function(c) {
         c._ceoYoY = null;
+        c._ceoYoYSort = null;
         if (!c.executives || c.executives.length === 0) return;
         var allYears = [];
         c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
@@ -110,6 +111,7 @@ function computeCeoYoY(companies) {
         if (ceo1 && ceo2 && ceo1.total > 0 && ceo2.total > 0) {
             var pct = (ceo1.total - ceo2.total) / ceo2.total * 100;
             c._ceoYoY = { pct: pct, fromYear: yr2, toYear: yr1, fromComp: ceo2.total, toComp: ceo1.total };
+            c._ceoYoYSort = pct;
         }
     });
 }
@@ -297,7 +299,9 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    announce('Table sorted by ' + key.replace(/_/g, ' ') + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change' };
+    var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
+    announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
 
 /* Metric card helper: scroll to any section by ID */
@@ -409,6 +413,24 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // 7. Biggest YoY CEO Pay Change
+    var yoyCompanies = companies.filter(function(c) { return c._ceoYoY != null; });
+    if (yoyCompanies.length > 0) {
+        var biggestIncrease = yoyCompanies.slice().sort(function(a, b) { return b._ceoYoYSort - a._ceoYoYSort; })[0];
+        var biggestDecrease = yoyCompanies.slice().sort(function(a, b) { return a._ceoYoYSort - b._ceoYoYSort; })[0];
+        var incPct = Math.abs(biggestIncrease._ceoYoY.pct);
+        var decPct = Math.abs(biggestDecrease._ceoYoY.pct);
+        var incStr = incPct >= 100 ? Math.round(incPct) + '%' : incPct.toFixed(1) + '%';
+        var decStr = decPct >= 100 ? Math.round(decPct) + '%' : decPct.toFixed(1) + '%';
+        insights.push({
+            icon: '📈',
+            label: 'Biggest Pay Swing',
+            value: '▲ +' + incStr + ' / ▼ −' + decStr,
+            detail: biggestIncrease.ticker + ' CEO pay surged +' + incStr + ' (' + formatCurrency(biggestIncrease._ceoYoY.fromComp) + ' → ' + formatCurrency(biggestIncrease._ceoYoY.toComp) + '). ' + biggestDecrease.ticker + ' fell −' + decStr + ' (' + formatCurrency(biggestDecrease._ceoYoY.fromComp) + ' → ' + formatCurrency(biggestDecrease._ceoYoY.toComp) + '). ' + yoyCompanies.length + ' companies with YoY data.',
+            _yoyCount: yoyCompanies.length
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -482,6 +504,12 @@ function populateInsights(comp, trends) {
     if (insights[5]) {
         insights[5].action = function() { insightResetAndSort('total_compensation', 'asc'); };
         insights[5].actionHint = 'View full range';
+    }
+
+    // 7. Biggest Pay Swing → sort by YoY desc to show biggest increases first
+    if (insights[6]) {
+        insights[6].action = function() { insightResetAndSort('_ceoYoYSort', 'desc'); };
+        insights[6].actionHint = 'Sort by YoY change';
     }
 
     // Render cards
@@ -1012,6 +1040,10 @@ function renderTable(companies, options) {
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
+        compHtml += '</div>';
+
+        // YoY cell (separate column)
+        var yoyCell = '\u2014';
         if (c._ceoYoY) {
             var yoy = c._ceoYoY;
             var isPos = yoy.pct >= 0;
@@ -1020,10 +1052,9 @@ function renderTable(companies, options) {
             var yoyArrow = isPos ? '▲' : '▼';
             var yoySign = isPos ? '+' : '\u2212';
             var yoyCls = isPos ? 'positive' : 'negative';
-            var yoyTitle = 'CEO comp ' + (isPos ? '+' : '-') + yoyStr + ' vs FY' + yoy.fromYear + ' (' + formatCurrency(yoy.fromComp) + ' → ' + formatCurrency(yoy.toComp) + ')';
-            compHtml += ' <span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span>';
+            var yoyTitle = 'CEO comp ' + (isPos ? '+' : '-') + yoyStr + ' vs FY' + yoy.fromYear + ' (' + formatCurrency(yoy.fromComp) + ' \u2192 ' + formatCurrency(yoy.toComp) + ')';
+            yoyCell = '<span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span>';
         }
-        compHtml += '</div>';
 
         // Pay ratio with color class + optional extreme badge
         var ratioClass = c.pay_ratio > 2000 ? 'ratio-high' : c.pay_ratio > 500 ? 'ratio-mid' : 'ratio-low';
@@ -1050,6 +1081,7 @@ function renderTable(companies, options) {
             '<td><span class="company">' + c.company_name + '</span></td>' +
             '<td>' + c.ceo_name + '</td>' +
             '<td>' + compHtml + '</td>' +
+            '<td class="yoy-cell">' + yoyCell + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
