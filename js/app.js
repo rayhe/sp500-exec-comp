@@ -3249,19 +3249,42 @@ function hideMetricSkeletons() {
             var sector = row.dataset.sector;
             if (sector) {
                 // Toggle sector filter
-                if (typeof activeSector !== 'undefined' && activeSector === sector) {
+                if (activeSector === sector) {
                     activeSector = null;
                 } else {
                     activeSector = sector;
                 }
-                if (typeof currentPage !== 'undefined') currentPage = 0;
-                if (typeof renderTable === 'function') renderTable();
-                if (typeof renderSectorChips === 'function') renderSectorChips();
+                currentPage = 1;
+
+                // Clear distribution filter when sector changes
+                window._activeDistFilter = null;
+                var distChip = document.getElementById('dist-filter-chip');
+                if (distChip) distChip.remove();
+
+                // Clear ratio bucket filter when sector changes
+                if (window._activeRatioBucket) {
+                    window._activeRatioBucket = null;
+                    var ratioChip = document.getElementById('ratio-filter-chip');
+                    if (ratioChip) ratioChip.remove();
+                }
+
+                renderTable(companies);
+
+                // Update sector chip active states
+                document.querySelectorAll('.chip').forEach(function(chip) {
+                    chip.classList.remove('active');
+                    if (!activeSector && chip.textContent === 'All') chip.classList.add('active');
+                    else if (chip.textContent === activeSector) chip.classList.add('active');
+                });
+
                 if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
-                // Highlight active row
+                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+
+                // Highlight active row in sector analytics table
                 tbody.querySelectorAll('.sector-analytics-row').forEach(function(r) {
                     r.classList.toggle('sa-active', r.dataset.sector === activeSector);
                 });
+
                 // Scroll to table
                 var tableSection = document.getElementById('compensation-table-section');
                 if (tableSection) {
