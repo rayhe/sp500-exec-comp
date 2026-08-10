@@ -116,6 +116,38 @@ function computeCeoYoY(companies) {
     });
 }
 
+/* Pre-compute CEO multi-year pay trajectory for inline sparklines.
+   Sets c._ceoTrend = [{year, total}, ...] (ascending by year) or null if < 2 points. */
+function computeCeoTrend(companies) {
+    companies.forEach(function(c) {
+        c._ceoTrend = null;
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return a - b; }); // ascending for left-to-right display
+
+        if (allYears.length < 2) return;
+
+        var trend = [];
+        allYears.forEach(function(yr) {
+            var yrExecs = c.executives.filter(function(e) { return e.year === yr; });
+            var ceo = yrExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo && yrExecs.length > 0) {
+                ceo = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            if (ceo && ceo.total > 0) {
+                trend.push({ year: yr, total: ceo.total });
+            }
+        });
+
+        if (trend.length >= 2) {
+            c._ceoTrend = trend;
+        }
+    });
+}
+
 /* Pre-compute CEO stock awards as percentage of total compensation.
    Sets c._ceoStockPct (0-100 or null) for the latest fiscal year. */
 function computeCeoStockPct(companies) {
@@ -1520,7 +1552,7 @@ function renderTable(companies, options) {
         }
         compHtml += '</div>';
 
-        // YoY cell (separate column)
+        // YoY cell (separate column) with inline sparkline for multi-year trend
         var yoyCell = '\u2014';
         if (c._ceoYoY) {
             var yoy = c._ceoYoY;
@@ -1531,7 +1563,32 @@ function renderTable(companies, options) {
             var yoySign = isPos ? '+' : '\u2212';
             var yoyCls = isPos ? 'positive' : 'negative';
             var yoyTitle = 'CEO comp ' + (isPos ? '+' : '-') + yoyStr + ' vs FY' + yoy.fromYear + ' (' + formatCurrency(yoy.fromComp) + ' \u2192 ' + formatCurrency(yoy.toComp) + ')';
-            yoyCell = '<span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span>';
+
+            // Build sparkline SVG if multi-year trend data exists (≥2 points)
+            var sparkSvg = '';
+            if (c._ceoTrend && c._ceoTrend.length >= 2) {
+                var sparkW = 36, sparkH = 14, sparkPad = 1;
+                var trendPts = c._ceoTrend;
+                var tMin = Math.min.apply(null, trendPts.map(function(d) { return d.total; }));
+                var tMax = Math.max.apply(null, trendPts.map(function(d) { return d.total; }));
+                var tRange = tMax - tMin || 1;
+                var sparkPoints = [];
+                trendPts.forEach(function(d, di) {
+                    var sx = sparkPad + di / (trendPts.length - 1) * (sparkW - sparkPad * 2);
+                    var sy = sparkPad + (1 - (d.total - tMin) / tRange) * (sparkH - sparkPad * 2);
+                    sparkPoints.push(sx.toFixed(1) + ',' + sy.toFixed(1));
+                });
+                var sparkLine = sparkPoints.join(' ');
+                // Area fill: close path along bottom
+                var sparkArea = sparkPoints[0].split(',')[0] + ',' + (sparkH - sparkPad) + ' ' + sparkLine + ' ' + sparkPoints[sparkPoints.length - 1].split(',')[0] + ',' + (sparkH - sparkPad);
+                var sparkColor = isPos ? 'var(--positive)' : 'var(--negative)';
+                var sparkFill = isPos ? 'rgba(6,214,160,0.15)' : 'rgba(239,71,111,0.15)';
+                // Sparkline tooltip: show year range
+                var sparkTitle = 'FY' + trendPts[0].year + '\u2013' + trendPts[trendPts.length - 1].year + ': ' + trendPts.map(function(d) { return formatCurrency(d.total); }).join(' \u2192 ');
+                sparkSvg = '<svg class="yoy-spark-svg" width="' + sparkW + '" height="' + sparkH + '" viewBox="0 0 ' + sparkW + ' ' + sparkH + '" aria-hidden="true" title="' + sparkTitle.replace(/"/g, '&quot;') + '"><polygon points="' + sparkArea + '" fill="' + sparkFill + '"/><polyline points="' + sparkLine + '" fill="none" stroke="' + sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            }
+
+            yoyCell = '<span class="yoy-cell-wrap">' + sparkSvg + '<span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span></span>';
         }
 
         // Pay ratio with color class + optional extreme badge
@@ -2745,6 +2802,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute CEO YoY change for inline table badges
     computeCeoYoY(companies);
+
+    // Pre-compute CEO multi-year trend for inline sparklines
+    computeCeoTrend(companies);
 
     // Pre-compute CEO stock % for sortable column
     computeCeoStockPct(companies);

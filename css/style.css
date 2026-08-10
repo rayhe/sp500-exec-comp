@@ -2038,7 +2038,7 @@ td .comp-value { font-weight: 600; position: relative; z-index: 1; }
     text-align: center;
     white-space: nowrap;
     min-width: 60px;
-    max-width: 90px;
+    max-width: 130px;
 }
 .yoy-inline.positive {
     color: var(--positive);
@@ -2055,6 +2055,23 @@ td .comp-value { font-weight: 600; position: relative; z-index: 1; }
 [data-theme="light"] .yoy-inline.negative {
     color: #dc2626;
     background: rgba(239, 71, 111, 0.12);
+}
+/* YoY cell wrapper — sparkline + percentage badge inline */
+.yoy-cell-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+/* Inline sparkline SVG */
+.yoy-spark-svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+[data-theme="light"] .yoy-spark-svg polygon {
+    opacity: 0.7; /* Slightly stronger fill on white backgrounds */
 }
 
 /* Stock % badge */
@@ -3237,6 +3254,9 @@ footer li::before {
     .composition-legend-label { min-width: 100px; font-size: 0.72rem; }
     .composition-legend-val { font-size: 0.72rem; }
     .comp-yoy-badge { font-size: 0.6rem; padding: 1px 4px; margin-left: 4px; }
+    /* Hide sparklines on small screens to save column width */
+    .yoy-spark-svg { display: none; }
+    .yoy-cell-wrap { gap: 0; }
 }
 
 /* ============================================================
@@ -3428,6 +3448,7 @@ footer li::before {
     .yoy-inline { font-size: 7px !important; }
     .yoy-inline.positive { color: #059669 !important; background: #f0fdf4 !important; }
     .yoy-inline.negative { color: #dc2626 !important; background: #fef2f2 !important; }
+    .yoy-spark-svg { display: none !important; }
     .data-na { background: #fffbeb !important; border-color: #b45309 !important; color: #6b7280 !important; }
     .comp-bar { display: none !important; }
     .data-na-icon { color: #b45309 !important; }
