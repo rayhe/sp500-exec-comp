@@ -2468,6 +2468,7 @@ function setupDetailPanel(companies) {
             tab.addEventListener('keydown', function(e) {
                 if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
                 e.preventDefault();
+                e.stopPropagation(); // Prevent detail panel from navigating to prev/next company
                 var tabs = Array.from(tab.closest('.neo-year-tabs').querySelectorAll('.neo-year-tab'));
                 var idx = tabs.indexOf(tab);
                 var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
@@ -2558,6 +2559,8 @@ function setupDetailPanel(companies) {
         if (panelEl) {
             // Add keyboard navigation for arrow keys
             panelEl.addEventListener('keydown', function(e) {
+                // Skip if the event originated from an interactive child with its own arrow handling
+                if (e.target.closest && e.target.closest('.neo-year-tabs')) return;
                 if (e.key === 'ArrowLeft' && _hasPrev) {
                     e.preventDefault();
                     e.stopPropagation();
