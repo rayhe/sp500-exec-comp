@@ -4306,3 +4306,40 @@ footer li::before {
     .neo-years-available { margin-left: 0; }
     .neo-year-tabs { flex-wrap: wrap; }
 }
+
+/* === Scatter Plot === */
+.chart-panel-full {
+    grid-column: 1 / -1;
+}
+.scatter-controls {
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    align-items: center;
+}
+.scatter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+.scatter-toggle input[type="checkbox"] {
+    accent-color: #00b4d8;
+    cursor: pointer;
+}
+.scatter-dot {
+    transition: opacity 0.15s ease, r 0.15s ease;
+}
+.scatter-label {
+    pointer-events: none;
+}
+[data-theme="light"] .scatter-label {
+    fill: #1a1a2e;
+}
+@media (max-width: 640px) {
+    .scatter-controls { flex-wrap: wrap; gap: 0.5rem; }
+    #scatter-chart svg { max-width: 100%; }
+}

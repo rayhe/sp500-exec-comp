@@ -213,6 +213,24 @@
         </div>
     </section>
 
+    <section class="section charts-grid">
+        <div class="chart-panel chart-panel-full" id="scatter-chart-panel">
+            <div class="section-header">
+                <h2>CEO Pay vs. Pay Ratio</h2>
+                <p class="section-desc">Each dot is an S&P 500 company. X = CEO total compensation, Y = CEO-to-worker pay ratio. Dot size = CEO pay. Hover for details, click to view in table. Colored by sector.</p>
+            </div>
+            <div class="scatter-controls">
+                <label class="scatter-toggle">
+                    <input type="checkbox" id="scatter-log-x"> Log scale (X)
+                </label>
+                <label class="scatter-toggle">
+                    <input type="checkbox" id="scatter-log-y"> Log scale (Y)
+                </label>
+            </div>
+            <div id="scatter-chart"></div>
+        </div>
+    </section>
+
     <section class="section" id="composition-section" role="region" aria-label="Compensation composition">
         <div class="section-header">
             <h2>Compensation Composition</h2>

@@ -55,7 +55,13 @@ function initCharts(companies, trends, compData) {
     drawRatioChart(companies);
     drawTop10Chart(companies);
     drawCompositionChart(trends);
+    drawScatterChart(companies);
     setupChartResize();
+    // Scatter log-scale toggles
+    var logXCb = document.getElementById('scatter-log-x');
+    var logYCb = document.getElementById('scatter-log-y');
+    if (logXCb) logXCb.addEventListener('change', function() { var el = document.getElementById('scatter-chart'); if (el) el.innerHTML = ''; drawScatterChart(_chartData.companies); });
+    if (logYCb) logYCb.addEventListener('change', function() { var el = document.getElementById('scatter-chart'); if (el) el.innerHTML = ''; drawScatterChart(_chartData.companies); });
 }
 
 /* Debounced resize handler — clears and redraws all SVG charts */
@@ -71,7 +77,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart', 'scatter-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -81,6 +87,7 @@ function redrawAllCharts() {
     drawRatioChart(_chartData.companies);
     drawTop10Chart(_chartData.companies);
     drawCompositionChart(_chartData.trends);
+    drawScatterChart(_chartData.companies);
 }
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -1127,4 +1134,204 @@ function drawCompositionChart(trends) {
     sourceNote.className = 'composition-source';
     sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2025') + ' · FY' + (sp.fiscal_year || 2024);
     wrapper.appendChild(sourceNote);
+}
+
+/* --- CEO Pay vs. Pay Ratio Scatter Plot --- */
+function drawScatterChart(companies) {
+    var container = document.getElementById('scatter-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var SECTOR_COLORS = {
+        'Information Technology': '#00b4d8',
+        'Communication Services': '#06d6a0',
+        'Consumer Discretionary': '#ef476f',
+        'Health Care': '#ffd166',
+        'Financials': '#a78bfa',
+        'Consumer Staples': '#fb923c',
+        'Industrials': '#94a3b8',
+        'Energy': '#34d399',
+        'Real Estate': '#f472b6',
+        'Materials': '#f9a8d4',
+        'Utilities': '#67e8f9'
+    };
+
+    // Filter to companies with both comp and ratio data
+    var pts = companies.filter(function(c) {
+        return c.total_compensation > 0 && c.pay_ratio != null && c.pay_ratio > 0;
+    });
+
+    if (pts.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available</p>';
+        return;
+    }
+
+    var logX = document.getElementById('scatter-log-x') && document.getElementById('scatter-log-x').checked;
+    var logY = document.getElementById('scatter-log-y') && document.getElementById('scatter-log-y').checked;
+
+    var margin = { top: 30, right: 30, bottom: 55, left: 70 };
+    var w = container.clientWidth - margin.left - margin.right;
+    var h = Math.max(400, Math.min(500, container.clientWidth * 0.55));
+
+    var svg = d3.select('#scatter-chart').append('svg')
+        .attr('width', w + margin.left + margin.right)
+        .attr('height', h + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var xMax = d3.max(pts, function(d) { return d.total_compensation; }) * 1.05;
+    var yMax = d3.max(pts, function(d) { return d.pay_ratio; }) * 1.05;
+
+    var x = logX
+        ? d3.scaleLog().domain([d3.min(pts, function(d) { return Math.max(d.total_compensation, 100000); }), xMax]).range([0, w]).clamp(true)
+        : d3.scaleLinear().domain([0, xMax]).range([0, w]);
+
+    var y = logY
+        ? d3.scaleLog().domain([d3.min(pts, function(d) { return Math.max(d.pay_ratio, 1); }), yMax]).range([h, 0]).clamp(true)
+        : d3.scaleLinear().domain([0, yMax]).range([h, 0]);
+
+    var r = d3.scaleSqrt()
+        .domain([0, d3.max(pts, function(d) { return d.total_compensation; })])
+        .range([3, 18]);
+
+    // Grid
+    svg.append('g').attr('class', 'grid')
+        .call(d3.axisBottom(x).tickSize(h).tickFormat('').ticks(6))
+        .attr('transform', 'translate(0,0)');
+    svg.append('g').attr('class', 'grid')
+        .call(d3.axisLeft(y).tickSize(-w).tickFormat('').ticks(6));
+
+    // Axes
+    svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(d3.axisBottom(x).ticks(6).tickFormat(function(v) { return fmtCurr(v); }));
+
+    svg.append('g').attr('class', 'axis')
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(v) {
+            if (v >= 1000) return (v / 1000).toFixed(0) + 'K';
+            return v;
+        }));
+
+    // Axis labels
+    svg.append('text')
+        .attr('class', 'axis-label')
+        .attr('x', w / 2)
+        .attr('y', h + 45)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa')
+        .attr('font-size', '12px')
+        .text('CEO Total Compensation');
+
+    svg.append('text')
+        .attr('class', 'axis-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -h / 2)
+        .attr('y', -55)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa')
+        .attr('font-size', '12px')
+        .text('CEO-to-Worker Pay Ratio');
+
+    // Median reference lines
+    var medComp = d3.median(pts, function(d) { return d.total_compensation; });
+    var medRatio = d3.median(pts, function(d) { return d.pay_ratio; });
+
+    svg.append('line')
+        .attr('x1', x(medComp)).attr('x2', x(medComp))
+        .attr('y1', 0).attr('y2', h)
+        .attr('stroke', '#00b4d8').attr('stroke-width', 1)
+        .attr('stroke-dasharray', '6,4').attr('opacity', 0.5);
+    svg.append('text')
+        .attr('x', x(medComp) + 4).attr('y', 12)
+        .attr('fill', '#00b4d8').attr('font-size', '10px').attr('opacity', 0.7)
+        .text('Median ' + fmtCurr(medComp));
+
+    svg.append('line')
+        .attr('x1', 0).attr('x2', w)
+        .attr('y1', y(medRatio)).attr('y2', y(medRatio))
+        .attr('stroke', '#00b4d8').attr('stroke-width', 1)
+        .attr('stroke-dasharray', '6,4').attr('opacity', 0.5);
+    svg.append('text')
+        .attr('x', w - 4).attr('y', y(medRatio) - 4)
+        .attr('text-anchor', 'end')
+        .attr('fill', '#00b4d8').attr('font-size', '10px').attr('opacity', 0.7)
+        .text('Median Ratio ' + Math.round(medRatio) + ':1');
+
+    // Quadrant labels (subtle)
+    var qLabels = [
+        { label: 'Low Pay, High Ratio', x: margin.left + 8, y: 22, anchor: 'start' },
+        { label: 'High Pay, High Ratio', x: w - 8, y: 22, anchor: 'end' },
+        { label: 'Low Pay, Low Ratio', x: margin.left + 8, y: h - 8, anchor: 'start' },
+        { label: 'High Pay, Low Ratio', x: w - 8, y: h - 8, anchor: 'end' }
+    ];
+    qLabels.forEach(function(q) {
+        svg.append('text')
+            .attr('x', q.x).attr('y', q.y)
+            .attr('text-anchor', q.anchor)
+            .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+            .attr('font-size', '9px').attr('opacity', 0.5)
+            .text(q.label);
+    });
+
+    // Dots
+    svg.selectAll('.scatter-dot')
+        .data(pts)
+        .join('circle')
+        .attr('class', 'scatter-dot')
+        .attr('cx', function(d) { return x(d.total_compensation); })
+        .attr('cy', function(d) { return y(d.pay_ratio); })
+        .attr('r', function(d) { return r(d.total_compensation); })
+        .attr('fill', function(d) { return SECTOR_COLORS[d.sector] || '#94a3b8'; })
+        .attr('opacity', 0.7)
+        .attr('stroke', 'none')
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5)
+                .attr('r', r(d.total_compensation) + 2);
+            // Dim other dots
+            svg.selectAll('.scatter-dot').filter(function(o) { return o !== d; })
+                .attr('opacity', 0.2);
+            var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
+                '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio + ':1</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Worker Pay</span><span class="ct-val">' + fmtCurr(d.median_worker_pay) + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function(event, d) {
+            d3.select(this).attr('opacity', 0.7).attr('stroke', 'none')
+                .attr('r', r(d.total_compensation));
+            svg.selectAll('.scatter-dot').attr('opacity', 0.7);
+            hideChartTooltip();
+        })
+        .on('click', function(event, d) {
+            if (typeof window.findCompanyInTable === 'function') {
+                window.findCompanyInTable(d.ticker);
+            }
+        });
+
+    // Label outliers (top 5 by comp + top 3 by ratio)
+    var topComp = pts.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5);
+    var topRatio = pts.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; }).slice(0, 3);
+    var labeled = {};
+    var labelsArr = [];
+    topComp.concat(topRatio).forEach(function(d) {
+        if (labeled[d.ticker]) return;
+        labeled[d.ticker] = true;
+        labelsArr.push(d);
+    });
+
+    svg.selectAll('.scatter-label')
+        .data(labelsArr)
+        .join('text')
+        .attr('class', 'scatter-label')
+        .attr('x', function(d) { return x(d.total_compensation) + r(d.total_compensation) + 4; })
+        .attr('y', function(d) { return y(d.pay_ratio) + 3; })
+        .attr('fill', typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7')
+        .attr('font-size', '10px')
+        .attr('font-weight', '500')
+        .attr('pointer-events', 'none')
+        .text(function(d) { return d.ticker; });
 }
