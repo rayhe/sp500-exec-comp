@@ -2169,6 +2169,72 @@ function setupDetailPanel(companies) {
             }
         }
 
+        // Peer Pay Position — horizontal bar chart showing this company vs. comp peers
+        if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
+            var _peerAllTickers = [];
+            peerInfo.selects.forEach(function(t) { if (_peerAllTickers.indexOf(t) < 0) _peerAllTickers.push(t); });
+            peerInfo.selectedBy.forEach(function(t) { if (_peerAllTickers.indexOf(t) < 0) _peerAllTickers.push(t); });
+
+            var _peerCompList = [];
+            _peerAllTickers.forEach(function(t) {
+                var peer = companies.find(function(c2) { return c2.ticker === t; });
+                if (peer && peer.total_compensation > 0) {
+                    _peerCompList.push({ ticker: t, total: peer.total_compensation, name: peer.ceo_name || '', isSelf: false });
+                }
+            });
+
+            if (_peerCompList.length >= 2) {
+                _peerCompList.push({ ticker: ticker, total: company.total_compensation || 0, name: company.ceo_name || '', isSelf: true });
+                _peerCompList.sort(function(a, b) { return b.total - a.total; });
+
+                var _peerRank = _peerCompList.findIndex(function(p) { return p.isSelf; }) + 1;
+                var _peerMax = _peerCompList[0].total;
+                var _peerCount = _peerCompList.length;
+                var _maxPeerShow = 15;
+                var _peerTruncated = _peerCompList.length > _maxPeerShow;
+                var _displayPeers = _peerTruncated ? _peerCompList.slice(0, _maxPeerShow) : _peerCompList;
+                // Ensure self is always visible even when truncated
+                if (_peerTruncated && !_displayPeers.some(function(p) { return p.isSelf; })) {
+                    _displayPeers[_maxPeerShow - 1] = _peerCompList.find(function(p) { return p.isSelf; });
+                }
+
+                // Compute vs peer median
+                var _peerTotals = _peerCompList.filter(function(p) { return !p.isSelf; }).map(function(p) { return p.total; });
+                _peerTotals.sort(function(a, b) { return a - b; });
+                var _peerMedian = _peerTotals.length > 0 ? _peerTotals[Math.floor(_peerTotals.length / 2)] : 0;
+                var _vsPeerMedianPct = _peerMedian > 0 ? ((company.total_compensation - _peerMedian) / _peerMedian * 100) : 0;
+                var _vsPeerSign = _vsPeerMedianPct >= 0 ? '+' : '\u2212';
+                var _vsPeerCls = _vsPeerMedianPct >= 0 ? 'positive' : 'negative';
+                var _vsPeerAbsStr = Math.abs(_vsPeerMedianPct) >= 100 ? Math.round(Math.abs(_vsPeerMedianPct)) + '%' : Math.abs(_vsPeerMedianPct).toFixed(1) + '%';
+
+                html += '<div class="peer-pay-section">';
+                html += '<div class="peer-pay-header">';
+                html += '<span class="peer-pay-title">Peer Pay Position</span>';
+                html += '<span class="peer-pay-rank">#' + _peerRank + ' of ' + _peerCount + '</span>';
+                html += '</div>';
+                html += '<div class="peer-pay-sub ' + _vsPeerCls + '">' + _vsPeerSign + _vsPeerAbsStr + ' vs peer median (' + formatCurrency(_peerMedian) + ')</div>';
+                html += '<div class="peer-pay-rows">';
+
+                _displayPeers.forEach(function(p) {
+                    var barW = _peerMax > 0 ? Math.max(2, p.total / _peerMax * 100) : 0;
+                    var cls = p.isSelf ? ' peer-pay-self' : '';
+                    var rowTitle = p.name + ': ' + formatCurrency(p.total);
+                    html += '<div class="peer-pay-row' + cls + '" data-ticker="' + p.ticker + '" title="' + rowTitle.replace(/"/g, '&quot;') + '">';
+                    html += '<span class="peer-pay-ticker">' + p.ticker + '</span>';
+                    html += '<div class="peer-pay-bar-track"><div class="peer-pay-bar" style="width:' + barW.toFixed(1) + '%"></div></div>';
+                    html += '<span class="peer-pay-val">' + formatCurrency(p.total) + '</span>';
+                    html += '</div>';
+                });
+
+                if (_peerTruncated) {
+                    html += '<div class="peer-pay-more">+ ' + (_peerCount - _maxPeerShow) + ' more peers</div>';
+                }
+
+                html += '</div>'; // peer-pay-rows
+                html += '</div>'; // peer-pay-section
+            }
+        }
+
         // NEO Executive Compensation Breakdown (from EDGAR data)
         if (company.executives && company.executives.length > 0) {
             var allYears = [];
@@ -2358,6 +2424,17 @@ function setupDetailPanel(companies) {
                         if (window.findCompanyInTable) window.findCompanyInTable(peerTicker);
                     }
                 }
+            });
+        });
+
+        // Wire up clickable peer pay rows — click to find peer in table
+        detailRow.querySelectorAll('.peer-pay-row[data-ticker]').forEach(function(row) {
+            if (row.classList.contains('peer-pay-self')) return; // Skip self
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var peerTicker = row.getAttribute('data-ticker');
+                if (peerTicker && window.findCompanyInTable) window.findCompanyInTable(peerTicker);
             });
         });
 
