@@ -1983,9 +1983,28 @@ function setupDetailPanel(companies) {
         // Peer network
         var peerInfo = getPeerInfo(ticker);
 
+        // Compute position in visible table rows for navigation
+        var _visibleRows = Array.from(tbody.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)'));
+        var _currentIdx = -1;
+        for (var vi = 0; vi < _visibleRows.length; vi++) {
+            var _vt = _visibleRows[vi].querySelector('.ticker');
+            if (_vt && _vt.textContent.trim() === ticker) { _currentIdx = vi; break; }
+        }
+        var _hasPrev = _currentIdx > 0;
+        var _hasNext = _currentIdx >= 0 && _currentIdx < _visibleRows.length - 1;
+        var _posLabel = _currentIdx >= 0 ? (_currentIdx + 1) + ' of ' + _visibleRows.length : '';
+
         // Build HTML
         var html = '<td colspan="10"><div class="detail-panel" tabindex="-1">';
-        html += '<div class="detail-header">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></div>';
+        html += '<div class="detail-header">';
+        html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
+        html += '<div class="detail-header-center">';
+        html += '<span class="detail-header-title">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></span>';
+        if (_posLabel) html += '<span class="detail-header-pos">' + _posLabel + '</span>';
+        html += '</div>';
+        html += '<button class="detail-nav-btn detail-nav-next" title="Next company (→)" aria-label="Next company"' + (_hasNext ? '' : ' disabled') + '>›</button>';
+        html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
+        html += '</div>';
         html += '<div class="detail-stats">';
 
         // Helper: build distribution bar HTML
@@ -2438,12 +2457,60 @@ function setupDetailPanel(companies) {
             });
         });
 
+        // Wire up prev/next navigation buttons
+        function _navigateDetail(direction) {
+            var visRows = Array.from(tbody.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)'));
+            var curIdx = -1;
+            for (var ni = 0; ni < visRows.length; ni++) {
+                var nt = visRows[ni].querySelector('.ticker');
+                if (nt && nt.textContent.trim() === ticker) { curIdx = ni; break; }
+            }
+            if (curIdx < 0) return;
+            var targetIdx = curIdx + direction;
+            if (targetIdx < 0 || targetIdx >= visRows.length) return;
+            // Scroll the target row into view before clicking to ensure smooth transition
+            var targetRow = visRows[targetIdx];
+            var stickyH = getStickyOffset();
+            var rowTop = targetRow.getBoundingClientRect().top + window.scrollY - stickyH - 16;
+            window.scrollTo({ top: rowTop, behavior: getScrollBehavior() });
+            setTimeout(function() { targetRow.click(); }, 50);
+        }
+
+        var _prevBtn = detailRow.querySelector('.detail-nav-prev');
+        var _nextBtn = detailRow.querySelector('.detail-nav-next');
+        var _closeBtn = detailRow.querySelector('.detail-close-btn');
+
+        if (_prevBtn) _prevBtn.addEventListener('click', function(e) { e.stopPropagation(); _navigateDetail(-1); });
+        if (_nextBtn) _nextBtn.addEventListener('click', function(e) { e.stopPropagation(); _navigateDetail(1); });
+        if (_closeBtn) _closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            detailRow.remove();
+            tbody.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+            tbody.querySelectorAll('tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
+            if (_detailTriggerRow && _detailTriggerRow.isConnected) {
+                _detailTriggerRow.focus();
+            }
+            _detailTriggerRow = null;
+        });
+
         // ARIA announcement for detail panel
         announce(company.company_name + ' detail panel. Rank ' + overallRank + ' of ' + companies.length + ', ' + formatCurrency(company.total_compensation) + ' total compensation.');
 
         // Move focus to the detail panel for keyboard/screen reader users
         var panelEl = detailRow.querySelector('.detail-panel');
         if (panelEl) {
+            // Add keyboard navigation for arrow keys
+            panelEl.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft' && _hasPrev) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    _navigateDetail(-1);
+                } else if (e.key === 'ArrowRight' && _hasNext) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    _navigateDetail(1);
+                }
+            });
             setTimeout(function() { panelEl.focus({ preventScroll: true }); }, 50);
         }
     });
