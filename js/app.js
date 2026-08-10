@@ -75,6 +75,21 @@ function getThemeSecondaryColor() {
     return isDarkTheme() ? '#a1a1aa' : '#4b5563';
 }
 
+var SECTOR_COLORS_APP = {
+    'Information Technology': '#00b4d8',
+    'Communication Services': '#06d6a0',
+    'Consumer Discretionary': '#ef476f',
+    'Health Care': '#ffd166',
+    'Financials': '#a78bfa',
+    'Consumer Staples': '#fb923c',
+    'Industrials': '#94a3b8',
+    'Energy': '#34d399',
+    'Real Estate': '#f472b6',
+    'Materials': '#f9a8d4',
+    'Utilities': '#67e8f9'
+};
+function getSectorColor(s) { return SECTOR_COLORS_APP[s] || '#94a3b8'; }
+
 let compData = null;
 let trendsData = null;
 let peerData = null;
@@ -3136,6 +3151,137 @@ function hideMetricSkeletons() {
         initCharts(companies, data.trends, data.comp);
     }
 
+    // === Sector Analytics Summary Table ===
+    (function renderSectorAnalytics() {
+        var tbody = document.getElementById('sector-analytics-tbody');
+        if (!tbody) return;
+
+        // Compute per-sector metrics
+        var sectorMap = {};
+        companies.forEach(function(c) {
+            if (!c.sector) return;
+            if (!sectorMap[c.sector]) sectorMap[c.sector] = [];
+            sectorMap[c.sector].push(c);
+        });
+
+        var rows = [];
+        Object.keys(sectorMap).forEach(function(sector) {
+            var comps = sectorMap[sector];
+            var count = comps.length;
+
+            // CEO pay values (filter out nulls)
+            var pays = comps.map(function(c) { return c.total_compensation; }).filter(function(v) { return v != null && v > 0; }).sort(function(a, b) { return a - b; });
+            var median = pays.length ? pays[Math.floor(pays.length / 2)] : 0;
+            var mean = pays.length ? pays.reduce(function(a, b) { return a + b; }, 0) / pays.length : 0;
+
+            // Equity % — compute per company
+            var eqPcts = [];
+            comps.forEach(function(c) {
+                if (!c.executives || !c.executives.length) return;
+                var latestYear = Math.max.apply(null, c.executives.map(function(e) { return e.year || 0; }));
+                var ceoExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+                // Find CEO by title
+                var ceo = ceoExecs.find(function(e) { return /chief executive|\\bceo\\b/i.test(e.title || ''); });
+                if (!ceo) ceo = ceoExecs.reduce(function(a, b) { return (a.total || 0) > (b.total || 0) ? a : b; }, ceoExecs[0]);
+                if (ceo && ceo.total > 0) {
+                    var equity = ((ceo.stock_awards || 0) + (ceo.option_awards || 0));
+                    eqPcts.push(Math.round(equity / ceo.total * 100));
+                }
+            });
+            eqPcts.sort(function(a, b) { return a - b; });
+            var medianEq = eqPcts.length ? eqPcts[Math.floor(eqPcts.length / 2)] : null;
+
+            // Pay ratio
+            var ratios = comps.map(function(c) { return c.pay_ratio; }).filter(function(v) { return v != null && v > 0; }).sort(function(a, b) { return a - b; });
+            var medianRatio = ratios.length ? ratios[Math.floor(ratios.length / 2)] : null;
+
+            // Highest paid CEO
+            var highest = comps.reduce(function(best, c) {
+                return (c.total_compensation || 0) > (best.total_compensation || 0) ? c : best;
+            }, comps[0]);
+
+            rows.push({
+                sector: sector,
+                count: count,
+                median: median,
+                mean: mean,
+                medianEq: medianEq,
+                medianRatio: medianRatio,
+                highestName: highest ? highest.ceo_name : '—',
+                highestTicker: highest ? highest.ticker : '',
+                highestPay: highest ? highest.total_compensation : 0
+            });
+        });
+
+        // Sort by median pay descending
+        rows.sort(function(a, b) { return b.median - a.median; });
+
+        function fmt(v) {
+            if (v == null || v <= 0) return '—';
+            if (v >= 1e9) return '$' + (v / 1e9).toFixed(1) + 'B';
+            if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+            if (v >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K';
+            return '$' + v.toLocaleString();
+        }
+
+        var maxMedian = Math.max.apply(null, rows.map(function(r) { return r.median; }));
+
+        tbody.innerHTML = rows.map(function(r) {
+            var barW = maxMedian > 0 ? Math.round(r.median / maxMedian * 100) : 0;
+            var eqClass = r.medianEq != null ? (r.medianEq >= 70 ? 'eq-high' : r.medianEq >= 40 ? 'eq-mid' : 'eq-low') : '';
+            var ratioClass = r.medianRatio != null ? (r.medianRatio > 500 ? 'ratio-high' : r.medianRatio > 200 ? 'ratio-mid' : 'ratio-low') : '';
+            return '<tr class="sector-analytics-row" data-sector="' + r.sector + '" tabindex="0">' +
+                '<td class="sa-sector"><span class="sa-sector-dot" style="background:' + getSectorColor(r.sector) + '"></span>' + r.sector + '</td>' +
+                '<td class="sa-count">' + r.count + '</td>' +
+                '<td class="sa-pay"><div class="sa-bar-cell"><div class="sa-bar" style="width:' + barW + '%"></div><span class="sa-bar-val">' + fmt(r.median) + '</span></div></td>' +
+                '<td class="sa-pay">' + fmt(r.mean) + '</td>' +
+                '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
+                '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
+                '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
+                '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
+                '</tr>';
+        }).join('');
+
+        // Click to filter main table by sector
+        tbody.addEventListener('click', function(ev) {
+            var row = ev.target.closest('.sector-analytics-row');
+            if (!row) return;
+            var sector = row.dataset.sector;
+            if (sector) {
+                // Toggle sector filter
+                if (typeof activeSector !== 'undefined' && activeSector === sector) {
+                    activeSector = null;
+                } else {
+                    activeSector = sector;
+                }
+                if (typeof currentPage !== 'undefined') currentPage = 0;
+                if (typeof renderTable === 'function') renderTable();
+                if (typeof renderSectorChips === 'function') renderSectorChips();
+                if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
+                // Highlight active row
+                tbody.querySelectorAll('.sector-analytics-row').forEach(function(r) {
+                    r.classList.toggle('sa-active', r.dataset.sector === activeSector);
+                });
+                // Scroll to table
+                var tableSection = document.getElementById('compensation-table-section');
+                if (tableSection) {
+                    var hh = getStickyOffset();
+                    var tp = tableSection.getBoundingClientRect().top + window.scrollY - hh - 12;
+                    window.scrollTo({ top: tp, behavior: getScrollBehavior() });
+                }
+            }
+        });
+
+        // Keyboard support
+        tbody.addEventListener('keydown', function(ev) {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                var row = ev.target.closest('.sector-analytics-row');
+                if (row) row.click();
+            }
+        });
+    })();
+
     // Restore state from URL hash (after charts/network are initialized)
     applyHashState(companies);
     _stateInitialized = true;
@@ -4835,6 +4981,17 @@ function hideMetricSkeletons() {
                     var hh5 = getStickyOffset();
                     var rt = trendsSection.getBoundingClientRect().top + window.scrollY - hh5 - 12;
                     window.scrollTo({ top: rt, behavior: getScrollBehavior() });
+                }
+                break;
+
+            case 's':
+            case 'S':
+                e.preventDefault();
+                var sectorsSection = document.getElementById('sector-analytics-section');
+                if (sectorsSection) {
+                    var hh6 = getStickyOffset();
+                    var st = sectorsSection.getBoundingClientRect().top + window.scrollY - hh6 - 12;
+                    window.scrollTo({ top: st, behavior: getScrollBehavior() });
                 }
                 break;
 

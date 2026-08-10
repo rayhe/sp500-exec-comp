@@ -1957,7 +1957,7 @@
       "filing_date": "2026-05-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000036/nvda-20260512.htm",
       "total_neo_compensation": 94033099,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -2872,7 +2872,7 @@
       "filing_date": "2025-10-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/858877/000085887725000150/csco-20251027.htm",
       "total_neo_compensation": 139926295,
-      "neo_count": 8,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -2962,7 +2962,7 @@
           "total": 26134183
         },
         {
-          "name": "Troy Rohrbaugh 7 Co-",
+          "name": "Troy Rohrbaugh",
           "title": "CEO, CIB",
           "year": 2025,
           "salary": 0,
@@ -2975,7 +2975,7 @@
           "total": 8676
         },
         {
-          "name": "Troy Rohrbaugh 7 Co-",
+          "name": "Troy Rohrbaugh",
           "title": "CEO, CIB",
           "year": 2024,
           "salary": 1000000,
@@ -2988,7 +2988,7 @@
           "total": 23559903
         },
         {
-          "name": "Douglas Petno 9 Co-",
+          "name": "Douglas Petno",
           "title": "CEO, CIB",
           "year": 2025,
           "salary": 1000000,
@@ -2998,7 +2998,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 41597,
           "all_other": 31825,
-          "total": 10
+          "total": 23073422
         },
         {
           "name": "Jeremy Barnum",
@@ -3040,7 +3040,7 @@
           "total": 13221257
         },
         {
-          "name": "Daniel Pinto 11",
+          "name": "Daniel Pinto",
           "title": "Vice Chair; Former President and COO",
           "year": 2025,
           "salary": 0,
@@ -3053,7 +3053,7 @@
           "total": 116871
         },
         {
-          "name": "Daniel Pinto 11",
+          "name": "Daniel Pinto",
           "title": "Vice Chair; Former President and COO",
           "year": 2024,
           "salary": 1500000,
@@ -3066,7 +3066,7 @@
           "total": 30072089
         },
         {
-          "name": "Daniel Pinto 11",
+          "name": "Daniel Pinto",
           "title": "Vice Chair; Former President and COO",
           "year": 2023,
           "salary": 1500000,
@@ -3079,8 +3079,8 @@
           "total": 28597037
         }
       ],
-      "total_neo_compensation": 50838483,
-      "neo_count": 6,
+      "total_neo_compensation": 73911895,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -3136,7 +3136,7 @@
           "non_equity_incentive": 21679933,
           "pension_nqdc": 0,
           "all_other": 1136250,
-          "total": 45273
+          "total": 25716178
         },
         {
           "name": "Amit Zavery",
@@ -3194,7 +3194,7 @@
       "cik": "0001373715",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1373715/000137371526000039/now-20260406.htm",
-      "total_neo_compensation": 118934635,
+      "total_neo_compensation": 144605540,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -3487,8 +3487,8 @@
       "cik": "0000004962",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4962/000110465926034163/tm2519434-8_def14a.htm",
-      "total_neo_compensation": 39090592,
-      "neo_count": 6,
+      "total_neo_compensation": 39086544,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -3697,7 +3697,7 @@
           "non_equity_incentive": 960000,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 11300
+          "total": 16392969
         },
         {
           "name": "Sandeep S. Aujla",
@@ -3762,7 +3762,7 @@
           "non_equity_incentive": 960000,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 10000
+          "total": 16392969
         },
         {
           "name": "Marianna Tessel",
@@ -3797,7 +3797,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 68767047,
+      "total_neo_compensation": 101531685,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -3960,7 +3960,7 @@
       "filing_date": "2026-01-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/814547/000119312526024403/d27709ddef14a.htm",
       "total_neo_compensation": 72157751,
-      "neo_count": 7,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -5235,8 +5235,8 @@
           "total": 0
         },
         {
-          "name": "President, Arch Capital",
-          "title": null,
+          "name": "Nicolas Papadopoulo",
+          "title": "President, Arch Capital Group",
           "year": 2023,
           "salary": 780000,
           "bonus": 1414052,
@@ -5261,8 +5261,8 @@
           "total": 7776148
         },
         {
-          "name": "President, Arch Capital",
-          "title": null,
+          "name": "Nicolas Papadopoulo",
+          "title": "President, Arch Capital Group",
           "year": 2024,
           "salary": 857576,
           "bonus": 63781,
@@ -5274,8 +5274,8 @@
           "total": 150683
         },
         {
-          "name": "President, Arch Capital",
-          "title": null,
+          "name": "Nicolas Papadopoulo",
+          "title": "President, Arch Capital Group",
           "year": 2023,
           "salary": 780000,
           "bonus": 97219,
@@ -5304,7 +5304,7 @@
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/947484/000094748426000038/acgl-20260324.htm",
       "total_neo_compensation": 33692612,
-      "neo_count": 7,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -5325,16 +5325,6 @@
       "sector": "Financials",
       "cik": "0000886982",
       "executives": [
-        {
-          "name": "Year-End Awards",
-          "year": 2025,
-          "salary": 2000000,
-          "bonus": 10125000,
-          "stock_awards": 25287776,
-          "pension_nqdc": 80000099,
-          "all_other": 105287875,
-          "total": 90
-        },
         {
           "name": "David Solomon",
           "year": 2024,
@@ -5361,7 +5351,7 @@
           "stock_awards": 21177285,
           "pension_nqdc": 80000099,
           "all_other": 101177384,
-          "total": 404
+          "total": 218012768
         },
         {
           "name": "John Waldron",
@@ -5388,7 +5378,7 @@
           "bonus": 9328000,
           "stock_awards": 14733846,
           "all_other": 14733846,
-          "total": 1820
+          "total": 40645692
         },
         {
           "name": "Denis Coleman",
@@ -5402,13 +5392,13 @@
       ],
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/886982/000119312526117433/gs-20260319.htm",
-      "neo_count": 4,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 2314,
+      "total_neo_compensation": 258658460,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -7662,7 +7652,7 @@
       "filing_date": "2025-11-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000038/mu-20251125.htm",
       "total_neo_compensation": 70277487,
-      "neo_count": 10,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -7752,15 +7742,15 @@
           "non_equity_incentive": 2290390,
           "pension_nqdc": 4715033,
           "all_other": 22311446,
-          "total": 1,
+          "total": 44622892,
           "title": "President, Technology"
         }
       ],
       "cik": "0001283699",
       "filing_date": "2026-04-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1283699/000119312526181884/d11985ddef14a.htm",
-      "total_neo_compensation": 70890988,
-      "neo_count": 8,
+      "total_neo_compensation": 44622892,
+      "neo_count": 1,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -8190,7 +8180,7 @@
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/59478/000005947826000029/lly-20260317.htm",
       "total_neo_compensation": 80399843,
-      "neo_count": 7,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -9336,7 +9326,7 @@
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
       "total_neo_compensation": 60671934,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -9491,7 +9481,7 @@
       "filing_date": "2026-03-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000008/smci-20260303.htm",
       "total_neo_compensation": 5170364,
-      "neo_count": 4,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -10306,7 +10296,7 @@
       "filing_date": "2026-01-14",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/315189/000110465926003618/de-20260225xdef14a.htm",
       "total_neo_compensation": 58113558,
-      "neo_count": 9,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -10623,8 +10613,8 @@
           "total": 4547690
         },
         {
-          "name": "President, Pottery Barn Brand",
-          "title": null,
+          "name": "Monica Bhargava",
+          "title": "President, Pottery Barn Brand",
           "year": 2024,
           "salary": 850000,
           "bonus": 0,
@@ -10718,7 +10708,7 @@
       "filing_date": "2026-05-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/719955/000071995526000109/wsm-20260506.htm",
       "total_neo_compensation": 54268079,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -10875,7 +10865,7 @@
       "filing_date": "2025-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/50863/000005086325000054/intc-20250327.htm",
       "total_neo_compensation": 83042000,
-      "neo_count": 8,
+      "neo_count": 6,
       "proxy_fiscal_year": 2024,
       "available_years": [
         2024,
@@ -11894,26 +11884,6 @@
           "total": 11989118
         },
         {
-          "name": "Proxy Statement",
-          "year": 2025,
-          "salary": 145000,
-          "bonus": 60778,
-          "option_awards": 19500,
-          "non_equity_incentive": 225278,
-          "pension_nqdc": 2024,
-          "all_other": 143333,
-          "total": 100000
-        },
-        {
-          "name": "Proxy Statement",
-          "year": 2023,
-          "salary": 135000,
-          "bonus": 83063,
-          "stock_awards": 10008,
-          "non_equity_incentive": 228071,
-          "total": 456142
-        },
-        {
           "name": "Salvatore Mancuso",
           "year": 2023,
           "salary": 74398,
@@ -11941,8 +11911,8 @@
       "cik": "0000764180",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/764180/000110465926038900/tmb-20260514xdef14a.htm",
-      "total_neo_compensation": 110434710,
-      "neo_count": 9,
+      "total_neo_compensation": 110334710,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -12641,7 +12611,7 @@
           "total": 23871744
         },
         {
-          "name": "Charles R. Schwab5 Co-",
+          "name": "Charles R. Schwab",
           "title": "Chairman",
           "year": 2025,
           "salary": 900000,
@@ -12653,7 +12623,7 @@
           "total": 8540179
         },
         {
-          "name": "Charles R. Schwab5 Co-",
+          "name": "Charles R. Schwab",
           "title": "Chairman",
           "year": 2024,
           "salary": 900000,
@@ -12665,7 +12635,7 @@
           "total": 8566408
         },
         {
-          "name": "Charles R. Schwab5 Co-",
+          "name": "Charles R. Schwab",
           "title": "Chairman",
           "year": 2023,
           "salary": 884616,
@@ -13884,7 +13854,7 @@
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/18230/000130817926000358/cat014496-def14a.htm",
       "total_neo_compensation": 10992620,
-      "neo_count": 3,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -14025,7 +13995,7 @@
       ],
       "filing_date": "2026-05-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/769397/000076939726000030/adsk-20260429.htm",
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2025,
@@ -14673,7 +14643,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 1925000,
           "all_other": 0,
-          "total": 12953
+          "total": 8983428
         },
         {
           "name": "John Walsh",
@@ -14712,7 +14682,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 44480
+          "total": 2277266
         },
         {
           "name": "Mauro Macchi",
@@ -14741,8 +14711,8 @@
           "total": 9513458
         }
       ],
-      "total_neo_compensation": 51075647,
-      "neo_count": 5,
+      "total_neo_compensation": 62278908,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -15414,7 +15384,7 @@
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1041061/000119312526142078/yum-20260402.htm",
       "total_neo_compensation": 64309997,
-      "neo_count": 8,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -18126,18 +18096,6 @@
           "total": 26456606
         },
         {
-          "name": "Chief",
-          "title": null,
-          "year": 2024,
-          "salary": 1539947,
-          "stock_awards": 8421948,
-          "option_awards": 8158720,
-          "non_equity_incentive": 5116688,
-          "pension_nqdc": 372138,
-          "all_other": 189696,
-          "total": 23799137
-        },
-        {
           "name": "Officer",
           "title": null,
           "year": 2023,
@@ -18259,7 +18217,7 @@
         }
       ],
       "total_neo_compensation": 59219035,
-      "neo_count": 9,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -19172,7 +19130,7 @@
       ],
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/882835/000119312526145481/d204543ddef14a.htm",
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
@@ -20798,8 +20756,8 @@
           "total": 6040046
         },
         {
-          "name": "Sundar Raman 6 CEO - Fabric and Home Care",
-          "title": null,
+          "name": "Sundar Raman",
+          "title": "CEO - Fabric and Home Care",
           "year": 2024,
           "salary": 912500,
           "bonus": 737153,
@@ -21889,8 +21847,8 @@
           "total": 4207257
         },
         {
-          "name": "C. Arnold Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "C. Arnold",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2025,
           "salary": 602552,
           "bonus": 0,
@@ -21902,8 +21860,8 @@
           "total": 13974141
         },
         {
-          "name": "C. Arnold Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "C. Arnold",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 12611090,
@@ -21915,8 +21873,8 @@
           "total": 43700936
         },
         {
-          "name": "C. Arnold Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "C. Arnold",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 10029689,
@@ -21928,8 +21886,8 @@
           "total": 39546311
         },
         {
-          "name": "E. Marshall Former",
-          "title": "Executive Vice President and Chief Human Resources Officer",
+          "name": "E. Marshall",
+          "title": "Former Executive Vice President and Chief Human Resources Officer",
           "year": 2025,
           "salary": 610915,
           "bonus": 0,
@@ -21941,8 +21899,8 @@
           "total": 5091532
         },
         {
-          "name": "E. Marshall Former",
-          "title": "Executive Vice President and Chief Human Resources Officer",
+          "name": "E. Marshall",
+          "title": "Former Executive Vice President and Chief Human Resources Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 2088253,
@@ -21954,8 +21912,8 @@
           "total": 7954539
         },
         {
-          "name": "E. Marshall Former",
-          "title": "Executive Vice President and Chief Human Resources Officer",
+          "name": "E. Marshall",
+          "title": "Former Executive Vice President and Chief Human Resources Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 1112015,
@@ -22520,7 +22478,7 @@
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4281/000110465926039940/tm261330-1_def14a.htm",
       "total_neo_compensation": 92035899,
-      "neo_count": 7,
+      "neo_count": 10,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -22584,7 +22542,7 @@
           "total": 4410000
         },
         {
-          "name": "Robert Q. Reilly Exec. VP",
+          "name": "Robert Q. Reilly",
           "title": "and CFO",
           "year": 2025,
           "salary": 700000,
@@ -22597,7 +22555,7 @@
           "total": 4500070
         },
         {
-          "name": "Robert Q. Reilly Exec. VP",
+          "name": "Robert Q. Reilly",
           "title": "and CFO",
           "year": 2024,
           "salary": 0,
@@ -22610,7 +22568,7 @@
           "total": 2300000
         },
         {
-          "name": "Robert Q. Reilly Exec. VP",
+          "name": "Robert Q. Reilly",
           "title": "and CFO",
           "year": 2023,
           "salary": 0,
@@ -22636,8 +22594,8 @@
           "total": 5200090
         },
         {
-          "name": "Deborah Guild Exec. VP, Head of Technology",
-          "title": null,
+          "name": "Deborah Guild",
+          "title": "Exec. VP, Head of Technology",
           "year": 2025,
           "salary": 600000,
           "bonus": 0,
@@ -22649,8 +22607,8 @@
           "total": 3000176
         },
         {
-          "name": "Deborah Guild Exec. VP, Head of Technology",
-          "title": null,
+          "name": "Deborah Guild",
+          "title": "Exec. VP, Head of Technology",
           "year": 2024,
           "salary": 0,
           "bonus": 2000098,
@@ -22662,8 +22620,8 @@
           "total": 2400000
         },
         {
-          "name": "Deborah Guild Exec. VP, Head of Technology",
-          "title": null,
+          "name": "Deborah Guild",
+          "title": "Exec. VP, Head of Technology",
           "year": 2023,
           "salary": 0,
           "bonus": 1875064,
@@ -22701,8 +22659,8 @@
           "total": 2300000
         },
         {
-          "name": "E William Parsley, III Former Exec. VP",
-          "title": "and COO",
+          "name": "E William Parsley, III",
+          "title": "Former and COO",
           "year": 2025,
           "salary": 700000,
           "bonus": 0,
@@ -22714,8 +22672,8 @@
           "total": 5355213
         },
         {
-          "name": "E William Parsley, III Former Exec. VP",
-          "title": "and COO",
+          "name": "E William Parsley, III",
+          "title": "Former and COO",
           "year": 2024,
           "salary": 0,
           "bonus": 5100196,
@@ -22727,8 +22685,8 @@
           "total": 2870000
         },
         {
-          "name": "E William Parsley, III Former Exec. VP",
-          "title": "and COO",
+          "name": "E William Parsley, III",
+          "title": "Former and COO",
           "year": 2023,
           "salary": 0,
           "bonus": 5100109,
@@ -23266,7 +23224,7 @@
       "filing_date": "2024-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/310764/000031076424000054/syk-20240326.htm",
       "total_neo_compensation": 45056561,
-      "neo_count": 10,
+      "neo_count": 5,
       "proxy_fiscal_year": 2023,
       "available_years": [
         2023,
@@ -24229,7 +24187,7 @@
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/24741/000120677426000148/glw4500541-def14a.htm",
       "total_neo_compensation": 69425107,
-      "neo_count": 5,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24364,7 +24322,7 @@
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/29989/000121390026034811/ea0274271-02.htm",
       "total_neo_compensation": 18966644,
-      "neo_count": 4,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24534,7 +24492,7 @@
       ],
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/7084/000119312526126218/d911479ddef14a.htm",
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -24673,7 +24631,7 @@
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1138118/000119312526141285/cbre-20260402.htm",
       "total_neo_compensation": 52867877,
-      "neo_count": 6,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -25063,7 +25021,7 @@
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1120193/000162828026027245/ndaq-20260424.htm",
       "total_neo_compensation": 119181186,
-      "neo_count": 5,
+      "neo_count": 11,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -25448,7 +25406,7 @@
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/885725/000088572526000025/bsx-20260318.htm",
       "total_neo_compensation": 52022225,
-      "neo_count": 8,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -25820,7 +25778,7 @@
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2005951/000110465926026094/sw-20260501xdef14a.htm",
       "total_neo_compensation": 43701519,
-      "neo_count": 5,
+      "neo_count": 14,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -26787,7 +26745,7 @@
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/202058/000110465926038170/tmb-20260511xdef14a.htm",
       "total_neo_compensation": 49146855,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -26955,7 +26913,7 @@
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/51434/000162828026021729/ipc-20260327.htm",
       "total_neo_compensation": 36612751,
-      "neo_count": 4,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -28439,7 +28397,7 @@
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1413329/000162828026021169/pmi-20260325.htm",
       "total_neo_compensation": 15826775,
-      "neo_count": 4,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -28695,7 +28653,7 @@
       ],
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/60667/000006066726000056/low-20260415.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024
@@ -29079,7 +29037,7 @@
           "total": 3632502
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -29233,8 +29191,8 @@
           "total": 5278219
         },
         {
-          "name": "Nancy Buese Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Nancy Buese",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2025,
           "salary": 612637,
           "bonus": 0,
@@ -29246,8 +29204,8 @@
           "total": 6078445
         },
         {
-          "name": "Nancy Buese Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Nancy Buese",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2024,
           "salary": 3603366,
           "bonus": 1400000,
@@ -29259,8 +29217,8 @@
           "total": 11675342
         },
         {
-          "name": "Nancy Buese Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Nancy Buese",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2023,
           "salary": 3776191,
           "bonus": 1330000,
@@ -29272,8 +29230,8 @@
           "total": 11421601
         },
         {
-          "name": "Ganesh Ramaswamy Former",
-          "title": "Executive Vice President\u2013IET",
+          "name": "Ganesh Ramaswamy",
+          "title": "Former Executive Vice President\u2013IET",
           "year": 2025,
           "salary": 791538,
           "bonus": 3109951,
@@ -29285,8 +29243,8 @@
           "total": 8515294
         },
         {
-          "name": "Ganesh Ramaswamy Former",
-          "title": "Executive Vice President\u2013IET",
+          "name": "Ganesh Ramaswamy",
+          "title": "Former Executive Vice President\u2013IET",
           "year": 2024,
           "salary": 2573833,
           "bonus": 1395000,
@@ -29298,8 +29256,8 @@
           "total": 9268763
         },
         {
-          "name": "Ganesh Ramaswamy Former",
-          "title": "Executive Vice President\u2013IET",
+          "name": "Ganesh Ramaswamy",
+          "title": "Former Executive Vice President\u2013IET",
           "year": 2023,
           "salary": 2500000,
           "bonus": 4697231,
@@ -29664,7 +29622,7 @@
       "filing_date": "2025-03-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/217346/000155278125000047/e25050_txt-def14a.htm",
       "total_neo_compensation": 33223146,
-      "neo_count": 5,
+      "neo_count": 4,
       "proxy_fiscal_year": 2024,
       "available_years": [
         2024,
@@ -30110,13 +30068,13 @@
           "total": 5358303
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "total_neo_compensation": 41318334
+      "total_neo_compensation": 22755540
     },
     {
       "ticker": "PARA",
@@ -30133,13 +30091,14 @@
       "cik": "0000813828",
       "executives": [
         {
-          "name": "Chris McCarthy (6) Office of the CEO",
+          "name": "Chris McCarthy",
           "year": 2024,
           "salary": 2750000,
           "stock_awards": 8044141,
           "non_equity_incentive": 8658600,
           "all_other": 30498,
-          "total": 19483239
+          "total": 19483239,
+          "title": "Office of the CEO"
         },
         {
           "name": "Naveen Chopra",
@@ -30169,14 +30128,15 @@
           "total": 6510533
         },
         {
-          "name": "George Cheeks (6) Office of the CEO",
+          "name": "George Cheeks",
           "year": 2024,
           "salary": 2750000,
           "stock_awards": 8006829,
           "non_equity_incentive": 11365260,
           "pension_nqdc": 18117,
           "all_other": 14240,
-          "total": 22154446
+          "total": 22154446,
+          "title": "Office of the CEO"
         }
       ],
       "filing_date": "2025-06-02",
@@ -30737,8 +30697,8 @@
           "total": 3544786
         },
         {
-          "name": "Deepa Soni Former",
-          "title": "Executive Vice President, Chief Information and Operations Officer",
+          "name": "Deepa Soni",
+          "title": "Former Executive Vice President, Chief Information and Operations Officer",
           "year": 2025,
           "salary": 369318,
           "bonus": 0,
@@ -30750,8 +30710,8 @@
           "total": 6091303
         },
         {
-          "name": "Deepa Soni Former",
-          "title": "Executive Vice President, Chief Information and Operations Officer",
+          "name": "Deepa Soni",
+          "title": "Former Executive Vice President, Chief Information and Operations Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 1343040,
@@ -30763,8 +30723,8 @@
           "total": 7455097
         },
         {
-          "name": "Deepa Soni Former",
-          "title": "Executive Vice President, Chief Information and Operations Officer",
+          "name": "Deepa Soni",
+          "title": "Former Executive Vice President, Chief Information and Operations Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 766290,
@@ -31166,7 +31126,7 @@
           "total": 13815
         }
       ],
-      "neo_count": 11,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -31802,8 +31762,8 @@
           "total": 14077643
         },
         {
-          "name": "Chris Brandt Former",
-          "title": "President, Chief Brand Officer",
+          "name": "Chris Brandt",
+          "title": "Former President, Chief Brand Officer",
           "year": 2025,
           "salary": 781154,
           "bonus": 0,
@@ -31815,8 +31775,8 @@
           "total": 6253063
         },
         {
-          "name": "Chris Brandt Former",
-          "title": "President, Chief Brand Officer",
+          "name": "Chris Brandt",
+          "title": "Former President, Chief Brand Officer",
           "year": 2024,
           "salary": 10912699,
           "bonus": 0,
@@ -31828,8 +31788,8 @@
           "total": 27457931
         },
         {
-          "name": "Chris Brandt Former",
-          "title": "President, Chief Brand Officer",
+          "name": "Chris Brandt",
+          "title": "Former President, Chief Brand Officer",
           "year": 2023,
           "salary": 3602692,
           "bonus": 0,
@@ -31841,8 +31801,8 @@
           "total": 12529172
         },
         {
-          "name": "Roger Theodoredis Former",
-          "title": "General Counsel, Chief Legal Officer",
+          "name": "Roger Theodoredis",
+          "title": "Former General Counsel, Chief Legal Officer",
           "year": 2025,
           "salary": 661923,
           "bonus": 0,
@@ -31854,8 +31814,8 @@
           "total": 4975111
         },
         {
-          "name": "Roger Theodoredis Former",
-          "title": "General Counsel, Chief Legal Officer",
+          "name": "Roger Theodoredis",
+          "title": "Former General Counsel, Chief Legal Officer",
           "year": 2024,
           "salary": 7371910,
           "bonus": 0,
@@ -32103,7 +32063,7 @@
           "total": 5815025
         }
       ],
-      "neo_count": 8,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -32528,7 +32488,7 @@
           "total": 14313412
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -32694,7 +32654,7 @@
       ],
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1280452/000143774926014084/mpwr20260403_def14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2023
@@ -32798,12 +32758,12 @@
       ],
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/864749/000086474926000042/trmb-20260409.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024
       ],
-      "total_neo_compensation": 70529906,
+      "total_neo_compensation": 32270018,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -32875,7 +32835,7 @@
       ],
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/14272/000001427226000006/bmy-20260325.htm",
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2023
@@ -36102,7 +36062,7 @@
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/63908/000119312526145548/mcd-20260407.htm",
       "total_neo_compensation": 91862516,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -37008,8 +36968,8 @@
           "total": 10893341
         },
         {
-          "name": "Fabrizio Freda Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "Fabrizio Freda",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2025,
           "salary": 2100000,
           "bonus": 0,
@@ -37021,8 +36981,8 @@
           "total": 17793402
         },
         {
-          "name": "Fabrizio Freda Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "Fabrizio Freda",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2024,
           "salary": 2100000,
           "bonus": 0,
@@ -37034,8 +36994,8 @@
           "total": 17851573
         },
         {
-          "name": "Fabrizio Freda Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "Fabrizio Freda",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2023,
           "salary": 2100000,
           "bonus": 0,
@@ -37047,8 +37007,8 @@
           "total": 21811244
         },
         {
-          "name": "Tracey T. Travis Former",
-          "title": "Executive Vice President and, Chief Financial Officer",
+          "name": "Tracey T. Travis",
+          "title": "Former Executive Vice President and, Chief Financial Officer",
           "year": 2025,
           "salary": 1195000,
           "bonus": 0,
@@ -37216,8 +37176,8 @@
           "total": 8582366
         },
         {
-          "name": "Thomas F. Cowhey Former",
-          "title": "Executive Vice President and, Chief Financial Officer",
+          "name": "Thomas F. Cowhey",
+          "title": "Former Executive Vice President and, Chief Financial Officer",
           "year": 2025,
           "salary": 420833,
           "bonus": 0,
@@ -37229,8 +37189,8 @@
           "total": 6715138
         },
         {
-          "name": "Thomas F. Cowhey Former",
-          "title": "Executive Vice President and, Chief Financial Officer",
+          "name": "Thomas F. Cowhey",
+          "title": "Former Executive Vice President and, Chief Financial Officer",
           "year": 2024,
           "salary": 998387,
           "bonus": 0,
@@ -37242,8 +37202,8 @@
           "total": 7644364
         },
         {
-          "name": "Thomas F. Cowhey Former",
-          "title": "Executive Vice President and, Chief Financial Officer",
+          "name": "Thomas F. Cowhey",
+          "title": "Former Executive Vice President and, Chief Financial Officer",
           "year": 2023,
           "salary": 771250,
           "bonus": 0,
@@ -37440,7 +37400,7 @@
           "total": 4285209
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2025,
@@ -37661,7 +37621,7 @@
           "total": 3432069
         }
       ],
-      "neo_count": 11,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -37705,7 +37665,7 @@
           "total": 18488885
         },
         {
-          "name": "Michael J. Petro7",
+          "name": "Michael J. Petro",
           "title": "Senior Vice Chief Financial Officer",
           "year": 2025,
           "salary": 2025,
@@ -37715,19 +37675,19 @@
           "total": 3431606
         },
         {
-          "name": "Michael J. Petro7",
+          "name": "Michael J. Petro",
           "title": "Senior Vice Chief Financial Officer",
           "year": 2024,
           "total": 2039121
         },
         {
-          "name": "Michael J. Petro7",
+          "name": "Michael J. Petro",
           "title": "Senior Vice Chief Financial Officer",
           "year": 2023,
           "total": 2027446
         },
         {
-          "name": "Robert J. Cardin8",
+          "name": "Robert J. Cardin",
           "title": "Chief Financial Officer7",
           "year": 2025,
           "salary": 2025,
@@ -37737,13 +37697,13 @@
           "total": 4840305
         },
         {
-          "name": "Robert J. Cardin8",
+          "name": "Robert J. Cardin",
           "title": "Chief Financial Officer7",
           "year": 2024,
           "total": 2452054
         },
         {
-          "name": "Robert J. Cardin8",
+          "name": "Robert J. Cardin",
           "title": "Chief Financial Officer7",
           "year": 2023,
           "total": 2308785
@@ -37771,7 +37731,7 @@
           "total": 4295560
         },
         {
-          "name": "Donald A. McCunniff10",
+          "name": "Donald A. McCunniff",
           "title": "Executive Vice, Chief Human Resources Officer",
           "year": 2025,
           "salary": 2025,
@@ -37809,7 +37769,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Rodney C. Sacks Co-CEO",
+          "name": "Rodney C. Sacks",
           "year": 2025,
           "salary": 2024,
           "bonus": 2023,
@@ -37818,7 +37778,8 @@
           "non_equity_incentive": 1100000,
           "pension_nqdc": 7106610,
           "all_other": 10498230,
-          "total": 10306296
+          "total": 10306296,
+          "title": "Co-CEO"
         },
         {
           "name": "Thomas J. Kelly",
@@ -37869,11 +37830,11 @@
           "total": 5991005
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025
       ],
-      "total_neo_compensation": 29195417,
+      "total_neo_compensation": 18889121,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -37898,7 +37859,7 @@
           "stock_awards": -5,
           "non_equity_incentive": 8487926,
           "all_other": 2123138,
-          "total": 26549
+          "total": 11507815
         },
         {
           "name": "Kris Sennesael",
@@ -37953,7 +37914,7 @@
           "stock_awards": -7,
           "non_equity_incentive": 20182423,
           "all_other": 1334195,
-          "total": 10800
+          "total": 24920649
         },
         {
           "name": "David V. Goeckeler",
@@ -38019,7 +37980,7 @@
           "stock_awards": -9,
           "non_equity_incentive": 844693,
           "all_other": 552729,
-          "total": 26180
+          "total": 2135105
         },
         {
           "name": "Robert W. Soderbery",
@@ -38058,7 +38019,7 @@
       "cik": "106040",
       "filing_date": "2025-10-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/106040/000162828025044298/wdc-20251006.htm",
-      "total_neo_compensation": 31363544,
+      "total_neo_compensation": 69863584,
       "neo_count": 9,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -38419,7 +38380,7 @@
           "option_awards": 7870118,
           "non_equity_incentive": 450983,
           "all_other": 533610,
-          "total": 47660
+          "total": 10545112
         },
         {
           "name": "Steven H. Stein",
@@ -38509,7 +38470,7 @@
       "cik": "879169",
       "filing_date": "2026-04-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/879169/000087916926000031/incy-20260428.htm",
-      "total_neo_compensation": 53499608,
+      "total_neo_compensation": 63997060,
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -38898,7 +38859,7 @@
           "total": 3030111
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -38997,7 +38958,7 @@
       "filing_date": "2025-09-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/721371/000072137125000114/cah-20250916.htm",
       "total_neo_compensation": 80728966,
-      "neo_count": 8,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -40162,24 +40123,26 @@
           "total": 1968840
         },
         {
-          "name": "Devina A. Rankin Former",
+          "name": "Devina A. Rankin",
           "year": 2025,
           "salary": 809967,
           "stock_awards": 2791429,
           "option_awards": 539981,
           "non_equity_incentive": 870687,
           "all_other": 64029,
-          "total": 5076093
+          "total": 5076093,
+          "title": "Former Executive"
         },
         {
-          "name": "Devina A. Rankin Former",
+          "name": "Devina A. Rankin",
           "year": 2024,
           "salary": 790035,
           "stock_awards": 2427755,
           "option_awards": 460014,
           "non_equity_incentive": 1203674,
           "all_other": 78250,
-          "total": 4959728
+          "total": 4959728,
+          "title": "Former Executive"
         }
       ],
       "neo_count": 3,
@@ -40740,7 +40703,7 @@
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/745732/000074573226000013/rost-20260406.htm",
       "total_neo_compensation": 30950657,
-      "neo_count": 6,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -41057,7 +41020,7 @@
           "total": 3495813
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -41452,7 +41415,7 @@
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1996862/000162828026024588/bg-20260410.htm",
       "total_neo_compensation": 57627621,
-      "neo_count": 11,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -41942,33 +41905,33 @@
           "title": "Executive Vice President and Global Head of Strategic Finance and former Interim CFO"
         },
         {
-          "name": "Eric W. Aboaf Former",
+          "name": "Eric W. Aboaf",
           "year": 2025,
           "salary": 118462,
           "non_equity_incentive": 67759,
           "all_other": 73116,
           "total": 259337,
-          "title": "Vice Chairman and CFO"
+          "title": "Former Vice Chairman and CFO"
         },
         {
-          "name": "Eric W. Aboaf Former",
+          "name": "Eric W. Aboaf",
           "year": 2024,
           "salary": 700000,
           "stock_awards": 4033195,
           "non_equity_incentive": 140923,
           "all_other": 94016,
           "total": 4968134,
-          "title": "Vice Chairman and CFO"
+          "title": "Former Vice Chairman and CFO"
         },
         {
-          "name": "Eric W. Aboaf Former",
+          "name": "Eric W. Aboaf",
           "year": 2023,
           "salary": 700000,
           "stock_awards": 4744997,
           "non_equity_incentive": 2331183,
           "all_other": 113910,
           "total": 7890090,
-          "title": "Vice Chairman and CFO"
+          "title": "Former Vice Chairman and CFO"
         },
         {
           "name": "Joerg Ambrosius",
@@ -42360,7 +42323,7 @@
       ],
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1051470/000105147026000039/cci-20260406.htm",
-      "neo_count": 9,
+      "neo_count": 7,
       "available_years": [
         2025,
         2024
@@ -42503,7 +42466,7 @@
       ],
       "filing_date": "2024-04-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/51644/000119312524094907/d496315ddef14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2023,
         2022,
@@ -43686,7 +43649,7 @@
           "total": 5553183
         }
       ],
-      "neo_count": 8,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -43899,7 +43862,7 @@
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/107263/000119312526112643/wmb-20260317.htm",
       "total_neo_compensation": 102081020,
-      "neo_count": 9,
+      "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -44027,28 +43990,6 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1868275/000155278126000140/e26004_ceg-def14a.htm",
       "executives": [
         {
-          "name": "Summary Compensation",
-          "year": 2025,
-          "salary": 1481250,
-          "stock_awards": 12100487,
-          "option_awards": 2649928,
-          "non_equity_incentive": 505380,
-          "pension_nqdc": 378134,
-          "all_other": 17115179,
-          "total": 34230358
-        },
-        {
-          "name": "Summary Compensation",
-          "year": 2023,
-          "salary": 1181944,
-          "stock_awards": 10000025,
-          "option_awards": 3309384,
-          "non_equity_incentive": 471090,
-          "pension_nqdc": 222942,
-          "all_other": 15185385,
-          "total": 30370770
-        },
-        {
           "name": "Daniel Eggers",
           "year": 2025,
           "salary": 755747,
@@ -44137,8 +44078,8 @@
           "total": 7290786
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 84493434,
+      "neo_count": 4,
+      "total_neo_compensation": 50263076,
       "available_years": [
         2025,
         2023
@@ -44700,8 +44641,8 @@
           "total": 84820
         },
         {
-          "name": "Donald Allan, Jr., Chair; Former",
-          "title": "Executive President and CEO",
+          "name": "Donald Allan, Jr.",
+          "title": "Former Executive President and CEO",
           "year": 2025,
           "salary": 1315929,
           "bonus": 0,
@@ -44711,8 +44652,8 @@
           "total": 700007
         },
         {
-          "name": "Donald Allan, Jr., Chair; Former",
-          "title": "Executive President and CEO",
+          "name": "Donald Allan, Jr.",
+          "title": "Former Executive President and CEO",
           "year": 2024,
           "salary": 1350000,
           "bonus": 0,
@@ -44722,8 +44663,8 @@
           "total": 642731
         },
         {
-          "name": "Donald Allan, Jr., Chair; Former",
-          "title": "Executive President and CEO",
+          "name": "Donald Allan, Jr.",
+          "title": "Former Executive President and CEO",
           "year": 2023,
           "salary": 1250000,
           "bonus": 0,
@@ -44799,8 +44740,8 @@
           "total": 292270
         },
         {
-          "name": "Tamer K. Abuaita Former Global",
-          "title": "Chief Supply Chain Officer and, President, Industrial",
+          "name": "Tamer K. Abuaita",
+          "title": "Former Chief Supply Chain Officer and, President, Industrial",
           "year": 2025,
           "salary": 500000,
           "bonus": 0,
@@ -45215,8 +45156,8 @@
           "total": 6368237
         },
         {
-          "name": "Seifi Ghasemi Former",
-          "title": "Chairman, President and Chief Executive Officer",
+          "name": "Seifi Ghasemi",
+          "title": "Former Chairman, President and Chief Executive Officer",
           "year": 2025,
           "salary": 488077,
           "bonus": 0,
@@ -45228,8 +45169,8 @@
           "total": 23418863
         },
         {
-          "name": "Seifi Ghasemi Former",
-          "title": "Chairman, President and Chief Executive Officer",
+          "name": "Seifi Ghasemi",
+          "title": "Former Chairman, President and Chief Executive Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 12950997,
@@ -45241,8 +45182,8 @@
           "total": 30431392
         },
         {
-          "name": "Seifi Ghasemi Former",
-          "title": "Chairman, President and Chief Executive Officer",
+          "name": "Seifi Ghasemi",
+          "title": "Former Chairman, President and Chief Executive Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 17074629,
@@ -45254,8 +45195,8 @@
           "total": 42806198
         },
         {
-          "name": "Sean D. Major Former",
-          "title": "Executive Vice President, General Counsel and Secretary",
+          "name": "Sean D. Major",
+          "title": "Former Executive Vice President, General Counsel and Secretary",
           "year": 2025,
           "salary": 540385,
           "bonus": 0,
@@ -45267,8 +45208,8 @@
           "total": 4712266
         },
         {
-          "name": "Sean D. Major Former",
-          "title": "Executive Vice President, General Counsel and Secretary",
+          "name": "Sean D. Major",
+          "title": "Former Executive Vice President, General Counsel and Secretary",
           "year": 2024,
           "salary": 0,
           "bonus": 2136151,
@@ -45280,8 +45221,8 @@
           "total": 5975582
         },
         {
-          "name": "Sean D. Major Former",
-          "title": "Executive Vice President, General Counsel and Secretary",
+          "name": "Sean D. Major",
+          "title": "Former Executive Vice President, General Counsel and Secretary",
           "year": 2023,
           "salary": 0,
           "bonus": 2111813,
@@ -45364,32 +45305,6 @@
           "pension_nqdc": 0,
           "all_other": 224802,
           "total": 7238955
-        },
-        {
-          "name": "Corporate Officer and Former",
-          "year": 2024,
-          "salary": 696300,
-          "bonus": 0,
-          "stock_awards": 4468799,
-          "option_awards": 0,
-          "non_equity_incentive": 1298300,
-          "pension_nqdc": 0,
-          "all_other": 222955,
-          "total": 6686354,
-          "title": "Chief Financial Officer"
-        },
-        {
-          "name": "Corporate Officer and Former",
-          "year": 2023,
-          "salary": 676000,
-          "bonus": 0,
-          "stock_awards": 3443994,
-          "option_awards": 0,
-          "non_equity_incentive": 1103200,
-          "pension_nqdc": 0,
-          "all_other": 371918,
-          "total": 5595112,
-          "title": "Chief Financial Officer"
         },
         {
           "name": "Michael A. Bonarti",
@@ -45512,7 +45427,7 @@
           "total": 7014269
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "total_neo_compensation": 49170432,
       "available_years": [
         2023,
@@ -46543,7 +46458,7 @@
       ],
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/891103/000089110326000066/mtch-20260430.htm",
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -47026,7 +46941,7 @@
           "total": 2643017
         },
         {
-          "name": "Robert P. Mundy(5) Retired",
+          "name": "Robert P. Mundy",
           "year": 2025,
           "salary": 822960,
           "non_equity_incentive": 460026,
@@ -47034,7 +46949,7 @@
           "total": 1405143
         },
         {
-          "name": "Robert P. Mundy(5) Retired",
+          "name": "Robert P. Mundy",
           "year": 2024,
           "salary": 795132,
           "stock_awards": 2398458,
@@ -47043,7 +46958,7 @@
           "total": 4811854
         },
         {
-          "name": "Robert P. Mundy(5) Retired",
+          "name": "Robert P. Mundy",
           "year": 2023,
           "salary": 766392,
           "stock_awards": 2180461,
@@ -47194,8 +47109,8 @@
           "total": 4341136
         },
         {
-          "name": "Todd A. Foley Former",
-          "title": "Senior Vice President and Interim, Chief Financial Officer",
+          "name": "Todd A. Foley",
+          "title": "Former Senior Vice President and Interim, Chief Financial Officer",
           "year": 2025,
           "salary": 248214,
           "bonus": 749971,
@@ -47205,8 +47120,8 @@
           "total": 1321645
         },
         {
-          "name": "Todd A. Foley Former",
-          "title": "Senior Vice President and Interim, Chief Financial Officer",
+          "name": "Todd A. Foley",
+          "title": "Former Senior Vice President and Interim, Chief Financial Officer",
           "year": 2024,
           "salary": 596613,
           "bonus": 600000,
@@ -47218,8 +47133,8 @@
           "total": 4039390
         },
         {
-          "name": "W. Rodney McMullen Former",
-          "title": "Chairman and, Chief Executive Officer",
+          "name": "W. Rodney McMullen",
+          "title": "Former Chairman and, Chief Executive Officer",
           "year": 2025,
           "salary": 124314,
           "bonus": 562587,
@@ -47228,8 +47143,8 @@
           "total": 843061
         },
         {
-          "name": "W. Rodney McMullen Former",
-          "title": "Chairman and, Chief Executive Officer",
+          "name": "W. Rodney McMullen",
+          "title": "Former Chairman and, Chief Executive Officer",
           "year": 2024,
           "salary": 1433913,
           "bonus": 10600023,
@@ -47241,8 +47156,8 @@
           "total": 15631028
         },
         {
-          "name": "W. Rodney McMullen Former",
-          "title": "Chairman and, Chief Executive Officer",
+          "name": "W. Rodney McMullen",
+          "title": "Former Chairman and, Chief Executive Officer",
           "year": 2023,
           "salary": 1422581,
           "bonus": 10000038,
@@ -47303,7 +47218,7 @@
           "total": 11305537
         },
         {
-          "name": "Karl Studer (7) \u2013 Electric Power",
+          "name": "Karl Studer",
           "year": 2025,
           "salary": 835340,
           "bonus": 1839070,
@@ -47312,7 +47227,8 @@
           "non_equity_incentive": 1181563,
           "pension_nqdc": 293763,
           "all_other": 4938146,
-          "total": 12503772
+          "total": 12503772,
+          "title": "Electric Power"
         },
         {
           "name": "Gerald A. Ducey Jr.",
@@ -47862,7 +47778,7 @@
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1389170/000119312526126280/trgp-20260326.htm",
       "total_neo_compensation": 36693921,
-      "neo_count": 5,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -48260,7 +48176,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Joakim Weidemanis 7",
+          "name": "Joakim Weidemanis",
           "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 825000,
@@ -48299,7 +48215,7 @@
           "total": 13983479
         },
         {
-          "name": "Chris Scalia 8",
+          "name": "Chris Scalia",
           "title": "Executive Vice President, Chief Human Resources Officer",
           "year": 2025,
           "salary": 142788,
@@ -48390,8 +48306,8 @@
           "total": 17335753
         },
         {
-          "name": "George Oliver 9 Former",
-          "title": "Chairman & Chief Executive Officer",
+          "name": "George Oliver",
+          "title": "Former Chairman & Chief Executive Officer",
           "year": 2025,
           "salary": 680769,
           "bonus": 0,
@@ -48403,8 +48319,8 @@
           "total": 16220184
         },
         {
-          "name": "George Oliver 9 Former",
-          "title": "Chairman & Chief Executive Officer",
+          "name": "George Oliver",
+          "title": "Former Chairman & Chief Executive Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 8312634,
@@ -48416,8 +48332,8 @@
           "total": 29317972
         },
         {
-          "name": "George Oliver 9 Former",
-          "title": "Chairman & Chief Executive Officer",
+          "name": "George Oliver",
+          "title": "Former Chairman & Chief Executive Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 9301583,
@@ -48931,7 +48847,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 6173
+          "total": 6192142
         },
         {
           "name": "Edward McGowan",
@@ -48944,7 +48860,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 6000
+          "total": 5526232
         },
         {
           "name": "Adam Karon",
@@ -48970,7 +48886,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 9000
+          "total": 5319712
         },
         {
           "name": "EVP, Global Sales and Ser",
@@ -48983,7 +48899,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 6000
+          "total": 4772293
         },
         {
           "name": "Robert Blumofe",
@@ -49009,7 +48925,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 9000
+          "total": 7716594
         },
         {
           "name": "COO and General Manager of the Cloud Technology",
@@ -49022,7 +48938,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 6000
+          "total": 6816621
         },
         {
           "name": "COO and General Manager of the Cloud Technology",
@@ -49048,7 +48964,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 9000
+          "total": 5433327
         },
         {
           "name": "EVP and General Manager, Security Technology Group",
@@ -49061,7 +48977,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 0,
-          "total": 6000
+          "total": 4962079
         },
         {
           "name": "Paul Joseph",
@@ -49077,13 +48993,13 @@
           "total": 4130849
         }
       ],
-      "neo_count": 9,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 15987345,
+      "total_neo_compensation": 40615947,
       "proxy_fiscal_year": 2025
     },
     {
@@ -49216,7 +49132,7 @@
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/352915/000119312526148814/uhs-20260403.htm",
       "total_neo_compensation": 30199058,
-      "neo_count": 5,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -49518,7 +49434,7 @@
           "total": 3418175
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "total_neo_compensation": 40542719,
       "available_years": [
         2023,
@@ -50079,7 +49995,7 @@
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/33185/000119312526127556/d947238ddef14a.htm",
       "total_neo_compensation": 61341483,
-      "neo_count": 10,
+      "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -50364,7 +50280,7 @@
           "title": "Executive Vice President and Chief Finance Officer, Audit and Risk"
         },
         {
-          "name": "Michael Innocenzo 6",
+          "name": "Michael Innocenzo",
           "title": "Executive Vice President, Chief Operating Officer",
           "year": 2025,
           "salary": 735375,
@@ -50375,7 +50291,7 @@
           "total": 4790614
         },
         {
-          "name": "Michael Innocenzo 6",
+          "name": "Michael Innocenzo",
           "title": "Executive Vice President, Chief Operating Officer",
           "year": 2024,
           "salary": 653820,
@@ -50386,7 +50302,7 @@
           "total": 3424542
         },
         {
-          "name": "Colette Honorable 7",
+          "name": "Colette Honorable",
           "title": "Executive Vice President, Chief Legal Officer, Compliance and Corporate Secretary",
           "year": 2025,
           "salary": 668375,
@@ -50396,34 +50312,34 @@
           "total": 3198141
         },
         {
-          "name": "David Glockner Former",
+          "name": "David Glockner",
           "year": 2025,
           "salary": 681727,
           "stock_awards": 1420031,
           "non_equity_incentive": 732772,
           "all_other": 110473,
           "total": 2945003,
-          "title": "Executive Vice President, Compliance, Audit and Risk"
+          "title": "Former Executive Vice President, Compliance, Audit and Risk"
         },
         {
-          "name": "David Glockner Former",
+          "name": "David Glockner",
           "year": 2024,
           "salary": 661823,
           "stock_awards": 1370561,
           "non_equity_incentive": 727336,
           "all_other": 102150,
           "total": 2861870,
-          "title": "Executive Vice President, Compliance, Audit and Risk"
+          "title": "Former Executive Vice President, Compliance, Audit and Risk"
         },
         {
-          "name": "David Glockner Former",
+          "name": "David Glockner",
           "year": 2023,
           "salary": 641510,
           "stock_awards": 1411477,
           "non_equity_incentive": 669149,
           "all_other": 93186,
           "total": 2815322,
-          "title": "Executive Vice President, Compliance, Audit and Risk"
+          "title": "Former Executive Vice President, Compliance, Audit and Risk"
         }
       ],
       "neo_count": 5,
@@ -50558,7 +50474,7 @@
       ],
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1037868/000103786826000062/ame-20260311.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
@@ -50741,7 +50657,7 @@
           "total": 5395034
         }
       ],
-      "neo_count": 9,
+      "neo_count": 6,
       "total_neo_compensation": 41010362,
       "available_years": [
         2023,
@@ -51172,7 +51088,7 @@
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1755672/000119312526116069/ctva-20260319.htm",
       "total_neo_compensation": 21978037,
-      "neo_count": 4,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2023,
@@ -51948,8 +51864,8 @@
           "total": 4223650
         },
         {
-          "name": "President, UGG",
-          "title": null,
+          "name": "Stefano Caroti",
+          "title": "President, UGG Brand",
           "year": 2025,
           "salary": 775577,
           "bonus": 0,
@@ -51959,8 +51875,8 @@
           "total": 4218829
         },
         {
-          "name": "President, UGG",
-          "title": null,
+          "name": "Stefano Caroti",
+          "title": "President, UGG Brand",
           "year": 2024,
           "salary": 756164,
           "bonus": 0,
@@ -51981,8 +51897,8 @@
           "total": 3165045
         },
         {
-          "name": "President, HOKA",
-          "title": null,
+          "name": "Wendy Yang",
+          "title": "President, HOKA Brand",
           "year": 2025,
           "salary": 608769,
           "bonus": 0,
@@ -52029,7 +51945,7 @@
       "filing_date": "2026-07-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/910521/000091052126000018/deck-20260724.htm",
       "total_neo_compensation": 27203475,
-      "neo_count": 10,
+      "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2024,
@@ -52479,7 +52395,7 @@
           "total": 4242268
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "total_neo_compensation": 26070698,
       "available_years": [
         2023,
@@ -52643,7 +52559,7 @@
       ],
       "filing_date": "2026-03-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/92230/000119312526107144/d12240ddef14a.htm",
-      "neo_count": 8,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -52795,7 +52711,7 @@
           "all_other": 1420620
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -53851,7 +53767,7 @@
           "title": "CFO"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -54371,8 +54287,8 @@
           "total": 2540918
         },
         {
-          "name": "James Hollingshead Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "James Hollingshead",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2025,
           "salary": 357492,
           "bonus": 0,
@@ -54383,8 +54299,8 @@
           "total": 13224270
         },
         {
-          "name": "James Hollingshead Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "James Hollingshead",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2024,
           "salary": 930769,
           "bonus": 0,
@@ -54395,8 +54311,8 @@
           "total": 13302350
         },
         {
-          "name": "James Hollingshead Former",
-          "title": "President and, Chief Executive Officer",
+          "name": "James Hollingshead",
+          "title": "Former President and, Chief Executive Officer",
           "year": 2023,
           "salary": 842308,
           "bonus": 0,
@@ -54626,7 +54542,7 @@
       ],
       "filing_date": "2024-12-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1618921/000155837024016214/tmb-20250130xdef14a.htm",
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2024,
         2023,
@@ -55068,8 +54984,8 @@
           "total": 3820151
         },
         {
-          "name": "Leanne D. Cunningham Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Leanne D. Cunningham",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2026,
           "salary": 751066,
           "bonus": 829150,
@@ -55081,8 +54997,8 @@
           "total": 8898554
         },
         {
-          "name": "Leanne D. Cunningham Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Leanne D. Cunningham",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2025,
           "salary": 0,
           "bonus": 1204949,
@@ -55094,8 +55010,8 @@
           "total": 7968262
         },
         {
-          "name": "Leanne D. Cunningham Former",
-          "title": "Executive Vice President and Chief Financial Officer",
+          "name": "Leanne D. Cunningham",
+          "title": "Former Executive Vice President and Chief Financial Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 1075043,
@@ -55504,7 +55420,7 @@
           "option_awards": 2032885,
           "pension_nqdc": 589504,
           "all_other": -9,
-          "total": 8915
+          "total": 3282509
         },
         {
           "name": "Michael Durand",
@@ -55538,13 +55454,13 @@
       ],
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1067701/000119312526124113/uri-20260324.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22485020,
+      "total_neo_compensation": 25758614,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -56349,7 +56265,7 @@
           "total": 2195392
         }
       ],
-      "neo_count": 10,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -56887,7 +56803,7 @@
           "total": 3003597
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -57268,7 +57184,7 @@
           "salary": 950000,
           "stock_awards": 19317943,
           "all_other": 2758900,
-          "total": 20462
+          "total": 23026843
         },
         {
           "name": "Owen D. Thomas",
@@ -57276,7 +57192,7 @@
           "salary": 950000,
           "stock_awards": 9324550,
           "all_other": 2547400,
-          "total": 22128
+          "total": 12821950
         },
         {
           "name": "Owen D. Thomas",
@@ -57284,7 +57200,7 @@
           "salary": 950000,
           "stock_awards": 9261028,
           "all_other": 2721300,
-          "total": 31636
+          "total": 12932328
         },
         {
           "name": "Douglas T. Linde",
@@ -57292,7 +57208,7 @@
           "salary": 800000,
           "stock_awards": 13167709,
           "all_other": 2230600,
-          "total": 41465
+          "total": 16198309
         },
         {
           "name": "Douglas T. Linde",
@@ -57300,7 +57216,7 @@
           "salary": 800000,
           "stock_awards": 6160140,
           "all_other": 2059600,
-          "total": 35942
+          "total": 9019740
         },
         {
           "name": "Douglas T. Linde",
@@ -57308,7 +57224,7 @@
           "salary": 800000,
           "stock_awards": 5929505,
           "all_other": 2200200,
-          "total": 38712
+          "total": 8929705
         },
         {
           "name": "Michael E. LaBelle",
@@ -57316,7 +57232,7 @@
           "salary": 550000,
           "stock_awards": 6105584,
           "all_other": 1467500,
-          "total": 31385
+          "total": 8123084
         },
         {
           "name": "Michael E. LaBelle",
@@ -57324,7 +57240,7 @@
           "salary": 550000,
           "stock_awards": 2472250,
           "all_other": 1305000,
-          "total": 29965
+          "total": 4327250
         },
         {
           "name": "Michael E. LaBelle",
@@ -57332,7 +57248,7 @@
           "salary": 550000,
           "stock_awards": 2202834,
           "all_other": 1597500,
-          "total": 29385
+          "total": 4350334
         },
         {
           "name": "Bryan J. Koop",
@@ -57340,7 +57256,7 @@
           "salary": 450000,
           "stock_awards": 4194012,
           "all_other": 1548750,
-          "total": 40315
+          "total": 6192762
         },
         {
           "name": "Bryan J. Koop",
@@ -57348,7 +57264,7 @@
           "salary": 450000,
           "stock_awards": 1564480,
           "all_other": 1557500,
-          "total": 38715
+          "total": 3571980
         },
         {
           "name": "Bryan J. Koop",
@@ -57356,7 +57272,7 @@
           "salary": 440000,
           "stock_awards": 1555280,
           "all_other": 1300000,
-          "total": 37993
+          "total": 3295280
         },
         {
           "name": "Hilary J. Spann",
@@ -57364,7 +57280,7 @@
           "salary": 450000,
           "stock_awards": 4146107,
           "all_other": 1151000,
-          "total": 19998
+          "total": 5747107
         },
         {
           "name": "Hilary J. Spann",
@@ -57372,7 +57288,7 @@
           "salary": 450000,
           "stock_awards": 1349880,
           "all_other": 1000000,
-          "total": 19779
+          "total": 2799880
         }
       ],
       "filing_date": "2026-04-10",
@@ -57383,7 +57299,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 153625,
+      "total_neo_compensation": 59288105,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -57404,8 +57320,8 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Harry Sommer Former",
-          "title": "President and Chief Executive Officer",
+          "name": "Harry Sommer",
+          "title": "Former President and Chief Executive Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 0,
@@ -57417,8 +57333,8 @@
           "total": 1000000
         },
         {
-          "name": "Harry Sommer Former",
-          "title": "President and Chief Executive Officer",
+          "name": "Harry Sommer",
+          "title": "Former President and Chief Executive Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 0,
@@ -57495,7 +57411,7 @@
           "total": 1000000
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2024,
         2023
@@ -58281,27 +58197,27 @@
           "title": "EVP and Group President\u2013Health & Hygiene"
         },
         {
-          "name": "Kevin Jacobsen Former",
+          "name": "Kevin Jacobsen",
           "year": 2025,
           "salary": 650192,
           "stock_awards": 2799730,
           "non_equity_incentive": 513383,
           "pension_nqdc": 6097,
           "total": 4246342,
-          "title": "EVP and Chief Financial Officer"
+          "title": "Former EVP and Chief Financial Officer"
         },
         {
-          "name": "Kevin Jacobsen Former",
+          "name": "Kevin Jacobsen",
           "year": 2024,
           "salary": 788504,
           "stock_awards": 2399924,
           "non_equity_incentive": 780000,
           "pension_nqdc": 8430,
           "total": 4319645,
-          "title": "EVP and Chief Financial Officer"
+          "title": "Former EVP and Chief Financial Officer"
         },
         {
-          "name": "Kevin Jacobsen Former",
+          "name": "Kevin Jacobsen",
           "year": 2023,
           "salary": 768462,
           "stock_awards": 1759750,
@@ -58309,7 +58225,7 @@
           "non_equity_incentive": 1258370,
           "pension_nqdc": 6051,
           "total": 4428950,
-          "title": "EVP and Chief Financial Officer"
+          "title": "Former EVP and Chief Financial Officer"
         }
       ],
       "neo_count": 6,
@@ -58640,12 +58556,12 @@
           "total": 5391291
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2023
       ],
-      "total_neo_compensation": 10819382,
+      "total_neo_compensation": 10193228,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -58817,7 +58733,7 @@
           "all_other": 55369
         }
       ],
-      "neo_count": 8,
+      "neo_count": 7,
       "available_years": [
         2025,
         2024,
@@ -59457,7 +59373,7 @@
           "total": 3591656
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -59698,8 +59614,8 @@
           "total": 2073675
         },
         {
-          "name": "Daniel W. Fisher Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "Daniel W. Fisher",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2025,
           "salary": 0,
           "bonus": 1269462,
@@ -59711,8 +59627,8 @@
           "total": 2081242
         },
         {
-          "name": "Daniel W. Fisher Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "Daniel W. Fisher",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2024,
           "salary": 1250000,
           "bonus": 0,
@@ -59724,8 +59640,8 @@
           "total": 7679984
         },
         {
-          "name": "Daniel W. Fisher Former",
-          "title": "Chairman and Chief Executive Officer",
+          "name": "Daniel W. Fisher",
+          "title": "Former Chairman and Chief Executive Officer",
           "year": 2023,
           "salary": 1249038,
           "bonus": 0,
@@ -60187,8 +60103,8 @@
           "total": 1550788
         },
         {
-          "name": "Christopher D. Foley Former",
-          "title": "Executive Vice President and President, Snacks",
+          "name": "Christopher D. Foley",
+          "title": "Former Executive Vice President and President, Snacks",
           "year": 2025,
           "salary": 0,
           "bonus": 844985,
@@ -60200,8 +60116,8 @@
           "total": 3169335
         },
         {
-          "name": "Christopher D. Foley Former",
-          "title": "Executive Vice President and President, Snacks",
+          "name": "Christopher D. Foley",
+          "title": "Former Executive Vice President and President, Snacks",
           "year": 2024,
           "salary": 779833,
           "bonus": 0,
@@ -60213,8 +60129,8 @@
           "total": 426235
         },
         {
-          "name": "Christopher D. Foley Former",
-          "title": "Executive Vice President and President, Snacks",
+          "name": "Christopher D. Foley",
+          "title": "Former Executive Vice President and President, Snacks",
           "year": 2023,
           "salary": 689291,
           "bonus": 0,
@@ -61007,7 +60923,7 @@
           "total": 9044538
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -61701,7 +61617,7 @@
           "total": 3056055
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "total_neo_compensation": 28881894,
       "available_years": [
         2023,
@@ -61843,7 +61759,7 @@
           "total": 165918
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -62197,7 +62113,7 @@
       "filing_date": "2024-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/47111/000004711124000014/hsy-20240326.htm",
       "total_neo_compensation": 37878585,
-      "neo_count": 6,
+      "neo_count": 5,
       "proxy_fiscal_year": 2023,
       "available_years": [
         2023,
@@ -62361,7 +62277,7 @@
           "title": "SVP, Steel Operations"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -62838,7 +62754,7 @@
       ],
       "filing_date": "2026-03-05",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/79879/000007987926000088/ppg-20260304.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -63672,7 +63588,7 @@
           "year": 2025,
           "salary": 245616,
           "all_other": 825481,
-          "total": 2822
+          "total": 1071097
         },
         {
           "name": "Robert A. Garechana",
@@ -63784,7 +63700,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 30347310,
+      "total_neo_compensation": 31415585,
       "proxy_fiscal_year": 2025
     },
     {
@@ -64266,7 +64182,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Andrew R. Schlossberg 6",
+          "name": "Andrew R. Schlossberg",
           "year": 2025,
           "salary": 750000,
           "non_equity_incentive": 5321250,
@@ -64274,7 +64190,7 @@
           "total": 16299849
         },
         {
-          "name": "Andrew R. Schlossberg 6",
+          "name": "Andrew R. Schlossberg",
           "year": 2024,
           "salary": 2024,
           "bonus": 750000,
@@ -64283,7 +64199,7 @@
           "total": 150222
         },
         {
-          "name": "Andrew R. Schlossberg 6",
+          "name": "Andrew R. Schlossberg",
           "year": 2023,
           "salary": 2023,
           "bonus": 625000,
@@ -64360,7 +64276,7 @@
       ],
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/914208/000119312526140019/d931607ddef14a.htm",
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
@@ -65062,34 +64978,34 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/779152/000077915225000079/jkhy-20251001.htm",
       "executives": [
         {
-          "name": "David B. Foss Board Chair and Former",
+          "name": "David B. Foss",
           "year": 2025,
           "salary": 500000,
           "stock_awards": 2467416,
           "non_equity_incentive": 500750,
           "all_other": 6438,
           "total": 3474604,
-          "title": "Executive Chief Executive Officer"
+          "title": "Former Executive Chief Executive Officer"
         },
         {
-          "name": "David B. Foss Board Chair and Former",
+          "name": "David B. Foss",
           "year": 2024,
           "salary": 865000,
           "stock_awards": 8728670,
           "non_equity_incentive": 1352968,
           "all_other": 16500,
           "total": 10963138,
-          "title": "Executive Chief Executive Officer"
+          "title": "Former Executive Chief Executive Officer"
         },
         {
-          "name": "David B. Foss Board Chair and Former",
+          "name": "David B. Foss",
           "year": 2023,
           "salary": 858750,
           "stock_awards": 8571735,
           "non_equity_incentive": 991979,
           "all_other": 16562,
           "total": 10439026,
-          "title": "Executive Chief Executive Officer"
+          "title": "Former Executive Chief Executive Officer"
         },
         {
           "name": "Gregory R. Adelson",
@@ -66734,8 +66650,8 @@
           "total": 4437330
         },
         {
-          "name": "Keith J. Allman Former",
-          "title": "President and Chief Executive Officer (c)",
+          "name": "Keith J. Allman",
+          "title": "Former President and Chief Executive Officer (c)",
           "year": 2025,
           "salary": 671829,
           "bonus": 0,
@@ -66747,8 +66663,8 @@
           "total": 6307655
         },
         {
-          "name": "Keith J. Allman Former",
-          "title": "President and Chief Executive Officer (c)",
+          "name": "Keith J. Allman",
+          "title": "Former President and Chief Executive Officer (c)",
           "year": 2024,
           "salary": 0,
           "bonus": 4858947,
@@ -66760,8 +66676,8 @@
           "total": 20029288
         },
         {
-          "name": "Keith J. Allman Former",
-          "title": "President and Chief Executive Officer (c)",
+          "name": "Keith J. Allman",
+          "title": "Former President and Chief Executive Officer (c)",
           "year": 2023,
           "salary": 0,
           "bonus": 5876604,
@@ -67107,7 +67023,7 @@
           "total": 74020
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -67250,8 +67166,8 @@
           "total": 4935287
         },
         {
-          "name": "Tammy Romo Former",
-          "title": "Executive Vice President & Chief Financial Officer",
+          "name": "Tammy Romo",
+          "title": "Former Executive Vice President & Chief Financial Officer",
           "year": 2025,
           "salary": 610000,
           "bonus": 0,
@@ -67263,8 +67179,8 @@
           "total": 4705214
         },
         {
-          "name": "Tammy Romo Former",
-          "title": "Executive Vice President & Chief Financial Officer",
+          "name": "Tammy Romo",
+          "title": "Former Executive Vice President & Chief Financial Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 2745038,
@@ -67276,8 +67192,8 @@
           "total": 8531669
         },
         {
-          "name": "Tammy Romo Former",
-          "title": "Executive Vice President & Chief Financial Officer",
+          "name": "Tammy Romo",
+          "title": "Former Executive Vice President & Chief Financial Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 1975185,
@@ -68357,7 +68273,7 @@
           "title": "Chief Investment Officer"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -69574,8 +69490,8 @@
           "total": 1971260
         },
         {
-          "name": "Mark C. Birk Former",
-          "title": "Chairman and President, Ameren Missouri",
+          "name": "Mark C. Birk",
+          "title": "Former Chairman and President, Ameren Missouri",
           "year": 2025,
           "salary": 634646,
           "bonus": 0,
@@ -69587,8 +69503,8 @@
           "total": 2860218
         },
         {
-          "name": "Mark C. Birk Former",
-          "title": "Chairman and President, Ameren Missouri",
+          "name": "Mark C. Birk",
+          "title": "Former Chairman and President, Ameren Missouri",
           "year": 2024,
           "salary": 0,
           "bonus": 1174177,
@@ -69600,8 +69516,8 @@
           "total": 5297634
         },
         {
-          "name": "Mark C. Birk Former",
-          "title": "Chairman and President, Ameren Missouri",
+          "name": "Mark C. Birk",
+          "title": "Former Chairman and President, Ameren Missouri",
           "year": 2023,
           "salary": 0,
           "bonus": 1225254,
@@ -69613,8 +69529,8 @@
           "total": 5175254
         },
         {
-          "name": "Fadi M. Diya Former",
-          "title": "Senior Vice President and Chief Nuclear Officer, Ameren Missouri",
+          "name": "Fadi M. Diya",
+          "title": "Former Senior Vice President and Chief Nuclear Officer, Ameren Missouri",
           "year": 2025,
           "salary": 434473,
           "bonus": 0,
@@ -70154,7 +70070,7 @@
           "title": "Chief Legal Officer and Secretary"
         }
       ],
-      "neo_count": 12,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -70339,7 +70255,7 @@
           "title": "SVP and Chief Human Resources Officer"
         }
       ],
-      "neo_count": 8,
+      "neo_count": 6,
       "total_neo_compensation": 16919582,
       "available_years": [
         2023,
@@ -73870,8 +73786,8 @@
           "total": 1964850
         },
         {
-          "name": "Stephen Lovass Former",
-          "title": "Executive Vice President",
+          "name": "Stephen Lovass",
+          "title": "Former Executive Vice President",
           "year": 2025,
           "salary": 323705,
           "bonus": 0,
@@ -73883,8 +73799,8 @@
           "total": 2241952
         },
         {
-          "name": "Stephen Lovass Former",
-          "title": "Executive Vice President",
+          "name": "Stephen Lovass",
+          "title": "Former Executive Vice President",
           "year": 2024,
           "salary": 0,
           "bonus": 618388,
@@ -73896,8 +73812,8 @@
           "total": 3370015
         },
         {
-          "name": "Stephen Lovass Former",
-          "title": "Executive Vice President",
+          "name": "Stephen Lovass",
+          "title": "Former Executive Vice President",
           "year": 2023,
           "salary": 0,
           "bonus": 817351,
@@ -74202,7 +74118,7 @@
       ],
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/320335/000032033526000135/gl-20260318.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
@@ -74681,7 +74597,7 @@
           "total": 2894640
         }
       ],
-      "neo_count": 8,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -75014,7 +74930,7 @@
           "salary": 600000,
           "non_equity_incentive": 240990,
           "all_other": 457500,
-          "total": 47756
+          "total": 1298490
         },
         {
           "name": "John F. Wilson",
@@ -75031,7 +74947,7 @@
           "salary": 400000,
           "non_equity_incentive": 147173,
           "all_other": 355000,
-          "total": 38163
+          "total": 902173
         },
         {
           "name": "Jerry E. Gahlhoff, Jr",
@@ -75056,7 +74972,7 @@
           "salary": 1000000,
           "non_equity_incentive": 1294070,
           "all_other": 1785000,
-          "total": 40864
+          "total": 4079070
         },
         {
           "name": "Kenneth D. Krause",
@@ -75064,7 +74980,7 @@
           "salary": 765000,
           "non_equity_incentive": 903713,
           "all_other": 780300,
-          "total": 49707
+          "total": 2449013
         },
         {
           "name": "Kenneth D. Krause",
@@ -75089,7 +75005,7 @@
           "salary": 578000,
           "non_equity_incentive": 461898,
           "all_other": 442170,
-          "total": 44720
+          "total": 1482068
         },
         {
           "name": "Elizabeth B. Chandler",
@@ -75106,7 +75022,7 @@
           "salary": 538200,
           "non_equity_incentive": 148528,
           "all_other": 480344,
-          "total": 36019
+          "total": 1167072
         }
       ],
       "filing_date": "2026-03-17",
@@ -75117,7 +75033,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 821803,
+      "total_neo_compensation": 5909191,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -75619,7 +75535,7 @@
           "title": "SVP and Chief Financial Officer"
         }
       ],
-      "neo_count": 9,
+      "neo_count": 7,
       "total_neo_compensation": 28166555,
       "available_years": [
         2023,
@@ -75718,13 +75634,13 @@
       ],
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1095073/000162828026024596/eg-20260406.htm",
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 24767174,
+      "total_neo_compensation": 16189468,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -75745,12 +75661,12 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Stephen M. Shafer 7",
+          "name": "Stephen M. Shafer",
           "year": 2025,
           "total": 4960450
         },
         {
-          "name": "Stephen M. Shafer 7",
+          "name": "Stephen M. Shafer",
           "year": 2024,
           "total": 5586236
         },
@@ -75839,7 +75755,7 @@
           "total": 2911116
         },
         {
-          "name": "Ming Cheng 8",
+          "name": "Ming Cheng",
           "year": 2025,
           "total": 2484591
         }
@@ -76485,7 +76401,7 @@
           "title": "Executive Vice President, Strategic Development"
         },
         {
-          "name": "Eric Roegner Former",
+          "name": "Eric Roegner",
           "year": 2025,
           "salary": 1041106,
           "stock_awards": 1725758,
@@ -76493,10 +76409,10 @@
           "non_equity_incentive": 316540,
           "all_other": 141098,
           "total": 3716406,
-          "title": "President, Amcor Rigid Packaging"
+          "title": "Former President, Amcor Rigid Packaging"
         },
         {
-          "name": "Eric Roegner Former",
+          "name": "Eric Roegner",
           "year": 2024,
           "salary": 1021996,
           "stock_awards": 2162136,
@@ -76504,10 +76420,10 @@
           "non_equity_incentive": 145634,
           "all_other": 135377,
           "total": 3955388,
-          "title": "President, Amcor Rigid Packaging"
+          "title": "Former President, Amcor Rigid Packaging"
         },
         {
-          "name": "Eric Roegner Former",
+          "name": "Eric Roegner",
           "year": 2023,
           "salary": 1016945,
           "stock_awards": 1595205,
@@ -76515,7 +76431,7 @@
           "non_equity_incentive": 114975,
           "all_other": 168355,
           "total": 3417052,
-          "title": "President, Amcor Rigid Packaging"
+          "title": "Former President, Amcor Rigid Packaging"
         },
         {
           "name": "Michael ZackaFormer",
@@ -77042,7 +76958,7 @@
           "total": 602281
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
@@ -77783,13 +77699,13 @@
           "total": 2027044
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 1867278,
+      "total_neo_compensation": 1865257,
       "proxy_fiscal_year": 2026
     },
     {
@@ -77926,8 +77842,8 @@
           "total": 4040735
         },
         {
-          "name": "Robert Gamgort Former",
-          "title": "Executive Chairman",
+          "name": "Robert Gamgort",
+          "title": "Former Executive Chairman",
           "year": 2025,
           "salary": 323077,
           "bonus": 0,
@@ -77939,8 +77855,8 @@
           "total": 3028224
         },
         {
-          "name": "Robert Gamgort Former",
-          "title": "Executive Chairman",
+          "name": "Robert Gamgort",
+          "title": "Former Executive Chairman",
           "year": 2024,
           "salary": 0,
           "bonus": 4239716,
@@ -77952,8 +77868,8 @@
           "total": 12307179
         },
         {
-          "name": "Robert Gamgort Former",
-          "title": "Executive Chairman",
+          "name": "Robert Gamgort",
+          "title": "Former Executive Chairman",
           "year": 2023,
           "salary": 0,
           "bonus": 4335741,
@@ -77965,8 +77881,8 @@
           "total": 13740190
         },
         {
-          "name": "Sudhanshu Priyadarshi Former",
-          "title": "Chief Financial Officer",
+          "name": "Sudhanshu Priyadarshi",
+          "title": "Former Chief Financial Officer",
           "year": 2025,
           "salary": 981923,
           "bonus": 0,
@@ -77978,8 +77894,8 @@
           "total": 6998375
         },
         {
-          "name": "Sudhanshu Priyadarshi Former",
-          "title": "Chief Financial Officer",
+          "name": "Sudhanshu Priyadarshi",
+          "title": "Former Chief Financial Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 4856200,
@@ -77991,8 +77907,8 @@
           "total": 11990382
         },
         {
-          "name": "Sudhanshu Priyadarshi Former",
-          "title": "Chief Financial Officer",
+          "name": "Sudhanshu Priyadarshi",
+          "title": "Former Chief Financial Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 2029504,
@@ -78757,7 +78673,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Alex Chriss 5",
+          "name": "Alex Chriss",
           "title": null,
           "year": 2025,
           "salary": 1325342,
@@ -78770,7 +78686,7 @@
           "total": 25243486
         },
         {
-          "name": "Alex Chriss 5",
+          "name": "Alex Chriss",
           "title": "Former President and Chief Executive Officer",
           "year": 2024,
           "salary": 1250000,
@@ -78783,7 +78699,7 @@
           "total": 6658527
         },
         {
-          "name": "Alex Chriss 5",
+          "name": "Alex Chriss",
           "title": "Former President and Chief Executive Officer",
           "year": 2023,
           "salary": 0,
@@ -79078,7 +78994,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1126328/000110465926039920/tm2529976-1_def14a.htm",
       "executives": [
         {
-          "name": "Daniel J. Houston Former",
+          "name": "Daniel J. Houston",
           "year": 2025,
           "salary": 791154,
           "bonus": 0,
@@ -79088,10 +79004,10 @@
           "pension_nqdc": 2533807,
           "all_other": 485651,
           "total": 11321031,
-          "title": "Executive Chairman"
+          "title": "Former Executive Chairman"
         },
         {
-          "name": "Daniel J. Houston Former",
+          "name": "Daniel J. Houston",
           "year": 2024,
           "salary": 1088462,
           "bonus": 0,
@@ -79101,10 +79017,10 @@
           "pension_nqdc": 790074,
           "all_other": 333422,
           "total": 16438184,
-          "title": "Executive Chairman"
+          "title": "Former Executive Chairman"
         },
         {
-          "name": "Daniel J. Houston Former",
+          "name": "Daniel J. Houston",
           "year": 2023,
           "salary": 1038462,
           "bonus": 0,
@@ -79114,7 +79030,7 @@
           "pension_nqdc": 765298,
           "all_other": 343285,
           "total": 15118828,
-          "title": "Executive Chairman"
+          "title": "Former Executive Chairman"
         },
         {
           "name": "Deanna D. Strable-Soethout Chair",
@@ -79182,7 +79098,7 @@
           "title": "Chief Financial Officer"
         },
         {
-          "name": "Kamal Bhatia \ufeff8",
+          "name": "Kamal Bhatia",
           "year": 2025,
           "salary": 551500,
           "bonus": 0,
@@ -79195,7 +79111,7 @@
           "title": "President and CEO, Principal Asset Management"
         },
         {
-          "name": "Kamal Bhatia \ufeff8",
+          "name": "Kamal Bhatia",
           "year": 2024,
           "salary": 547423,
           "bonus": 0,
@@ -79524,7 +79440,7 @@
           "total": 1845313
         },
         {
-          "name": "Dean Berry 4",
+          "name": "Dean Berry",
           "title": null,
           "year": 2025,
           "salary": 190284,
@@ -79576,7 +79492,7 @@
           "total": 4943514
         },
         {
-          "name": "Naineshkumar S. Panchal 7",
+          "name": "Naineshkumar S. Panchal",
           "title": null,
           "year": 2025,
           "salary": 450000,
@@ -79589,7 +79505,7 @@
           "total": 2222567
         },
         {
-          "name": "Naineshkumar S. Panchal 7",
+          "name": "Naineshkumar S. Panchal",
           "title": "Former Chief Information Officer",
           "year": 2024,
           "salary": 450000,
@@ -79602,7 +79518,7 @@
           "total": 2592318
         },
         {
-          "name": "Naineshkumar S. Panchal 7",
+          "name": "Naineshkumar S. Panchal",
           "title": "Former Chief Information Officer",
           "year": 2023,
           "salary": 0,
@@ -79615,7 +79531,7 @@
           "total": 3379352
         },
         {
-          "name": "Christophe Roupie 8",
+          "name": "Christophe Roupie",
           "title": null,
           "year": 2025,
           "salary": 310868,
@@ -79628,7 +79544,7 @@
           "total": 2596742
         },
         {
-          "name": "Christophe Roupie 8",
+          "name": "Christophe Roupie",
           "title": "Former Head of EMEA and APAC",
           "year": 2023,
           "salary": 0,
@@ -80122,7 +80038,7 @@
       ],
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/945841/000094584126000077/pool-20260325.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
@@ -80631,7 +80547,7 @@
           "non_equity_incentive": 0,
           "pension_nqdc": 0,
           "all_other": 6314713,
-          "total": 36535
+          "total": 27928066
         },
         {
           "name": "Ryan Taylor",
@@ -80666,7 +80582,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 38844656,
+      "total_neo_compensation": 66736187,
       "proxy_fiscal_year": 2025
     },
     {
@@ -80802,12 +80718,12 @@
       ],
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1065696/000106569626000026/lkq-20260323.htm",
-      "neo_count": 8,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024
       ],
-      "total_neo_compensation": 41192345,
+      "total_neo_compensation": 41190322,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
     },
@@ -81081,7 +80997,7 @@
           "total": 2411259
         }
       ],
-      "neo_count": 10,
+      "neo_count": 8,
       "total_neo_compensation": 53927242,
       "available_years": [
         2023,
@@ -81244,7 +81160,7 @@
           "salary": 806157,
           "stock_awards": 8224918,
           "all_other": 1117333,
-          "total": 48177
+          "total": 10148408
         }
       ],
       "neo_count": 4,
@@ -81253,7 +81169,7 @@
         2025,
         2024
       ],
-      "total_neo_compensation": 4016145,
+      "total_neo_compensation": 14116376,
       "proxy_fiscal_year": 2026
     },
     {
@@ -81669,7 +81585,7 @@
           "total": 387950
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
@@ -82007,7 +81923,7 @@
           "non_equity_incentive": 861387,
           "pension_nqdc": 0,
           "all_other": 2569000,
-          "total": 2941
+          "total": 4180387
         },
         {
           "name": "Daniel L. Florness",
@@ -82020,7 +81936,7 @@
           "non_equity_incentive": 867883,
           "pension_nqdc": 0,
           "all_other": 75250,
-          "total": 2754
+          "total": 1693133
         },
         {
           "name": "Daniel L. Florness",
@@ -82244,13 +82160,13 @@
           "total": 1447832
         }
       ],
-      "neo_count": 9,
+      "neo_count": 7,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 9024622,
+      "total_neo_compensation": 13202068,
       "proxy_fiscal_year": 2025
     },
     {
@@ -82760,13 +82676,13 @@
           "total": 3814523
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 48314525,
+      "total_neo_compensation": 48312500,
       "proxy_fiscal_year": 2025
     },
     {
@@ -83254,7 +83170,7 @@
           "total": 21459966
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,

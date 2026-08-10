@@ -4343,3 +4343,143 @@ footer li::before {
     .scatter-controls { flex-wrap: wrap; gap: 0.5rem; }
     #scatter-chart svg { max-width: 100%; }
 }
+
+
+/* ── Sector Analytics Summary Table ── */
+.sector-analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    font-family: var(--mono, 'SF Mono', 'Monaco', monospace);
+}
+.sector-analytics-table thead th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted, #a1a1aa);
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    white-space: nowrap;
+}
+.sector-analytics-row {
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.sector-analytics-row:hover {
+    background: rgba(0,180,216,0.06);
+}
+.sector-analytics-row.sa-active {
+    background: rgba(0,180,216,0.12);
+    outline: 1px solid rgba(0,180,216,0.3);
+}
+.sector-analytics-row td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    white-space: nowrap;
+}
+.sa-sector {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sa-sector-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+.sa-count {
+    text-align: center;
+    color: var(--text-muted, #a1a1aa);
+}
+.sa-pay {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.sa-bar-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 160px;
+}
+.sa-bar {
+    height: 6px;
+    background: var(--accent, #00b4d8);
+    border-radius: 3px;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+.sa-bar-val {
+    white-space: nowrap;
+    font-weight: 500;
+}
+.sa-eq {
+    text-align: center;
+    font-weight: 600;
+}
+.sa-eq.eq-high { color: #a78bfa; }
+.sa-eq.eq-mid { color: #8b5cf6; }
+.sa-eq.eq-low { color: #fb923c; }
+.sa-ratio {
+    text-align: right;
+    font-weight: 500;
+}
+.sa-ratio.ratio-high { color: #ef476f; }
+.sa-ratio.ratio-mid { color: #ffd166; }
+.sa-ratio.ratio-low { color: #06d6a0; }
+.sa-ceo {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .sector-analytics-table thead th {
+    color: #6b7280;
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .sector-analytics-row:hover {
+    background: rgba(0,0,0,0.03);
+}
+[data-theme="light"] .sector-analytics-row.sa-active {
+    background: rgba(0,180,216,0.08);
+    outline-color: rgba(0,180,216,0.2);
+}
+[data-theme="light"] .sector-analytics-row td {
+    border-bottom-color: rgba(0,0,0,0.05);
+}
+[data-theme="light"] .sa-count { color: #6b7280; }
+[data-theme="light"] .sa-eq.eq-high { color: #7c3aed; }
+[data-theme="light"] .sa-eq.eq-mid { color: #6d28d9; }
+[data-theme="light"] .sa-eq.eq-low { color: #ea580c; }
+[data-theme="light"] .sa-ratio.ratio-high { color: #dc2626; }
+[data-theme="light"] .sa-ratio.ratio-mid { color: #d97706; }
+[data-theme="light"] .sa-ratio.ratio-low { color: #059669; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .sector-analytics-table { font-size: 0.75rem; }
+    .sector-analytics-table thead th { padding: 8px 8px; font-size: 0.68rem; }
+    .sector-analytics-row td { padding: 7px 8px; }
+    .sa-bar-cell { min-width: 100px; }
+    .sa-ceo { max-width: 120px; }
+}
+@media (max-width: 480px) {
+    .sector-analytics-table thead th:nth-child(4),
+    .sector-analytics-table thead th:nth-child(5),
+    .sector-analytics-row td:nth-child(4),
+    .sector-analytics-row td:nth-child(5) {
+        display: none;
+    }
+}
+
+/* Print */
+@media print {
+    .sector-analytics-table { page-break-inside: avoid; }
+    .sa-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sa-sector-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
