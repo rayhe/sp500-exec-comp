@@ -2200,7 +2200,16 @@ function setupDetailPanel(companies) {
 
                 html += '<div class="neo-year-panel" data-year="' + yr + '"' + (yrIdx > 0 ? ' style="display:none"' : '') + '>';
                 html += '<div class="neo-table-wrap"><table class="neo-table">';
-                html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th><th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th><th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
+                // Determine which optional columns have data for this year
+                var yrHasBonus = yrExecs.some(function(e) { return e.bonus && e.bonus > 0; });
+                var yrHasPension = yrExecs.some(function(e) { return (e.pension_nqdc && e.pension_nqdc > 0) || (e.pension_change && e.pension_change > 0); });
+                var neoCols = 6 + (yrHasBonus ? 1 : 0) + (yrHasPension ? 1 : 0); // name + title + data cols
+
+                html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th>';
+                if (yrHasBonus) html += '<th class="neo-num">Bonus</th>';
+                html += '<th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th>';
+                if (yrHasPension) html += '<th class="neo-num">Pension/NQDC</th>';
+                html += '<th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
                 html += '<tbody>';
 
                 yrExecs.forEach(function(exec) {
@@ -2211,16 +2220,18 @@ function setupDetailPanel(companies) {
                     html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
+                    if (yrHasBonus) html += '<td class="neo-num">' + (exec.bonus ? formatCompact(exec.bonus) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.stock_awards ? formatCompact(exec.stock_awards) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.option_awards ? formatCompact(exec.option_awards) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
+                    if (yrHasPension) html += '<td class="neo-num">' + ((exec.pension_nqdc || exec.pension_change) ? formatCompact(exec.pension_nqdc || exec.pension_change) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
                     html += '<td class="neo-num neo-total">' + formatCompact(total) + '</td>';
                     html += '</tr>';
                 });
 
                 // Total row
-                html += '<tr class="neo-total-row"><td colspan="7" class="neo-total-label">Total NEO Compensation</td>';
+                html += '<tr class="neo-total-row"><td colspan="' + (neoCols + 1) + '" class="neo-total-label">Total NEO Compensation</td>';
                 html += '<td class="neo-num neo-total">' + formatCurrency(yrTotal) + '</td></tr>';
 
                 html += '</tbody></table></div>';
