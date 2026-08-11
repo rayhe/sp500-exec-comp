@@ -192,6 +192,44 @@ function computeCeoStockPct(companies) {
     });
 }
 
+/* Pre-compute compensation percentile rank for each company (100 = highest paid).
+   Sets c._compPercentile (1-100) based on rank within the full dataset. */
+function computeCompPercentile(companies) {
+    var withComp = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
+    withComp.sort(function(a, b) { return a.total_compensation - b.total_compensation; });
+    var n = withComp.length;
+    withComp.forEach(function(c, i) {
+        c._compPercentile = Math.round((i + 1) / n * 100);
+    });
+    // Companies without comp data get null
+    companies.forEach(function(c) {
+        if (c.total_compensation == null || c.total_compensation <= 0) {
+            c._compPercentile = null;
+        }
+    });
+}
+
+/* Format a percentile value into a human-readable tier label */
+function getPercentileLabel(pctile) {
+    if (pctile >= 99) return 'P99';
+    if (pctile >= 95) return 'P95';
+    if (pctile >= 90) return 'P90';
+    if (pctile >= 75) return 'P75';
+    if (pctile >= 50) return 'P50';
+    if (pctile >= 25) return 'P25';
+    if (pctile >= 10) return 'P10';
+    if (pctile >= 5) return 'P5';
+    return 'P' + pctile;
+}
+
+/* Get CSS class for percentile tier coloring */
+function getPercentileClass(pctile) {
+    if (pctile >= 90) return 'pctile-top';
+    if (pctile >= 75) return 'pctile-high';
+    if (pctile >= 25) return 'pctile-mid';
+    return 'pctile-low';
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -1565,6 +1603,13 @@ function renderTable(companies, options) {
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
+        // Percentile rank badge — shown when sorted by non-compensation column
+        if (currentSort.key !== 'total_compensation' && currentSort.key !== 'rank' && c._compPercentile != null) {
+            var pLabel = getPercentileLabel(c._compPercentile);
+            var pClass = getPercentileClass(c._compPercentile);
+            var pTitle = 'Compensation percentile: ' + c._compPercentile + ' of 100 (higher = more highly paid)';
+            compHtml += ' <span class="pctile-badge ' + pClass + '" title="' + pTitle + '">' + pLabel + '</span>';
+        }
         compHtml += '</div>';
 
         // YoY cell (separate column) with inline sparkline for multi-year trend
@@ -2892,6 +2937,9 @@ function hideMetricSkeletons() {
     // Pre-compute CEO stock % for sortable column
     computeCeoStockPct(companies);
 
+    // Pre-compute compensation percentile rank for cross-reference badges
+    computeCompPercentile(companies);
+
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
 
@@ -3585,7 +3633,7 @@ function hideMetricSkeletons() {
             });
 
             // CSV header and rows
-            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
                 'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
                 'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
                 'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
@@ -3628,6 +3676,7 @@ function hideMetricSkeletons() {
                     csvEscape(c.company_name),
                     csvEscape(c.ceo_name),
                     c.total_compensation || '',
+                    c._compPercentile != null ? c._compPercentile : '',
                     csvEscape(yoyVal),
                     csvEscape(c.sector || ''),
                     c.pay_ratio || '',
