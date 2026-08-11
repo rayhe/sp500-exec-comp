@@ -1989,6 +1989,7 @@ function getPeerInfo(ticker) {
 /* === Focus Management — track previous focus for panels === */
 var _detailTriggerRow = null;  // row that opened the detail panel
 var _preFocusElement = null;   // element focused before modal/comparison opens
+var _expandedDetailTicker = null; // ticker of currently expanded detail panel (for URL hash)
 
 function setupDetailPanel(companies) {
     var tbody = document.getElementById('comp-tbody');
@@ -2014,6 +2015,8 @@ function setupDetailPanel(companies) {
                 _detailTriggerRow.focus();
             }
             _detailTriggerRow = null;
+            _expandedDetailTicker = null;
+            pushState();
             return; // toggle off
         }
 
@@ -2458,6 +2461,10 @@ function setupDetailPanel(companies) {
         detailRow.innerHTML = html;
         row.after(detailRow);
 
+        // Track expanded detail for URL hash deep-linking
+        _expandedDetailTicker = ticker;
+        pushState();
+
         // Wire up NEO year tabs — switch between fiscal years
         detailRow.querySelectorAll('.neo-year-tab').forEach(function(tab) {
             tab.addEventListener('click', function(e) {
@@ -2564,6 +2571,8 @@ function setupDetailPanel(companies) {
                 _detailTriggerRow.focus();
             }
             _detailTriggerRow = null;
+            _expandedDetailTicker = null;
+            pushState();
         });
 
         // ARIA announcement for detail panel
@@ -2626,6 +2635,9 @@ function serializeState() {
         params.push('dmax=' + window._activeDistFilter.max);
         params.push('dsec=' + encodeURIComponent(window._activeDistFilter.sector || ''));
         params.push('dlbl=' + encodeURIComponent(window._activeDistFilter.label));
+    }
+    if (_expandedDetailTicker) {
+        params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
     return params.length > 0 ? '#' + params.join('&') : '';
 }
@@ -2705,6 +2717,59 @@ function applyHashState(companies) {
     }
 
     renderTable(companies);
+
+    // Deep-link: open detail panel for specified ticker (after table is rendered)
+    if (state.detail) {
+        var detailTicker = decodeURIComponent(state.detail).toUpperCase();
+        _expandedDetailTicker = detailTicker;
+        // Use search to find the company if not visible on current page
+        var companyExists = companies.some(function(c) { return c.ticker === detailTicker; });
+        if (companyExists) {
+            // Set search to ticker to ensure it's on the visible page
+            var needSearch = true;
+            setTimeout(function() {
+                var tbody = document.getElementById('comp-tbody');
+                if (!tbody) return;
+                // Check if already visible
+                var rows = tbody.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)');
+                var targetRow = null;
+                rows.forEach(function(r) {
+                    var te = r.querySelector('.ticker');
+                    if (te && te.textContent.trim() === detailTicker) targetRow = r;
+                });
+                if (!targetRow && needSearch) {
+                    // Force search filter to show the ticker
+                    searchTerm = detailTicker;
+                    document.getElementById('table-search').value = detailTicker;
+                    currentPage = 1;
+                    renderTable(companies);
+                    // Re-query after render
+                    setTimeout(function() {
+                        var tbody2 = document.getElementById('comp-tbody');
+                        var rows2 = tbody2.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)');
+                        rows2.forEach(function(r) {
+                            var te = r.querySelector('.ticker');
+                            if (te && te.textContent.trim() === detailTicker) {
+                                r.click();
+                                setTimeout(function() {
+                                    r.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
+                                    var off = getStickyOffset();
+                                    if (off > 0) window.scrollBy({ top: -off - 16, behavior: getScrollBehavior() });
+                                }, 100);
+                            }
+                        });
+                    }, 50);
+                } else if (targetRow) {
+                    targetRow.click();
+                    setTimeout(function() {
+                        targetRow.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
+                        var off = getStickyOffset();
+                        if (off > 0) window.scrollBy({ top: -off - 16, behavior: getScrollBehavior() });
+                    }, 100);
+                }
+            }, 50);
+        }
+    }
 }
 
 /* === Skeleton Loading State === */
@@ -4633,6 +4698,12 @@ function hideMetricSkeletons() {
         currentPage = 1;
         window._activeRatioBucket = null;
         window._activeDistFilter = null;
+        _expandedDetailTicker = null;
+        // Close any open detail panel
+        var existingDetail = document.querySelector('#comp-tbody .detail-row');
+        if (existingDetail) existingDetail.remove();
+        document.querySelectorAll('#comp-tbody tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+        document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
