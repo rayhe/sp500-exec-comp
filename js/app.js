@@ -413,7 +413,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1013,6 +1013,9 @@ function renderSortContextSummary(companies) {
     if (currentSort.key === '_ceoStockPctSort') {
         return renderStockPctSortSummary(companies);
     }
+    if (currentSort.key === '_compPercentile') {
+        return renderPercentileSortSummary(companies);
+    }
     return null;
 }
 
@@ -1385,6 +1388,47 @@ function renderStockPctSortSummary(companies) {
     return html;
 }
 
+/* Percentile sort summary — tier distribution + comp range per tier */
+function renderPercentileSortSummary(companies) {
+    var withData = companies.filter(function(c) { return c._compPercentile != null; });
+    if (withData.length === 0) return null;
+
+    // Count companies in each tier
+    var tiers = [
+        { label: 'P90+', min: 90, max: 101, cls: 'pctile-top', count: 0, comps: [] },
+        { label: 'P75–89', min: 75, max: 90, cls: 'pctile-high', count: 0, comps: [] },
+        { label: 'P25–74', min: 25, max: 75, cls: 'pctile-mid', count: 0, comps: [] },
+        { label: '<P25', min: 0, max: 25, cls: 'pctile-low', count: 0, comps: [] }
+    ];
+
+    withData.forEach(function(c) {
+        for (var ti = 0; ti < tiers.length; ti++) {
+            if (c._compPercentile >= tiers[ti].min && c._compPercentile < tiers[ti].max) {
+                tiers[ti].count++;
+                tiers[ti].comps.push(c.total_compensation || 0);
+                break;
+            }
+        }
+    });
+
+    var sortDir = currentSort.dir === 'desc' ? 'highest first' : 'lowest first';
+    var html = '<span class="summary-stat"><span class="summary-stat-label">Compensation Percentile</span>';
+    html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span></span>';
+
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        var minComp = Math.min.apply(null, t.comps);
+        var maxComp = Math.max.apply(null, t.comps);
+        var rangeStr = formatCurrency(minComp) + '–' + formatCurrency(maxComp);
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label"><span class="pctile-badge ' + t.cls + '" style="font-size:0.65rem">' + t.label + '</span></span>';
+        html += '<span class="summary-stat-value">' + t.count + ' (' + rangeStr + ')</span>';
+        html += '</span>';
+    });
+
+    return html;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -1603,13 +1647,6 @@ function renderTable(companies, options) {
         if (_outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
-        // Percentile rank badge — shown when sorted by non-compensation column
-        if (currentSort.key !== 'total_compensation' && currentSort.key !== 'rank' && c._compPercentile != null) {
-            var pLabel = getPercentileLabel(c._compPercentile);
-            var pClass = getPercentileClass(c._compPercentile);
-            var pTitle = 'Compensation percentile: ' + c._compPercentile + ' of 100 (higher = more highly paid)';
-            compHtml += ' <span class="pctile-badge ' + pClass + '" title="' + pTitle + '">' + pLabel + '</span>';
-        }
         compHtml += '</div>';
 
         // YoY cell (separate column) with inline sparkline for multi-year trend
@@ -1688,6 +1725,12 @@ function renderTable(companies, options) {
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
             '<td class="stock-pct-cell">' + stockPctCell + '</td>' +
+            '<td class="pctile-cell">' + (function() {
+                if (c._compPercentile == null) return '\u2014';
+                var pl = getPercentileLabel(c._compPercentile);
+                var pc = getPercentileClass(c._compPercentile);
+                return '<span class="pctile-badge ' + pc + '" title="Compensation percentile: ' + c._compPercentile + ' of 100">' + pl + '</span>';
+            })() + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
@@ -2113,14 +2156,26 @@ function setupDetailPanel(companies) {
         var _hasPrev = _currentIdx > 0;
         var _hasNext = _currentIdx >= 0 && _currentIdx < _visibleRows.length - 1;
         var _posLabel = _currentIdx >= 0 ? (_currentIdx + 1) + ' of ' + _visibleRows.length : '';
+        var _pctileLabel = company._compPercentile != null ? getPercentileLabel(company._compPercentile) : '';
 
         // Build HTML
-        var html = '<td colspan="10"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="11"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">';
         html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
         html += '<div class="detail-header-center">';
         html += '<span class="detail-header-title">' + company.company_name + ' <span class="detail-ticker">(' + ticker + ')</span></span>';
-        if (_posLabel) html += '<span class="detail-header-pos">' + _posLabel + '</span>';
+        if (_posLabel || _pctileLabel) {
+            var posHtml = '';
+            if (_pctileLabel) {
+                var _pc = getPercentileClass(company._compPercentile);
+                posHtml += '<span class="pctile-badge ' + _pc + '" style="font-size:0.65rem;vertical-align:middle">' + _pctileLabel + '</span>';
+            }
+            if (_posLabel) {
+                if (posHtml) posHtml += ' &mdash; ';
+                posHtml += _posLabel;
+            }
+            html += '<span class="detail-header-pos">' + posHtml + '</span>';
+        }
         html += '</div>';
         html += '<button class="detail-nav-btn detail-nav-next" title="Next company (→)" aria-label="Next company"' + (_hasNext ? '' : ' disabled') + '>›</button>';
         html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
@@ -2864,7 +2919,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="10"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="11"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +

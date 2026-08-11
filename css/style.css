@@ -4303,7 +4303,9 @@ footer li::before {
     color: #0077a8;
 }
 
-/* Percentile rank badges — shown in Total Comp cell when sorted by non-comp column */
+/* Percentile rank column + badges */
+.pctile-col { width: 52px; text-align: center; }
+.pctile-cell { text-align: center; width: 52px; padding: 4px 2px; }
 .pctile-badge {
     display: inline-flex;
     align-items: center;
@@ -4605,4 +4607,9 @@ footer li::before {
     .sector-analytics-table { page-break-inside: avoid; }
     .sa-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .sa-sector-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* Percentile column — hide on small screens */
+@media (max-width: 600px) {
+    .pctile-col, .pctile-cell { display: none; }
 }
