@@ -562,6 +562,24 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // 9. Percentile Concentration — top 1% vs bottom 50%
+    var pctileSorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+    var top1PctCount = Math.max(1, Math.round(companies.length * 0.01)); // ~5 companies
+    var bottom50PctCount = Math.floor(companies.length * 0.50); // 250 companies
+    var top1Pay = pctileSorted.slice(0, top1PctCount).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+    var bottom50Pay = pctileSorted.slice(pctileSorted.length - bottom50PctCount).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+    if (top1Pay > 0 && bottom50Pay > 0) {
+        var p1Ratio = (top1Pay / bottom50Pay).toFixed(1);
+        var top1Names = pctileSorted.slice(0, top1PctCount).map(function(c) { return c.ticker; }).join(', ');
+        insights.push({
+            icon: '🔺',
+            label: 'Top 1% vs Bottom 50%',
+            value: p1Ratio + '× more pay',
+            detail: 'The top ' + top1PctCount + ' CEO' + (top1PctCount > 1 ? 's' : '') + ' (P99: ' + top1Names + ') earned ' + formatCurrency(top1Pay) + ' combined — ' + p1Ratio + '× what the bottom 250 CEOs earned together (' + formatCurrency(bottom50Pay) + ').',
+            _tickers: pctileSorted.slice(0, Math.min(top1PctCount, 3)).map(function(c) { return c.ticker; })
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -647,6 +665,12 @@ function populateInsights(comp, trends) {
     if (insights[7]) {
         insights[7].action = function() { insightResetAndSort('_ceoStockPctSort', 'desc'); };
         insights[7].actionHint = 'Sort by equity %';
+    }
+
+    // 9. Percentile Concentration → sort by percentile descending
+    if (insights[8]) {
+        insights[8].action = function() { insightResetAndSort('_compPercentile', 'desc'); };
+        insights[8].actionHint = 'Sort by percentile';
     }
 
     // Render cards
@@ -4691,7 +4715,14 @@ function hideMetricSkeletons() {
             }
             var workerPct = maxWorker > 0 && c.median_worker_pay ? (c.median_worker_pay / maxWorker * 100) : 0;
 
-            var html = '<div class="comparison-card-rank">#' + rank + ' / 500</div>';
+            var html = '<div class="comparison-card-rank">#' + rank + ' / 500';
+            // Percentile badge alongside rank
+            if (c._compPercentile != null) {
+                var _cpLabel = getPercentileLabel(c._compPercentile);
+                var _cpClass = getPercentileClass(c._compPercentile);
+                html += ' <span class="pctile-badge ' + _cpClass + '" style="font-size:0.6rem;vertical-align:middle;margin-left:6px" title="Compensation percentile: ' + c._compPercentile + ' of 100">' + _cpLabel + '</span>';
+            }
+            html += '</div>';
             html += '<div class="comparison-card-ticker">' + c.ticker + '</div>';
             html += '<div class="comparison-card-company">' + c.company_name + '</div>';
             html += '<div class="comparison-card-ceo">' + c.ceo_name + '</div>';
