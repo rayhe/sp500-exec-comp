@@ -1536,16 +1536,22 @@ function renderSectorSortSummary(companies) {
 
     html += '<span class="summary-divider"></span>';
 
-    // Mini sector distribution — color-coded bars showing company count per sector
+    // Mini sector distribution — color-coded bars, clickable to filter by sector
+    var isActiveSectorSort = !!activeSector;
     html += '<span class="summary-stat sector-sort-dist">';
     html += '<span class="summary-stat-label">Distribution</span>';
     html += '<span class="sector-sort-bars">';
     byCount.forEach(function(s) {
         var barH = Math.max(3, Math.round(s.count / maxCount * 24));
         var color = getSectorColor(s.name);
-        html += '<span class="sector-sort-bar-group" title="' + s.name + ': ' + s.count + ' companies, median ' + formatCurrency(s.median) + '">';
-        html += '<span class="sector-sort-bar" style="height:' + barH + 'px;background:' + color + '"></span>';
-        html += '<span class="sector-sort-bar-count">' + s.count + '</span>';
+        var isActive = (activeSector === s.name);
+        var isDimmed = (isActiveSectorSort && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + color + ';outline-offset:2px;border-radius:3px;' : '';
+        var escapedName = s.name.replace(/'/g, "\\'");
+        html += '<span class="sector-sort-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + s.name + ': ' + s.count + ' companies, median ' + formatCurrency(s.median) + ' — click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterBySectorFromBar(\'' + escapedName + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="sector-sort-bar" style="height:' + barH + 'px;background:' + color + ';' + dimStyle + '"></span>';
+        html += '<span class="sector-sort-bar-count" style="' + dimStyle + '">' + s.count + '</span>';
         html += '</span>';
     });
     html += '</span>';
@@ -1685,6 +1691,59 @@ function renderSummaryBar(filtered, allCompanies) {
             html += '<span class="summary-stat"><span class="summary-stat-value stock-pct-high">' + fAbove80 + '</span><span class="summary-stat-label">≥80%</span></span>';
             html += '<span class="summary-stat"><span class="summary-stat-value stock-pct-low">' + fBelow20 + '</span><span class="summary-stat-label">&lt;20%</span></span>';
             html += '<span class="summary-stat"><span class="summary-stat-label">Median</span><span class="summary-stat-value">' + fMedianSP + '%</span></span>';
+        }
+    }
+
+    // Append sector-vs-benchmark context when a sector filter is active
+    if (activeSector && filtered.length > 0) {
+        // Compute S&P 500 wide stats for comparison
+        var allComps = allCompanies.filter(function(c) { return c.total_compensation > 0; }).map(function(c) { return c.total_compensation; });
+        var allMedian = computeMedian(allComps.slice().sort(function(a, b) { return a - b; }));
+
+        // Sector-specific stats (from filtered set since activeSector is already applied)
+        var sectorComps = comps.slice().sort(function(a, b) { return a - b; });
+        var sectorMedian = computeMedian(sectorComps);
+        var deltaVsBenchmark = ((sectorMedian - allMedian) / allMedian * 100);
+        var deltaSign = deltaVsBenchmark >= 0 ? '+' : '\u2212';
+        var deltaClass = deltaVsBenchmark >= 0 ? 'positive' : 'negative';
+
+        // Sector rank by median CEO pay
+        var sectorMap = {};
+        allCompanies.forEach(function(c) {
+            var s = c.sector || 'Unknown';
+            if (!sectorMap[s]) sectorMap[s] = [];
+            if (c.total_compensation > 0) sectorMap[s].push(c.total_compensation);
+        });
+        var sectorRanking = Object.keys(sectorMap).map(function(s) {
+            var sorted = sectorMap[s].slice().sort(function(a, b) { return a - b; });
+            return { name: s, median: computeMedian(sorted) };
+        }).sort(function(a, b) { return b.median - a.median; });
+        var sectorRank = sectorRanking.findIndex(function(s) { return s.name === activeSector; }) + 1;
+
+        // Sector equity stats
+        var sectorEqPcts = filtered.filter(function(c) { return c._ceoStockPct != null; }).map(function(c) { return c._ceoStockPct; });
+        var sectorMedianEq = sectorEqPcts.length > 0 ? Math.round(computeMedian(sectorEqPcts.slice().sort(function(a, b) { return a - b; })) * 10) / 10 : null;
+
+        html += '<span class="summary-divider"></span>';
+
+        // Sector rank badge
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Sector rank</span>';
+        html += '<span class="summary-stat-value" style="color:' + getSectorColor(activeSector) + '">#' + sectorRank + ' of ' + sectorRanking.length + '</span>';
+        html += '</span>';
+
+        // vs S&P 500 median
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">vs S&P 500</span>';
+        html += '<span class="summary-stat-value ' + deltaClass + '">' + deltaSign + Math.abs(deltaVsBenchmark).toFixed(1) + '%</span>';
+        html += '</span>';
+
+        // Sector median equity %
+        if (sectorMedianEq != null) {
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Equity %</span>';
+            html += '<span class="summary-stat-value">' + sectorMedianEq + '%</span>';
+            html += '</span>';
         }
     }
 
@@ -3302,6 +3361,48 @@ function hideMetricSkeletons() {
         renderTable(companies);
         pushState();
         announce(window._activeDistFilter ? 'Filtered to ' + label + ' compensation bracket' : 'Filter cleared');
+    };
+
+    // Sector filter from sector sort distribution bars
+    window.filterBySectorFromBar = function(sectorName) {
+        // Toggle off if same sector clicked again
+        if (activeSector === sectorName) {
+            activeSector = null;
+        } else {
+            activeSector = sectorName;
+        }
+        currentPage = 1;
+
+        // Clear other filters
+        window._activeDistFilter = null;
+        var distChip = document.getElementById('dist-filter-chip');
+        if (distChip) distChip.remove();
+
+        if (window._activeRatioBucket) {
+            window._activeRatioBucket = null;
+            var ratioChip = document.getElementById('ratio-filter-chip');
+            if (ratioChip) ratioChip.remove();
+        }
+
+        // Update sector chip active states
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (!activeSector && chip.textContent === 'All') chip.classList.add('active');
+            else if (chip.textContent === activeSector) chip.classList.add('active');
+        });
+
+        renderTable(companies);
+        if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+
+        // Highlight active row in sector analytics table
+        var saRows = document.querySelectorAll('.sector-analytics-row');
+        saRows.forEach(function(r) {
+            r.classList.toggle('sa-active', r.dataset.sector === activeSector);
+        });
+
+        pushState();
+        announce(activeSector ? 'Filtered to ' + activeSector : 'Sector filter cleared');
     };
 
     // Ratio bucket filter — stores active bucket for renderTable filtering
