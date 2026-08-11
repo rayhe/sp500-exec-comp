@@ -1040,6 +1040,9 @@ function renderSortContextSummary(companies) {
     if (currentSort.key === '_compPercentile') {
         return renderPercentileSortSummary(companies);
     }
+    if (currentSort.key === 'sector') {
+        return renderSectorSortSummary(companies);
+    }
     return null;
 }
 
@@ -1449,6 +1452,104 @@ function renderPercentileSortSummary(companies) {
         html += '<span class="summary-stat-value">' + t.count + ' (' + rangeStr + ')</span>';
         html += '</span>';
     });
+
+    return html;
+}
+
+/* Sector sort context summary — shown when sorted by sector column.
+   Displays number of sectors, mini sector distribution with color-coded segment bars,
+   highest/lowest median pay sectors, and sector spread ratio. */
+function renderSectorSortSummary(companies) {
+    if (companies.length === 0) return null;
+
+    // Group companies by sector
+    var sectorMap = {};
+    companies.forEach(function(c) {
+        var s = c.sector || 'Unknown';
+        if (!sectorMap[s]) sectorMap[s] = { name: s, companies: [], comps: [] };
+        sectorMap[s].companies.push(c);
+        if (c.total_compensation != null && c.total_compensation > 0) {
+            sectorMap[s].comps.push(c.total_compensation);
+        }
+    });
+
+    var sectors = Object.keys(sectorMap).map(function(k) {
+        var s = sectorMap[k];
+        var sorted = s.comps.slice().sort(function(a, b) { return a - b; });
+        return {
+            name: s.name,
+            count: s.companies.length,
+            median: sorted.length > 0 ? computeMedian(sorted) : 0,
+            mean: sorted.length > 0 ? sorted.reduce(function(sum, v) { return sum + v; }, 0) / sorted.length : 0,
+            min: sorted.length > 0 ? sorted[0] : 0,
+            max: sorted.length > 0 ? sorted[sorted.length - 1] : 0
+        };
+    });
+
+    // Sort by median descending to find highest/lowest
+    var byMedian = sectors.slice().sort(function(a, b) { return b.median - a.median; });
+    var highestSector = byMedian[0];
+    var lowestSector = byMedian[byMedian.length - 1];
+
+    // Sort by count descending for the bar distribution
+    var byCount = sectors.slice().sort(function(a, b) { return b.count - a.count; });
+    var maxCount = byCount[0] ? byCount[0].count : 1;
+
+    var spreadRatio = lowestSector && lowestSector.median > 0
+        ? (highestSector.median / lowestSector.median).toFixed(1) : '—';
+
+    var html = '';
+
+    // Sector count
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + sectors.length + '</span>';
+    html += '<span class="summary-stat-label">sectors</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Highest paying sector
+    if (highestSector && highestSector.median > 0) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Highest median</span>';
+        html += '<span class="summary-stat-value" style="color:' + getSectorColor(highestSector.name) + '">';
+        html += highestSector.name + ' ' + formatCurrency(highestSector.median);
+        html += '</span></span>';
+    }
+
+    // Lowest paying sector
+    if (lowestSector && lowestSector.median > 0 && lowestSector.name !== highestSector.name) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Lowest median</span>';
+        html += '<span class="summary-stat-value" style="color:' + getSectorColor(lowestSector.name) + '">';
+        html += lowestSector.name + ' ' + formatCurrency(lowestSector.median);
+        html += '</span></span>';
+    }
+
+    // Spread ratio
+    if (spreadRatio !== '—') {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Spread</span>';
+        html += '<span class="summary-stat-value">' + spreadRatio + '×</span>';
+        html += '</span>';
+    }
+
+    html += '<span class="summary-divider"></span>';
+
+    // Mini sector distribution — color-coded bars showing company count per sector
+    html += '<span class="summary-stat sector-sort-dist">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="sector-sort-bars">';
+    byCount.forEach(function(s) {
+        var barH = Math.max(3, Math.round(s.count / maxCount * 24));
+        var color = getSectorColor(s.name);
+        html += '<span class="sector-sort-bar-group" title="' + s.name + ': ' + s.count + ' companies, median ' + formatCurrency(s.median) + '">';
+        html += '<span class="sector-sort-bar" style="height:' + barH + 'px;background:' + color + '"></span>';
+        html += '<span class="sector-sort-bar-count">' + s.count + '</span>';
+        html += '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
 
     return html;
 }
