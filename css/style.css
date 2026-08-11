@@ -4653,3 +4653,94 @@ footer li::before {
 @media (max-width: 600px) {
     .pctile-col, .pctile-cell { display: none; }
 }
+
+/* === Touch target expansion for interactive histogram bars === */
+/* WCAG 2.5.5: minimum 24×24px touch targets for clickable inline bar charts.
+   Desktop bars (14–20px) and mobile bars (10–14px) are too narrow for finger taps.
+   Expand via wider bars + padding on touch devices without distorting data proportions. */
+@media (pointer: coarse) {
+    /* Sector sort distribution bars: 14px desktop / 10px mobile → 20px + padding = 26px touch target */
+    .sector-sort-bar-group {
+        padding: 6px 3px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .sector-sort-bar {
+        width: 20px;
+    }
+    .sector-sort-bars {
+        gap: 2px;
+    }
+
+    /* Compensation distribution bars: 20px desktop / 14px mobile → 24px + padding = 30px touch target */
+    .comp-dist-bar-group.clickable-bar {
+        padding: 6px 3px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .comp-dist-bar {
+        width: 24px;
+    }
+    .comp-dist-bracket-label {
+        width: 24px;
+    }
+    .comp-dist-bars {
+        gap: 2px;
+    }
+    .comp-dist-bracket-labels {
+        gap: 2px;
+    }
+
+    /* Active state feedback for touch (replaces hover which isn't available) */
+    .sector-sort-bar-group:active .sector-sort-bar,
+    .comp-dist-bar-group.clickable-bar:active .comp-dist-bar {
+        opacity: 0.65;
+        transform: scaleY(1.1);
+    }
+
+    /* Count labels slightly larger for readability on touch */
+    .sector-sort-bar-count {
+        font-size: 0.62rem;
+    }
+    .comp-dist-bar-label {
+        font-size: 0.65rem;
+    }
+}
+
+/* Combined: touch device + narrow screen — keep bars proportionate but still tappable */
+@media (pointer: coarse) and (max-width: 600px) {
+    .sector-sort-bar {
+        width: 16px;
+    }
+    .sector-sort-bar-group {
+        padding: 6px 4px;
+    }
+    .sector-sort-bars {
+        gap: 1px;
+    }
+    .sector-sort-bar-count {
+        font-size: 0.56rem;
+    }
+
+    .comp-dist-bar {
+        width: 20px;
+    }
+    .comp-dist-bracket-label {
+        width: 20px;
+    }
+    .comp-dist-bar-group.clickable-bar {
+        padding: 6px 4px;
+    }
+    .comp-dist-bars {
+        gap: 1px;
+    }
+    .comp-dist-bracket-labels {
+        gap: 1px;
+    }
+    .comp-dist-bar-label {
+        font-size: 0.58rem;
+    }
+    .comp-dist-bracket-label {
+        font-size: 0.5rem;
+    }
+}
