@@ -3216,12 +3216,16 @@ function hideMetricSkeletons() {
         initCharts(companies, data.trends, data.comp);
     }
 
-    // === Sector Analytics Summary Table ===
+    // === Sector Analytics Summary Table (sortable) ===
     (function renderSectorAnalytics() {
         var tbody = document.getElementById('sector-analytics-tbody');
+        var thead = document.querySelector('#sector-analytics-table thead');
         if (!tbody) return;
 
-        // Compute per-sector metrics
+        // Current sort state for sector analytics table
+        var saSort = { key: 'median', dir: 'desc' };
+
+        // Compute per-sector metrics (once)
         var sectorMap = {};
         companies.forEach(function(c) {
             if (!c.sector) return;
@@ -3229,7 +3233,7 @@ function hideMetricSkeletons() {
             sectorMap[c.sector].push(c);
         });
 
-        var rows = [];
+        var saRows = [];
         Object.keys(sectorMap).forEach(function(sector) {
             var comps = sectorMap[sector];
             var count = comps.length;
@@ -3265,7 +3269,7 @@ function hideMetricSkeletons() {
                 return (c.total_compensation || 0) > (best.total_compensation || 0) ? c : best;
             }, comps[0]);
 
-            rows.push({
+            saRows.push({
                 sector: sector,
                 count: count,
                 median: median,
@@ -3278,9 +3282,6 @@ function hideMetricSkeletons() {
             });
         });
 
-        // Sort by median pay descending
-        rows.sort(function(a, b) { return b.median - a.median; });
-
         function fmt(v) {
             if (v == null || v <= 0) return '—';
             if (v >= 1e9) return '$' + (v / 1e9).toFixed(1) + 'B';
@@ -3289,25 +3290,96 @@ function hideMetricSkeletons() {
             return '$' + v.toLocaleString();
         }
 
-        var maxMedian = Math.max.apply(null, rows.map(function(r) { return r.median; }));
+        // Render rows with current sort
+        function renderSARows() {
+            // Sort rows
+            var sorted = saRows.slice();
+            sorted.sort(function(a, b) {
+                var av = a[saSort.key];
+                var bv = b[saSort.key];
+                // Handle nulls — push to bottom
+                if (av == null) av = saSort.dir === 'asc' ? Infinity : -Infinity;
+                if (bv == null) bv = saSort.dir === 'asc' ? Infinity : -Infinity;
+                if (typeof av === 'string') av = av.toLowerCase();
+                if (typeof bv === 'string') bv = bv.toLowerCase();
+                if (av < bv) return saSort.dir === 'asc' ? -1 : 1;
+                if (av > bv) return saSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
 
-        tbody.innerHTML = rows.map(function(r) {
-            var barW = maxMedian > 0 ? Math.round(r.median / maxMedian * 100) : 0;
-            var eqClass = r.medianEq != null ? (r.medianEq >= 70 ? 'eq-high' : r.medianEq >= 40 ? 'eq-mid' : 'eq-low') : '';
-            var ratioClass = r.medianRatio != null ? (r.medianRatio > 500 ? 'ratio-high' : r.medianRatio > 200 ? 'ratio-mid' : 'ratio-low') : '';
-            return '<tr class="sector-analytics-row" data-sector="' + r.sector + '" tabindex="0">' +
-                '<td class="sa-sector"><span class="sa-sector-dot" style="background:' + getSectorColor(r.sector) + '"></span>' + r.sector + '</td>' +
-                '<td class="sa-count">' + r.count + '</td>' +
-                '<td class="sa-pay"><div class="sa-bar-cell"><div class="sa-bar" style="width:' + barW + '%"></div><span class="sa-bar-val">' + fmt(r.median) + '</span></div></td>' +
-                '<td class="sa-pay">' + fmt(r.mean) + '</td>' +
-                '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
-                '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
-                '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
-                '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
-                '</tr>';
-        }).join('');
+            var maxMedian = Math.max.apply(null, saRows.map(function(r) { return r.median; }));
 
-        // Click to filter main table by sector
+            tbody.innerHTML = sorted.map(function(r) {
+                var barW = maxMedian > 0 ? Math.round(r.median / maxMedian * 100) : 0;
+                var eqClass = r.medianEq != null ? (r.medianEq >= 70 ? 'eq-high' : r.medianEq >= 40 ? 'eq-mid' : 'eq-low') : '';
+                var ratioClass = r.medianRatio != null ? (r.medianRatio > 500 ? 'ratio-high' : r.medianRatio > 200 ? 'ratio-mid' : 'ratio-low') : '';
+                var isActive = activeSector === r.sector;
+                return '<tr class="sector-analytics-row' + (isActive ? ' sa-active' : '') + '" data-sector="' + r.sector + '" tabindex="0">' +
+                    '<td class="sa-sector"><span class="sa-sector-dot" style="background:' + getSectorColor(r.sector) + '"></span>' + r.sector + '</td>' +
+                    '<td class="sa-count">' + r.count + '</td>' +
+                    '<td class="sa-pay"><div class="sa-bar-cell"><div class="sa-bar" style="width:' + barW + '%"></div><span class="sa-bar-val">' + fmt(r.median) + '</span></div></td>' +
+                    '<td class="sa-pay">' + fmt(r.mean) + '</td>' +
+                    '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
+                    '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
+                    '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
+                    '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        // Update header sort indicators
+        function updateSAHeaders() {
+            if (!thead) return;
+            thead.querySelectorAll('.sa-sortable').forEach(function(th) {
+                th.classList.remove('sa-sorted-asc', 'sa-sorted-desc');
+                th.setAttribute('aria-sort', 'none');
+                if (th.dataset.saSort === saSort.key) {
+                    th.classList.add(saSort.dir === 'asc' ? 'sa-sorted-asc' : 'sa-sorted-desc');
+                    th.setAttribute('aria-sort', saSort.dir === 'asc' ? 'ascending' : 'descending');
+                }
+            });
+        }
+
+        // Initial render
+        renderSARows();
+        updateSAHeaders();
+
+        // Sort handler for header clicks
+        function handleSASort(th) {
+            var key = th.dataset.saSort;
+            if (!key) return;
+            if (saSort.key === key) {
+                // Toggle direction
+                saSort.dir = saSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                // New column — default direction: desc for numeric, asc for text
+                saSort.key = key;
+                saSort.dir = (key === 'sector' || key === 'highestName') ? 'asc' : 'desc';
+            }
+            updateSAHeaders();
+            renderSARows();
+            var sortLabel = th.textContent.replace(/[↑↓▲▼]/g, '').trim();
+            announce('Sector analytics sorted by ' + sortLabel + ', ' + (saSort.dir === 'asc' ? 'ascending' : 'descending'));
+        }
+
+        // Wire up header click and keyboard handlers
+        if (thead) {
+            thead.querySelectorAll('.sa-sortable').forEach(function(th) {
+                th.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    handleSASort(th);
+                });
+                th.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSASort(th);
+                    }
+                });
+            });
+        }
+
+        // Click to filter main table by sector (on tbody rows only)
         tbody.addEventListener('click', function(ev) {
             var row = ev.target.closest('.sector-analytics-row');
             if (!row) return;
@@ -3360,7 +3432,7 @@ function hideMetricSkeletons() {
             }
         });
 
-        // Keyboard support
+        // Keyboard support for row clicks
         tbody.addEventListener('keydown', function(ev) {
             if (ev.key === 'Enter' || ev.key === ' ') {
                 ev.preventDefault();

@@ -4363,6 +4363,51 @@ footer li::before {
     border-bottom: 2px solid rgba(255,255,255,0.08);
     white-space: nowrap;
 }
+/* Sortable sector analytics headers */
+.sa-sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 20px !important;
+    transition: color 0.15s ease;
+}
+.sa-sortable:hover {
+    color: var(--accent, #00b4d8);
+}
+.sa-sortable:focus-visible {
+    outline: 2px solid var(--accent, #00b4d8);
+    outline-offset: -2px;
+    border-radius: 3px;
+}
+.sa-sortable::after {
+    content: '⇅';
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.65rem;
+    opacity: 0.35;
+    transition: opacity 0.15s ease;
+}
+.sa-sortable:hover::after {
+    opacity: 0.7;
+}
+.sa-sortable.sa-sorted-asc::after {
+    content: '▲';
+    opacity: 1;
+    color: var(--accent, #00b4d8);
+    font-size: 0.6rem;
+}
+.sa-sortable.sa-sorted-desc::after {
+    content: '▼';
+    opacity: 1;
+    color: var(--accent, #00b4d8);
+    font-size: 0.6rem;
+}
+.sa-sortable.sa-sorted-asc,
+.sa-sortable.sa-sorted-desc {
+    color: var(--accent, #00b4d8);
+}
 .sector-analytics-row {
     cursor: pointer;
     transition: background 0.15s ease;
@@ -4441,6 +4486,20 @@ footer li::before {
 [data-theme="light"] .sector-analytics-table thead th {
     color: #6b7280;
     border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .sa-sortable:hover {
+    color: #0077b6;
+}
+[data-theme="light"] .sa-sortable.sa-sorted-asc,
+[data-theme="light"] .sa-sortable.sa-sorted-desc {
+    color: #0077b6;
+}
+[data-theme="light"] .sa-sortable.sa-sorted-asc::after,
+[data-theme="light"] .sa-sortable.sa-sorted-desc::after {
+    color: #0077b6;
+}
+[data-theme="light"] .sa-sortable:focus-visible {
+    outline-color: #0077b6;
 }
 [data-theme="light"] .sector-analytics-row:hover {
     background: rgba(0,0,0,0.03);
