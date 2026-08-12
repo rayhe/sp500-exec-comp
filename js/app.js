@@ -196,6 +196,46 @@ function computeCeoStockPct(companies) {
 
 /* Pre-compute compensation percentile rank for each company (100 = highest paid).
    Sets c._compPercentile (1-100) based on rank within the full dataset. */
+/* Pre-compute CEO pay concentration: CEO total as % of total NEO compensation + CEO premium ratio (CEO / #2 exec) */
+function computeCeoConcentration(companies) {
+    companies.forEach(function(c) {
+        c._ceoConcPct = null;
+        c._ceoPremiumRatio = null;
+        if (!c.executives || c.executives.length === 0) return;
+
+        // Find latest fiscal year
+        var latestYear = 0;
+        c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+        var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        if (latestExecs.length < 2) return;
+
+        // Identify CEO
+        var ceo = latestExecs.find(function(e) {
+            return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+        });
+        if (!ceo) {
+            ceo = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+        }
+        if (!ceo || !ceo.total || ceo.total <= 0) return;
+
+        // Total NEO comp
+        var totalNeo = latestExecs.reduce(function(s, e) { return s + (e.total || 0); }, 0);
+        if (totalNeo <= 0) return;
+
+        c._ceoConcPct = (ceo.total / totalNeo * 100);
+
+        // CEO premium: CEO total / #2 exec total
+        var otherExecs = latestExecs.filter(function(e) { return e !== ceo && e.total > 0; });
+        if (otherExecs.length > 0) {
+            otherExecs.sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
+            var secondExec = otherExecs[0];
+            if (secondExec.total > 0) {
+                c._ceoPremiumRatio = ceo.total / secondExec.total;
+            }
+        }
+    });
+}
+
 function computeCompPercentile(companies) {
     var withComp = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
     withComp.sort(function(a, b) { return a.total_compensation - b.total_compensation; });
@@ -582,6 +622,24 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // 10. CEO Pay Concentration — how much does the CEO take of total NEO comp
+    var concCompanies = companies.filter(function(c) { return c._ceoConcPct != null; });
+    if (concCompanies.length > 0) {
+        var concSorted = concCompanies.slice().sort(function(a, b) { return b._ceoConcPct - a._ceoConcPct; });
+        var mostConc = concSorted[0];
+        var leastConc = concSorted[concSorted.length - 1];
+        var allConcPcts = concCompanies.map(function(c) { return c._ceoConcPct; });
+        var medConc = computeMedian(allConcPcts);
+        var above50 = concCompanies.filter(function(c) { return c._ceoConcPct >= 50; });
+        insights.push({
+            icon: '👑',
+            label: 'CEO Concentration',
+            value: above50.length + ' CEOs take ≥50%',
+            detail: above50.length + ' CEOs earn at least half of their executive team\'s total compensation. Most concentrated: ' + mostConc.ceo_name + ' (' + mostConc.ticker + ') at ' + mostConc._ceoConcPct.toFixed(1) + '%. Most distributed: ' + leastConc.ticker + ' at ' + leastConc._ceoConcPct.toFixed(1) + '%. S&P 500 median: ' + medConc.toFixed(1) + '%.',
+            _tickers: [mostConc.ticker, leastConc.ticker]
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -596,6 +654,11 @@ function populateInsights(comp, trends) {
             window._activeRatioBucket = null;
             var rc = document.getElementById('ratio-filter-chip');
             if (rc) rc.remove();
+        }
+        if (window._activeDistFilter) {
+            window._activeDistFilter = null;
+            var dc = document.getElementById('dist-filter-chip');
+            if (dc) dc.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -673,6 +736,12 @@ function populateInsights(comp, trends) {
     if (insights[8]) {
         insights[8].action = function() { insightResetAndSort('_compPercentile', 'desc'); };
         insights[8].actionHint = 'Sort by percentile';
+    }
+
+    // 10. CEO Concentration → sort by total comp desc (concentrated CEOs tend to be at the top)
+    if (insights[9]) {
+        insights[9].action = function() { insightResetAndSort('total_compensation', 'desc'); };
+        insights[9].actionHint = 'View top CEOs';
     }
 
     // Render cards
@@ -950,18 +1019,6 @@ function buildSectorChips(companies) {
     allChip.addEventListener('click', function() {
         activeSector = null;
         currentPage = 1;
-        // Clear ratio bucket filter if active
-        if (window._activeRatioBucket) {
-            window._activeRatioBucket = null;
-            var rc = document.getElementById('ratio-filter-chip');
-            if (rc) rc.remove();
-        }
-        // Clear distribution filter if active
-        if (window._activeDistFilter) {
-            window._activeDistFilter = null;
-            var dc = document.getElementById('dist-filter-chip');
-            if (dc) dc.remove();
-        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
         renderTable(companies);
@@ -977,18 +1034,6 @@ function buildSectorChips(companies) {
         chip.addEventListener('click', function() {
             activeSector = s;
             currentPage = 1;
-            // Clear ratio bucket filter if active
-            if (window._activeRatioBucket) {
-                window._activeRatioBucket = null;
-                var rc = document.getElementById('ratio-filter-chip');
-                if (rc) rc.remove();
-            }
-            // Clear distribution filter if active
-            if (window._activeDistFilter) {
-                window._activeDistFilter = null;
-                var dc = document.getElementById('dist-filter-chip');
-                if (dc) dc.remove();
-            }
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
             renderTable(companies);
@@ -2406,6 +2451,21 @@ function setupDetailPanel(companies) {
             html += '<div class="detail-stat"><div class="detail-stat-label">Total NEO Comp</div><div class="detail-stat-value">' + formatCurrency(company.total_neo_compensation) + '</div><div class="detail-stat-sub">' + (company.neo_count || '—') + ' Named Executives, FY' + (company.proxy_fiscal_year || '') + '</div></div>';
         }
 
+        // CEO Pay Concentration — CEO comp as % of total NEO compensation
+        if (company._ceoConcPct != null) {
+            var concPct = company._ceoConcPct;
+            var concCls = concPct >= 50 ? 'negative' : concPct >= 35 ? '' : 'positive';
+            var concLabel = concPct >= 50 ? 'Concentrated' : concPct >= 35 ? 'Moderate' : 'Distributed';
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO Concentration</div><div class="detail-stat-value ' + concCls + '">' + concPct.toFixed(1) + '%</div>' + distBar(concPct, '0%', '100%') + '<div class="detail-stat-sub">' + concLabel + ' — CEO share of NEO total</div></div>';
+        }
+
+        // CEO Premium — CEO pay vs #2 exec
+        if (company._ceoPremiumRatio != null) {
+            var premRatio = company._ceoPremiumRatio;
+            var premStr = premRatio >= 10 ? premRatio.toFixed(0) + '×' : premRatio.toFixed(1) + '×';
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO Premium</div><div class="detail-stat-value">' + premStr + '</div><div class="detail-stat-sub">CEO pay vs. #2 executive</div></div>';
+        }
+
         html += '</div>'; // detail-stats
 
         // CEO Compensation Breakdown — visual stacked bar
@@ -3181,6 +3241,9 @@ function hideMetricSkeletons() {
     // Pre-compute compensation percentile rank for cross-reference badges
     computeCompPercentile(companies);
 
+    // Pre-compute CEO pay concentration (CEO % of total NEO comp + CEO premium ratio)
+    computeCeoConcentration(companies);
+
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
 
@@ -3199,11 +3262,6 @@ function hideMetricSkeletons() {
         activeSector = sectorName || null;
         currentPage = 1;
 
-        // Clear distribution filter when sector filter changes directly
-        window._activeDistFilter = null;
-        var distChip = document.getElementById('dist-filter-chip');
-        if (distChip) distChip.remove();
-
         // Update sector chip active states
         document.querySelectorAll('.chip').forEach(function(chip) {
             chip.classList.remove('active');
@@ -3216,9 +3274,6 @@ function hideMetricSkeletons() {
 
         // Highlight active bar in sector chart
         if (window.highlightSectorBar) window.highlightSectorBar(sectorName);
-
-        // Clear ratio bucket highlight (sector filter clears ratio)
-        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -3333,11 +3388,8 @@ function hideMetricSkeletons() {
             window._activeDistFilter = { sector: null, min: minComp, max: maxComp, label: label };
         }
 
-        // Clear other filters
-        activeSector = null;
-        searchTerm = '';
+        // Clear ratio filter (mutually exclusive histogram-style filters)
         currentPage = 1;
-        document.getElementById('table-search').value = '';
         window._activeRatioBucket = null;
         var rc = document.getElementById('ratio-filter-chip');
         if (rc) rc.remove();
@@ -3351,12 +3403,6 @@ function hideMetricSkeletons() {
                 t.classList.add('sorted-desc');
                 t.setAttribute('aria-sort', 'descending');
             }
-        });
-
-        // Reset sector chips
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (chip.textContent === 'All') chip.classList.add('active');
         });
 
         updateDistFilterIndicator();
@@ -3375,17 +3421,6 @@ function hideMetricSkeletons() {
         }
         currentPage = 1;
 
-        // Clear other filters
-        window._activeDistFilter = null;
-        var distChip = document.getElementById('dist-filter-chip');
-        if (distChip) distChip.remove();
-
-        if (window._activeRatioBucket) {
-            window._activeRatioBucket = null;
-            var ratioChip = document.getElementById('ratio-filter-chip');
-            if (ratioChip) ratioChip.remove();
-        }
-
         // Update sector chip active states
         document.querySelectorAll('.chip').forEach(function(chip) {
             chip.classList.remove('active');
@@ -3395,7 +3430,6 @@ function hideMetricSkeletons() {
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
-        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
 
         // Highlight active row in sector analytics table
         var saRows = document.querySelectorAll('.sector-analytics-row');
@@ -3418,18 +3452,11 @@ function hideMetricSkeletons() {
             window._activeRatioBucket = { min: minRatio, max: maxRatio };
         }
 
-        // Clear other filters for clarity
-        activeSector = null;
-        searchTerm = '';
+        // Clear dist filter (mutually exclusive histogram-style filters), preserve sector
         currentPage = 1;
         window._activeDistFilter = null;
         var distChip = document.getElementById('dist-filter-chip');
         if (distChip) distChip.remove();
-        document.getElementById('table-search').value = '';
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (chip.textContent === 'All') chip.classList.add('active');
-        });
 
         // Sort by pay ratio descending
         currentSort = { key: 'pay_ratio', dir: 'desc' };
@@ -3442,9 +3469,6 @@ function hideMetricSkeletons() {
         updateRatioFilterIndicator();
 
         renderTable(companies);
-
-        // Clear sector chart highlight (sector was cleared)
-        if (window.highlightSectorBar) window.highlightSectorBar(null);
 
         // Highlight active ratio bucket in histogram
         if (window.highlightRatioBucket) {
@@ -3724,18 +3748,6 @@ function hideMetricSkeletons() {
                 }
                 currentPage = 1;
 
-                // Clear distribution filter when sector changes
-                window._activeDistFilter = null;
-                var distChip = document.getElementById('dist-filter-chip');
-                if (distChip) distChip.remove();
-
-                // Clear ratio bucket filter when sector changes
-                if (window._activeRatioBucket) {
-                    window._activeRatioBucket = null;
-                    var ratioChip = document.getElementById('ratio-filter-chip');
-                    if (ratioChip) ratioChip.remove();
-                }
-
                 renderTable(companies);
 
                 // Update sector chip active states
@@ -3746,7 +3758,6 @@ function hideMetricSkeletons() {
                 });
 
                 if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
-                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
 
                 // Highlight active row in sector analytics table
                 tbody.querySelectorAll('.sector-analytics-row').forEach(function(r) {
@@ -4052,6 +4063,7 @@ function hideMetricSkeletons() {
 
             // CSV header and rows
             var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+                'CEO Concentration %', 'CEO Premium Ratio',
                 'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
                 'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
                 'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
@@ -4099,6 +4111,8 @@ function hideMetricSkeletons() {
                     csvEscape(c.sector || ''),
                     c.pay_ratio || '',
                     c.median_worker_pay || '',
+                    c._ceoConcPct != null ? c._ceoConcPct.toFixed(1) : '',
+                    c._ceoPremiumRatio != null ? c._ceoPremiumRatio.toFixed(2) : '',
                     sal, stk, opt, bon, inc, pen, oth,
                     csvEscape(salP), csvEscape(stkP), csvEscape(optP), csvEscape(bonP),
                     csvEscape(incP), csvEscape(penP), csvEscape(othP)
@@ -4394,11 +4408,25 @@ function hideMetricSkeletons() {
                 higherBetter: true,
                 getRank: function(ticker) { return workerRankMap[ticker] || null; },
                 unit: ''
+            },
+            {
+                label: 'CEO Concentration',
+                key: '_ceoConcPct',
+                format: function(v) { return v != null ? v.toFixed(1) + '%' : 'N/A'; },
+                color: function(v, max, min) {
+                    if (v == null) return null;
+                    if (v >= 50) return '#ef476f';
+                    if (v >= 35) return '#ffd166';
+                    return '#06d6a0';
+                },
+                higherBetter: false,
+                getRank: function() { return null; },
+                unit: '%'
             }
         ];
 
         var totalH = metrics.length * (n * (barH + 4) + 28 + groupGap) - groupGap + 16;
-        // Reserve extra space for 4th group (composition) — adjusted dynamically later if rendered
+        // Reserve extra space for composition group
         totalH += n * (barH + 4) + 28 + groupGap + 24;
 
         var svg = d3.select(container).append('svg')
