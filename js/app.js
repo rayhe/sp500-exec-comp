@@ -3771,6 +3771,139 @@ function hideMetricSkeletons() {
         });
     })();
 
+    // === Sector × Component Compensation Heatmap ===
+    (function renderSectorCompHeatmap() {
+        var container = document.getElementById('sector-comp-heatmap');
+        if (!container) return;
+
+        var COMP_KEYS = [
+            { key: 'salary', label: 'Salary', color: '#06d6a0' },
+            { key: 'stock_awards', label: 'Stock', color: '#00b4d8' },
+            { key: 'option_awards', label: 'Options', color: '#0096c7' },
+            { key: 'non_equity_incentive', label: 'Incentive', color: '#a78bfa' },
+            { key: 'bonus', label: 'Bonus', color: '#8b5cf6' },
+            { key: 'all_other', label: 'Other', color: '#ffd166' }
+        ];
+
+        // Group companies by sector and compute CEO component medians
+        var sectorMap = {};
+        companies.forEach(function(c) {
+            if (!c.sector || !c.executives || c.executives.length === 0) return;
+            if (!sectorMap[c.sector]) sectorMap[c.sector] = [];
+
+            // Find CEO in latest year
+            var allYears = [];
+            c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+            allYears.sort(function(a, b) { return b - a; });
+            var latestExecs = c.executives.filter(function(e) { return e.year === allYears[0]; });
+
+            var ceo = latestExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo && latestExecs.length > 0) {
+                ceo = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            if (ceo && ceo.total && ceo.total > 0) sectorMap[c.sector].push(ceo);
+        });
+
+        function median(arr) {
+            if (!arr.length) return 0;
+            var s = arr.slice().sort(function(a, b) { return a - b; });
+            var mid = Math.floor(s.length / 2);
+            return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+        }
+
+        // Build sector rows with median component %
+        var sectorRows = [];
+        var allSectors = Object.keys(sectorMap).sort(function(a, b) {
+            var medA = median(sectorMap[a].map(function(e) { return e.total; }));
+            var medB = median(sectorMap[b].map(function(e) { return e.total; }));
+            return medB - medA;
+        });
+
+        var globalMaxPct = 0;
+        allSectors.forEach(function(sector) {
+            var ceos = sectorMap[sector];
+            var row = { sector: sector, count: ceos.length, medianTotal: median(ceos.map(function(e) { return e.total; })), components: {} };
+            COMP_KEYS.forEach(function(ck) {
+                var pcts = ceos.map(function(e) {
+                    var val = e[ck.key] || 0;
+                    return e.total > 0 ? (val / e.total * 100) : 0;
+                });
+                var medPct = median(pcts);
+                var medDollar = median(ceos.map(function(e) { return e[ck.key] || 0; }));
+                row.components[ck.key] = { pct: medPct, dollar: medDollar };
+                if (medPct > globalMaxPct) globalMaxPct = medPct;
+            });
+            sectorRows.push(row);
+        });
+
+        // Render table
+        var html = '<div class="sector-comp-heatmap-wrapper"><table class="sector-comp-heatmap" aria-label="Compensation component mix by sector"><thead><tr>';
+        html += '<th class="hm-sector-th">Sector</th>';
+        COMP_KEYS.forEach(function(ck) {
+            html += '<th>' + ck.label + '</th>';
+        });
+        html += '<th>Median Total</th></tr></thead><tbody>';
+
+        sectorRows.forEach(function(row) {
+            html += '<tr>';
+            var sColor = getSectorColor(row.sector);
+            html += '<td class="hm-sector-label" data-sector="' + row.sector + '" title="Click to filter table to ' + row.sector + ' (' + row.count + ' companies)"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + sColor + ';margin-right:6px;vertical-align:middle;"></span>' + row.sector + '</td>';
+
+            COMP_KEYS.forEach(function(ck) {
+                var comp = row.components[ck.key];
+                if (comp.pct < 0.5) {
+                    html += '<td><div class="hm-cell hm-zero" title="' + ck.label + ': <0.5% in ' + row.sector + '"><span class="hm-cell-val">—</span></div></td>';
+                    return;
+                }
+                // Color intensity: opacity 0.2 (low) to 0.9 (high), scaled by component's max across sectors
+                var intensity = Math.min(0.92, 0.18 + (comp.pct / globalMaxPct) * 0.74);
+                var bgColor = hexToRgba(ck.color, intensity);
+                // Text contrast: light text on dark backgrounds, dark on light
+                var textColor = intensity > 0.55 ? '#fff' : (isDarkTheme() ? '#e4e4e7' : '#1a1a2e');
+                var title = row.sector + ' — ' + ck.label + ': ' + comp.pct.toFixed(1) + '% (median ' + formatCompact(comp.dollar) + ')';
+                html += '<td><div class="hm-cell" style="background:' + bgColor + ';color:' + textColor + '" data-sector="' + row.sector + '" data-component="' + ck.key + '" title="' + title + '"><span class="hm-cell-val">' + Math.round(comp.pct) + '%</span><span class="hm-cell-dollar">' + formatCompact(comp.dollar) + '</span></div></td>';
+            });
+
+            html += '<td class="hm-total">' + formatCurrency(row.medianTotal) + '</td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+
+        // Color scale legend
+        html += '<div class="hm-footer">';
+        COMP_KEYS.forEach(function(ck) {
+            html += '<span class="hm-footer-stat"><span class="hm-footer-swatch" style="background:' + ck.color + '"></span>' + ck.label + '</span>';
+        });
+        html += '</div>';
+
+        container.innerHTML = html;
+
+        // Click handlers: sector labels → filter table
+        container.querySelectorAll('.hm-sector-label').forEach(function(td) {
+            td.addEventListener('click', function() {
+                var sector = td.dataset.sector;
+                if (window.filterBySector) window.filterBySector(sector);
+            });
+        });
+
+        // Click handlers: cells → filter table to sector + sort by stock %
+        container.querySelectorAll('.hm-cell:not(.hm-zero)').forEach(function(cell) {
+            cell.addEventListener('click', function() {
+                var sector = cell.dataset.sector;
+                if (window.filterBySector) window.filterBySector(sector);
+            });
+        });
+    })();
+
+    function hexToRgba(hex, alpha) {
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
+    }
+
     // Restore state from URL hash (after charts/network are initialized)
     applyHashState(companies);
     _stateInitialized = true;
