@@ -1021,6 +1021,9 @@ function buildSectorChips(companies) {
         currentPage = 1;
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
+        // Refresh combined filter chips to remove sector context
+        if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
+        if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1036,6 +1039,9 @@ function buildSectorChips(companies) {
             currentPage = 1;
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
+            // Refresh combined filter chips to include sector context
+            if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
+            if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1649,6 +1655,26 @@ function renderSummaryBar(filtered, allCompanies) {
 
     // Build HTML
     var html = '';
+
+    // Combined filter indicator when 2+ filter dimensions are active
+    var filterDims = 0;
+    var filterParts = [];
+    if (activeSector) { filterDims++; filterParts.push(activeSector); }
+    if (window._activeDistFilter && !window._activeDistFilter.sector) { filterDims++; filterParts.push(window._activeDistFilter.label); }
+    if (window._activeRatioBucket) {
+        filterDims++;
+        var rb = window._activeRatioBucket;
+        filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
+    }
+    if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
+
+    if (filterDims >= 2) {
+        html += '<span class="summary-stat combined-filter-badge">';
+        html += '<span class="combined-filter-icon">⧉</span>';
+        html += '<span class="summary-stat-label">' + filterParts.join(' × ') + '</span>';
+        html += '</span>';
+        html += '<span class="summary-divider"></span>';
+    }
 
     // Company count
     html += '<span class="summary-stat">';
@@ -3269,6 +3295,10 @@ function hideMetricSkeletons() {
             else if (chip.textContent === sectorName) chip.classList.add('active');
         });
 
+        // Refresh filter chips to show/hide sector context
+        updateDistFilterIndicator();
+        updateRatioFilterIndicator();
+
         renderTable(companies);
         pushState();
 
@@ -3352,14 +3382,17 @@ function hideMetricSkeletons() {
 
         if (window._activeDistFilter) {
             var df = window._activeDistFilter;
+            // Build label with sector context when combined filtering
+            var isCombined = activeSector && !df.sector;
+            var chipLabel = isCombined ? activeSector + ' × ' + df.label : df.label;
             var chip = document.createElement('button');
-            chip.className = 'chip active';
+            chip.className = 'chip active combined-filter-chip';
             chip.id = 'dist-filter-chip';
-            chip.style.background = 'rgba(0,180,216,0.15)';
-            chip.style.borderColor = 'rgba(0,180,216,0.5)';
-            chip.style.color = '#00b4d8';
-            chip.innerHTML = df.label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
-            chip.title = 'Click to clear distribution filter';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + bracket filter' : 'Click to clear distribution filter';
             chip.addEventListener('click', function() {
                 window._activeDistFilter = null;
                 activeSector = null;
@@ -3375,6 +3408,7 @@ function hideMetricSkeletons() {
             if (controls) controls.appendChild(chip);
         }
     }
+    window._updateDistFilterIndicator = updateDistFilterIndicator;
 
     // Compensation bracket filter — filter table by clicking histogram bars
     window.filterByCompBracket = function(minComp, maxComp, label) {
@@ -3427,6 +3461,10 @@ function hideMetricSkeletons() {
             if (!activeSector && chip.textContent === 'All') chip.classList.add('active');
             else if (chip.textContent === activeSector) chip.classList.add('active');
         });
+
+        // Refresh filter chips to show/hide sector context
+        updateDistFilterIndicator();
+        updateRatioFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -3495,15 +3533,18 @@ function hideMetricSkeletons() {
 
         if (window._activeRatioBucket) {
             var bucket = window._activeRatioBucket;
-            var label = 'Ratio: ' + bucket.min + (bucket.max === Infinity ? '+' : '–' + bucket.max) + ':1';
+            var baseLabel = 'Ratio: ' + bucket.min + (bucket.max === Infinity ? '+' : '–' + bucket.max) + ':1';
+            // Build label with sector context when combined filtering
+            var isCombined = !!activeSector;
+            var label = isCombined ? activeSector + ' × ' + baseLabel : baseLabel;
             var chip = document.createElement('button');
-            chip.className = 'chip active';
+            chip.className = 'chip active combined-filter-chip';
             chip.id = 'ratio-filter-chip';
-            chip.style.background = 'rgba(239,71,111,0.15)';
-            chip.style.borderColor = 'rgba(239,71,111,0.5)';
-            chip.style.color = '#ef476f';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(239,71,111,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(239,71,111,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#ef476f';
             chip.innerHTML = label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
-            chip.title = 'Click to clear ratio filter';
+            chip.title = isCombined ? 'Click to clear combined sector + ratio filter' : 'Click to clear ratio filter';
             chip.addEventListener('click', function() {
                 window._activeRatioBucket = null;
                 chip.remove();
@@ -3514,6 +3555,7 @@ function hideMetricSkeletons() {
             if (controls) controls.appendChild(chip);
         }
     }
+    window._updateRatioFilterIndicator = updateRatioFilterIndicator;
 
     // Find a specific company in the table by ticker — used by Top 10 chart click
     window.findCompanyInTable = function(ticker) {
@@ -3747,6 +3789,10 @@ function hideMetricSkeletons() {
                     activeSector = sector;
                 }
                 currentPage = 1;
+
+                // Refresh combined filter chips to include/exclude sector context
+                if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
+                if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
 
                 renderTable(companies);
 
@@ -3982,28 +4028,12 @@ function hideMetricSkeletons() {
 
     // Update ratio filter chip UI if restored from hash
     if (window._activeRatioBucket) {
-        var existing = document.getElementById('ratio-filter-chip');
-        if (!existing) {
-            var bucket = window._activeRatioBucket;
-            var label = 'Ratio: ' + bucket.min + (bucket.max === Infinity ? '+' : '–' + bucket.max) + ':1';
-            var chip = document.createElement('button');
-            chip.className = 'chip active';
-            chip.id = 'ratio-filter-chip';
-            chip.style.background = 'rgba(239,71,111,0.15)';
-            chip.style.borderColor = 'rgba(239,71,111,0.5)';
-            chip.style.color = '#ef476f';
-            chip.innerHTML = label + ' <span style="margin-left:4px;font-weight:700;">×</span>';
-            chip.title = 'Click to clear ratio filter';
-            chip.addEventListener('click', function() {
-                window._activeRatioBucket = null;
-                chip.remove();
-                renderTable(companies);
-                pushState();
-                if (window.highlightRatioBucket) window.highlightRatioBucket(null);
-            });
-            var controls = document.querySelector('.table-controls');
-            if (controls) controls.appendChild(chip);
-        }
+        updateRatioFilterIndicator();
+    }
+
+    // Update dist filter chip UI if restored from hash
+    if (window._activeDistFilter) {
+        updateDistFilterIndicator();
     }
 
     // === CSV Export ===

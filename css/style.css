@@ -973,6 +973,44 @@ header h1 {
     font-size: 0.68rem;
     font-weight: 400;
     opacity: 0.7;
+
+/* Combined filter indicator in summary bar */
+}
+.combined-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 6px;
+    padding: 2px 10px;
+}
+.combined-filter-badge .summary-stat-label {
+    color: #a78bfa;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+}
+.combined-filter-icon {
+    font-size: 0.85rem;
+    color: #a78bfa;
+    opacity: 0.8;
+}
+[data-theme="light"] .combined-filter-badge {
+    background: rgba(99,102,241,0.08);
+    border-color: rgba(99,102,241,0.25);
+}
+[data-theme="light"] .combined-filter-badge .summary-stat-label {
+    color: #6366f1;
+}
+[data-theme="light"] .combined-filter-icon {
+    color: #6366f1;
+}
+
+/* Combined filter chip styling */
+.chip.combined-filter-chip {
+    font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
 /* Compensation distribution summary — inline mini histogram */
