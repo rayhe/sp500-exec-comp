@@ -506,6 +506,7 @@ function sortTableByKey(key, dir) {
     window._activeRatioBucket = null;
     window._activeDistFilter = null;
     window._activeConcTier = null;
+    window._activeCeoTransitionFilter = false;
 
     // Remove filter chips if present
     var ratioChip = document.getElementById('ratio-filter-chip');
@@ -778,6 +779,11 @@ function populateInsights(comp, trends) {
             var cc = document.getElementById('conc-filter-chip');
             if (cc) cc.remove();
         }
+        if (window._activeCeoTransitionFilter) {
+            window._activeCeoTransitionFilter = false;
+            var tc = document.getElementById('transition-filter-chip');
+            if (tc) tc.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -864,8 +870,8 @@ function populateInsights(comp, trends) {
 
     // 11. CEO Turnover → sort by YoY (new CEOs often have big YoY swings)
     if (insights[10]) {
-        insights[10].action = function() { insightResetAndSort('_ceoYoYSort', 'desc'); };
-        insights[10].actionHint = 'View CEO changes';
+        insights[10].action = function() { if (window.filterByCeoTransition) window.filterByCeoTransition(); };
+        insights[10].actionHint = 'Filter to CEO transitions';
     }
 
     // Render cards
@@ -1149,6 +1155,7 @@ function buildSectorChips(companies) {
         if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
         if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
         if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
+        if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1168,6 +1175,7 @@ function buildSectorChips(companies) {
             if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
             if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
             if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
+            if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1947,6 +1955,7 @@ function renderSummaryBar(filtered, allCompanies) {
     }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
+    if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
 
     if (filterDims >= 2) {
         html += '<span class="summary-stat combined-filter-badge">';
@@ -2115,6 +2124,44 @@ function renderSummaryBar(filtered, allCompanies) {
         }
     }
 
+    // CEO Transition filter summary stats
+    if (window._activeCeoTransitionFilter && filtered.length > 0) {
+        html += '<span class="summary-divider"></span>';
+        // Median transition comp
+        var transComps = filtered.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; }).sort(function(a, b) { return a - b; });
+        if (transComps.length > 0) {
+            var medTransComp = transComps[Math.floor(transComps.length / 2)];
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Median (new CEOs)</span>';
+            html += '<span class="summary-stat-value">' + formatCurrency(medTransComp) + '</span>';
+            html += '</span>';
+        }
+        // Count by transition year
+        var transYears = {};
+        filtered.forEach(function(c) {
+            if (c._ceoTransition) {
+                var yr = c._ceoTransition.newCeo.year;
+                transYears[yr] = (transYears[yr] || 0) + 1;
+            }
+        });
+        var transYearKeys = Object.keys(transYears).sort();
+        if (transYearKeys.length > 0) {
+            var yearParts = transYearKeys.map(function(y) { return 'FY' + y + ': ' + transYears[y]; });
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">By Year</span>';
+            html += '<span class="summary-stat-value" style="color:#fb923c">' + yearParts.join(', ') + '</span>';
+            html += '</span>';
+        }
+        // Highest paid new CEO
+        var topNew = filtered.slice().sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
+        if (topNew) {
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Highest Paid</span>';
+            html += '<span class="summary-stat-value">' + (topNew.ceo_name || 'N/A') + ' (' + topNew.ticker + ') ' + formatCurrency(topNew.total_compensation) + '</span>';
+            html += '</span>';
+        }
+    }
+
     bar.innerHTML = html;
 }
 
@@ -2161,6 +2208,11 @@ function renderTable(companies, options) {
         var ct = window._activeConcTier;
         filtered = filtered.filter(function(c) {
             return c._ceoConcPct != null && c._ceoConcPct >= ct.min && c._ceoConcPct < ct.max;
+        });
+    }
+    if (window._activeCeoTransitionFilter) {
+        filtered = filtered.filter(function(c) {
+            return c._ceoTransition != null;
         });
     }
 
@@ -2279,7 +2331,7 @@ function renderTable(companies, options) {
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
-            '<td>' + c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + '">NEW</span>' : '') + '</td>' +
+            '<td>' + c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge new-ceo-badge-clickable" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + ' \u2014 click to filter" onclick="event.stopPropagation();if(window.filterByCeoTransition)window.filterByCeoTransition()">NEW</span>' : '') + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
             '<td class="stock-pct-cell">' + stockPctCell + '</td>' +
@@ -2336,6 +2388,7 @@ function renderTable(companies, options) {
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
+    if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
     if (!options || !options.suppressAnnounce) announce(announceMsg);
@@ -3407,6 +3460,9 @@ function serializeState() {
         params.push('cttag=' + encodeURIComponent(window._activeConcTier.tag));
         params.push('ctlbl=' + encodeURIComponent(window._activeConcTier.label));
     }
+    if (window._activeCeoTransitionFilter) {
+        params.push('ceotrans=1');
+    }
     if (_expandedDetailTicker) {
         params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
@@ -3490,6 +3546,11 @@ function applyHashState(companies) {
             tag: state.cttag || 'Filtered',
             label: state.ctlbl || ''
         };
+    }
+
+    // CEO transition filter
+    if (state.ceotrans === '1') {
+        window._activeCeoTransitionFilter = true;
     }
 
     // Page (apply after filters so pagination is computed correctly)
@@ -3711,6 +3772,7 @@ function hideMetricSkeletons() {
         updateDistFilterIndicator();
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
+        updateCeoTransitionFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -3879,6 +3941,7 @@ function hideMetricSkeletons() {
         updateDistFilterIndicator();
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
+        updateCeoTransitionFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -4026,6 +4089,65 @@ function hideMetricSkeletons() {
         }
     }
     window._updateConcFilterIndicator = updateConcFilterIndicator;
+
+    // CEO Transition filter — toggle to show only companies with CEO changes
+    window.filterByCeoTransition = function() {
+        window._activeCeoTransitionFilter = !window._activeCeoTransitionFilter;
+        currentPage = 1;
+
+        // Sort by total compensation descending when activating
+        if (window._activeCeoTransitionFilter) {
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+        }
+
+        updateCeoTransitionFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeCeoTransitionFilter ? 'Filtered to companies with CEO transitions' : 'CEO transition filter cleared');
+
+        // Scroll to table
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updateCeoTransitionFilterIndicator() {
+        var existing = document.getElementById('transition-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeCeoTransitionFilter) {
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × CEO Transitions' : 'CEO Transitions';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'transition-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(251,146,60,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(251,146,60,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#fb923c';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + transition filter' : 'Click to clear CEO transition filter';
+            chip.addEventListener('click', function() {
+                window._activeCeoTransitionFilter = false;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateCeoTransitionFilterIndicator = updateCeoTransitionFilterIndicator;
 
     // Helper to derive rgba chip background from hex color
     function hexToChipBg(hex) {
@@ -4279,6 +4401,7 @@ function hideMetricSkeletons() {
                 if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
                 if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
                 if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
+                if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
 
                 renderTable(companies);
 
@@ -4461,6 +4584,11 @@ function hideMetricSkeletons() {
     // Apply ratio bucket highlight if restored from hash
     if (window._activeRatioBucket && window.highlightRatioBucket) {
         window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
+    }
+
+    // Apply CEO transition filter chip if restored from hash
+    if (window._activeCeoTransitionFilter) {
+        updateCeoTransitionFilterIndicator();
     }
 
     // === Table horizontal scroll indicator ===
@@ -5826,6 +5954,10 @@ function hideMetricSkeletons() {
         if (window._activeDistFilter) {
             updateDistFilterIndicator();
         }
+        // Restore CEO transition filter chip if present in hash state
+        if (window._activeCeoTransitionFilter) {
+            updateCeoTransitionFilterIndicator();
+        }
 
         // Restore or clear comparison set from hash
         var hashState = parseHash();
@@ -5979,7 +6111,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter) {
                 activeSector = null;
                 searchTerm = '';
                 currentPage = 1;
@@ -5998,6 +6130,11 @@ function hideMetricSkeletons() {
                     window._activeConcTier = null;
                     var cc3 = document.getElementById('conc-filter-chip');
                     if (cc3) cc3.remove();
+                }
+                if (window._activeCeoTransitionFilter) {
+                    window._activeCeoTransitionFilter = false;
+                    var tc = document.getElementById('transition-filter-chip');
+                    if (tc) tc.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
@@ -6109,6 +6246,9 @@ function hideMetricSkeletons() {
                     totalFiltered = totalFiltered.filter(function(c) {
                         return c.total_compensation != null && c.total_compensation >= adf.min && c.total_compensation <= adf.max;
                     });
+                }
+                if (window._activeCeoTransitionFilter) {
+                    totalFiltered = totalFiltered.filter(function(c) { return c._ceoTransition != null; });
                 }
                 var maxPages = Math.max(1, Math.ceil(totalFiltered.length / PAGE_SIZE));
                 if (currentPage < maxPages) {

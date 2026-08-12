@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 497 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage.",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -97,9 +97,9 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-11",
-    "total_neo_records": 6205,
-    "title_coverage": 5798
+    "last_updated": "2026-08-12",
+    "total_neo_records": 6141,
+    "title_coverage": 6141
   },
   "companies": [
     {
