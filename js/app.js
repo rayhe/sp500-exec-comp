@@ -272,6 +272,89 @@ function getPercentileClass(pctile) {
     return 'pctile-low';
 }
 
+/* Pre-compute CEO transitions: detect when the CEO changed between fiscal years.
+   Sets c._ceoTransition = { oldCeo: {name, year, comp}, newCeo: {name, year, comp} } or null.
+   Sets c._ceoDataYears = number of fiscal years the current CEO appears in the data. */
+function computeCeoTransitions(companies) {
+    companies.forEach(function(c) {
+        c._ceoTransition = null;
+        c._ceoDataYears = null;
+        if (!c.executives || c.executives.length === 0) return;
+
+        // Collect unique fiscal years
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return a - b; }); // ascending
+        if (allYears.length < 2) {
+            c._ceoDataYears = 1;
+            return;
+        }
+
+        // Helper: find CEO for a given year's execs
+        function findCeoForYear(yr) {
+            var yrExecs = c.executives.filter(function(e) { return e.year === yr; });
+            if (yrExecs.length === 0) return null;
+            var ceo = yrExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo) {
+                ceo = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            return ceo ? { name: ceo.name || '', year: yr, comp: ceo.total || 0 } : null;
+        }
+
+        // Helper: normalize name for comparison (strip Jr/Sr/III, middle initials, lower, trim)
+        function normName(n) {
+            return (n || '').toLowerCase()
+                .replace(/\b(jr|sr|iii|iv|ii|mr|ms|dr|phd|former)\b\.?/g, '')
+                .replace(/[.,'"()]/g, '')
+                .replace(/\b[a-z]\b/g, '') // remove single-letter tokens (middle initials)
+                .replace(/\s+/g, ' ').trim();
+        }
+
+        // Find CEO for each year
+        var ceoByYear = [];
+        allYears.forEach(function(yr) {
+            var ceoInfo = findCeoForYear(yr);
+            if (ceoInfo) ceoByYear.push(ceoInfo);
+        });
+
+        if (ceoByYear.length < 2) {
+            c._ceoDataYears = ceoByYear.length;
+            return;
+        }
+
+        // Check for transitions: compare consecutive years from most recent backward
+        var latestCeo = ceoByYear[ceoByYear.length - 1];
+        var latestNorm = normName(latestCeo.name);
+
+        // Count how many consecutive years the current CEO appears (from latest backward)
+        var tenureCount = 1;
+        for (var i = ceoByYear.length - 2; i >= 0; i--) {
+            if (normName(ceoByYear[i].name) === latestNorm) {
+                tenureCount++;
+            } else {
+                break;
+            }
+        }
+        c._ceoDataYears = tenureCount;
+
+        // Detect transition: did the CEO change between any consecutive years?
+        // Report the most recent transition
+        for (var j = ceoByYear.length - 1; j >= 1; j--) {
+            var currNorm = normName(ceoByYear[j].name);
+            var prevNorm = normName(ceoByYear[j - 1].name);
+            if (currNorm !== prevNorm && currNorm.length > 0 && prevNorm.length > 0) {
+                c._ceoTransition = {
+                    oldCeo: ceoByYear[j - 1],
+                    newCeo: ceoByYear[j]
+                };
+                break; // most recent transition only
+            }
+        }
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -458,7 +541,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -643,6 +726,33 @@ function populateInsights(comp, trends) {
         });
     }
 
+    // 11. CEO Turnover — companies that changed CEOs within the data window
+    var transitionCompanies = companies.filter(function(c) { return c._ceoTransition != null; });
+    if (transitionCompanies.length > 0) {
+        // Compute median comp for new vs continuing CEOs
+        var newCeoComps = transitionCompanies.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; });
+        var continuingCeoComps = companies.filter(function(c) { return c._ceoTransition == null && c.total_compensation > 0; })
+            .map(function(c) { return c.total_compensation; });
+        var medNewCeo = newCeoComps.length > 0 ? computeMedian(newCeoComps) : 0;
+        var medContinuingCeo = continuingCeoComps.length > 0 ? computeMedian(continuingCeoComps) : 0;
+        // Find fiscal year range
+        var transYears = transitionCompanies.map(function(c) { return c._ceoTransition.newCeo.year; });
+        var minTransYear = Math.min.apply(null, transYears);
+        var maxTransYear = Math.max.apply(null, transYears);
+        var yearRange = minTransYear === maxTransYear ? 'FY' + minTransYear : 'FY' + minTransYear + '\u2013' + maxTransYear;
+        // Most notable transition (highest paid new CEO)
+        var topNewCeo = transitionCompanies.slice().sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
+        var compDelta = medNewCeo > 0 && medContinuingCeo > 0 ? ((medNewCeo - medContinuingCeo) / medContinuingCeo * 100).toFixed(0) : null;
+        var compDeltaStr = compDelta ? (parseInt(compDelta) >= 0 ? '+' + compDelta + '%' : compDelta + '%') : '';
+        insights.push({
+            icon: '🔄',
+            label: 'CEO Turnover',
+            value: transitionCompanies.length + ' transitions',
+            detail: transitionCompanies.length + ' companies changed CEOs in ' + yearRange + '. New CEO median pay: ' + formatCurrency(medNewCeo) + (compDeltaStr ? ' (' + compDeltaStr + ' vs continuing CEOs at ' + formatCurrency(medContinuingCeo) + ')' : '') + '. Highest-paid new CEO: ' + (topNewCeo.ceo_name || 'N/A') + ' (' + topNewCeo.ticker + ') at ' + formatCurrency(topNewCeo.total_compensation) + '.',
+            _tickers: transitionCompanies.slice(0, 3).sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); }).map(function(c) { return c.ticker; })
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -750,6 +860,12 @@ function populateInsights(comp, trends) {
     if (insights[9]) {
         insights[9].action = function() { insightResetAndSort('total_compensation', 'desc'); };
         insights[9].actionHint = 'View top CEOs';
+    }
+
+    // 11. CEO Turnover → sort by YoY (new CEOs often have big YoY swings)
+    if (insights[10]) {
+        insights[10].action = function() { insightResetAndSort('_ceoYoYSort', 'desc'); };
+        insights[10].actionHint = 'View CEO changes';
     }
 
     // Render cards
@@ -1108,6 +1224,9 @@ function renderSortContextSummary(companies) {
     }
     if (currentSort.key === 'sector') {
         return renderSectorSortSummary(companies);
+    }
+    if (currentSort.key === 'ceo_name') {
+        return renderCeoNameSortSummary(companies);
     }
     return null;
 }
@@ -1710,6 +1829,69 @@ function renderSectorSortSummary(companies) {
     return html;
 }
 
+/* CEO Name sort context summary — shows CEO turnover stats when sorted by CEO name column. */
+function renderCeoNameSortSummary(companies) {
+    if (companies.length === 0) return null;
+
+    var transitionCompanies = companies.filter(function(c) { return c._ceoTransition != null; });
+    var continuingCompanies = companies.filter(function(c) { return c._ceoTransition == null && c._ceoDataYears != null && c._ceoDataYears >= 2; });
+
+    var html = '';
+
+    // Total companies shown
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-value accent">' + companies.length + '</span>';
+    html += '<span class="summary-stat-label">companies</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // CEO Transitions
+    html += '<span class="summary-stat">';
+    html += '<span class="summary-stat-label">CEO transitions</span>';
+    html += '<span class="summary-stat-value" style="color:#fb923c">' + transitionCompanies.length + '</span>';
+    html += '</span>';
+
+    // Continuing CEOs
+    if (continuingCompanies.length > 0) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Continuing CEOs</span>';
+        html += '<span class="summary-stat-value">' + continuingCompanies.length + '</span>';
+        html += '</span>';
+    }
+
+    if (transitionCompanies.length > 0) {
+        html += '<span class="summary-divider"></span>';
+
+        // New vs continuing CEO median comp
+        var newComps = transitionCompanies.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; });
+        var contComps = continuingCompanies.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; });
+        if (newComps.length > 0 && contComps.length > 0) {
+            var medNew = computeMedian(newComps);
+            var medCont = computeMedian(contComps);
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">New CEO median</span>';
+            html += '<span class="summary-stat-value">' + formatCurrency(medNew) + '</span>';
+            html += '</span>';
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Continuing CEO median</span>';
+            html += '<span class="summary-stat-value">' + formatCurrency(medCont) + '</span>';
+            html += '</span>';
+        }
+
+        // Most recent notable transition
+        var sorted = transitionCompanies.slice().sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); });
+        if (sorted[0]) {
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Highest-paid new CEO</span>';
+            html += '<span class="summary-stat-value" style="color:#fb923c">' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') ' + formatCurrency(sorted[0].total_compensation) + '</span>';
+            html += '</span>';
+        }
+    }
+
+    return html;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -2097,7 +2279,7 @@ function renderTable(companies, options) {
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
-            '<td>' + c.ceo_name + '</td>' +
+            '<td>' + c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + '">NEW</span>' : '') + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
             '<td class="stock-pct-cell">' + stockPctCell + '</td>' +
@@ -2622,6 +2804,14 @@ function setupDetailPanel(companies) {
             var premRatio = company._ceoPremiumRatio;
             var premStr = premRatio >= 10 ? premRatio.toFixed(0) + '×' : premRatio.toFixed(1) + '×';
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Premium</div><div class="detail-stat-value">' + premStr + '</div><div class="detail-stat-sub">CEO pay vs. #2 executive</div></div>';
+        }
+
+        // CEO History — transition/tenure data
+        if (company._ceoTransition) {
+            var _tr = company._ceoTransition;
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO Transition</div><div class="detail-stat-value ceo-transition-new">New CEO</div><div class="detail-stat-sub">Succeeded ' + (_tr.oldCeo.name || 'previous CEO') + ' after FY' + _tr.oldCeo.year + '</div></div>';
+        } else if (company._ceoDataYears && company._ceoDataYears >= 2) {
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO Tenure</div><div class="detail-stat-value">' + company._ceoDataYears + '+ years</div><div class="detail-stat-sub">In role since at least FY' + (company.executives ? (function() { var yrs = []; company.executives.forEach(function(e) { if (yrs.indexOf(e.year) < 0) yrs.push(e.year); }); yrs.sort(function(a,b){return a-b;}); return yrs[0]; })() : '?') + '</div></div>';
         }
 
         html += '</div>'; // detail-stats
@@ -3417,6 +3607,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute CEO pay concentration (CEO % of total NEO comp + CEO premium ratio)
     computeCeoConcentration(companies);
+
+    // Pre-compute CEO transitions (detect CEO changes between fiscal years)
+    computeCeoTransitions(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
@@ -4320,7 +4513,7 @@ function hideMetricSkeletons() {
 
             // CSV header and rows
             var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
-                'CEO Concentration %', 'CEO Premium Ratio',
+                'CEO Concentration %', 'CEO Premium Ratio', 'CEO Transition', 'CEO Data Years',
                 'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
                 'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
                 'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
@@ -4370,6 +4563,8 @@ function hideMetricSkeletons() {
                     c.median_worker_pay || '',
                     c._ceoConcPct != null ? c._ceoConcPct.toFixed(1) : '',
                     c._ceoPremiumRatio != null ? c._ceoPremiumRatio.toFixed(2) : '',
+                    c._ceoTransition ? csvEscape('Yes: ' + c._ceoTransition.oldCeo.name + ' → ' + c._ceoTransition.newCeo.name) : 'No',
+                    c._ceoDataYears || '',
                     sal, stk, opt, bon, inc, pen, oth,
                     csvEscape(salP), csvEscape(stkP), csvEscape(optP), csvEscape(bonP),
                     csvEscape(incP), csvEscape(penP), csvEscape(othP)
