@@ -2160,6 +2160,39 @@ function renderSummaryBar(filtered, allCompanies) {
             html += '<span class="summary-stat-value">' + (topNew.ceo_name || 'N/A') + ' (' + topNew.ticker + ') ' + formatCurrency(topNew.total_compensation) + '</span>';
             html += '</span>';
         }
+
+        // Sector distribution histogram — mini bar chart showing transition count by sector
+        var transSectorMap = {};
+        filtered.forEach(function(c) {
+            var s = c.sector || 'Unknown';
+            transSectorMap[s] = (transSectorMap[s] || 0) + 1;
+        });
+        var transSectors = Object.keys(transSectorMap).map(function(k) {
+            return { name: k, count: transSectorMap[k] };
+        }).sort(function(a, b) { return b.count - a.count; });
+        var transMaxCount = transSectors.length > 0 ? transSectors[0].count : 1;
+
+        if (transSectors.length > 1) {
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat sector-sort-dist">';
+            html += '<span class="summary-stat-label">By Sector</span>';
+            html += '<span class="sector-sort-bars">';
+            transSectors.forEach(function(s) {
+                var barH = Math.max(3, Math.round(s.count / transMaxCount * 24));
+                var color = getSectorColor(s.name);
+                var isActive = (activeSector === s.name);
+                var isDimmed = (activeSector && !isActive);
+                var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+                var activeOutline = isActive ? 'outline:2px solid ' + color + ';outline-offset:2px;border-radius:3px;' : '';
+                var escapedName = s.name.replace(/'/g, "\\'");
+                html += '<span class="sector-sort-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + s.name + ': ' + s.count + ' CEO transition' + (s.count > 1 ? 's' : '') + ' — click to ' + (isActive ? 'clear sector' : 'filter to ' + s.name) + '" onclick="filterBySectorFromBar(\'' + escapedName + '\')" style="cursor:pointer;' + activeOutline + '">';
+                html += '<span class="sector-sort-bar" style="height:' + barH + 'px;background:' + color + ';' + dimStyle + '"></span>';
+                html += '<span class="sector-sort-bar-count" style="' + dimStyle + '">' + s.count + '</span>';
+                html += '</span>';
+            });
+            html += '</span>';
+            html += '</span>';
+        }
     }
 
     bar.innerHTML = html;
@@ -5743,7 +5776,11 @@ function hideMetricSkeletons() {
             html += '</div>';
             html += '<div class="comparison-card-ticker">' + c.ticker + '</div>';
             html += '<div class="comparison-card-company">' + c.company_name + '</div>';
-            html += '<div class="comparison-card-ceo">' + c.ceo_name + '</div>';
+            html += '<div class="comparison-card-ceo">' + c.ceo_name;
+            if (c._ceoTransition) {
+                html += ' <span class="new-ceo-badge" title="CEO transition: succeeded ' + (c._ceoTransition.oldCeo.name || 'previous CEO').replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + '">NEW</span>';
+            }
+            html += '</div>';
 
             // Total Compensation
             html += '<div class="comparison-row"><span class="comparison-row-label">Total Comp</span><span class="comparison-row-value' + compClass + '">' + formatCurrency(c.total_compensation) + '</span></div>';
