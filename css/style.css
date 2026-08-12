@@ -2676,6 +2676,190 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     background: rgba(0,180,216,0.06);
 }
 
+/* === C-Suite Role Compensation Analysis === */
+.role-chart-container {
+    margin-top: 8px;
+}
+.role-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.role-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: default;
+}
+.role-bar-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+.role-bar-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.role-bar-count {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+.role-bar-track {
+    flex: 1;
+    height: 22px;
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 4px;
+    overflow: visible;
+}
+.role-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+.role-bar-iqr {
+    position: absolute;
+    top: -4px;
+    height: 30px;
+    border-radius: 3px;
+    z-index: 1;
+    pointer-events: none;
+}
+.role-bar-value {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 75px;
+    flex-shrink: 0;
+}
+.role-bar-median {
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+}
+.role-bar-ratio {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+}
+
+/* Role summary table */
+.role-table-wrap {
+    overflow-x: auto;
+    margin-top: 4px;
+}
+.role-table {
+    width: 100%;
+    border-spacing: 0;
+    font-size: 0.78rem;
+}
+.role-table thead th {
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border);
+}
+.role-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+.role-table tbody tr:hover td {
+    background: rgba(0,180,216,0.04);
+}
+.role-num {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+}
+.role-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.role-top-earner {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.role-top-ticker {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+.role-top-val {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.72rem;
+}
+
+/* NEO table role benchmark badge */
+.neo-role-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+    vertical-align: middle;
+}
+.neo-role-badge.positive {
+    color: var(--positive);
+    background: rgba(6,214,160,0.1);
+    border: 1px solid rgba(6,214,160,0.2);
+}
+.neo-role-badge.negative {
+    color: var(--negative);
+    background: rgba(239,71,111,0.1);
+    border: 1px solid rgba(239,71,111,0.2);
+}
+
+/* Light theme overrides for role analysis */
+[data-theme="light"] .role-bar-track {
+    background: #f1f5f9;
+}
+[data-theme="light"] .role-table tbody td {
+    border-bottom-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .role-table tbody tr:hover td {
+    background: rgba(0,180,216,0.06);
+}
+[data-theme="light"] .neo-role-badge.positive {
+    color: #047857;
+    background: rgba(6,214,160,0.08);
+    border-color: rgba(6,214,160,0.2);
+}
+[data-theme="light"] .neo-role-badge.negative {
+    color: #dc2626;
+    background: rgba(239,71,111,0.06);
+    border-color: rgba(239,71,111,0.15);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .role-bar-label { min-width: 60px; }
+    .role-bar-name { font-size: 0.72rem; }
+    .role-bar-value { min-width: 55px; }
+    .role-bar-median { font-size: 0.72rem; }
+    .role-bar-ratio { display: none; }
+    .role-bar-iqr { display: none; }
+    .role-table { font-size: 0.7rem; }
+    .role-top-earner { max-width: 120px; }
+    .neo-role-badge { display: none; }
+}
+
 /* Print */
 @media print {
     .hm-cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

@@ -355,6 +355,78 @@ function computeCeoTransitions(companies) {
     });
 }
 
+/* Classify an executive's title into a standard C-suite role category.
+   Returns one of: CEO, CFO, COO, GC/CLO, CHRO, CTO, CIO, Other */
+function classifyExecRole(title) {
+    if (!title) return 'Other';
+    var t = title.toLowerCase();
+    if (/\bceo\b|chief executive/i.test(t)) return 'CEO';
+    if (/\bcfo\b|chief financial/i.test(t)) return 'CFO';
+    if (/\bcoo\b|chief operating/i.test(t)) return 'COO';
+    if (/\bclo\b|general counsel|chief legal/i.test(t)) return 'GC/CLO';
+    if (/\bchro\b|chief human|chief people/i.test(t)) return 'CHRO';
+    if (/\bcto\b|chief technolog/i.test(t)) return 'CTO';
+    if (/\bcio\b|chief information/i.test(t)) return 'CIO';
+    return 'Other';
+}
+
+var ROLE_COLORS = {
+    'CEO': '#ef476f',
+    'CFO': '#06d6a0',
+    'COO': '#00b4d8',
+    'GC/CLO': '#a78bfa',
+    'CTO': '#ffd166',
+    'CHRO': '#fb923c',
+    'CIO': '#67e8f9',
+    'Other': '#94a3b8'
+};
+
+var ROLE_ORDER = ['CEO', 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', 'Other'];
+
+/* Pre-compute S&P 500 role-level compensation benchmarks from latest FY NEO data.
+   Sets window._roleBenchmarks = { role: { count, median, mean, p25, p75, max, topEarner } } */
+var _roleBenchmarks = null;
+function computeRoleBenchmarks(companies) {
+    var roleMap = {};
+    ROLE_ORDER.forEach(function(r) { roleMap[r] = []; });
+    companies.forEach(function(c) {
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        var maxYr = Math.max.apply(null, allYears);
+        c.executives.filter(function(e) { return e.year === maxYr; }).forEach(function(e) {
+            var role = classifyExecRole(e.title);
+            if (!roleMap[role]) roleMap[role] = [];
+            roleMap[role].push({ total: e.total || 0, ticker: c.ticker, name: e.name, sector: c.sector, title: e.title });
+        });
+    });
+
+    function arrMedian(arr) {
+        if (!arr.length) return 0;
+        var s = arr.slice().sort(function(a, b) { return a - b; });
+        var m = Math.floor(s.length / 2);
+        return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+    }
+
+    _roleBenchmarks = {};
+    ROLE_ORDER.forEach(function(role) {
+        var entries = roleMap[role];
+        if (!entries || entries.length === 0) return;
+        var totals = entries.map(function(r) { return r.total; }).sort(function(a, b) { return a - b; });
+        var topEarner = entries.slice().sort(function(a, b) { return b.total - a.total; })[0];
+        _roleBenchmarks[role] = {
+            count: totals.length,
+            median: arrMedian(totals),
+            mean: totals.reduce(function(s, v) { return s + v; }, 0) / totals.length,
+            p25: totals[Math.floor(totals.length * 0.25)],
+            p75: totals[Math.floor(totals.length * 0.75)],
+            max: totals[totals.length - 1],
+            topEarner: topEarner
+        };
+    });
+    window._roleBenchmarks = _roleBenchmarks;
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -872,6 +944,34 @@ function populateInsights(comp, trends) {
     if (insights[10]) {
         insights[10].action = function() { if (window.filterByCeoTransition) window.filterByCeoTransition(); };
         insights[10].actionHint = 'Filter to CEO transitions';
+    }
+
+    // 12. C-Suite Pay Gap insight card
+    if (_roleBenchmarks && _roleBenchmarks['CEO'] && _roleBenchmarks['CFO']) {
+        var _rbCeo = _roleBenchmarks['CEO'];
+        var _rbCfo = _roleBenchmarks['CFO'];
+        var _rbCoo = _roleBenchmarks['COO'];
+        var cfoRatio = _rbCeo.median > 0 ? (_rbCeo.median / _rbCfo.median).toFixed(1) : '?';
+        var cooStr = _rbCoo ? formatCompact(_rbCoo.median) + ' (COO, ' + _rbCoo.count + ')' : '';
+        var roleCount = ROLE_ORDER.filter(function(r) { return _roleBenchmarks[r] && r !== 'Other'; }).length;
+        insights.push({
+            icon: '👔',
+            label: 'C-Suite Pay Gap',
+            value: cfoRatio + '× CEO/CFO',
+            detail: 'CEO median ' + formatCurrency(_rbCeo.median) + ' vs CFO median ' + formatCurrency(_rbCfo.median) + ' (' + cfoRatio + '× gap). ' + (cooStr ? 'COO median: ' + formatCompact(_rbCoo.median) + '. ' : '') + roleCount + ' C-suite roles benchmarked across ' + _rbCeo.count + ' CEOs, ' + _rbCfo.count + ' CFOs' + (_rbCoo ? ', ' + _rbCoo.count + ' COOs' : '') + '.'
+        });
+    }
+
+    if (insights[11]) {
+        insights[11].action = function() {
+            var section = document.getElementById('role-comp-chart');
+            if (section) {
+                var headerHeight = getStickyOffset();
+                var top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+                window.scrollTo({ top: top, behavior: getScrollBehavior() });
+            }
+        };
+        insights[11].actionHint = 'View role analysis';
     }
 
     // Render cards
@@ -3237,7 +3337,21 @@ function setupDetailPanel(companies) {
                     html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
                     if (yrHasPension) html += '<td class="neo-num">' + ((exec.pension_nqdc || exec.pension_change) ? formatCompact(exec.pension_nqdc || exec.pension_change) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
-                    html += '<td class="neo-num neo-total">' + formatCompact(total) + '</td>';
+                    html += '<td class="neo-num neo-total">' + formatCompact(total);
+                    // Role benchmark context badge
+                    if (_roleBenchmarks && total > 0) {
+                        var _execRole = classifyExecRole(exec.title);
+                        var _rb = _roleBenchmarks[_execRole];
+                        if (_rb && _rb.median > 0 && _execRole !== 'Other') {
+                            var _vsRolePct = ((total - _rb.median) / _rb.median * 100);
+                            var _vsSign = _vsRolePct >= 0 ? '+' : '\u2212';
+                            var _vsCls = _vsRolePct >= 0 ? 'positive' : 'negative';
+                            var _vsAbsStr = Math.abs(_vsRolePct) >= 100 ? Math.round(Math.abs(_vsRolePct)) + '%' : Math.abs(_vsRolePct).toFixed(0) + '%';
+                            var _vsTitle = _vsSign + _vsAbsStr + ' vs S&P 500 ' + _execRole + ' median (' + formatCompact(_rb.median) + ')';
+                            html += ' <span class="neo-role-badge ' + _vsCls + '" title="' + _vsTitle + '">' + _vsSign + _vsAbsStr + '</span>';
+                        }
+                    }
+                    html += '</td>';
                     html += '</tr>';
                 });
 
@@ -3775,6 +3889,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute CEO transitions (detect CEO changes between fiscal years)
     computeCeoTransitions(companies);
+
+    // Pre-compute C-suite role benchmarks for role analysis section + detail panel context
+    computeRoleBenchmarks(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
@@ -4600,6 +4717,83 @@ function hideMetricSkeletons() {
     renderSectorCompHeatmap();
     window._redrawSectorHeatmap = renderSectorCompHeatmap;
 
+    // === C-Suite Role Compensation Analysis ===
+    (function renderRoleCompAnalysis() {
+        var container = document.getElementById('role-comp-chart');
+        if (!container || !_roleBenchmarks) return;
+
+        var ceoMedian = _roleBenchmarks['CEO'] ? _roleBenchmarks['CEO'].median : 1;
+        var maxMedian = 0;
+        ROLE_ORDER.forEach(function(role) {
+            if (_roleBenchmarks[role] && _roleBenchmarks[role].median > maxMedian) maxMedian = _roleBenchmarks[role].median;
+        });
+
+        var html = '<div class="role-chart-container">';
+
+        // Horizontal bar chart
+        html += '<div class="role-bars">';
+        ROLE_ORDER.forEach(function(role) {
+            var rb = _roleBenchmarks[role];
+            if (!rb || role === 'Other') return; // Skip 'Other' in bars, show in table below
+            var barW = maxMedian > 0 ? (rb.median / maxMedian * 100) : 0;
+            var vsCeo = ceoMedian > 0 ? (rb.median / ceoMedian * 100).toFixed(0) : '—';
+            var color = ROLE_COLORS[role] || '#94a3b8';
+            var tooltip = role + ': Median ' + formatCurrency(rb.median) + ' (' + rb.count + ' execs across S&P 500). ' + vsCeo + '% of CEO median.';
+
+            html += '<div class="role-bar-row" title="' + tooltip.replace(/"/g, '&quot;') + '">';
+            html += '<div class="role-bar-label">';
+            html += '<span class="role-bar-name">' + role + '</span>';
+            html += '<span class="role-bar-count">' + rb.count + '</span>';
+            html += '</div>';
+            html += '<div class="role-bar-track">';
+            // IQR range bar (P25-P75)
+            var iqrLeft = maxMedian > 0 ? (rb.p25 / maxMedian * 100) : 0;
+            var iqrWidth = maxMedian > 0 ? ((rb.p75 - rb.p25) / maxMedian * 100) : 0;
+            html += '<div class="role-bar-iqr" style="left:' + iqrLeft.toFixed(1) + '%;width:' + iqrWidth.toFixed(1) + '%;background:' + hexToRgba(color, 0.18) + ';border:1px solid ' + hexToRgba(color, 0.35) + '" title="P25–P75: ' + formatCompact(rb.p25) + ' – ' + formatCompact(rb.p75) + '"></div>';
+            // Median bar
+            html += '<div class="role-bar-fill" style="width:' + barW.toFixed(1) + '%;background:' + color + '"></div>';
+            // Median marker line
+            html += '</div>';
+            html += '<div class="role-bar-value">';
+            html += '<span class="role-bar-median">' + formatCompact(rb.median) + '</span>';
+            if (role !== 'CEO') {
+                html += '<span class="role-bar-ratio">' + vsCeo + '% of CEO</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Role summary table
+        html += '<div class="role-table-wrap"><table class="role-table" aria-label="C-Suite role compensation benchmarks">';
+        html += '<thead><tr><th>Role</th><th class="role-num">Count</th><th class="role-num">Median</th><th class="role-num">Mean</th><th class="role-num">P25</th><th class="role-num">P75</th><th class="role-num">vs CEO</th><th>Highest Paid</th></tr></thead>';
+        html += '<tbody>';
+        ROLE_ORDER.forEach(function(role) {
+            var rb = _roleBenchmarks[role];
+            if (!rb) return;
+            var color = ROLE_COLORS[role] || '#94a3b8';
+            var vsCeo = role === 'CEO' ? '—' : (ceoMedian > 0 ? (rb.median / ceoMedian * 100).toFixed(0) + '%' : '—');
+            var topName = rb.topEarner ? rb.topEarner.name : '—';
+            var topTicker = rb.topEarner ? rb.topEarner.ticker : '';
+            var topVal = rb.topEarner ? formatCompact(rb.topEarner.total) : '—';
+
+            html += '<tr>';
+            html += '<td><span class="role-dot" style="background:' + color + '"></span>' + role + '</td>';
+            html += '<td class="role-num">' + rb.count + '</td>';
+            html += '<td class="role-num">' + formatCompact(rb.median) + '</td>';
+            html += '<td class="role-num">' + formatCompact(rb.mean) + '</td>';
+            html += '<td class="role-num">' + formatCompact(rb.p25) + '</td>';
+            html += '<td class="role-num">' + formatCompact(rb.p75) + '</td>';
+            html += '<td class="role-num">' + vsCeo + '</td>';
+            html += '<td class="role-top-earner">' + topName + (topTicker ? ' <span class="role-top-ticker">(' + topTicker + ')</span>' : '') + ' <span class="role-top-val">' + topVal + '</span></td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+
+        html += '</div>';
+        container.innerHTML = html;
+    })();
+
     function hexToRgba(hex, alpha) {
         var r = parseInt(hex.slice(1, 3), 16);
         var g = parseInt(hex.slice(3, 5), 16);
@@ -4873,7 +5067,7 @@ function hideMetricSkeletons() {
             var headers = [
                 'Rank', 'Ticker', 'Company', 'CEO', 'CEO Total Comp ($)',
                 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
-                'Exec Name', 'Exec Title', 'Salary ($)', 'Bonus ($)', 'Stock Awards ($)',
+                'Exec Name', 'Exec Title', 'Role Category', 'Salary ($)', 'Bonus ($)', 'Stock Awards ($)',
                 'Option Awards ($)', 'Non-Equity Incentive ($)', 'Pension/NQDC ($)', 'All Other Comp ($)',
                 'Exec Total ($)', 'Fiscal Year', 'Filing Date', 'Filing URL'
             ];
@@ -4898,6 +5092,7 @@ function hideMetricSkeletons() {
                         rows.push(baseFields.concat([
                             csvEscape(exec.name || ''),
                             csvEscape(exec.title || ''),
+                            csvEscape(classifyExecRole(exec.title)),
                             exec.salary || '',
                             exec.bonus || '',
                             exec.stock_awards || '',
