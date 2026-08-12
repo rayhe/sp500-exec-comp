@@ -2774,6 +2774,12 @@ footer li::before {
     .comp-dist-bracket-labels { gap: 2px; }
     .comp-dist-bar-label { font-size: 0.55rem; }
     .comp-dist-histogram .summary-stat-label { display: none; }
+    .conc-dist-bar { width: 20px; }
+    .conc-dist-bracket-label { width: 20px; font-size: 0.48rem; }
+    .conc-dist-bars { gap: 3px; height: 22px; }
+    .conc-dist-bracket-labels { gap: 3px; }
+    .conc-dist-bar-label { font-size: 0.55rem; }
+    .conc-dist-histogram .summary-stat-label { display: none; }
     .sector-sort-bars { gap: 2px; height: 22px; }
     .sector-sort-bar { width: 10px; }
     .sector-sort-bar-count { font-size: 0.5rem; }
@@ -4641,6 +4647,67 @@ footer li::before {
 [data-theme="light"] .conc-high-text { color: #dc2626; }
 [data-theme="light"] .conc-low-text { color: #059669; }
 
+/* Concentration histogram bars (sort summary) */
+.conc-dist-histogram {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+.conc-dist-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 28px;
+}
+.conc-dist-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    cursor: pointer;
+}
+.conc-dist-bar {
+    width: 28px;
+    border-radius: 2px 2px 0 0;
+    min-height: 4px;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.conc-dist-bar-group:hover .conc-dist-bar {
+    opacity: 0.85;
+    transform: scaleY(1.15);
+}
+.conc-dist-bar-label {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1;
+}
+.conc-dist-bracket-labels {
+    display: inline-flex;
+    gap: 4px;
+}
+.conc-dist-bracket-label {
+    width: 28px;
+    text-align: center;
+    font-size: 0.52rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    line-height: 1;
+}
+.conc-badge-clickable {
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+}
+.conc-badge-clickable:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+}
+[data-theme="light"] .conc-badge-clickable:hover {
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
 @media (max-width: 640px) {
     .neo-table { font-size: 0.75rem; }
     .neo-table thead th,
@@ -4884,6 +4951,7 @@ footer li::before {
     .sector-analytics-table { page-break-inside: avoid; }
     .sa-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .sa-sector-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .conc-dist-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 /* Percentile column — hide on small screens */
@@ -4943,6 +5011,20 @@ footer li::before {
     .comp-dist-bar-label {
         font-size: 0.65rem;
     }
+
+    /* Concentration distribution bars */
+    .conc-dist-bar-group {
+        padding: 6px 3px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .conc-dist-bar-group:active .conc-dist-bar {
+        opacity: 0.65;
+        transform: scaleY(1.1);
+    }
+    .conc-dist-bar-label {
+        font-size: 0.65rem;
+    }
 }
 
 /* Combined: touch device + narrow screen — keep bars proportionate but still tappable */
@@ -4979,6 +5061,22 @@ footer li::before {
         font-size: 0.58rem;
     }
     .comp-dist-bracket-label {
+        font-size: 0.5rem;
+    }
+
+    .conc-dist-bar-group {
+        padding: 6px 4px;
+    }
+    .conc-dist-bars {
+        gap: 2px;
+    }
+    .conc-dist-bracket-labels {
+        gap: 2px;
+    }
+    .conc-dist-bar-label {
+        font-size: 0.58rem;
+    }
+    .conc-dist-bracket-label {
         font-size: 0.5rem;
     }
 }

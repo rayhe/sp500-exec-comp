@@ -422,12 +422,15 @@ function sortTableByKey(key, dir) {
     searchTerm = '';
     window._activeRatioBucket = null;
     window._activeDistFilter = null;
+    window._activeConcTier = null;
 
     // Remove filter chips if present
     var ratioChip = document.getElementById('ratio-filter-chip');
     if (ratioChip) ratioChip.remove();
     var distChip = document.getElementById('dist-filter-chip');
     if (distChip) distChip.remove();
+    var concChip = document.getElementById('conc-filter-chip');
+    if (concChip) concChip.remove();
 
     // Clear search input
     var searchInput = document.getElementById('table-search');
@@ -659,6 +662,11 @@ function populateInsights(comp, trends) {
             window._activeDistFilter = null;
             var dc = document.getElementById('dist-filter-chip');
             if (dc) dc.remove();
+        }
+        if (window._activeConcTier) {
+            window._activeConcTier = null;
+            var cc = document.getElementById('conc-filter-chip');
+            if (cc) cc.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -1024,6 +1032,7 @@ function buildSectorChips(companies) {
         // Refresh combined filter chips to remove sector context
         if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
         if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
+        if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1042,6 +1051,7 @@ function buildSectorChips(companies) {
             // Refresh combined filter chips to include sector context
             if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
             if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
+            if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1514,16 +1524,16 @@ function renderPercentileSortSummary(companies) {
 
 /* CEO Concentration sort context summary — shown when sorted by CEO % column.
    Displays distribution of concentrated (≥50%), moderate (35–49%), and distributed (<35%) companies,
-   with a mini histogram and median/mean concentration stats. */
+   with a clickable mini histogram and median/mean concentration stats. */
 function renderConcSortSummary(companies) {
     var withData = companies.filter(function(c) { return c._ceoConcPct != null; });
     if (withData.length === 0) return null;
 
-    // Tiers
+    // Tiers — colors match the conc-badge classes
     var tiers = [
-        { label: '≥50%', min: 50, max: 101, cls: 'conc-high', count: 0, comps: [], tag: 'Concentrated' },
-        { label: '35–49%', min: 35, max: 50, cls: 'conc-mid', count: 0, comps: [], tag: 'Moderate' },
-        { label: '<35%', min: 0, max: 35, cls: 'conc-low', count: 0, comps: [], tag: 'Distributed' }
+        { label: '≥50%', min: 50, max: 101, cls: 'conc-high', count: 0, comps: [], tag: 'Concentrated', color: '#ef476f' },
+        { label: '35–49%', min: 35, max: 50, cls: 'conc-mid', count: 0, comps: [], tag: 'Moderate', color: '#ffd166' },
+        { label: '<35%', min: 0, max: 35, cls: 'conc-low', count: 0, comps: [], tag: 'Distributed', color: '#06d6a0' }
     ];
 
     withData.forEach(function(c) {
@@ -1545,22 +1555,37 @@ function renderConcSortSummary(companies) {
     var most = sorted[0];
     var least = sorted[sorted.length - 1];
 
+    var maxTierCount = Math.max.apply(null, tiers.map(function(t) { return t.count; }));
+
     var sortDir = currentSort.dir === 'desc' ? 'most concentrated first' : 'most distributed first';
     var html = '<span class="summary-stat"><span class="summary-stat-label">CEO Concentration</span>';
     html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span></span>';
 
     html += '<span class="summary-divider"></span>';
 
-    // Tier distribution
+    // Clickable histogram bars (matching comp-dist pattern)
+    var activeTier = window._activeConcTier;
+    html += '<span class="summary-stat conc-dist-histogram">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="conc-dist-bars">';
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
-        var minC = Math.min.apply(null, t.comps).toFixed(0);
-        var maxC = Math.max.apply(null, t.comps).toFixed(0);
-        html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label"><span class="conc-badge ' + t.cls + '" style="font-size:0.65rem">' + t.label + '</span></span>';
-        html += '<span class="summary-stat-value">' + t.count + ' (' + t.tag + ')</span>';
+        var barH = maxTierCount > 0 ? Math.max(4, Math.round(t.count / maxTierCount * 24)) : 4;
+        var isActive = (activeTier && activeTier.min === t.min && activeTier.max === t.max);
+        var isDimmed = (activeTier && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:2px;border-radius:3px;' : '';
+        html += '<span class="conc-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies — click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByConcTier(' + t.min + ',' + t.max + ',\'' + t.tag + '\',\'' + t.label.replace("'","\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="conc-dist-bar" style="height:' + barH + 'px;background:' + t.color + ';' + dimStyle + '"></span>';
+        html += '<span class="conc-dist-bar-label" style="' + dimStyle + '">' + t.count + '</span>';
         html += '</span>';
     });
+    html += '</span>';
+    html += '<span class="conc-dist-bracket-labels">';
+    tiers.forEach(function(t) {
+        html += '<span class="conc-dist-bracket-label">' + t.label + '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
 
     html += '<span class="summary-divider"></span>';
 
@@ -1739,6 +1764,7 @@ function renderSummaryBar(filtered, allCompanies) {
         filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
     }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
+    if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
 
     if (filterDims >= 2) {
         html += '<span class="summary-stat combined-filter-badge">';
@@ -1949,6 +1975,12 @@ function renderTable(companies, options) {
             return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
         });
     }
+    if (window._activeConcTier) {
+        var ct = window._activeConcTier;
+        filtered = filtered.filter(function(c) {
+            return c._ceoConcPct != null && c._ceoConcPct >= ct.min && c._ceoConcPct < ct.max;
+        });
+    }
 
     // Render summary statistics bar
     renderSummaryBar(filtered, companies);
@@ -2080,9 +2112,12 @@ function renderTable(companies, options) {
                 var cp = c._ceoConcPct;
                 var cc = cp >= 50 ? 'conc-high' : cp >= 35 ? 'conc-mid' : 'conc-low';
                 var cl = cp >= 50 ? 'Concentrated' : cp >= 35 ? 'Moderate' : 'Distributed';
-                var tt = 'CEO earns ' + cp.toFixed(1) + '% of total NEO compensation (' + cl + ')';
+                var cMin = cp >= 50 ? 50 : cp >= 35 ? 35 : 0;
+                var cMax = cp >= 50 ? 101 : cp >= 35 ? 50 : 35;
+                var cLbl = cp >= 50 ? '≥50%' : cp >= 35 ? '35–49%' : '<35%';
+                var tt = 'CEO earns ' + cp.toFixed(1) + '% of total NEO compensation (' + cl + ') — click to filter';
                 if (c._ceoPremiumRatio != null) tt += ' — ' + c._ceoPremiumRatio.toFixed(1) + '× the #2 executive';
-                return '<span class="conc-badge ' + cc + '" title="' + tt + '">' + Math.round(cp) + '%</span>';
+                return '<span class="conc-badge ' + cc + ' conc-badge-clickable" title="' + tt + '" onclick="event.stopPropagation();filterByConcTier(' + cMin + ',' + cMax + ',\'' + cl + '\',\'' + cLbl.replace("'","\\'") + '\')">' + Math.round(cp) + '%</span>';
             })() + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
@@ -2118,6 +2153,7 @@ function renderTable(companies, options) {
     if (searchTerm) announceMsg += ', search: ' + searchTerm;
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
+    if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
     if (!options || !options.suppressAnnounce) announce(announceMsg);
@@ -3104,6 +3140,12 @@ function serializeState() {
         params.push('dsec=' + encodeURIComponent(window._activeDistFilter.sector || ''));
         params.push('dlbl=' + encodeURIComponent(window._activeDistFilter.label));
     }
+    if (window._activeConcTier) {
+        params.push('ctmin=' + window._activeConcTier.min);
+        params.push('ctmax=' + window._activeConcTier.max);
+        params.push('cttag=' + encodeURIComponent(window._activeConcTier.tag));
+        params.push('ctlbl=' + encodeURIComponent(window._activeConcTier.label));
+    }
     if (_expandedDetailTicker) {
         params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
@@ -3176,6 +3218,16 @@ function applyHashState(companies) {
             max: parseFloat(state.dmax),
             sector: state.dsec,
             label: state.dlbl || state.dsec + ' (filtered)'
+        };
+    }
+
+    // Concentration tier filter
+    if (state.ctmin != null && state.ctmax != null) {
+        window._activeConcTier = {
+            min: parseFloat(state.ctmin),
+            max: parseFloat(state.ctmax),
+            tag: state.cttag || 'Filtered',
+            label: state.ctlbl || ''
         };
     }
 
@@ -3394,6 +3446,7 @@ function hideMetricSkeletons() {
         // Refresh filter chips to show/hide sector context
         updateDistFilterIndicator();
         updateRatioFilterIndicator();
+        updateConcFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -3561,6 +3614,7 @@ function hideMetricSkeletons() {
         // Refresh filter chips to show/hide sector context
         updateDistFilterIndicator();
         updateRatioFilterIndicator();
+        updateConcFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -3653,6 +3707,72 @@ function hideMetricSkeletons() {
     }
     window._updateRatioFilterIndicator = updateRatioFilterIndicator;
 
+    // CEO Concentration tier filter — filter table by clicking histogram bars in conc sort summary
+    window.filterByConcTier = function(minPct, maxPct, tag, label) {
+        // Toggle off if same tier clicked again
+        if (window._activeConcTier && window._activeConcTier.min === minPct && window._activeConcTier.max === maxPct) {
+            window._activeConcTier = null;
+        } else {
+            window._activeConcTier = { min: minPct, max: maxPct, tag: tag, label: label };
+        }
+
+        currentPage = 1;
+
+        // Sort by CEO concentration descending
+        currentSort = { key: '_ceoConcPct', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_ceoConcPct') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updateConcFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeConcTier ? 'Filtered to ' + tag + ' CEO concentration (' + label + ')' : 'Concentration filter cleared');
+    };
+
+    function updateConcFilterIndicator() {
+        var existing = document.getElementById('conc-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeConcTier) {
+            var ct = window._activeConcTier;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × ' + ct.tag : ct.tag + ' (' + ct.label + ')';
+            var tierColor = ct.min >= 50 ? '#ef476f' : (ct.min >= 35 ? '#ffd166' : '#06d6a0');
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'conc-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(tierColor);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(tierColor);
+            chip.style.color = isCombined ? '#a78bfa' : tierColor;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + concentration filter' : 'Click to clear concentration tier filter';
+            chip.addEventListener('click', function() {
+                window._activeConcTier = null;
+                chip.remove();
+                renderTable(companies);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateConcFilterIndicator = updateConcFilterIndicator;
+
+    // Helper to derive rgba chip background from hex color
+    function hexToChipBg(hex) {
+        var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',0.15)';
+    }
+    function hexToChipBorder(hex) {
+        var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',0.5)';
+    }
+
     // Find a specific company in the table by ticker — used by Top 10 chart click
     window.findCompanyInTable = function(ticker) {
         // Clear filters to ensure company is visible
@@ -3667,6 +3787,11 @@ function hideMetricSkeletons() {
             window._activeDistFilter = null;
             var dc = document.getElementById('dist-filter-chip');
             if (dc) dc.remove();
+        }
+        if (window._activeConcTier) {
+            window._activeConcTier = null;
+            var cc2 = document.getElementById('conc-filter-chip');
+            if (cc2) cc2.remove();
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -3889,6 +4014,7 @@ function hideMetricSkeletons() {
                 // Refresh combined filter chips to include/exclude sector context
                 if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
                 if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
+                if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
 
                 renderTable(companies);
 
@@ -4130,6 +4256,11 @@ function hideMetricSkeletons() {
     // Update dist filter chip UI if restored from hash
     if (window._activeDistFilter) {
         updateDistFilterIndicator();
+    }
+
+    // Update conc filter chip UI if restored from hash
+    if (window._activeConcTier) {
+        updateConcFilterIndicator();
     }
 
     // === CSV Export ===
@@ -5582,7 +5713,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier) {
                 activeSector = null;
                 searchTerm = '';
                 currentPage = 1;
@@ -5596,6 +5727,11 @@ function hideMetricSkeletons() {
                     window._activeDistFilter = null;
                     var dc = document.getElementById('dist-filter-chip');
                     if (dc) dc.remove();
+                }
+                if (window._activeConcTier) {
+                    window._activeConcTier = null;
+                    var cc3 = document.getElementById('conc-filter-chip');
+                    if (cc3) cc3.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
