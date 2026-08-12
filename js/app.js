@@ -59,6 +59,8 @@ function toggleTheme() {
     if (window._redrawComparisonChart) window._redrawComparisonChart();
     // Re-render sector compensation heatmap (text contrast depends on theme)
     if (window._redrawSectorHeatmap) window._redrawSectorHeatmap();
+    // Re-render role × sector heatmap (text contrast depends on theme)
+    if (window._redrawRoleSectorHeatmap) window._redrawRoleSectorHeatmap();
 }
 
 function isDarkTheme() {
@@ -4800,6 +4802,138 @@ function hideMetricSkeletons() {
         var b = parseInt(hex.slice(5, 7), 16);
         return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
     }
+
+    // === Role × Sector Compensation Heatmap ===
+    function renderRoleSectorHeatmap() {
+        var container = document.getElementById('role-sector-heatmap');
+        if (!container) return;
+
+        var ROLES_DISPLAY = ROLE_ORDER.filter(function(r) { return r !== 'Other'; });
+        // 7 roles: CEO, CFO, COO, GC/CLO, CTO, CHRO, CIO
+
+        // Build sector → role → [totals] map from latest-year NEO data
+        var sectorRoleMap = {};
+        companies.forEach(function(c) {
+            if (!c.sector || !c.executives || c.executives.length === 0) return;
+            if (!sectorRoleMap[c.sector]) sectorRoleMap[c.sector] = {};
+
+            // Find latest year
+            var allYears = [];
+            c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+            var maxYr = Math.max.apply(null, allYears);
+
+            c.executives.filter(function(e) { return e.year === maxYr; }).forEach(function(e) {
+                var role = classifyExecRole(e.title);
+                if (role === 'Other') return;
+                if (!sectorRoleMap[c.sector][role]) sectorRoleMap[c.sector][role] = [];
+                sectorRoleMap[c.sector][role].push({
+                    total: e.total || 0, name: e.name, ticker: c.ticker
+                });
+            });
+        });
+
+        function arrMedianLocal(arr) {
+            if (!arr.length) return 0;
+            var s = arr.slice().sort(function(a, b) { return a - b; });
+            var m = Math.floor(s.length / 2);
+            return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+
+        // Compute per-column (role) max for within-role color scaling
+        var roleMaxMedian = {};
+        var roleMinMedian = {};
+        ROLES_DISPLAY.forEach(function(role) { roleMaxMedian[role] = 0; roleMinMedian[role] = Infinity; });
+
+        // Build rows
+        var sectors = Object.keys(sectorRoleMap);
+        var sectorRows = [];
+        sectors.forEach(function(sector) {
+            var row = { sector: sector, roles: {} };
+            var ceoMedian = 0;
+            ROLES_DISPLAY.forEach(function(role) {
+                var entries = sectorRoleMap[sector][role] || [];
+                if (entries.length === 0) {
+                    row.roles[role] = { median: 0, count: 0, topEarner: null };
+                    return;
+                }
+                var totals = entries.map(function(e) { return e.total; });
+                var med = arrMedianLocal(totals);
+                var top = entries.slice().sort(function(a, b) { return b.total - a.total; })[0];
+                row.roles[role] = { median: med, count: entries.length, topEarner: top };
+                if (med > roleMaxMedian[role]) roleMaxMedian[role] = med;
+                if (med > 0 && med < roleMinMedian[role]) roleMinMedian[role] = med;
+                if (role === 'CEO') ceoMedian = med;
+            });
+            row.ceoMedian = ceoMedian;
+            sectorRows.push(row);
+        });
+
+        // Sort sectors by CEO median descending
+        sectorRows.sort(function(a, b) { return b.ceoMedian - a.ceoMedian; });
+
+        // Render
+        var html = '<div class="role-sector-heatmap-wrapper"><table class="role-sector-heatmap" aria-label="C-Suite role compensation by sector">';
+        html += '<thead><tr><th class="rs-sector-th">Sector</th>';
+        ROLES_DISPLAY.forEach(function(role) {
+            var rc = ROLE_COLORS[role] || '#94a3b8';
+            html += '<th><span class="rs-role-dot" style="background:' + rc + '"></span>' + role + '</th>';
+        });
+        html += '</tr></thead><tbody>';
+
+        sectorRows.forEach(function(row) {
+            var sColor = getSectorColor(row.sector);
+            var escapedSector = row.sector.replace(/'/g, "\\'");
+            html += '<tr>';
+            html += '<td class="rs-sector-label" onclick="if(window.filterBySector)window.filterBySector(\'' + escapedSector + '\')" title="Click to filter table to ' + row.sector + '">';
+            html += '<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + sColor + ';margin-right:6px;vertical-align:middle;"></span>' + row.sector + '</td>';
+
+            ROLES_DISPLAY.forEach(function(role) {
+                var data = row.roles[role];
+                var rc = ROLE_COLORS[role] || '#94a3b8';
+                if (!data || data.count === 0) {
+                    html += '<td><div class="rs-cell rs-cell-empty" title="No ' + role + ' records for ' + row.sector + '"><span class="rs-cell-val">—</span></div></td>';
+                    return;
+                }
+                // Color intensity scaled within each role column (0.15 to 0.88)
+                var maxM = roleMaxMedian[role] || 1;
+                var intensity = Math.min(0.88, 0.15 + (data.median / maxM) * 0.73);
+                var bgColor = hexToRgba(rc, intensity);
+                // Text contrast
+                var textColor = intensity > 0.50 ? '#fff' : (isDarkTheme() ? '#e4e4e7' : '#1a1a2e');
+                // vs S&P 500 role median
+                var globalRb = _roleBenchmarks && _roleBenchmarks[role] ? _roleBenchmarks[role] : null;
+                var vsGlobalStr = '';
+                if (globalRb && globalRb.median > 0) {
+                    var vsPct = ((data.median - globalRb.median) / globalRb.median * 100);
+                    vsGlobalStr = (vsPct >= 0 ? '+' : '') + vsPct.toFixed(0) + '% vs S&P 500 ' + role + ' median';
+                }
+                var topStr = data.topEarner ? ('. Highest: ' + data.topEarner.name + ' (' + data.topEarner.ticker + ') ' + formatCompact(data.topEarner.total)) : '';
+                var title = row.sector + ' ' + role + ': median ' + formatCompact(data.median) + ' (' + data.count + ' execs)';
+                if (vsGlobalStr) title += '. ' + vsGlobalStr;
+                title += topStr;
+
+                html += '<td><div class="rs-cell" style="background:' + bgColor + ';color:' + textColor + '" onclick="if(window.filterBySector)window.filterBySector(\'' + escapedSector + '\')" title="' + title.replace(/"/g, '&quot;') + '">';
+                html += '<span class="rs-cell-val">' + formatCompact(data.median) + '</span>';
+                html += '<span class="rs-cell-count">' + data.count + '</span>';
+                html += '</div></td>';
+            });
+
+            html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+
+        // Role color legend footer
+        html += '<div class="rs-footer">';
+        ROLES_DISPLAY.forEach(function(role) {
+            var rc = ROLE_COLORS[role] || '#94a3b8';
+            html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:' + rc + '"></span>' + role + '</span>';
+        });
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+    renderRoleSectorHeatmap();
+    window._redrawRoleSectorHeatmap = renderRoleSectorHeatmap;
 
     // Restore state from URL hash (after charts/network are initialized)
     applyHashState(companies);

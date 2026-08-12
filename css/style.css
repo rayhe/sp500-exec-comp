@@ -2874,6 +2874,131 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     .sector-comp-heatmap td.hm-sector-label { font-size: 0.68rem; padding: 6px 6px; }
 }
 
+/* === Role × Sector Compensation Heatmap === */
+.role-sector-heatmap-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 0 8px 0;
+}
+.role-sector-heatmap {
+    border-collapse: separate;
+    border-spacing: 3px;
+    width: 100%;
+    min-width: 680px;
+    font-size: 0.78rem;
+}
+.role-sector-heatmap thead th {
+    padding: 6px 8px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+}
+.rs-sector-th {
+    text-align: left !important;
+    min-width: 140px;
+}
+.rs-role-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.rs-sector-label {
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 4px;
+}
+.rs-sector-label:hover {
+    background: rgba(255,255,255,0.06);
+}
+.rs-cell {
+    border-radius: 6px;
+    padding: 8px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    min-width: 64px;
+    position: relative;
+}
+.rs-cell:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+.rs-cell-empty {
+    opacity: 0.35;
+    cursor: default;
+}
+.rs-cell-empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+.rs-cell-val {
+    display: block;
+    font-weight: 600;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+}
+.rs-cell-count {
+    display: block;
+    font-size: 0.6rem;
+    opacity: 0.7;
+    margin-top: 1px;
+}
+.rs-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 0 4px;
+}
+.rs-footer-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+.rs-footer-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+/* Light theme overrides for role × sector heatmap */
+[data-theme="light"] .rs-sector-label:hover {
+    background: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .rs-cell:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .role-sector-heatmap { font-size: 0.68rem; min-width: 560px; }
+    .role-sector-heatmap thead th { font-size: 0.58rem; padding: 4px 4px; }
+    .rs-cell { padding: 6px 3px; min-width: 48px; }
+    .rs-cell-val { font-size: 0.66rem; }
+    .rs-cell-count { display: none; }
+    .rs-sector-label { font-size: 0.66rem; padding: 6px 4px; }
+    .rs-sector-th { min-width: 100px; }
+}
+
+/* Print */
+@media print {
+    .rs-cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 .trends-section {
     margin-top: 24px;
 }
