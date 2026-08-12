@@ -3678,6 +3678,10 @@ footer li::before {
     .pctile-badge.pctile-high { color: #0077b6 !important; background: #f0f9ff !important; border-color: #0077b6 !important; }
     .pctile-badge.pctile-mid { color: #6b7280 !important; background: #f9fafb !important; border-color: #9ca3af !important; }
     .pctile-badge.pctile-low { color: #7c3aed !important; background: #f5f3ff !important; border-color: #7c3aed !important; }
+    .conc-badge { font-size: 7px !important; }
+    .conc-badge.conc-high { color: #dc2626 !important; background: #fef2f2 !important; border-color: #dc2626 !important; }
+    .conc-badge.conc-mid { color: #a16207 !important; background: #fefce8 !important; border-color: #a16207 !important; }
+    .conc-badge.conc-low { color: #059669 !important; background: #f0fdf4 !important; border-color: #059669 !important; }
     .data-na { background: #fffbeb !important; border-color: #b45309 !important; color: #6b7280 !important; }
     .comp-bar { display: none !important; }
     .data-na-icon { color: #b45309 !important; }
@@ -4588,6 +4592,55 @@ footer li::before {
     border-color: rgba(109, 40, 217, 0.15);
 }
 
+/* === CEO Concentration Column === */
+.conc-col { width: 52px; text-align: center; }
+.conc-cell { text-align: center; width: 52px; padding: 4px 2px; }
+.conc-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-family: var(--mono);
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+}
+.conc-badge.conc-high {
+    background: rgba(239, 71, 111, 0.12);
+    color: #ef476f;
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.conc-badge.conc-mid {
+    background: rgba(255, 209, 102, 0.12);
+    color: #ffd166;
+    border-color: rgba(255, 209, 102, 0.25);
+}
+.conc-badge.conc-low {
+    background: rgba(6, 214, 160, 0.12);
+    color: #06d6a0;
+    border-color: rgba(6, 214, 160, 0.25);
+}
+[data-theme="light"] .conc-badge.conc-high {
+    background: rgba(220, 38, 38, 0.06);
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.15);
+}
+[data-theme="light"] .conc-badge.conc-mid {
+    background: rgba(202, 138, 4, 0.06);
+    color: #a16207;
+    border-color: rgba(202, 138, 4, 0.15);
+}
+[data-theme="light"] .conc-badge.conc-low {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+    border-color: rgba(5, 150, 105, 0.15);
+}
+.conc-high-text { color: #ef476f; }
+.conc-low-text { color: #06d6a0; }
+[data-theme="light"] .conc-high-text { color: #dc2626; }
+[data-theme="light"] .conc-low-text { color: #059669; }
+
 @media (max-width: 640px) {
     .neo-table { font-size: 0.75rem; }
     .neo-table thead th,
@@ -4836,6 +4889,7 @@ footer li::before {
 /* Percentile column — hide on small screens */
 @media (max-width: 600px) {
     .pctile-col, .pctile-cell { display: none; }
+    .conc-col, .conc-cell { display: none; }
 }
 
 /* === Touch target expansion for interactive histogram bars === */

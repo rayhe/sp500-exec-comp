@@ -455,7 +455,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1093,6 +1093,9 @@ function renderSortContextSummary(companies) {
     if (currentSort.key === '_compPercentile') {
         return renderPercentileSortSummary(companies);
     }
+    if (currentSort.key === '_ceoConcPct') {
+        return renderConcSortSummary(companies);
+    }
     if (currentSort.key === 'sector') {
         return renderSectorSortSummary(companies);
     }
@@ -1509,6 +1512,75 @@ function renderPercentileSortSummary(companies) {
     return html;
 }
 
+/* CEO Concentration sort context summary — shown when sorted by CEO % column.
+   Displays distribution of concentrated (≥50%), moderate (35–49%), and distributed (<35%) companies,
+   with a mini histogram and median/mean concentration stats. */
+function renderConcSortSummary(companies) {
+    var withData = companies.filter(function(c) { return c._ceoConcPct != null; });
+    if (withData.length === 0) return null;
+
+    // Tiers
+    var tiers = [
+        { label: '≥50%', min: 50, max: 101, cls: 'conc-high', count: 0, comps: [], tag: 'Concentrated' },
+        { label: '35–49%', min: 35, max: 50, cls: 'conc-mid', count: 0, comps: [], tag: 'Moderate' },
+        { label: '<35%', min: 0, max: 35, cls: 'conc-low', count: 0, comps: [], tag: 'Distributed' }
+    ];
+
+    withData.forEach(function(c) {
+        for (var ti = 0; ti < tiers.length; ti++) {
+            if (c._ceoConcPct >= tiers[ti].min && c._ceoConcPct < tiers[ti].max) {
+                tiers[ti].count++;
+                tiers[ti].comps.push(c._ceoConcPct);
+                break;
+            }
+        }
+    });
+
+    var concVals = withData.map(function(c) { return c._ceoConcPct; }).sort(function(a, b) { return a - b; });
+    var medianConc = computeMedian(concVals);
+    var meanConc = concVals.reduce(function(s, v) { return s + v; }, 0) / concVals.length;
+
+    // Most and least concentrated
+    var sorted = withData.slice().sort(function(a, b) { return b._ceoConcPct - a._ceoConcPct; });
+    var most = sorted[0];
+    var least = sorted[sorted.length - 1];
+
+    var sortDir = currentSort.dir === 'desc' ? 'most concentrated first' : 'most distributed first';
+    var html = '<span class="summary-stat"><span class="summary-stat-label">CEO Concentration</span>';
+    html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span></span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Tier distribution
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        var minC = Math.min.apply(null, t.comps).toFixed(0);
+        var maxC = Math.max.apply(null, t.comps).toFixed(0);
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label"><span class="conc-badge ' + t.cls + '" style="font-size:0.65rem">' + t.label + '</span></span>';
+        html += '<span class="summary-stat-value">' + t.count + ' (' + t.tag + ')</span>';
+        html += '</span>';
+    });
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median and mean
+    html += '<span class="summary-stat"><span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + medianConc.toFixed(1) + '%</span></span>';
+    html += '<span class="summary-stat"><span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + meanConc.toFixed(1) + '%</span></span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Most / Least concentrated
+    html += '<span class="summary-stat"><span class="summary-stat-label">Most concentrated</span>';
+    html += '<span class="summary-stat-value conc-high-text">' + most.ceo_name + ' (' + most.ticker + ') ' + most._ceoConcPct.toFixed(1) + '%</span></span>';
+    html += '<span class="summary-stat"><span class="summary-stat-label">Most distributed</span>';
+    html += '<span class="summary-stat-value conc-low-text">' + least.ceo_name + ' (' + least.ticker + ') ' + least._ceoConcPct.toFixed(1) + '%</span></span>';
+
+    return html;
+}
+
 /* Sector sort context summary — shown when sorted by sector column.
    Displays number of sectors, mini sector distribution with color-coded segment bars,
    highest/lowest median pay sectors, and sector spread ratio. */
@@ -1767,6 +1839,21 @@ function renderSummaryBar(filtered, allCompanies) {
         }
     }
 
+    // Append CEO Concentration stats when filtered AND sorted by concentration
+    if (currentSort.key === '_ceoConcPct') {
+        var fConc = filtered.filter(function(c) { return c._ceoConcPct != null; });
+        if (fConc.length > 0) {
+            var fAbove50 = fConc.filter(function(c) { return c._ceoConcPct >= 50; }).length;
+            var fBelow35 = fConc.filter(function(c) { return c._ceoConcPct < 35; }).length;
+            var fConcVals = fConc.map(function(c) { return c._ceoConcPct; });
+            var fMedianConc = Math.round(computeMedian(fConcVals) * 10) / 10;
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value conc-high-text">' + fAbove50 + '</span><span class="summary-stat-label">≥50%</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-value conc-low-text">' + fBelow35 + '</span><span class="summary-stat-label">&lt;35%</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Median</span><span class="summary-stat-value">' + fMedianConc + '%</span></span>';
+        }
+    }
+
     // Append sector-vs-benchmark context when a sector filter is active
     if (activeSector && filtered.length > 0) {
         // Compute S&P 500 wide stats for comparison
@@ -1987,6 +2074,15 @@ function renderTable(companies, options) {
                 var pl = getPercentileLabel(c._compPercentile);
                 var pc = getPercentileClass(c._compPercentile);
                 return '<span class="pctile-badge ' + pc + '" title="Compensation percentile: ' + c._compPercentile + ' of 100">' + pl + '</span>';
+            })() + '</td>' +
+            '<td class="conc-cell">' + (function() {
+                if (c._ceoConcPct == null) return '\u2014';
+                var cp = c._ceoConcPct;
+                var cc = cp >= 50 ? 'conc-high' : cp >= 35 ? 'conc-mid' : 'conc-low';
+                var cl = cp >= 50 ? 'Concentrated' : cp >= 35 ? 'Moderate' : 'Distributed';
+                var tt = 'CEO earns ' + cp.toFixed(1) + '% of total NEO compensation (' + cl + ')';
+                if (c._ceoPremiumRatio != null) tt += ' — ' + c._ceoPremiumRatio.toFixed(1) + '× the #2 executive';
+                return '<span class="conc-badge ' + cc + '" title="' + tt + '">' + Math.round(cp) + '%</span>';
             })() + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
             '<td>' + ratioHtml + '</td>' +
@@ -2416,7 +2512,7 @@ function setupDetailPanel(companies) {
         var _pctileLabel = company._compPercentile != null ? getPercentileLabel(company._compPercentile) : '';
 
         // Build HTML
-        var html = '<td colspan="11"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="12"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">';
         html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
         html += '<div class="detail-header-center">';
@@ -3191,7 +3287,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="11"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="12"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
