@@ -1754,16 +1754,92 @@ tbody tr:last-child td { border-bottom: none; }
     margin-top: 2px;
 }
 
+/* CEO Transition annotation in Pay Trend chart */
+.ceo-trend-transition-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.12);
+    border: 1px solid rgba(251, 146, 60, 0.25);
+    padding: 1px 7px;
+    border-radius: 10px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.ceo-trend-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 16px;
+    padding-bottom: 4px;
+    align-self: stretch;
+    position: relative;
+}
+.ceo-trend-divider-line {
+    position: absolute;
+    top: 0;
+    bottom: 18px;
+    width: 1px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #fb923c 0px,
+        #fb923c 3px,
+        transparent 3px,
+        transparent 6px
+    );
+    opacity: 0.6;
+}
+.ceo-trend-divider-label {
+    font-size: 0.72rem;
+    color: #fb923c;
+    font-weight: 700;
+    position: absolute;
+    bottom: 0;
+    white-space: nowrap;
+}
+.ceo-trend-name-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 72px;
+    text-align: center;
+}
+.ceo-trend-name-label.ceo-outgoing {
+    color: #6b7280;
+    font-style: italic;
+}
+.ceo-trend-mini-col.ceo-trend-new-ceo .ceo-trend-mini-year {
+    font-weight: 700;
+    color: #fb923c;
+}
+
 [data-theme="light"] .ceo-trend-mini {
     background: rgba(0, 0, 0, 0.03);
 }
 [data-theme="light"] .ceo-trend-mini-val {
     color: #1a1a2e;
 }
+[data-theme="light"] .ceo-trend-transition-badge {
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+[data-theme="light"] .ceo-trend-name-label {
+    color: #6b7280;
+}
+[data-theme="light"] .ceo-trend-name-label.ceo-outgoing {
+    color: #9ca3af;
+}
 
 /* Print: CEO Pay Trend */
 @media print {
     .ceo-trend-mini-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .ceo-trend-divider-line { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .ceo-trend-transition-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 /* Mobile: CEO Pay Trend */
@@ -1774,6 +1850,9 @@ tbody tr:last-child td { border-bottom: none; }
     .ceo-trend-mini-bar { width: 30px; }
     .ceo-trend-mini-val { font-size: 0.7rem; }
     .ceo-trend-mini-header { flex-direction: column; gap: 2px; }
+    .ceo-trend-divider { min-width: 10px; }
+    .ceo-trend-name-label { font-size: 0.55rem; max-width: 50px; }
+    .ceo-trend-transition-badge { font-size: 0.6rem; padding: 1px 5px; }
 }
 
 /* === Peer Pay Position (detail panel) === */

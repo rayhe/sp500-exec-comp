@@ -2922,9 +2922,50 @@ function setupDetailPanel(companies) {
                     var overallCls = overallPctChange >= 0 ? 'positive' : 'negative';
                     var overallSign = overallPctChange >= 0 ? '+' : '\u2212';
 
+                    // Detect CEO name changes within the trend data for transition annotation
+                    function _normTrendName(n) {
+                        return (n || '').toLowerCase()
+                            .replace(/\b(jr|sr|iii|iv|ii|mr|ms|dr|phd|former)\b\.?/g, '')
+                            .replace(/[.,'"()]/g, '')
+                            .replace(/\b[a-z]\b/g, '')
+                            .replace(/\s+/g, ' ').trim();
+                    }
+                    var _hasTransition = false;
+                    var _transitionIndices = []; // indices where CEO changed (the NEW CEO's index)
+                    for (var _ti = 1; _ti < ceoTrendData.length; _ti++) {
+                        var _prevNorm = _normTrendName(ceoTrendData[_ti - 1].name);
+                        var _currNorm = _normTrendName(ceoTrendData[_ti].name);
+                        if (_prevNorm !== _currNorm && _prevNorm.length > 0 && _currNorm.length > 0) {
+                            _hasTransition = true;
+                            _transitionIndices.push(_ti);
+                        }
+                    }
+
+                    // Build a map of unique CEO "segments" for coloring (each distinct CEO gets a segment ID)
+                    var _ceoSegments = [0]; // segment ID per bar index
+                    var _segId = 0;
+                    for (var _si = 1; _si < ceoTrendData.length; _si++) {
+                        if (_transitionIndices.indexOf(_si) >= 0) _segId++;
+                        _ceoSegments.push(_segId);
+                    }
+
+                    // Extract short last name for CEO labels
+                    function _shortCeoName(fullName) {
+                        if (!fullName) return '';
+                        var parts = fullName.trim().split(/\s+/);
+                        // Return last meaningful token (skip Jr/Sr/III etc.)
+                        for (var _k = parts.length - 1; _k >= 0; _k--) {
+                            if (!/^(jr|sr|iii|iv|ii)\.?$/i.test(parts[_k])) return parts[_k];
+                        }
+                        return parts[parts.length - 1] || '';
+                    }
+
                     html += '<div class="ceo-trend-mini">';
                     html += '<div class="ceo-trend-mini-header">';
                     html += '<span class="ceo-trend-mini-title">CEO Pay Trend</span>';
+                    if (_hasTransition) {
+                        html += '<span class="ceo-trend-transition-badge" title="CEO changed during this period">\u21C4 CEO Transition</span>';
+                    }
                     html += '<span class="ceo-trend-mini-change ' + overallCls + '" title="FY' + firstTrend.year + ' to FY' + lastTrend.year + '">' + overallSign + overallAbsStr + ' over ' + ceoTrendData.length + ' years</span>';
                     html += '</div>';
 
@@ -2932,8 +2973,18 @@ function setupDetailPanel(companies) {
                     ceoTrendData.forEach(function(d, i) {
                         var barH = maxTrend > 0 ? Math.max(8, Math.round(d.total / maxTrend * 64)) : 8;
                         var isLatest = (i === ceoTrendData.length - 1);
+                        var isTransitionPoint = _transitionIndices.indexOf(i) >= 0;
+                        var isOutgoingCeo = _hasTransition && _ceoSegments[i] < _ceoSegments[ceoTrendData.length - 1];
 
-                        html += '<div class="ceo-trend-mini-col">';
+                        // Insert transition divider before this bar
+                        if (isTransitionPoint) {
+                            html += '<div class="ceo-trend-divider" title="CEO changed: ' + (ceoTrendData[i - 1].name || '').replace(/"/g, '&quot;') + ' \u2192 ' + (d.name || '').replace(/"/g, '&quot;') + '">';
+                            html += '<div class="ceo-trend-divider-line"></div>';
+                            html += '<div class="ceo-trend-divider-label">\u2192</div>';
+                            html += '</div>';
+                        }
+
+                        html += '<div class="ceo-trend-mini-col' + (isTransitionPoint ? ' ceo-trend-new-ceo' : '') + '">';
                         html += '<div class="ceo-trend-mini-val">' + formatCurrency(d.total) + '</div>';
 
                         // YoY change label between bars
@@ -2947,8 +2998,28 @@ function setupDetailPanel(companies) {
                             html += '<div class="ceo-trend-mini-yoy">\u00A0</div>';
                         }
 
-                        html += '<div class="ceo-trend-mini-bar" style="height:' + barH + 'px' + (isLatest ? '' : ';opacity:0.55') + '" title="' + (d.name || '') + ' FY' + d.year + ': ' + formatCurrency(d.total) + '"></div>';
+                        // Bar: outgoing CEO gets muted color, current CEO gets accent
+                        var barStyle = 'height:' + barH + 'px';
+                        if (isOutgoingCeo) {
+                            barStyle += ';background:#6b7280;opacity:0.5';
+                        } else if (!isLatest && !_hasTransition) {
+                            barStyle += ';opacity:0.55';
+                        }
+                        html += '<div class="ceo-trend-mini-bar" style="' + barStyle + '" title="' + (d.name || '') + ' FY' + d.year + ': ' + formatCurrency(d.total) + '"></div>';
                         html += '<div class="ceo-trend-mini-year">FY' + d.year + '</div>';
+
+                        // Show CEO last name label when transition exists
+                        if (_hasTransition) {
+                            var _showName = false;
+                            // Show name on first bar, at each transition point, and if name differs from previous
+                            if (i === 0 || isTransitionPoint) _showName = true;
+                            if (_showName) {
+                                html += '<div class="ceo-trend-name-label' + (isOutgoingCeo ? ' ceo-outgoing' : '') + '">' + _shortCeoName(d.name) + '</div>';
+                            } else {
+                                html += '<div class="ceo-trend-name-label">\u00A0</div>'; // spacer for alignment
+                            }
+                        }
+
                         html += '</div>';
                     });
                     html += '</div>';
