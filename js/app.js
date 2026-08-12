@@ -57,6 +57,8 @@ function toggleTheme() {
     if (window._redrawNetwork) window._redrawNetwork();
     // Re-render comparison chart if visible
     if (window._redrawComparisonChart) window._redrawComparisonChart();
+    // Re-render sector compensation heatmap (text contrast depends on theme)
+    if (window._redrawSectorHeatmap) window._redrawSectorHeatmap();
 }
 
 function isDarkTheme() {
@@ -3772,7 +3774,7 @@ function hideMetricSkeletons() {
     })();
 
     // === Sector × Component Compensation Heatmap ===
-    (function renderSectorCompHeatmap() {
+    function renderSectorCompHeatmap() {
         var container = document.getElementById('sector-comp-heatmap');
         if (!container) return;
 
@@ -3895,7 +3897,9 @@ function hideMetricSkeletons() {
                 if (window.filterBySector) window.filterBySector(sector);
             });
         });
-    })();
+    }
+    renderSectorCompHeatmap();
+    window._redrawSectorHeatmap = renderSectorCompHeatmap;
 
     function hexToRgba(hex, alpha) {
         var r = parseInt(hex.slice(1, 3), 16);
