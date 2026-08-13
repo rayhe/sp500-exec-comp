@@ -643,6 +643,7 @@ function sortTableByKey(key, dir) {
     window._activeConcTier = null;
     window._activeCeoTransitionFilter = false;
     window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
+    window._activePctileTier = null; // null=off, { min, max, label, color }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -942,6 +943,11 @@ function populateInsights(comp, trends) {
             var yfc = document.getElementById('yoy-filter-chip');
             if (yfc) yfc.remove();
             if (window.highlightYoYBucket) window.highlightYoYBucket(null);
+        }
+        if (window._activePctileTier) {
+            window._activePctileTier = null;
+            var ptf = document.getElementById('pctile-filter-chip');
+            if (ptf) ptf.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -1378,6 +1384,7 @@ function buildSectorChips(companies) {
         if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
+        if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1400,6 +1407,7 @@ function buildSectorChips(companies) {
             if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
+        if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -2049,17 +2057,17 @@ function renderStockPctSortSummary(companies) {
     return html;
 }
 
-/* Percentile sort summary — tier distribution + comp range per tier */
+/* Percentile sort summary — tier distribution histogram + comp range + analytical stats */
 function renderPercentileSortSummary(companies) {
     var withData = companies.filter(function(c) { return c._compPercentile != null; });
     if (withData.length === 0) return null;
 
-    // Count companies in each tier
+    // Tier definitions with colors matching pctile-badge classes
     var tiers = [
-        { label: 'P90+', min: 90, max: 101, cls: 'pctile-top', count: 0, comps: [] },
-        { label: 'P75–89', min: 75, max: 90, cls: 'pctile-high', count: 0, comps: [] },
-        { label: 'P25–74', min: 25, max: 75, cls: 'pctile-mid', count: 0, comps: [] },
-        { label: '<P25', min: 0, max: 25, cls: 'pctile-low', count: 0, comps: [] }
+        { label: 'P90+', min: 90, max: 101, cls: 'pctile-top', count: 0, comps: [], color: '#ffd166', tag: 'Top Decile' },
+        { label: 'P75–89', min: 75, max: 90, cls: 'pctile-high', count: 0, comps: [], color: '#00b4d8', tag: 'Upper Quartile' },
+        { label: 'P25–74', min: 25, max: 75, cls: 'pctile-mid', count: 0, comps: [], color: '#a1a1aa', tag: 'Middle Half' },
+        { label: '<P25', min: 0, max: 25, cls: 'pctile-low', count: 0, comps: [], color: '#a78bfa', tag: 'Lower Quartile' }
     ];
 
     withData.forEach(function(c) {
@@ -2072,20 +2080,114 @@ function renderPercentileSortSummary(companies) {
         }
     });
 
+    var vals = withData.map(function(c) { return c.total_compensation || 0; }).sort(function(a, b) { return a - b; });
+    var medianComp = computeMedian(vals);
+    var meanComp = vals.reduce(function(s, v) { return s + v; }, 0) / vals.length;
+    var skewRatio = medianComp > 0 ? meanComp / medianComp : 1;
+
+    var maxTierCount = Math.max.apply(null, tiers.map(function(t) { return t.count; }));
+
     var sortDir = currentSort.dir === 'desc' ? 'highest first' : 'lowest first';
     var html = '<span class="summary-stat"><span class="summary-stat-label">Compensation Percentile</span>';
     html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span></span>';
 
+    html += '<span class="summary-divider"></span>';
+
+    // Clickable histogram bars (matching conc-dist pattern)
+    var activeTier = window._activePctileTier;
+    html += '<span class="summary-stat pctile-dist-histogram">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="pctile-dist-bars">';
+    tiers.forEach(function(t) {
+        var barH = maxTierCount > 0 ? Math.max(4, Math.round(t.count / maxTierCount * 24)) : 4;
+        var isActive = (activeTier && activeTier.min === t.min && activeTier.max === t.max);
+        var isDimmed = (activeTier && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:2px;border-radius:3px;' : '';
+        html += '<span class="pctile-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies' + (t.comps.length > 0 ? ' (' + formatCurrency(Math.min.apply(null, t.comps)) + ' \u2013 ' + formatCurrency(Math.max.apply(null, t.comps)) + ')' : '') + ' \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByPctileTier(' + t.min + ',' + t.max + ',\'' + t.label.replace(/'/g, "\\\\'") + '\',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="pctile-dist-bar" style="height:' + barH + 'px;background:' + t.color + ';' + dimStyle + '"></span>';
+        html += '<span class="pctile-dist-bar-label" style="' + dimStyle + '">' + t.count + '</span>';
+        html += '</span>';
+    });
+    html += '</span>';
+    html += '<span class="pctile-dist-bracket-labels">';
+    tiers.forEach(function(t) {
+        html += '<span class="pctile-dist-bracket-label">' + t.label + '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median and mean
+    html += '<span class="summary-stat"><span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(medianComp) + '</span></span>';
+    html += '<span class="summary-stat"><span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + formatCurrency(meanComp) + '</span></span>';
+
+    // Skewness indicator
+    if (skewRatio > 1.05) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Skew</span>';
+        html += '<span class="summary-stat-value" title="Mean/median ratio of ' + skewRatio.toFixed(2) + ' \u2014 pay is concentrated at the top">';
+        html += skewRatio.toFixed(1) + '\u00d7 right-skewed';
+        html += '</span></span>';
+    }
+
+    html += '<span class="summary-divider"></span>';
+
+    // Tier-specific stats
     tiers.forEach(function(t) {
         if (t.count === 0) return;
         var minComp = Math.min.apply(null, t.comps);
         var maxComp = Math.max.apply(null, t.comps);
-        var rangeStr = formatCurrency(minComp) + '–' + formatCurrency(maxComp);
         html += '<span class="summary-stat">';
         html += '<span class="summary-stat-label"><span class="pctile-badge ' + t.cls + '" style="font-size:0.65rem">' + t.label + '</span></span>';
-        html += '<span class="summary-stat-value">' + t.count + ' (' + rangeStr + ')</span>';
+        html += '<span class="summary-stat-value">' + t.count + ' (' + formatCurrency(minComp) + '\u2013' + formatCurrency(maxComp) + ')</span>';
         html += '</span>';
     });
+
+    // Active pctile tier enrichment: sector breakdown within active tier
+    if (activeTier) {
+        var tierCompanies = withData.filter(function(c) {
+            return c._compPercentile >= activeTier.min && c._compPercentile < activeTier.max;
+        });
+        if (tierCompanies.length > 0) {
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label" style="color:' + (tiers.find(function(t) { return t.min === activeTier.min; }) || {}).color + '">' + activeTier.tag + ' Detail</span></span>';
+
+            // Median comp within tier
+            var tierVals = tierCompanies.map(function(c) { return c.total_compensation || 0; }).sort(function(a, b) { return a - b; });
+            var tierMedian = computeMedian(tierVals);
+            html += '<span class="summary-stat"><span class="summary-stat-label">Tier median</span>';
+            html += '<span class="summary-stat-value">' + formatCurrency(tierMedian) + '</span></span>';
+
+            // Highest-paid in tier
+            var highest = tierCompanies.slice().sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
+            if (highest) {
+                html += '<span class="summary-stat"><span class="summary-stat-label">Top earner</span>';
+                html += '<span class="summary-stat-value accent">' + (highest.ceo_name || highest.ticker) + ' (' + highest.ticker + ') ' + formatCurrency(highest.total_compensation) + '</span></span>';
+            }
+
+            // Top 3 sectors by count in this tier
+            var sectorCounts = {};
+            tierCompanies.forEach(function(c) {
+                var s = c.sector || 'Unknown';
+                sectorCounts[s] = (sectorCounts[s] || 0) + 1;
+            });
+            var topSectors = Object.keys(sectorCounts).sort(function(a, b) { return sectorCounts[b] - sectorCounts[a]; }).slice(0, 3);
+            if (topSectors.length > 0) {
+                html += '<span class="summary-stat"><span class="summary-stat-label">Top sectors</span>';
+                html += '<span class="summary-stat-value">';
+                topSectors.forEach(function(s, i) {
+                    var abbr = s.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls').replace('Health Care', 'Health');
+                    if (i > 0) html += ', ';
+                    html += '<span style="color:' + getSectorColor(s) + '">' + abbr + '</span> ' + sectorCounts[s];
+                });
+                html += '</span></span>';
+            }
+        }
+    }
 
     return html;
 }
@@ -2410,6 +2512,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
     if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
+    if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -2817,6 +2920,12 @@ function renderTable(companies, options) {
             return pct >= yb.min && pct < yb.max;
         });
     }
+    if (window._activePctileTier) {
+        var pt = window._activePctileTier;
+        filtered = filtered.filter(function(c) {
+            return c._compPercentile != null && c._compPercentile >= pt.min && c._compPercentile < pt.max;
+        });
+    }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
@@ -3049,6 +3158,7 @@ function renderTable(companies, options) {
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
     if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
     if (window._activeYoYBucket) announceMsg += ', YoY: ' + window._activeYoYBucket.label;
+    if (window._activePctileTier) announceMsg += ', percentile: ' + window._activePctileTier.label;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -4168,6 +4278,12 @@ function serializeState() {
         params.push('ymax=' + (window._activeYoYBucket.max === Infinity ? 'inf' : window._activeYoYBucket.max));
         params.push('ylbl=' + encodeURIComponent(window._activeYoYBucket.label));
     }
+    if (window._activePctileTier) {
+        params.push('ptmin=' + window._activePctileTier.min);
+        params.push('ptmax=' + window._activePctileTier.max);
+        params.push('ptlbl=' + encodeURIComponent(window._activePctileTier.label));
+        params.push('pttag=' + encodeURIComponent(window._activePctileTier.tag));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -4275,6 +4391,15 @@ function applyHashState(companies) {
         var yMax = state.ymax === 'inf' ? Infinity : parseFloat(state.ymax);
         if (!isNaN(yMin) && (yMax === Infinity || !isNaN(yMax))) {
             window._activeYoYBucket = { min: yMin, max: yMax, label: decodeURIComponent(state.ylbl) };
+        }
+    }
+
+    // Percentile tier filter
+    if (state.ptmin != null && state.ptmax != null && state.ptlbl) {
+        var ptMin = parseFloat(state.ptmin);
+        var ptMax = parseFloat(state.ptmax);
+        if (!isNaN(ptMin) && !isNaN(ptMax)) {
+            window._activePctileTier = { min: ptMin, max: ptMax, label: decodeURIComponent(state.ptlbl), tag: state.pttag ? decodeURIComponent(state.pttag) : '' };
         }
     }
 
@@ -4525,6 +4650,7 @@ function hideMetricSkeletons() {
         updateCeoTransitionFilterIndicator();
         updateTeamCompletenessFilterIndicator();
         updateYoYFilterIndicator();
+        updatePctileFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -4696,6 +4822,7 @@ function hideMetricSkeletons() {
         updateCeoTransitionFilterIndicator();
         updateTeamCompletenessFilterIndicator();
         updateYoYFilterIndicator();
+        updatePctileFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -4919,6 +5046,64 @@ function hideMetricSkeletons() {
     }
     window._updateYoYFilterIndicator = updateYoYFilterIndicator;
 
+    // Percentile tier filter — filter table by clicking bars in percentile sort summary histogram
+    window.filterByPctileTier = function(minPct, maxPct, label, tag) {
+        // Toggle off if same tier clicked again
+        if (window._activePctileTier && window._activePctileTier.min === minPct && window._activePctileTier.max === maxPct) {
+            window._activePctileTier = null;
+        } else {
+            var tierColors = { 90: '#ffd166', 75: '#00b4d8', 25: '#a1a1aa', 0: '#a78bfa' };
+            window._activePctileTier = { min: minPct, max: maxPct, label: label, tag: tag, color: tierColors[minPct] || '#a1a1aa' };
+        }
+
+        currentPage = 1;
+
+        // Sort by percentile descending
+        currentSort = { key: '_compPercentile', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_compPercentile') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updatePctileFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activePctileTier ? 'Filtered to ' + tag + ' (' + label + ')' : 'Percentile filter cleared');
+    };
+
+    function updatePctileFilterIndicator() {
+        var existing = document.getElementById('pctile-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activePctileTier) {
+            var pt = window._activePctileTier;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' \u00d7 ' + pt.label : pt.tag + ' (' + pt.label + ')';
+            var tierColor = pt.color || '#a1a1aa';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'pctile-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(tierColor);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(tierColor);
+            chip.style.color = isCombined ? '#a78bfa' : tierColor;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + percentile filter' : 'Click to clear percentile tier filter';
+            chip.addEventListener('click', function() {
+                window._activePctileTier = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updatePctileFilterIndicator = updatePctileFilterIndicator;
+
     // CEO Transition filter — toggle to show only companies with CEO changes
     window.filterByCeoTransition = function() {
         window._activeCeoTransitionFilter = !window._activeCeoTransitionFilter;
@@ -5088,6 +5273,11 @@ function hideMetricSkeletons() {
             window._activeYoYBucket = null;
             var yfc2 = document.getElementById('yoy-filter-chip');
             if (yfc2) yfc2.remove();
+        }
+        if (window._activePctileTier) {
+            window._activePctileTier = null;
+            var ptf2 = document.getElementById('pctile-filter-chip');
+            if (ptf2) ptf2.remove();
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -5315,6 +5505,7 @@ function hideMetricSkeletons() {
                 if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
+        if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
 
                 renderTable(companies);
 
@@ -5777,6 +5968,11 @@ function hideMetricSkeletons() {
     // Apply team completeness filter chip if restored from hash
     if (window._activeTeamCompletenessFilter) {
         updateTeamCompletenessFilterIndicator();
+    }
+
+    // Apply percentile tier filter chip if restored from hash
+    if (window._activePctileTier) {
+        updatePctileFilterIndicator();
     }
 
     // === Table horizontal scroll indicator ===
@@ -7425,6 +7621,11 @@ function hideMetricSkeletons() {
         // Restore YoY filter chip if present in hash state
         if (window._activeYoYBucket) {
             updateYoYFilterIndicator();
+        }
+
+        // Restore percentile tier filter chip if present in hash state
+        if (window._activePctileTier) {
+            updatePctileFilterIndicator();
         }
 
         // Restore or clear comparison set from hash

@@ -3324,6 +3324,12 @@ footer li::before {
     .yoy-dist-bracket-labels { gap: 1px; }
     .yoy-dist-bar-label { font-size: 0.5rem; }
     .yoy-dist-histogram .summary-stat-label { display: none; }
+    .pctile-dist-bar { width: 20px; }
+    .pctile-dist-bracket-label { width: 20px; font-size: 0.48rem; }
+    .pctile-dist-bars { gap: 3px; height: 22px; }
+    .pctile-dist-bracket-labels { gap: 3px; }
+    .pctile-dist-bar-label { font-size: 0.55rem; }
+    .pctile-dist-histogram .summary-stat-label { display: none; }
     .sector-sort-bars { gap: 2px; height: 22px; }
     .sector-sort-bar { width: 10px; }
     .sector-sort-bar-count { font-size: 0.5rem; }
@@ -5297,6 +5303,56 @@ footer li::before {
     box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
 }
 
+/* === Percentile tier distribution histogram in sort summary === */
+.pctile-dist-histogram {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+.pctile-dist-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 28px;
+}
+.pctile-dist-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    cursor: pointer;
+}
+.pctile-dist-bar {
+    width: 28px;
+    border-radius: 2px 2px 0 0;
+    min-height: 4px;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.pctile-dist-bar-group:hover .pctile-dist-bar {
+    opacity: 0.85;
+    transform: scaleY(1.15);
+}
+.pctile-dist-bar-label {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1;
+}
+.pctile-dist-bracket-labels {
+    display: inline-flex;
+    gap: 4px;
+}
+.pctile-dist-bracket-label {
+    width: 28px;
+    text-align: center;
+    font-size: 0.52rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    line-height: 1;
+}
+
 @media (max-width: 640px) {
     .neo-table { font-size: 0.75rem; }
     .neo-table thead th,
@@ -5542,6 +5598,7 @@ footer li::before {
     .sa-sector-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .conc-dist-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .yoy-dist-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pctile-dist-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 /* Percentile column — hide on small screens */
@@ -5615,6 +5672,20 @@ footer li::before {
     .conc-dist-bar-label {
         font-size: 0.65rem;
     }
+
+    /* Percentile distribution bars */
+    .pctile-dist-bar-group {
+        padding: 6px 3px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .pctile-dist-bar-group:active .pctile-dist-bar {
+        opacity: 0.65;
+        transform: scaleY(1.1);
+    }
+    .pctile-dist-bar-label {
+        font-size: 0.65rem;
+    }
 }
 
 /* Combined: touch device + narrow screen — keep bars proportionate but still tappable */
@@ -5667,6 +5738,22 @@ footer li::before {
         font-size: 0.58rem;
     }
     .conc-dist-bracket-label {
+        font-size: 0.5rem;
+    }
+
+    .pctile-dist-bar-group {
+        padding: 6px 4px;
+    }
+    .pctile-dist-bars {
+        gap: 2px;
+    }
+    .pctile-dist-bracket-labels {
+        gap: 2px;
+    }
+    .pctile-dist-bar-label {
+        font-size: 0.58rem;
+    }
+    .pctile-dist-bracket-label {
         font-size: 0.5rem;
     }
 }
