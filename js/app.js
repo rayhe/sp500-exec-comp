@@ -363,13 +363,19 @@ function classifyExecRole(title) {
     if (!title) return 'Other';
     var t = title.toLowerCase();
     if (/\bceo\b|chief executive/i.test(t)) return 'CEO';
-    if (/\bcfo\b|chief financial/i.test(t)) return 'CFO';
+    if (/\bcfo\b|chief financ|principal financial/i.test(t)) return 'CFO';
     if (/\bcoo\b|chief operating/i.test(t)) return 'COO';
     if (/\bclo\b|general counsel|chief legal/i.test(t)) return 'GC/CLO';
     if (/\bchro\b|chief human|chief people/i.test(t)) return 'CHRO';
     if (/\bcto\b|chief technolog/i.test(t)) return 'CTO';
     if (/\bcio\b|chief information/i.test(t)) return 'CIO';
     return 'Other';
+}
+
+/* Helper: get the effective compensation value for a company, respecting role filter */
+function getEffectiveComp(c) {
+    if (activeRole && activeRole !== 'CEO' && c._roleViewComp != null) return c._roleViewComp;
+    return c.total_compensation || 0;
 }
 
 var ROLE_COLORS = {
@@ -1517,10 +1523,14 @@ function renderSortContextSummary(companies) {
    Displays total combined pay, median vs mean skewness, bracket distribution with inline mini histogram,
    and min/max range context. */
 function renderCompDistSummary(companies) {
-    var comps = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
+    var isRoleView = activeRole && activeRole !== 'CEO';
+    var comps = companies.filter(function(c) {
+        var v = isRoleView ? (c._roleViewComp || 0) : (c.total_compensation || 0);
+        return v > 0;
+    });
     if (comps.length === 0) return null;
 
-    var vals = comps.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var vals = comps.map(function(c) { return isRoleView ? (c._roleViewComp || 0) : c.total_compensation; }).sort(function(a, b) { return a - b; });
     var totalCombined = vals.reduce(function(s, v) { return s + v; }, 0);
     var mean = totalCombined / vals.length;
     var median = computeMedian(vals);
@@ -1542,7 +1552,7 @@ function renderCompDistSummary(companies) {
         { label: '$50M+', min: 50e6, max: Infinity, count: 0, color: '#ef476f' }
     ];
     comps.forEach(function(c) {
-        var v = c.total_compensation;
+        var v = isRoleView ? (c._roleViewComp || 0) : c.total_compensation;
         for (var bi = brackets.length - 1; bi >= 0; bi--) {
             if (v >= brackets[bi].min) { brackets[bi].count++; break; }
         }
@@ -1552,6 +1562,14 @@ function renderCompDistSummary(companies) {
     var html = '';
 
     // Total combined
+    // Role context prefix
+    if (isRoleView) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label" style="color:' + ROLE_COLORS[activeRole] + '">' + activeRole + ' Compensation</span>';
+        html += '</span>';
+        html += '<span class="summary-divider"></span>';
+    }
+
     html += '<span class="summary-stat">';
     html += '<span class="summary-stat-label">Total combined</span>';
     html += '<span class="summary-stat-value accent">' + formatCurrency(totalCombined) + '</span>';
@@ -2012,6 +2030,7 @@ function renderConcSortSummary(companies) {
    highest/lowest median pay sectors, and sector spread ratio. */
 function renderSectorSortSummary(companies) {
     if (companies.length === 0) return null;
+    var isRoleView = activeRole && activeRole !== 'CEO';
 
     // Group companies by sector
     var sectorMap = {};
@@ -2019,8 +2038,9 @@ function renderSectorSortSummary(companies) {
         var s = c.sector || 'Unknown';
         if (!sectorMap[s]) sectorMap[s] = { name: s, companies: [], comps: [] };
         sectorMap[s].companies.push(c);
-        if (c.total_compensation != null && c.total_compensation > 0) {
-            sectorMap[s].comps.push(c.total_compensation);
+        var cv = isRoleView ? (c._roleViewComp || 0) : (c.total_compensation || 0);
+        if (cv > 0) {
+            sectorMap[s].comps.push(cv);
         }
     });
 
@@ -2057,21 +2077,30 @@ function renderSectorSortSummary(companies) {
     html += '<span class="summary-stat-label">sectors</span>';
     html += '</span>';
 
+    // Role context prefix
+    if (isRoleView) {
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label" style="color:' + ROLE_COLORS[activeRole] + '">' + activeRole + ' by Sector</span>';
+        html += '</span>';
+    }
+
     html += '<span class="summary-divider"></span>';
 
     // Highest paying sector
+    var medianLabel = isRoleView ? 'Highest ' + activeRole : 'Highest median';
     if (highestSector && highestSector.median > 0) {
         html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Highest median</span>';
+        html += '<span class="summary-stat-label">' + medianLabel + '</span>';
         html += '<span class="summary-stat-value" style="color:' + getSectorColor(highestSector.name) + '">';
         html += highestSector.name + ' ' + formatCurrency(highestSector.median);
         html += '</span></span>';
     }
 
     // Lowest paying sector
+    var lowestLabel = isRoleView ? 'Lowest ' + activeRole : 'Lowest median';
     if (lowestSector && lowestSector.median > 0 && lowestSector.name !== highestSector.name) {
         html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Lowest median</span>';
+        html += '<span class="summary-stat-label">' + lowestLabel + '</span>';
         html += '<span class="summary-stat-value" style="color:' + getSectorColor(lowestSector.name) + '">';
         html += lowestSector.name + ' ' + formatCurrency(lowestSector.median);
         html += '</span></span>';
@@ -2196,8 +2225,8 @@ function renderSummaryBar(filtered, allCompanies) {
         return;
     }
 
-    // Compute statistics
-    var comps = filtered.map(function(c) { return c.total_compensation || 0; });
+    // Compute statistics — use role-specific comp when role filter is active
+    var comps = filtered.map(function(c) { return getEffectiveComp(c); });
     var totalComp = comps.reduce(function(s, v) { return s + v; }, 0);
     var meanComp = totalComp / comps.length;
     var medianComp = computeMedian(comps);
@@ -2252,9 +2281,11 @@ function renderSummaryBar(filtered, allCompanies) {
 
     html += '<span class="summary-divider"></span>';
 
+    var compLabel = (activeRole && activeRole !== 'CEO') ? activeRole + ' comp' : 'comp';
+
     // Median Total Comp
     html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-label">Median comp</span>';
+    html += '<span class="summary-stat-label">Median ' + compLabel + '</span>';
     html += '<span class="summary-stat-value">' + formatCurrency(medianComp) + '</span>';
     html += '</span>';
 
@@ -2365,7 +2396,8 @@ function renderSummaryBar(filtered, allCompanies) {
         allCompanies.forEach(function(c) {
             var s = c.sector || 'Unknown';
             if (!sectorMap[s]) sectorMap[s] = [];
-            if (c.total_compensation > 0) sectorMap[s].push(c.total_compensation);
+            var cv = (activeRole && activeRole !== 'CEO' && c._roleViewComp != null) ? c._roleViewComp : (c.total_compensation || 0);
+            if (cv > 0) sectorMap[s].push(cv);
         });
         var sectorRanking = Object.keys(sectorMap).map(function(s) {
             var sorted = sectorMap[s].slice().sort(function(a, b) { return a - b; });
@@ -2404,7 +2436,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeCeoTransitionFilter && filtered.length > 0) {
         html += '<span class="summary-divider"></span>';
         // Median transition comp
-        var transComps = filtered.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; }).sort(function(a, b) { return a - b; });
+        var transComps = filtered.map(function(c) { return getEffectiveComp(c); }).filter(function(v) { return v > 0; }).sort(function(a, b) { return a - b; });
         if (transComps.length > 0) {
             var medTransComp = transComps[Math.floor(transComps.length / 2)];
             html += '<span class="summary-stat">';
@@ -2429,11 +2461,11 @@ function renderSummaryBar(filtered, allCompanies) {
             html += '</span>';
         }
         // Highest paid new CEO
-        var topNew = filtered.slice().sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
+        var topNew = filtered.slice().sort(function(a, b) { return getEffectiveComp(b) - getEffectiveComp(a); })[0];
         if (topNew) {
             html += '<span class="summary-stat">';
             html += '<span class="summary-stat-label">Highest Paid</span>';
-            html += '<span class="summary-stat-value">' + (topNew.ceo_name || 'N/A') + ' (' + topNew.ticker + ') ' + formatCurrency(topNew.total_compensation) + '</span>';
+            html += '<span class="summary-stat-value">' + (topNew.ceo_name || 'N/A') + ' (' + topNew.ticker + ') ' + formatCurrency(getEffectiveComp(topNew)) + '</span>';
             html += '</span>';
         }
 
