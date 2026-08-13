@@ -453,6 +453,34 @@ function computeRoleExecs(companies) {
     });
 }
 
+/* Pre-compute executive team completeness — which C-suite roles each company's NEO disclosure covers.
+   Sets c._teamRoles (filled roles), c._teamRoleCount (0-7), c._teamMissingExpected (missing common roles). */
+function computeTeamCompleteness(companies) {
+    // Expected roles for a typical S&P 500 company: CEO + CFO are near-universal, others vary
+    var EXPECTED_ROLES = ['CEO', 'CFO'];
+    var C_SUITE_ROLES = ['CEO', 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
+    companies.forEach(function(c) {
+        c._teamRoles = [];
+        c._teamRoleCount = 0;
+        c._teamMissingExpected = [];
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        var maxYr = Math.max.apply(null, allYears);
+        var latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        var rolesFound = {};
+        latestExecs.forEach(function(e) {
+            var role = classifyExecRole(e.title);
+            if (role !== 'Other' && !rolesFound[role]) {
+                rolesFound[role] = true;
+            }
+        });
+        c._teamRoles = C_SUITE_ROLES.filter(function(r) { return rolesFound[r]; });
+        c._teamRoleCount = c._teamRoles.length;
+        c._teamMissingExpected = EXPECTED_ROLES.filter(function(r) { return !rolesFound[r]; });
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -1013,6 +1041,58 @@ function populateInsights(comp, trends) {
             }
         };
         insights[11].actionHint = 'View role analysis';
+    }
+
+    // 13. Team Completeness insight card
+    (function() {
+        var fullTeam = companies.filter(function(c) { return c._teamRoleCount >= 4; });
+        var missingExpected = companies.filter(function(c) { return c._teamMissingExpected && c._teamMissingExpected.length > 0; });
+        var missingCFO = companies.filter(function(c) { return c._teamMissingExpected && c._teamMissingExpected.indexOf('CFO') >= 0 && c.executives && c.executives.length > 0; });
+        var missingCEO = companies.filter(function(c) { return c._teamMissingExpected && c._teamMissingExpected.indexOf('CEO') >= 0 && c.executives && c.executives.length > 0; });
+        // Average role count
+        var withExecs = companies.filter(function(c) { return c.executives && c.executives.length > 0; });
+        var avgRoles = withExecs.length > 0 ? (withExecs.reduce(function(s, c) { return s + (c._teamRoleCount || 0); }, 0) / withExecs.length).toFixed(1) : '?';
+        // Most complete company
+        var mostComplete = withExecs.slice().sort(function(a, b) { return (b._teamRoleCount || 0) - (a._teamRoleCount || 0) || (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
+
+        insights.push({
+            icon: '🏢',
+            label: 'Team Completeness',
+            value: avgRoles + ' avg roles',
+            detail: fullTeam.length + ' companies disclose 4+ C-suite roles in NEO data (of 7 tracked). ' +
+                missingCFO.length + ' companies have no identifiable CFO' +
+                (missingCEO.length > 0 ? ', ' + missingCEO.length + ' have no identifiable CEO' : '') +
+                '. Most complete: ' + (mostComplete ? mostComplete.ticker + ' (' + (mostComplete._teamRoleCount || 0) + ' roles)' : '—') +
+                '.',
+            _tickers: mostComplete ? [mostComplete.ticker] : []
+        });
+    })();
+
+    if (insights[12]) {
+        insights[12].action = function() {
+            // Filter to companies with 4+ roles (deep C-suite coverage)
+            searchTerm = '';
+            activeSector = null;
+            activeRole = null;
+            currentPage = 1;
+            document.getElementById('table-search').value = '';
+            document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+            var allChip = document.querySelector('.chip');
+            if (allChip) allChip.classList.add('active');
+            // Sort by total comp to show most-complete high-paid companies
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+            renderTable(companies);
+            scrollToTable();
+        };
+        insights[12].actionHint = 'View top earners';
     }
 
     // Render cards
@@ -3202,6 +3282,28 @@ function setupDetailPanel(companies) {
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Tenure</div><div class="detail-stat-value">' + company._ceoDataYears + '+ years</div><div class="detail-stat-sub">In role since at least FY' + (company.executives ? (function() { var yrs = []; company.executives.forEach(function(e) { if (yrs.indexOf(e.year) < 0) yrs.push(e.year); }); yrs.sort(function(a,b){return a-b;}); return yrs[0]; })() : '?') + '</div></div>';
         }
 
+        // Team Completeness — C-suite role coverage visualization
+        if (company._teamRoles && company.executives && company.executives.length > 0) {
+            var _tcRoles = ['CEO', 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
+            var _tcCount = company._teamRoleCount || 0;
+            var _tcCls = _tcCount >= 4 ? 'positive' : _tcCount >= 2 ? '' : 'negative';
+            var _tcDotsHtml = '';
+            _tcRoles.forEach(function(r) {
+                var filled = company._teamRoles.indexOf(r) >= 0;
+                var color = filled ? (ROLE_COLORS[r] || '#94a3b8') : 'transparent';
+                var border = filled ? color : 'rgba(161,161,170,0.3)';
+                var roleExec = company._roleExecs && company._roleExecs[r];
+                var tip = r + (filled ? (roleExec ? ': ' + roleExec.name + ' (' + formatCompact(roleExec.total || 0) + ')' : ' ✓') : ' — not in NEO disclosure');
+                _tcDotsHtml += '<span class="tc-dot' + (filled ? ' tc-filled' : '') + '" style="background:' + color + ';border-color:' + border + '" title="' + tip.replace(/"/g, '&quot;') + '"><span class="tc-dot-label">' + r.replace('GC/CLO', 'GC') + '</span></span>';
+            });
+            var _tcMissing = company._teamMissingExpected && company._teamMissingExpected.length > 0;
+            var _tcSubText = _tcCount + '/7 C-suite roles in NEO data';
+            if (_tcMissing) {
+                _tcSubText += ' · Missing: ' + company._teamMissingExpected.join(', ');
+            }
+            html += '<div class="detail-stat detail-stat-wide"><div class="detail-stat-label">Team Completeness</div><div class="detail-stat-value ' + _tcCls + '">' + _tcCount + ' roles</div><div class="tc-dots">' + _tcDotsHtml + '</div><div class="detail-stat-sub">' + _tcSubText + '</div></div>';
+        }
+
         html += '</div>'; // detail-stats
 
         // CEO Compensation Breakdown — visual stacked bar
@@ -4115,6 +4217,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute role-specific execs per company for role filter pivot
     computeRoleExecs(companies);
+
+    // Pre-compute executive team completeness (C-suite role coverage per company)
+    computeTeamCompleteness(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
@@ -5350,6 +5455,7 @@ function hideMetricSkeletons() {
             // CSV header and rows
             var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
                 'CEO Concentration %', 'CEO Premium Ratio', 'CEO Transition', 'CEO Data Years',
+                'Team Roles Filled', 'Team Roles', 'Missing Expected Roles',
                 'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
                 'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
                 'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
@@ -5401,6 +5507,9 @@ function hideMetricSkeletons() {
                     c._ceoPremiumRatio != null ? c._ceoPremiumRatio.toFixed(2) : '',
                     c._ceoTransition ? csvEscape('Yes: ' + c._ceoTransition.oldCeo.name + ' → ' + c._ceoTransition.newCeo.name) : 'No',
                     c._ceoDataYears || '',
+                    c._teamRoleCount || 0,
+                    csvEscape((c._teamRoles || []).join('; ')),
+                    csvEscape((c._teamMissingExpected || []).join('; ')),
                     sal, stk, opt, bon, inc, pen, oth,
                     csvEscape(salP), csvEscape(stkP), csvEscape(optP), csvEscape(bonP),
                     csvEscape(incP), csvEscape(penP), csvEscape(othP)

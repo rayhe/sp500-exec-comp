@@ -5678,3 +5678,77 @@ footer li::before {
         print-color-adjust: exact;
     }
 }
+
+/* === Team Completeness Dots (detail panel) === */
+.tc-dots {
+    display: flex;
+    gap: 6px;
+    margin: 6px 0 4px;
+    flex-wrap: wrap;
+}
+.tc-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(161,161,170,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
+}
+.tc-dot.tc-filled {
+    box-shadow: 0 0 6px rgba(255,255,255,0.08);
+}
+.tc-dot:hover {
+    transform: scale(1.15);
+}
+.tc-dot-label {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+    line-height: 1;
+    user-select: none;
+}
+.tc-dot:not(.tc-filled) .tc-dot-label {
+    color: var(--text-muted, #6b7280);
+}
+.detail-stat-wide {
+    grid-column: 1 / -1;
+}
+
+/* Light theme */
+[data-theme="light"] .tc-dot-label {
+    color: rgba(0,0,0,0.7);
+}
+[data-theme="light"] .tc-dot:not(.tc-filled) .tc-dot-label {
+    color: #9ca3af;
+}
+[data-theme="light"] .tc-dot:not(.tc-filled) {
+    border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .tc-dot.tc-filled {
+    box-shadow: 0 0 4px rgba(0,0,0,0.08);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .tc-dot {
+        width: 24px;
+        height: 24px;
+    }
+    .tc-dot-label {
+        font-size: 0.45rem;
+    }
+}
+
+/* Print */
+@media print {
+    .tc-dot.tc-filled {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
