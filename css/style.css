@@ -2983,6 +2983,62 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
+/* Role × Sector mode toggle buttons */
+.rs-mode-toggle {
+    display: inline-flex;
+    gap: 2px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 2px;
+    margin-top: 8px;
+}
+.rs-mode-btn {
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.rs-mode-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+}
+.rs-mode-btn.active {
+    background: rgba(167,139,250,0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(167,139,250,0.25);
+}
+[data-theme="light"] .rs-mode-toggle {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.1);
+}
+[data-theme="light"] .rs-mode-btn:hover {
+    background: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .rs-mode-btn.active {
+    background: rgba(99,102,241,0.1);
+    color: #6366f1;
+    border-color: rgba(99,102,241,0.2);
+}
+
+/* Delta mode cell styles */
+.rs-cell-delta {
+    position: relative;
+}
+.rs-cell-dollar-sub {
+    display: block;
+    font-size: 0.55rem;
+    opacity: 0.7;
+    margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+}
+
 /* Mobile */
 @media (max-width: 600px) {
     .role-sector-heatmap { font-size: 0.68rem; min-width: 560px; }
@@ -2990,13 +3046,17 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     .rs-cell { padding: 6px 3px; min-width: 48px; }
     .rs-cell-val { font-size: 0.66rem; }
     .rs-cell-count { display: none; }
+    .rs-cell-dollar-sub { display: none; }
     .rs-sector-label { font-size: 0.66rem; padding: 6px 4px; }
     .rs-sector-th { min-width: 100px; }
+    .rs-mode-btn { font-size: 0.64rem; padding: 3px 8px; }
 }
 
 /* Print */
 @media print {
     .rs-cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .rs-cell-delta { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .rs-mode-toggle { display: none; }
 }
 
 .trends-section {

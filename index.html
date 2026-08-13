@@ -277,7 +277,11 @@
         <div id="role-comp-chart"></div>
         <div class="section-header role-sector-header" style="margin-top:32px;">
             <h2>Role Compensation by Sector</h2>
-            <p class="section-desc">Median total compensation for each C-suite role across GICS sectors — revealing how industry context shapes pay at every level. Color intensity is scaled within each role column to highlight sector outliers. Click any cell to filter the table.</p>
+            <p class="section-desc" id="role-sector-desc">Median total compensation for each C-suite role across GICS sectors — revealing how industry context shapes pay at every level. Color intensity is scaled within each role column to highlight sector outliers. Click any cell to filter the table.</p>
+            <div class="rs-mode-toggle">
+                <button class="rs-mode-btn active" id="rs-mode-abs" onclick="setRoleSectorMode('absolute')" title="Show absolute median compensation">$ Absolute</button>
+                <button class="rs-mode-btn" id="rs-mode-delta" onclick="setRoleSectorMode('delta')" title="Show ±% vs S&amp;P 500 role median">±% vs Index</button>
+            </div>
         </div>
         <div id="role-sector-heatmap"></div>
     </section>

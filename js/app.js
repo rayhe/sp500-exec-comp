@@ -470,6 +470,7 @@ function getMissingDataHtml(ticker, field) {
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
 let activeRole = null;   // C-suite role filter: 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', or null (CEO/default)
+let _roleSectorDeltaMode = false; // Delta overlay mode for role × sector heatmap
 let searchTerm = '';
 let currentPage = 1;
 var PAGE_SIZE = 50;
@@ -5115,46 +5116,97 @@ function hideMetricSkeletons() {
                     html += '<td><div class="rs-cell rs-cell-empty" title="No ' + role + ' records for ' + row.sector + '"><span class="rs-cell-val">—</span></div></td>';
                     return;
                 }
-                // Color intensity scaled within each role column (0.15 to 0.88)
-                var maxM = roleMaxMedian[role] || 1;
-                var intensity = Math.min(0.88, 0.15 + (data.median / maxM) * 0.73);
-                var bgColor = hexToRgba(rc, intensity);
-                // Text contrast
-                var textColor = intensity > 0.50 ? '#fff' : (isDarkTheme() ? '#e4e4e7' : '#1a1a2e');
-                // vs S&P 500 role median
-                var globalRb = _roleBenchmarks && _roleBenchmarks[role] ? _roleBenchmarks[role] : null;
-                var vsGlobalStr = '';
-                if (globalRb && globalRb.median > 0) {
-                    var vsPct = ((data.median - globalRb.median) / globalRb.median * 100);
-                    vsGlobalStr = (vsPct >= 0 ? '+' : '') + vsPct.toFixed(0) + '% vs S&P 500 ' + role + ' median';
-                }
-                var topStr = data.topEarner ? ('. Highest: ' + data.topEarner.name + ' (' + data.topEarner.ticker + ') ' + formatCompact(data.topEarner.total)) : '';
-                var title = row.sector + ' ' + role + ': median ' + formatCompact(data.median) + ' (' + data.count + ' execs)';
-                if (vsGlobalStr) title += '. ' + vsGlobalStr;
-                title += topStr;
 
-                html += '<td><div class="rs-cell" style="background:' + bgColor + ';color:' + textColor + '" onclick="if(window.filterBySector)window.filterBySector(\'' + escapedSector + '\')" title="' + title.replace(/"/g, '&quot;') + '">';
-                html += '<span class="rs-cell-val">' + formatCompact(data.median) + '</span>';
-                html += '<span class="rs-cell-count">' + data.count + '</span>';
-                html += '</div></td>';
+                var globalRb = _roleBenchmarks && _roleBenchmarks[role] ? _roleBenchmarks[role] : null;
+                var topStr = data.topEarner ? ('. Highest: ' + data.topEarner.name + ' (' + data.topEarner.ticker + ') ' + formatCompact(data.topEarner.total)) : '';
+
+                if (_roleSectorDeltaMode && globalRb && globalRb.median > 0) {
+                    // Delta mode: show ±% vs S&P 500 role median with diverging green/red color
+                    var deltaPct = ((data.median - globalRb.median) / globalRb.median * 100);
+                    var deltaSign = deltaPct >= 0 ? '+' : '';
+                    var deltaLabel = deltaSign + Math.round(deltaPct) + '%';
+                    // Diverging color: green for above median, red for below
+                    // Cap intensity at ±60% for color scaling
+                    var clampedPct = Math.max(-60, Math.min(60, deltaPct));
+                    var absNorm = Math.abs(clampedPct) / 60; // 0 to 1
+                    var cellIntensity = 0.12 + absNorm * 0.68;
+                    var bgColor, textColor;
+                    if (deltaPct >= 0) {
+                        bgColor = hexToRgba('#06d6a0', cellIntensity); // green
+                    } else {
+                        bgColor = hexToRgba('#ef476f', cellIntensity); // red
+                    }
+                    textColor = cellIntensity > 0.45 ? '#fff' : (isDarkTheme() ? '#e4e4e7' : '#1a1a2e');
+
+                    var title = row.sector + ' ' + role + ': ' + deltaLabel + ' vs S&P 500 ' + role + ' median (' + formatCompact(globalRb.median) + '). Sector median: ' + formatCompact(data.median) + ' (' + data.count + ' execs)' + topStr;
+
+                    html += '<td><div class="rs-cell rs-cell-delta" style="background:' + bgColor + ';color:' + textColor + '" onclick="if(window.filterBySector)window.filterBySector(\'' + escapedSector + '\')" title="' + title.replace(/"/g, '&quot;') + '">';
+                    html += '<span class="rs-cell-val">' + deltaLabel + '</span>';
+                    html += '<span class="rs-cell-dollar-sub">' + formatCompact(data.median) + '</span>';
+                    html += '</div></td>';
+                } else {
+                    // Absolute mode (default): show dollar values with role-colored intensity
+                    var maxM = roleMaxMedian[role] || 1;
+                    var intensity = Math.min(0.88, 0.15 + (data.median / maxM) * 0.73);
+                    var bgColor = hexToRgba(rc, intensity);
+                    var textColor = intensity > 0.50 ? '#fff' : (isDarkTheme() ? '#e4e4e7' : '#1a1a2e');
+                    var vsGlobalStr = '';
+                    if (globalRb && globalRb.median > 0) {
+                        var vsPct = ((data.median - globalRb.median) / globalRb.median * 100);
+                        vsGlobalStr = (vsPct >= 0 ? '+' : '') + vsPct.toFixed(0) + '% vs S&P 500 ' + role + ' median';
+                    }
+                    var title = row.sector + ' ' + role + ': median ' + formatCompact(data.median) + ' (' + data.count + ' execs)';
+                    if (vsGlobalStr) title += '. ' + vsGlobalStr;
+                    title += topStr;
+
+                    html += '<td><div class="rs-cell" style="background:' + bgColor + ';color:' + textColor + '" onclick="if(window.filterBySector)window.filterBySector(\'' + escapedSector + '\')" title="' + title.replace(/"/g, '&quot;') + '">';
+                    html += '<span class="rs-cell-val">' + formatCompact(data.median) + '</span>';
+                    html += '<span class="rs-cell-count">' + data.count + '</span>';
+                    html += '</div></td>';
+                }
             });
 
             html += '</tr>';
         });
         html += '</tbody></table></div>';
 
-        // Role color legend footer
+        // Footer: role legend or delta legend
         html += '<div class="rs-footer">';
-        ROLES_DISPLAY.forEach(function(role) {
-            var rc = ROLE_COLORS[role] || '#94a3b8';
-            html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:' + rc + '"></span>' + role + '</span>';
-        });
+        if (_roleSectorDeltaMode) {
+            html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:#ef476f"></span>Below index median</span>';
+            html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:' + (isDarkTheme() ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)') + ';border:1px solid ' + (isDarkTheme() ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)') + '"></span>At index median</span>';
+            html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:#06d6a0"></span>Above index median</span>';
+        } else {
+            ROLES_DISPLAY.forEach(function(role) {
+                var rc = ROLE_COLORS[role] || '#94a3b8';
+                html += '<span class="rs-footer-stat"><span class="rs-footer-swatch" style="background:' + rc + '"></span>' + role + '</span>';
+            });
+        }
         html += '</div>';
 
         container.innerHTML = html;
     }
     renderRoleSectorHeatmap();
     window._redrawRoleSectorHeatmap = renderRoleSectorHeatmap;
+
+    // Role × Sector heatmap mode toggle (absolute ↔ delta)
+    window.setRoleSectorMode = function(mode) {
+        _roleSectorDeltaMode = (mode === 'delta');
+        // Update button active state
+        var absBtn = document.getElementById('rs-mode-abs');
+        var deltaBtn = document.getElementById('rs-mode-delta');
+        if (absBtn) absBtn.classList.toggle('active', !_roleSectorDeltaMode);
+        if (deltaBtn) deltaBtn.classList.toggle('active', _roleSectorDeltaMode);
+        // Update description
+        var desc = document.getElementById('role-sector-desc');
+        if (desc) {
+            desc.textContent = _roleSectorDeltaMode
+                ? 'Deviation from S&P 500 median for each C-suite role \u2014 green cells pay above index, red cells pay below. Intensity scales with distance from the benchmark. Click any cell to filter the table.'
+                : 'Median total compensation for each C-suite role across GICS sectors \u2014 revealing how industry context shapes pay at every level. Color intensity is scaled within each role column to highlight sector outliers. Click any cell to filter the table.';
+        }
+        renderRoleSectorHeatmap();
+        announce(_roleSectorDeltaMode ? 'Showing deviation from S&P 500 role medians' : 'Showing absolute median compensation');
+    };
 
     // Restore state from URL hash (after charts/network are initialized)
     applyHashState(companies);
