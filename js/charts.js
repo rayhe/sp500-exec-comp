@@ -113,6 +113,27 @@ window.highlightRatioBucket = function(minRatio, maxRatio) {
     });
 };
 
+/* Update YoY distribution chart bar highlighting without full redraw */
+window.highlightYoYBucket = function(minPct, maxPct) {
+    d3.selectAll('#yoy-dist-chart .yoy-bar rect').each(function(d) {
+        if (!d) return;
+        if (minPct == null) {
+            // Clear: restore all to default
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        } else if (d.min === minPct && d.max === maxPct) {
+            // Active bucket
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+        } else {
+            // Inactive bucket
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+        }
+    });
+    d3.selectAll('#yoy-dist-chart .yoy-bar text').each(function(d) {
+        if (!d) return;
+        d3.select(this).attr('opacity', minPct == null || (d.min === minPct && d.max === maxPct) ? 1 : 0.4);
+    });
+};
+
 /* Update sector chart bar highlighting without full redraw */
 window.highlightSectorBar = function(sectorName) {
     d3.selectAll('#sector-chart .bar').each(function(d) {
@@ -1446,7 +1467,17 @@ function drawYoYDistChart(companies) {
         .attr('width', x.bandwidth())
         .attr('height', function(b) { return innerH - y(b.count); })
         .attr('fill', function(b) { return b.color; })
-        .attr('opacity', 0.8)
+        .attr('opacity', function(b) {
+            var ab = window._activeYoYBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(b) {
+            var ab = window._activeYoYBucket;
+            if (ab && b.min === ab.min && b.max === ab.max) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .attr('rx', 3)
         .on('mouseenter', function(event, b) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
@@ -1463,8 +1494,13 @@ function drawYoYDistChart(companies) {
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseleave', function() {
-            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        .on('mouseleave', function(event, b) {
+            var ab = window._activeYoYBucket;
+            var isActive = ab && b.min === ab.min && b.max === ab.max;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (ab ? 0.3 : 0.8))
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
             hideChartTooltip();
         })
         .on('click', function(event, b) {
@@ -1482,6 +1518,11 @@ function drawYoYDistChart(companies) {
         .attr('fill', typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7')
         .attr('font-size', '11px')
         .attr('font-weight', '600')
+        .attr('opacity', function(b) {
+            var ab = window._activeYoYBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.4;
+            return 1;
+        })
         .text(function(b) { return b.count > 0 ? b.count : ''; });
 
     // X axis

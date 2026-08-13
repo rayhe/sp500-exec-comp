@@ -941,6 +941,7 @@ function populateInsights(comp, trends) {
             window._activeYoYBucket = null;
             var yfc = document.getElementById('yoy-filter-chip');
             if (yfc) yfc.remove();
+            if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -1376,6 +1377,7 @@ function buildSectorChips(companies) {
         if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
         if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
+        if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1397,6 +1399,7 @@ function buildSectorChips(companies) {
             if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
             if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
+        if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -4019,6 +4022,11 @@ function serializeState() {
     if (window._activeTeamCompletenessFilter) {
         params.push('teamfilter=' + encodeURIComponent(window._activeTeamCompletenessFilter));
     }
+    if (window._activeYoYBucket) {
+        params.push('ymin=' + window._activeYoYBucket.min);
+        params.push('ymax=' + (window._activeYoYBucket.max === Infinity ? 'inf' : window._activeYoYBucket.max));
+        params.push('ylbl=' + encodeURIComponent(window._activeYoYBucket.label));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -4117,6 +4125,15 @@ function applyHashState(companies) {
         var tfVal = decodeURIComponent(state.teamfilter);
         if (tfVal === 'missing' || tfVal === 'complete') {
             window._activeTeamCompletenessFilter = tfVal;
+        }
+    }
+
+    // YoY bucket filter
+    if (state.ymin != null && state.ymax != null && state.ylbl) {
+        var yMin = parseFloat(state.ymin);
+        var yMax = state.ymax === 'inf' ? Infinity : parseFloat(state.ymax);
+        if (!isNaN(yMin) && (yMax === Infinity || !isNaN(yMax))) {
+            window._activeYoYBucket = { min: yMin, max: yMax, label: decodeURIComponent(state.ylbl) };
         }
     }
 
@@ -4366,6 +4383,7 @@ function hideMetricSkeletons() {
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
         updateTeamCompletenessFilterIndicator();
+        updateYoYFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -4536,6 +4554,7 @@ function hideMetricSkeletons() {
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
         updateTeamCompletenessFilterIndicator();
+        updateYoYFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -4585,6 +4604,14 @@ function hideMetricSkeletons() {
                 window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
             } else {
                 window.highlightRatioBucket(null);
+            }
+        }
+        // Restore YoY bucket highlight from hash state
+        if (window.highlightYoYBucket) {
+            if (window._activeYoYBucket) {
+                window.highlightYoYBucket(window._activeYoYBucket.min, window._activeYoYBucket.max);
+            } else {
+                window.highlightYoYBucket(null);
             }
         }
 
@@ -4712,6 +4739,14 @@ function hideMetricSkeletons() {
         updateYoYFilterIndicator();
         renderTable(companies);
         pushState();
+        // Highlight active bar in YoY distribution chart
+        if (window.highlightYoYBucket) {
+            if (window._activeYoYBucket) {
+                window.highlightYoYBucket(window._activeYoYBucket.min, window._activeYoYBucket.max);
+            } else {
+                window.highlightYoYBucket(null);
+            }
+        }
         announce(window._activeYoYBucket ? 'Filtered to YoY ' + label : 'YoY filter cleared');
     };
 
@@ -4735,6 +4770,7 @@ function hideMetricSkeletons() {
                 window._activeYoYBucket = null;
                 chip.remove();
                 renderTable(companies);
+                if (window.highlightYoYBucket) window.highlightYoYBucket(null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
@@ -4907,6 +4943,11 @@ function hideMetricSkeletons() {
             var tfc2 = document.getElementById('team-filter-chip');
             if (tfc2) tfc2.remove();
         }
+        if (window._activeYoYBucket) {
+            window._activeYoYBucket = null;
+            var yfc2 = document.getElementById('yoy-filter-chip');
+            if (yfc2) yfc2.remove();
+        }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
         currentPage = 1;
@@ -4919,6 +4960,7 @@ function hideMetricSkeletons() {
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightYoYBucket) window.highlightYoYBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -5131,6 +5173,7 @@ function hideMetricSkeletons() {
                 if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
                 if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
+        if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
 
                 renderTable(companies);
 
@@ -5573,6 +5616,16 @@ function hideMetricSkeletons() {
     // Apply ratio bucket highlight if restored from hash
     if (window._activeRatioBucket && window.highlightRatioBucket) {
         window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
+    }
+
+    // Apply YoY bucket highlight if restored from hash
+    if (window._activeYoYBucket && window.highlightYoYBucket) {
+        window.highlightYoYBucket(window._activeYoYBucket.min, window._activeYoYBucket.max);
+    }
+
+    // Apply YoY filter chip if restored from hash
+    if (window._activeYoYBucket) {
+        updateYoYFilterIndicator();
     }
 
     // Apply CEO transition filter chip if restored from hash
@@ -7206,6 +7259,14 @@ function hideMetricSkeletons() {
                 window.highlightRatioBucket(null);
             }
         }
+        // Restore YoY bucket highlight from hash state
+        if (window.highlightYoYBucket) {
+            if (window._activeYoYBucket) {
+                window.highlightYoYBucket(window._activeYoYBucket.min, window._activeYoYBucket.max);
+            } else {
+                window.highlightYoYBucket(null);
+            }
+        }
         // Restore dist filter chip if present in hash state
         if (window._activeDistFilter) {
             updateDistFilterIndicator();
@@ -7218,6 +7279,11 @@ function hideMetricSkeletons() {
         // Restore team completeness filter chip if present in hash state
         if (window._activeTeamCompletenessFilter) {
             updateTeamCompletenessFilterIndicator();
+        }
+
+        // Restore YoY filter chip if present in hash state
+        if (window._activeYoYBucket) {
+            updateYoYFilterIndicator();
         }
 
         // Restore or clear comparison set from hash
@@ -7429,6 +7495,7 @@ function hideMetricSkeletons() {
                 renderTable(companies);
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+                if (window.highlightYoYBucket) window.highlightYoYBucket(null);
                 e.preventDefault();
                 return;
             }
