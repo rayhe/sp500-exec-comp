@@ -6900,6 +6900,140 @@ function hideMetricSkeletons() {
         }
     });
 
+    // === Comparison Export: Build data rows for copy/download ===
+    function getComparisonExportData() {
+        if (compareSet.length < 2) return null;
+        var isRoleExport = activeRole && activeRole !== 'CEO';
+        var roleLabel = isRoleExport ? activeRole : 'CEO';
+        var selected = compareSet.map(function(ticker) {
+            return companies.find(function(c) { return c.ticker === ticker; });
+        }).filter(Boolean);
+        if (selected.length < 2) return null;
+
+        // Build column headers
+        var headers = ['Ticker', 'Company', roleLabel + ' Name', roleLabel + ' Total Comp ($)',
+            'YoY Change (%)', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+            'Stock Awards %', 'Peer In', 'Peer Out'];
+        if (!isRoleExport) {
+            headers.push('CEO Concentration %');
+            headers.push('Percentile');
+        }
+
+        var rows = selected.map(function(c) {
+            var displayName, displayComp;
+            if (isRoleExport && c._roleExecs && c._roleExecs[activeRole]) {
+                var re = c._roleExecs[activeRole];
+                displayName = re.name || '';
+                displayComp = re.total || 0;
+            } else {
+                displayName = c.ceo_name || '';
+                displayComp = c.total_compensation || 0;
+            }
+
+            // YoY for this exec
+            var yoyVal = '';
+            if (c.executives && c.executives.length > 0) {
+                var allYrs = [];
+                c.executives.forEach(function(e) { if (allYrs.indexOf(e.year) < 0) allYrs.push(e.year); });
+                allYrs.sort(function(a, b) { return b - a; });
+                if (allYrs.length >= 2) {
+                    var execs1 = c.executives.filter(function(e) { return e.year === allYrs[0]; });
+                    var execs2 = c.executives.filter(function(e) { return e.year === allYrs[1]; });
+                    var exec1, exec2;
+                    if (isRoleExport) {
+                        exec1 = execs1.find(function(e) { return classifyExecRole(e.title) === activeRole; });
+                        exec2 = execs2.find(function(e) { return classifyExecRole(e.title) === activeRole; });
+                    } else {
+                        exec1 = execs1.find(function(e) { return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title)); });
+                        if (!exec1 && execs1.length > 0) exec1 = execs1.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                        exec2 = execs2.find(function(e) { return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title)); });
+                        if (!exec2 && execs2.length > 0) exec2 = execs2.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    }
+                    if (exec1 && exec2 && exec1.total > 0 && exec2.total > 0) {
+                        yoyVal = ((exec1.total - exec2.total) / exec2.total * 100).toFixed(1);
+                    }
+                }
+            }
+
+            var peerInfo = getPeerInfo(c.ticker);
+            var peerIn = peerInfo ? peerInfo.selectedBy.length : 0;
+            var peerOut = peerInfo ? peerInfo.selects.length : 0;
+
+            var row = [
+                c.ticker,
+                c.company_name || '',
+                displayName,
+                displayComp,
+                yoyVal,
+                c.sector || '',
+                c.pay_ratio || '',
+                c.median_worker_pay || '',
+                c._ceoStockPct != null ? c._ceoStockPct : '',
+                peerIn,
+                peerOut
+            ];
+            if (!isRoleExport) {
+                row.push(c._ceoConcPct != null ? Math.round(c._ceoConcPct * 10) / 10 : '');
+                row.push(c._compPercentile || '');
+            }
+            return row;
+        });
+        return { headers: headers, rows: rows, roleLabel: roleLabel };
+    }
+
+    // Copy comparison as tab-separated table to clipboard
+    document.getElementById('comparison-copy-btn').addEventListener('click', function() {
+        var data = getComparisonExportData();
+        if (!data) return;
+        var tsv = data.headers.join('\t') + '\n' + data.rows.map(function(r) { return r.join('\t'); }).join('\n');
+        var btn = this;
+        navigator.clipboard.writeText(tsv).then(function() {
+            btn.classList.add('copied');
+            var svgEl = btn.querySelector('svg');
+            var origHtml = btn.innerHTML;
+            btn.innerHTML = '';
+            if (svgEl) btn.appendChild(svgEl);
+            btn.appendChild(document.createTextNode(' Copied!'));
+            announce('Comparison table copied to clipboard with ' + data.rows.length + ' companies');
+            setTimeout(function() {
+                btn.classList.remove('copied');
+                btn.innerHTML = origHtml;
+            }, 2000);
+        }).catch(function() {
+            // Fallback for older browsers
+            var ta = document.createElement('textarea');
+            ta.value = tsv;
+            ta.style.position = 'fixed'; ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.classList.add('copied');
+            setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+            announce('Comparison table copied to clipboard');
+        });
+    });
+
+    // Download comparison as CSV
+    document.getElementById('comparison-csv-btn').addEventListener('click', function() {
+        var data = getComparisonExportData();
+        if (!data) return;
+        var csv = data.headers.map(csvEscape).join(',') + '\n' + data.rows.map(function(r) {
+            return r.map(function(v) { return csvEscape(String(v)); }).join(',');
+        }).join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        var fname = 'comparison-' + data.roleLabel.toLowerCase() + '-' + compareSet.join('-');
+        a.download = fname + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        announce('Downloaded comparison CSV for ' + data.rows.length + ' companies');
+    });
+
     // Expose for use in renderTable
     window._compareSet = compareSet;
     window._toggleCompare = toggleCompare;
