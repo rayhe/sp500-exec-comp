@@ -429,6 +429,30 @@ function computeRoleBenchmarks(companies) {
     window._roleBenchmarks = _roleBenchmarks;
 }
 
+/* Pre-compute role-specific exec data per company for role filter pivot.
+   Sets c._roleExecs = { 'CFO': {name, title, total, year, ...}, 'COO': {...}, ... } */
+function computeRoleExecs(companies) {
+    companies.forEach(function(c) {
+        c._roleExecs = {};
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        var maxYr = Math.max.apply(null, allYears);
+        var latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+
+        ROLE_ORDER.forEach(function(role) {
+            if (role === 'Other') return;
+            var matches = latestExecs.filter(function(e) {
+                return classifyExecRole(e.title) === role;
+            });
+            if (matches.length > 0) {
+                matches.sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
+                c._roleExecs[role] = matches[0];
+            }
+        });
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -445,6 +469,7 @@ function getMissingDataHtml(ticker, field) {
 }
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
+let activeRole = null;   // C-suite role filter: 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', or null (CEO/default)
 let searchTerm = '';
 let currentPage = 1;
 var PAGE_SIZE = 50;
@@ -576,11 +601,18 @@ function sortTableByKey(key, dir) {
     currentSort = { key: key, dir: dir };
     currentPage = 1;
     activeSector = null;
+    activeRole = null;
     searchTerm = '';
     window._activeRatioBucket = null;
     window._activeDistFilter = null;
     window._activeConcTier = null;
     window._activeCeoTransitionFilter = false;
+
+    // Reset role chips
+    document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+    var firstRoleChip = document.querySelector('.role-chip');
+    if (firstRoleChip) firstRoleChip.classList.add('active');
+    updateRoleColumnHeader();
 
     // Remove filter chips if present
     var ratioChip = document.getElementById('ratio-filter-chip');
@@ -835,9 +867,15 @@ function populateInsights(comp, trends) {
     function insightResetAndSort(sortKey, sortDir) {
         currentSort = { key: sortKey, dir: sortDir };
         activeSector = null;
+        activeRole = null;
         searchTerm = '';
         currentPage = 1;
         document.getElementById('table-search').value = '';
+        // Reset role chips
+        document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+        var firstRoleChip = document.querySelector('.role-chip');
+        if (firstRoleChip) firstRoleChip.classList.add('active');
+        updateRoleColumnHeader();
         if (window._activeRatioBucket) {
             window._activeRatioBucket = null;
             var rc = document.getElementById('ratio-filter-chip');
@@ -1284,6 +1322,70 @@ function buildSectorChips(companies) {
         });
         container.appendChild(chip);
     });
+}
+
+/* Build role filter chips for the table controls */
+function buildRoleChips(companies) {
+    var container = document.getElementById('role-chips');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var roles = ['CEO', 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
+
+    // Count companies per role
+    var roleCounts = {};
+    roles.forEach(function(r) { roleCounts[r] = 0; });
+    companies.forEach(function(c) {
+        if (!c._roleExecs) return;
+        roles.forEach(function(r) { if (c._roleExecs[r]) roleCounts[r]++; });
+    });
+
+    roles.forEach(function(role) {
+        var chip = document.createElement('button');
+        chip.className = 'role-chip' + ((!activeRole && role === 'CEO') || activeRole === role ? ' active' : '');
+        chip.style.setProperty('--role-color', ROLE_COLORS[role]);
+        chip.textContent = role;
+        chip.title = role + ' (' + roleCounts[role] + ' companies)';
+        chip.addEventListener('click', function() {
+            if (role === 'CEO') {
+                activeRole = null;
+            } else {
+                activeRole = (activeRole === role) ? null : role;
+            }
+            currentPage = 1;
+            // When switching to a role view, sort by total comp descending
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+            // Update active state on chips
+            document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+            if (!activeRole) {
+                container.querySelector('.role-chip').classList.add('active'); // First chip = CEO
+            } else {
+                chip.classList.add('active');
+            }
+            // Update column header
+            updateRoleColumnHeader();
+            renderTable(companies);
+            pushState();
+            announce(activeRole ? 'Viewing ' + role + ' compensation across S&P 500' : 'Viewing CEO compensation (default)');
+        });
+        container.appendChild(chip);
+    });
+}
+
+/* Update the CEO/role column header text when role filter changes */
+function updateRoleColumnHeader() {
+    var th = document.querySelector('th[data-sort="ceo_name"]');
+    if (th) {
+        th.textContent = activeRole || 'CEO';
+    }
 }
 
 /* Pre-compute outlier sets (computed once, stable across filters/sorts) */
@@ -2058,6 +2160,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
+    if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
         html += '<span class="summary-stat combined-filter-badge">';
@@ -2297,6 +2400,45 @@ function renderSummaryBar(filtered, allCompanies) {
         }
     }
 
+    // Role filter summary stats
+    if (activeRole && activeRole !== 'CEO' && filtered.length > 0) {
+        html += '<span class="summary-divider"></span>';
+        // Role context label
+        html += '<span class="summary-stat">';
+        html += '<span class="summary-stat-label">Viewing</span>';
+        html += '<span class="summary-stat-value" style="color:' + ROLE_COLORS[activeRole] + '">' + activeRole + 's across ' + filtered.length + ' companies</span>';
+        html += '</span>';
+        // Median role comp
+        var roleComps = filtered.map(function(c) { return c._roleViewComp || 0; }).filter(function(v) { return v > 0; }).sort(function(a, b) { return a - b; });
+        if (roleComps.length > 0) {
+            var medRoleComp = roleComps[Math.floor(roleComps.length / 2)];
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Median ' + activeRole + '</span>';
+            html += '<span class="summary-stat-value">' + formatCurrency(medRoleComp) + '</span>';
+            html += '</span>';
+        }
+        // CEO:Role ratio
+        if (_roleBenchmarks && _roleBenchmarks['CEO'] && _roleBenchmarks[activeRole]) {
+            var ceoMed = _roleBenchmarks['CEO'].median;
+            var roleMed = _roleBenchmarks[activeRole].median;
+            if (roleMed > 0) {
+                var ratio = (ceoMed / roleMed).toFixed(1);
+                html += '<span class="summary-stat">';
+                html += '<span class="summary-stat-label">CEO/' + activeRole + '</span>';
+                html += '<span class="summary-stat-value">' + ratio + '×</span>';
+                html += '</span>';
+            }
+        }
+        // Top earner for this role
+        var topRole = filtered.slice().sort(function(a, b) { return (b._roleViewComp || 0) - (a._roleViewComp || 0); })[0];
+        if (topRole && topRole._roleExecs && topRole._roleExecs[activeRole]) {
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Highest Paid</span>';
+            html += '<span class="summary-stat-value">' + topRole._roleExecs[activeRole].name + ' (' + topRole.ticker + ') ' + formatCurrency(topRole._roleViewComp) + '</span>';
+            html += '</span>';
+        }
+    }
+
     bar.innerHTML = html;
 }
 
@@ -2351,12 +2493,36 @@ function renderTable(companies, options) {
         });
     }
 
+    // Role filter: filter to companies with that role + compute role-specific sort value
+    if (activeRole && activeRole !== 'CEO') {
+        filtered = filtered.filter(function(c) {
+            return c._roleExecs && c._roleExecs[activeRole];
+        });
+        // Set temporary _roleViewComp for sorting
+        filtered.forEach(function(c) {
+            var re = c._roleExecs[activeRole];
+            c._roleViewComp = re ? (re.total || 0) : 0;
+        });
+    } else {
+        // Clear role view data
+        filtered.forEach(function(c) { c._roleViewComp = null; });
+    }
+
     // Render summary statistics bar
     renderSummaryBar(filtered, companies);
 
     filtered.sort(function(a, b) {
-        var av = a[currentSort.key];
-        var bv = b[currentSort.key];
+        var sortKey = currentSort.key;
+        // When role filter is active and sorting by comp or rank, use role-specific comp
+        if (activeRole && activeRole !== 'CEO' && (sortKey === 'total_compensation' || sortKey === 'rank')) {
+            var av = a._roleViewComp != null ? a._roleViewComp : 0;
+            var bv = b._roleViewComp != null ? b._roleViewComp : 0;
+            if (av < bv) return currentSort.dir === 'asc' ? -1 : 1;
+            if (av > bv) return currentSort.dir === 'asc' ? 1 : -1;
+            return 0;
+        }
+        var av = a[sortKey];
+        var bv = b[sortKey];
         if (av == null) av = currentSort.dir === 'asc' ? Infinity : -Infinity;
         if (bv == null) bv = currentSort.dir === 'asc' ? Infinity : -Infinity;
         if (typeof av === 'string') av = av.toLowerCase();
@@ -2377,20 +2543,44 @@ function renderTable(companies, options) {
 
     // Compute max compensation in filtered view for inline data bars
     var maxFilteredComp = 0;
-    filtered.forEach(function(c) { if (c.total_compensation > maxFilteredComp) maxFilteredComp = c.total_compensation; });
+    if (activeRole && activeRole !== 'CEO') {
+        filtered.forEach(function(c) { if ((c._roleViewComp || 0) > maxFilteredComp) maxFilteredComp = c._roleViewComp; });
+    } else {
+        filtered.forEach(function(c) { if (c.total_compensation > maxFilteredComp) maxFilteredComp = c.total_compensation; });
+    }
+
+    // When role filter is active, compute role-specific benchmarks for the filtered set
+    var _roleFilterMedian = null;
+    if (activeRole && activeRole !== 'CEO' && _roleBenchmarks && _roleBenchmarks[activeRole]) {
+        _roleFilterMedian = _roleBenchmarks[activeRole].median;
+    }
 
     pageItems.forEach(function(c, i) {
         var globalIdx = startIdx + i;
         var tr = document.createElement('tr');
 
+        // Determine display values based on role filter
+        var isRolePivot = activeRole && activeRole !== 'CEO';
+        var displayComp = isRolePivot ? (c._roleViewComp || 0) : (c.total_compensation || 0);
+        var roleExec = isRolePivot && c._roleExecs ? c._roleExecs[activeRole] : null;
+        var displayName = isRolePivot && roleExec ? roleExec.name : c.ceo_name;
+        var displayTitle = isRolePivot && roleExec ? roleExec.title : null;
+
         // Compensation value with inline data bar + optional top-10 badge
-        var barPct = maxFilteredComp > 0 ? Math.max(0, Math.min(100, (c.total_compensation || 0) / maxFilteredComp * 100)) : 0;
-        var compHtml = '<div class="comp-bar-cell"><div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(c.total_compensation) + '</span>';
-        if (c.neo_count) {
+        var barPct = maxFilteredComp > 0 ? Math.max(0, Math.min(100, displayComp / maxFilteredComp * 100)) : 0;
+        var compHtml = '<div class="comp-bar-cell"><div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(displayComp) + '</span>';
+        if (!isRolePivot && c.neo_count) {
             compHtml += ' <span class="neo-badge" title="' + c.neo_count + ' Named Executive Officers from SEC EDGAR">' + c.neo_count + ' NEOs</span>';
         }
-        if (_outlierTop10[c.ticker]) {
+        if (!isRolePivot && _outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
+        }
+        // Role benchmark badge when in role view
+        if (isRolePivot && _roleFilterMedian && displayComp > 0) {
+            var roleDelta = ((displayComp - _roleFilterMedian) / _roleFilterMedian * 100).toFixed(0);
+            var roleDeltaCls = parseInt(roleDelta) >= 0 ? 'positive' : 'negative';
+            var roleDeltaSign = parseInt(roleDelta) >= 0 ? '+' : '';
+            compHtml += ' <span class="neo-role-badge ' + roleDeltaCls + '" title="' + roleDeltaSign + roleDelta + '% vs S&amp;P 500 ' + activeRole + ' median (' + formatCurrency(_roleFilterMedian) + ')">' + roleDeltaSign + roleDelta + '%</span>';
         }
         compHtml += '</div>';
 
@@ -2463,10 +2653,18 @@ function renderTable(companies, options) {
         var isCompared = window._compareSet && window._compareSet.indexOf(c.ticker) >= 0;
         var compareBtnHtml = '<button class="compare-btn' + (isCompared ? ' selected' : '') + '" data-ticker="' + c.ticker + '" title="' + (isCompared ? 'Remove from comparison' : 'Add to comparison') + '">' + (isCompared ? '✓' : '+') + '</button>';
 
+        // Name cell: show role exec name + title badge when in role view, CEO name + transition badge otherwise
+        var nameCellHtml;
+        if (isRolePivot && roleExec) {
+            nameCellHtml = displayName + ' <span class="role-title-badge" style="color:' + ROLE_COLORS[activeRole] + '" title="' + (displayTitle || activeRole).replace(/"/g, '&quot;') + '">' + activeRole + '</span>';
+        } else {
+            nameCellHtml = c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge new-ceo-badge-clickable" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + ' \u2014 click to filter" onclick="event.stopPropagation();if(window.filterByCeoTransition)window.filterByCeoTransition()">NEW</span>' : '');
+        }
+
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
             '<td><span class="company">' + c.company_name + '</span></td>' +
-            '<td>' + c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge new-ceo-badge-clickable" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + ' \u2014 click to filter" onclick="event.stopPropagation();if(window.filterByCeoTransition)window.filterByCeoTransition()">NEW</span>' : '') + '</td>' +
+            '<td>' + nameCellHtml + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
             '<td class="stock-pct-cell">' + stockPctCell + '</td>' +
@@ -2524,6 +2722,7 @@ function renderTable(companies, options) {
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
+    if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
     if (!options || !options.suppressAnnounce) announce(announceMsg);
@@ -3612,6 +3811,9 @@ function serializeState() {
     if (window._activeCeoTransitionFilter) {
         params.push('ceotrans=1');
     }
+    if (activeRole && activeRole !== 'CEO') {
+        params.push('role=' + encodeURIComponent(activeRole));
+    }
     if (_expandedDetailTicker) {
         params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
@@ -3700,6 +3902,21 @@ function applyHashState(companies) {
     // CEO transition filter
     if (state.ceotrans === '1') {
         window._activeCeoTransitionFilter = true;
+    }
+
+    // Role filter
+    if (state.role) {
+        var validRoles = ['CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
+        var roleParsed = decodeURIComponent(state.role);
+        if (validRoles.indexOf(roleParsed) >= 0) {
+            activeRole = roleParsed;
+            updateRoleColumnHeader();
+            // Update role chip active states
+            document.querySelectorAll('.role-chip').forEach(function(rc) {
+                rc.classList.remove('active');
+                if (rc.textContent === roleParsed) rc.classList.add('active');
+            });
+        }
     }
 
     // Page (apply after filters so pagination is computed correctly)
@@ -3895,6 +4112,9 @@ function hideMetricSkeletons() {
     // Pre-compute C-suite role benchmarks for role analysis section + detail panel context
     computeRoleBenchmarks(companies);
 
+    // Pre-compute role-specific execs per company for role filter pivot
+    computeRoleExecs(companies);
+
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
 
@@ -3902,6 +4122,7 @@ function hideMetricSkeletons() {
     populateInsights(data.comp, data.trends);
     populateTrends(data.trends);
     buildSectorChips(companies);
+    buildRoleChips(companies);
     renderTable(companies);
     setupSorting(companies);
     setupSearch(companies);
@@ -5059,6 +5280,9 @@ function hideMetricSkeletons() {
                     return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
                 });
             }
+            if (activeRole && activeRole !== 'CEO') {
+                filtered = filtered.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; });
+            }
             filtered.sort(function(a, b) {
                 var av = a[currentSort.key];
                 var bv = b[currentSort.key];
@@ -5138,6 +5362,7 @@ function hideMetricSkeletons() {
             a.href = url;
             var fname = 'sp500-exec-comp';
             if (activeSector) fname += '-' + activeSector.toLowerCase().replace(/\s+/g, '-');
+            if (activeRole && activeRole !== 'CEO') fname += '-' + activeRole.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             if (searchTerm) fname += '-' + searchTerm.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
             if (window._activeDistFilter) fname += '-dist-' + window._activeDistFilter.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
             if (window._activeRatioBucket) fname += '-ratio-' + window._activeRatioBucket.min + '-' + (window._activeRatioBucket.max === Infinity ? 'max' : window._activeRatioBucket.max);
@@ -5184,6 +5409,9 @@ function hideMetricSkeletons() {
                 filtered = filtered.filter(function(c) {
                     return c.total_compensation != null && c.total_compensation >= df.min && c.total_compensation <= df.max;
                 });
+            }
+            if (activeRole && activeRole !== 'CEO') {
+                filtered = filtered.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; });
             }
             filtered.sort(function(a, b) {
                 var av = a[currentSort.key];
@@ -5258,6 +5486,7 @@ function hideMetricSkeletons() {
             a.href = url;
             var fname = 'sp500-neo-comp';
             if (activeSector) fname += '-' + activeSector.toLowerCase().replace(/\s+/g, '-');
+            if (activeRole && activeRole !== 'CEO') fname += '-' + activeRole.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             if (searchTerm) fname += '-' + searchTerm.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
             if (window._activeDistFilter) fname += '-dist-' + window._activeDistFilter.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
             if (window._activeRatioBucket) fname += '-ratio-' + window._activeRatioBucket.min + '-' + (window._activeRatioBucket.max === Infinity ? 'max' : window._activeRatioBucket.max);
@@ -6477,11 +6706,17 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || (activeRole && activeRole !== 'CEO')) {
                 activeSector = null;
                 searchTerm = '';
+                activeRole = null;
                 currentPage = 1;
                 document.getElementById('table-search').value = '';
+                // Reset role chips to CEO default
+                document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+                var firstRoleChip = document.querySelector('.role-chip');
+                if (firstRoleChip) firstRoleChip.classList.add('active');
+                updateRoleColumnHeader();
                 if (window._activeRatioBucket) {
                     window._activeRatioBucket = null;
                     var rc = document.getElementById('ratio-filter-chip');
@@ -6615,6 +6850,9 @@ function hideMetricSkeletons() {
                 }
                 if (window._activeCeoTransitionFilter) {
                     totalFiltered = totalFiltered.filter(function(c) { return c._ceoTransition != null; });
+                }
+                if (activeRole && activeRole !== 'CEO') {
+                    totalFiltered = totalFiltered.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; });
                 }
                 var maxPages = Math.max(1, Math.ceil(totalFiltered.length / PAGE_SIZE));
                 if (currentPage < maxPages) {
