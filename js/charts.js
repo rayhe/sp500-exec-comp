@@ -56,6 +56,7 @@ function initCharts(companies, trends, compData) {
     drawTop10Chart(companies);
     drawCompositionChart(trends);
     drawScatterChart(companies);
+    drawYoYDistChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -77,7 +78,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart', 'scatter-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -88,6 +89,7 @@ function redrawAllCharts() {
     drawTop10Chart(_chartData.companies);
     drawCompositionChart(_chartData.trends);
     drawScatterChart(_chartData.companies);
+    drawYoYDistChart(_chartData.companies);
 }
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -1334,4 +1336,211 @@ function drawScatterChart(companies) {
         .attr('font-weight', '500')
         .attr('pointer-events', 'none')
         .text(function(d) { return d.ticker; });
+}
+
+/* === YoY Compensation Change Distribution === */
+function drawYoYDistChart(companies) {
+    var container = document.getElementById('yoy-dist-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Collect companies with YoY data
+    var yoyData = companies.filter(function(c) {
+        return c._ceoYoY && c._ceoYoY.pctChange != null && isFinite(c._ceoYoY.pctChange);
+    }).map(function(c) {
+        return {
+            ticker: c.ticker,
+            name: c.company_name,
+            ceo: c.ceo_name,
+            pct: c._ceoYoY.pctChange,
+            from: c._ceoYoY.fromComp,
+            to: c._ceoYoY.toComp,
+            sector: c.sector
+        };
+    });
+
+    if (yoyData.length < 10) return;
+
+    // Define buckets
+    var buckets = [
+        { label: '< −50%', min: -Infinity, max: -50, color: '#dc2626' },
+        { label: '−50% to −20%', min: -50, max: -20, color: '#ef4444' },
+        { label: '−20% to −5%', min: -20, max: -5, color: '#f97316' },
+        { label: '−5% to +5%', min: -5, max: 5, color: '#94a3b8' },
+        { label: '+5% to +20%', min: 5, max: 20, color: '#22c55e' },
+        { label: '+20% to +50%', min: 20, max: 50, color: '#06d6a0' },
+        { label: '> +50%', min: 50, max: Infinity, color: '#00b4d8' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.companies = yoyData.filter(function(d) {
+            if (b.max === Infinity) return d.pct >= b.min;
+            if (b.min === -Infinity) return d.pct < b.max;
+            return d.pct >= b.min && d.pct < b.max;
+        });
+        b.count = b.companies.length;
+    });
+
+    var maxCount = Math.max.apply(null, buckets.map(function(b) { return b.count; }));
+    if (maxCount === 0) return;
+
+    // Compute summary stats
+    var allPcts = yoyData.map(function(d) { return d.pct; }).sort(function(a, b) { return a - b; });
+    var medianPct = allPcts[Math.floor(allPcts.length / 2)];
+    var meanPct = allPcts.reduce(function(s, v) { return s + v; }, 0) / allPcts.length;
+    var raisedCount = yoyData.filter(function(d) { return d.pct > 5; }).length;
+    var cutCount = yoyData.filter(function(d) { return d.pct < -5; }).length;
+    var flatCount = yoyData.filter(function(d) { return d.pct >= -5 && d.pct <= 5; }).length;
+
+    // Dimensions
+    var rect = container.getBoundingClientRect();
+    var width = Math.max(rect.width, 300);
+    var height = 280;
+    var margin = { top: 36, right: 20, bottom: 56, left: 44 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+
+    var svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+        .attr('role', 'img')
+        .attr('aria-label', 'Year-over-year CEO compensation change distribution');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(buckets.map(function(b) { return b.label; }))
+        .range([0, innerW])
+        .padding(0.15);
+
+    var y = d3.scaleLinear()
+        .domain([0, maxCount * 1.15])
+        .range([innerH, 0]);
+
+    // Grid lines
+    var gridTicks = y.ticks(5);
+    g.selectAll('.grid-line')
+        .data(gridTicks)
+        .join('line')
+        .attr('class', 'grid-line')
+        .attr('x1', 0)
+        .attr('x2', innerW)
+        .attr('y1', function(d) { return y(d); })
+        .attr('y2', function(d) { return y(d); })
+        .attr('stroke', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+        .attr('stroke-opacity', 0.15)
+        .attr('stroke-dasharray', '3,3');
+
+    // Bars
+    var bars = g.selectAll('.yoy-bar')
+        .data(buckets)
+        .join('g')
+        .attr('class', 'yoy-bar')
+        .attr('transform', function(b) { return 'translate(' + x(b.label) + ',0)'; });
+
+    bars.append('rect')
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return innerH - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('opacity', 0.8)
+        .attr('rx', 3)
+        .on('mouseenter', function(event, b) {
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            var topCompanies = b.companies.slice().sort(function(a, c) {
+                return Math.abs(c.pct) - Math.abs(a.pct);
+            }).slice(0, 5);
+            var compList = topCompanies.map(function(d) {
+                var sign = d.pct >= 0 ? '+' : '';
+                return '<strong>' + d.ticker + '</strong> ' + sign + d.pct.toFixed(1) + '%';
+            }).join('<br>');
+            var html = '<div style="font-weight:600;margin-bottom:4px">' + b.label + '</div>';
+            html += '<div>' + b.count + ' companies (' + (b.count / yoyData.length * 100).toFixed(1) + '%)</div>';
+            if (compList) html += '<div style="margin-top:6px;font-size:0.75rem;opacity:0.85">' + compList + '</div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseleave', function() {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+            hideChartTooltip();
+        })
+        .on('click', function(event, b) {
+            // Filter table to companies in this YoY bucket
+            if (typeof window.filterByYoYBucket === 'function') {
+                window.filterByYoYBucket(b.min, b.max, b.label);
+            }
+        });
+
+    // Count labels on bars
+    bars.append('text')
+        .attr('x', x.bandwidth() / 2)
+        .attr('y', function(b) { return y(b.count) - 5; })
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7')
+        .attr('font-size', '11px')
+        .attr('font-weight', '600')
+        .text(function(b) { return b.count > 0 ? b.count : ''; });
+
+    // X axis
+    g.append('g')
+        .attr('transform', 'translate(0,' + innerH + ')')
+        .call(d3.axisBottom(x).tickSize(0))
+        .select('.domain').remove();
+
+    g.selectAll('.tick text')
+        .attr('fill', typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa')
+        .attr('font-size', '9px')
+        .attr('transform', 'rotate(-25)')
+        .attr('text-anchor', 'end')
+        .attr('dx', '-0.3em')
+        .attr('dy', '0.5em');
+
+    // Y axis
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(5).tickFormat(function(d) { return d; }))
+        .select('.domain').remove();
+
+    g.selectAll('.tick line').attr('stroke-opacity', 0.2);
+    g.selectAll('.tick text')
+        .attr('fill', typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa')
+        .attr('font-size', '10px');
+
+    // Summary annotation
+    var summaryText = raisedCount + ' raised · ' + flatCount + ' flat · ' + cutCount + ' cut';
+    summaryText += ' · median ' + (medianPct >= 0 ? '+' : '') + medianPct.toFixed(1) + '%';
+
+    svg.append('text')
+        .attr('x', margin.left)
+        .attr('y', 16)
+        .attr('fill', typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7')
+        .attr('font-size', '11px')
+        .attr('font-weight', '500')
+        .text(summaryText);
+
+    // Median line
+    var medianBucket = buckets.find(function(b) {
+        if (b.max === Infinity) return medianPct >= b.min;
+        if (b.min === -Infinity) return medianPct < b.max;
+        return medianPct >= b.min && medianPct < b.max;
+    });
+    if (medianBucket) {
+        var medianX = x(medianBucket.label) + x.bandwidth() / 2;
+        g.append('line')
+            .attr('x1', medianX).attr('x2', medianX)
+            .attr('y1', 0).attr('y2', innerH)
+            .attr('stroke', '#ffd166')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '4,3')
+            .attr('opacity', 0.7);
+        g.append('text')
+            .attr('x', medianX + 4)
+            .attr('y', 8)
+            .attr('fill', '#ffd166')
+            .attr('font-size', '9px')
+            .attr('font-weight', '500')
+            .text('median');
+    }
 }

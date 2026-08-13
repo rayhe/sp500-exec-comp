@@ -937,6 +937,11 @@ function populateInsights(comp, trends) {
             var tcf = document.getElementById('team-filter-chip');
             if (tcf) tcf.remove();
         }
+        if (window._activeYoYBucket) {
+            window._activeYoYBucket = null;
+            var yfc = document.getElementById('yoy-filter-chip');
+            if (yfc) yfc.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -2260,6 +2265,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
+    if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -2657,6 +2663,16 @@ function renderTable(companies, options) {
             });
         }
     }
+    if (window._activeYoYBucket) {
+        var yb = window._activeYoYBucket;
+        filtered = filtered.filter(function(c) {
+            if (!c._ceoYoY || c._ceoYoY.pctChange == null || !isFinite(c._ceoYoY.pctChange)) return false;
+            var pct = c._ceoYoY.pctChange;
+            if (yb.max === Infinity) return pct >= yb.min;
+            if (yb.min === -Infinity) return pct < yb.max;
+            return pct >= yb.min && pct < yb.max;
+        });
+    }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
@@ -2888,6 +2904,7 @@ function renderTable(companies, options) {
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
     if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
+    if (window._activeYoYBucket) announceMsg += ', YoY: ' + window._activeYoYBucket.label;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -4667,6 +4684,63 @@ function hideMetricSkeletons() {
         }
     }
     window._updateConcFilterIndicator = updateConcFilterIndicator;
+
+    // YoY bucket filter — filter table by clicking bars in YoY distribution chart
+    window._activeYoYBucket = null;
+
+    window.filterByYoYBucket = function(minPct, maxPct, label) {
+        // Toggle off if same bucket clicked again
+        if (window._activeYoYBucket && window._activeYoYBucket.min === minPct && window._activeYoYBucket.max === maxPct) {
+            window._activeYoYBucket = null;
+        } else {
+            window._activeYoYBucket = { min: minPct, max: maxPct, label: label };
+        }
+
+        currentPage = 1;
+
+        // Sort by YoY descending
+        currentSort = { key: '_ceoYoYSort', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_ceoYoYSort') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updateYoYFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeYoYBucket ? 'Filtered to YoY ' + label : 'YoY filter cleared');
+    };
+
+    function updateYoYFilterIndicator() {
+        var existing = document.getElementById('yoy-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeYoYBucket) {
+            var yb = window._activeYoYBucket;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × YoY ' + yb.label : 'YoY: ' + yb.label;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'yoy-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = 'Click to clear YoY filter';
+            chip.addEventListener('click', function() {
+                window._activeYoYBucket = null;
+                chip.remove();
+                renderTable(companies);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateYoYFilterIndicator = updateYoYFilterIndicator;
 
     // CEO Transition filter — toggle to show only companies with CEO changes
     window.filterByCeoTransition = function() {
@@ -7096,6 +7170,7 @@ function hideMetricSkeletons() {
         window._activeDistFilter = null;
         window._activeCeoTransitionFilter = false;
         window._activeTeamCompletenessFilter = null;
+        window._activeYoYBucket = null;
         _expandedDetailTicker = null;
         // Close any open detail panel
         var existingDetail = document.querySelector('#comp-tbody .detail-row');
@@ -7116,6 +7191,8 @@ function hideMetricSkeletons() {
         if (tfc3) tfc3.remove();
         var cc4 = document.getElementById('conc-filter-chip');
         if (cc4) cc4.remove();
+        var yc5 = document.getElementById('yoy-filter-chip');
+        if (yc5) yc5.remove();
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
@@ -7295,7 +7372,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || (activeRole && activeRole !== 'CEO')) {
                 activeSector = null;
                 searchTerm = '';
                 activeRole = null;
@@ -7330,6 +7407,11 @@ function hideMetricSkeletons() {
                     window._activeTeamCompletenessFilter = null;
                     var tfc = document.getElementById('team-filter-chip');
                     if (tfc) tfc.remove();
+                }
+                if (window._activeYoYBucket) {
+                    window._activeYoYBucket = null;
+                    var yfc2 = document.getElementById('yoy-filter-chip');
+                    if (yfc2) yfc2.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');

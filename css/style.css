@@ -5807,3 +5807,24 @@ footer li::before {
 :root[data-theme="light"] .tc-missing-link:hover {
     color: #be185d;
 }
+
+
+/* === YoY Distribution Chart === */
+#yoy-dist-chart {
+    width: 100%;
+    min-height: 280px;
+}
+#yoy-dist-chart svg {
+    width: 100%;
+    display: block;
+}
+#yoy-dist-chart .yoy-bar rect {
+    cursor: pointer;
+    transition: opacity 0.15s, stroke 0.15s;
+}
+@media print {
+    #yoy-dist-chart .yoy-bar rect {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
