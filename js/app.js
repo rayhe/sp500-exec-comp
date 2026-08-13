@@ -129,7 +129,7 @@ function computeCeoYoY(companies) {
 
         if (ceo1 && ceo2 && ceo1.total > 0 && ceo2.total > 0) {
             var pct = (ceo1.total - ceo2.total) / ceo2.total * 100;
-            c._ceoYoY = { pct: pct, fromYear: yr2, toYear: yr1, fromComp: ceo2.total, toComp: ceo1.total };
+            c._ceoYoY = { pct: pct, pctChange: pct, fromYear: yr2, toYear: yr1, fromComp: ceo2.total, toComp: ceo1.total };
             c._ceoYoYSort = pct;
         }
     });
@@ -1695,6 +1695,52 @@ function renderYoYSortSummary(companies) {
 
     html += '<span class="summary-divider"></span>';
 
+    // Mini inline histogram — 7 buckets matching YoY distribution chart
+    var yoyBuckets = [
+        { label: '<\u221250%', min: -Infinity, max: -50, color: '#dc2626' },
+        { label: '\u221250–20%', min: -50, max: -20, color: '#ef4444' },
+        { label: '\u221220–5%', min: -20, max: -5, color: '#f97316' },
+        { label: '±5%', min: -5, max: 5, color: '#94a3b8' },
+        { label: '+5–20%', min: 5, max: 20, color: '#22c55e' },
+        { label: '+20–50%', min: 20, max: 50, color: '#06d6a0' },
+        { label: '>+50%', min: 50, max: Infinity, color: '#00b4d8' }
+    ];
+    yoyBuckets.forEach(function(b) {
+        b.count = withYoY.filter(function(c) {
+            if (b.max === Infinity) return c._ceoYoY.pct >= b.min;
+            if (b.min === -Infinity) return c._ceoYoY.pct < b.max;
+            return c._ceoYoY.pct >= b.min && c._ceoYoY.pct < b.max;
+        }).length;
+    });
+    var maxBucketCount = Math.max.apply(null, yoyBuckets.map(function(b) { return b.count; }));
+
+    var activeYoY = window._activeYoYBucket;
+    html += '<span class="summary-stat yoy-dist-histogram">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="yoy-dist-bars">';
+    yoyBuckets.forEach(function(b) {
+        var barH = maxBucketCount > 0 ? Math.max(3, Math.round(b.count / maxBucketCount * 24)) : 3;
+        var bMinStr = b.min === -Infinity ? '-Infinity' : b.min;
+        var bMaxStr = b.max === Infinity ? 'Infinity' : b.max;
+        var isActive = (activeYoY && activeYoY.min === b.min && activeYoY.max === b.max);
+        var isDimmed = (activeYoY && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
+        html += '<span class="yoy-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.label + ': ' + b.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByYoYBucket(' + bMinStr + ',' + bMaxStr + ',\'' + b.label.replace(/'/g, "\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="yoy-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
+        html += '<span class="yoy-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
+        html += '</span>';
+    });
+    html += '</span>';
+    html += '<span class="yoy-dist-bracket-labels">';
+    yoyBuckets.forEach(function(b) {
+        html += '<span class="yoy-dist-bracket-label">' + b.label + '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
     // Biggest increase
     if (topInc && topInc._ceoYoY.pct > 0) {
         html += '<span class="summary-stat">';
@@ -1709,6 +1755,101 @@ function renderYoYSortSummary(companies) {
         html += '<span class="summary-stat-label">Biggest ▼</span>';
         html += '<span class="summary-stat-value negative">' + topDec.ticker + ' \u2212' + fmtPct(topDec._ceoYoY.pct) + '</span>';
         html += '</span>';
+    }
+
+    // Bucket-specific enrichment when YoY bucket filter is active
+    if (activeYoY) {
+        var bucketCompanies = withYoY.filter(function(c) {
+            var pct = c._ceoYoY.pct;
+            if (activeYoY.max === Infinity) return pct >= activeYoY.min;
+            if (activeYoY.min === -Infinity) return pct < activeYoY.max;
+            return pct >= activeYoY.min && pct < activeYoY.max;
+        });
+
+        if (bucketCompanies.length > 0) {
+            html += '<span class="summary-divider"></span>';
+
+            // Bucket context label
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label" style="color:#ffd166">Bucket</span>';
+            html += '<span class="summary-stat-value">' + activeYoY.label + ' (' + bucketCompanies.length + ')</span>';
+            html += '</span>';
+
+            // Median within bucket
+            var bucketPcts = bucketCompanies.map(function(c) { return c._ceoYoY.pct; });
+            var bucketMedian = computeMedian(bucketPcts);
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Bucket median</span>';
+            html += '<span class="summary-stat-value ' + (bucketMedian >= 0 ? 'positive' : 'negative') + '">' + (bucketMedian >= 0 ? '+' : '\u2212') + fmtPct(bucketMedian) + '</span>';
+            html += '</span>';
+
+            // Largest individual change in bucket
+            var bucketSorted = bucketCompanies.slice().sort(function(a, b) { return Math.abs(b._ceoYoY.pct) - Math.abs(a._ceoYoY.pct); });
+            var largest = bucketSorted[0];
+            if (largest) {
+                html += '<span class="summary-stat">';
+                html += '<span class="summary-stat-label">Largest Δ</span>';
+                html += '<span class="summary-stat-value ' + (largest._ceoYoY.pct >= 0 ? 'positive' : 'negative') + '">' + largest.ticker + ' ' + (largest._ceoYoY.pct >= 0 ? '+' : '\u2212') + fmtPct(largest._ceoYoY.pct) + '</span>';
+                html += '</span>';
+            }
+
+            // Top 3 sectors by count in this bucket
+            var sectorCounts = {};
+            bucketCompanies.forEach(function(c) {
+                var s = c.sector || 'Unknown';
+                sectorCounts[s] = (sectorCounts[s] || 0) + 1;
+            });
+            var topSectors = Object.keys(sectorCounts).map(function(k) {
+                return { name: k, count: sectorCounts[k] };
+            }).sort(function(a, b) { return b.count - a.count; }).slice(0, 3);
+
+            if (topSectors.length > 0) {
+                html += '<span class="summary-stat">';
+                html += '<span class="summary-stat-label">Top sectors</span>';
+                html += '<span class="summary-stat-value">';
+                html += topSectors.map(function(s) {
+                    var sc = getSectorColor(s.name);
+                    return '<span style="color:' + sc + '">' + s.name.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls').replace('Health Care', 'Health') + '</span> ' + s.count;
+                }).join(', ');
+                html += '</span>';
+                html += '</span>';
+            }
+        }
+    }
+
+    // Sector skew analysis (when no bucket filter is active)
+    if (!activeYoY && withYoY.length >= 20) {
+        var sectorYoY = {};
+        withYoY.forEach(function(c) {
+            var s = c.sector || 'Unknown';
+            if (!sectorYoY[s]) sectorYoY[s] = [];
+            sectorYoY[s].push(c._ceoYoY.pct);
+        });
+
+        var sectorMedians = Object.keys(sectorYoY).filter(function(s) {
+            return sectorYoY[s].length >= 5;
+        }).map(function(s) {
+            return { name: s, median: computeMedian(sectorYoY[s]), count: sectorYoY[s].length };
+        }).sort(function(a, b) { return b.median - a.median; });
+
+        if (sectorMedians.length >= 4) {
+            html += '<span class="summary-divider"></span>';
+            var topSec = sectorMedians[0];
+            var botSec = sectorMedians[sectorMedians.length - 1];
+            var shortName = function(n) {
+                return n.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs')
+                    .replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls')
+                    .replace('Health Care', 'Health');
+            };
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Biggest sector ▲</span>';
+            html += '<span class="summary-stat-value positive" style="color:' + getSectorColor(topSec.name) + '">' + shortName(topSec.name) + ' +' + fmtPct(topSec.median) + '</span>';
+            html += '</span>';
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Biggest sector ▼</span>';
+            html += '<span class="summary-stat-value negative" style="color:' + getSectorColor(botSec.name) + '">' + shortName(botSec.name) + ' ' + (botSec.median >= 0 ? '+' : '\u2212') + fmtPct(botSec.median) + '</span>';
+            html += '</span>';
+        }
     }
 
     return html;
