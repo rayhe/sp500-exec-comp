@@ -5633,52 +5633,62 @@ function hideMetricSkeletons() {
                 return 0;
             });
 
-            // CSV header and rows
-            var headers = ['Rank', 'Ticker', 'Company', 'CEO', 'Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+            // CSV header and rows — adapt labels and data to active role filter
+            var isRoleExport = activeRole && activeRole !== 'CEO';
+            var roleLabel = isRoleExport ? activeRole : 'CEO';
+            var headers = ['Rank', 'Ticker', 'Company', roleLabel, roleLabel + ' Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
                 'CEO Concentration %', 'CEO Premium Ratio', 'CEO Transition', 'CEO Data Years',
                 'Team Roles Filled', 'Team Roles', 'Missing Expected Roles',
-                'CEO Salary ($)', 'CEO Stock Awards ($)', 'CEO Option Awards ($)', 'CEO Bonus ($)',
-                'CEO Non-Equity Incentive ($)', 'CEO Pension/NQDC ($)', 'CEO All Other ($)',
-                'CEO Salary %', 'CEO Stock %', 'CEO Options %', 'CEO Bonus %', 'CEO Incentive %', 'CEO Pension %', 'CEO Other %'];
+                roleLabel + ' Salary ($)', roleLabel + ' Stock Awards ($)', roleLabel + ' Option Awards ($)', roleLabel + ' Bonus ($)',
+                roleLabel + ' Non-Equity Incentive ($)', roleLabel + ' Pension/NQDC ($)', roleLabel + ' All Other ($)',
+                roleLabel + ' Salary %', roleLabel + ' Stock %', roleLabel + ' Options %', roleLabel + ' Bonus %', roleLabel + ' Incentive %', roleLabel + ' Pension %', roleLabel + ' Other %'];
             var rows = filtered.map(function(c, i) {
                 var yoyVal = c._ceoYoY ? (c._ceoYoY.pct >= 0 ? '+' : '') + c._ceoYoY.pct.toFixed(1) + '%' : '';
-                // Find CEO executive record for composition data
-                var ceoExec = null;
-                if (c.executives && c.executives.length > 0) {
+                // Find executive record for composition data — role exec when role-filtered, CEO otherwise
+                var compExec = null;
+                if (isRoleExport && c._roleExecs && c._roleExecs[activeRole]) {
+                    compExec = c._roleExecs[activeRole];
+                } else if (c.executives && c.executives.length > 0) {
                     var latestYear = 0;
                     c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
                     var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
                     // CEO by title match
-                    ceoExec = latestExecs.find(function(e) {
+                    compExec = latestExecs.find(function(e) {
                         return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
                     });
                     // Fallback: highest total
-                    if (!ceoExec && latestExecs.length > 0) {
-                        ceoExec = latestExecs.reduce(function(a, b) { return (a.total || 0) > (b.total || 0) ? a : b; });
+                    if (!compExec && latestExecs.length > 0) {
+                        compExec = latestExecs.reduce(function(a, b) { return (a.total || 0) > (b.total || 0) ? a : b; });
                     }
                 }
-                var sal = ceoExec ? (ceoExec.salary || 0) : '';
-                var stk = ceoExec ? (ceoExec.stock_awards || 0) : '';
-                var opt = ceoExec ? (ceoExec.option_awards || 0) : '';
-                var bon = ceoExec ? (ceoExec.bonus || 0) : '';
-                var inc = ceoExec ? (ceoExec.non_equity_incentive || 0) : '';
-                var pen = ceoExec ? (ceoExec.pension_nqdc || ceoExec.pension_change || 0) : '';
-                var oth = ceoExec ? (ceoExec.all_other || 0) : '';
-                var tot = ceoExec ? (ceoExec.total || 0) : 0;
+                // Executive name and total comp adapt to role filter
+                var exportName = isRoleExport && c._roleExecs && c._roleExecs[activeRole]
+                    ? c._roleExecs[activeRole].name : c.ceo_name;
+                var exportComp = isRoleExport
+                    ? (compExec ? (compExec.total || 0) : 0)
+                    : (c.total_compensation || '');
+                var sal = compExec ? (compExec.salary || 0) : '';
+                var stk = compExec ? (compExec.stock_awards || 0) : '';
+                var opt = compExec ? (compExec.option_awards || 0) : '';
+                var bon = compExec ? (compExec.bonus || 0) : '';
+                var inc = compExec ? (compExec.non_equity_incentive || 0) : '';
+                var pen = compExec ? (compExec.pension_nqdc || compExec.pension_change || 0) : '';
+                var oth = compExec ? (compExec.all_other || 0) : '';
+                var tot = compExec ? (compExec.total || 0) : 0;
                 // Percentages
-                var salP = tot > 0 && ceoExec ? ((sal / tot) * 100).toFixed(1) + '%' : '';
-                var stkP = tot > 0 && ceoExec ? ((stk / tot) * 100).toFixed(1) + '%' : '';
-                var optP = tot > 0 && ceoExec ? ((opt / tot) * 100).toFixed(1) + '%' : '';
-                var bonP = tot > 0 && ceoExec ? ((bon / tot) * 100).toFixed(1) + '%' : '';
-                var incP = tot > 0 && ceoExec ? ((inc / tot) * 100).toFixed(1) + '%' : '';
-                var penP = tot > 0 && ceoExec ? ((pen / tot) * 100).toFixed(1) + '%' : '';
-                var othP = tot > 0 && ceoExec ? ((oth / tot) * 100).toFixed(1) + '%' : '';
+                var salP = tot > 0 && compExec ? ((sal / tot) * 100).toFixed(1) + '%' : '';
+                var stkP = tot > 0 && compExec ? ((stk / tot) * 100).toFixed(1) + '%' : '';
+                var optP = tot > 0 && compExec ? ((opt / tot) * 100).toFixed(1) + '%' : '';
+                var bonP = tot > 0 && compExec ? ((bon / tot) * 100).toFixed(1) + '%' : '';
+                var incP = tot > 0 && compExec ? ((inc / tot) * 100).toFixed(1) + '%' : '';
+                var penP = tot > 0 && compExec ? ((pen / tot) * 100).toFixed(1) + '%' : '';
+                var othP = tot > 0 && compExec ? ((oth / tot) * 100).toFixed(1) + '%' : '';
                 return [
                     i + 1,
                     csvEscape(c.ticker),
                     csvEscape(c.company_name),
-                    csvEscape(c.ceo_name),
-                    c.total_compensation || '',
+                    csvEscape(exportName),
+                    exportComp,
                     c._compPercentile != null ? c._compPercentile : '',
                     csvEscape(yoyVal),
                     csvEscape(c.sector || ''),
@@ -5767,9 +5777,11 @@ function hideMetricSkeletons() {
                 return 0;
             });
 
-            // CSV header — expanded with NEO fields
+            // CSV header — expanded with NEO fields; adapt to role filter
+            var isRoleNeo = activeRole && activeRole !== 'CEO';
+            var roleLabelNeo = isRoleNeo ? activeRole : 'CEO';
             var headers = [
-                'Rank', 'Ticker', 'Company', 'CEO', 'CEO Total Comp ($)',
+                'Rank', 'Ticker', 'Company', roleLabelNeo, roleLabelNeo + ' Total Comp ($)',
                 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
                 'Exec Name', 'Exec Title', 'Role Category', 'Salary ($)', 'Bonus ($)', 'Stock Awards ($)',
                 'Option Awards ($)', 'Non-Equity Incentive ($)', 'Pension/NQDC ($)', 'All Other Comp ($)',
@@ -5779,12 +5791,18 @@ function hideMetricSkeletons() {
             var rows = [];
             filtered.forEach(function(c, i) {
                 var rank = i + 1;
+                // Use role exec name and comp when role-filtered
+                var neoExportName = isRoleNeo && c._roleExecs && c._roleExecs[activeRole]
+                    ? c._roleExecs[activeRole].name : c.ceo_name;
+                var neoExportComp = isRoleNeo && c._roleExecs && c._roleExecs[activeRole]
+                    ? (c._roleExecs[activeRole].total || 0)
+                    : (c.total_compensation || '');
                 var baseFields = [
                     rank,
                     csvEscape(c.ticker),
                     csvEscape(c.company_name),
-                    csvEscape(c.ceo_name),
-                    c.total_compensation || '',
+                    csvEscape(neoExportName),
+                    neoExportComp,
                     csvEscape(c.sector || ''),
                     c.pay_ratio || '',
                     c.median_worker_pay || ''
