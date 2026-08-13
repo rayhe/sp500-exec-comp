@@ -636,6 +636,7 @@ function sortTableByKey(key, dir) {
     window._activeDistFilter = null;
     window._activeConcTier = null;
     window._activeCeoTransitionFilter = false;
+    window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -925,6 +926,11 @@ function populateInsights(comp, trends) {
             var tc = document.getElementById('transition-filter-chip');
             if (tc) tc.remove();
         }
+        if (window._activeTeamCompletenessFilter) {
+            window._activeTeamCompletenessFilter = null;
+            var tcf = document.getElementById('team-filter-chip');
+            if (tcf) tcf.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -1070,29 +1076,10 @@ function populateInsights(comp, trends) {
 
     if (insights[12]) {
         insights[12].action = function() {
-            // Filter to companies with 4+ roles (deep C-suite coverage)
-            searchTerm = '';
-            activeSector = null;
-            activeRole = null;
-            currentPage = 1;
-            document.getElementById('table-search').value = '';
-            document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-            var allChip = document.querySelector('.chip');
-            if (allChip) allChip.classList.add('active');
-            // Sort by total comp to show most-complete high-paid companies
-            currentSort = { key: 'total_compensation', dir: 'desc' };
-            document.querySelectorAll('th.sortable').forEach(function(t) {
-                t.classList.remove('sorted-asc', 'sorted-desc');
-                t.setAttribute('aria-sort', 'none');
-                if (t.dataset.sort === 'total_compensation') {
-                    t.classList.add('sorted-desc');
-                    t.setAttribute('aria-sort', 'descending');
-                }
-            });
-            renderTable(companies);
-            scrollToTable();
+            // Toggle team completeness filter to show companies missing expected roles
+            if (window.filterByTeamCompleteness) window.filterByTeamCompleteness('missing');
         };
-        insights[12].actionHint = 'View top earners';
+        insights[12].actionHint = 'Filter missing roles';
     }
 
     // Render cards
@@ -1377,6 +1364,7 @@ function buildSectorChips(companies) {
         if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
         if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
         if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1397,6 +1385,7 @@ function buildSectorChips(companies) {
             if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
             if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
             if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -2241,6 +2230,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
+    if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -2481,6 +2471,57 @@ function renderSummaryBar(filtered, allCompanies) {
         }
     }
 
+    // Team Completeness filter summary stats
+    if (window._activeTeamCompletenessFilter && filtered.length > 0) {
+        html += '<span class="summary-divider"></span>';
+        if (window._activeTeamCompletenessFilter === 'missing') {
+            // Count by missing role type
+            var missingRoleCounts = {};
+            filtered.forEach(function(c) {
+                if (c._teamMissingExpected) {
+                    c._teamMissingExpected.forEach(function(r) {
+                        missingRoleCounts[r] = (missingRoleCounts[r] || 0) + 1;
+                    });
+                }
+            });
+            var missingParts = Object.keys(missingRoleCounts).map(function(r) {
+                return r + ': ' + missingRoleCounts[r];
+            });
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Missing roles</span>';
+            html += '<span class="summary-stat-value" style="color:#f472b6">' + missingParts.join(', ') + '</span>';
+            html += '</span>';
+            // Average role count in filtered set
+            var avgFiltered = filtered.reduce(function(s, c) { return s + (c._teamRoleCount || 0); }, 0) / filtered.length;
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Avg roles</span>';
+            html += '<span class="summary-stat-value">' + avgFiltered.toFixed(1) + '/7</span>';
+            html += '</span>';
+            // Least complete company
+            var leastComplete = filtered.slice().sort(function(a, b) { return (a._teamRoleCount || 0) - (b._teamRoleCount || 0); })[0];
+            if (leastComplete) {
+                html += '<span class="summary-stat">';
+                html += '<span class="summary-stat-label">Least complete</span>';
+                html += '<span class="summary-stat-value">' + (leastComplete.ticker || 'N/A') + ' (' + (leastComplete._teamRoleCount || 0) + ' roles)</span>';
+                html += '</span>';
+            }
+        } else {
+            // 'complete' mode — show companies with 4+ roles
+            var avgComplete = filtered.reduce(function(s, c) { return s + (c._teamRoleCount || 0); }, 0) / filtered.length;
+            html += '<span class="summary-stat">';
+            html += '<span class="summary-stat-label">Avg roles</span>';
+            html += '<span class="summary-stat-value positive">' + avgComplete.toFixed(1) + '/7</span>';
+            html += '</span>';
+            var mostComp = filtered.slice().sort(function(a, b) { return (b._teamRoleCount || 0) - (a._teamRoleCount || 0); })[0];
+            if (mostComp) {
+                html += '<span class="summary-stat">';
+                html += '<span class="summary-stat-label">Most complete</span>';
+                html += '<span class="summary-stat-value">' + (mostComp.ticker || 'N/A') + ' (' + (mostComp._teamRoleCount || 0) + ' roles)</span>';
+                html += '</span>';
+            }
+        }
+    }
+
     // Role filter summary stats
     if (activeRole && activeRole !== 'CEO' && filtered.length > 0) {
         html += '<span class="summary-divider"></span>';
@@ -2572,6 +2613,17 @@ function renderTable(companies, options) {
         filtered = filtered.filter(function(c) {
             return c._ceoTransition != null;
         });
+    }
+    if (window._activeTeamCompletenessFilter) {
+        if (window._activeTeamCompletenessFilter === 'missing') {
+            filtered = filtered.filter(function(c) {
+                return c._teamMissingExpected && c._teamMissingExpected.length > 0 && c.executives && c.executives.length > 0;
+            });
+        } else if (window._activeTeamCompletenessFilter === 'complete') {
+            filtered = filtered.filter(function(c) {
+                return c._teamRoleCount >= 4;
+            });
+        }
     }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
@@ -2803,6 +2855,7 @@ function renderTable(companies, options) {
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
+    if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -3299,7 +3352,7 @@ function setupDetailPanel(companies) {
             var _tcMissing = company._teamMissingExpected && company._teamMissingExpected.length > 0;
             var _tcSubText = _tcCount + '/7 C-suite roles in NEO data';
             if (_tcMissing) {
-                _tcSubText += ' · Missing: ' + company._teamMissingExpected.join(', ');
+                _tcSubText += ' · <span class="tc-missing-link" onclick="event.stopPropagation();if(window.filterByTeamCompleteness)window.filterByTeamCompleteness(\'missing\')" title="Click to filter table to companies missing expected roles" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted;">Missing: ' + company._teamMissingExpected.join(', ') + '</span>';
             }
             html += '<div class="detail-stat detail-stat-wide"><div class="detail-stat-label">Team Completeness</div><div class="detail-stat-value ' + _tcCls + '">' + _tcCount + ' roles</div><div class="tc-dots">' + _tcDotsHtml + '</div><div class="detail-stat-sub">' + _tcSubText + '</div></div>';
         }
@@ -3914,6 +3967,9 @@ function serializeState() {
     if (window._activeCeoTransitionFilter) {
         params.push('ceotrans=1');
     }
+    if (window._activeTeamCompletenessFilter) {
+        params.push('teamfilter=' + encodeURIComponent(window._activeTeamCompletenessFilter));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -4005,6 +4061,14 @@ function applyHashState(companies) {
     // CEO transition filter
     if (state.ceotrans === '1') {
         window._activeCeoTransitionFilter = true;
+    }
+
+    // Team completeness filter
+    if (state.teamfilter) {
+        var tfVal = decodeURIComponent(state.teamfilter);
+        if (tfVal === 'missing' || tfVal === 'complete') {
+            window._activeTeamCompletenessFilter = tfVal;
+        }
     }
 
     // Role filter
@@ -4252,6 +4316,7 @@ function hideMetricSkeletons() {
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
+        updateTeamCompletenessFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -4421,6 +4486,7 @@ function hideMetricSkeletons() {
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
+        updateTeamCompletenessFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -4536,6 +4602,7 @@ function hideMetricSkeletons() {
         });
 
         updateConcFilterIndicator();
+        updateTeamCompletenessFilterIndicator();
         renderTable(companies);
         pushState();
         announce(window._activeConcTier ? 'Filtered to ' + tag + ' CEO concentration (' + label + ')' : 'Concentration filter cleared');
@@ -4628,6 +4695,77 @@ function hideMetricSkeletons() {
     }
     window._updateCeoTransitionFilterIndicator = updateCeoTransitionFilterIndicator;
 
+    // Team Completeness filter — toggle to show only companies missing expected roles or with complete teams
+    window.filterByTeamCompleteness = function(mode) {
+        // mode: 'missing' = companies missing expected roles (CEO/CFO), 'complete' = 4+ roles
+        // Toggle off if same mode re-clicked
+        if (window._activeTeamCompletenessFilter === mode) {
+            window._activeTeamCompletenessFilter = null;
+        } else {
+            window._activeTeamCompletenessFilter = mode;
+        }
+        currentPage = 1;
+
+        // Sort by total compensation descending when activating
+        if (window._activeTeamCompletenessFilter) {
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+        }
+
+        updateTeamCompletenessFilterIndicator();
+        renderTable(companies);
+        pushState();
+
+        var msg = window._activeTeamCompletenessFilter
+            ? 'Filtered to companies ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected C-suite roles' : 'with 4+ C-suite roles')
+            : 'Team completeness filter cleared';
+        announce(msg);
+
+        // Scroll to table
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updateTeamCompletenessFilterIndicator() {
+        var existing = document.getElementById('team-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeTeamCompletenessFilter) {
+            var isCombined = !!activeSector;
+            var modeLabel = window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams';
+            var chipLabel = isCombined ? activeSector + ' × ' + modeLabel : modeLabel;
+            var chipColor = window._activeTeamCompletenessFilter === 'missing' ? '#f472b6' : '#34d399';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'team-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(chipColor);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(chipColor);
+            chip.style.color = isCombined ? '#a78bfa' : chipColor;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + team filter' : 'Click to clear team completeness filter';
+            chip.addEventListener('click', function() {
+                window._activeTeamCompletenessFilter = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateTeamCompletenessFilterIndicator = updateTeamCompletenessFilterIndicator;
+
     // Helper to derive rgba chip background from hex color
     function hexToChipBg(hex) {
         var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
@@ -4657,6 +4795,11 @@ function hideMetricSkeletons() {
             window._activeConcTier = null;
             var cc2 = document.getElementById('conc-filter-chip');
             if (cc2) cc2.remove();
+        }
+        if (window._activeTeamCompletenessFilter) {
+            window._activeTeamCompletenessFilter = null;
+            var tfc2 = document.getElementById('team-filter-chip');
+            if (tfc2) tfc2.remove();
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -4881,6 +5024,7 @@ function hideMetricSkeletons() {
                 if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
                 if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
                 if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
 
                 renderTable(companies);
 
@@ -5328,6 +5472,11 @@ function hideMetricSkeletons() {
     // Apply CEO transition filter chip if restored from hash
     if (window._activeCeoTransitionFilter) {
         updateCeoTransitionFilterIndicator();
+    }
+
+    // Apply team completeness filter chip if restored from hash
+    if (window._activeTeamCompletenessFilter) {
+        updateTeamCompletenessFilterIndicator();
     }
 
     // === Table horizontal scroll indicator ===
@@ -6679,6 +6828,8 @@ function hideMetricSkeletons() {
         currentPage = 1;
         window._activeRatioBucket = null;
         window._activeDistFilter = null;
+        window._activeCeoTransitionFilter = false;
+        window._activeTeamCompletenessFilter = null;
         _expandedDetailTicker = null;
         // Close any open detail panel
         var existingDetail = document.querySelector('#comp-tbody .detail-row');
@@ -6693,6 +6844,12 @@ function hideMetricSkeletons() {
         if (rc) rc.remove();
         var dc = document.getElementById('dist-filter-chip');
         if (dc) dc.remove();
+        var tc2 = document.getElementById('transition-filter-chip');
+        if (tc2) tc2.remove();
+        var tfc3 = document.getElementById('team-filter-chip');
+        if (tfc3) tfc3.remove();
+        var cc4 = document.getElementById('conc-filter-chip');
+        if (cc4) cc4.remove();
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
@@ -6713,6 +6870,11 @@ function hideMetricSkeletons() {
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
             updateCeoTransitionFilterIndicator();
+        }
+
+        // Restore team completeness filter chip if present in hash state
+        if (window._activeTeamCompletenessFilter) {
+            updateTeamCompletenessFilterIndicator();
         }
 
         // Restore or clear comparison set from hash
@@ -6867,7 +7029,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || (activeRole && activeRole !== 'CEO')) {
                 activeSector = null;
                 searchTerm = '';
                 activeRole = null;
@@ -6897,6 +7059,11 @@ function hideMetricSkeletons() {
                     window._activeCeoTransitionFilter = false;
                     var tc = document.getElementById('transition-filter-chip');
                     if (tc) tc.remove();
+                }
+                if (window._activeTeamCompletenessFilter) {
+                    window._activeTeamCompletenessFilter = null;
+                    var tfc = document.getElementById('team-filter-chip');
+                    if (tfc) tfc.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
@@ -7011,6 +7178,13 @@ function hideMetricSkeletons() {
                 }
                 if (window._activeCeoTransitionFilter) {
                     totalFiltered = totalFiltered.filter(function(c) { return c._ceoTransition != null; });
+                }
+                if (window._activeTeamCompletenessFilter) {
+                    if (window._activeTeamCompletenessFilter === 'missing') {
+                        totalFiltered = totalFiltered.filter(function(c) { return c._teamMissingExpected && c._teamMissingExpected.length > 0 && c.executives && c.executives.length > 0; });
+                    } else if (window._activeTeamCompletenessFilter === 'complete') {
+                        totalFiltered = totalFiltered.filter(function(c) { return c._teamRoleCount >= 4; });
+                    }
                 }
                 if (activeRole && activeRole !== 'CEO') {
                     totalFiltered = totalFiltered.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; });
