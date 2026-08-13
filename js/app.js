@@ -5942,9 +5942,10 @@ function hideMetricSkeletons() {
     /* === Comparison Summary Chart === */
     var COMP_COLORS = ['#00b4d8', '#06d6a0', '#ffd166', '#a78bfa'];
 
-    function renderComparisonChart(container, selected, rankMap) {
+    function renderComparisonChart(container, selected, rankMap, roleCtx) {
         container.innerHTML = '';
         if (selected.length < 2) return;
+        // roleCtx: { role: 'CFO'|..., getComp: fn(c)->number, getExec: fn(c)->exec } or null
 
         var cWidth = container.clientWidth || 600;
         var barH = 28;
@@ -5976,8 +5977,9 @@ function hideMetricSkeletons() {
         // Three metric groups
         var metrics = [
             {
-                label: 'Total Compensation',
+                label: roleCtx ? roleCtx.role + ' Total Compensation' : 'Total Compensation',
                 key: 'total_compensation',
+                getValue: roleCtx ? function(c) { return roleCtx.getComp(c); } : null,
                 format: function(v) { return formatCurrency(v); },
                 color: function(v, max, min) {
                     return v === max ? (dark ? '#00b4d8' : '#0077b6') : null;
@@ -6054,7 +6056,9 @@ function hideMetricSkeletons() {
             yOffset += 24;
 
             // Compute max for this metric
-            var vals = selected.map(function(c) { return c[metric.key]; }).filter(function(v) { return v != null && v > 0; });
+            // Helper: get metric value, using custom getValue if provided (for role-aware comp)
+            function mVal(c) { return metric.getValue ? metric.getValue(c) : c[metric.key]; }
+            var vals = selected.map(function(c) { return mVal(c); }).filter(function(v) { return v != null && v > 0; });
             var maxVal = vals.length > 0 ? Math.max.apply(null, vals) : 1;
             var minVal = vals.length > 0 ? Math.min.apply(null, vals) : 0;
 
@@ -6062,7 +6066,7 @@ function hideMetricSkeletons() {
             var bestVal = metric.higherBetter ? maxVal : minVal;
             var bestTicker = '';
             selected.forEach(function(c) {
-                var v = c[metric.key];
+                var v = mVal(c);
                 if (v != null && v === bestVal) bestTicker = c.ticker;
             });
 
@@ -6076,7 +6080,7 @@ function hideMetricSkeletons() {
                 .attr('stroke-width', 1);
 
             selected.forEach(function(c, i) {
-                var val = c[metric.key];
+                var val = mVal(c);
                 var barY = yOffset + i * (barH + 4);
                 var barW = (val != null && val > 0 && maxVal > 0) ? (val / maxVal * barAreaW) : 0;
 
@@ -6173,7 +6177,7 @@ function hideMetricSkeletons() {
                             } else {
                                 var diffFromBest = Math.abs((val - bestInComparison) / bestInComparison * 100);
                                 var bestRatioTicker = '';
-                                selected.forEach(function(sc) { if (sc[metric.key] === bestInComparison) bestRatioTicker = sc.ticker; });
+                                selected.forEach(function(sc) { if (mVal(sc) === bestInComparison) bestRatioTicker = sc.ticker; });
                                 compContext = Math.round(diffFromBest) + '% higher than ' + bestRatioTicker;
                             }
                         }
@@ -6245,22 +6249,29 @@ function hideMetricSkeletons() {
             { key: 'all_other', label: 'Other' }
         ];
 
-        // Get CEO breakdown for each company
+        // Get exec breakdown for each company (role-aware: uses role exec when roleCtx active)
         var compBreakdowns = selected.map(function(c) {
             if (!c.executives || c.executives.length === 0) return null;
             var allYears = [];
             c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
             allYears.sort(function(a, b) { return b - a; });
             var latestExecs = c.executives.filter(function(e) { return e.year === allYears[0]; });
-            var ceo = latestExecs.find(function(e) {
-                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
-            });
-            if (!ceo) ceo = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
-            if (!ceo) return null;
+            var exec;
+            if (roleCtx) {
+                // Use role exec from pre-computed data
+                exec = roleCtx.getExec(c);
+                if (!exec) return null;
+            } else {
+                exec = latestExecs.find(function(e) {
+                    return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                });
+                if (!exec) exec = latestExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            if (!exec) return null;
             var segs = [];
             var segTotal = 0;
             compCompKeys.forEach(function(kd) {
-                var val = ceo[kd.key] || 0;
+                var val = exec[kd.key] || 0;
                 if (val > 0) {
                     segs.push({ label: kd.label, value: val, color: compCompColors[kd.label] });
                     segTotal += val;
@@ -6268,7 +6279,7 @@ function hideMetricSkeletons() {
             });
             if (segs.length === 0 || segTotal === 0) return null;
             segs.forEach(function(s) { s.pct = s.value / segTotal * 100; });
-            return { segs: segs, total: segTotal, ceoName: ceo.name || c.ceo_name, year: allYears[0] };
+            return { segs: segs, total: segTotal, ceoName: exec.name || c.ceo_name, year: allYears[0] };
         });
 
         var hasCompData = compBreakdowns.some(function(b) { return b !== null; });
@@ -6288,7 +6299,7 @@ function hideMetricSkeletons() {
                 .attr('letter-spacing', '0.5px')
                 .attr('font-family', "'Inter', sans-serif")
                 .style('text-transform', 'uppercase')
-                .text('Pay Composition');
+                .text(roleCtx ? roleCtx.role + ' Pay Composition' : 'Pay Composition');
 
             yOffset += 24;
 
@@ -6601,8 +6612,14 @@ function hideMetricSkeletons() {
         _preFocusElement = document.activeElement;
         section.classList.add('visible');
 
+        // Role-aware comparison context
+        var isRoleComp = activeRole && activeRole !== 'CEO';
+        var roleLabel = isRoleComp ? activeRole : 'CEO';
+
         // ARIA announcement for comparison
-        announce('Comparing ' + compareSet.length + ' companies: ' + compareSet.join(', '));
+        var announceMsg = 'Comparing ' + compareSet.length + ' companies: ' + compareSet.join(', ');
+        if (isRoleComp) announceMsg += ' (' + roleLabel + ' view)';
+        announce(announceMsg);
 
         // Grid columns based on count
         grid.className = 'comparison-grid cols-' + Math.min(compareSet.length, 4);
@@ -6612,30 +6629,72 @@ function hideMetricSkeletons() {
             return companies.find(function(c) { return c.ticker === ticker; });
         }).filter(Boolean);
 
-        // Pre-compute ranks
-        var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
-        var rankMap = {};
-        sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
+        // Helper: get role exec for a company
+        function getRoleExec(c) {
+            return (isRoleComp && c._roleExecs && c._roleExecs[activeRole]) ? c._roleExecs[activeRole] : null;
+        }
+        // Helper: get display comp (role exec total or CEO total)
+        function getDisplayComp(c) {
+            if (isRoleComp) {
+                var re = getRoleExec(c);
+                return re ? (re.total || 0) : 0;
+            }
+            return c.total_compensation || 0;
+        }
+        // Helper: get display name (role exec name or CEO name)
+        function getDisplayName(c) {
+            if (isRoleComp) {
+                var re = getRoleExec(c);
+                return re ? (re.name || '—') : '—';
+            }
+            return c.ceo_name || '—';
+        }
 
-        // Pre-compute sector ranks
+        // Pre-compute ranks (role-aware)
+        var sorted;
+        var rankMap = {};
+        if (isRoleComp) {
+            sorted = companies.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; })
+                .slice().sort(function(a, b) { return (b._roleExecs[activeRole].total || 0) - (a._roleExecs[activeRole].total || 0); });
+            sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
+        } else {
+            sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+            sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
+        }
+        var rankTotal = sorted.length;
+
+        // Pre-compute sector ranks (role-aware)
         var sectorRankMap = {};
         selected.forEach(function(c) {
             if (sectorRankMap[c.sector]) return;
-            var peers = companies.filter(function(x) { return x.sector === c.sector; })
-                .sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+            var peers;
+            if (isRoleComp) {
+                peers = companies.filter(function(x) { return x.sector === c.sector && x._roleExecs && x._roleExecs[activeRole]; })
+                    .sort(function(a, b) { return (b._roleExecs[activeRole].total || 0) - (a._roleExecs[activeRole].total || 0); });
+            } else {
+                peers = companies.filter(function(x) { return x.sector === c.sector; })
+                    .sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+            }
             sectorRankMap[c.sector] = {};
             peers.forEach(function(p, i) { sectorRankMap[c.sector][p.ticker] = { rank: i + 1, total: peers.length }; });
         });
 
-        // Find max/min for relative bars
-        var maxComp = Math.max.apply(null, selected.map(function(c) { return c.total_compensation || 0; }));
+        // Find max/min for relative bars (role-aware)
+        var maxComp = Math.max.apply(null, selected.map(function(c) { return getDisplayComp(c); }));
         var maxRatio = Math.max.apply(null, selected.map(function(c) { return c.pay_ratio || 0; }));
         var maxWorker = Math.max.apply(null, selected.map(function(c) { return c.median_worker_pay || 0; }));
 
-        // Determine best/worst for highlighting
-        var compValues = selected.map(function(c) { return c.total_compensation || 0; });
+        // Determine best/worst for highlighting (role-aware)
+        var compValues = selected.map(function(c) { return getDisplayComp(c); });
         var ratioValues = selected.filter(function(c) { return c.pay_ratio != null; }).map(function(c) { return c.pay_ratio; });
         var workerValues = selected.filter(function(c) { return c.median_worker_pay != null; }).map(function(c) { return c.median_worker_pay; });
+
+        // Build role context for chart rendering
+        var roleCtx = isRoleComp ? {
+            role: activeRole,
+            getComp: getDisplayComp,
+            getExec: getRoleExec
+        } : null;
 
         // === Comparison Summary Chart (SVG) ===
         var chartContainer = document.getElementById('comparison-chart');
@@ -6645,7 +6704,7 @@ function hideMetricSkeletons() {
             chartContainer.className = 'comparison-chart-container';
             grid.parentNode.insertBefore(chartContainer, grid);
         }
-        renderComparisonChart(chartContainer, selected, rankMap);
+        renderComparisonChart(chartContainer, selected, rankMap, roleCtx);
 
         // === Peer Overlap Analysis ===
         renderPeerOverlap(selected, grid);
@@ -6664,10 +6723,6 @@ function hideMetricSkeletons() {
             var peerIn = peerInfo ? peerInfo.selectedBy.length : 0;
             var peerOut = peerInfo ? peerInfo.selects.length : 0;
 
-            // Comp bar width
-            var compPct = maxComp > 0 ? (c.total_compensation / maxComp * 100) : 0;
-            var compClass = c.total_compensation === Math.max.apply(null, compValues) ? ' best' : '';
-
             // Ratio class (lower is better)
             var ratioClass = '';
             if (c.pay_ratio != null && ratioValues.length > 1) {
@@ -6684,9 +6739,12 @@ function hideMetricSkeletons() {
             }
             var workerPct = maxWorker > 0 && c.median_worker_pay ? (c.median_worker_pay / maxWorker * 100) : 0;
 
-            var html = '<div class="comparison-card-rank">#' + rank + ' / 500';
-            // Percentile badge alongside rank
-            if (c._compPercentile != null) {
+            var displayComp = getDisplayComp(c);
+            var displayName = getDisplayName(c);
+
+            var html = '<div class="comparison-card-rank">#' + rank + ' / ' + rankTotal;
+            // Percentile badge alongside rank (CEO-only)
+            if (!isRoleComp && c._compPercentile != null) {
                 var _cpLabel = getPercentileLabel(c._compPercentile);
                 var _cpClass = getPercentileClass(c._compPercentile);
                 html += ' <span class="pctile-badge ' + _cpClass + '" style="font-size:0.6rem;vertical-align:middle;margin-left:6px" title="Compensation percentile: ' + c._compPercentile + ' of 100">' + _cpLabel + '</span>';
@@ -6694,17 +6752,23 @@ function hideMetricSkeletons() {
             html += '</div>';
             html += '<div class="comparison-card-ticker">' + c.ticker + '</div>';
             html += '<div class="comparison-card-company">' + c.company_name + '</div>';
-            html += '<div class="comparison-card-ceo">' + c.ceo_name;
-            if (c._ceoTransition) {
+            // Exec name with role badge when role-filtered
+            html += '<div class="comparison-card-ceo">' + displayName;
+            if (isRoleComp) {
+                html += ' <span class="role-title-badge" style="--role-color:' + (ROLE_COLORS[activeRole] || '#94a3b8') + '">' + roleLabel + '</span>';
+            }
+            if (!isRoleComp && c._ceoTransition) {
                 html += ' <span class="new-ceo-badge" title="CEO transition: succeeded ' + (c._ceoTransition.oldCeo.name || 'previous CEO').replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + '">NEW</span>';
             }
             html += '</div>';
 
-            // Total Compensation
-            html += '<div class="comparison-row"><span class="comparison-row-label">Total Comp</span><span class="comparison-row-value' + compClass + '">' + formatCurrency(c.total_compensation) + '</span></div>';
-            html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + compPct + '%;background:var(--accent)"></div></div>';
+            // Total Compensation (role-aware)
+            var compPct = maxComp > 0 ? (displayComp / maxComp * 100) : 0;
+            var compClass = displayComp === Math.max.apply(null, compValues) ? ' best' : '';
+            html += '<div class="comparison-row"><span class="comparison-row-label">' + roleLabel + ' Total Comp</span><span class="comparison-row-value' + compClass + '">' + formatCurrency(displayComp) + '</span></div>';
+            html += '<div class="comparison-row-bar"><div class="comparison-row-bar-fill" style="width:' + compPct + '%;background:' + (isRoleComp ? (ROLE_COLORS[activeRole] || 'var(--accent)') : 'var(--accent)') + '"></div></div>';
 
-            // CEO Comp YoY change badge (from multi-year NEO data)
+            // YoY change badge (role-aware — finds role exec in both years)
             if (c.executives && c.executives.length > 0) {
                 var yoyAllYears = [];
                 c.executives.forEach(function(e) { if (yoyAllYears.indexOf(e.year) < 0) yoyAllYears.push(e.year); });
@@ -6714,21 +6778,28 @@ function hideMetricSkeletons() {
                     var yoyYr2 = yoyAllYears[1];
                     var yoyExecs1 = c.executives.filter(function(e) { return e.year === yoyYr1; });
                     var yoyExecs2 = c.executives.filter(function(e) { return e.year === yoyYr2; });
-                    // Find CEO in each year
-                    var yoyCeo1 = yoyExecs1.find(function(e) {
-                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
-                    });
-                    if (!yoyCeo1 && yoyExecs1.length > 0) {
-                        yoyCeo1 = yoyExecs1.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    var yoyExec1, yoyExec2;
+                    if (isRoleComp) {
+                        // Find role exec in each year
+                        yoyExec1 = yoyExecs1.find(function(e) { return classifyExecRole(e.title) === activeRole; });
+                        yoyExec2 = yoyExecs2.find(function(e) { return classifyExecRole(e.title) === activeRole; });
+                    } else {
+                        // Find CEO in each year
+                        yoyExec1 = yoyExecs1.find(function(e) {
+                            return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                        });
+                        if (!yoyExec1 && yoyExecs1.length > 0) {
+                            yoyExec1 = yoyExecs1.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                        }
+                        yoyExec2 = yoyExecs2.find(function(e) {
+                            return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                        });
+                        if (!yoyExec2 && yoyExecs2.length > 0) {
+                            yoyExec2 = yoyExecs2.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                        }
                     }
-                    var yoyCeo2 = yoyExecs2.find(function(e) {
-                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
-                    });
-                    if (!yoyCeo2 && yoyExecs2.length > 0) {
-                        yoyCeo2 = yoyExecs2.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
-                    }
-                    if (yoyCeo1 && yoyCeo2 && yoyCeo1.total > 0 && yoyCeo2.total > 0) {
-                        var yoyPctChange = ((yoyCeo1.total - yoyCeo2.total) / yoyCeo2.total * 100);
+                    if (yoyExec1 && yoyExec2 && yoyExec1.total > 0 && yoyExec2.total > 0) {
+                        var yoyPctChange = ((yoyExec1.total - yoyExec2.total) / yoyExec2.total * 100);
                         var yoyIsPos = yoyPctChange >= 0;
                         var yoyArrow = yoyIsPos ? '▲' : '▼';
                         var yoySign = yoyIsPos ? '+' : '';
@@ -6741,9 +6812,9 @@ function hideMetricSkeletons() {
                 }
             }
 
-            // Sector Rank
+            // Sector Rank (role-aware)
             html += '<div class="comparison-row"><span class="comparison-row-label">Sector</span><span class="comparison-row-value">' + (c.sector || '—') + '</span></div>';
-            html += '<div class="comparison-row"><span class="comparison-row-label">Sector Rank</span><span class="comparison-row-value">#' + sRank.rank + ' of ' + sRank.total + '</span></div>';
+            html += '<div class="comparison-row"><span class="comparison-row-label">' + (isRoleComp ? roleLabel + ' ' : '') + 'Sector Rank</span><span class="comparison-row-value">#' + sRank.rank + ' of ' + sRank.total + '</span></div>';
 
             // Pay Ratio
             var ratioDisplay = c.pay_ratio ? formatRatio(c.pay_ratio) : '<span class="data-na"><span class="data-na-icon">⚠</span> N/A</span>';
@@ -6863,10 +6934,21 @@ function hideMetricSkeletons() {
             return companies.find(function(c) { return c.ticker === ticker; });
         }).filter(Boolean);
         if (selected.length < 2) return;
-        var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
-        var rankMap = {};
+        var isRoleRedraw = activeRole && activeRole !== 'CEO';
+        var sorted, rankMap = {};
+        if (isRoleRedraw) {
+            sorted = companies.filter(function(c) { return c._roleExecs && c._roleExecs[activeRole]; })
+                .slice().sort(function(a, b) { return (b._roleExecs[activeRole].total || 0) - (a._roleExecs[activeRole].total || 0); });
+        } else {
+            sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        }
         sorted.forEach(function(c, i) { rankMap[c.ticker] = i + 1; });
-        renderComparisonChart(chartEl, selected, rankMap);
+        var roleCtxRedraw = isRoleRedraw ? {
+            role: activeRole,
+            getComp: function(c) { return (c._roleExecs && c._roleExecs[activeRole]) ? (c._roleExecs[activeRole].total || 0) : 0; },
+            getExec: function(c) { return (c._roleExecs && c._roleExecs[activeRole]) ? c._roleExecs[activeRole] : null; }
+        } : null;
+        renderComparisonChart(chartEl, selected, rankMap, roleCtxRedraw);
     };
 
     // Listen for browser back/forward
