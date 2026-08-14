@@ -333,7 +333,6 @@ header h1 {
         font-weight: 700;
     }
 }
-
 /* === Metrics Strip === */
 .metrics-strip {
     display: grid;
@@ -6297,4 +6296,144 @@ footer li::before {
         border-color: #ccc !important;
         break-inside: avoid;
     }
+}
+
+/* --- Compensation Twins: Dimension Breakdown Tooltip --- */
+.comp-twin-card {
+    position: relative;
+}
+.comp-twin-breakdown {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: #1a1a2e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    min-width: 320px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+.comp-twin-breakdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--border);
+}
+.comp-twin-card:hover .comp-twin-breakdown,
+.comp-twin-card:focus-within .comp-twin-breakdown {
+    display: block;
+}
+.ctb-header {
+    display: grid;
+    grid-template-columns: 1fr 72px 72px 90px;
+    gap: 4px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.ctb-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.ctb-val-hdr {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+    letter-spacing: 0.02em;
+}
+.ctb-row {
+    display: grid;
+    grid-template-columns: 1fr 72px 72px 90px;
+    gap: 4px;
+    align-items: center;
+    padding: 2px 0;
+}
+.ctb-dim {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+.ctb-weight {
+    font-size: 0.48rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    margin-left: 2px;
+}
+.ctb-val {
+    font-size: 0.66rem;
+    color: var(--text-primary);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.ctb-bar-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.ctb-bar {
+    height: 6px;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: width 0.3s;
+}
+.ctb-pct {
+    font-size: 0.62rem;
+    font-weight: 600;
+    min-width: 28px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+/* Sector distribution summary */
+.comp-twins-sector-summary {
+    margin-top: 8px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+.ctss-dot {
+    font-size: 0.8rem;
+}
+/* Light theme overrides */
+[data-theme="light"] .comp-twin-breakdown {
+    background: #ffffff;
+    border-color: #d4d4d8;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+[data-theme="light"] .comp-twin-breakdown::after {
+    border-top-color: #d4d4d8;
+}
+[data-theme="light"] .ctb-header {
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+/* Mobile: breakdown below card instead of above */
+@media (max-width: 600px) {
+    .comp-twin-breakdown {
+        position: static;
+        transform: none;
+        min-width: auto;
+        margin-top: 8px;
+        box-shadow: none;
+        border-top: 1px solid var(--border);
+        border-radius: 0 0 8px 8px;
+        padding: 8px 10px;
+    }
+    .comp-twin-breakdown::after { display: none; }
+    .ctb-header, .ctb-row {
+        grid-template-columns: 1fr 60px 60px 80px;
+    }
+}
+/* Print */
+@media print {
+    .comp-twin-breakdown { display: block !important; position: static; transform: none; box-shadow: none; border-color: #ccc; }
+    .comp-twin-breakdown::after { display: none; }
 }

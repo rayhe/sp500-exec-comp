@@ -4390,29 +4390,63 @@ function setupDetailPanel(companies) {
                 return dist;
             }
 
+            // Per-dimension similarity breakdown for twin tooltips
+            var DIM_META = [
+                { key: 'logComp', label: 'Total Comp', weight: 3 },
+                { key: 'stockPct', label: 'Equity %', weight: 2 },
+                { key: 'concPct', label: 'Concentration', weight: 1.5 },
+                { key: 'logRatio', label: 'Pay Ratio', weight: 1.5 },
+                { key: 'logWorker', label: 'Worker Pay', weight: 1 }
+            ];
+            function dimBreakdown(f1, f2) {
+                var result = [];
+                DIM_META.forEach(function(dm) {
+                    if (f1[dm.key] != null && f2[dm.key] != null) {
+                        var diff = Math.abs(f1[dm.key] - f2[dm.key]);
+                        var sim = Math.max(0, Math.round((1 - diff) * 100));
+                        result.push({ key: dm.key, label: dm.label, sim: sim, weight: dm.weight });
+                    }
+                });
+                return result;
+            }
+            function fmtDimRaw(dim, c) {
+                if (dim === 'logComp') return formatCurrency(c.total_compensation || c.comp || 0);
+                if (dim === 'stockPct') { var v = c._ceoStockPct != null ? c._ceoStockPct : c.stockPct; return v != null ? Math.round(v) + '%' : '—'; }
+                if (dim === 'concPct') { var v2 = c._ceoConcPct != null ? c._ceoConcPct : c.concPct; return v2 != null ? Math.round(v2) + '%' : '—'; }
+                if (dim === 'logRatio') { var r = c.pay_ratio || c.payRatio; return r ? r + ':1' : '—'; }
+                if (dim === 'logWorker') { var w = c.median_worker_pay || c.workerPay; return w ? formatCurrency(w) : '—'; }
+                return '—';
+            }
+
             if (company.total_compensation > 0) {
                 var selfF = features(company);
                 var scored = [];
                 companies.forEach(function(c) {
                     if (c.ticker === ticker || c.total_compensation <= 0) return;
-                    var d = similarity(selfF, features(c));
-                    if (d < Infinity) scored.push({ ticker: c.ticker, name: c.company_name, ceo: c.ceo_name, comp: c.total_compensation, sector: c.sector, dist: d, stockPct: c._ceoStockPct, concPct: c._ceoConcPct, payRatio: c.pay_ratio });
+                    var cF = features(c);
+                    var d = similarity(selfF, cF);
+                    if (d < Infinity) scored.push({ ticker: c.ticker, name: c.company_name, ceo: c.ceo_name, comp: c.total_compensation, sector: c.sector, dist: d, stockPct: c._ceoStockPct, concPct: c._ceoConcPct, payRatio: c.pay_ratio, workerPay: c.median_worker_pay, feat: cF });
                 });
                 scored.sort(function(a, b) { return a.dist - b.dist; });
                 var twins = scored.slice(0, 5);
 
                 if (twins.length > 0) {
                     var maxDist = twins[twins.length - 1].dist;
+                    var sameSectorCount = 0;
+                    var crossSectorCount = 0;
                     html += '<div class="comp-twins-section">';
                     html += '<div class="comp-twins-header">';
                     html += '<span class="comp-twins-title">Compensation Twins</span>';
-                    html += '<span class="comp-twins-sub">Most similar pay profiles (total comp, equity mix, concentration, pay ratio, worker pay)</span>';
+                    html += '<span class="comp-twins-sub">Most similar pay profiles — hover a card for dimension-by-dimension breakdown</span>';
                     html += '</div>';
                     html += '<div class="comp-twins-list">';
                     twins.forEach(function(tw) {
                         var simPct = Math.max(0, Math.round((1 - tw.dist / (maxDist * 1.5)) * 100));
                         var isSameSector = tw.sector === company.sector;
+                        if (isSameSector) sameSectorCount++; else crossSectorCount++;
                         var barColor = isSameSector ? '#06d6a0' : '#00b4d8';
+                        // Compute per-dimension breakdown
+                        var breakdown = dimBreakdown(selfF, tw.feat);
                         html += '<div class="comp-twin-card" data-ticker="' + tw.ticker + '" tabindex="0" role="button" title="Click to find ' + tw.ticker + ' in table">';
                         html += '<div class="comp-twin-header">';
                         html += '<span class="comp-twin-ticker">' + tw.ticker + '</span>';
@@ -4426,8 +4460,30 @@ function setupDetailPanel(companies) {
                         if (tw.concPct != null) html += '<span title="CEO concentration %">Conc ' + tw.concPct.toFixed(0) + '%</span>';
                         if (tw.payRatio != null) html += '<span title="CEO-to-worker pay ratio">Ratio ' + tw.payRatio + ':1</span>';
                         html += '</div>';
+                        // Dimension breakdown tooltip (shown on hover/focus)
+                        html += '<div class="comp-twin-breakdown">';
+                        html += '<div class="ctb-header"><span class="ctb-label">Dimension</span><span class="ctb-val-hdr">' + ticker + '</span><span class="ctb-val-hdr">' + tw.ticker + '</span><span class="ctb-val-hdr">Match</span></div>';
+                        breakdown.forEach(function(bd) {
+                            var simColor = bd.sim >= 85 ? '#06d6a0' : (bd.sim >= 60 ? '#ffd166' : '#ef476f');
+                            var weightDots = bd.weight >= 2.5 ? '●●●' : (bd.weight >= 1.5 ? '●●' : '●');
+                            html += '<div class="ctb-row">';
+                            html += '<span class="ctb-dim" title="Weight: ' + bd.weight + '">' + bd.label + ' <span class="ctb-weight">' + weightDots + '</span></span>';
+                            html += '<span class="ctb-val">' + fmtDimRaw(bd.key, company) + '</span>';
+                            html += '<span class="ctb-val">' + fmtDimRaw(bd.key, tw) + '</span>';
+                            html += '<span class="ctb-bar-cell"><span class="ctb-bar" style="width:' + bd.sim + '%;background:' + simColor + '"></span><span class="ctb-pct" style="color:' + simColor + '">' + bd.sim + '%</span></span>';
+                            html += '</div>';
+                        });
+                        html += '</div>';
                         html += '</div>';
                     });
+                    html += '</div>';
+                    // Sector distribution summary
+                    html += '<div class="comp-twins-sector-summary">';
+                    html += '<span class="ctss-dot" style="color:#06d6a0">●</span> ' + sameSectorCount + ' same sector';
+                    html += ' · <span class="ctss-dot" style="color:#00b4d8">○</span> ' + crossSectorCount + ' cross-sector';
+                    if (sameSectorCount > crossSectorCount) html += ' — pay structure concentrates within ' + (company.sector || 'sector');
+                    else if (crossSectorCount > sameSectorCount) html += ' — pay profile transcends sector boundaries';
+                    else html += ' — balanced sector distribution';
                     html += '</div>';
                     html += '</div>';
                 }
