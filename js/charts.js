@@ -53,6 +53,7 @@ function initCharts(companies, trends, compData) {
     drawSectorChart(trends, companies);
     drawTrendChart(trends);
     drawRatioChart(companies);
+    drawCompDistChart(companies);
     drawTop10Chart(companies);
     drawCompositionChart(trends);
     drawScatterChart(companies);
@@ -98,7 +99,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -106,6 +107,7 @@ function redrawAllCharts() {
     drawSectorChart(_chartData.trends, _chartData.companies);
     drawTrendChart(_chartData.trends);
     drawRatioChart(_chartData.companies);
+    drawCompDistChart(_chartData.companies);
     drawTop10Chart(_chartData.companies, _top10Mode);
     drawCompositionChart(_chartData.trends);
     drawScatterChart(_chartData.companies);
@@ -1132,6 +1134,273 @@ function drawTop10Chart(companies, mode) {
         }
     }
 }
+
+/* --- CEO Compensation Distribution Histogram --- */
+function drawCompDistChart(companies) {
+    var container = document.getElementById('comp-dist-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withComp = companies.filter(function(c) { return c.total_compensation > 0; });
+    if (withComp.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No compensation data available</p>';
+        return;
+    }
+
+    // Define buckets matching the sort summary brackets but with finer granularity
+    var buckets = [
+        { min: 0, max: 5e6, label: '<$5M', color: '#06d6a0' },
+        { min: 5e6, max: 10e6, label: '$5–10M', color: '#00b4d8' },
+        { min: 10e6, max: 15e6, label: '$10–15M', color: '#38bdf8' },
+        { min: 15e6, max: 20e6, label: '$15–20M', color: '#a78bfa' },
+        { min: 20e6, max: 30e6, label: '$20–30M', color: '#818cf8' },
+        { min: 30e6, max: 50e6, label: '$30–50M', color: '#ffd166' },
+        { min: 50e6, max: 75e6, label: '$50–75M', color: '#fb923c' },
+        { min: 75e6, max: Infinity, label: '$75M+', color: '#ef476f' }
+    ];
+
+    // Count companies in each bucket and collect them
+    buckets.forEach(function(b) {
+        b.companies = withComp.filter(function(c) {
+            return c.total_compensation >= b.min && c.total_compensation < b.max;
+        });
+        b.count = b.companies.length;
+        b.companies.sort(function(a, bb) { return bb.total_compensation - a.total_compensation; });
+    });
+
+    // Filter out empty buckets
+    var activeBuckets = buckets.filter(function(b) { return b.count > 0; });
+
+    // Compute Gini coefficient
+    var sortedComps = withComp.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var n = sortedComps.length;
+    var totalComp = sortedComps.reduce(function(s, v) { return s + v; }, 0);
+    var giniSum = 0;
+    for (var gi = 0; gi < n; gi++) {
+        giniSum += (2 * (gi + 1) - n - 1) * sortedComps[gi];
+    }
+    var gini = totalComp > 0 ? (giniSum / (n * totalComp)) : 0;
+
+    // Median and mean
+    var medianComp = sortedComps[Math.floor(n / 2)];
+    var meanComp = totalComp / n;
+
+    // Top 10% share
+    var top10Idx = Math.floor(n * 0.9);
+    var top10Total = sortedComps.slice(top10Idx).reduce(function(s, v) { return s + v; }, 0);
+    var top10Pct = (top10Total / totalComp * 100).toFixed(1);
+
+    var margin = { top: 20, right: 50, bottom: 50, left: 70 };
+    var w = container.clientWidth - margin.left - margin.right;
+    var h = 300;
+
+    var svg = d3.select('#comp-dist-chart').append('svg')
+        .attr('width', w + margin.left + margin.right)
+        .attr('height', h + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO total compensation distribution across S&P 500')
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(activeBuckets.map(function(b) { return b.label; }))
+        .range([0, w])
+        .padding(0.2);
+
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(activeBuckets, function(b) { return b.count; }) * 1.15])
+        .range([h, 0]);
+
+    // Grid
+    svg.append('g').attr('class', 'grid')
+        .call(d3.axisLeft(y).tickSize(-w).tickFormat('').ticks(6));
+
+    // X axis
+    svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(d3.axisBottom(x).tickSize(0).tickPadding(10));
+
+    // X axis label
+    svg.append('text')
+        .attr('x', w / 2)
+        .attr('y', h + 42)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('CEO Total Compensation');
+
+    // Y axis
+    svg.append('g').attr('class', 'axis')
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return d; }));
+
+    // Y axis label
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -h / 2)
+        .attr('y', -50)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Number of Companies');
+
+    // Bars
+    var bars = svg.selectAll('.comp-dist-bar')
+        .data(activeBuckets)
+        .join('g')
+        .attr('class', 'comp-dist-bar');
+
+    bars.append('rect')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return h - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('rx', 3)
+        .attr('opacity', function(b) {
+            var af = window._activeDistFilter;
+            if (af && !af.sector) return (b.min === af.min) ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(b) {
+            var af = window._activeDistFilter;
+            if (af && !af.sector && b.min === af.min) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
+            var pct = (b.count / withComp.length * 100).toFixed(1);
+            var topNames = b.companies.slice(0, 5).map(function(c) {
+                return c.ticker + ' (' + fmtCurr(c.total_compensation) + ')';
+            }).join('<br>');
+            var html = '<div class="ct-title">' + b.label + ' Compensation</div>' +
+                '<div class="ct-row"><span class="ct-label">Companies</span><span class="ct-val">' + b.count + ' (' + pct + '%)</span></div>';
+            if (topNames) html += '<div class="ct-row ct-sub"><span class="ct-label">Top earners</span><span class="ct-val">' + topNames + '</span></div>';
+            html += '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function(event, b) {
+            var af = window._activeDistFilter;
+            var isActive = af && !af.sector && b.min === af.min;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (af && !af.sector ? 0.3 : 0.8))
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
+            hideChartTooltip();
+        })
+        .on('click', function(event, b) {
+            if (window.filterByCompBracket) {
+                window.filterByCompBracket(b.min, b.max, b.label);
+            }
+        });
+
+    // Count labels on top of bars
+    bars.append('text')
+        .attr('class', 'bar-label')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 6; })
+        .attr('text-anchor', 'middle')
+        .attr('font-weight', '600')
+        .text(function(b) { return b.count; })
+        .attr('opacity', function(b) {
+            var af = window._activeDistFilter;
+            if (af && !af.sector) return (b.min === af.min) ? 1 : 0.4;
+            return 1;
+        });
+
+    // Median reference line — find which bucket it falls in
+    var medianBucket = activeBuckets.find(function(b) {
+        return medianComp >= b.min && medianComp < (b.max === Infinity ? 1e12 : b.max);
+    });
+    if (medianBucket) {
+        var medBucketRange = Math.min(medianBucket.max, 200e6) - medianBucket.min;
+        var medFrac = medBucketRange > 0 ? (medianComp - medianBucket.min) / medBucketRange : 0.5;
+        var medX = x(medianBucket.label) + medFrac * x.bandwidth();
+
+        svg.append('line')
+            .attr('x1', medX).attr('x2', medX)
+            .attr('y1', 0).attr('y2', h)
+            .attr('stroke', '#ffd166').attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '6,4').attr('opacity', 0.7);
+        svg.append('text')
+            .attr('x', medX + 5).attr('y', 10)
+            .attr('fill', '#ffd166').attr('font-size', '9px').attr('font-weight', '500').attr('opacity', 0.8)
+            .text('Median: ' + fmtCurr(medianComp));
+    }
+
+    // Mean reference line
+    var meanBucket = activeBuckets.find(function(b) {
+        return meanComp >= b.min && meanComp < (b.max === Infinity ? 1e12 : b.max);
+    });
+    if (meanBucket) {
+        var meanBucketRange = Math.min(meanBucket.max, 200e6) - meanBucket.min;
+        var meanFrac = meanBucketRange > 0 ? (meanComp - meanBucket.min) / meanBucketRange : 0.5;
+        var meanX = x(meanBucket.label) + meanFrac * x.bandwidth();
+
+        svg.append('line')
+            .attr('x1', meanX).attr('x2', meanX)
+            .attr('y1', 0).attr('y2', h)
+            .attr('stroke', '#ef476f').attr('stroke-width', 1)
+            .attr('stroke-dasharray', '3,3').attr('opacity', 0.6);
+        svg.append('text')
+            .attr('x', meanX + 5).attr('y', 24)
+            .attr('fill', '#ef476f').attr('font-size', '9px').attr('font-weight', '500').attr('opacity', 0.8)
+            .text('Mean: ' + fmtCurr(meanComp));
+    }
+
+    // Summary annotation: Gini + inequality stats
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var annotColor = dark ? '#a1a1aa' : '#6b7280';
+    var annotG = svg.append('g').attr('class', 'comp-dist-annotation');
+
+    // Gini badge (top-right)
+    var giniX = w - 4;
+    annotG.append('text')
+        .attr('x', giniX).attr('y', 14)
+        .attr('text-anchor', 'end')
+        .attr('fill', '#00b4d8').attr('font-size', '11px').attr('font-weight', '600')
+        .text('Gini: ' + gini.toFixed(3));
+    annotG.append('text')
+        .attr('x', giniX).attr('y', 28)
+        .attr('text-anchor', 'end')
+        .attr('fill', annotColor).attr('font-size', '9px')
+        .text('Top 10% earn ' + top10Pct + '% of total');
+    annotG.append('text')
+        .attr('x', giniX).attr('y', 40)
+        .attr('text-anchor', 'end')
+        .attr('fill', annotColor).attr('font-size', '9px')
+        .text('Mean/Median ratio: ' + (meanComp / medianComp).toFixed(2) + '×');
+}
+
+/* Highlight compensation distribution chart bars when filter is active */
+window.highlightCompDistBucket = function(minComp) {
+    d3.selectAll('#comp-dist-chart .comp-dist-bar rect').each(function(d) {
+        if (!d) return;
+        if (minComp == null) {
+            // Clear: restore all to default
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none').attr('stroke-width', 0);
+        } else {
+            var isActive = d.min === minComp;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : 0.3)
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
+        }
+    });
+    // Also update count label opacity
+    d3.selectAll('#comp-dist-chart .comp-dist-bar text').each(function(d) {
+        if (!d) return;
+        if (minComp == null) {
+            d3.select(this).attr('opacity', 1);
+        } else {
+            d3.select(this).attr('opacity', d.min === minComp ? 1 : 0.4);
+        }
+    });
+};
 
 /* --- Compensation Composition (Donut Chart with Granular Breakdown) --- */
 function drawCompositionChart(trends) {

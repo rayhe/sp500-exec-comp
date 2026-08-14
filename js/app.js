@@ -685,6 +685,7 @@ function sortTableByKey(key, dir) {
     if (compData && compData.companies) renderTable(compData.companies, { suppressAnnounce: true });
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+    if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     scrollToTable();
     var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
@@ -965,6 +966,7 @@ function populateInsights(comp, trends) {
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
         scrollToTable();
     }
 
@@ -1104,6 +1106,55 @@ function populateInsights(comp, trends) {
             if (window.filterByTeamCompleteness) window.filterByTeamCompleteness('missing');
         };
         insights[12].actionHint = 'Filter missing roles';
+    }
+
+    // 14. Pay Inequality insight card (Gini coefficient + concentration stats)
+    (function() {
+        var sortedComps = companies.filter(function(c) { return c.total_compensation > 0; })
+            .map(function(c) { return c.total_compensation; })
+            .sort(function(a, b) { return a - b; });
+        var n = sortedComps.length;
+        if (n > 0) {
+            var totalComp = sortedComps.reduce(function(s, v) { return s + v; }, 0);
+            var gSum = 0;
+            for (var gi = 0; gi < n; gi++) {
+                gSum += (2 * (gi + 1) - n - 1) * sortedComps[gi];
+            }
+            var gini = totalComp > 0 ? (gSum / (n * totalComp)) : 0;
+            var top10Idx = Math.floor(n * 0.9);
+            var top10Tot = sortedComps.slice(top10Idx).reduce(function(s, v) { return s + v; }, 0);
+            var top10Pct = (top10Tot / totalComp * 100).toFixed(1);
+            var bot50Tot = sortedComps.slice(0, Math.floor(n * 0.5)).reduce(function(s, v) { return s + v; }, 0);
+            var bot50Pct = (bot50Tot / totalComp * 100).toFixed(1);
+            var meanComp = totalComp / n;
+            var medComp = sortedComps[Math.floor(n / 2)];
+            var skew = (meanComp / medComp).toFixed(2);
+
+            insights.push({
+                icon: '⚖️',
+                label: 'Pay Inequality',
+                value: 'Gini ' + gini.toFixed(3),
+                detail: 'Top 10% of CEOs earn ' + top10Pct + '% of total S&P 500 CEO compensation. ' +
+                    'Bottom 50% earn ' + bot50Pct + '%. ' +
+                    'Mean/median skew: ' + skew + '× — pay is right-skewed toward outliers. ' +
+                    'Total combined CEO pay: ' + formatCurrency(totalComp) + '.',
+                _tickers: []
+            });
+        }
+    })();
+
+    if (insights[13]) {
+        insights[13].action = function() {
+            insightResetAndSort('total_compensation', 'desc');
+            // Scroll to the comp dist chart
+            var chartPanel = document.getElementById('comp-dist-panel');
+            if (chartPanel) {
+                var headerHeight = getStickyOffset();
+                var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                window.scrollTo({ top: top, behavior: getScrollBehavior() });
+            }
+        };
+        insights[13].actionHint = 'View distribution';
     }
 
     // Render cards
@@ -1394,6 +1445,7 @@ function buildSectorChips(companies) {
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     });
     container.appendChild(allChip);
 
@@ -1417,6 +1469,7 @@ function buildSectorChips(companies) {
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+            if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
         });
         container.appendChild(chip);
     });
@@ -4849,6 +4902,7 @@ function hideMetricSkeletons() {
         // Highlight active bar in sector chart
         if (window.highlightSectorBar) window.highlightSectorBar(window._activeDistFilter ? sector : null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -4925,6 +4979,10 @@ function hideMetricSkeletons() {
         updateDistFilterIndicator();
         renderTable(companies);
         pushState();
+        // Highlight the active bucket in the compensation distribution chart
+        if (window.highlightCompDistBucket) {
+            window.highlightCompDistBucket(window._activeDistFilter ? window._activeDistFilter.min : null);
+        }
         announce(window._activeDistFilter ? 'Filtered to ' + label + ' compensation bracket' : 'Filter cleared');
     };
 
@@ -4983,6 +5041,7 @@ function hideMetricSkeletons() {
         window._activeDistFilter = null;
         var distChip = document.getElementById('dist-filter-chip');
         if (distChip) distChip.remove();
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
 
         // Sort by pay ratio descending
         currentSort = { key: 'pay_ratio', dir: 'desc' };
@@ -5002,6 +5061,7 @@ function hideMetricSkeletons() {
                 window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
             } else {
                 window.highlightRatioBucket(null);
+                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
             }
         }
         // Restore YoY bucket highlight from hash state
@@ -5046,6 +5106,7 @@ function hideMetricSkeletons() {
                 chip.remove();
                 renderTable(companies);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
@@ -5479,6 +5540,7 @@ function hideMetricSkeletons() {
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
 
         // Scroll to the table section
@@ -6141,6 +6203,11 @@ function hideMetricSkeletons() {
     // Apply YoY bucket highlight if restored from hash
     if (window._activeYoYBucket && window.highlightYoYBucket) {
         window.highlightYoYBucket(window._activeYoYBucket.min, window._activeYoYBucket.max);
+    }
+
+    // Apply comp dist bracket highlight if restored from hash
+    if (window._activeDistFilter && window.highlightCompDistBucket) {
+        window.highlightCompDistBucket(window._activeDistFilter.min);
     }
 
     // Apply YoY filter chip if restored from hash
@@ -7782,6 +7849,7 @@ function hideMetricSkeletons() {
                 window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
             } else {
                 window.highlightRatioBucket(null);
+                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
             }
         }
         // Restore YoY bucket highlight from hash state
@@ -7795,6 +7863,7 @@ function hideMetricSkeletons() {
         // Restore dist filter chip if present in hash state
         if (window._activeDistFilter) {
             updateDistFilterIndicator();
+            if (window.highlightCompDistBucket) window.highlightCompDistBucket(window._activeDistFilter.min);
         }
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
@@ -8025,6 +8094,7 @@ function hideMetricSkeletons() {
                 renderTable(companies);
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
                 if (window.highlightYoYBucket) window.highlightYoYBucket(null);
                 e.preventDefault();
                 return;
