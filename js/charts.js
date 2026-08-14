@@ -116,6 +116,36 @@ function redrawAllCharts() {
     drawYoYDistChart(_chartData.companies);
 }
 
+/* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
+window._redrawSectorAwareCharts = function() {
+    if (!_chartData) return;
+    var sector = window._activeSector || null;
+    // Update chart headers to reflect sector context
+    var compTitle = document.getElementById('comp-dist-title');
+    var compDesc = document.getElementById('comp-dist-desc');
+    var lorenzTitle = document.getElementById('lorenz-title');
+    var lorenzDesc = document.getElementById('lorenz-desc');
+    if (compTitle) compTitle.textContent = sector
+        ? sector + ' vs S&P 500 Compensation Distribution'
+        : 'CEO Compensation Distribution';
+    if (compDesc) compDesc.textContent = sector
+        ? 'Comparing ' + sector + ' CEO pay distribution against the full S&P 500. Gray bars = index benchmark, colored bars = sector. Click a bucket to filter.'
+        : 'Distribution of CEO total compensation across the S&P 500. Includes Gini coefficient measuring pay inequality. Click a bucket to filter the table.';
+    if (lorenzTitle) lorenzTitle.textContent = sector
+        ? sector + ' vs S&P 500 Lorenz Curve'
+        : 'CEO Pay Lorenz Curve';
+    if (lorenzDesc) lorenzDesc.textContent = sector
+        ? 'Sector inequality (solid) overlaid on S&P 500 baseline (dashed). Gini delta shows whether the sector has more or less pay concentration than the index.'
+        : 'Cumulative share of CEO compensation vs. cumulative share of companies. The gap between the curve and the diagonal (perfect equality) represents the Gini coefficient. Hover for precise percentile breakpoints.';
+    // Redraw charts
+    var el1 = document.getElementById('comp-dist-chart');
+    if (el1) el1.innerHTML = '';
+    drawCompDistChart(_chartData.companies);
+    var el2 = document.getElementById('lorenz-chart');
+    if (el2) el2.innerHTML = '';
+    drawLorenzChart(_chartData.companies);
+};
+
 /* Update ratio histogram bar highlighting without full redraw */
 window.highlightRatioBucket = function(minRatio, maxRatio) {
     d3.selectAll('#ratio-chart .hist-bar rect').each(function(d) {
@@ -1149,6 +1179,12 @@ function drawCompDistChart(companies) {
         return;
     }
 
+    // Sector overlay mode
+    var sectorName = window._activeSector || null;
+    var sectorCompanies = sectorName ? withComp.filter(function(c) { return c.sector === sectorName; }) : null;
+    var hasSectorOverlay = sectorCompanies && sectorCompanies.length >= 3;
+    var sectorColor = hasSectorOverlay && typeof getSectorColor === 'function' ? getSectorColor(sectorName) : '#00b4d8';
+
     // Define buckets matching the sort summary brackets but with finer granularity
     var buckets = [
         { min: 0, max: 5e6, label: '<$5M', color: '#06d6a0' },
@@ -1168,12 +1204,20 @@ function drawCompDistChart(companies) {
         });
         b.count = b.companies.length;
         b.companies.sort(function(a, bb) { return bb.total_compensation - a.total_compensation; });
+        // Sector-specific count
+        if (hasSectorOverlay) {
+            b.sectorCompanies = sectorCompanies.filter(function(c) {
+                return c.total_compensation >= b.min && c.total_compensation < b.max;
+            });
+            b.sectorCount = b.sectorCompanies.length;
+            b.sectorCompanies.sort(function(a, bb) { return bb.total_compensation - a.total_compensation; });
+        }
     });
 
-    // Filter out empty buckets
+    // Filter out empty buckets (keep bucket if S&P 500 OR sector has entries)
     var activeBuckets = buckets.filter(function(b) { return b.count > 0; });
 
-    // Compute Gini coefficient
+    // Compute Gini coefficient for S&P 500
     var sortedComps = withComp.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
     var n = sortedComps.length;
     var totalComp = sortedComps.reduce(function(s, v) { return s + v; }, 0);
@@ -1183,7 +1227,7 @@ function drawCompDistChart(companies) {
     }
     var gini = totalComp > 0 ? (giniSum / (n * totalComp)) : 0;
 
-    // Median and mean
+    // Median and mean for S&P 500
     var medianComp = sortedComps[Math.floor(n / 2)];
     var meanComp = totalComp / n;
 
@@ -1192,26 +1236,62 @@ function drawCompDistChart(companies) {
     var top10Total = sortedComps.slice(top10Idx).reduce(function(s, v) { return s + v; }, 0);
     var top10Pct = (top10Total / totalComp * 100).toFixed(1);
 
+    // Sector stats
+    var sectorGini = 0, sectorMedian = 0, sectorMean = 0, sectorTop10Pct = 0;
+    if (hasSectorOverlay) {
+        var sComps = sectorCompanies.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+        var sn = sComps.length;
+        var sTotalComp = sComps.reduce(function(s, v) { return s + v; }, 0);
+        var sGiniSum = 0;
+        for (var sgi = 0; sgi < sn; sgi++) {
+            sGiniSum += (2 * (sgi + 1) - sn - 1) * sComps[sgi];
+        }
+        sectorGini = sTotalComp > 0 ? (sGiniSum / (sn * sTotalComp)) : 0;
+        sectorMedian = sComps[Math.floor(sn / 2)];
+        sectorMean = sTotalComp / sn;
+        if (sn >= 10) {
+            var sTop10Idx = Math.floor(sn * 0.9);
+            var sTop10Total = sComps.slice(sTop10Idx).reduce(function(s, v) { return s + v; }, 0);
+            sectorTop10Pct = (sTop10Total / sTotalComp * 100).toFixed(1);
+        }
+    }
+
     var margin = { top: 20, right: 50, bottom: 50, left: 70 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = 300;
+
+    var ariaLabel = hasSectorOverlay
+        ? 'CEO compensation distribution: ' + sectorName + ' (' + sectorCompanies.length + ' companies) vs S&P 500'
+        : 'CEO total compensation distribution across S&P 500';
 
     var svg = d3.select('#comp-dist-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
         .attr('height', h + margin.top + margin.bottom)
         .attr('role', 'img')
-        .attr('aria-label', 'CEO total compensation distribution across S&P 500')
+        .attr('aria-label', ariaLabel)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+    // Y domain: use max of S&P 500 counts (sector bars will be shorter)
+    var maxCount = d3.max(activeBuckets, function(b) { return b.count; });
+    // In sector mode, also check percentage scale if sector is small
     var x = d3.scaleBand()
         .domain(activeBuckets.map(function(b) { return b.label; }))
         .range([0, w])
         .padding(0.2);
 
     var y = d3.scaleLinear()
-        .domain([0, d3.max(activeBuckets, function(b) { return b.count; }) * 1.15])
+        .domain([0, maxCount * 1.15])
         .range([h, 0]);
+
+    // If sector overlay, add secondary Y axis for sector count
+    var ySector = null;
+    if (hasSectorOverlay) {
+        var maxSectorCount = d3.max(activeBuckets, function(b) { return b.sectorCount || 0; });
+        ySector = d3.scaleLinear()
+            .domain([0, Math.max(maxSectorCount * 1.15, 1)])
+            .range([h, 0]);
+    }
 
     // Grid
     svg.append('g').attr('class', 'grid')
@@ -1232,11 +1312,10 @@ function drawCompDistChart(companies) {
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text('CEO Total Compensation');
 
-    // Y axis
+    // Y axis (left — S&P 500)
     svg.append('g').attr('class', 'axis')
         .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return d; }));
 
-    // Y axis label
     svg.append('text')
         .attr('transform', 'rotate(-90)')
         .attr('x', -h / 2)
@@ -1245,9 +1324,25 @@ function drawCompDistChart(companies) {
         .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
         .attr('font-size', '11px')
         .attr('font-family', 'Inter, system-ui, sans-serif')
-        .text('Number of Companies');
+        .text(hasSectorOverlay ? 'S&P 500 Companies' : 'Number of Companies');
 
-    // Bars
+    // Y axis (right — sector) when overlay is active
+    if (hasSectorOverlay && ySector) {
+        svg.append('g').attr('class', 'axis')
+            .attr('transform', 'translate(' + w + ',0)')
+            .call(d3.axisRight(ySector).ticks(4).tickFormat(function(d) { return d; }));
+        svg.append('text')
+            .attr('transform', 'rotate(90)')
+            .attr('x', h / 2)
+            .attr('y', -w - 40)
+            .attr('text-anchor', 'middle')
+            .attr('fill', sectorColor)
+            .attr('font-size', '11px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorName + ' Companies');
+    }
+
+    // S&P 500 bars (background when sector overlay active)
     var bars = svg.selectAll('.comp-dist-bar')
         .data(activeBuckets)
         .join('g')
@@ -1258,21 +1353,25 @@ function drawCompDistChart(companies) {
         .attr('y', function(b) { return y(b.count); })
         .attr('width', x.bandwidth())
         .attr('height', function(b) { return h - y(b.count); })
-        .attr('fill', function(b) { return b.color; })
+        .attr('fill', function(b) { return hasSectorOverlay ? (typeof isDarkTheme === 'function' && isDarkTheme() ? '#3f3f46' : '#d4d4d8') : b.color; })
         .attr('rx', 3)
         .attr('opacity', function(b) {
+            if (hasSectorOverlay) return 0.5;
             var af = window._activeDistFilter;
             if (af && !af.sector) return (b.min === af.min) ? 1 : 0.3;
             return 0.8;
         })
         .each(function(b) {
-            var af = window._activeDistFilter;
-            if (af && !af.sector && b.min === af.min) {
-                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            if (!hasSectorOverlay) {
+                var af = window._activeDistFilter;
+                if (af && !af.sector && b.min === af.min) {
+                    d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+                }
             }
         })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
+            if (hasSectorOverlay) return; // Let sector bars handle tooltip
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
             var pct = (b.count / withComp.length * 100).toFixed(1);
             var topNames = b.companies.slice(0, 5).map(function(c) {
@@ -1284,8 +1383,9 @@ function drawCompDistChart(companies) {
             html += '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
             showChartTooltip(event, html);
         })
-        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mousemove', function(event) { if (!hasSectorOverlay) positionChartTooltip(event); })
         .on('mouseout', function(event, b) {
+            if (hasSectorOverlay) return;
             var af = window._activeDistFilter;
             var isActive = af && !af.sector && b.min === af.min;
             d3.select(this)
@@ -1300,25 +1400,84 @@ function drawCompDistChart(companies) {
             }
         });
 
-    // Count labels on top of bars
+    // S&P 500 count labels (dimmed when sector overlay active)
     bars.append('text')
         .attr('class', 'bar-label')
         .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
         .attr('y', function(b) { return y(b.count) - 6; })
         .attr('text-anchor', 'middle')
-        .attr('font-weight', '600')
+        .attr('font-weight', hasSectorOverlay ? '400' : '600')
+        .attr('font-size', hasSectorOverlay ? '9px' : null)
+        .attr('fill', hasSectorOverlay ? (typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa') : null)
         .text(function(b) { return b.count; })
         .attr('opacity', function(b) {
+            if (hasSectorOverlay) return 0.6;
             var af = window._activeDistFilter;
             if (af && !af.sector) return (b.min === af.min) ? 1 : 0.4;
             return 1;
         });
 
+    // Sector overlay bars
+    if (hasSectorOverlay && ySector) {
+        var sectorBars = svg.selectAll('.comp-dist-sector-bar')
+            .data(activeBuckets)
+            .join('g')
+            .attr('class', 'comp-dist-sector-bar');
+
+        // Narrower bars centered within the S&P 500 bar
+        var sBarWidth = Math.max(x.bandwidth() * 0.55, 6);
+        var sBarOffset = (x.bandwidth() - sBarWidth) / 2;
+
+        sectorBars.append('rect')
+            .attr('x', function(b) { return x(b.label) + sBarOffset; })
+            .attr('y', function(b) { return ySector(b.sectorCount || 0); })
+            .attr('width', sBarWidth)
+            .attr('height', function(b) { return h - ySector(b.sectorCount || 0); })
+            .attr('fill', sectorColor)
+            .attr('rx', 2)
+            .attr('opacity', 0.85)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, b) {
+                d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
+                var sPct = sectorCompanies.length > 0 ? ((b.sectorCount / sectorCompanies.length) * 100).toFixed(1) : '0';
+                var sp500Pct = (b.count / withComp.length * 100).toFixed(1);
+                var topNames = (b.sectorCompanies || []).slice(0, 5).map(function(c) {
+                    return c.ticker + ' (' + fmtCurr(c.total_compensation) + ')';
+                }).join('<br>');
+                var html = '<div class="ct-title">' + b.label + ' — ' + sectorName + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">' + sectorName + '</span><span class="ct-val">' + (b.sectorCount || 0) + ' (' + sPct + '%)</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">S&P 500</span><span class="ct-val">' + b.count + ' (' + sp500Pct + '%)</span></div>';
+                if (topNames) html += '<div class="ct-row ct-sub"><span class="ct-label">Top in sector</span><span class="ct-val">' + topNames + '</span></div>';
+                html += '<div class="ct-row ct-sub"><span class="ct-label">Click to filter table</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function(event, b) {
+                d3.select(this).attr('opacity', 0.85).attr('stroke', 'none').attr('stroke-width', 0);
+                hideChartTooltip();
+            })
+            .on('click', function(event, b) {
+                if (window.filterByCompBracket) {
+                    window.filterByCompBracket(b.min, b.max, b.label);
+                }
+            });
+
+        // Sector count labels
+        sectorBars.append('text')
+            .attr('class', 'bar-label')
+            .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+            .attr('y', function(b) { return ySector(b.sectorCount || 0) - 6; })
+            .attr('text-anchor', 'middle')
+            .attr('font-weight', '600')
+            .attr('fill', sectorColor)
+            .text(function(b) { return b.sectorCount || ''; });
+    }
+
     // Median reference line — find which bucket it falls in
     var medianBucket = activeBuckets.find(function(b) {
         return medianComp >= b.min && medianComp < (b.max === Infinity ? 1e12 : b.max);
     });
-    if (medianBucket) {
+    if (medianBucket && !hasSectorOverlay) {
         var medBucketRange = Math.min(medianBucket.max, 200e6) - medianBucket.min;
         var medFrac = medBucketRange > 0 ? (medianComp - medianBucket.min) / medBucketRange : 0.5;
         var medX = x(medianBucket.label) + medFrac * x.bandwidth();
@@ -1334,11 +1493,11 @@ function drawCompDistChart(companies) {
             .text('Median: ' + fmtCurr(medianComp));
     }
 
-    // Mean reference line
+    // Mean reference line (non-sector mode only)
     var meanBucket = activeBuckets.find(function(b) {
         return meanComp >= b.min && meanComp < (b.max === Infinity ? 1e12 : b.max);
     });
-    if (meanBucket) {
+    if (meanBucket && !hasSectorOverlay) {
         var meanBucketRange = Math.min(meanBucket.max, 200e6) - meanBucket.min;
         var meanFrac = meanBucketRange > 0 ? (meanComp - meanBucket.min) / meanBucketRange : 0.5;
         var meanX = x(meanBucket.label) + meanFrac * x.bandwidth();
@@ -1354,28 +1513,106 @@ function drawCompDistChart(companies) {
             .text('Mean: ' + fmtCurr(meanComp));
     }
 
-    // Summary annotation: Gini + inequality stats
+    // Sector median + S&P 500 median reference lines in overlay mode
+    if (hasSectorOverlay) {
+        // S&P 500 median (dimmed)
+        var sp500MedBucket = activeBuckets.find(function(b) {
+            return medianComp >= b.min && medianComp < (b.max === Infinity ? 1e12 : b.max);
+        });
+        if (sp500MedBucket) {
+            var sp500Range = Math.min(sp500MedBucket.max, 200e6) - sp500MedBucket.min;
+            var sp500Frac = sp500Range > 0 ? (medianComp - sp500MedBucket.min) / sp500Range : 0.5;
+            var sp500MedX = x(sp500MedBucket.label) + sp500Frac * x.bandwidth();
+            svg.append('line')
+                .attr('x1', sp500MedX).attr('x2', sp500MedX)
+                .attr('y1', 0).attr('y2', h)
+                .attr('stroke', typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa')
+                .attr('stroke-width', 1).attr('stroke-dasharray', '4,4').attr('opacity', 0.5);
+            svg.append('text')
+                .attr('x', sp500MedX + 5).attr('y', 10)
+                .attr('fill', typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa')
+                .attr('font-size', '8px').attr('font-weight', '400').attr('opacity', 0.6)
+                .text('S&P 500 Med: ' + fmtCurr(medianComp));
+        }
+        // Sector median (prominent)
+        var secMedBucket = activeBuckets.find(function(b) {
+            return sectorMedian >= b.min && sectorMedian < (b.max === Infinity ? 1e12 : b.max);
+        });
+        if (secMedBucket) {
+            var secRange = Math.min(secMedBucket.max, 200e6) - secMedBucket.min;
+            var secFrac = secRange > 0 ? (sectorMedian - secMedBucket.min) / secRange : 0.5;
+            var secMedX = x(secMedBucket.label) + secFrac * x.bandwidth();
+            svg.append('line')
+                .attr('x1', secMedX).attr('x2', secMedX)
+                .attr('y1', 0).attr('y2', h)
+                .attr('stroke', sectorColor).attr('stroke-width', 1.5)
+                .attr('stroke-dasharray', '6,4').attr('opacity', 0.8);
+            svg.append('text')
+                .attr('x', secMedX + 5).attr('y', 24)
+                .attr('fill', sectorColor).attr('font-size', '9px').attr('font-weight', '500').attr('opacity', 0.9)
+                .text('Sector Med: ' + fmtCurr(sectorMedian));
+        }
+    }
+
+    // Summary annotation
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var annotColor = dark ? '#a1a1aa' : '#6b7280';
     var annotG = svg.append('g').attr('class', 'comp-dist-annotation');
-
-    // Gini badge (top-right)
     var giniX = w - 4;
-    annotG.append('text')
-        .attr('x', giniX).attr('y', 14)
-        .attr('text-anchor', 'end')
-        .attr('fill', '#00b4d8').attr('font-size', '11px').attr('font-weight', '600')
-        .text('Gini: ' + gini.toFixed(3));
-    annotG.append('text')
-        .attr('x', giniX).attr('y', 28)
-        .attr('text-anchor', 'end')
-        .attr('fill', annotColor).attr('font-size', '9px')
-        .text('Top 10% earn ' + top10Pct + '% of total');
-    annotG.append('text')
-        .attr('x', giniX).attr('y', 40)
-        .attr('text-anchor', 'end')
-        .attr('fill', annotColor).attr('font-size', '9px')
-        .text('Mean/Median ratio: ' + (meanComp / medianComp).toFixed(2) + '×');
+
+    if (hasSectorOverlay) {
+        // Sector vs S&P 500 comparison annotations
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', sectorColor).attr('font-size', '11px').attr('font-weight', '600')
+            .text(sectorName + ': Gini ' + sectorGini.toFixed(3));
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 28)
+            .attr('text-anchor', 'end')
+            .attr('fill', annotColor).attr('font-size', '9px')
+            .text('S&P 500: Gini ' + gini.toFixed(3));
+        var medDelta = sectorMedian > 0 && medianComp > 0 ? ((sectorMedian / medianComp - 1) * 100).toFixed(0) : '0';
+        var medDeltaSign = medDelta >= 0 ? '+' : '';
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 42)
+            .attr('text-anchor', 'end')
+            .attr('fill', sectorColor).attr('font-size', '9px')
+            .text('Median ' + medDeltaSign + medDelta + '% vs S&P 500');
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 54)
+            .attr('text-anchor', 'end')
+            .attr('fill', annotColor).attr('font-size', '9px')
+            .text(sectorCompanies.length + ' companies in sector');
+    } else {
+        // Standard S&P 500 annotations
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', '#00b4d8').attr('font-size', '11px').attr('font-weight', '600')
+            .text('Gini: ' + gini.toFixed(3));
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 28)
+            .attr('text-anchor', 'end')
+            .attr('fill', annotColor).attr('font-size', '9px')
+            .text('Top 10% earn ' + top10Pct + '% of total');
+        annotG.append('text')
+            .attr('x', giniX).attr('y', 40)
+            .attr('text-anchor', 'end')
+            .attr('fill', annotColor).attr('font-size', '9px')
+            .text('Mean/Median ratio: ' + (meanComp / medianComp).toFixed(2) + '×');
+    }
+
+    // Legend when sector overlay active
+    if (hasSectorOverlay) {
+        var legendG = svg.append('g').attr('transform', 'translate(0,' + (h + 26) + ')');
+        legendG.append('rect').attr('x', 0).attr('y', 0).attr('width', 10).attr('height', 10).attr('rx', 2)
+            .attr('fill', dark ? '#3f3f46' : '#d4d4d8').attr('opacity', 0.6);
+        legendG.append('text').attr('x', 14).attr('y', 9).attr('fill', annotColor).attr('font-size', '9px').text('S&P 500');
+        legendG.append('rect').attr('x', 65).attr('y', 0).attr('width', 10).attr('height', 10).attr('rx', 2)
+            .attr('fill', sectorColor).attr('opacity', 0.85);
+        legendG.append('text').attr('x', 79).attr('y', 9).attr('fill', sectorColor).attr('font-size', '9px').attr('font-weight', '500').text(sectorName);
+    }
 }
 
 /* Highlight compensation distribution chart bars when filter is active */
@@ -2054,30 +2291,53 @@ function drawLorenzChart(companies) {
         return;
     }
 
-    // Sort compensations ascending for cumulative distribution
-    var sorted = withComp.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
-    var n = sorted.length;
-    var totalComp = sorted.reduce(function(s, v) { return s + v; }, 0);
+    // Sector overlay mode
+    var sectorName = window._activeSector || null;
+    var sectorCompanies = sectorName ? withComp.filter(function(c) { return c.sector === sectorName; }) : null;
+    var hasSectorOverlay = sectorCompanies && sectorCompanies.length >= 5;
+    var sectorColor = hasSectorOverlay && typeof getSectorColor === 'function' ? getSectorColor(sectorName) : '#00b4d8';
 
-    // Build Lorenz curve points: (cumPop%, cumComp%)
-    var lorenzPoints = [{ popPct: 0, compPct: 0 }];
-    var cumComp = 0;
-    for (var i = 0; i < n; i++) {
-        cumComp += sorted[i];
-        lorenzPoints.push({
-            popPct: (i + 1) / n,
-            compPct: cumComp / totalComp
-        });
+    // Helper: build Lorenz points and stats from a sorted array
+    function buildLorenz(arr) {
+        var sArr = arr.slice().sort(function(a, b) { return a - b; });
+        var ln = sArr.length;
+        var lTotal = sArr.reduce(function(s, v) { return s + v; }, 0);
+        var pts = [{ popPct: 0, compPct: 0 }];
+        var cum = 0;
+        for (var li = 0; li < ln; li++) {
+            cum += sArr[li];
+            pts.push({ popPct: (li + 1) / ln, compPct: cum / lTotal });
+        }
+        var gs = 0;
+        for (var gi2 = 0; gi2 < ln; gi2++) {
+            gs += (2 * (gi2 + 1) - ln - 1) * sArr[gi2];
+        }
+        var gCoeff = lTotal > 0 ? (gs / (ln * lTotal)) : 0;
+        var t10i = Math.floor(ln * 0.9);
+        var t10 = sArr.slice(t10i).reduce(function(s, v) { return s + v; }, 0);
+        var b50i = Math.floor(ln * 0.5);
+        var b50 = sArr.slice(0, b50i).reduce(function(s, v) { return s + v; }, 0);
+        return {
+            sorted: sArr, points: pts, n: ln, total: lTotal, gini: gCoeff,
+            top10Pct: lTotal > 0 ? t10 / lTotal : 0,
+            bot50Pct: lTotal > 0 ? b50 / lTotal : 0
+        };
     }
 
-    // Compute Gini coefficient (area between diagonal and curve)
-    var giniSum = 0;
-    for (var gi = 0; gi < n; gi++) {
-        giniSum += (2 * (gi + 1) - n - 1) * sorted[gi];
-    }
-    var gini = totalComp > 0 ? (giniSum / (n * totalComp)) : 0;
+    // S&P 500 Lorenz
+    var sp500 = buildLorenz(withComp.map(function(c) { return c.total_compensation; }));
+    var lorenzPoints = sp500.points;
+    var sorted = sp500.sorted;
+    var n = sp500.n;
+    var gini = sp500.gini;
 
-    // Key percentile breakpoints for annotations
+    // Sector Lorenz
+    var sectorLorenz = null;
+    if (hasSectorOverlay) {
+        sectorLorenz = buildLorenz(sectorCompanies.map(function(c) { return c.total_compensation; }));
+    }
+
+    // Key percentile breakpoints for annotations (S&P 500)
     var breakpoints = [
         { label: 'Bottom 50%', idx: Math.floor(n * 0.5) },
         { label: 'Bottom 75%', idx: Math.floor(n * 0.75) },
@@ -2087,30 +2347,24 @@ function drawLorenzChart(companies) {
     breakpoints.forEach(function(bp) {
         var cumBp = 0;
         for (var j = 0; j < bp.idx; j++) cumBp += sorted[j];
-        bp.compPct = cumBp / totalComp;
+        bp.compPct = cumBp / sp500.total;
         bp.popPct = bp.idx / n;
     });
-
-    // Top-10% share
-    var top10Idx = Math.floor(n * 0.9);
-    var top10Total = sorted.slice(top10Idx).reduce(function(s, v) { return s + v; }, 0);
-    var top10Pct = top10Total / totalComp;
-
-    // Bottom-50% share
-    var bot50Idx = Math.floor(n * 0.5);
-    var bot50Total = sorted.slice(0, bot50Idx).reduce(function(s, v) { return s + v; }, 0);
-    var bot50Pct = bot50Total / totalComp;
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var margin = { top: 24, right: 30, bottom: 50, left: 55 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = Math.min(360, Math.max(280, w * 0.85));
 
+    var ariaLabel = hasSectorOverlay
+        ? 'Lorenz curve: ' + sectorName + ' (Gini ' + sectorLorenz.gini.toFixed(3) + ') vs S&P 500 (Gini ' + gini.toFixed(3) + ')'
+        : 'Lorenz curve showing CEO compensation inequality across the S&P 500. Gini coefficient: ' + gini.toFixed(3);
+
     var svg = d3.select('#lorenz-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
         .attr('height', h + margin.top + margin.bottom)
         .attr('role', 'img')
-        .attr('aria-label', 'Lorenz curve showing CEO compensation inequality across the S&P 500. Gini coefficient: ' + gini.toFixed(3))
+        .attr('aria-label', ariaLabel)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -2171,129 +2425,233 @@ function drawLorenzChart(companies) {
         .attr('font-style', 'italic')
         .text('Perfect equality');
 
-    // Shaded area between diagonal and Lorenz curve (Gini area)
-    var areaPath = d3.area()
-        .x(function(d) { return x(d.popPct); })
-        .y0(function(d) { return y(d.popPct); })  // diagonal
-        .y1(function(d) { return y(d.compPct); })  // Lorenz curve
-        .curve(d3.curveMonotoneX);
-
-    svg.append('path')
-        .datum(lorenzPoints)
-        .attr('class', 'lorenz-gini-area')
-        .attr('d', areaPath)
-        .attr('fill', '#00b4d8')
-        .attr('opacity', dark ? 0.12 : 0.10)
-        .attr('stroke', 'none');
-
-    // Lorenz curve line
+    // Lorenz curve line helpers
     var lorenzLine = d3.line()
         .x(function(d) { return x(d.popPct); })
         .y(function(d) { return y(d.compPct); })
         .curve(d3.curveMonotoneX);
 
-    svg.append('path')
-        .datum(lorenzPoints)
-        .attr('class', 'lorenz-curve-line')
-        .attr('d', lorenzLine)
-        .attr('fill', 'none')
-        .attr('stroke', '#00b4d8')
-        .attr('stroke-width', 2.5)
-        .attr('opacity', 0.9);
+    var areaPath = d3.area()
+        .x(function(d) { return x(d.popPct); })
+        .y0(function(d) { return y(d.popPct); })
+        .y1(function(d) { return y(d.compPct); })
+        .curve(d3.curveMonotoneX);
 
-    // Percentile breakpoint dots and annotations
-    var annotColors = {
-        'Bottom 50%': '#06d6a0',
-        'Bottom 75%': '#a78bfa',
-        'Bottom 90%': '#ffd166',
-        'Bottom 95%': '#fb923c'
-    };
+    if (hasSectorOverlay) {
+        // S&P 500 as background reference
+        svg.append('path')
+            .datum(lorenzPoints)
+            .attr('d', areaPath)
+            .attr('fill', dark ? '#3f3f46' : '#d4d4d8')
+            .attr('opacity', 0.08)
+            .attr('stroke', 'none');
 
-    // Annotation layout offsets to avoid overlap
-    var annotOffsets = [
-        { dx: 8, dy: -12 },
-        { dx: 8, dy: -12 },
-        { dx: -8, dy: 14, anchor: 'end' },
-        { dx: -8, dy: 14, anchor: 'end' }
-    ];
-
-    breakpoints.forEach(function(bp, bpi) {
-        var cx = x(bp.popPct);
-        var cy = y(bp.compPct);
-        var off = annotOffsets[bpi];
-
-        // Dot on curve
-        svg.append('circle')
-            .attr('class', 'lorenz-bp-dot')
-            .attr('cx', cx).attr('cy', cy)
-            .attr('r', 4)
-            .attr('fill', annotColors[bp.label] || '#00b4d8')
-            .attr('stroke', dark ? '#18181b' : '#fff')
+        svg.append('path')
+            .datum(lorenzPoints)
+            .attr('d', lorenzLine)
+            .attr('fill', 'none')
+            .attr('stroke', dark ? '#52525b' : '#a1a1aa')
             .attr('stroke-width', 1.5)
-            .attr('opacity', 0.9);
-
-        // Dashed line from dot to diagonal (visual gap)
-        svg.append('line')
-            .attr('x1', cx).attr('x2', cx)
-            .attr('y1', cy).attr('y2', y(bp.popPct))
-            .attr('stroke', annotColors[bp.label] || '#00b4d8')
-            .attr('stroke-width', 0.8)
-            .attr('stroke-dasharray', '2,2')
+            .attr('stroke-dasharray', '4,3')
             .attr('opacity', 0.5);
 
-        // Label
-        svg.append('text')
-            .attr('x', cx + off.dx).attr('y', cy + off.dy)
-            .attr('text-anchor', off.anchor || 'start')
-            .attr('fill', annotColors[bp.label] || '#00b4d8')
-            .attr('font-size', '9px')
-            .attr('font-weight', '500')
-            .text(bp.label + ': ' + (bp.compPct * 100).toFixed(1) + '%');
-    });
+        // Sector Lorenz curve (primary)
+        var sectorAreaPath = d3.area()
+            .x(function(d) { return x(d.popPct); })
+            .y0(function(d) { return y(d.popPct); })
+            .y1(function(d) { return y(d.compPct); })
+            .curve(d3.curveMonotoneX);
+
+        svg.append('path')
+            .datum(sectorLorenz.points)
+            .attr('d', sectorAreaPath)
+            .attr('fill', sectorColor)
+            .attr('opacity', dark ? 0.15 : 0.12)
+            .attr('stroke', 'none');
+
+        svg.append('path')
+            .datum(sectorLorenz.points)
+            .attr('d', lorenzLine)
+            .attr('fill', 'none')
+            .attr('stroke', sectorColor)
+            .attr('stroke-width', 2.5)
+            .attr('opacity', 0.9);
+
+        // Sector Gini label in shaded area
+        var sGiniLabelPt = sectorLorenz.points[Math.floor(sectorLorenz.points.length * 0.35)];
+        if (sGiniLabelPt) {
+            var sgx = x(sGiniLabelPt.popPct);
+            var sgy = (y(sGiniLabelPt.popPct) + y(sGiniLabelPt.compPct)) / 2;
+            svg.append('text')
+                .attr('x', sgx).attr('y', sgy)
+                .attr('text-anchor', 'middle')
+                .attr('fill', sectorColor)
+                .attr('font-size', '9px').attr('font-style', 'italic').attr('opacity', 0.6)
+                .text('Sector Gini area');
+        }
+    } else {
+        // Standard S&P 500 only view
+        svg.append('path')
+            .datum(lorenzPoints)
+            .attr('class', 'lorenz-gini-area')
+            .attr('d', areaPath)
+            .attr('fill', '#00b4d8')
+            .attr('opacity', dark ? 0.12 : 0.10)
+            .attr('stroke', 'none');
+
+        svg.append('path')
+            .datum(lorenzPoints)
+            .attr('class', 'lorenz-curve-line')
+            .attr('d', lorenzLine)
+            .attr('fill', 'none')
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 2.5)
+            .attr('opacity', 0.9);
+
+        // "Gini = shaded area" label inside the shaded area
+        var giniLabelPt = lorenzPoints[Math.floor(lorenzPoints.length * 0.35)];
+        if (giniLabelPt) {
+            var gx = x(giniLabelPt.popPct);
+            var gy = (y(giniLabelPt.popPct) + y(giniLabelPt.compPct)) / 2;
+            svg.append('text')
+                .attr('x', gx).attr('y', gy)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#00b4d8')
+                .attr('font-size', '9px').attr('font-style', 'italic').attr('opacity', 0.6)
+                .text('Gini area');
+        }
+    }
+
+    // Percentile breakpoint dots and annotations (only in non-sector mode for clarity)
+    if (!hasSectorOverlay) {
+        var annotColors = {
+            'Bottom 50%': '#06d6a0',
+            'Bottom 75%': '#a78bfa',
+            'Bottom 90%': '#ffd166',
+            'Bottom 95%': '#fb923c'
+        };
+
+        var annotOffsets = [
+            { dx: 8, dy: -12 },
+            { dx: 8, dy: -12 },
+            { dx: -8, dy: 14, anchor: 'end' },
+            { dx: -8, dy: 14, anchor: 'end' }
+        ];
+
+        breakpoints.forEach(function(bp, bpi) {
+            var cx = x(bp.popPct);
+            var cy = y(bp.compPct);
+            var off = annotOffsets[bpi];
+
+            svg.append('circle')
+                .attr('class', 'lorenz-bp-dot')
+                .attr('cx', cx).attr('cy', cy)
+                .attr('r', 4)
+                .attr('fill', annotColors[bp.label] || '#00b4d8')
+                .attr('stroke', dark ? '#18181b' : '#fff')
+                .attr('stroke-width', 1.5)
+                .attr('opacity', 0.9);
+
+            svg.append('line')
+                .attr('x1', cx).attr('x2', cx)
+                .attr('y1', cy).attr('y2', y(bp.popPct))
+                .attr('stroke', annotColors[bp.label] || '#00b4d8')
+                .attr('stroke-width', 0.8)
+                .attr('stroke-dasharray', '2,2')
+                .attr('opacity', 0.5);
+
+            svg.append('text')
+                .attr('x', cx + off.dx).attr('y', cy + off.dy)
+                .attr('text-anchor', off.anchor || 'start')
+                .attr('fill', annotColors[bp.label] || '#00b4d8')
+                .attr('font-size', '9px').attr('font-weight', '500')
+                .text(bp.label + ': ' + (bp.compPct * 100).toFixed(1) + '%');
+        });
+    }
 
     // Gini coefficient badge (top-right area)
     var badgeX = w - 6;
-    svg.append('text')
-        .attr('x', badgeX).attr('y', 14)
-        .attr('text-anchor', 'end')
-        .attr('fill', '#00b4d8')
-        .attr('font-size', '13px')
-        .attr('font-weight', '700')
-        .attr('font-family', 'Inter, system-ui, sans-serif')
-        .text('Gini: ' + gini.toFixed(3));
-
-    svg.append('text')
-        .attr('x', badgeX).attr('y', 30)
-        .attr('text-anchor', 'end')
-        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
-        .attr('font-size', '9.5px')
-        .attr('font-family', 'Inter, system-ui, sans-serif')
-        .text('Top 10% earn ' + (top10Pct * 100).toFixed(1) + '% of total');
-
-    svg.append('text')
-        .attr('x', badgeX).attr('y', 44)
-        .attr('text-anchor', 'end')
-        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
-        .attr('font-size', '9.5px')
-        .attr('font-family', 'Inter, system-ui, sans-serif')
-        .text('Bottom 50% earn ' + (bot50Pct * 100).toFixed(1) + '% of total');
-
-    // "Gini = shaded area" label inside the shaded area
-    var giniLabelPt = lorenzPoints[Math.floor(lorenzPoints.length * 0.35)];
-    if (giniLabelPt) {
-        var gx = x(giniLabelPt.popPct);
-        var gy = (y(giniLabelPt.popPct) + y(giniLabelPt.compPct)) / 2;
+    if (hasSectorOverlay) {
+        // Sector vs S&P 500 comparison
         svg.append('text')
-            .attr('x', gx).attr('y', gy)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#00b4d8')
+            .attr('x', badgeX).attr('y', 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', sectorColor)
+            .attr('font-size', '13px').attr('font-weight', '700')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorName + ': ' + sectorLorenz.gini.toFixed(3));
+
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 30)
+            .attr('text-anchor', 'end')
+            .attr('fill', dark ? '#71717a' : '#a1a1aa')
+            .attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('S&P 500: ' + gini.toFixed(3));
+
+        var giniDelta = sectorLorenz.gini - gini;
+        var giniDeltaLabel = (giniDelta >= 0 ? '+' : '') + (giniDelta * 1000).toFixed(1) + ' bps';
+        var giniDeltaColor = giniDelta > 0.01 ? '#ef476f' : giniDelta < -0.01 ? '#06d6a0' : (dark ? '#a1a1aa' : '#6b7280');
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 44)
+            .attr('text-anchor', 'end')
+            .attr('fill', giniDeltaColor)
+            .attr('font-size', '9.5px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Δ ' + giniDeltaLabel + ' vs index');
+
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 58)
+            .attr('text-anchor', 'end')
+            .attr('fill', dark ? '#a1a1aa' : '#6b7280')
             .attr('font-size', '9px')
-            .attr('font-style', 'italic')
-            .attr('opacity', 0.6)
-            .text('Gini area');
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorCompanies.length + ' companies');
+
+        // Legend
+        var legY = h - 24;
+        svg.append('line')
+            .attr('x1', 6).attr('x2', 26).attr('y1', legY).attr('y2', legY)
+            .attr('stroke', dark ? '#52525b' : '#a1a1aa').attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '4,3').attr('opacity', 0.5);
+        svg.append('text')
+            .attr('x', 30).attr('y', legY + 4)
+            .attr('fill', dark ? '#71717a' : '#a1a1aa').attr('font-size', '9px')
+            .text('S&P 500');
+        svg.append('line')
+            .attr('x1', 80).attr('x2', 100).attr('y1', legY).attr('y2', legY)
+            .attr('stroke', sectorColor).attr('stroke-width', 2.5).attr('opacity', 0.9);
+        svg.append('text')
+            .attr('x', 104).attr('y', legY + 4)
+            .attr('fill', sectorColor).attr('font-size', '9px').attr('font-weight', '500')
+            .text(sectorName);
+    } else {
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', '#00b4d8')
+            .attr('font-size', '13px').attr('font-weight', '700')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Gini: ' + gini.toFixed(3));
+
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 30)
+            .attr('text-anchor', 'end')
+            .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+            .attr('font-size', '9.5px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Top 10% earn ' + (sp500.top10Pct * 100).toFixed(1) + '% of total');
+
+        svg.append('text')
+            .attr('x', badgeX).attr('y', 44)
+            .attr('text-anchor', 'end')
+            .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+            .attr('font-size', '9.5px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Bottom 50% earn ' + (sp500.bot50Pct * 100).toFixed(1) + '% of total');
     }
 
-    // Interactive hover overlay — transparent rect catches mouse, shows nearest point
+    // Interactive hover overlay
     var hoverLine = svg.append('line')
         .attr('y1', 0).attr('y2', h)
         .attr('stroke', dark ? '#6b7280' : '#9ca3af')
@@ -2303,7 +2661,7 @@ function drawLorenzChart(companies) {
 
     var hoverDot = svg.append('circle')
         .attr('r', 5)
-        .attr('fill', '#00b4d8')
+        .attr('fill', hasSectorOverlay ? sectorColor : '#00b4d8')
         .attr('stroke', dark ? '#18181b' : '#fff')
         .attr('stroke-width', 2)
         .attr('opacity', 0);
@@ -2315,6 +2673,22 @@ function drawLorenzChart(companies) {
         .attr('stroke-width', 1.5)
         .attr('opacity', 0);
 
+    // Secondary hover dot for S&P 500 reference in sector mode
+    var hoverDotRef = null;
+    if (hasSectorOverlay) {
+        hoverDotRef = svg.append('circle')
+            .attr('r', 3)
+            .attr('fill', dark ? '#52525b' : '#a1a1aa')
+            .attr('stroke', dark ? '#18181b' : '#fff')
+            .attr('stroke-width', 1)
+            .attr('opacity', 0);
+    }
+
+    // Use sector Lorenz for hover in sector mode
+    var hoverPoints = hasSectorOverlay ? sectorLorenz.points : lorenzPoints;
+    var hoverSorted = hasSectorOverlay ? sectorLorenz.sorted : sorted;
+    var hoverN = hasSectorOverlay ? sectorLorenz.n : n;
+
     svg.append('rect')
         .attr('width', w).attr('height', h)
         .attr('fill', 'transparent')
@@ -2324,11 +2698,11 @@ function drawLorenzChart(companies) {
             var popPct = x.invert(mouseX);
             if (popPct < 0 || popPct > 1) return;
 
-            // Find nearest Lorenz point
-            var idx = Math.round(popPct * n);
+            // Find nearest point on primary curve
+            var idx = Math.round(popPct * hoverN);
             if (idx < 0) idx = 0;
-            if (idx > n) idx = n;
-            var pt = lorenzPoints[idx];
+            if (idx > hoverN) idx = hoverN;
+            var pt = hoverPoints[idx];
 
             hoverLine.attr('x1', x(pt.popPct)).attr('x2', x(pt.popPct)).attr('opacity', 0.5);
             hoverDot.attr('cx', x(pt.popPct)).attr('cy', y(pt.compPct)).attr('opacity', 1);
@@ -2337,21 +2711,33 @@ function drawLorenzChart(companies) {
             var popPctStr = (pt.popPct * 100).toFixed(1);
             var compPctStr = (pt.compPct * 100).toFixed(1);
             var gap = (pt.popPct - pt.compPct) * 100;
-            var compAtIdx = idx > 0 && idx <= n ? sorted[idx - 1] : 0;
+            var compAtIdx = idx > 0 && idx <= hoverN ? hoverSorted[idx - 1] : 0;
 
-            var html = '<div class="ct-title">Lorenz Curve</div>' +
+            var html = '<div class="ct-title">' + (hasSectorOverlay ? sectorName : 'Lorenz Curve') + '</div>' +
                 '<div class="ct-row"><span class="ct-label">Population</span><span class="ct-val">' + popPctStr + '% of CEOs</span></div>' +
                 '<div class="ct-row"><span class="ct-label">Compensation</span><span class="ct-val">' + compPctStr + '% of total pay</span></div>' +
                 '<div class="ct-row"><span class="ct-label">Gap from equality</span><span class="ct-val">' + gap.toFixed(1) + ' pp</span></div>';
             if (compAtIdx > 0) {
                 html += '<div class="ct-row ct-sub"><span class="ct-label">Comp at this point</span><span class="ct-val">' + fmtCurr(compAtIdx) + '</span></div>';
             }
+
+            // S&P 500 reference in sector mode
+            if (hasSectorOverlay && hoverDotRef) {
+                var sp500Idx = Math.round(popPct * n);
+                if (sp500Idx < 0) sp500Idx = 0;
+                if (sp500Idx > n) sp500Idx = n;
+                var sp500Pt = lorenzPoints[sp500Idx];
+                hoverDotRef.attr('cx', x(sp500Pt.popPct)).attr('cy', y(sp500Pt.compPct)).attr('opacity', 0.7);
+                html += '<div class="ct-row ct-sub" style="border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;margin-top:4px"><span class="ct-label">S&P 500</span><span class="ct-val">' + (sp500Pt.compPct * 100).toFixed(1) + '% of total</span></div>';
+            }
+
             showChartTooltip(event, html);
         })
         .on('mouseout', function() {
             hoverLine.attr('opacity', 0);
             hoverDot.attr('opacity', 0);
             hoverDotEq.attr('opacity', 0);
+            if (hoverDotRef) hoverDotRef.attr('opacity', 0);
             hideChartTooltip();
         });
 }

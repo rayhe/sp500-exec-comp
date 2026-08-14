@@ -503,6 +503,13 @@ function getMissingDataHtml(ticker, field) {
 }
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
+window._activeSector = null; // Expose to charts.js for sector-aware visualizations
+function setActiveSector(val) {
+    activeSector = val;
+    window._activeSector = val;
+    // Redraw sector-aware charts
+    if (window._redrawSectorAwareCharts) window._redrawSectorAwareCharts();
+}
 let activeRole = null;   // C-suite role filter: 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', or null (CEO/default)
 let _roleSectorDeltaMode = false; // Delta overlay mode for role × sector heatmap
 let searchTerm = '';
@@ -635,7 +642,7 @@ function populateMetrics(comp, trends) {
 function sortTableByKey(key, dir) {
     currentSort = { key: key, dir: dir };
     currentPage = 1;
-    activeSector = null;
+    setActiveSector(null);
     activeRole = null;
     searchTerm = '';
     window._activeRatioBucket = null;
@@ -905,7 +912,7 @@ function populateInsights(comp, trends) {
     // Helper: reset table to clean state, apply sort, scroll
     function insightResetAndSort(sortKey, sortDir) {
         currentSort = { key: sortKey, dir: sortDir };
-        activeSector = null;
+        setActiveSector(null);
         activeRole = null;
         searchTerm = '';
         currentPage = 1;
@@ -1430,7 +1437,7 @@ function buildSectorChips(companies) {
     allChip.className = 'chip active';
     allChip.textContent = 'All';
     allChip.addEventListener('click', function() {
-        activeSector = null;
+        setActiveSector(null);
         currentPage = 1;
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         allChip.classList.add('active');
@@ -1454,7 +1461,7 @@ function buildSectorChips(companies) {
         chip.className = 'chip';
         chip.textContent = s;
         chip.addEventListener('click', function() {
-            activeSector = s;
+            setActiveSector(s);
             currentPage = 1;
             document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
             chip.classList.add('active');
@@ -4507,7 +4514,7 @@ function applyHashState(companies) {
 
     // Sector
     if (state.sector) {
-        activeSector = state.sector;
+        setActiveSector(state.sector);
         document.querySelectorAll('.chip').forEach(function(chip) {
             chip.classList.remove('active');
             if (chip.textContent === state.sector) chip.classList.add('active');
@@ -4816,7 +4823,7 @@ function hideMetricSkeletons() {
     // Expose global API for chart → table cross-section linking
     window.filterBySector = function(sectorName) {
         // Set active sector (null clears filter)
-        activeSector = sectorName || null;
+        setActiveSector(sectorName || null);
         currentPage = 1;
 
         // Update sector chip active states
@@ -4865,7 +4872,7 @@ function hideMetricSkeletons() {
         }
 
         // Set sector to the clicked sector
-        activeSector = window._activeDistFilter ? sector : null;
+        setActiveSector(window._activeDistFilter ? sector : null);
         searchTerm = '';
         currentPage = 1;
         document.getElementById('table-search').value = '';
@@ -4932,7 +4939,7 @@ function hideMetricSkeletons() {
             chip.title = isCombined ? 'Click to clear combined sector + bracket filter' : 'Click to clear distribution filter';
             chip.addEventListener('click', function() {
                 window._activeDistFilter = null;
-                activeSector = null;
+                setActiveSector(null);
                 chip.remove();
                 document.querySelectorAll('.chip').forEach(function(c) {
                     c.classList.remove('active');
@@ -4990,9 +4997,9 @@ function hideMetricSkeletons() {
     window.filterBySectorFromBar = function(sectorName) {
         // Toggle off if same sector clicked again
         if (activeSector === sectorName) {
-            activeSector = null;
+            setActiveSector(null);
         } else {
-            activeSector = sectorName;
+            setActiveSector(sectorName);
         }
         currentPage = 1;
 
@@ -5496,7 +5503,7 @@ function hideMetricSkeletons() {
     // Find a specific company in the table by ticker — used by Top 10 chart click
     window.findCompanyInTable = function(ticker) {
         // Clear filters to ensure company is visible
-        activeSector = null;
+        setActiveSector(null);
         searchTerm = '';
         if (window._activeRatioBucket) {
             window._activeRatioBucket = null;
@@ -5742,9 +5749,9 @@ function hideMetricSkeletons() {
             if (sector) {
                 // Toggle sector filter
                 if (activeSector === sector) {
-                    activeSector = null;
+                    setActiveSector(null);
                 } else {
-                    activeSector = sector;
+                    setActiveSector(sector);
                 }
                 currentPage = 1;
 
@@ -7808,7 +7815,7 @@ function hideMetricSkeletons() {
     window.addEventListener('hashchange', function() {
         // Reset to defaults first
         currentSort = { key: 'total_compensation', dir: 'desc' };
-        activeSector = null;
+        setActiveSector(null);
         searchTerm = '';
         currentPage = 1;
         window._activeRatioBucket = null;
@@ -8038,7 +8045,7 @@ function hideMetricSkeletons() {
             }
             // Clear all filters and search
             if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || (activeRole && activeRole !== 'CEO')) {
-                activeSector = null;
+                setActiveSector(null);
                 searchTerm = '';
                 activeRole = null;
                 currentPage = 1;
