@@ -144,6 +144,10 @@ window._redrawSectorAwareCharts = function() {
     var el2 = document.getElementById('lorenz-chart');
     if (el2) el2.innerHTML = '';
     drawLorenzChart(_chartData.companies);
+    // Redraw scatter chart (sector-aware)
+    var el3 = document.getElementById('scatter-chart');
+    if (el3) el3.innerHTML = '';
+    drawScatterChart(_chartData.companies);
 };
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -1872,6 +1876,10 @@ function drawScatterChart(companies) {
         'Utilities': '#67e8f9'
     };
 
+    // Sector overlay mode
+    var sectorName = window._activeSector || null;
+    var sectorColor = sectorName && typeof getSectorColor === 'function' ? getSectorColor(sectorName) : null;
+
     // Filter to companies with both comp and ratio data
     var pts = companies.filter(function(c) {
         return c.total_compensation > 0 && c.pay_ratio != null && c.pay_ratio > 0;
@@ -1882,16 +1890,37 @@ function drawScatterChart(companies) {
         return;
     }
 
+    // Sector-specific data
+    var sectorPts = sectorName ? pts.filter(function(c) { return c.sector === sectorName; }) : null;
+    var hasSectorOverlay = sectorPts && sectorPts.length >= 3;
+
     var logX = document.getElementById('scatter-log-x') && document.getElementById('scatter-log-x').checked;
     var logY = document.getElementById('scatter-log-y') && document.getElementById('scatter-log-y').checked;
 
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var margin = { top: 30, right: 30, bottom: 55, left: 70 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = Math.max(400, Math.min(500, container.clientWidth * 0.55));
 
+    // Update chart title/desc for sector context
+    var scatterTitle = document.querySelector('#scatter-chart-panel .section-header h2');
+    var scatterDesc = document.querySelector('#scatter-chart-panel .section-header .section-desc');
+    if (scatterTitle) scatterTitle.textContent = hasSectorOverlay
+        ? sectorName + ' — CEO Pay vs. Pay Ratio'
+        : 'CEO Pay vs. Pay Ratio';
+    if (scatterDesc) scatterDesc.textContent = hasSectorOverlay
+        ? sectorName + ' companies highlighted against the S&P 500. Sector median crosshairs shown in color. Dot size = CEO pay.'
+        : 'Each dot is an S&P 500 company. X = CEO total compensation, Y = CEO-to-worker pay ratio. Dot size = CEO pay. Hover for details, click to view in table. Colored by sector.';
+
+    var ariaLabel = hasSectorOverlay
+        ? 'Scatter plot: ' + sectorName + ' CEO pay vs pay ratio highlighted against S&P 500'
+        : 'Scatter plot: CEO total compensation vs CEO-to-worker pay ratio for S&P 500';
+
     var svg = d3.select('#scatter-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
         .attr('height', h + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', ariaLabel)
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -1948,91 +1977,235 @@ function drawScatterChart(companies) {
         .attr('font-size', '12px')
         .text('CEO-to-Worker Pay Ratio');
 
-    // Median reference lines
+    // S&P 500 median reference lines (always shown)
     var medComp = d3.median(pts, function(d) { return d.total_compensation; });
     var medRatio = d3.median(pts, function(d) { return d.pay_ratio; });
+
+    var sp500LineColor = hasSectorOverlay ? (dark ? '#52525b' : '#a1a1aa') : '#00b4d8';
+    var sp500LineOpacity = hasSectorOverlay ? 0.35 : 0.5;
+    var sp500TextOpacity = hasSectorOverlay ? 0.45 : 0.7;
 
     svg.append('line')
         .attr('x1', x(medComp)).attr('x2', x(medComp))
         .attr('y1', 0).attr('y2', h)
-        .attr('stroke', '#00b4d8').attr('stroke-width', 1)
-        .attr('stroke-dasharray', '6,4').attr('opacity', 0.5);
+        .attr('stroke', sp500LineColor).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '6,4').attr('opacity', sp500LineOpacity);
     svg.append('text')
-        .attr('x', x(medComp) + 4).attr('y', 12)
-        .attr('fill', '#00b4d8').attr('font-size', '10px').attr('opacity', 0.7)
-        .text('Median ' + fmtCurr(medComp));
+        .attr('x', x(medComp) + 4).attr('y', hasSectorOverlay ? 24 : 12)
+        .attr('fill', sp500LineColor).attr('font-size', '10px').attr('opacity', sp500TextOpacity)
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text((hasSectorOverlay ? 'S&P 500 ' : '') + 'Median ' + fmtCurr(medComp));
 
     svg.append('line')
         .attr('x1', 0).attr('x2', w)
         .attr('y1', y(medRatio)).attr('y2', y(medRatio))
-        .attr('stroke', '#00b4d8').attr('stroke-width', 1)
-        .attr('stroke-dasharray', '6,4').attr('opacity', 0.5);
+        .attr('stroke', sp500LineColor).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '6,4').attr('opacity', sp500LineOpacity);
     svg.append('text')
         .attr('x', w - 4).attr('y', y(medRatio) - 4)
         .attr('text-anchor', 'end')
-        .attr('fill', '#00b4d8').attr('font-size', '10px').attr('opacity', 0.7)
-        .text('Median Ratio ' + Math.round(medRatio) + ':1');
+        .attr('fill', sp500LineColor).attr('font-size', '10px').attr('opacity', sp500TextOpacity)
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text((hasSectorOverlay ? 'S&P 500 ' : '') + 'Median Ratio ' + Math.round(medRatio) + ':1');
 
-    // Quadrant labels (subtle)
-    var qLabels = [
-        { label: 'Low Pay, High Ratio', x: margin.left + 8, y: 22, anchor: 'start' },
-        { label: 'High Pay, High Ratio', x: w - 8, y: 22, anchor: 'end' },
-        { label: 'Low Pay, Low Ratio', x: margin.left + 8, y: h - 8, anchor: 'start' },
-        { label: 'High Pay, Low Ratio', x: w - 8, y: h - 8, anchor: 'end' }
-    ];
-    qLabels.forEach(function(q) {
+    // Sector median crosshairs (when sector overlay is active)
+    if (hasSectorOverlay) {
+        var secMedComp = d3.median(sectorPts, function(d) { return d.total_compensation; });
+        var secMedRatio = d3.median(sectorPts, function(d) { return d.pay_ratio; });
+
+        // Vertical sector median line
+        svg.append('line')
+            .attr('x1', x(secMedComp)).attr('x2', x(secMedComp))
+            .attr('y1', 0).attr('y2', h)
+            .attr('stroke', sectorColor).attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '8,4').attr('opacity', 0.7);
         svg.append('text')
-            .attr('x', q.x).attr('y', q.y)
-            .attr('text-anchor', q.anchor)
-            .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
-            .attr('font-size', '9px').attr('opacity', 0.5)
-            .text(q.label);
-    });
+            .attr('x', x(secMedComp) + 4).attr('y', 12)
+            .attr('fill', sectorColor).attr('font-size', '10px').attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+            .text(sectorName.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls') + ' Median ' + fmtCurr(secMedComp));
 
-    // Dots
-    svg.selectAll('.scatter-dot')
-        .data(pts)
-        .join('circle')
-        .attr('class', 'scatter-dot')
-        .attr('cx', function(d) { return x(d.total_compensation); })
-        .attr('cy', function(d) { return y(d.pay_ratio); })
-        .attr('r', function(d) { return r(d.total_compensation); })
-        .attr('fill', function(d) { return SECTOR_COLORS[d.sector] || '#94a3b8'; })
-        .attr('opacity', 0.7)
-        .attr('stroke', 'none')
-        .style('cursor', 'pointer')
-        .on('mouseover', function(event, d) {
-            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5)
-                .attr('r', r(d.total_compensation) + 2);
-            // Dim other dots
-            svg.selectAll('.scatter-dot').filter(function(o) { return o !== d; })
-                .attr('opacity', 0.2);
-            var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
-                '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio + ':1</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Worker Pay</span><span class="ct-val">' + fmtCurr(d.median_worker_pay) + '</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
-            showChartTooltip(event, html);
-        })
-        .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function(event, d) {
-            d3.select(this).attr('opacity', 0.7).attr('stroke', 'none')
-                .attr('r', r(d.total_compensation));
-            svg.selectAll('.scatter-dot').attr('opacity', 0.7);
-            hideChartTooltip();
-        })
-        .on('click', function(event, d) {
-            if (typeof window.findCompanyInTable === 'function') {
-                window.findCompanyInTable(d.ticker);
-            }
+        // Horizontal sector median line
+        svg.append('line')
+            .attr('x1', 0).attr('x2', w)
+            .attr('y1', y(secMedRatio)).attr('y2', y(secMedRatio))
+            .attr('stroke', sectorColor).attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '8,4').attr('opacity', 0.7);
+        svg.append('text')
+            .attr('x', w - 4).attr('y', y(secMedRatio) + 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', sectorColor).attr('font-size', '10px').attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+            .text('Ratio ' + Math.round(secMedRatio) + ':1');
+
+        // Crosshair intersection marker
+        svg.append('circle')
+            .attr('cx', x(secMedComp)).attr('cy', y(secMedRatio))
+            .attr('r', 5)
+            .attr('fill', 'none').attr('stroke', sectorColor).attr('stroke-width', 2)
+            .attr('opacity', 0.8);
+        svg.append('circle')
+            .attr('cx', x(secMedComp)).attr('cy', y(secMedRatio))
+            .attr('r', 2)
+            .attr('fill', sectorColor).attr('opacity', 0.8);
+    }
+
+    // Quadrant labels (subtle) — hide when sector overlay to reduce clutter
+    if (!hasSectorOverlay) {
+        var qLabels = [
+            { label: 'Low Pay, High Ratio', x: margin.left + 8, y: 22, anchor: 'start' },
+            { label: 'High Pay, High Ratio', x: w - 8, y: 22, anchor: 'end' },
+            { label: 'Low Pay, Low Ratio', x: margin.left + 8, y: h - 8, anchor: 'start' },
+            { label: 'High Pay, Low Ratio', x: w - 8, y: h - 8, anchor: 'end' }
+        ];
+        qLabels.forEach(function(q) {
+            svg.append('text')
+                .attr('x', q.x).attr('y', q.y)
+                .attr('text-anchor', q.anchor)
+                .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+                .attr('font-size', '9px').attr('opacity', 0.5)
+                .text(q.label);
         });
+    }
 
-    // Label outliers (top 5 by comp + top 3 by ratio)
-    var topComp = pts.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5);
-    var topRatio = pts.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; }).slice(0, 3);
-    var labeled = {};
-    var labelsArr = [];
+    // Determine default dot opacity based on sector overlay state
+    var defaultOpacity = hasSectorOverlay ? 0.12 : 0.7;
+    var sectorDotOpacity = 0.9;
+
+    // Dots — render non-sector dots first (background) then sector dots on top
+    var nonSectorPts = hasSectorOverlay ? pts.filter(function(c) { return c.sector !== sectorName; }) : [];
+    var sectorDotsData = hasSectorOverlay ? sectorPts : [];
+
+    // Background dots (non-sector) when sector overlay is active
+    if (hasSectorOverlay) {
+        svg.selectAll('.scatter-dot-bg')
+            .data(nonSectorPts)
+            .join('circle')
+            .attr('class', 'scatter-dot scatter-dot-bg')
+            .attr('cx', function(d) { return x(d.total_compensation); })
+            .attr('cy', function(d) { return y(d.pay_ratio); })
+            .attr('r', function(d) { return r(d.total_compensation); })
+            .attr('fill', function(d) { return dark ? '#3f3f46' : '#d4d4d8'; })
+            .attr('opacity', defaultOpacity)
+            .attr('stroke', 'none')
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('opacity', 0.6).attr('stroke', chartStrokeColor()).attr('stroke-width', 1)
+                    .attr('r', r(d.total_compensation) + 2);
+                var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio + ':1</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function(event, d) {
+                d3.select(this).attr('opacity', defaultOpacity).attr('stroke', 'none')
+                    .attr('r', r(d.total_compensation));
+                hideChartTooltip();
+            })
+            .on('click', function(event, d) {
+                if (typeof window.findCompanyInTable === 'function') {
+                    window.findCompanyInTable(d.ticker);
+                }
+            });
+
+        // Sector dots (foreground — rendered on top)
+        svg.selectAll('.scatter-dot-sector')
+            .data(sectorDotsData)
+            .join('circle')
+            .attr('class', 'scatter-dot scatter-dot-sector')
+            .attr('cx', function(d) { return x(d.total_compensation); })
+            .attr('cy', function(d) { return y(d.pay_ratio); })
+            .attr('r', function(d) { return r(d.total_compensation); })
+            .attr('fill', sectorColor)
+            .attr('opacity', sectorDotOpacity)
+            .attr('stroke', dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)')
+            .attr('stroke-width', 1)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 2)
+                    .attr('r', r(d.total_compensation) + 2);
+                // Dim other sector dots slightly
+                svg.selectAll('.scatter-dot-sector').filter(function(o) { return o !== d; })
+                    .attr('opacity', 0.45);
+                var vsComp = secMedComp > 0 ? ((d.total_compensation - secMedComp) / secMedComp * 100) : 0;
+                var vsSign = vsComp >= 0 ? '+' : '\u2212';
+                var vsStr = Math.abs(vsComp) >= 100 ? Math.round(Math.abs(vsComp)) + '%' : Math.abs(vsComp).toFixed(1) + '%';
+                var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio + ':1</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Worker Pay</span><span class="ct-val">' + fmtCurr(d.median_worker_pay) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">vs ' + sectorName + ' Median</span><span class="ct-val">' + vsSign + vsStr + '</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function(event, d) {
+                d3.select(this).attr('opacity', sectorDotOpacity)
+                    .attr('stroke', dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)')
+                    .attr('stroke-width', 1)
+                    .attr('r', r(d.total_compensation));
+                svg.selectAll('.scatter-dot-sector').attr('opacity', sectorDotOpacity);
+                hideChartTooltip();
+            })
+            .on('click', function(event, d) {
+                if (typeof window.findCompanyInTable === 'function') {
+                    window.findCompanyInTable(d.ticker);
+                }
+            });
+    } else {
+        // No sector overlay — standard rendering
+        svg.selectAll('.scatter-dot')
+            .data(pts)
+            .join('circle')
+            .attr('class', 'scatter-dot')
+            .attr('cx', function(d) { return x(d.total_compensation); })
+            .attr('cy', function(d) { return y(d.pay_ratio); })
+            .attr('r', function(d) { return r(d.total_compensation); })
+            .attr('fill', function(d) { return SECTOR_COLORS[d.sector] || '#94a3b8'; })
+            .attr('opacity', 0.7)
+            .attr('stroke', 'none')
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+                d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5)
+                    .attr('r', r(d.total_compensation) + 2);
+                // Dim other dots
+                svg.selectAll('.scatter-dot').filter(function(o) { return o !== d; })
+                    .attr('opacity', 0.2);
+                var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio + ':1</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Worker Pay</span><span class="ct-val">' + fmtCurr(d.median_worker_pay) + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function(event, d) {
+                d3.select(this).attr('opacity', 0.7).attr('stroke', 'none')
+                    .attr('r', r(d.total_compensation));
+                svg.selectAll('.scatter-dot').attr('opacity', 0.7);
+                hideChartTooltip();
+            })
+            .on('click', function(event, d) {
+                if (typeof window.findCompanyInTable === 'function') {
+                    window.findCompanyInTable(d.ticker);
+                }
+            });
+    }
+
+    // Label outliers — in sector mode, label sector outliers; otherwise top by comp + ratio
+    var topComp, topRatio, labelsArr, labeled = {};
+    if (hasSectorOverlay) {
+        topComp = sectorPts.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5);
+        topRatio = sectorPts.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; }).slice(0, 3);
+    } else {
+        topComp = pts.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5);
+        topRatio = pts.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; }).slice(0, 3);
+    }
+    labelsArr = [];
     topComp.concat(topRatio).forEach(function(d) {
         if (labeled[d.ticker]) return;
         labeled[d.ticker] = true;
@@ -2045,11 +2218,61 @@ function drawScatterChart(companies) {
         .attr('class', 'scatter-label')
         .attr('x', function(d) { return x(d.total_compensation) + r(d.total_compensation) + 4; })
         .attr('y', function(d) { return y(d.pay_ratio) + 3; })
-        .attr('fill', typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7')
+        .attr('fill', hasSectorOverlay ? sectorColor : (typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7'))
         .attr('font-size', '10px')
-        .attr('font-weight', '500')
+        .attr('font-weight', hasSectorOverlay ? '600' : '500')
         .attr('pointer-events', 'none')
         .text(function(d) { return d.ticker; });
+
+    // Sector stats annotation (bottom-right corner)
+    if (hasSectorOverlay) {
+        var secMedCompVal = d3.median(sectorPts, function(d) { return d.total_compensation; });
+        var secMedRatioVal = d3.median(sectorPts, function(d) { return d.pay_ratio; });
+        var secMeanComp = d3.mean(sectorPts, function(d) { return d.total_compensation; });
+        var vsIndexComp = medComp > 0 ? ((secMedCompVal - medComp) / medComp * 100) : 0;
+        var vsIndexRatio = medRatio > 0 ? ((secMedRatioVal - medRatio) / medRatio * 100) : 0;
+        var vsCompSign = vsIndexComp >= 0 ? '+' : '\u2212';
+        var vsRatioSign = vsIndexRatio >= 0 ? '+' : '\u2212';
+        var vsCompStr = Math.abs(vsIndexComp).toFixed(0) + '%';
+        var vsRatioStr = Math.abs(vsIndexRatio).toFixed(0) + '%';
+
+        var statsGroup = svg.append('g')
+            .attr('class', 'scatter-sector-stats')
+            .attr('transform', 'translate(' + (w - 8) + ',' + (h - 68) + ')');
+
+        // Background rect
+        statsGroup.append('rect')
+            .attr('x', -150).attr('y', -4)
+            .attr('width', 158).attr('height', 72)
+            .attr('rx', 6)
+            .attr('fill', dark ? 'rgba(24,24,27,0.85)' : 'rgba(255,255,255,0.9)')
+            .attr('stroke', dark ? 'rgba(63,63,70,0.5)' : 'rgba(212,212,216,0.6)')
+            .attr('stroke-width', 1);
+
+        statsGroup.append('text')
+            .attr('x', -142).attr('y', 12)
+            .attr('fill', sectorColor).attr('font-size', '11px').attr('font-weight', '700')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorName.length > 20 ? sectorName.substring(0, 18) + '\u2026' : sectorName);
+
+        statsGroup.append('text')
+            .attr('x', -142).attr('y', 28)
+            .attr('fill', dark ? '#a1a1aa' : '#6b7280').attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorPts.length + ' companies \u00B7 Median ' + fmtCurr(secMedCompVal));
+
+        statsGroup.append('text')
+            .attr('x', -142).attr('y', 42)
+            .attr('fill', dark ? '#a1a1aa' : '#6b7280').attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Median Ratio ' + Math.round(secMedRatioVal) + ':1');
+
+        statsGroup.append('text')
+            .attr('x', -142).attr('y', 58)
+            .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('vs Index: ' + vsCompSign + vsCompStr + ' comp, ' + vsRatioSign + vsRatioStr + ' ratio');
+    }
 }
 
 /* === YoY Compensation Change Distribution === */
