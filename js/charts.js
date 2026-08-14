@@ -54,6 +54,7 @@ function initCharts(companies, trends, compData) {
     drawTrendChart(trends);
     drawRatioChart(companies);
     drawCompDistChart(companies);
+    drawLorenzChart(companies);
     drawTop10Chart(companies);
     drawCompositionChart(trends);
     drawScatterChart(companies);
@@ -99,7 +100,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -108,6 +109,7 @@ function redrawAllCharts() {
     drawTrendChart(_chartData.trends);
     drawRatioChart(_chartData.companies);
     drawCompDistChart(_chartData.companies);
+    drawLorenzChart(_chartData.companies);
     drawTop10Chart(_chartData.companies, _top10Mode);
     drawCompositionChart(_chartData.trends);
     drawScatterChart(_chartData.companies);
@@ -2038,4 +2040,318 @@ function drawYoYDistChart(companies) {
             .attr('font-weight', '500')
             .text('median');
     }
+}
+
+/* --- Lorenz Curve: CEO Compensation Inequality --- */
+function drawLorenzChart(companies) {
+    var container = document.getElementById('lorenz-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withComp = companies.filter(function(c) { return c.total_compensation > 0; });
+    if (withComp.length < 5) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for Lorenz curve</p>';
+        return;
+    }
+
+    // Sort compensations ascending for cumulative distribution
+    var sorted = withComp.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var n = sorted.length;
+    var totalComp = sorted.reduce(function(s, v) { return s + v; }, 0);
+
+    // Build Lorenz curve points: (cumPop%, cumComp%)
+    var lorenzPoints = [{ popPct: 0, compPct: 0 }];
+    var cumComp = 0;
+    for (var i = 0; i < n; i++) {
+        cumComp += sorted[i];
+        lorenzPoints.push({
+            popPct: (i + 1) / n,
+            compPct: cumComp / totalComp
+        });
+    }
+
+    // Compute Gini coefficient (area between diagonal and curve)
+    var giniSum = 0;
+    for (var gi = 0; gi < n; gi++) {
+        giniSum += (2 * (gi + 1) - n - 1) * sorted[gi];
+    }
+    var gini = totalComp > 0 ? (giniSum / (n * totalComp)) : 0;
+
+    // Key percentile breakpoints for annotations
+    var breakpoints = [
+        { label: 'Bottom 50%', idx: Math.floor(n * 0.5) },
+        { label: 'Bottom 75%', idx: Math.floor(n * 0.75) },
+        { label: 'Bottom 90%', idx: Math.floor(n * 0.90) },
+        { label: 'Bottom 95%', idx: Math.floor(n * 0.95) }
+    ];
+    breakpoints.forEach(function(bp) {
+        var cumBp = 0;
+        for (var j = 0; j < bp.idx; j++) cumBp += sorted[j];
+        bp.compPct = cumBp / totalComp;
+        bp.popPct = bp.idx / n;
+    });
+
+    // Top-10% share
+    var top10Idx = Math.floor(n * 0.9);
+    var top10Total = sorted.slice(top10Idx).reduce(function(s, v) { return s + v; }, 0);
+    var top10Pct = top10Total / totalComp;
+
+    // Bottom-50% share
+    var bot50Idx = Math.floor(n * 0.5);
+    var bot50Total = sorted.slice(0, bot50Idx).reduce(function(s, v) { return s + v; }, 0);
+    var bot50Pct = bot50Total / totalComp;
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var margin = { top: 24, right: 30, bottom: 50, left: 55 };
+    var w = container.clientWidth - margin.left - margin.right;
+    var h = Math.min(360, Math.max(280, w * 0.85));
+
+    var svg = d3.select('#lorenz-chart').append('svg')
+        .attr('width', w + margin.left + margin.right)
+        .attr('height', h + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', 'Lorenz curve showing CEO compensation inequality across the S&P 500. Gini coefficient: ' + gini.toFixed(3))
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleLinear().domain([0, 1]).range([0, w]);
+    var y = d3.scaleLinear().domain([0, 1]).range([h, 0]);
+
+    // Grid lines
+    svg.append('g').attr('class', 'grid')
+        .call(d3.axisBottom(x).tickSize(h).tickFormat('').ticks(5))
+        .attr('transform', 'translate(0,0)')
+        .selectAll('line').attr('stroke-opacity', 0.12);
+
+    svg.append('g').attr('class', 'grid')
+        .call(d3.axisLeft(y).tickSize(-w).tickFormat('').ticks(5))
+        .selectAll('line').attr('stroke-opacity', 0.12);
+
+    // X axis
+    svg.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return Math.round(d * 100) + '%'; }));
+
+    svg.append('text')
+        .attr('x', w / 2).attr('y', h + 40)
+        .attr('text-anchor', 'middle')
+        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Cumulative % of CEOs (lowest to highest paid)');
+
+    // Y axis
+    svg.append('g').attr('class', 'axis')
+        .call(d3.axisLeft(y).ticks(5).tickFormat(function(d) { return Math.round(d * 100) + '%'; }));
+
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -h / 2).attr('y', -42)
+        .attr('text-anchor', 'middle')
+        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+        .attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Cumulative % of Total Compensation');
+
+    // Line of perfect equality (diagonal)
+    svg.append('line')
+        .attr('x1', x(0)).attr('y1', y(0))
+        .attr('x2', x(1)).attr('y2', y(1))
+        .attr('stroke', dark ? '#4b5563' : '#d1d5db')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '6,4')
+        .attr('opacity', 0.8);
+
+    // Label for equality line
+    svg.append('text')
+        .attr('x', x(0.52)).attr('y', y(0.55))
+        .attr('transform', 'rotate(-42,' + x(0.52) + ',' + y(0.55) + ')')
+        .attr('fill', dark ? '#6b7280' : '#9ca3af')
+        .attr('font-size', '9px')
+        .attr('font-style', 'italic')
+        .text('Perfect equality');
+
+    // Shaded area between diagonal and Lorenz curve (Gini area)
+    var areaPath = d3.area()
+        .x(function(d) { return x(d.popPct); })
+        .y0(function(d) { return y(d.popPct); })  // diagonal
+        .y1(function(d) { return y(d.compPct); })  // Lorenz curve
+        .curve(d3.curveMonotoneX);
+
+    svg.append('path')
+        .datum(lorenzPoints)
+        .attr('class', 'lorenz-gini-area')
+        .attr('d', areaPath)
+        .attr('fill', '#00b4d8')
+        .attr('opacity', dark ? 0.12 : 0.10)
+        .attr('stroke', 'none');
+
+    // Lorenz curve line
+    var lorenzLine = d3.line()
+        .x(function(d) { return x(d.popPct); })
+        .y(function(d) { return y(d.compPct); })
+        .curve(d3.curveMonotoneX);
+
+    svg.append('path')
+        .datum(lorenzPoints)
+        .attr('class', 'lorenz-curve-line')
+        .attr('d', lorenzLine)
+        .attr('fill', 'none')
+        .attr('stroke', '#00b4d8')
+        .attr('stroke-width', 2.5)
+        .attr('opacity', 0.9);
+
+    // Percentile breakpoint dots and annotations
+    var annotColors = {
+        'Bottom 50%': '#06d6a0',
+        'Bottom 75%': '#a78bfa',
+        'Bottom 90%': '#ffd166',
+        'Bottom 95%': '#fb923c'
+    };
+
+    // Annotation layout offsets to avoid overlap
+    var annotOffsets = [
+        { dx: 8, dy: -12 },
+        { dx: 8, dy: -12 },
+        { dx: -8, dy: 14, anchor: 'end' },
+        { dx: -8, dy: 14, anchor: 'end' }
+    ];
+
+    breakpoints.forEach(function(bp, bpi) {
+        var cx = x(bp.popPct);
+        var cy = y(bp.compPct);
+        var off = annotOffsets[bpi];
+
+        // Dot on curve
+        svg.append('circle')
+            .attr('class', 'lorenz-bp-dot')
+            .attr('cx', cx).attr('cy', cy)
+            .attr('r', 4)
+            .attr('fill', annotColors[bp.label] || '#00b4d8')
+            .attr('stroke', dark ? '#18181b' : '#fff')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.9);
+
+        // Dashed line from dot to diagonal (visual gap)
+        svg.append('line')
+            .attr('x1', cx).attr('x2', cx)
+            .attr('y1', cy).attr('y2', y(bp.popPct))
+            .attr('stroke', annotColors[bp.label] || '#00b4d8')
+            .attr('stroke-width', 0.8)
+            .attr('stroke-dasharray', '2,2')
+            .attr('opacity', 0.5);
+
+        // Label
+        svg.append('text')
+            .attr('x', cx + off.dx).attr('y', cy + off.dy)
+            .attr('text-anchor', off.anchor || 'start')
+            .attr('fill', annotColors[bp.label] || '#00b4d8')
+            .attr('font-size', '9px')
+            .attr('font-weight', '500')
+            .text(bp.label + ': ' + (bp.compPct * 100).toFixed(1) + '%');
+    });
+
+    // Gini coefficient badge (top-right area)
+    var badgeX = w - 6;
+    svg.append('text')
+        .attr('x', badgeX).attr('y', 14)
+        .attr('text-anchor', 'end')
+        .attr('fill', '#00b4d8')
+        .attr('font-size', '13px')
+        .attr('font-weight', '700')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Gini: ' + gini.toFixed(3));
+
+    svg.append('text')
+        .attr('x', badgeX).attr('y', 30)
+        .attr('text-anchor', 'end')
+        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+        .attr('font-size', '9.5px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Top 10% earn ' + (top10Pct * 100).toFixed(1) + '% of total');
+
+    svg.append('text')
+        .attr('x', badgeX).attr('y', 44)
+        .attr('text-anchor', 'end')
+        .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+        .attr('font-size', '9.5px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Bottom 50% earn ' + (bot50Pct * 100).toFixed(1) + '% of total');
+
+    // "Gini = shaded area" label inside the shaded area
+    var giniLabelPt = lorenzPoints[Math.floor(lorenzPoints.length * 0.35)];
+    if (giniLabelPt) {
+        var gx = x(giniLabelPt.popPct);
+        var gy = (y(giniLabelPt.popPct) + y(giniLabelPt.compPct)) / 2;
+        svg.append('text')
+            .attr('x', gx).attr('y', gy)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#00b4d8')
+            .attr('font-size', '9px')
+            .attr('font-style', 'italic')
+            .attr('opacity', 0.6)
+            .text('Gini area');
+    }
+
+    // Interactive hover overlay — transparent rect catches mouse, shows nearest point
+    var hoverLine = svg.append('line')
+        .attr('y1', 0).attr('y2', h)
+        .attr('stroke', dark ? '#6b7280' : '#9ca3af')
+        .attr('stroke-width', 0.8)
+        .attr('stroke-dasharray', '3,3')
+        .attr('opacity', 0);
+
+    var hoverDot = svg.append('circle')
+        .attr('r', 5)
+        .attr('fill', '#00b4d8')
+        .attr('stroke', dark ? '#18181b' : '#fff')
+        .attr('stroke-width', 2)
+        .attr('opacity', 0);
+
+    var hoverDotEq = svg.append('circle')
+        .attr('r', 3)
+        .attr('fill', dark ? '#4b5563' : '#d1d5db')
+        .attr('stroke', dark ? '#18181b' : '#fff')
+        .attr('stroke-width', 1.5)
+        .attr('opacity', 0);
+
+    svg.append('rect')
+        .attr('width', w).attr('height', h)
+        .attr('fill', 'transparent')
+        .style('cursor', 'crosshair')
+        .on('mousemove', function(event) {
+            var mouseX = d3.pointer(event)[0];
+            var popPct = x.invert(mouseX);
+            if (popPct < 0 || popPct > 1) return;
+
+            // Find nearest Lorenz point
+            var idx = Math.round(popPct * n);
+            if (idx < 0) idx = 0;
+            if (idx > n) idx = n;
+            var pt = lorenzPoints[idx];
+
+            hoverLine.attr('x1', x(pt.popPct)).attr('x2', x(pt.popPct)).attr('opacity', 0.5);
+            hoverDot.attr('cx', x(pt.popPct)).attr('cy', y(pt.compPct)).attr('opacity', 1);
+            hoverDotEq.attr('cx', x(pt.popPct)).attr('cy', y(pt.popPct)).attr('opacity', 1);
+
+            var popPctStr = (pt.popPct * 100).toFixed(1);
+            var compPctStr = (pt.compPct * 100).toFixed(1);
+            var gap = (pt.popPct - pt.compPct) * 100;
+            var compAtIdx = idx > 0 && idx <= n ? sorted[idx - 1] : 0;
+
+            var html = '<div class="ct-title">Lorenz Curve</div>' +
+                '<div class="ct-row"><span class="ct-label">Population</span><span class="ct-val">' + popPctStr + '% of CEOs</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Compensation</span><span class="ct-val">' + compPctStr + '% of total pay</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Gap from equality</span><span class="ct-val">' + gap.toFixed(1) + ' pp</span></div>';
+            if (compAtIdx > 0) {
+                html += '<div class="ct-row ct-sub"><span class="ct-label">Comp at this point</span><span class="ct-val">' + fmtCurr(compAtIdx) + '</span></div>';
+            }
+            showChartTooltip(event, html);
+        })
+        .on('mouseout', function() {
+            hoverLine.attr('opacity', 0);
+            hoverDot.attr('opacity', 0);
+            hoverDotEq.attr('opacity', 0);
+            hideChartTooltip();
+        });
 }

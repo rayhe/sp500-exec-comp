@@ -6038,3 +6038,41 @@ footer li::before {
         display: none;
     }
 }
+
+/* --- Lorenz Curve Chart --- */
+#lorenz-chart {
+    min-height: 280px;
+}
+#lorenz-chart svg {
+    display: block;
+    margin: 0 auto;
+}
+.lorenz-gini-area {
+    transition: opacity 0.3s;
+}
+.lorenz-curve-line {
+    transition: opacity 0.3s;
+}
+.lorenz-bp-dot {
+    transition: opacity 0.3s, r 0.2s;
+}
+/* Light theme */
+[data-theme="light"] .lorenz-gini-area {
+    opacity: 0.08;
+}
+/* Mobile */
+@media (max-width: 600px) {
+    #lorenz-chart {
+        min-height: 220px;
+    }
+}
+/* Print */
+@media print {
+    .lorenz-gini-area {
+        fill: #ccc !important;
+        opacity: 0.15 !important;
+    }
+    .lorenz-curve-line {
+        stroke: #333 !important;
+    }
+}
