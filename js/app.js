@@ -4476,6 +4476,8 @@ function serializeState() {
     var _scYSel = document.getElementById('scatter-y-metric');
     if (_scXSel && _scXSel.value !== 'total_compensation') params.push('scx=' + encodeURIComponent(_scXSel.value));
     if (_scYSel && _scYSel.value !== 'pay_ratio') params.push('scy=' + encodeURIComponent(_scYSel.value));
+    var _trendCb = document.getElementById('scatter-trend-line');
+    if (_trendCb && !_trendCb.checked) params.push('sct=0');
     return params.length > 0 ? '#' + params.join('&') : '';
 }
 
@@ -4621,6 +4623,11 @@ function applyHashState(companies) {
     if (state.scy) {
         var scYEl = document.getElementById('scatter-y-metric');
         if (scYEl) scYEl.value = decodeURIComponent(state.scy);
+    }
+    // Scatter trend line toggle
+    if (state.sct === '0') {
+        var scTrendEl = document.getElementById('scatter-trend-line');
+        if (scTrendEl) scTrendEl.checked = false;
     }
 
     // Page (apply after filters so pagination is computed correctly)

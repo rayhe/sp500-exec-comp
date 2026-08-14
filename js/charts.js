@@ -66,6 +66,9 @@ function initCharts(companies, trends, compData) {
     function _redrawScatter() { var el = document.getElementById('scatter-chart'); if (el) el.innerHTML = ''; drawScatterChart(_chartData.companies); }
     if (logXCb) logXCb.addEventListener('change', _redrawScatter);
     if (logYCb) logYCb.addEventListener('change', _redrawScatter);
+    // Scatter trend line toggle
+    var trendCb = document.getElementById('scatter-trend-line');
+    if (trendCb) trendCb.addEventListener('change', _redrawScatter);
     // Scatter axis metric selectors
     var xMetricSel = document.getElementById('scatter-x-metric');
     var yMetricSel = document.getElementById('scatter-y-metric');
@@ -2214,6 +2217,126 @@ function drawScatterChart(companies) {
     });
     var denom = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
     var correlation = denom > 0 ? (n * sumXY - sumX * sumY) / denom : 0;
+    var rSquared = correlation * correlation;
+
+    // OLS regression line: y = slope * x + intercept
+    var ssDenom = n * sumX2 - sumX * sumX;
+    var slope = ssDenom !== 0 ? (n * sumXY - sumX * sumY) / ssDenom : 0;
+    var intercept = ssDenom !== 0 ? (sumY - slope * sumX) / n : (sumY / n);
+
+    // Draw regression trend line (if toggle is checked and |r| is meaningful)
+    var showTrend = document.getElementById('scatter-trend-line') && document.getElementById('scatter-trend-line').checked;
+    if (showTrend && Math.abs(correlation) >= 0.02 && ssDenom !== 0) {
+        // Compute line endpoints from x domain, then clip to chart area
+        var xDomain = x.domain();
+        var x1Raw = xDomain[0];
+        var x2Raw = xDomain[1];
+        var y1Raw = slope * x1Raw + intercept;
+        var y2Raw = slope * x2Raw + intercept;
+
+        // Clip to y domain
+        var yDomain = yScale.domain();
+        var yLo = Math.min(yDomain[0], yDomain[1]);
+        var yHi = Math.max(yDomain[0], yDomain[1]);
+
+        // Parametric clipping: find t values where the line exits y bounds
+        function clipLine(x1, y1, x2, y2, yMin, yMax) {
+            var pts = [];
+            // t goes from 0 (x1,y1) to 1 (x2,y2)
+            // y(t) = y1 + t*(y2-y1)
+            var dy = y2 - y1;
+            var dx = x2 - x1;
+            var tMin = 0, tMax = 1;
+            if (dy !== 0) {
+                var tAtYMin = (yMin - y1) / dy;
+                var tAtYMax = (yMax - y1) / dy;
+                if (dy > 0) {
+                    tMin = Math.max(tMin, tAtYMin);
+                    tMax = Math.min(tMax, tAtYMax);
+                } else {
+                    tMin = Math.max(tMin, tAtYMax);
+                    tMax = Math.min(tMax, tAtYMin);
+                }
+            } else if (y1 < yMin || y1 > yMax) {
+                return null; // horizontal line outside y bounds
+            }
+            if (tMin > tMax) return null;
+            return {
+                x1: x1 + tMin * dx, y1: y1 + tMin * dy,
+                x2: x1 + tMax * dx, y2: y1 + tMax * dy
+            };
+        }
+
+        var clipped = clipLine(x1Raw, y1Raw, x2Raw, y2Raw, yLo, yHi);
+        if (clipped) {
+            var trendColor = Math.abs(correlation) >= 0.5 ? '#06d6a0' : Math.abs(correlation) >= 0.3 ? '#ffd166' : '#94a3b8';
+
+            // For sector overlay, also draw sector-specific regression line
+            if (hasSectorOverlay) {
+                // S&P 500 regression in muted color behind sector line
+                svg.append('line')
+                    .attr('class', 'regression-line regression-line-sp500')
+                    .attr('x1', x(clipped.x1)).attr('y1', yScale(clipped.y1))
+                    .attr('x2', x(clipped.x2)).attr('y2', yScale(clipped.y2))
+                    .attr('stroke', dark ? '#52525b' : '#a1a1aa')
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-dasharray', '8,6')
+                    .attr('opacity', 0.3)
+                    .attr('pointer-events', 'none');
+
+                // Compute sector-specific regression
+                if (sectorPts.length >= 3) {
+                    var sn = sectorPts.length;
+                    var sSumX = 0, sSumY = 0, sSumXY = 0, sSumX2 = 0, sSumY2 = 0;
+                    sectorPts.forEach(function(c) {
+                        var xv = xMetric.get(c);
+                        var yv = yMetric.get(c);
+                        sSumX += xv; sSumY += yv;
+                        sSumXY += xv * yv;
+                        sSumX2 += xv * xv; sSumY2 += yv * yv;
+                    });
+                    var sDenom = sn * sSumX2 - sSumX * sSumX;
+                    var sSlope = sDenom !== 0 ? (sn * sSumXY - sSumX * sSumY) / sDenom : 0;
+                    var sIntercept = sDenom !== 0 ? (sSumY - sSlope * sSumX) / sn : (sSumY / sn);
+                    var sCorrDenom = Math.sqrt((sn * sSumX2 - sSumX * sSumX) * (sn * sSumY2 - sSumY * sSumY));
+                    var sCorr = sCorrDenom > 0 ? (sn * sSumXY - sSumX * sSumY) / sCorrDenom : 0;
+
+                    var sx1Raw = d3.min(sectorPts, function(c) { return xMetric.get(c); });
+                    var sx2Raw = d3.max(sectorPts, function(c) { return xMetric.get(c); });
+                    // Extend 5% beyond data range for visual continuity
+                    var sRange = sx2Raw - sx1Raw;
+                    sx1Raw -= sRange * 0.05;
+                    sx2Raw += sRange * 0.05;
+                    var sy1Raw = sSlope * sx1Raw + sIntercept;
+                    var sy2Raw = sSlope * sx2Raw + sIntercept;
+
+                    var sClipped = clipLine(sx1Raw, sy1Raw, sx2Raw, sy2Raw, yLo, yHi);
+                    if (sClipped && Math.abs(sCorr) >= 0.02) {
+                        svg.append('line')
+                            .attr('class', 'regression-line regression-line-sector')
+                            .attr('x1', x(sClipped.x1)).attr('y1', yScale(sClipped.y1))
+                            .attr('x2', x(sClipped.x2)).attr('y2', yScale(sClipped.y2))
+                            .attr('stroke', sectorColor)
+                            .attr('stroke-width', 2)
+                            .attr('stroke-dasharray', '10,5')
+                            .attr('opacity', 0.7)
+                            .attr('pointer-events', 'none');
+                    }
+                }
+            } else {
+                // Standard regression line
+                svg.append('line')
+                    .attr('class', 'regression-line')
+                    .attr('x1', x(clipped.x1)).attr('y1', yScale(clipped.y1))
+                    .attr('x2', x(clipped.x2)).attr('y2', yScale(clipped.y2))
+                    .attr('stroke', trendColor)
+                    .attr('stroke-width', 2)
+                    .attr('stroke-dasharray', '10,5')
+                    .attr('opacity', 0.6)
+                    .attr('pointer-events', 'none');
+            }
+        }
+    }
 
     // Build tooltip HTML helper for a company
     function buildTooltip(d, includeVsSector) {
@@ -2418,16 +2541,19 @@ function drawScatterChart(companies) {
             .attr('x', -152).attr('y', 58)
             .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text('vs Index: ' + vsXSign + vsXStr + ' X, ' + vsYSign + vsYStr + ' Y · r=' + correlation.toFixed(2));
+            .text('vs Index: ' + vsXSign + vsXStr + ' X, ' + vsYSign + vsYStr + ' Y · r=' + correlation.toFixed(2) + ' R\u00B2=' + rSquared.toFixed(2));
     } else {
         // Show correlation annotation for non-sector mode
         var corrColor = Math.abs(correlation) >= 0.5 ? '#06d6a0' : Math.abs(correlation) >= 0.3 ? '#ffd166' : '#94a3b8';
         var corrLabel = Math.abs(correlation) >= 0.7 ? 'Strong' : Math.abs(correlation) >= 0.5 ? 'Moderate' : Math.abs(correlation) >= 0.3 ? 'Weak' : 'Very Weak';
         corrLabel += correlation < 0 ? ' Negative' : ' Positive';
 
+        var showTrendStats = showTrend && Math.abs(correlation) >= 0.02 && ssDenom !== 0;
+        var statsBoxH = showTrendStats ? 60 : 46;
+
         statsGroup.append('rect')
             .attr('x', -140).attr('y', -4)
-            .attr('width', 148).attr('height', 46)
+            .attr('width', 148).attr('height', statsBoxH)
             .attr('rx', 6)
             .attr('fill', dark ? 'rgba(24,24,27,0.85)' : 'rgba(255,255,255,0.9)')
             .attr('stroke', dark ? 'rgba(63,63,70,0.5)' : 'rgba(212,212,216,0.6)')
@@ -2437,13 +2563,27 @@ function drawScatterChart(companies) {
             .attr('x', -132).attr('y', 14)
             .attr('fill', corrColor).attr('font-size', '11px').attr('font-weight', '700')
             .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text('r = ' + correlation.toFixed(3));
+            .text('r = ' + correlation.toFixed(3) + (showTrendStats ? '  R\u00B2 = ' + rSquared.toFixed(3) : ''));
 
         statsGroup.append('text')
             .attr('x', -132).attr('y', 30)
             .attr('fill', dark ? '#a1a1aa' : '#6b7280').attr('font-size', '10px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text(corrLabel + ' · n=' + pts.length);
+
+        if (showTrendStats) {
+            // Format slope in human-readable terms
+            var slopeStr = '';
+            if (Math.abs(slope) >= 1000) slopeStr = (slope / 1000).toFixed(1) + 'K';
+            else if (Math.abs(slope) >= 1) slopeStr = slope.toFixed(2);
+            else if (Math.abs(slope) >= 0.01) slopeStr = slope.toFixed(4);
+            else slopeStr = slope.toExponential(1);
+            statsGroup.append('text')
+                .attr('x', -132).attr('y', 46)
+                .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text('slope: ' + slopeStr + ' · ' + xMetric.shortLabel + ' \u2192 ' + yMetric.shortLabel);
+        }
     }
 }
 

@@ -5427,6 +5427,13 @@ footer li::before {
 .scatter-dot {
     transition: opacity 0.15s ease, r 0.15s ease;
 }
+.regression-line {
+    shape-rendering: geometricPrecision;
+}
+.scatter-trend-toggle {
+    border-left: 1px solid rgba(113,113,122,0.3);
+    padding-left: 0.75rem;
+}
 .scatter-label {
     pointer-events: none;
 }
