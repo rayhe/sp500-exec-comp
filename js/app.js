@@ -4471,6 +4471,11 @@ function serializeState() {
     if (_expandedDetailTicker) {
         params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
+    // Scatter axis selections (only serialize if non-default)
+    var _scXSel = document.getElementById('scatter-x-metric');
+    var _scYSel = document.getElementById('scatter-y-metric');
+    if (_scXSel && _scXSel.value !== 'total_compensation') params.push('scx=' + encodeURIComponent(_scXSel.value));
+    if (_scYSel && _scYSel.value !== 'pay_ratio') params.push('scy=' + encodeURIComponent(_scYSel.value));
     return params.length > 0 ? '#' + params.join('&') : '';
 }
 
@@ -4606,6 +4611,16 @@ function applyHashState(companies) {
                 if (rc.textContent === roleParsed) rc.classList.add('active');
             });
         }
+    }
+
+    // Scatter axis selections (restore before chart init)
+    if (state.scx) {
+        var scXEl = document.getElementById('scatter-x-metric');
+        if (scXEl) scXEl.value = decodeURIComponent(state.scx);
+    }
+    if (state.scy) {
+        var scYEl = document.getElementById('scatter-y-metric');
+        if (scYEl) scYEl.value = decodeURIComponent(state.scy);
     }
 
     // Page (apply after filters so pagination is computed correctly)
