@@ -230,8 +230,15 @@
     <section class="section charts-grid">
         <div class="chart-panel" id="top10-panel">
             <div class="section-header">
-                <h2>Top 10 Highest Paid CEOs</h2>
-                <p class="section-desc">FY 2024 total compensation from proxy statements</p>
+                <h2 id="top10-title">Top 10 Highest Paid CEOs</h2>
+                <p class="section-desc" id="top10-desc">FY 2024 total compensation from proxy statements</p>
+                <div class="top10-mode-toggle" id="top10-mode-toggle">
+                    <button class="top10-mode-btn active" data-mode="comp" title="Top 10 by total CEO compensation">💰 Highest Paid</button>
+                    <button class="top10-mode-btn" data-mode="ratio" title="Top 10 by CEO-to-worker pay ratio">📊 Highest Ratio</button>
+                    <button class="top10-mode-btn" data-mode="raise" title="Top 10 biggest year-over-year raises">📈 Biggest Raise</button>
+                    <button class="top10-mode-btn" data-mode="cut" title="Top 10 biggest year-over-year pay cuts">📉 Biggest Cut</button>
+                    <button class="top10-mode-btn" data-mode="worker" title="Top 10 by median worker pay">💵 Highest Worker Pay</button>
+                </div>
             </div>
             <div id="top10-chart"></div>
         </div>

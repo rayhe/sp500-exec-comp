@@ -644,6 +644,7 @@ function sortTableByKey(key, dir) {
     window._activeCeoTransitionFilter = false;
     window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
     window._activePctileTier = null; // null=off, { min, max, label, color }
+    window._activeStockPctTier = null; // null=off, { min, max, label, color }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -948,6 +949,11 @@ function populateInsights(comp, trends) {
             window._activePctileTier = null;
             var ptf = document.getElementById('pctile-filter-chip');
             if (ptf) ptf.remove();
+        }
+        if (window._activeStockPctTier) {
+            window._activeStockPctTier = null;
+            var spf = document.getElementById('stockpct-filter-chip');
+            if (spf) spf.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -1867,61 +1873,162 @@ function renderRatioSortSummary(companies) {
     var withRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; });
     if (withRatio.length === 0) return null;
 
-    var ratioVals = withRatio.map(function(c) { return c.pay_ratio; });
+    var ratioVals = withRatio.map(function(c) { return c.pay_ratio; }).sort(function(a, b) { return a - b; });
     var medianR = Math.round(computeMedian(ratioVals));
     var meanR = Math.round(ratioVals.reduce(function(s, v) { return s + v; }, 0) / ratioVals.length);
-    var extreme = withRatio.filter(function(c) { return c.pay_ratio > 1000; });
-    var equitable = withRatio.filter(function(c) { return c.pay_ratio < 50; });
+
+    // Buckets matching the ratio histogram chart
+    var buckets = [
+        { min: 0, max: 50, label: '0\u201350', color: '#06d6a0', tag: 'Equitable' },
+        { min: 50, max: 100, label: '50\u2013100', color: '#06d6a0', tag: 'Low' },
+        { min: 100, max: 200, label: '100\u2013200', color: '#34d399', tag: 'Moderate' },
+        { min: 200, max: 300, label: '200\u2013300', color: '#ffd166', tag: 'Elevated' },
+        { min: 300, max: 500, label: '300\u2013500', color: '#ffd166', tag: 'High' },
+        { min: 500, max: 1000, label: '500\u20131K', color: '#fb923c', tag: 'Very High' },
+        { min: 1000, max: 2000, label: '1K\u20132K', color: '#ef476f', tag: 'Extreme' },
+        { min: 2000, max: Infinity, label: '2K+', color: '#ef476f', tag: 'Extreme+' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.count = 0; b.companies = [];
+        withRatio.forEach(function(c) {
+            if (c.pay_ratio >= b.min && c.pay_ratio < b.max) { b.count++; b.companies.push(c); }
+        });
+    });
+
+    var maxBucketCount = Math.max.apply(null, buckets.map(function(b) { return b.count; }));
 
     var sorted = withRatio.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; });
     var highest = sorted[0];
     var lowest = sorted[sorted.length - 1];
 
-    var html = '';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value accent">' + withRatio.length + '</span>';
-    html += '<span class="summary-stat-label">with ratio data</span>';
-    html += '</span>';
+    var sortDir = currentSort.dir === 'desc' ? 'highest ratios first' : 'lowest ratios first';
+    var html = '<span class="summary-stat"><span class="summary-stat-label">Pay Ratio</span>';
+    html += '<span class="summary-stat-value">' + withRatio.length + ' companies, ' + sortDir + '</span></span>';
 
     html += '<span class="summary-divider"></span>';
 
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-label">Median</span>';
-    html += '<span class="summary-stat-value">' + medianR.toLocaleString() + ':1</span>';
-    html += '</span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-label">Mean</span>';
-    html += '<span class="summary-stat-value">' + meanR.toLocaleString() + ':1</span>';
-    html += '</span>';
-
-    html += '<span class="summary-divider"></span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value negative">' + extreme.length + '</span>';
-    html += '<span class="summary-stat-label">above 1,000:1</span>';
-    html += '</span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value positive">' + equitable.length + '</span>';
-    html += '<span class="summary-stat-label">below 50:1</span>';
-    html += '</span>';
-
-    html += '<span class="summary-divider"></span>';
-
-    if (highest) {
-        html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Highest</span>';
-        html += '<span class="summary-stat-value negative">' + highest.ticker + ' ' + highest.pay_ratio.toLocaleString() + ':1</span>';
+    // Mini clickable histogram — 8 buckets matching the ratio chart
+    var activeRB = window._activeRatioBucket;
+    html += '<span class="summary-stat ratio-dist-histogram">';
+    html += '<span class="summary-stat-label">Distribution</span>';
+    html += '<span class="ratio-dist-bars">';
+    buckets.forEach(function(b) {
+        if (b.count === 0) return; // skip empty buckets
+        var barH = maxBucketCount > 0 ? Math.max(4, Math.round(b.count / maxBucketCount * 24)) : 4;
+        var isActive = (activeRB && activeRB.min === b.min && activeRB.max === b.max);
+        var isDimmed = (activeRB && !isActive);
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
+        var maxStr = b.max === Infinity ? 'Infinity' : b.max;
+        html += '<span class="ratio-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.tag + ' (' + b.label + ':1): ' + b.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByRatioBucket(' + b.min + ',' + maxStr + ')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<span class="ratio-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
+        html += '<span class="ratio-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
         html += '</span>';
+    });
+    html += '</span>';
+    html += '<span class="ratio-dist-bracket-labels">';
+    buckets.forEach(function(b) {
+        if (b.count === 0) return;
+        html += '<span class="ratio-dist-bracket-label">' + b.label + '</span>';
+    });
+    html += '</span>';
+    html += '</span>';
+
+    html += '<span class="summary-divider"></span>';
+
+    // Median and mean with skewness indicator
+    html += '<span class="summary-stat"><span class="summary-stat-label">Median</span>';
+    html += '<span class="summary-stat-value">' + medianR.toLocaleString() + ':1</span></span>';
+    html += '<span class="summary-stat"><span class="summary-stat-label">Mean</span>';
+    html += '<span class="summary-stat-value">' + meanR.toLocaleString() + ':1</span></span>';
+    if (meanR > medianR * 1.2) {
+        html += '<span class="summary-stat"><span class="summary-stat-label">Skew</span>';
+        html += '<span class="summary-stat-value negative">\u2191 right-skewed (' + (meanR / medianR).toFixed(1) + '\u00d7)</span></span>';
     }
 
+    html += '<span class="summary-divider"></span>';
+
+    // Highest / lowest
+    if (highest) {
+        html += '<span class="summary-stat"><span class="summary-stat-label">Highest ratio</span>';
+        html += '<span class="summary-stat-value negative">' + highest.ceo_name + ' (' + highest.ticker + ') ' + highest.pay_ratio.toLocaleString() + ':1</span></span>';
+    }
     if (lowest) {
-        html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Lowest</span>';
-        html += '<span class="summary-stat-value positive">' + lowest.ticker + ' ' + lowest.pay_ratio.toLocaleString() + ':1</span>';
-        html += '</span>';
+        html += '<span class="summary-stat"><span class="summary-stat-label">Lowest ratio</span>';
+        html += '<span class="summary-stat-value positive">' + lowest.ceo_name + ' (' + lowest.ticker + ') ' + lowest.pay_ratio.toLocaleString() + ':1</span></span>';
+    }
+
+    // Bucket-specific enrichment when ratio filter is active
+    if (activeRB) {
+        var bucketCompanies = withRatio.filter(function(c) {
+            return c.pay_ratio >= activeRB.min && c.pay_ratio < activeRB.max;
+        });
+        if (bucketCompanies.length > 0) {
+            var bucketRatios = bucketCompanies.map(function(c) { return c.pay_ratio; });
+            var bucketMedian = Math.round(computeMedian(bucketRatios));
+            var bucketSorted = bucketCompanies.slice().sort(function(a, b) { return b.pay_ratio - a.pay_ratio; });
+            var bucketTop = bucketSorted[0];
+
+            var bucketLabel = activeRB.min + (activeRB.max === Infinity ? '+' : '\u2013' + activeRB.max) + ':1';
+
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Bucket ' + bucketLabel + '</span>';
+            html += '<span class="summary-stat-value accent">' + bucketCompanies.length + ' companies</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Bucket median</span>';
+            html += '<span class="summary-stat-value">' + bucketMedian.toLocaleString() + ':1</span></span>';
+
+            if (bucketTop) {
+                html += '<span class="summary-stat"><span class="summary-stat-label">Highest in bucket</span>';
+                html += '<span class="summary-stat-value">' + bucketTop.ceo_name + ' (' + bucketTop.ticker + ') ' + bucketTop.pay_ratio.toLocaleString() + ':1</span></span>';
+            }
+
+            // Top sectors in bucket
+            var bucketSectors = {};
+            bucketCompanies.forEach(function(c) {
+                var s = c.sector || 'Unknown';
+                if (!bucketSectors[s]) bucketSectors[s] = 0;
+                bucketSectors[s]++;
+            });
+            var sectorEntries = Object.keys(bucketSectors).map(function(s) { return { name: s, count: bucketSectors[s] }; });
+            sectorEntries.sort(function(a, b) { return b.count - a.count; });
+            var topSectors = sectorEntries.slice(0, 3);
+            if (topSectors.length > 0) {
+                var sectorAbbrev = { 'Information Technology': 'IT', 'Communication Services': 'Comm Svcs', 'Consumer Discretionary': 'Cons Disc', 'Consumer Staples': 'Cons Stpls', 'Health Care': 'Health', 'Industrials': 'Ind', 'Financials': 'Fin', 'Real Estate': 'RE', 'Materials': 'Mat', 'Utilities': 'Util', 'Energy': 'Energy' };
+                html += '<span class="summary-stat"><span class="summary-stat-label">Top sectors</span>';
+                html += '<span class="summary-stat-value">' + topSectors.map(function(se) {
+                    var abbr = sectorAbbrev[se.name] || se.name;
+                    var sColor = SECTOR_COLORS[se.name] || '#94a3b8';
+                    return '<span style="color:' + sColor + '">' + abbr + '</span> ' + se.count;
+                }).join(' · ') + '</span></span>';
+            }
+        }
+    }
+
+    // Sector skew analysis (when no bucket filter, ≥20 companies)
+    if (!activeRB && withRatio.length >= 20) {
+        var sectorMedians = {};
+        withRatio.forEach(function(c) {
+            var s = c.sector || 'Unknown';
+            if (!sectorMedians[s]) sectorMedians[s] = [];
+            sectorMedians[s].push(c.pay_ratio);
+        });
+        var sectorRanked = [];
+        Object.keys(sectorMedians).forEach(function(s) {
+            if (sectorMedians[s].length >= 5) {
+                sectorRanked.push({ name: s, median: Math.round(computeMedian(sectorMedians[s])), count: sectorMedians[s].length });
+            }
+        });
+        if (sectorRanked.length >= 2) {
+            sectorRanked.sort(function(a, b) { return b.median - a.median; });
+            var highSector = sectorRanked[0];
+            var lowSector = sectorRanked[sectorRanked.length - 1];
+            html += '<span class="summary-divider"></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Highest sector</span>';
+            html += '<span class="summary-stat-value"><span style="color:' + (SECTOR_COLORS[highSector.name] || '#94a3b8') + '">' + highSector.name + '</span> ' + highSector.median.toLocaleString() + ':1 median</span></span>';
+            html += '<span class="summary-stat"><span class="summary-stat-label">Lowest sector</span>';
+            html += '<span class="summary-stat-value"><span style="color:' + (SECTOR_COLORS[lowSector.name] || '#94a3b8') + '">' + lowSector.name + '</span> ' + lowSector.median.toLocaleString() + ':1 median</span></span>';
+        }
     }
 
     return html;
@@ -2513,6 +2620,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
     if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
     if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.label); }
+    if (window._activeStockPctTier) { filterDims++; filterParts.push('Equity: ' + window._activeStockPctTier.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -2926,6 +3034,12 @@ function renderTable(companies, options) {
             return c._compPercentile != null && c._compPercentile >= pt.min && c._compPercentile < pt.max;
         });
     }
+    if (window._activeStockPctTier) {
+        var spt = window._activeStockPctTier;
+        filtered = filtered.filter(function(c) {
+            return c._ceoStockPct != null && c._ceoStockPct >= spt.min && c._ceoStockPct < spt.max;
+        });
+    }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
@@ -3159,6 +3273,7 @@ function renderTable(companies, options) {
     if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
     if (window._activeYoYBucket) announceMsg += ', YoY: ' + window._activeYoYBucket.label;
     if (window._activePctileTier) announceMsg += ', percentile: ' + window._activePctileTier.label;
+    if (window._activeStockPctTier) announceMsg += ', equity: ' + window._activeStockPctTier.label;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -4284,6 +4399,12 @@ function serializeState() {
         params.push('ptlbl=' + encodeURIComponent(window._activePctileTier.label));
         params.push('pttag=' + encodeURIComponent(window._activePctileTier.tag));
     }
+    if (window._activeStockPctTier) {
+        params.push('spmin=' + window._activeStockPctTier.min);
+        params.push('spmax=' + window._activeStockPctTier.max);
+        params.push('splbl=' + encodeURIComponent(window._activeStockPctTier.label));
+        params.push('sptag=' + encodeURIComponent(window._activeStockPctTier.tag));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -4400,6 +4521,15 @@ function applyHashState(companies) {
         var ptMax = parseFloat(state.ptmax);
         if (!isNaN(ptMin) && !isNaN(ptMax)) {
             window._activePctileTier = { min: ptMin, max: ptMax, label: decodeURIComponent(state.ptlbl), tag: state.pttag ? decodeURIComponent(state.pttag) : '' };
+        }
+    }
+
+    // Stock % tier filter
+    if (state.spmin != null && state.spmax != null && state.splbl) {
+        var spMin = parseFloat(state.spmin);
+        var spMax = parseFloat(state.spmax);
+        if (!isNaN(spMin) && !isNaN(spMax)) {
+            window._activeStockPctTier = { min: spMin, max: spMax, label: decodeURIComponent(state.splbl), tag: state.sptag ? decodeURIComponent(state.sptag) : '' };
         }
     }
 
@@ -5103,6 +5233,64 @@ function hideMetricSkeletons() {
         }
     }
     window._updatePctileFilterIndicator = updatePctileFilterIndicator;
+
+    // Stock % Tier filter — filter table by clicking bars in stock pct sort summary histogram
+    window.filterByStockPctTier = function(minPct, maxPct, label, tag) {
+        // Toggle off if same tier clicked again
+        if (window._activeStockPctTier && window._activeStockPctTier.min === minPct && window._activeStockPctTier.max === maxPct) {
+            window._activeStockPctTier = null;
+        } else {
+            var tierColors = { 0: '#ef476f', 20: '#fb923c', 40: '#ffd166', 60: '#34d399', 80: '#06d6a0' };
+            window._activeStockPctTier = { min: minPct, max: maxPct, label: label, tag: tag, color: tierColors[minPct] || '#a1a1aa' };
+        }
+
+        currentPage = 1;
+
+        // Sort by stock % descending
+        currentSort = { key: '_ceoStockPctSort', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_ceoStockPctSort') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updateStockPctFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeStockPctTier ? 'Filtered to ' + tag + ' (' + label + ')' : 'Equity tier filter cleared');
+    };
+
+    function updateStockPctFilterIndicator() {
+        var existing = document.getElementById('stockpct-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeStockPctTier) {
+            var sp = window._activeStockPctTier;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' \u00d7 Equity: ' + sp.label : sp.tag + ' (' + sp.label + ')';
+            var tierColor = sp.color || '#a1a1aa';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'stockpct-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(tierColor);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(tierColor);
+            chip.style.color = isCombined ? '#a78bfa' : tierColor;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + equity filter' : 'Click to clear equity tier filter';
+            chip.addEventListener('click', function() {
+                window._activeStockPctTier = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateStockPctFilterIndicator = updateStockPctFilterIndicator;
 
     // CEO Transition filter — toggle to show only companies with CEO changes
     window.filterByCeoTransition = function() {

@@ -63,6 +63,26 @@ function initCharts(companies, trends, compData) {
     var logYCb = document.getElementById('scatter-log-y');
     if (logXCb) logXCb.addEventListener('change', function() { var el = document.getElementById('scatter-chart'); if (el) el.innerHTML = ''; drawScatterChart(_chartData.companies); });
     if (logYCb) logYCb.addEventListener('change', function() { var el = document.getElementById('scatter-chart'); if (el) el.innerHTML = ''; drawScatterChart(_chartData.companies); });
+    // Top 10 mode toggle buttons
+    setupTop10ModeToggle();
+}
+
+/* Wire up Top 10 chart mode toggle buttons */
+function setupTop10ModeToggle() {
+    var toggleContainer = document.getElementById('top10-mode-toggle');
+    if (!toggleContainer) return;
+    toggleContainer.querySelectorAll('.top10-mode-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var mode = btn.dataset.mode;
+            if (mode === _top10Mode) return; // already active
+            _top10Mode = mode;
+            // Update active button state
+            toggleContainer.querySelectorAll('.top10-mode-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            // Redraw chart with new mode
+            drawTop10Chart(_chartData.companies, mode);
+        });
+    });
 }
 
 /* Debounced resize handler — clears and redraws all SVG charts */
@@ -86,7 +106,7 @@ function redrawAllCharts() {
     drawSectorChart(_chartData.trends, _chartData.companies);
     drawTrendChart(_chartData.trends);
     drawRatioChart(_chartData.companies);
-    drawTop10Chart(_chartData.companies);
+    drawTop10Chart(_chartData.companies, _top10Mode);
     drawCompositionChart(_chartData.trends);
     drawScatterChart(_chartData.companies);
     drawYoYDistChart(_chartData.companies);
@@ -871,13 +891,122 @@ function drawRatioChart(companies) {
 }
 
 /* --- Top 10 Horizontal Bar Chart --- */
-function drawTop10Chart(companies) {
-    var container = document.getElementById('top10-chart');
-    var top10 = companies.slice().sort(function(a, b) {
-        return b.total_compensation - a.total_compensation;
-    }).slice(0, 10);
+/* Top 10 chart mode state */
+var _top10Mode = 'comp';
 
-    var margin = { top: 20, right: 80, bottom: 30, left: 120 };
+/* Mode definitions for the multi-mode Top 10 chart */
+var TOP10_MODES = {
+    comp: {
+        title: 'Top 10 Highest Paid CEOs',
+        desc: 'FY 2024 total compensation from proxy statements',
+        filter: function(c) { return c.total_compensation > 0; },
+        sort: function(a, b) { return b.total_compensation - a.total_compensation; },
+        value: function(c) { return c.total_compensation; },
+        label: function(c) { return c.ceo_name || c.ticker; },
+        format: function(v) { return fmtCurr(v); },
+        xLabel: 'Total Compensation',
+        colors: ['#00b4d8', '#0096c7', '#0077b6', '#023e8a', '#03045e', '#1b263b', '#415a77', '#778da9', '#94a3b8', '#94a3b8'],
+        tooltipExtra: function(d) {
+            var html = '';
+            if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
+            return html;
+        }
+    },
+    ratio: {
+        title: 'Top 10 Highest Pay Ratios',
+        desc: 'CEO-to-median-worker pay ratio — highest inequality gap',
+        filter: function(c) { return c.pay_ratio != null && c.pay_ratio > 0; },
+        sort: function(a, b) { return b.pay_ratio - a.pay_ratio; },
+        value: function(c) { return c.pay_ratio; },
+        label: function(c) { return c.ceo_name || c.ticker; },
+        format: function(v) { return Math.round(v).toLocaleString() + ':1'; },
+        xLabel: 'CEO-to-Worker Pay Ratio',
+        colors: ['#ef476f', '#e5383b', '#d90429', '#c1121f', '#a4133c', '#780000', '#6a040f', '#520309', '#3d0208', '#3d0208'],
+        tooltipExtra: function(d) {
+            var html = '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d.median_worker_pay) html += '<div class="ct-row"><span class="ct-label">Worker Pay</span><span class="ct-val">' + fmtCurr(d.median_worker_pay) + '</span></div>';
+            return html;
+        }
+    },
+    raise: {
+        title: 'Top 10 Biggest CEO Raises',
+        desc: 'Largest year-over-year CEO compensation increases',
+        filter: function(c) { return c._ceoYoY && c._ceoYoY.pct > 0; },
+        sort: function(a, b) { return b._ceoYoY.pct - a._ceoYoY.pct; },
+        value: function(c) { return c._ceoYoY.pct; },
+        label: function(c) { return c.ceo_name || c.ticker; },
+        format: function(v) { return '+' + (Math.abs(v) >= 100 ? Math.round(v) : v.toFixed(1)) + '%'; },
+        xLabel: 'Year-over-Year Change (%)',
+        colors: ['#06d6a0', '#05c48e', '#04b27c', '#03a06a', '#028e58', '#027c46', '#016a34', '#015822', '#014610', '#013400'],
+        tooltipExtra: function(d) {
+            var html = '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d._ceoYoY) html += '<div class="ct-row"><span class="ct-label">From</span><span class="ct-val">FY' + d._ceoYoY.fromYear + ': ' + fmtCurr(d._ceoYoY.fromComp) + '</span></div>';
+            if (d._ceoYoY) html += '<div class="ct-row"><span class="ct-label">To</span><span class="ct-val">FY' + d._ceoYoY.toYear + ': ' + fmtCurr(d._ceoYoY.toComp) + '</span></div>';
+            return html;
+        }
+    },
+    cut: {
+        title: 'Top 10 Biggest CEO Pay Cuts',
+        desc: 'Largest year-over-year CEO compensation decreases',
+        filter: function(c) { return c._ceoYoY && c._ceoYoY.pct < 0; },
+        sort: function(a, b) { return a._ceoYoY.pct - b._ceoYoY.pct; },
+        value: function(c) { return Math.abs(c._ceoYoY.pct); },
+        rawValue: function(c) { return c._ceoYoY.pct; },
+        label: function(c) { return c.ceo_name || c.ticker; },
+        format: function(v, d) { var raw = d && d._ceoYoY ? d._ceoYoY.pct : -v; return (Math.abs(raw) >= 100 ? Math.round(raw) : raw.toFixed(1)) + '%'; },
+        xLabel: 'Year-over-Year Change (%)',
+        colors: ['#ef476f', '#e5383b', '#d90429', '#c1121f', '#a4133c', '#780000', '#6a040f', '#520309', '#3d0208', '#3d0208'],
+        tooltipExtra: function(d) {
+            var html = '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d._ceoYoY) html += '<div class="ct-row"><span class="ct-label">From</span><span class="ct-val">FY' + d._ceoYoY.fromYear + ': ' + fmtCurr(d._ceoYoY.fromComp) + '</span></div>';
+            if (d._ceoYoY) html += '<div class="ct-row"><span class="ct-label">To</span><span class="ct-val">FY' + d._ceoYoY.toYear + ': ' + fmtCurr(d._ceoYoY.toComp) + '</span></div>';
+            return html;
+        }
+    },
+    worker: {
+        title: 'Top 10 Highest Median Worker Pay',
+        desc: 'Companies with the best-paid median workers',
+        filter: function(c) { return c.median_worker_pay != null && c.median_worker_pay > 0; },
+        sort: function(a, b) { return b.median_worker_pay - a.median_worker_pay; },
+        value: function(c) { return c.median_worker_pay; },
+        label: function(c) { return (c.company_name || c.ticker).length > 20 ? c.ticker : (c.company_name || c.ticker); },
+        format: function(v) { return fmtCurr(v); },
+        xLabel: 'Median Worker Pay',
+        colors: ['#a78bfa', '#9575f6', '#835ff2', '#7149ee', '#5f33ea', '#4d1de6', '#3b07e2', '#3206c2', '#2905a2', '#200482'],
+        tooltipExtra: function(d) {
+            var html = '<div class="ct-row"><span class="ct-label">CEO Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
+            html += '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>';
+            return html;
+        }
+    }
+};
+
+function drawTop10Chart(companies, mode) {
+    var container = document.getElementById('top10-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    mode = mode || _top10Mode || 'comp';
+    var cfg = TOP10_MODES[mode];
+    if (!cfg) return;
+
+    // Update title and description
+    var titleEl = document.getElementById('top10-title');
+    var descEl = document.getElementById('top10-desc');
+    if (titleEl) titleEl.textContent = cfg.title;
+    if (descEl) descEl.textContent = cfg.desc;
+
+    // Get and sort data
+    var filtered = companies.filter(cfg.filter);
+    if (filtered.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available for this view</p>';
+        return;
+    }
+    filtered.sort(cfg.sort);
+    var top10 = filtered.slice(0, 10);
+
+    var margin = { top: 20, right: 100, bottom: 30, left: 140 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = 320;
 
@@ -887,12 +1016,13 @@ function drawTop10Chart(companies) {
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+    var maxVal = d3.max(top10, function(d) { return cfg.value(d); });
     var x = d3.scaleLinear()
-        .domain([0, d3.max(top10, function(d) { return d.total_compensation; }) * 1.05])
+        .domain([0, maxVal * 1.05])
         .range([0, w]);
 
     var y = d3.scaleBand()
-        .domain(top10.map(function(d) { return d.ceo_name; }))
+        .domain(top10.map(function(d) { return cfg.label(d); }))
         .range([0, h])
         .padding(0.3);
 
@@ -900,52 +1030,107 @@ function drawTop10Chart(companies) {
     svg.append('g').attr('class', 'grid')
         .call(d3.axisBottom(x).tickSize(h).tickFormat('').ticks(5));
 
-    // Y axis
+    // Y axis — truncate long names
     svg.append('g').attr('class', 'axis')
-        .call(d3.axisLeft(y).tickSize(0).tickPadding(8));
+        .call(d3.axisLeft(y).tickSize(0).tickPadding(8).tickFormat(function(name) {
+            return name.length > 18 ? name.substring(0, 16) + '…' : name;
+        }));
 
-    // Gradient bars
-    var colors = ['#00b4d8', '#0096c7', '#0077b6', '#023e8a', '#03045e', '#1b263b', '#415a77', '#778da9', '#94a3b8', '#94a3b8'];
+    // X axis label
+    svg.append('text')
+        .attr('class', 'axis-label')
+        .attr('x', w / 2)
+        .attr('y', h + 28)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa')
+        .attr('font-size', '10px')
+        .text(cfg.xLabel);
+
+    // Bars
+    var colors = cfg.colors;
     svg.selectAll('.top-bar')
         .data(top10)
         .join('rect')
         .attr('x', 0)
-        .attr('y', function(d) { return y(d.ceo_name); })
-        .attr('width', function(d) { return x(d.total_compensation); })
+        .attr('y', function(d) { return y(cfg.label(d)); })
+        .attr('width', function(d) { return Math.max(2, x(cfg.value(d))); })
         .attr('height', y.bandwidth())
-        .attr('fill', function(d, i) { return colors[i]; })
+        .attr('fill', function(d, i) { return colors[Math.min(i, colors.length - 1)]; })
         .attr('rx', 3)
         .attr('opacity', 0.85)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
+            // Dim other bars
+            svg.selectAll('.top-bar').filter(function(o) { return o !== d; }).attr('opacity', 0.35);
             var rank = top10.indexOf(d) + 1;
-            var html = '<div class="ct-title">#' + rank + ' ' + d.ceo_name + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Company</span><span class="ct-val">' + d.ticker + '</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Total Compensation</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
-            if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
+            var html = '<div class="ct-title">#' + rank + ' ' + (d.ceo_name || d.ticker) + '</div>';
+            html += '<div class="ct-row"><span class="ct-label">Company</span><span class="ct-val">' + d.ticker + ' — ' + (d.company_name || '') + '</span></div>';
+            html += '<div class="ct-row"><span class="ct-label">' + cfg.xLabel + '</span><span class="ct-val">' + cfg.format(cfg.value(d), d) + '</span></div>';
+            html += cfg.tooltipExtra(d);
             if (d.sector) html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + d.sector + '</span></div>';
             html += '<div class="ct-row ct-sub"><span class="ct-label">Click to find in table</span></div>';
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
-            d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
+            svg.selectAll('.top-bar').attr('opacity', 0.85);
+            d3.select(this).attr('stroke', 'none');
             hideChartTooltip();
         })
         .on('click', function(event, d) {
             if (window.findCompanyInTable) window.findCompanyInTable(d.ticker);
         });
 
-    // Labels
+    // Ticker labels on bars (small, inside or next to bar)
+    svg.selectAll('.top-ticker')
+        .data(top10)
+        .join('text')
+        .attr('class', 'bar-label')
+        .attr('x', function(d) {
+            var barW = x(cfg.value(d));
+            return barW > 60 ? barW - 6 : barW + 4;
+        })
+        .attr('y', function(d) { return y(cfg.label(d)) + y.bandwidth() * 0.35; })
+        .attr('text-anchor', function(d) { return x(cfg.value(d)) > 60 ? 'end' : 'start'; })
+        .attr('fill', function(d) {
+            return x(cfg.value(d)) > 60
+                ? (typeof isDarkTheme === 'function' && isDarkTheme() ? '#e4e4e7' : '#ffffff')
+                : (typeof getThemeTextColor === 'function' ? getThemeTextColor() : '#e4e4e7');
+        })
+        .attr('font-size', '9px')
+        .attr('opacity', 0.7)
+        .text(function(d) { return d.ticker; });
+
+    // Value labels
     svg.selectAll('.top-label')
         .data(top10)
         .join('text')
         .attr('class', 'bar-label')
-        .attr('x', function(d) { return x(d.total_compensation) + 6; })
-        .attr('y', function(d) { return y(d.ceo_name) + y.bandwidth() / 2; })
-        .attr('dy', '0.35em')
-        .text(function(d) { return fmtCurr(d.total_compensation); });
+        .attr('x', function(d) { return x(cfg.value(d)) + 6; })
+        .attr('y', function(d) { return y(cfg.label(d)) + y.bandwidth() * 0.7; })
+        .attr('dy', '0.1em')
+        .text(function(d) { return cfg.format(cfg.value(d), d); });
+
+    // Median reference line (for comp and worker modes)
+    if (mode === 'comp' || mode === 'worker' || mode === 'ratio') {
+        var allVals = companies.filter(cfg.filter).map(function(c) { return cfg.value(c); }).sort(function(a, b) { return a - b; });
+        if (allVals.length > 0) {
+            var medIdx = Math.floor(allVals.length / 2);
+            var medVal = allVals.length % 2 === 0 ? (allVals[medIdx - 1] + allVals[medIdx]) / 2 : allVals[medIdx];
+            if (medVal > 0 && medVal < maxVal) {
+                svg.append('line')
+                    .attr('x1', x(medVal)).attr('x2', x(medVal))
+                    .attr('y1', 0).attr('y2', h)
+                    .attr('stroke', '#ffd166').attr('stroke-width', 1)
+                    .attr('stroke-dasharray', '6,4').attr('opacity', 0.6);
+                svg.append('text')
+                    .attr('x', x(medVal) + 4).attr('y', -4)
+                    .attr('fill', '#ffd166').attr('font-size', '9px').attr('opacity', 0.8)
+                    .text('S&P 500 Median: ' + cfg.format(medVal));
+            }
+        }
+    }
 }
 
 /* --- Compensation Composition (Donut Chart with Granular Breakdown) --- */
