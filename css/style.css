@@ -6177,3 +6177,124 @@ footer li::before {
         stroke: #333 !important;
     }
 }
+
+
+/* === Compensation Twins (detail panel — similar pay profiles) === */
+.comp-twins-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+.comp-twins-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.comp-twins-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+.comp-twins-sub {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+.comp-twins-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.comp-twin-card {
+    flex: 1 1 140px;
+    max-width: 200px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.comp-twin-card:hover {
+    background: rgba(0,180,216,0.08);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.comp-twin-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.comp-twin-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+.comp-twin-ticker {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--accent);
+}
+.comp-twin-sector-badge {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+.comp-twin-sector-badge.comp-twin-cross {
+    opacity: 0.7;
+}
+.comp-twin-sim {
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+.comp-twin-name {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.comp-twin-metrics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.comp-twin-metrics span {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+/* Light theme */
+[data-theme="light"] .comp-twin-card {
+    background: rgba(0,0,0,0.02);
+}
+[data-theme="light"] .comp-twin-card:hover {
+    background: rgba(0,180,216,0.06);
+}
+[data-theme="light"] .comp-twin-metrics span {
+    background: rgba(0,0,0,0.04);
+}
+/* Mobile */
+@media (max-width: 600px) {
+    .comp-twins-list {
+        flex-direction: column;
+    }
+    .comp-twin-card {
+        max-width: 100%;
+    }
+}
+/* Print */
+@media print {
+    .comp-twin-card {
+        border-color: #ccc !important;
+        break-inside: avoid;
+    }
+}

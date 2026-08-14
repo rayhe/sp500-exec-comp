@@ -4336,6 +4336,104 @@ function setupDetailPanel(companies) {
             html += '</div>';
         }
 
+        // --- Compensation Twins: most similar companies by multi-dimensional pay profile ---
+        (function() {
+            // Normalize a value to 0-1 given min/max range
+            function norm(v, min, max) { return max > min ? (v - min) / (max - min) : 0; }
+
+            // Pre-compute feature ranges from all companies (only once, cache on window)
+            if (!window._compTwinRanges) {
+                var allComp = companies.filter(function(c) { return c.total_compensation > 0; });
+                var logComps = allComp.map(function(c) { return Math.log10(c.total_compensation + 1); });
+                var stockPcts = allComp.filter(function(c) { return c._ceoStockPct != null; }).map(function(c) { return c._ceoStockPct; });
+                var concPcts = allComp.filter(function(c) { return c._ceoConcPct != null; }).map(function(c) { return c._ceoConcPct; });
+                var ratios = allComp.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; }).map(function(c) { return Math.log10(c.pay_ratio); });
+                var workerPays = allComp.filter(function(c) { return c.median_worker_pay != null && c.median_worker_pay > 0; }).map(function(c) { return Math.log10(c.median_worker_pay); });
+                window._compTwinRanges = {
+                    logComp: { min: Math.min.apply(null, logComps), max: Math.max.apply(null, logComps) },
+                    stockPct: { min: Math.min.apply(null, stockPcts), max: Math.max.apply(null, stockPcts) },
+                    concPct: { min: Math.min.apply(null, concPcts), max: Math.max.apply(null, concPcts) },
+                    logRatio: { min: Math.min.apply(null, ratios), max: Math.max.apply(null, ratios) },
+                    logWorker: { min: Math.min.apply(null, workerPays), max: Math.max.apply(null, workerPays) }
+                };
+            }
+            var R = window._compTwinRanges;
+
+            // Feature vector for a company (5 dimensions + sector flag)
+            function features(c) {
+                return {
+                    logComp: c.total_compensation > 0 ? norm(Math.log10(c.total_compensation + 1), R.logComp.min, R.logComp.max) : null,
+                    stockPct: c._ceoStockPct != null ? norm(c._ceoStockPct, R.stockPct.min, R.stockPct.max) : null,
+                    concPct: c._ceoConcPct != null ? norm(c._ceoConcPct, R.concPct.min, R.concPct.max) : null,
+                    logRatio: c.pay_ratio > 0 ? norm(Math.log10(c.pay_ratio), R.logRatio.min, R.logRatio.max) : null,
+                    logWorker: c.median_worker_pay > 0 ? norm(Math.log10(c.median_worker_pay), R.logWorker.min, R.logWorker.max) : null,
+                    sector: c.sector || ''
+                };
+            }
+
+            // Weighted Euclidean distance (lower = more similar); skip null dimensions
+            function similarity(f1, f2) {
+                var weights = { logComp: 3, stockPct: 2, concPct: 1.5, logRatio: 1.5, logWorker: 1 };
+                var dims = ['logComp', 'stockPct', 'concPct', 'logRatio', 'logWorker'];
+                var sumSq = 0, wTotal = 0;
+                dims.forEach(function(d) {
+                    if (f1[d] != null && f2[d] != null) {
+                        var diff = f1[d] - f2[d];
+                        sumSq += weights[d] * diff * diff;
+                        wTotal += weights[d];
+                    }
+                });
+                if (wTotal === 0) return Infinity;
+                var dist = Math.sqrt(sumSq / wTotal);
+                // Same-sector bonus: reduce distance by 15%
+                if (f1.sector && f2.sector && f1.sector === f2.sector) dist *= 0.85;
+                return dist;
+            }
+
+            if (company.total_compensation > 0) {
+                var selfF = features(company);
+                var scored = [];
+                companies.forEach(function(c) {
+                    if (c.ticker === ticker || c.total_compensation <= 0) return;
+                    var d = similarity(selfF, features(c));
+                    if (d < Infinity) scored.push({ ticker: c.ticker, name: c.company_name, ceo: c.ceo_name, comp: c.total_compensation, sector: c.sector, dist: d, stockPct: c._ceoStockPct, concPct: c._ceoConcPct, payRatio: c.pay_ratio });
+                });
+                scored.sort(function(a, b) { return a.dist - b.dist; });
+                var twins = scored.slice(0, 5);
+
+                if (twins.length > 0) {
+                    var maxDist = twins[twins.length - 1].dist;
+                    html += '<div class="comp-twins-section">';
+                    html += '<div class="comp-twins-header">';
+                    html += '<span class="comp-twins-title">Compensation Twins</span>';
+                    html += '<span class="comp-twins-sub">Most similar pay profiles (total comp, equity mix, concentration, pay ratio, worker pay)</span>';
+                    html += '</div>';
+                    html += '<div class="comp-twins-list">';
+                    twins.forEach(function(tw) {
+                        var simPct = Math.max(0, Math.round((1 - tw.dist / (maxDist * 1.5)) * 100));
+                        var isSameSector = tw.sector === company.sector;
+                        var barColor = isSameSector ? '#06d6a0' : '#00b4d8';
+                        html += '<div class="comp-twin-card" data-ticker="' + tw.ticker + '" tabindex="0" role="button" title="Click to find ' + tw.ticker + ' in table">';
+                        html += '<div class="comp-twin-header">';
+                        html += '<span class="comp-twin-ticker">' + tw.ticker + '</span>';
+                        if (isSameSector) html += '<span class="comp-twin-sector-badge" title="Same sector: ' + tw.sector + '">● ' + tw.sector + '</span>';
+                        else html += '<span class="comp-twin-sector-badge comp-twin-cross" title="Cross-sector: ' + tw.sector + '">○ ' + tw.sector + '</span>';
+                        html += '<span class="comp-twin-sim" style="color:' + barColor + '">' + simPct + '% match</span>';
+                        html += '</div>';
+                        html += '<div class="comp-twin-name">' + (tw.ceo || '—') + ' · ' + formatCurrency(tw.comp) + '</div>';
+                        html += '<div class="comp-twin-metrics">';
+                        if (tw.stockPct != null) html += '<span title="Stock awards % of total">Eq ' + Math.round(tw.stockPct) + '%</span>';
+                        if (tw.concPct != null) html += '<span title="CEO concentration %">Conc ' + tw.concPct.toFixed(0) + '%</span>';
+                        if (tw.payRatio != null) html += '<span title="CEO-to-worker pay ratio">Ratio ' + tw.payRatio + ':1</span>';
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+            }
+        })();
+
         html += '</div></td>'; // detail-panel
 
         var detailRow = document.createElement('tr');
@@ -4417,6 +4515,22 @@ function setupDetailPanel(companies) {
                 e.stopPropagation();
                 var peerTicker = row.getAttribute('data-ticker');
                 if (peerTicker && window.findCompanyInTable) window.findCompanyInTable(peerTicker);
+            });
+        });
+
+        // Wire up clickable compensation twin cards — click to find in table
+        detailRow.querySelectorAll('.comp-twin-card[data-ticker]').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var twinTicker = card.getAttribute('data-ticker');
+                if (twinTicker && window.findCompanyInTable) window.findCompanyInTable(twinTicker);
+            });
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    card.click();
+                }
             });
         });
 

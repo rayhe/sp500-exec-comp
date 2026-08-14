@@ -7,7 +7,7 @@
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-08-13",
+    "data_collected": "2026-08-14",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -97,7 +97,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-13",
+    "last_updated": "2026-08-14",
     "total_neo_records": 6141,
     "title_coverage": 6141
   },
@@ -25360,8 +25360,8 @@
           "total": 3920644
         },
         {
-          "name": "Asia Pacific",
-          "title": "Executive Vice President and Group President, MedSurg and",
+          "name": "Arthur C. Butcher",
+          "title": "Executive Vice President and Group President, MedSurg and Asia Pacific",
           "year": 2024,
           "salary": 708884,
           "bonus": 2402895,
@@ -25372,8 +25372,8 @@
           "total": 5013447
         },
         {
-          "name": "Asia Pacific",
-          "title": "Executive Vice President and Group President, MedSurg and",
+          "name": "Arthur C. Butcher",
+          "title": "Executive Vice President and Group President, MedSurg and Asia Pacific",
           "year": 2023,
           "salary": 672077,
           "bonus": 2010731,
@@ -25456,8 +25456,8 @@
           "total": 4159959
         },
         {
-          "name": "Peripheral Interventions",
-          "title": "Executive Vice President and President",
+          "name": "Jeffrey B. Mirviss",
+          "title": "Former Executive Vice President and President, Peripheral Interventions",
           "year": 2024,
           "salary": 680411,
           "bonus": 1887957,
@@ -25468,8 +25468,8 @@
           "total": 4027076
         },
         {
-          "name": "Peripheral Interventions",
-          "title": "Executive Vice President and President",
+          "name": "Jeffrey B. Mirviss",
+          "title": "Former Executive Vice President and President, Peripheral Interventions",
           "year": 2023,
           "salary": 652646,
           "bonus": 1759429,
@@ -25793,7 +25793,7 @@
         },
         {
           "name": "Kaes Van\u2019t Hof",
-          "title": "Chairman of the Board at that time, and",
+          "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 1109500,
           "stock_awards": 7997391,
@@ -25804,7 +25804,7 @@
         },
         {
           "name": "Kaes Van\u2019t Hof",
-          "title": "Chairman of the Board at that time, and",
+          "title": "Chief Executive Officer",
           "year": 2024,
           "salary": 691667,
           "stock_awards": 5859064,
@@ -25815,7 +25815,7 @@
         },
         {
           "name": "Kaes Van\u2019t Hof",
-          "title": "Chairman of the Board at that time, and",
+          "title": "Chief Executive Officer",
           "year": 2023,
           "salary": 645192,
           "stock_awards": 4727935,
@@ -29036,7 +29036,7 @@
         },
         {
           "name": "Maria Claudia Borras",
-          "title": "Chief Growth &",
+          "title": "Chief Growth & Experience Officer & Executive Vice President, IET (Interim)",
           "year": 2025,
           "salary": 970000,
           "bonus": 3109951,
@@ -29049,7 +29049,7 @@
         },
         {
           "name": "Maria Claudia Borras",
-          "title": "Chief Growth &",
+          "title": "Chief Growth & Experience Officer & Executive Vice President, IET (Interim)",
           "year": 2024,
           "salary": 3088599,
           "bonus": 1261000,
@@ -29062,7 +29062,7 @@
         },
         {
           "name": "Maria Claudia Borras",
-          "title": "Chief Growth &",
+          "title": "Chief Growth & Experience Officer & Executive Vice President, IET (Interim)",
           "year": 2023,
           "salary": 3236726,
           "bonus": 2566623,
@@ -43130,7 +43130,7 @@
           "non_equity_incentive": 1596424,
           "all_other": 723992,
           "total": 15320405,
-          "title": "Chairman of the Board and"
+          "title": "Chairman of the Board and Chief Executive Officer"
         },
         {
           "name": "Michael D. Hsu",
@@ -43140,7 +43140,7 @@
           "non_equity_incentive": 641343,
           "all_other": 16413045,
           "total": 31329840,
-          "title": "Chairman of the Board and"
+          "title": "Chairman of the Board and Chief Executive Officer"
         },
         {
           "name": "Michael D. Hsu",
@@ -43150,7 +43150,7 @@
           "non_equity_incentive": 726341,
           "all_other": 16528052,
           "total": 31584854,
-          "title": "Chairman of the Board and"
+          "title": "Chairman of the Board and Chief Executive Officer"
         },
         {
           "name": "Nelson Urdaneta",
@@ -54150,7 +54150,7 @@
           "pension_nqdc": 101572,
           "total": 13890300,
           "all_other": 101572,
-          "title": "Chair of the Board, and"
+          "title": "Chief Executive Officer"
         },
         {
           "name": "William Burns",
@@ -54161,7 +54161,7 @@
           "pension_nqdc": 95998,
           "total": 13462794,
           "all_other": 95998,
-          "title": "Chair of the Board, and"
+          "title": "Chief Executive Officer"
         },
         {
           "name": "William Burns",
@@ -54172,7 +54172,7 @@
           "pension_nqdc": 88782,
           "total": 11259895,
           "all_other": 88782,
-          "title": "Chair of the Board, and"
+          "title": "Chief Executive Officer"
         },
         {
           "name": "Nathan Winters",
@@ -55009,14 +55009,14 @@
           "title": "Chief Financial Officer"
         },
         {
-          "name": "Global",
+          "name": "James Kehoe",
           "year": 2023,
           "salary": 490833,
           "bonus": 600000,
           "stock_awards": 664986,
           "all_other": 70289,
           "total": 1826108,
-          "title": "Global Chief Financial Officer"
+          "title": "Executive Vice President and Global Chief Financial Officer"
         },
         {
           "name": "Ornella Barra",
@@ -55055,7 +55055,7 @@
           "stock_awards": 4164307,
           "all_other": 56282,
           "total": 6652962,
-          "title": "Executive Vice President and President, U"
+          "title": "Executive Vice President and President, U.S. Healthcare"
         },
         {
           "name": "Ginger Graham",
@@ -73281,7 +73281,7 @@
         },
         {
           "name": "Claude E. Elkins",
-          "title": "Executive Vice President &",
+          "title": "Executive Vice President & Chief Commercial Officer",
           "year": 2024,
           "salary": 600000,
           "bonus": 0,
@@ -76218,7 +76218,7 @@
           "non_equity_incentive": 1727095,
           "all_other": 1683000,
           "total": 4510095,
-          "title": "Chairman of the Board, and"
+          "title": "President and Chief Executive Officer"
         },
         {
           "name": "Jerry E. Gahlhoff, Jr",
@@ -76228,7 +76228,7 @@
           "non_equity_incentive": 4176900,
           "all_other": 1520183,
           "total": 1457775,
-          "title": "Chairman of the Board, and"
+          "title": "President and Chief Executive Officer"
         },
         {
           "name": "Jerry E. Gahlhoff, Jr",
@@ -76237,7 +76237,7 @@
           "non_equity_incentive": 1294070,
           "all_other": 1785000,
           "total": 4079070,
-          "title": "Chairman of the Board, and"
+          "title": "President and Chief Executive Officer"
         },
         {
           "name": "Kenneth D. Krause",
@@ -82468,14 +82468,14 @@
           "title": "Chief Executive Officer"
         },
         {
-          "name": "Global",
+          "name": "David Howson",
           "year": 2023,
           "salary": 625000,
           "stock_awards": 3058526,
           "non_equity_incentive": 978480,
           "all_other": 294250,
           "total": 4956256,
-          "title": "President"
+          "title": "Global President"
         },
         {
           "name": "Catherine R. Clay",
@@ -82497,14 +82497,14 @@
           "title": "President"
         },
         {
-          "name": "Head of Global Derivatives",
+          "name": "Catherine R. Clay",
           "year": 2023,
           "salary": 483333,
           "stock_awards": 1324372,
           "non_equity_incentive": 513873,
           "all_other": 89681,
           "total": 2411259,
-          "title": "Executive Vice President"
+          "title": "Executive Vice President, Head of Global Derivatives"
         }
       ],
       "neo_count": 10,
