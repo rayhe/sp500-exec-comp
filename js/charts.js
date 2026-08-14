@@ -72,10 +72,41 @@ function initCharts(companies, trends, compData) {
     // Scatter axis metric selectors
     var xMetricSel = document.getElementById('scatter-x-metric');
     var yMetricSel = document.getElementById('scatter-y-metric');
-    if (xMetricSel) xMetricSel.addEventListener('change', _redrawScatter);
-    if (yMetricSel) yMetricSel.addEventListener('change', _redrawScatter);
+    if (xMetricSel) xMetricSel.addEventListener('change', function() { _syncPresetActiveState(); _redrawScatter(); });
+    if (yMetricSel) yMetricSel.addEventListener('change', function() { _syncPresetActiveState(); _redrawScatter(); });
+    // Scatter axis preset buttons
+    setupScatterPresets(_redrawScatter);
     // Top 10 mode toggle buttons
     setupTop10ModeToggle();
+}
+
+/* Sync active state of scatter preset buttons to match current dropdowns */
+function _syncPresetActiveState() {
+    var xSel = document.getElementById('scatter-x-metric');
+    var ySel = document.getElementById('scatter-y-metric');
+    if (!xSel || !ySel) return;
+    var curX = xSel.value, curY = ySel.value;
+    document.querySelectorAll('.scatter-preset-btn').forEach(function(btn) {
+        var match = btn.dataset.x === curX && btn.dataset.y === curY;
+        btn.classList.toggle('active', match);
+    });
+}
+
+/* Wire up scatter axis preset buttons */
+function setupScatterPresets(redrawFn) {
+    var container = document.getElementById('scatter-presets');
+    if (!container) return;
+    container.querySelectorAll('.scatter-preset-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var xSel = document.getElementById('scatter-x-metric');
+            var ySel = document.getElementById('scatter-y-metric');
+            if (!xSel || !ySel) return;
+            xSel.value = btn.dataset.x;
+            ySel.value = btn.dataset.y;
+            _syncPresetActiveState();
+            if (redrawFn) redrawFn();
+        });
+    });
 }
 
 /* Wire up Top 10 chart mode toggle buttons */

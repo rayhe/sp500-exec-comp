@@ -287,6 +287,14 @@
                         </select>
                     </label>
                 </div>
+                <div class="scatter-presets" id="scatter-presets">
+                    <span class="scatter-presets-label">Presets:</span>
+                    <button class="scatter-preset-btn active" data-x="total_compensation" data-y="pay_ratio" title="Default: CEO pay vs pay ratio">Pay vs Ratio</button>
+                    <button class="scatter-preset-btn" data-x="median_worker_pay" data-y="pay_ratio" title="Worker pay vs CEO-to-worker ratio — reveals whether high ratios come from low worker pay or high CEO pay">Worker vs Ratio</button>
+                    <button class="scatter-preset-btn" data-x="_ceoStockPctSort" data-y="_ceoConcPct" title="Stock awards % vs CEO concentration — do equity-heavy packages concentrate power?">Stock vs Power</button>
+                    <button class="scatter-preset-btn" data-x="total_compensation" data-y="_ceoYoYPct" title="Current pay level vs year-over-year change — are the highest-paid getting bigger raises?">Pay vs Momentum</button>
+                    <button class="scatter-preset-btn" data-x="median_worker_pay" data-y="total_compensation" title="Worker pay vs CEO pay — the fundamental equity question">Worker vs CEO</button>
+                </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">
                         <input type="checkbox" id="scatter-log-x"> Log scale (X)

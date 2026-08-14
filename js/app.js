@@ -3750,6 +3750,89 @@ function setupDetailPanel(companies) {
         html += '<button class="detail-nav-btn detail-nav-next" title="Next company (→)" aria-label="Next company"' + (_hasNext ? '' : ' disabled') + '>›</button>';
         html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
         html += '</div>';
+
+        // --- Auto-generated Compensation Profile Summary ---
+        (function() {
+            var sentences = [];
+
+            // Sentence 1: Core position — who, how much, rank, sector context
+            var ceoFirst = (company.ceo_name || '').split(/\s+/)[0] || 'The CEO';
+            var compStr = formatCurrency(company.total_compensation);
+            var fy = company.proxy_fiscal_year || '';
+            var pctileDesc = '';
+            if (company._compPercentile >= 99) pctileDesc = 'placing in the top 1%';
+            else if (company._compPercentile >= 95) pctileDesc = 'placing in the top 5%';
+            else if (company._compPercentile >= 90) pctileDesc = 'a top-decile package';
+            else if (company._compPercentile >= 75) pctileDesc = 'an above-median package';
+            else if (company._compPercentile >= 50) pctileDesc = 'near the S&P 500 median';
+            else if (company._compPercentile >= 25) pctileDesc = 'below the S&P 500 median';
+            else pctileDesc = 'in the bottom quartile';
+
+            var vsStr = '';
+            if (vsMedianPct !== null) {
+                var vsParsed = parseInt(vsMedianPct);
+                if (vsParsed > 0) vsStr = vsParsed + '% above the ' + (company.sector || 'sector') + ' median';
+                else if (vsParsed < 0) vsStr = Math.abs(vsParsed) + '% below the ' + (company.sector || 'sector') + ' median';
+                else vsStr = 'right at the ' + (company.sector || 'sector') + ' median';
+            }
+
+            var s1 = ceoFirst + ' received ' + compStr + ' in FY' + fy + ', ranking #' + overallRank + ' in the S&P 500';
+            if (pctileDesc) s1 += ' (' + pctileDesc + ')';
+            if (vsStr) s1 += ' and ' + vsStr;
+            s1 += '.';
+            sentences.push(s1);
+
+            // Sentence 2: Compensation structure — equity %, concentration, premium
+            var structParts = [];
+            if (company._ceoStockPct != null) {
+                if (company._ceoStockPct >= 90) structParts.push('almost entirely equity-based (' + Math.round(company._ceoStockPct) + '% stock/options)');
+                else if (company._ceoStockPct >= 70) structParts.push('heavily equity-weighted (' + Math.round(company._ceoStockPct) + '% stock/options)');
+                else if (company._ceoStockPct >= 40) structParts.push(Math.round(company._ceoStockPct) + '% equity');
+                else if (company._ceoStockPct > 0) structParts.push('only ' + Math.round(company._ceoStockPct) + '% equity, unusually salary-heavy');
+                else structParts.push('no equity awards reported');
+            }
+            if (company._ceoConcPct != null) {
+                if (company._ceoConcPct >= 55) structParts.push('CEO takes ' + company._ceoConcPct.toFixed(0) + '% of total NEO pay (highly concentrated)');
+                else if (company._ceoConcPct >= 40) structParts.push('CEO takes ' + company._ceoConcPct.toFixed(0) + '% of NEO pay');
+                else if (company._ceoConcPct < 25) structParts.push('pay is distributed broadly (' + company._ceoConcPct.toFixed(0) + '% CEO share)');
+            }
+            if (structParts.length > 0) {
+                sentences.push('Pay is ' + structParts.join('; ') + '.');
+            }
+
+            // Sentence 3: Dynamics — YoY change, transition, peer positioning
+            var dynParts = [];
+            if (company._ceoYoY) {
+                var yoyPctVal = company._ceoYoY.pct;
+                if (Math.abs(yoyPctVal) >= 50) {
+                    dynParts.push('CEO pay ' + (yoyPctVal > 0 ? 'surged ' : 'dropped ') + (yoyPctVal > 0 ? '+' : '') + Math.round(yoyPctVal) + '% year-over-year');
+                } else if (Math.abs(yoyPctVal) >= 10) {
+                    dynParts.push('CEO pay ' + (yoyPctVal > 0 ? 'rose ' : 'fell ') + (yoyPctVal > 0 ? '+' : '') + yoyPctVal.toFixed(1) + '% YoY');
+                } else if (Math.abs(yoyPctVal) < 5) {
+                    dynParts.push('compensation was essentially flat year-over-year');
+                }
+            }
+            if (company._ceoTransition) {
+                var _trOld = company._ceoTransition.oldCeo;
+                dynParts.push('new CEO (succeeded ' + (_trOld.name || 'prior CEO') + ')');
+            }
+            if (peerInfo) {
+                var totalPeers = peerInfo.selectedBy.length + peerInfo.selects.length;
+                if (totalPeers > 0) {
+                    dynParts.push(peerInfo.selectedBy.length + ' companies benchmark against ' + ticker + ', while it peers ' + peerInfo.selects.length);
+                }
+            }
+            if (dynParts.length > 0) {
+                sentences.push(dynParts.join('. ') + '.');
+            }
+
+            if (sentences.length > 0) {
+                html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
+                html += '<p>' + sentences.join(' ') + '</p>';
+                html += '</div>';
+            }
+        })();
+
         html += '<div class="detail-stats">';
 
         // Helper: build distribution bar HTML
