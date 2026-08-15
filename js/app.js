@@ -1150,6 +1150,46 @@ function populateInsights(comp, trends) {
         }
     })();
 
+    // 15. Data Quality insight card
+    (function() {
+        var verified = 0, recomputed = 0, incomplete = 0, bloated = 0, filingOnly = 0, totalRecs = 0;
+        companies.forEach(function(c) {
+            (c.executives || []).forEach(function(e) {
+                totalRecs++;
+                var src = e._total_source || 'verified';
+                if (src === 'verified') verified++;
+                else if (src === 'recomputed' || src === 'recomputed_implausible_total' || src === 'computed') recomputed++;
+                else if (src === 'incomplete_components') incomplete++;
+                else if (src === 'bloated_component') bloated++;
+                else if (src === 'filing_only') filingOnly++;
+            });
+        });
+        var verifiedPct = totalRecs > 0 ? (verified / totalRecs * 100).toFixed(1) : '0';
+        var affectedCos = new Set();
+        companies.forEach(function(c) {
+            (c.executives || []).forEach(function(e) {
+                var src = e._total_source || 'verified';
+                if (src !== 'verified' && src !== 'rounding' && src !== 'minor_gap' && src !== 'component_mismatch') {
+                    affectedCos.add(c.ticker);
+                }
+            });
+        });
+
+        if (totalRecs > 0) {
+            insights.push({
+                icon: '🔍',
+                label: 'Data Quality',
+                value: verifiedPct + '% Verified',
+                detail: verified.toLocaleString() + ' of ' + totalRecs.toLocaleString() + ' exec records have verified component-total consistency. ' +
+                    (recomputed > 0 ? recomputed + ' had totals recomputed from components. ' : '') +
+                    (incomplete > 0 ? incomplete + ' have incomplete component breakdown (total from filing). ' : '') +
+                    (bloated > 0 ? bloated + ' flagged for potential parsing artifacts. ' : '') +
+                    affectedCos.size + ' companies have at least one data quality note.',
+                _tickers: []
+            });
+        }
+    })();
+
     if (insights[13]) {
         insights[13].action = function() {
             insightResetAndSort('total_compensation', 'desc');
@@ -4245,6 +4285,15 @@ function setupDetailPanel(companies) {
                     var total = exec.total || 0;
                     yrTotal += total;
                     var isCeo = exec.title && (/chief executive/i.test(exec.title) || /\bceo\b/i.test(exec.title));
+                    var dqSrc = exec._total_source || 'verified';
+                    var dqDotHtml = '';
+                    if (dqSrc === 'recomputed' || dqSrc === 'recomputed_implausible_total' || dqSrc === 'computed') {
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-recomputed" title="Total recomputed from components (original: ' + (exec._original_total ? formatCompact(exec._original_total) : 'N/A') + ')"></span>';
+                    } else if (dqSrc === 'incomplete_components') {
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-incomplete" title="Component breakdown incomplete — total from filing, missing equity/stock detail"></span>';
+                    } else if (dqSrc === 'bloated_component') {
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-bloated" title="One component may have parsing error — total from filing retained"></span>';
+                    }
                     html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + '>';
                     html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
@@ -4255,7 +4304,7 @@ function setupDetailPanel(companies) {
                     html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
                     if (yrHasPension) html += '<td class="neo-num">' + ((exec.pension_nqdc || exec.pension_change) ? formatCompact(exec.pension_nqdc || exec.pension_change) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
-                    html += '<td class="neo-num neo-total">' + formatCompact(total);
+                    html += '<td class="neo-num neo-total">' + formatCompact(total) + dqDotHtml;
                     // Role benchmark context badge
                     if (_roleBenchmarks && total > 0) {
                         var _execRole = classifyExecRole(exec.title);
@@ -4297,7 +4346,30 @@ function setupDetailPanel(companies) {
                 html += '</div>'; // neo-year-panel
             });
 
-            html += '<div class="neo-source">Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '') + '</div>';
+            // Data quality summary for this company's exec records
+            var dqCounts = { verified: 0, recomputed: 0, incomplete: 0, bloated: 0, other: 0 };
+            company.executives.forEach(function(e) {
+                var src = e._total_source || 'verified';
+                if (src === 'verified') dqCounts.verified++;
+                else if (src === 'recomputed' || src === 'recomputed_implausible_total' || src === 'computed') dqCounts.recomputed++;
+                else if (src === 'incomplete_components') dqCounts.incomplete++;
+                else if (src === 'bloated_component') dqCounts.bloated++;
+                else dqCounts.other++;
+            });
+            var dqTotal = company.executives.length;
+            var dqHasIssues = dqCounts.recomputed > 0 || dqCounts.incomplete > 0 || dqCounts.bloated > 0;
+
+            html += '<div class="neo-source">';
+            html += 'Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '');
+            if (dqHasIssues) {
+                html += ' · <span class="neo-dq-summary" title="Data quality: ' + dqCounts.verified + ' verified, ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged">';
+                html += '<span class="neo-dq-dot neo-dq-verified"></span>' + dqCounts.verified;
+                if (dqCounts.recomputed > 0) html += ' <span class="neo-dq-dot neo-dq-recomputed"></span>' + dqCounts.recomputed + ' recomputed';
+                if (dqCounts.incomplete > 0) html += ' <span class="neo-dq-dot neo-dq-incomplete"></span>' + dqCounts.incomplete + ' incomplete';
+                if (dqCounts.bloated > 0) html += ' <span class="neo-dq-dot neo-dq-bloated"></span>' + dqCounts.bloated + ' flagged';
+                html += '</span>';
+            }
+            html += '</div>';
             html += '</div>'; // neo-section
         }
 

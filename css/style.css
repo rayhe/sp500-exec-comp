@@ -6437,3 +6437,37 @@ footer li::before {
     .comp-twin-breakdown { display: block !important; position: static; transform: none; box-shadow: none; border-color: #ccc; }
     .comp-twin-breakdown::after { display: none; }
 }
+
+/* Data Quality Indicators */
+.neo-dq-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: middle;
+    cursor: help;
+}
+.neo-dq-verified { background: #06d6a0; }
+.neo-dq-recomputed { background: #ffd166; }
+.neo-dq-incomplete { background: #fb923c; }
+.neo-dq-bloated { background: #ef476f; }
+.neo-dq-summary {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+.neo-dq-summary .neo-dq-dot {
+    width: 6px;
+    height: 6px;
+    margin-left: 6px;
+    margin-right: 2px;
+}
+/* DQ indicators in light theme */
+[data-theme="light"] .neo-dq-verified { background: #059669; }
+[data-theme="light"] .neo-dq-recomputed { background: #d97706; }
+[data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
+[data-theme="light"] .neo-dq-bloated { background: #dc2626; }
