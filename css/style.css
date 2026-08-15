@@ -6824,3 +6824,19 @@ footer li::before {
         color: #4b5563;
     }
 }
+
+/* SoP distribution histogram in sort summary */
+.sop-dist-histogram { display: inline-flex; flex-direction: column; margin-left: 10px; vertical-align: middle; }
+.sop-dist-bars { display: flex; align-items: flex-end; height: 28px; gap: 2px; }
+.sop-dist-bar-group { display: flex; flex-direction: column; align-items: center; transition: opacity 0.2s; }
+.sop-dist-bar { width: 16px; border-radius: 2px 2px 0 0; min-height: 2px; }
+.sop-dist-bar-label { font-size: 0.6rem; color: #a1a1aa; font-family: monospace; margin-top: 1px; }
+.sop-dist-bracket-labels { display: flex; gap: 2px; }
+.sop-dist-bracket-label { width: 16px; text-align: center; font-size: 0.42rem; color: #71717a; }
+@media (max-width: 600px) {
+  .sop-dist-bar { width: 12px; }
+  .sop-dist-bracket-label { width: 12px; font-size: 0.38rem; }
+  .sop-dist-bars { gap: 1px; }
+  .sop-dist-bracket-labels { gap: 1px; }
+  .sop-dist-bar-label { font-size: 0.5rem; }
+}

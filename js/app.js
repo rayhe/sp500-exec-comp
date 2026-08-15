@@ -1014,6 +1014,9 @@ function populateInsights(comp, trends) {
         }
         if (window._activeSopFilter) {
             window._activeSopFilter = null;
+            var sfc = document.getElementById('sop-filter-chip');
+            if (sfc) sfc.remove();
+            if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
         }
         if (window._activeCeoTransitionFilter) {
             window._activeCeoTransitionFilter = false;
@@ -1052,6 +1055,8 @@ function populateInsights(comp, trends) {
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+        if (window.highlightYoYBucket) window.highlightYoYBucket(null);
+        if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
         scrollToTable();
     }
 
@@ -1582,6 +1587,7 @@ function buildSectorChips(companies) {
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
+        if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1606,6 +1612,7 @@ function buildSectorChips(companies) {
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
+        if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1730,6 +1737,9 @@ function renderSortContextSummary(companies) {
     }
     if (currentSort.key === 'ceo_name') {
         return renderCeoNameSortSummary(companies);
+    }
+    if (currentSort.key === '_sopApproval') {
+        return renderSopSortSummary(companies);
     }
     return null;
 }
@@ -2751,6 +2761,125 @@ function renderCeoNameSortSummary(companies) {
         }
     }
 
+    return html;
+}
+
+function renderSopSortSummary(companies) {
+    var withSop = companies.filter(function(c) { return c._sopApproval != null; });
+    if (withSop.length === 0) return null;
+
+    var sopVals = withSop.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+    var median = sopVals[Math.floor(sopVals.length / 2)];
+    var mean = sopVals.reduce(function(s, v) { return s + v; }, 0) / sopVals.length;
+    var below70 = withSop.filter(function(c) { return c._sopApproval < 70; });
+    var below85 = withSop.filter(function(c) { return c._sopApproval < 85; });
+    var above95 = withSop.filter(function(c) { return c._sopApproval >= 95; });
+
+    var html = '<div class="sort-summary sop-sort-summary">';
+    html += '<span class="sort-summary-label">📊 Say-on-Pay:</span> ';
+    html += '<span>' + withSop.length + ' of ' + companies.length + ' companies with data</span>';
+    html += '<span class="sort-summary-sep">·</span>';
+    html += '<span>Median <strong>' + median.toFixed(1) + '%</strong></span>';
+    html += '<span class="sort-summary-sep">·</span>';
+    html += '<span>Mean ' + mean.toFixed(1) + '%</span>';
+
+    // Mini histogram
+    var buckets = [
+        { min: 0, max: 50, label: '<50%', color: '#ef476f' },
+        { min: 50, max: 60, label: '50-60', color: '#f77f7f' },
+        { min: 60, max: 70, label: '60-70', color: '#fb923c' },
+        { min: 70, max: 80, label: '70-80', color: '#fbbf24' },
+        { min: 80, max: 85, label: '80-85', color: '#fcd34d' },
+        { min: 85, max: 90, label: '85-90', color: '#a3e635' },
+        { min: 90, max: 95, label: '90-95', color: '#4ade80' },
+        { min: 95, max: 100.1, label: '95+', color: '#06d6a0' }
+    ];
+    buckets.forEach(function(b) {
+        b.count = withSop.filter(function(c) { return c._sopApproval >= b.min && c._sopApproval < b.max; }).length;
+    });
+    var maxBucket = Math.max.apply(null, buckets.map(function(b) { return b.count; }));
+
+    html += '<div class="sop-dist-histogram"><div class="sop-dist-bars">';
+    buckets.forEach(function(b) {
+        if (b.count === 0) return;
+        var h = maxBucket > 0 ? Math.max(2, Math.round(b.count / maxBucket * 28)) : 2;
+        var isActive = window._activeSopFilter && window._activeSopFilter.min === b.min && window._activeSopFilter.max === b.max;
+        var opacity = window._activeSopFilter ? (isActive ? 1 : 0.3) : 0.8;
+        var outline = isActive ? ';outline:2px solid ' + b.color : '';
+        html += '<div class="sop-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies" style="cursor:pointer;opacity:' + opacity + '" onclick="if(window.highlightSopBucket)window.highlightSopBucket(' + b.min + ',' + b.max + ')">';
+        html += '<div class="sop-dist-bar" style="height:' + h + 'px;background:' + b.color + outline + '"></div>';
+        html += '<div class="sop-dist-bar-label">' + b.count + '</div>';
+        html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="sop-dist-bracket-labels">';
+    buckets.forEach(function(b) {
+        if (b.count === 0) return;
+        html += '<span class="sop-dist-bracket-label">' + b.label + '</span>';
+    });
+    html += '</div></div>';
+
+    // Notable stats
+    if (below70.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#ef476f">\u26a0 ' + below70.length + ' below 70%</span>';
+        html += ': ' + below70.sort(function(a, b) { return a._sopApproval - b._sopApproval; }).slice(0, 5).map(function(c) {
+            return '<span style="color:#ef476f">' + c.ticker + ' (' + c._sopApproval.toFixed(1) + '%)</span>';
+        }).join(', ');
+        html += '</div>';
+    }
+    if (above95.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#06d6a0">\u2713 ' + above95.length + ' above 95%</span> (near-unanimous support)</div>';
+    }
+
+    // Bucket-specific enrichment when SoP filter active
+    if (window._activeSopFilter) {
+        var af = window._activeSopFilter;
+        var inBucket = withSop.filter(function(c) { return c._sopApproval >= af.min && c._sopApproval < af.max; });
+        if (inBucket.length > 0) {
+            html += '<div class="sort-summary-detail" style="margin-top:6px;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px;">';
+            html += '<strong style="color:#06d6a0">' + af.label + '</strong> (' + inBucket.length + ' companies)';
+            var bucketVals = inBucket.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+            var bucketMedian = bucketVals[Math.floor(bucketVals.length / 2)];
+            html += ' \u00b7 Bucket median: ' + bucketMedian.toFixed(1) + '%';
+            // Sector breakdown
+            var sectorCounts = {};
+            inBucket.forEach(function(c) { sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1; });
+            var topSectors = Object.keys(sectorCounts).sort(function(a, b) { return sectorCounts[b] - sectorCounts[a]; }).slice(0, 3);
+            if (topSectors.length > 0) {
+                html += ' \u00b7 Top sectors: ' + topSectors.map(function(s) {
+                    return '<span style="color:' + (window.getSectorColor ? window.getSectorColor(s) : '#a1a1aa') + '">' + s.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls').replace('Health Care', 'Health') + ' (' + sectorCounts[s] + ')</span>';
+                }).join(', ');
+            }
+            html += '</div>';
+        }
+    }
+
+    // Sector skew when no bucket filter
+    if (!window._activeSopFilter && withSop.length >= 20) {
+        var sectorMedians = {};
+        var sectorGroups = {};
+        withSop.forEach(function(c) {
+            if (!sectorGroups[c.sector]) sectorGroups[c.sector] = [];
+            sectorGroups[c.sector].push(c._sopApproval);
+        });
+        Object.keys(sectorGroups).forEach(function(s) {
+            if (sectorGroups[s].length >= 5) {
+                var sorted = sectorGroups[s].sort(function(a, b) { return a - b; });
+                sectorMedians[s] = sorted[Math.floor(sorted.length / 2)];
+            }
+        });
+        var sectorEntries = Object.entries(sectorMedians).sort(function(a, b) { return a[1] - b[1]; });
+        if (sectorEntries.length >= 2) {
+            var lowest = sectorEntries[0];
+            var highest = sectorEntries[sectorEntries.length - 1];
+            html += '<div class="sort-summary-detail">';
+            html += 'Sector skew: <span style="color:' + (window.getSectorColor ? window.getSectorColor(lowest[0]) : '#ef476f') + '">' + lowest[0] + ' (' + lowest[1].toFixed(1) + '%)</span> lowest \u2192 ';
+            html += '<span style="color:' + (window.getSectorColor ? window.getSectorColor(highest[0]) : '#06d6a0') + '">' + highest[0] + ' (' + highest[1].toFixed(1) + '%)</span> highest';
+            html += '</div>';
+        }
+    }
+
+    html += '</div>';
     return html;
 }
 
@@ -5087,6 +5216,10 @@ function serializeState() {
         params.push('splbl=' + encodeURIComponent(window._activeStockPctTier.label));
         params.push('sptag=' + encodeURIComponent(window._activeStockPctTier.tag));
     }
+    if (window._activeSopFilter) {
+        params.push('sopmin=' + window._activeSopFilter.min);
+        params.push('sopmax=' + window._activeSopFilter.max);
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -5219,6 +5352,15 @@ function applyHashState(companies) {
         var spMax = parseFloat(state.spmax);
         if (!isNaN(spMin) && !isNaN(spMax)) {
             window._activeStockPctTier = { min: spMin, max: spMax, label: decodeURIComponent(state.splbl), tag: state.sptag ? decodeURIComponent(state.sptag) : '' };
+        }
+    }
+
+    // Say-on-pay filter
+    if (state.sopmin != null && state.sopmax != null) {
+        var sopMin = parseFloat(state.sopmin);
+        var sopMax = parseFloat(state.sopmax);
+        if (!isNaN(sopMin) && !isNaN(sopMax)) {
+            window._activeSopFilter = { min: sopMin, max: sopMax, label: sopMin + '-' + sopMax + '%' };
         }
     }
 
@@ -5804,7 +5946,7 @@ function hideMetricSkeletons() {
         if (window._activeSopFilter && window._activeSopFilter.min === minPct && window._activeSopFilter.max === maxPct) {
             window._activeSopFilter = null;
         } else {
-            window._activeSopFilter = { min: minPct, max: maxPct };
+            window._activeSopFilter = { min: minPct, max: maxPct, label: minPct + '-' + maxPct + '%' };
         }
         currentPage = 1;
         currentSort = { key: '_sopApproval', dir: 'asc' };
@@ -5817,9 +5959,40 @@ function hideMetricSkeletons() {
             }
         });
         renderTable(companies);
+        if (window.highlightSopDistBucket) window.highlightSopDistBucket(window._activeSopFilter ? window._activeSopFilter.min : null, window._activeSopFilter ? window._activeSopFilter.max : null);
+        updateSopFilterIndicator();
         pushState();
         announce(window._activeSopFilter ? 'Filtered to ' + minPct + '-' + maxPct + '% say-on-pay approval' : 'Say-on-pay filter cleared');
     };
+
+    function updateSopFilterIndicator() {
+        var existing = document.getElementById('sop-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeSopFilter) {
+            var sf = window._activeSopFilter;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × SoP ' + sf.label : 'SoP: ' + sf.label;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'sop-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(6,214,160,0.12)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(6,214,160,0.4)';
+            chip.style.color = isCombined ? '#a78bfa' : '#06d6a0';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + SoP filter' : 'Click to clear say-on-pay filter';
+            chip.addEventListener('click', function() {
+                window._activeSopFilter = null;
+                chip.remove();
+                if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateSopFilterIndicator = updateSopFilterIndicator;
 
     function updateConcFilterIndicator() {
         var existing = document.getElementById('conc-filter-chip');
@@ -6206,6 +6379,12 @@ function hideMetricSkeletons() {
             var ptf2 = document.getElementById('pctile-filter-chip');
             if (ptf2) ptf2.remove();
         }
+        if (window._activeSopFilter) {
+            window._activeSopFilter = null;
+            var sfChip = document.getElementById('sop-filter-chip');
+            if (sfChip) sfChip.remove();
+            if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
         currentPage = 1;
@@ -6220,6 +6399,7 @@ function hideMetricSkeletons() {
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
+        if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -6297,6 +6477,11 @@ function hideMetricSkeletons() {
             var ratios = comps.map(function(c) { return c.pay_ratio; }).filter(function(v) { return v != null && v > 0; }).sort(function(a, b) { return a - b; });
             var medianRatio = ratios.length ? ratios[Math.floor(ratios.length / 2)] : null;
 
+            // Say-on-pay median
+            var sopApprovals = comps.filter(function(c) { return c._sopApproval != null; }).map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+            var medianSop = sopApprovals.length ? sopApprovals[Math.floor(sopApprovals.length / 2)] : null;
+            var sopCoverage = sopApprovals.length;
+
             // Highest paid CEO
             var highest = comps.reduce(function(best, c) {
                 return (c.total_compensation || 0) > (best.total_compensation || 0) ? c : best;
@@ -6309,6 +6494,8 @@ function hideMetricSkeletons() {
                 mean: mean,
                 medianEq: medianEq,
                 medianRatio: medianRatio,
+                medianSop: medianSop,
+                sopCoverage: sopCoverage,
                 highestName: highest ? highest.ceo_name : '—',
                 highestTicker: highest ? highest.ticker : '',
                 highestPay: highest ? highest.total_compensation : 0
@@ -6354,6 +6541,7 @@ function hideMetricSkeletons() {
                     '<td class="sa-pay">' + fmt(r.mean) + '</td>' +
                     '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
                     '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
+                    '<td class="sa-sop">' + (r.medianSop != null ? '<span style="color:' + (r.medianSop < 70 ? '#ef476f' : r.medianSop < 85 ? '#fbbf24' : '#06d6a0') + '">' + r.medianSop.toFixed(1) + '%</span>' + (r.sopCoverage ? ' <span style="opacity:0.5;font-size:0.75em">(' + r.sopCoverage + ')</span>' : '') : '—') + '</td>' +
                     '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
                     '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
                     '</tr>';
@@ -6434,6 +6622,7 @@ function hideMetricSkeletons() {
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
+        if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
 
                 renderTable(companies);
 
@@ -8715,7 +8904,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || (activeRole && activeRole !== 'CEO')) {
                 setActiveSector(null);
                 searchTerm = '';
                 activeRole = null;
@@ -8756,6 +8945,12 @@ function hideMetricSkeletons() {
                     var yfc2 = document.getElementById('yoy-filter-chip');
                     if (yfc2) yfc2.remove();
                 }
+                if (window._activeSopFilter) {
+                    window._activeSopFilter = null;
+                    var sfcEsc = document.getElementById('sop-filter-chip');
+                    if (sfcEsc) sfcEsc.remove();
+                    if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+                }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
                 if (allChip) allChip.classList.add('active');
@@ -8774,6 +8969,7 @@ function hideMetricSkeletons() {
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
                 if (window.highlightYoYBucket) window.highlightYoYBucket(null);
+                if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
                 e.preventDefault();
                 return;
             }

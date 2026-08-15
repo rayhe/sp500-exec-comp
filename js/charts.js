@@ -277,6 +277,24 @@ window.highlightYoYBucket = function(minPct, maxPct) {
     });
 };
 
+/* Update SoP distribution chart bar highlighting without full redraw */
+window.highlightSopDistBucket = function(minPct, maxPct) {
+    d3.selectAll('#sop-dist-chart .sop-bar').each(function(d) {
+        if (!d) return;
+        if (minPct == null) {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        } else if (d.min === minPct && d.max === maxPct) {
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+        } else {
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+        }
+    });
+    d3.selectAll('#sop-dist-chart .sop-count-label').each(function(d) {
+        if (!d) return;
+        d3.select(this).attr('opacity', minPct == null || (d.min === minPct && d.max === maxPct) ? 1 : 0.4);
+    });
+};
+
 /* Update sector chart bar highlighting without full redraw */
 window.highlightSectorBar = function(sectorName) {
     d3.selectAll('#sector-chart .bar').each(function(d) {
