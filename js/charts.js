@@ -60,6 +60,8 @@ function initCharts(companies, trends, compData) {
     drawScatterChart(companies);
     drawYoYDistChart(companies);
     drawGenderPayChart(trends);
+    drawSopDistChart(companies);
+    drawSopScatterChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -172,7 +174,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'sop-dist-chart', 'sop-scatter-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -189,6 +191,8 @@ function redrawAllCharts() {
     drawScatterChart(_chartData.companies);
     drawYoYDistChart(_chartData.companies);
     drawGenderPayChart(_chartData.trends);
+    drawSopDistChart(_chartData.companies);
+    drawSopScatterChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -2621,6 +2625,16 @@ function drawScatterChart(companies) {
             unit: '%',
             minForLog: 0.1,
             canBeNegative: true
+        },
+        _sopApproval: {
+            label: 'Say-on-Pay Approval %',
+            shortLabel: 'SoP %',
+            get: function(c) { return c._sopApproval; },
+            fmt: function(v) { return v != null ? v.toFixed(1) + '%' : '—'; },
+            fmtAxis: function(v) { return Math.round(v) + '%'; },
+            unit: '%',
+            minForLog: 1,
+            canBeNegative: false
         }
     };
 
@@ -4252,4 +4266,336 @@ function drawGenderPayChart(trends) {
         narrativeDiv.textContent = narrative;
         narrativeDiv.style.display = 'block';
     }
+}
+
+
+/* ========================================================================
+   Say-on-Pay Distribution Chart (histogram)
+   ======================================================================== */
+function drawSopDistChart(companies) {
+    var container = document.getElementById('sop-dist-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withSop = companies.filter(function(c) { return c._sopApproval != null; });
+    if (withSop.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No say-on-pay data available yet</p>';
+        return;
+    }
+
+    var buckets = [
+        { min: 0, max: 50, label: '<50%', color: '#ef476f' },
+        { min: 50, max: 60, label: '50–60%', color: '#f77f7f' },
+        { min: 60, max: 70, label: '60–70%', color: '#fb923c' },
+        { min: 70, max: 80, label: '70–80%', color: '#fbbf24' },
+        { min: 80, max: 85, label: '80–85%', color: '#fcd34d' },
+        { min: 85, max: 90, label: '85–90%', color: '#a3e635' },
+        { min: 90, max: 95, label: '90–95%', color: '#4ade80' },
+        { min: 95, max: 100.1, label: '95–100%', color: '#06d6a0' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.companies = withSop.filter(function(c) {
+            return c._sopApproval >= b.min && c._sopApproval < b.max;
+        });
+        b.count = b.companies.length;
+        b.companies.sort(function(a, bb) { return a._sopApproval - bb._sopApproval; });
+    });
+
+    var activeBuckets = buckets.filter(function(b) { return b.count > 0; });
+    var maxCount = d3.max(activeBuckets, function(b) { return b.count; });
+
+    // Median / mean
+    var sopVals = withSop.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+    var medianSop = sopVals[Math.floor(sopVals.length / 2)];
+    var meanSop = sopVals.reduce(function(s, v) { return s + v; }, 0) / sopVals.length;
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 30, right: 30, bottom: 55, left: 50 };
+    var width = cw - margin.left - margin.right;
+    var height = 320 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', 320)
+        .attr('role', 'img')
+        .attr('aria-label', 'Say-on-Pay approval distribution histogram');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(activeBuckets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.15);
+
+    var y = d3.scaleLinear()
+        .domain([0, maxCount * 1.15])
+        .range([height, 0]);
+
+    // Axes
+    g.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px');
+
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .selectAll('text')
+        .style('fill', chartStrokeColor());
+
+    // Bars
+    g.selectAll('.sop-bar')
+        .data(activeBuckets)
+        .enter()
+        .append('rect')
+        .attr('class', 'sop-bar')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return height - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('rx', 3)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            var compList = b.companies.slice(0, 8).map(function(c) {
+                return c.ticker + ' ' + c._sopApproval.toFixed(1) + '%';
+            }).join('<br>');
+            if (b.count > 8) compList += '<br>...+' + (b.count - 8) + ' more';
+            showChartTooltip(event, '<strong>' + b.label + ' Approval</strong><br>' +
+                b.count + ' companies<br><br>' + compList);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() { hideChartTooltip(); })
+        .on('click', function(event, b) {
+            if (window.highlightSopBucket) window.highlightSopBucket(b.min, b.max);
+        });
+
+    // Count labels on top of bars
+    g.selectAll('.sop-count-label')
+        .data(activeBuckets)
+        .enter()
+        .append('text')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 5; })
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .text(function(b) { return b.count; });
+
+    // Median line
+    var allLabelsX = activeBuckets.map(function(b) { return b.label; });
+    var medianBucket = activeBuckets.find(function(b) { return medianSop >= b.min && medianSop < b.max; });
+    if (medianBucket) {
+        var medianXPos = x(medianBucket.label) + x.bandwidth() * ((medianSop - medianBucket.min) / (medianBucket.max - medianBucket.min));
+        g.append('line')
+            .attr('x1', medianXPos).attr('x2', medianXPos)
+            .attr('y1', 0).attr('y2', height)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '6,3')
+            .attr('opacity', 0.8);
+        g.append('text')
+            .attr('x', medianXPos + 4)
+            .attr('y', 12)
+            .style('fill', '#fff')
+            .style('font-size', '11px')
+            .style('font-weight', '600')
+            .text('Median: ' + medianSop.toFixed(1) + '%');
+    }
+
+    // Stats annotation
+    var statsText = withSop.length + ' companies | Median ' + medianSop.toFixed(1) + '% | Mean ' + meanSop.toFixed(1) + '%';
+    var lowCount = withSop.filter(function(c) { return c._sopApproval < 70; }).length;
+    if (lowCount > 0) statsText += ' | ' + lowCount + ' below 70%';
+    svg.append('text')
+        .attr('x', cw / 2)
+        .attr('y', 320 - 5)
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('opacity', 0.7)
+        .text(statsText);
+}
+
+/* ========================================================================
+   Say-on-Pay vs CEO Compensation Scatter Chart
+   ======================================================================== */
+function drawSopScatterChart(companies) {
+    var container = document.getElementById('sop-scatter-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withBoth = companies.filter(function(c) {
+        return c._sopApproval != null && c.total_compensation > 0;
+    });
+
+    if (withBoth.length < 5) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient say-on-pay data for scatter plot</p>';
+        return;
+    }
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 20, right: 30, bottom: 50, left: 65 };
+    var width = cw - margin.left - margin.right;
+    var height = 360 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', 360)
+        .attr('role', 'img')
+        .attr('aria-label', 'Say-on-Pay approval vs CEO total compensation scatter plot');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var maxComp = d3.max(withBoth, function(c) { return c.total_compensation; });
+    var x = d3.scaleLog()
+        .domain([d3.min(withBoth, function(c) { return c.total_compensation; }) * 0.8, maxComp * 1.1])
+        .range([0, width]);
+
+    var y = d3.scaleLinear()
+        .domain([Math.min(d3.min(withBoth, function(c) { return c._sopApproval; }) - 2, 50), 101])
+        .range([height, 0]);
+
+    // Grid lines
+    g.append('g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).ticks(6, '$.2s').tickSize(-height))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '10px');
+    g.selectAll('.grid line').attr('stroke', chartStrokeColor()).attr('opacity', 0.1);
+    g.selectAll('.grid .domain').attr('stroke', chartStrokeColor()).attr('opacity', 0.2);
+
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return d + '%'; }))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '10px');
+
+    // Threshold lines
+    var thresholds = [
+        { val: 70, label: '70% threshold', color: '#ef476f', dash: '6,3' },
+        { val: 85, label: '85% threshold', color: '#fbbf24', dash: '4,4' }
+    ];
+    thresholds.forEach(function(t) {
+        var yPos = y(t.val);
+        if (yPos >= 0 && yPos <= height) {
+            g.append('line')
+                .attr('x1', 0).attr('x2', width)
+                .attr('y1', yPos).attr('y2', yPos)
+                .attr('stroke', t.color)
+                .attr('stroke-width', 1.5)
+                .attr('stroke-dasharray', t.dash)
+                .attr('opacity', 0.6);
+            g.append('text')
+                .attr('x', width - 4)
+                .attr('y', yPos - 4)
+                .attr('text-anchor', 'end')
+                .style('fill', t.color)
+                .style('font-size', '10px')
+                .style('opacity', 0.8)
+                .text(t.label);
+        }
+    });
+
+    // Dots
+    var dots = g.selectAll('.sop-dot')
+        .data(withBoth)
+        .enter()
+        .append('circle')
+        .attr('class', 'sop-dot')
+        .attr('cx', function(c) { return x(c.total_compensation); })
+        .attr('cy', function(c) { return y(c._sopApproval); })
+        .attr('r', function(c) {
+            var sp = c._sopApproval;
+            return sp < 70 ? 7 : sp < 85 ? 5 : 4;
+        })
+        .attr('fill', function(c) {
+            var sp = c._sopApproval;
+            return sp < 70 ? '#ef476f' : sp < 85 ? '#fbbf24' : '#06d6a0';
+        })
+        .attr('opacity', 0.75)
+        .attr('stroke', function(c) {
+            return c._sopApproval < 70 ? '#fff' : 'none';
+        })
+        .attr('stroke-width', function(c) {
+            return c._sopApproval < 70 ? 1.5 : 0;
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, c) {
+            d3.select(this).attr('r', 8).attr('opacity', 1);
+            showChartTooltip(event,
+                '<strong>' + c.ticker + '</strong> — ' + c.company_name + '<br>' +
+                'CEO: ' + (c.ceo_name || '—') + '<br>' +
+                'Total Comp: ' + fmtCurr(c.total_compensation) + '<br>' +
+                'Say-on-Pay: <strong>' + c._sopApproval.toFixed(1) + '%</strong>' +
+                (c.say_on_pay && c.say_on_pay.filing_date ? '<br>Filed: ' + c.say_on_pay.filing_date : '') +
+                '<br>Sector: ' + (c.sector || '—'));
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function(event, c) {
+            var sp = c._sopApproval;
+            d3.select(this).attr('r', sp < 70 ? 7 : sp < 85 ? 5 : 4).attr('opacity', 0.75);
+            hideChartTooltip();
+        });
+
+    // Label outliers (< 70%)
+    var outliers = withBoth.filter(function(c) { return c._sopApproval < 70; });
+    outliers.forEach(function(c) {
+        g.append('text')
+            .attr('x', x(c.total_compensation) + 9)
+            .attr('y', y(c._sopApproval) + 4)
+            .style('fill', '#ef476f')
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .text(c.ticker + ' ' + c._sopApproval.toFixed(1) + '%');
+    });
+
+    // Axis labels
+    svg.append('text')
+        .attr('x', margin.left + width / 2)
+        .attr('y', 360 - 8)
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '12px')
+        .text('CEO Total Compensation (log scale)');
+
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -(margin.top + height / 2))
+        .attr('y', 14)
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '12px')
+        .text('Say-on-Pay Approval %');
+
+    // Compute correlation
+    var lnComps = withBoth.map(function(c) { return Math.log(c.total_compensation); });
+    var sopVals = withBoth.map(function(c) { return c._sopApproval; });
+    var n = withBoth.length;
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+    for (var i = 0; i < n; i++) {
+        sumX += lnComps[i]; sumY += sopVals[i];
+        sumXY += lnComps[i] * sopVals[i];
+        sumX2 += lnComps[i] * lnComps[i];
+        sumY2 += sopVals[i] * sopVals[i];
+    }
+    var corrNum = n * sumXY - sumX * sumY;
+    var corrDen = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    var corr = corrDen > 0 ? corrNum / corrDen : 0;
+
+    svg.append('text')
+        .attr('x', cw - margin.right - 5)
+        .attr('y', margin.top + 14)
+        .attr('text-anchor', 'end')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('opacity', 0.7)
+        .text('r = ' + corr.toFixed(3) + ' (n=' + n + ')');
 }

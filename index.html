@@ -164,6 +164,7 @@
                         <th class="sortable pctile-col" data-sort="_compPercentile" role="columnheader" aria-sort="none" tabindex="0" title="Compensation percentile rank (P99 = top 1%)">Pctile</th>
                         <th class="sortable conc-col" data-sort="_ceoConcPct" role="columnheader" aria-sort="none" tabindex="0" title="CEO pay as % of total NEO compensation">CEO %</th>
                         <th class="sortable" data-sort="sector" role="columnheader" aria-sort="none" tabindex="0">Sector</th>
+                        <th class="sortable sop-col" data-sort="_sopApproval" role="columnheader" aria-sort="none" tabindex="0" title="Say-on-Pay shareholder approval percentage from 8-K Item 5.07 filings">SoP %</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
                         <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
                     </tr>
@@ -274,6 +275,23 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel" id="sop-dist-panel">
+            <div class="section-header">
+                <h2>Say-on-Pay Approval Distribution</h2>
+                <p class="section-desc">Shareholder approval rates for executive compensation from 8-K Item 5.07 filings. Red &lt;70%, amber 70–85%, green &gt;85%. Click a bucket to filter the table.</p>
+            </div>
+            <div id="sop-dist-chart"></div>
+        </div>
+        <div class="chart-panel" id="sop-scatter-panel">
+            <div class="section-header">
+                <h2>Say-on-Pay vs CEO Compensation</h2>
+                <p class="section-desc">Shareholder approval percentage vs total CEO compensation. Do higher-paid CEOs face more shareholder resistance? Hover for details.</p>
+            </div>
+            <div id="sop-scatter-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="scatter-chart-panel">
             <div class="section-header">
                 <h2 id="scatter-title">CEO Pay vs. Pay Ratio</h2>
@@ -289,6 +307,7 @@
                             <option value="_ceoStockPctSort">Stock Awards %</option>
                             <option value="_ceoConcPct">CEO Concentration %</option>
                             <option value="_ceoYoYPct">YoY Change %</option>
+                            <option value="_sopApproval">Say-on-Pay %</option>
                         </select>
                     </label>
                     <label class="scatter-axis-label">Y axis:
@@ -299,6 +318,7 @@
                             <option value="_ceoStockPctSort">Stock Awards %</option>
                             <option value="_ceoConcPct">CEO Concentration %</option>
                             <option value="_ceoYoYPct">YoY Change %</option>
+                            <option value="_sopApproval">Say-on-Pay %</option>
                         </select>
                     </label>
                 </div>
@@ -309,6 +329,7 @@
                     <button class="scatter-preset-btn" data-x="_ceoStockPctSort" data-y="_ceoConcPct" title="Stock awards % vs CEO concentration — do equity-heavy packages concentrate power?">Stock vs Power</button>
                     <button class="scatter-preset-btn" data-x="total_compensation" data-y="_ceoYoYPct" title="Current pay level vs year-over-year change — are the highest-paid getting bigger raises?">Pay vs Momentum</button>
                     <button class="scatter-preset-btn" data-x="median_worker_pay" data-y="total_compensation" title="Worker pay vs CEO pay — the fundamental equity question">Worker vs CEO</button>
+                    <button class="scatter-preset-btn" data-x="total_compensation" data-y="_sopApproval" title="CEO total compensation vs say-on-pay approval — do shareholders resist higher pay?">Pay vs SoP</button>
                 </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">

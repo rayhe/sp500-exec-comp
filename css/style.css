@@ -4294,6 +4294,10 @@ footer li::before {
     .conc-badge.conc-high { color: #dc2626 !important; background: #fef2f2 !important; border-color: #dc2626 !important; }
     .conc-badge.conc-mid { color: #a16207 !important; background: #fefce8 !important; border-color: #a16207 !important; }
     .conc-badge.conc-low { color: #059669 !important; background: #f0fdf4 !important; border-color: #059669 !important; }
+    .sop-badge { font-size: 7px !important; }
+    .sop-badge.sop-low { color: #dc2626 !important; background: #fef2f2 !important; border-color: #dc2626 !important; }
+    .sop-badge.sop-mid { color: #a16207 !important; background: #fefce8 !important; border-color: #a16207 !important; }
+    .sop-badge.sop-high { color: #059669 !important; background: #f0fdf4 !important; border-color: #059669 !important; }
     .data-na { background: #fffbeb !important; border-color: #b45309 !important; color: #6b7280 !important; }
     .comp-bar { display: none !important; }
     .data-na-icon { color: #b45309 !important; }
@@ -5253,6 +5257,49 @@ footer li::before {
 [data-theme="light"] .conc-high-text { color: #dc2626; }
 [data-theme="light"] .conc-low-text { color: #059669; }
 
+/* Say-on-Pay badges */
+.sop-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-family: var(--mono);
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+}
+.sop-badge.sop-low {
+    background: rgba(239, 71, 111, 0.12);
+    color: #ef476f;
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.sop-badge.sop-mid {
+    background: rgba(255, 209, 102, 0.12);
+    color: #ffd166;
+    border-color: rgba(255, 209, 102, 0.25);
+}
+.sop-badge.sop-high {
+    background: rgba(6, 214, 160, 0.12);
+    color: #06d6a0;
+    border-color: rgba(6, 214, 160, 0.25);
+}
+[data-theme="light"] .sop-badge.sop-low {
+    background: rgba(220, 38, 38, 0.06);
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.15);
+}
+[data-theme="light"] .sop-badge.sop-mid {
+    background: rgba(202, 138, 4, 0.06);
+    color: #a16207;
+    border-color: rgba(202, 138, 4, 0.15);
+}
+[data-theme="light"] .sop-badge.sop-high {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+    border-color: rgba(5, 150, 105, 0.15);
+}
+
 /* Light theme: NEW CEO badge */
 [data-theme="light"] .new-ceo-badge {
     background: rgba(234,88,12,0.1);
@@ -5715,7 +5762,11 @@ footer li::before {
 @media (max-width: 600px) {
     .pctile-col, .pctile-cell { display: none; }
     .conc-col, .conc-cell { display: none; }
+    .sop-col, .sop-cell { display: none; }
 }
+
+/* Say-on-Pay column sizing */
+.sop-col { width: 56px; text-align: center; }
 
 /* === Touch target expansion for interactive histogram bars === */
 /* WCAG 2.5.5: minimum 24×24px touch targets for clickable inline bar charts.

@@ -238,6 +238,17 @@ function computeCeoConcentration(companies) {
     });
 }
 
+/* Pre-compute say-on-pay approval field for sorting/filtering.
+   Sets c._sopApproval from c.say_on_pay.approval_pct, or null if no data. */
+function computeSayOnPay(companies) {
+    companies.forEach(function(c) {
+        c._sopApproval = null;
+        if (c.say_on_pay && c.say_on_pay.approval_pct != null) {
+            c._sopApproval = c.say_on_pay.approval_pct;
+        }
+    });
+}
+
 function computeCompPercentile(companies) {
     var withComp = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
     withComp.sort(function(a, b) { return a.total_compensation - b.total_compensation; });
@@ -711,6 +722,7 @@ function sortTableByKey(key, dir) {
     window._activeRatioBucket = null;
     window._activeDistFilter = null;
     window._activeConcTier = null;
+    window._activeSopFilter = null;
     window._activeCeoTransitionFilter = false;
     window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
     window._activePctileTier = null; // null=off, { min, max, label, color }
@@ -757,7 +769,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', 'ceo_name': 'CEO name' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -999,6 +1011,9 @@ function populateInsights(comp, trends) {
             window._activeConcTier = null;
             var cc = document.getElementById('conc-filter-chip');
             if (cc) cc.remove();
+        }
+        if (window._activeSopFilter) {
+            window._activeSopFilter = null;
         }
         if (window._activeCeoTransitionFilter) {
             window._activeCeoTransitionFilter = false;
@@ -1342,8 +1357,29 @@ function populateTrends(trends) {
         }
     }
 
-    // 2. Say-on-Pay Voting
-    if (trends.say_on_pay_trends && trends.say_on_pay_trends.data) {
+    // 2. Say-on-Pay Voting — use actual company data from 8-K filings
+    var sopCompanies = companies.filter(function(c) { return c._sopApproval != null; });
+    if (sopCompanies.length > 0) {
+        var sopVals = sopCompanies.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+        var sopMedian = sopVals[Math.floor(sopVals.length / 2)];
+        var sopLow = sopCompanies.filter(function(c) { return c._sopApproval < 70; });
+        var sopBelow85 = sopCompanies.filter(function(c) { return c._sopApproval < 85; });
+        var detail2 = sopMedian.toFixed(1) + '% median shareholder approval across ' + sopCompanies.length + ' companies with 8-K Item 5.07 data. ';
+        detail2 += sopBelow85.length + ' companies below 85% threshold';
+        if (sopLow.length > 0) {
+            detail2 += ', ' + sopLow.length + ' below 70%';
+            var worstSop = sopLow.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; });
+            detail2 += ': ' + worstSop.slice(0, 5).map(function(c) { return c.ticker + ' (' + c._sopApproval.toFixed(1) + '%)'; }).join(', ');
+        }
+        detail2 += '.';
+        cards.push({
+            icon: '🗳️',
+            label: 'Say-on-Pay Voting',
+            value: sopMedian.toFixed(1) + '% median approval',
+            detail: detail2,
+            source: 'SEC EDGAR 8-K Item 5.07 (' + sopCompanies.length + '/' + companies.length + ' companies)'
+        });
+    } else if (trends.say_on_pay_trends && trends.say_on_pay_trends.data) {
         var sopData = trends.say_on_pay_trends.data;
         var latestSop = sopData[sopData.length - 1];
         if (latestSop) {
@@ -1352,12 +1388,6 @@ function populateTrends(trends) {
             if (latestSop.notable_failures && latestSop.notable_failures.length > 0) {
                 detail2 += ' Notable failures: ';
                 detail2 += latestSop.notable_failures.map(function(f) {
-                    return f.company + ' (' + f.support_pct + '%)';
-                }).join(', ') + '.';
-            }
-            if (latestSop.notable_low_support && latestSop.notable_low_support.length > 0) {
-                detail2 += ' Low support: ';
-                detail2 += latestSop.notable_low_support.map(function(f) {
                     return f.company + ' (' + f.support_pct + '%)';
                 }).join(', ') + '.';
             }
@@ -3165,6 +3195,12 @@ function renderTable(companies, options) {
             return c._ceoConcPct != null && c._ceoConcPct >= ct.min && c._ceoConcPct < ct.max;
         });
     }
+    if (window._activeSopFilter) {
+        var sf = window._activeSopFilter;
+        filtered = filtered.filter(function(c) {
+            return c._sopApproval != null && c._sopApproval >= sf.min && c._sopApproval < sf.max;
+        });
+    }
     if (window._activeCeoTransitionFilter) {
         filtered = filtered.filter(function(c) {
             return c._ceoTransition != null;
@@ -3398,6 +3434,13 @@ function renderTable(companies, options) {
                 return '<span class="conc-badge ' + cc + ' conc-badge-clickable" title="' + tt + '" onclick="event.stopPropagation();filterByConcTier(' + cMin + ',' + cMax + ',\'' + cl + '\',\'' + cLbl.replace("'","\\'") + '\')">' + Math.round(cp) + '%</span>';
             })() + '</td>' +
             '<td>' + (c.sector || '\u2014') + '</td>' +
+            '<td class="sop-cell">' + (function() {
+                if (c._sopApproval == null) return '\u2014';
+                var sp = c._sopApproval;
+                var sc = sp < 70 ? 'sop-low' : sp < 85 ? 'sop-mid' : 'sop-high';
+                var sl = sp < 70 ? 'Low approval' : sp < 85 ? 'Below average' : 'Strong approval';
+                return '<span class="sop-badge ' + sc + '" title="' + sl + ': ' + sp.toFixed(1) + '% shareholder approval (8-K Item 5.07)">' + sp.toFixed(1) + '%</span>';
+            })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
@@ -3832,7 +3875,7 @@ function setupDetailPanel(companies) {
         var _pctileLabel = company._compPercentile != null ? getPercentileLabel(company._compPercentile) : '';
 
         // Build HTML
-        var html = '<td colspan="12"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="13"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">';
         html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
         html += '<div class="detail-header-center">';
@@ -3929,6 +3972,24 @@ function setupDetailPanel(companies) {
                 sentences.push(dynParts.join('. ') + '.');
             }
 
+            // Sentence 4: Say-on-Pay shareholder approval
+            if (company._sopApproval != null) {
+                var sopPct = company._sopApproval;
+                var sopSentence = '';
+                if (sopPct < 50) {
+                    sopSentence = 'Shareholders rejected the compensation plan with only ' + sopPct.toFixed(1) + '% approval.';
+                } else if (sopPct < 70) {
+                    sopSentence = 'The say-on-pay vote drew significant opposition at ' + sopPct.toFixed(1) + '% approval — well below the S&P 500 median.';
+                } else if (sopPct < 85) {
+                    sopSentence = 'Say-on-pay approval of ' + sopPct.toFixed(1) + '% signals notable shareholder concern.';
+                } else if (sopPct >= 97) {
+                    sopSentence = 'Near-unanimous say-on-pay support at ' + sopPct.toFixed(1) + '%.';
+                } else {
+                    sopSentence = 'Say-on-pay passed with ' + sopPct.toFixed(1) + '% shareholder approval.';
+                }
+                sentences.push(sopSentence);
+            }
+
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';
@@ -3989,6 +4050,15 @@ function setupDetailPanel(companies) {
             var premRatio = company._ceoPremiumRatio;
             var premStr = premRatio >= 10 ? premRatio.toFixed(0) + '×' : premRatio.toFixed(1) + '×';
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Premium</div><div class="detail-stat-value">' + premStr + '</div><div class="detail-stat-sub">CEO pay vs. #2 executive</div></div>';
+        }
+
+        // Say-on-Pay shareholder approval stat
+        if (company._sopApproval != null) {
+            var sopV = company._sopApproval;
+            var sopCls = sopV < 70 ? 'negative' : sopV < 85 ? '' : 'positive';
+            var sopLbl = sopV < 50 ? 'Failed' : sopV < 70 ? 'Low approval' : sopV < 85 ? 'Below average' : sopV >= 97 ? 'Near-unanimous' : 'Passed';
+            var sopSrc = company.say_on_pay && company.say_on_pay.filing_date ? 'Filed ' + company.say_on_pay.filing_date : '8-K Item 5.07';
+            html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value ' + sopCls + '">' + sopV.toFixed(1) + '%</div>' + distBar(sopV, '0%', '100%') + '<div class="detail-stat-sub">' + sopLbl + ' — ' + sopSrc + '</div></div>';
         }
 
         // CEO History — transition/tenure data
@@ -5290,7 +5360,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="12"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="13"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
@@ -5368,6 +5438,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute CEO pay concentration (CEO % of total NEO comp + CEO premium ratio)
     computeCeoConcentration(companies);
+
+    // Pre-compute say-on-pay approval field for sorting/filtering
+    computeSayOnPay(companies);
 
     // Pre-compute CEO transitions (detect CEO changes between fiscal years)
     computeCeoTransitions(companies);
@@ -5725,6 +5798,27 @@ function hideMetricSkeletons() {
         renderTable(companies);
         pushState();
         announce(window._activeConcTier ? 'Filtered to ' + tag + ' CEO concentration (' + label + ')' : 'Concentration filter cleared');
+    };
+
+    window.highlightSopBucket = function(minPct, maxPct) {
+        if (window._activeSopFilter && window._activeSopFilter.min === minPct && window._activeSopFilter.max === maxPct) {
+            window._activeSopFilter = null;
+        } else {
+            window._activeSopFilter = { min: minPct, max: maxPct };
+        }
+        currentPage = 1;
+        currentSort = { key: '_sopApproval', dir: 'asc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_sopApproval') {
+                t.classList.add('sorted-asc');
+                t.setAttribute('aria-sort', 'ascending');
+            }
+        });
+        renderTable(companies);
+        pushState();
+        announce(window._activeSopFilter ? 'Filtered to ' + minPct + '-' + maxPct + '% say-on-pay approval' : 'Say-on-pay filter cleared');
     };
 
     function updateConcFilterIndicator() {
