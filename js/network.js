@@ -455,6 +455,7 @@ function initNetwork(peerData) {
             html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + outSame + ' same-sector</span><span class="tt-peer-cross">' + outCross + ' cross-sector</span></div>';
         }
         html += '<div class="tt-row"><span class="tt-label">Market cap</span><span class="tt-value">' + d.market_cap_tier + '</span></div>';
+        html += '<div class="tt-hint">Click for details · Drag to reposition</div>';
         tooltip.innerHTML = html;
         tooltip.classList.add('visible');
         tooltip.style.left = (mx + 12) + 'px';
@@ -497,8 +498,39 @@ function initNetwork(peerData) {
         .call(zoom)
         .on('dblclick.zoom', null);
 
-    // Mouse interaction
+    // Click vs drag detection — click navigates to detail, drag repositions node
+    var _mdStartX = 0, _mdStartY = 0, _mdNode = null, _mdDragged = false;
+    var CLICK_THRESHOLD = 5; // px — movement below this is a click, above is a drag
+
+    canvas.addEventListener('mousedown', function(event) {
+        var rect = canvas.getBoundingClientRect();
+        var mx = event.clientX - rect.left;
+        var my = event.clientY - rect.top;
+        var found = findNode(mx, my);
+        _mdStartX = event.clientX;
+        _mdStartY = event.clientY;
+        _mdNode = found;
+        _mdDragged = false;
+        if (found) {
+            event.stopPropagation();
+            dragNode = found;
+            var pt = transform.invert([mx, my]);
+            dragNode.fx = pt[0];
+            dragNode.fy = pt[1];
+            simulation.alphaTarget(0.3).restart();
+        }
+    });
+
     canvas.addEventListener('mousemove', function(event) {
+        // Track if mouse moved enough to count as a drag
+        if (_mdNode && !_mdDragged) {
+            var dx = event.clientX - _mdStartX;
+            var dy = event.clientY - _mdStartY;
+            if (Math.sqrt(dx * dx + dy * dy) > CLICK_THRESHOLD) {
+                _mdDragged = true;
+            }
+        }
+
         var rect = canvas.getBoundingClientRect();
         var mx = event.clientX - rect.left;
         var my = event.clientY - rect.top;
@@ -526,28 +558,25 @@ function initNetwork(peerData) {
         }
     });
 
-    canvas.addEventListener('mousedown', function(event) {
-        var rect = canvas.getBoundingClientRect();
-        var mx = event.clientX - rect.left;
-        var my = event.clientY - rect.top;
-        var found = findNode(mx, my);
-        if (found) {
-            event.stopPropagation();
-            dragNode = found;
-            var pt = transform.invert([mx, my]);
-            dragNode.fx = pt[0];
-            dragNode.fy = pt[1];
-            simulation.alphaTarget(0.3).restart();
-        }
-    });
+    canvas.addEventListener('mouseup', function(event) {
+        var clickedNode = _mdNode;
+        var wasDrag = _mdDragged;
 
-    canvas.addEventListener('mouseup', function() {
         if (dragNode) {
             dragNode.fx = null;
             dragNode.fy = null;
             dragNode = null;
             simulation.alphaTarget(0);
         }
+
+        // If this was a click (not a drag) on a node, navigate to company detail
+        if (clickedNode && !wasDrag && window.findCompanyInTable) {
+            hideTooltip();
+            window.findCompanyInTable(clickedNode.ticker);
+        }
+
+        _mdNode = null;
+        _mdDragged = false;
     });
 
     canvas.addEventListener('mouseleave', function() {
@@ -629,13 +658,25 @@ function initNetwork(peerData) {
             return;
         }
 
-        // If a long-press tooltip is already visible, dismiss it on next tap
+        // If a long-press tooltip is already visible, tap on same node navigates to detail
         if (_lpActive) {
+            var touch = event.touches[0];
+            var rect = canvas.getBoundingClientRect();
+            var mx = touch.clientX - rect.left;
+            var my = touch.clientY - rect.top;
+            var tapped = findNode(mx, my);
+            var prevNode = _lpNode; // save before cancelLongPress clears it
+
             _lpActive = false;
             hoveredNode = null;
             hideTooltip();
             draw();
             cancelLongPress();
+
+            // If tapped the same node that was showing tooltip, navigate to detail
+            if (tapped && prevNode && tapped.ticker === prevNode.ticker && window.findCompanyInTable) {
+                window.findCompanyInTable(tapped.ticker);
+            }
             return;
         }
 
