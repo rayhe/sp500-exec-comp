@@ -59,6 +59,7 @@ function initCharts(companies, trends, compData) {
     drawCompositionChart(trends);
     drawScatterChart(companies);
     drawYoYDistChart(companies);
+    drawGenderPayChart(trends);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -171,11 +172,13 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
     });
+    var narrativeEl = document.getElementById('gender-pay-narrative');
+    if (narrativeEl) { narrativeEl.textContent = ''; narrativeEl.style.display = 'none'; }
     drawSectorChart(_chartData.trends, _chartData.companies);
     drawTrendChart(_chartData.trends);
     drawRatioChart(_chartData.companies);
@@ -185,6 +188,7 @@ function redrawAllCharts() {
     drawCompositionChart(_chartData.trends);
     drawScatterChart(_chartData.companies);
     drawYoYDistChart(_chartData.companies);
+    drawGenderPayChart(_chartData.trends);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -3942,4 +3946,310 @@ function drawLorenzChart(companies) {
             if (hoverDotRef) hoverDotRef.attr('opacity', 0);
             hideChartTooltip();
         });
+}
+
+/* === Gender Pay Gap Chart === */
+function drawGenderPayChart(trends) {
+    var container = document.getElementById('gender-pay-chart');
+    if (!container || !trends || !trends.gender_trends || !trends.gender_trends.data || trends.gender_trends.data.length === 0) return;
+
+    var dark = typeof isDarkTheme === 'function' && isDarkTheme();
+    var data = trends.gender_trends.data;
+    var rect = container.getBoundingClientRect();
+    var totalW = rect.width || 500;
+    var totalH = 340;
+
+    // Colors
+    var femaleColor = '#e879a0';  // rose/pink
+    var overallColor = '#00b4d8'; // cyan (matches the tracker's primary)
+    var premiumColor = '#ffd166'; // gold for annotations
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#a1a1aa' : '#6b7280';
+    var subtleColor = dark ? '#3f3f46' : '#e5e7eb';
+
+    var margin = { top: 50, right: 160, bottom: 65, left: 55 };
+    var w = totalW - margin.left - margin.right;
+    var h = totalH - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', totalW).attr('height', totalH)
+        .attr('aria-label', 'Gender pay gap grouped bar chart');
+
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Prepare data: each item has fiscal_year, female_median_pay, overall_median_pay
+    var years = data.map(function(d) { return 'FY' + d.fiscal_year; });
+    var maxPay = d3.max(data, function(d) { return Math.max(d.female_median_pay || 0, d.overall_median_pay || 0); });
+    maxPay = maxPay * 1.15; // headroom for labels
+
+    // Scales
+    var x0 = d3.scaleBand().domain(years).range([0, w]).padding(0.35);
+    var x1 = d3.scaleBand().domain(['overall', 'female']).range([0, x0.bandwidth()]).padding(0.12);
+    var y = d3.scaleLinear().domain([0, maxPay]).range([h, 0]);
+
+    // Y-axis gridlines
+    var yTicks = y.ticks(5);
+    yTicks.forEach(function(t) {
+        g.append('line')
+            .attr('x1', 0).attr('x2', w)
+            .attr('y1', y(t)).attr('y2', y(t))
+            .attr('stroke', subtleColor).attr('stroke-width', 0.5);
+    });
+
+    // Y-axis
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(5).tickFormat(function(d) { return '$' + (d / 1e6).toFixed(0) + 'M'; }))
+        .call(function(g) { g.select('.domain').remove(); })
+        .call(function(g) { g.selectAll('.tick line').attr('stroke', subtleColor); })
+        .call(function(g) { g.selectAll('.tick text').attr('fill', mutedColor).attr('font-size', '11px'); });
+
+    // X-axis
+    g.append('g')
+        .attr('transform', 'translate(0,' + h + ')')
+        .call(d3.axisBottom(x0).tickSize(0))
+        .call(function(g) { g.select('.domain').attr('stroke', subtleColor); })
+        .call(function(g) { g.selectAll('.tick text').attr('fill', textColor).attr('font-size', '13px').attr('font-weight', '600').attr('dy', '12'); });
+
+    // Draw grouped bars
+    var barGroups = g.selectAll('.gender-bar-group')
+        .data(data)
+        .enter().append('g')
+        .attr('transform', function(d) { return 'translate(' + x0('FY' + d.fiscal_year) + ',0)'; });
+
+    // Overall bars
+    barGroups.append('rect')
+        .attr('x', function() { return x1('overall'); })
+        .attr('y', function(d) { return y(d.overall_median_pay); })
+        .attr('width', x1.bandwidth())
+        .attr('height', function(d) { return h - y(d.overall_median_pay); })
+        .attr('fill', overallColor)
+        .attr('rx', 3).attr('ry', 3)
+        .attr('opacity', 0.85)
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 1);
+            showChartTooltip(event, '<div class="ct-title">All CEOs — FY' + d.fiscal_year + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median Pay</span><span class="ct-val">' + fmtCurr(d.overall_median_pay) + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Total CEOs</span><span class="ct-val">' + d.total_ceos_in_study + '</span></div>');
+        })
+        .on('mousemove', positionChartTooltip)
+        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); });
+
+    // Female bars
+    barGroups.append('rect')
+        .attr('x', function() { return x1('female'); })
+        .attr('y', function(d) { return y(d.female_median_pay); })
+        .attr('width', x1.bandwidth())
+        .attr('height', function(d) { return h - y(d.female_median_pay); })
+        .attr('fill', femaleColor)
+        .attr('rx', 3).attr('ry', 3)
+        .attr('opacity', 0.85)
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 1);
+            var premium = ((d.female_median_pay - d.overall_median_pay) / d.overall_median_pay * 100).toFixed(1);
+            showChartTooltip(event, '<div class="ct-title">Female CEOs — FY' + d.fiscal_year + '</div>' +
+                '<div class="ct-row"><span class="ct-label">Median Pay</span><span class="ct-val">' + fmtCurr(d.female_median_pay) + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Female CEOs</span><span class="ct-val">' + d.num_female_ceos + ' / ' + d.total_ceos_in_study + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">Premium</span><span class="ct-val" style="color:' + premiumColor + '">+' + premium + '%</span></div>' +
+                (d.highest_paid_woman ? '<div class="ct-row ct-sub"><span class="ct-label">Highest</span><span class="ct-val">' + d.highest_paid_woman + '</span></div>' : '') +
+                (d.highest_paid_woman_comp ? '<div class="ct-row ct-sub"><span class="ct-label"></span><span class="ct-val">' + fmtCurr(d.highest_paid_woman_comp) + '</span></div>' : ''));
+        })
+        .on('mousemove', positionChartTooltip)
+        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); });
+
+    // Bar value labels
+    barGroups.append('text')
+        .attr('x', function() { return x1('overall') + x1.bandwidth() / 2; })
+        .attr('y', function(d) { return y(d.overall_median_pay) - 6; })
+        .attr('text-anchor', 'middle')
+        .attr('fill', overallColor)
+        .attr('font-size', '11px').attr('font-weight', '600')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(function(d) { return '$' + (d.overall_median_pay / 1e6).toFixed(1) + 'M'; });
+
+    barGroups.append('text')
+        .attr('x', function() { return x1('female') + x1.bandwidth() / 2; })
+        .attr('y', function(d) { return y(d.female_median_pay) - 6; })
+        .attr('text-anchor', 'middle')
+        .attr('fill', femaleColor)
+        .attr('font-size', '11px').attr('font-weight', '600')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(function(d) { return '$' + (d.female_median_pay / 1e6).toFixed(1) + 'M'; });
+
+    // Premium connector + label between each pair
+    data.forEach(function(d) {
+        var groupX = x0('FY' + d.fiscal_year);
+        var overallBarCenter = groupX + x1('overall') + x1.bandwidth() / 2;
+        var femaleBarCenter = groupX + x1('female') + x1.bandwidth() / 2;
+        var overallY = y(d.overall_median_pay);
+        var femaleY = y(d.female_median_pay);
+        var midY = (overallY + femaleY) / 2;
+        var premium = ((d.female_median_pay - d.overall_median_pay) / d.overall_median_pay * 100).toFixed(1);
+
+        // Connector line
+        g.append('line')
+            .attr('x1', overallBarCenter + x1.bandwidth() / 2 + 2)
+            .attr('x2', femaleBarCenter - x1.bandwidth() / 2 - 2)
+            .attr('y1', midY).attr('y2', midY)
+            .attr('stroke', premiumColor)
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '3,2')
+            .attr('opacity', 0.7);
+
+        // Premium badge
+        var badgeMidX = (overallBarCenter + femaleBarCenter) / 2;
+        var badgeW = 52, badgeH = 20;
+        g.append('rect')
+            .attr('x', badgeMidX - badgeW / 2)
+            .attr('y', midY - badgeH / 2)
+            .attr('width', badgeW).attr('height', badgeH)
+            .attr('rx', 10).attr('ry', 10)
+            .attr('fill', dark ? 'rgba(255,209,102,0.15)' : 'rgba(255,209,102,0.2)')
+            .attr('stroke', premiumColor)
+            .attr('stroke-width', 1);
+
+        g.append('text')
+            .attr('x', badgeMidX)
+            .attr('y', midY + 4.5)
+            .attr('text-anchor', 'middle')
+            .attr('fill', premiumColor)
+            .attr('font-size', '10.5px').attr('font-weight', '700')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('+' + premium + '%');
+    });
+
+    // Right-side stats panel
+    var statsX = w + 20;
+    var statsY = 0;
+
+    // Latest data point for stats
+    var latest = data[data.length - 1];
+    var prev = data.length > 1 ? data[0] : null;
+
+    // Representation
+    svg.append('text')
+        .attr('x', margin.left + statsX).attr('y', margin.top + statsY)
+        .attr('fill', mutedColor).attr('font-size', '10px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('REPRESENTATION');
+
+    var repPct = (latest.num_female_ceos / latest.total_ceos_in_study * 100).toFixed(1);
+    svg.append('text')
+        .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 18)
+        .attr('fill', femaleColor).attr('font-size', '22px').attr('font-weight', '700')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(repPct + '%');
+
+    svg.append('text')
+        .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 34)
+        .attr('fill', mutedColor).attr('font-size', '10px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(latest.num_female_ceos + ' of ' + latest.total_ceos_in_study + ' CEOs');
+
+    // Premium trend
+    var latestPremium = ((latest.female_median_pay - latest.overall_median_pay) / latest.overall_median_pay * 100).toFixed(1);
+    svg.append('text')
+        .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 58)
+        .attr('fill', mutedColor).attr('font-size', '10px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('FY' + latest.fiscal_year + ' PREMIUM');
+
+    svg.append('text')
+        .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 76)
+        .attr('fill', premiumColor).attr('font-size', '18px').attr('font-weight', '700')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('+' + latestPremium + '%');
+
+    if (prev && prev.female_premium_pct) {
+        var delta = (parseFloat(latestPremium) - prev.female_premium_pct).toFixed(1);
+        var deltaSign = parseFloat(delta) >= 0 ? '+' : '';
+        svg.append('text')
+            .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 92)
+            .attr('fill', parseFloat(delta) < 0 ? '#ef476f' : '#34d399').attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(deltaSign + delta + 'pp vs FY' + prev.fiscal_year);
+    }
+
+    // Highest paid
+    if (latest.highest_paid_woman) {
+        svg.append('text')
+            .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 116)
+            .attr('fill', mutedColor).attr('font-size', '10px')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('HIGHEST PAID');
+
+        // Extract name and company
+        var nameMatch = latest.highest_paid_woman.match(/^([^(]+)/);
+        var compMatch = latest.highest_paid_woman.match(/\(([^)]+)\)/);
+        var displayName = nameMatch ? nameMatch[1].trim() : latest.highest_paid_woman;
+        var displayComp = compMatch ? compMatch[1] : '';
+
+        svg.append('text')
+            .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 132)
+            .attr('fill', textColor).attr('font-size', '11px').attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(displayName);
+
+        if (displayComp) {
+            svg.append('text')
+                .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 146)
+                .attr('fill', mutedColor).attr('font-size', '10px')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(displayComp + (latest.highest_paid_woman_comp ? ' · ' + fmtCurr(latest.highest_paid_woman_comp) : ''));
+        }
+
+        if (latest.note) {
+            svg.append('text')
+                .attr('x', margin.left + statsX).attr('y', margin.top + statsY + 162)
+                .attr('fill', premiumColor).attr('font-size', '9px').attr('font-style', 'italic')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(latest.note.length > 40 ? latest.note.substring(0, 38) + '…' : latest.note);
+        }
+    }
+
+    // Legend at bottom
+    var legY = totalH - 18;
+    svg.append('rect')
+        .attr('x', margin.left).attr('y', legY - 8)
+        .attr('width', 12).attr('height', 12)
+        .attr('rx', 2).attr('fill', overallColor).attr('opacity', 0.85);
+    svg.append('text')
+        .attr('x', margin.left + 16).attr('y', legY + 2)
+        .attr('fill', mutedColor).attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('All CEOs (Median)');
+
+    svg.append('rect')
+        .attr('x', margin.left + 120).attr('y', legY - 8)
+        .attr('width', 12).attr('height', 12)
+        .attr('rx', 2).attr('fill', femaleColor).attr('opacity', 0.85);
+    svg.append('text')
+        .attr('x', margin.left + 136).attr('y', legY + 2)
+        .attr('fill', mutedColor).attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Female CEOs (Median)');
+
+    svg.append('rect')
+        .attr('x', margin.left + 270).attr('y', legY - 8)
+        .attr('width', 12).attr('height', 12)
+        .attr('rx', 2).attr('fill', premiumColor).attr('opacity', 0.3);
+    svg.append('text')
+        .attr('x', margin.left + 286).attr('y', legY + 2)
+        .attr('fill', mutedColor).attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('Premium %');
+
+    // Narrative annotation — bottom pill
+    var narrativeDiv = document.getElementById('gender-pay-narrative');
+    if (narrativeDiv) {
+        var premShrink = prev && prev.female_premium_pct && parseFloat(latestPremium) < prev.female_premium_pct;
+        var narrative = '';
+        if (premShrink) {
+            narrative = 'Female CEO pay premium narrowed from +' + prev.female_premium_pct + '% (FY' + prev.fiscal_year + ') to +' + latestPremium + '% (FY' + latest.fiscal_year + '). ';
+        } else {
+            narrative = 'Female CEOs earned +' + latestPremium + '% more than the overall median. ';
+        }
+        narrative += 'The premium reflects selection bias: women who reach CEO of an S&P 500 company tend to lead larger firms where all CEO pay is higher.';
+        narrativeDiv.textContent = narrative;
+        narrativeDiv.style.display = 'block';
+    }
 }

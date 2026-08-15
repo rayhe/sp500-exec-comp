@@ -6681,3 +6681,37 @@ footer li::before {
     border-color: rgba(109,40,217,0.2);
     color: #6d28d9;
 }
+
+
+/* === Gender Pay Gap Chart === */
+.gender-pay-narrative {
+    margin: 8px 16px 12px;
+    padding: 8px 16px;
+    background: rgba(232,121,160,0.08);
+    border: 1px solid rgba(232,121,160,0.25);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    color: #e879a0;
+}
+[data-theme="light"] .gender-pay-narrative {
+    background: rgba(232,121,160,0.06);
+    border-color: rgba(232,121,160,0.2);
+    color: #be185d;
+}
+@media (max-width: 600px) {
+    .gender-pay-narrative {
+        font-size: 0.72rem;
+        margin: 6px 10px 10px;
+        padding: 6px 12px;
+    }
+}
+@media print {
+    .gender-pay-narrative {
+        border-color: #e879a0;
+        color: #be185d;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
