@@ -1610,6 +1610,25 @@ var TOP10_MODES = {
             html += '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (d.ceo_name || '—') + '</span></div>';
             return html;
         }
+    },
+    sop: {
+        title: 'Top 10 Lowest Say-on-Pay Approval',
+        desc: 'Companies with the most shareholder resistance to executive compensation',
+        filter: function(c) { return c._sopApproval != null; },
+        sort: function(a, b) { return a._sopApproval - b._sopApproval; },
+        value: function(c) { return c._sopApproval; },
+        label: function(c) { return c.ceo_name || c.ticker; },
+        format: function(v) { return v.toFixed(1) + '%'; },
+        xLabel: 'Shareholder Approval (%)',
+        colors: ['#ef476f', '#e5383b', '#d90429', '#c1121f', '#fb923c', '#f59e0b', '#fbbf24', '#fcd34d', '#fde68a', '#fef3c7'],
+        tooltipExtra: function(d) {
+            var html = '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
+            if (d.pay_ratio) html += '<div class="ct-row"><span class="ct-label">Pay Ratio</span><span class="ct-val">' + d.pay_ratio.toLocaleString() + ':1</span></div>';
+            if (d.say_on_pay && d.say_on_pay.filing_date) html += '<div class="ct-row"><span class="ct-label">Filed</span><span class="ct-val">' + d.say_on_pay.filing_date + '</span></div>';
+            var sopLabel = d._sopApproval < 50 ? 'Failed' : d._sopApproval < 70 ? 'Significant opposition' : d._sopApproval < 85 ? 'Below average' : 'Passed';
+            html += '<div class="ct-row"><span class="ct-label">Status</span><span class="ct-val" style="color:' + (d._sopApproval < 70 ? '#ef476f' : d._sopApproval < 85 ? '#fbbf24' : '#06d6a0') + '">' + sopLabel + '</span></div>';
+            return html;
+        }
     }
 };
 
@@ -1801,7 +1820,7 @@ function drawTop10Chart(companies, mode) {
         .text(function(d) { return cfg.format(cfg.value(d), d); });
 
     // Median reference line (for comp and worker modes)
-    if (mode === 'comp' || mode === 'worker' || mode === 'ratio') {
+    if (mode === 'comp' || mode === 'worker' || mode === 'ratio' || mode === 'sop') {
         // When sector-filtered, show sector median; always show S&P 500 median
         var sp500Vals = companies.filter(cfg.filter).map(function(c) { return cfg.value(c); }).sort(function(a, b) { return a - b; });
         if (sp500Vals.length > 0) {
@@ -1872,6 +1891,35 @@ function drawTop10Chart(companies, mode) {
                 .attr('fill', '#ef476f').attr('font-size', '8px').attr('opacity', 0.7)
                 .text('S&P 500 #1: ' + sp500Top1.ticker + ' ' + cfg.format(sp500TopVal, sp500Top1));
         }
+    }
+
+    // SoP-specific threshold lines — failure (50%) and significant opposition (70%)
+    if (mode === 'sop') {
+        var sopThresholds = [
+            { val: 50, label: 'Failed', color: '#ef476f', dash: '6,3', yOff: 14 },
+            { val: 70, label: 'Opposition', color: '#fbbf24', dash: '4,4', yOff: 28 },
+            { val: 85, label: 'Below avg', color: '#94a3b8', dash: '3,3', yOff: 14 }
+        ];
+        sopThresholds.forEach(function(t) {
+            var xPos = x(t.val);
+            if (xPos > 20 && xPos < w - 10) {
+                svg.append('line')
+                    .attr('x1', xPos).attr('x2', xPos)
+                    .attr('y1', -4).attr('y2', h + 4)
+                    .attr('stroke', t.color).attr('stroke-width', 1.5)
+                    .attr('stroke-dasharray', t.dash).attr('opacity', 0.5);
+                svg.append('text')
+                    .attr('x', xPos - 3).attr('y', t.yOff)
+                    .attr('text-anchor', 'end')
+                    .attr('fill', t.color).attr('font-size', '8px').attr('font-weight', '600').attr('opacity', 0.8)
+                    .text(t.val + '%');
+                svg.append('text')
+                    .attr('x', xPos - 3).attr('y', t.yOff + 10)
+                    .attr('text-anchor', 'end')
+                    .attr('fill', t.color).attr('font-size', '7px').attr('opacity', 0.6)
+                    .text(t.label);
+            }
+        });
     }
 }
 
