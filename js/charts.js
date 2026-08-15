@@ -78,6 +78,8 @@ function initCharts(companies, trends, compData) {
     setupScatterPresets(_redrawScatter);
     // Top 10 mode toggle buttons
     setupTop10ModeToggle();
+    // Trend overlay toggle buttons
+    setupTrendOverlayToggle();
 }
 
 /* Sync active state of scatter preset buttons to match current dropdowns */
@@ -128,6 +130,23 @@ function setupTop10ModeToggle() {
 }
 
 /* Debounced resize handler — clears and redraws all SVG charts */
+/* Wire up trend chart overlay toggle buttons */
+function setupTrendOverlayToggle() {
+    var toggleContainer = document.getElementById('trend-overlay-toggle');
+    if (!toggleContainer) return;
+    toggleContainer.querySelectorAll('.trend-overlay-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            // CEO is always on, but toggle the others
+            if (btn.dataset.series === 'ceo') return; // CEO always active
+            btn.classList.toggle('active');
+            // Redraw trend chart with new overlay state
+            var el = document.getElementById('trend-chart');
+            if (el) el.innerHTML = '';
+            drawTrendChart(_chartData.trends);
+        });
+    });
+}
+
 function setupChartResize() {
     var resizeTimer;
     window.addEventListener('resize', function() {
@@ -621,165 +640,517 @@ function drawSectorChart(trends, companies) {
 /* --- Trend Line Chart --- */
 function drawTrendChart(trends) {
     var container = document.getElementById('trend-chart');
-    var data = trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data
-        ? trends.median_ceo_pay_by_year.data
-        : [];
+    var ceoData = trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data
+        ? trends.median_ceo_pay_by_year.data : [];
+    var workerData = trends.median_worker_pay_by_year && trends.median_worker_pay_by_year.data
+        ? trends.median_worker_pay_by_year.data : [];
+    var ratioData = trends.pay_ratio_trend && trends.pay_ratio_trend.data
+        ? trends.pay_ratio_trend.data : [];
 
-    if (data.length === 0) {
+    if (ceoData.length === 0) {
         container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No trend data available</p>';
         return;
     }
 
-    var margin = { top: 20, right: 40, bottom: 40, left: 70 };
+    // Determine which series are active from toggle buttons
+    var showCeo = true, showWorker = false, showRatio = false;
+    var toggleBtns = document.querySelectorAll('.trend-overlay-btn');
+    toggleBtns.forEach(function(btn) {
+        if (btn.dataset.series === 'ceo') showCeo = btn.classList.contains('active');
+        if (btn.dataset.series === 'worker') showWorker = btn.classList.contains('active');
+        if (btn.dataset.series === 'ratio') showRatio = btn.classList.contains('active');
+    });
+
+    // Build lookup maps for worker pay and ratio by year
+    var workerByYear = {};
+    workerData.forEach(function(d) { workerByYear[d.year] = d; });
+    var ratioByYear = {};
+    ratioData.forEach(function(d) { ratioByYear[d.year] = d; });
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var bgColor = dark ? 'rgba(15,15,26,0.8)' : 'rgba(255,255,255,0.85)';
+    var dotStroke = dark ? '#0f0f1a' : '#fff';
+
+    var hasRightAxis = showWorker || showRatio;
+    var hasDualRightAxis = showWorker && showRatio;
+    var margin = { top: 20, right: hasDualRightAxis ? 120 : hasRightAxis ? 80 : 40, bottom: (showWorker || showRatio) ? 55 : 40, left: 70 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = 280;
+
+    // Compute global X domain across all visible series
+    var allYears = ceoData.map(function(d) { return d.year; });
+    if (showWorker) workerData.forEach(function(d) { if (allYears.indexOf(d.year) < 0) allYears.push(d.year); });
+    if (showRatio) ratioData.forEach(function(d) { if (allYears.indexOf(d.year) < 0) allYears.push(d.year); });
+    allYears.sort(function(a, b) { return a - b; });
+    var yearMin = allYears[0], yearMax = allYears[allYears.length - 1];
 
     var svg = d3.select('#trend-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
         .attr('height', h + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', 'S&P 500 compensation trend chart')
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    var x = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) { return d.year; }))
-        .range([0, w]);
+    var x = d3.scaleLinear().domain([yearMin, yearMax]).range([0, w]);
 
+    // Left Y axis: CEO pay (always present for scale context)
     var y = d3.scaleLinear()
         .domain([
-            d3.min(data, function(d) { return d.median_pay; }) * 0.9,
-            d3.max(data, function(d) { return d.median_pay; }) * 1.05
+            d3.min(ceoData, function(d) { return d.median_pay; }) * 0.9,
+            d3.max(ceoData, function(d) { return d.median_pay; }) * 1.05
         ])
         .range([h, 0]);
+
+    // Right Y axis: Worker pay or Pay ratio (mutually exclusive right axis, worker takes priority if both on)
+    var yRight = null;
+    var rightLabel = '';
+    var rightColor = '';
+    if (showWorker && workerData.length > 0) {
+        yRight = d3.scaleLinear()
+            .domain([
+                d3.min(workerData, function(d) { return d.median_worker_pay; }) * 0.92,
+                d3.max(workerData, function(d) { return d.median_worker_pay; }) * 1.08
+            ])
+            .range([h, 0]);
+        rightLabel = 'Median Worker Pay';
+        rightColor = '#06d6a0';
+    }
+    var yRatio = null;
+    if (showRatio && ratioData.length > 0) {
+        yRatio = d3.scaleLinear()
+            .domain([
+                d3.min(ratioData, function(d) { return d.median_ratio; }) * 0.9,
+                d3.max(ratioData, function(d) { return d.median_ratio; }) * 1.1
+            ])
+            .range([h, 0]);
+        if (!yRight) {
+            rightLabel = 'Pay Ratio';
+            rightColor = '#ffd166';
+        }
+    }
 
     // Grid
     svg.append('g').attr('class', 'grid')
         .call(d3.axisLeft(y).tickSize(-w).tickFormat('').ticks(5));
 
     // X axis
+    var xTickYears = allYears.filter(function(yr) { return Number.isInteger(yr); });
     svg.append('g').attr('class', 'axis')
         .attr('transform', 'translate(0,' + h + ')')
-        .call(d3.axisBottom(x).ticks(data.length).tickFormat(d3.format('d')));
+        .call(d3.axisBottom(x).tickValues(xTickYears).tickFormat(d3.format('d')));
 
-    // Y axis
+    // Left Y axis
     svg.append('g').attr('class', 'axis')
         .call(d3.axisLeft(y).ticks(5).tickFormat(function(d) { return fmtCurr(d); }));
 
-    // Area
-    var area = d3.area()
-        .x(function(d) { return x(d.year); })
-        .y0(h)
-        .y1(function(d) { return y(d.median_pay); })
-        .curve(d3.curveMonotoneX);
-
-    svg.append('path')
-        .datum(data)
-        .attr('fill', 'rgba(0,180,216,0.15)')
-        .attr('d', area);
-
-    // Line
-    var line = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.median_pay); })
-        .curve(d3.curveMonotoneX);
-
-    svg.append('path')
-        .datum(data)
-        .attr('fill', 'none')
-        .attr('stroke', '#00b4d8')
-        .attr('stroke-width', 2.5)
-        .attr('d', line);
-
-    // Dots
-    svg.selectAll('.dot')
-        .data(data)
-        .join('circle')
-        .attr('cx', function(d) { return x(d.year); })
-        .attr('cy', function(d) { return y(d.median_pay); })
-        .attr('r', 4)
-        .attr('fill', '#00b4d8')
-        .attr('stroke', '#0f0f1a')
-        .attr('stroke-width', 2)
-        .style('cursor', 'pointer')
-        .on('mouseover', function(event, d) {
-            d3.select(this).attr('r', 7).attr('stroke-width', 3);
-            var yoyHtml = '';
-            if (d.yoy_change) {
-                var isNeg = d.yoy_change.indexOf('-') === 0;
-                var yoyColor = isNeg ? '#ef476f' : '#06d6a0';
-                var yoyPrefix = isNeg ? '' : '+';
-                yoyHtml = '<div class="ct-row"><span class="ct-label">YoY Change</span><span class="ct-val" style="color:' + yoyColor + '">' + yoyPrefix + d.yoy_change + '</span></div>';
-            }
-            showChartTooltip(event,
-                '<div class="ct-title">FY ' + d.year + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>' +
-                yoyHtml);
-        })
-        .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function() {
-            d3.select(this).attr('r', 4).attr('stroke-width', 2);
-            hideChartTooltip();
-        });
-
-    // Labels on dots
-    svg.selectAll('.dot-label')
-        .data(data)
-        .join('text')
-        .attr('class', 'bar-label')
-        .attr('x', function(d) { return x(d.year); })
-        .attr('y', function(d) { return y(d.median_pay) - 12; })
+    // Left Y axis label
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -h / 2).attr('y', -56)
         .attr('text-anchor', 'middle')
-        .text(function(d) { return fmtCurr(d.median_pay); });
+        .attr('fill', '#00b4d8')
+        .attr('font-size', '10px')
+        .attr('font-weight', '500')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('CEO Median Pay');
 
-    // YoY growth annotations between consecutive dots
-    var yoyPairs = [];
-    for (var i = 1; i < data.length; i++) {
-        if (data[i].yoy_change) {
-            yoyPairs.push({
-                fromYear: data[i - 1].year,
-                toYear: data[i].year,
-                fromPay: data[i - 1].median_pay,
-                toPay: data[i].median_pay,
-                change: data[i].yoy_change
-            });
+    // Right Y axis (worker pay)
+    if (showWorker && yRight) {
+        svg.append('g').attr('class', 'axis')
+            .attr('transform', 'translate(' + w + ',0)')
+            .call(d3.axisRight(yRight).ticks(4).tickFormat(function(d) { return fmtCurr(d); }))
+            .selectAll('text').attr('fill', '#06d6a0');
+
+        svg.append('text')
+            .attr('transform', 'rotate(90)')
+            .attr('x', h / 2).attr('y', -w - 55)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#06d6a0')
+            .attr('font-size', '10px')
+            .attr('font-weight', '500')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Worker Pay');
+    }
+
+    // Right Y axis (ratio — second right axis if worker is also on, or primary right axis)
+    if (showRatio && yRatio) {
+        var ratioAxisOffset = showWorker && yRight ? w + 40 : w;
+        svg.append('g').attr('class', 'axis')
+            .attr('transform', 'translate(' + ratioAxisOffset + ',0)')
+            .call(d3.axisRight(yRatio).ticks(4).tickFormat(function(d) { return Math.round(d) + ':1'; }))
+            .selectAll('text').attr('fill', '#ffd166');
+
+        svg.append('text')
+            .attr('transform', 'rotate(90)')
+            .attr('x', h / 2).attr('y', -ratioAxisOffset - 55)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ffd166')
+            .attr('font-size', '10px')
+            .attr('font-weight', '500')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Pay Ratio');
+    }
+
+    // --- CEO Pay series (always drawn) ---
+    if (showCeo) {
+        // Area fill
+        var area = d3.area()
+            .x(function(d) { return x(d.year); })
+            .y0(h)
+            .y1(function(d) { return y(d.median_pay); })
+            .curve(d3.curveMonotoneX);
+
+        svg.append('path')
+            .datum(ceoData)
+            .attr('fill', 'rgba(0,180,216,0.12)')
+            .attr('d', area);
+
+        // Line
+        var ceoLine = d3.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return y(d.median_pay); })
+            .curve(d3.curveMonotoneX);
+
+        svg.append('path')
+            .datum(ceoData)
+            .attr('fill', 'none')
+            .attr('stroke', '#00b4d8')
+            .attr('stroke-width', 2.5)
+            .attr('d', ceoLine);
+
+        // Dots
+        svg.selectAll('.ceo-dot')
+            .data(ceoData)
+            .join('circle')
+            .attr('class', 'ceo-dot')
+            .attr('cx', function(d) { return x(d.year); })
+            .attr('cy', function(d) { return y(d.median_pay); })
+            .attr('r', 4)
+            .attr('fill', '#00b4d8')
+            .attr('stroke', dotStroke)
+            .attr('stroke-width', 2)
+            .style('cursor', 'pointer');
+
+        // Value labels on CEO dots (only when single series or few overlaps)
+        if (!showWorker && !showRatio) {
+            svg.selectAll('.ceo-dot-label')
+                .data(ceoData)
+                .join('text')
+                .attr('class', 'bar-label')
+                .attr('x', function(d) { return x(d.year); })
+                .attr('y', function(d) { return y(d.median_pay) - 12; })
+                .attr('text-anchor', 'middle')
+                .text(function(d) { return fmtCurr(d.median_pay); });
         }
     }
 
-    var yoyGroup = svg.append('g').attr('class', 'yoy-annotations');
+    // --- Worker Pay series ---
+    if (showWorker && yRight && workerData.length > 0) {
+        // Area fill
+        var workerArea = d3.area()
+            .x(function(d) { return x(d.year); })
+            .y0(h)
+            .y1(function(d) { return yRight(d.median_worker_pay); })
+            .curve(d3.curveMonotoneX);
 
-    yoyPairs.forEach(function(d) {
-        var midX = (x(d.fromYear) + x(d.toYear)) / 2;
-        var midY = (y(d.fromPay) + y(d.toPay)) / 2;
-        var isNeg = d.change.indexOf('-') === 0;
-        var labelColor = isNeg ? '#ef476f' : '#06d6a0';
-        var labelText = isNeg ? d.change : '+' + d.change;
-        var arrow = isNeg ? '▼' : '▲';
-        // Position below line to avoid dot value labels above
-        var labelY = midY + 22;
+        svg.append('path')
+            .datum(workerData)
+            .attr('fill', 'rgba(6,214,160,0.08)')
+            .attr('d', workerArea);
 
-        var annGroup = yoyGroup.append('g');
+        // Line
+        var workerLine = d3.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return yRight(d.median_worker_pay); })
+            .curve(d3.curveMonotoneX);
 
-        // Render text first to measure bounding box, then prepend rect behind it
-        var textNode = annGroup.append('text')
-            .attr('x', midX)
-            .attr('y', labelY)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '9.5px')
-            .attr('font-weight', '600')
-            .attr('font-family', 'JetBrains Mono, monospace')
-            .attr('fill', labelColor)
-            .text(arrow + ' ' + labelText);
+        svg.append('path')
+            .datum(workerData)
+            .attr('fill', 'none')
+            .attr('stroke', '#06d6a0')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '6,3')
+            .attr('d', workerLine);
 
-        // Background pill behind text for contrast
-        var bbox = textNode.node().getBBox();
-        var padX = 5, padY = 2;
-        annGroup.insert('rect', 'text')
-            .attr('x', bbox.x - padX)
-            .attr('y', bbox.y - padY)
-            .attr('width', bbox.width + padX * 2)
-            .attr('height', bbox.height + padY * 2)
-            .attr('rx', 6)
-            .attr('fill', typeof isDarkTheme === 'function' && !isDarkTheme() ? 'rgba(255,255,255,0.85)' : 'rgba(15,15,26,0.8)');
-    });
+        // Dots
+        svg.selectAll('.worker-dot')
+            .data(workerData)
+            .join('circle')
+            .attr('class', 'worker-dot')
+            .attr('cx', function(d) { return x(d.year); })
+            .attr('cy', function(d) { return yRight(d.median_worker_pay); })
+            .attr('r', 3.5)
+            .attr('fill', '#06d6a0')
+            .attr('stroke', dotStroke)
+            .attr('stroke-width', 1.5)
+            .style('cursor', 'pointer');
+    }
+
+    // --- Pay Ratio series ---
+    if (showRatio && yRatio && ratioData.length > 0) {
+        // Line
+        var ratioLine = d3.line()
+            .x(function(d) { return x(d.year); })
+            .y(function(d) { return yRatio(d.median_ratio); })
+            .curve(d3.curveMonotoneX);
+
+        svg.append('path')
+            .datum(ratioData)
+            .attr('fill', 'none')
+            .attr('stroke', '#ffd166')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '4,4')
+            .attr('d', ratioLine);
+
+        // Dots
+        svg.selectAll('.ratio-dot')
+            .data(ratioData)
+            .join('circle')
+            .attr('class', 'ratio-dot')
+            .attr('cx', function(d) { return x(d.year); })
+            .attr('cy', function(d) { return yRatio(d.median_ratio); })
+            .attr('r', 3.5)
+            .attr('fill', '#ffd166')
+            .attr('stroke', dotStroke)
+            .attr('stroke-width', 1.5)
+            .style('cursor', 'pointer');
+    }
+
+    // --- Interactive hover overlay for combined tooltip ---
+    var hoverLine = svg.append('line')
+        .attr('y1', 0).attr('y2', h)
+        .attr('stroke', mutedColor)
+        .attr('stroke-width', 0.8)
+        .attr('stroke-dasharray', '3,3')
+        .attr('opacity', 0)
+        .attr('pointer-events', 'none');
+
+    svg.append('rect')
+        .attr('width', w).attr('height', h)
+        .attr('fill', 'transparent')
+        .style('cursor', 'crosshair')
+        .on('mousemove', function(event) {
+            var mouseX = d3.pointer(event)[0];
+            var yearVal = x.invert(mouseX);
+            // Snap to nearest year
+            var nearestYear = Math.round(yearVal);
+            if (nearestYear < yearMin || nearestYear > yearMax) {
+                hoverLine.attr('opacity', 0);
+                hideChartTooltip();
+                return;
+            }
+            var snappedX = x(nearestYear);
+            hoverLine.attr('x1', snappedX).attr('x2', snappedX).attr('opacity', 0.5);
+
+            // Build combined tooltip
+            var html = '<div class="ct-title">FY ' + nearestYear + '</div>';
+            var hasContent = false;
+
+            // CEO pay
+            if (showCeo) {
+                var ceoPt = ceoData.find(function(d) { return d.year === nearestYear; });
+                if (ceoPt) {
+                    html += '<div class="ct-row"><span class="ct-label" style="color:#00b4d8">● CEO Median Pay</span><span class="ct-val">' + fmtCurr(ceoPt.median_pay) + '</span></div>';
+                    if (ceoPt.yoy_change) {
+                        var isNeg = ceoPt.yoy_change.indexOf('-') === 0;
+                        var yoyColor = isNeg ? '#ef476f' : '#06d6a0';
+                        html += '<div class="ct-row"><span class="ct-label" style="padding-left:12px;font-size:0.7rem">YoY</span><span class="ct-val" style="color:' + yoyColor + '">' + (isNeg ? '' : '+') + ceoPt.yoy_change + '</span></div>';
+                    }
+                    hasContent = true;
+                }
+            }
+
+            // Worker pay
+            if (showWorker) {
+                var workerPt = workerByYear[nearestYear];
+                if (workerPt) {
+                    html += '<div class="ct-row"><span class="ct-label" style="color:#06d6a0">● Worker Median Pay</span><span class="ct-val">' + fmtCurr(workerPt.median_worker_pay) + '</span></div>';
+                    if (workerPt.yoy_change) {
+                        var isNeg2 = workerPt.yoy_change.indexOf('-') === 0;
+                        var yoyColor2 = isNeg2 ? '#ef476f' : '#06d6a0';
+                        html += '<div class="ct-row"><span class="ct-label" style="padding-left:12px;font-size:0.7rem">YoY</span><span class="ct-val" style="color:' + yoyColor2 + '">' + (isNeg2 ? '' : '+') + workerPt.yoy_change + '</span></div>';
+                    }
+                    hasContent = true;
+                }
+            }
+
+            // Pay ratio
+            if (showRatio) {
+                var ratioPt = ratioByYear[nearestYear];
+                if (ratioPt) {
+                    html += '<div class="ct-row"><span class="ct-label" style="color:#ffd166">● Pay Ratio</span><span class="ct-val">' + Math.round(ratioPt.median_ratio) + ':1</span></div>';
+                    if (ratioPt.yoy_change) {
+                        var isNeg3 = ratioPt.yoy_change.indexOf('-') === 0;
+                        var yoyColor3 = isNeg3 ? '#ef476f' : '#06d6a0';
+                        html += '<div class="ct-row"><span class="ct-label" style="padding-left:12px;font-size:0.7rem">YoY</span><span class="ct-val" style="color:' + yoyColor3 + '">' + (isNeg3 ? '' : '+') + ratioPt.yoy_change + '</span></div>';
+                    }
+                    hasContent = true;
+                }
+            }
+
+            // CEO-to-worker multiplier when both visible
+            if (showCeo && showWorker) {
+                var ceoPt2 = ceoData.find(function(d) { return d.year === nearestYear; });
+                var workerPt2 = workerByYear[nearestYear];
+                if (ceoPt2 && workerPt2 && workerPt2.median_worker_pay > 0) {
+                    var mult = (ceoPt2.median_pay / workerPt2.median_worker_pay).toFixed(0);
+                    html += '<div class="ct-row" style="border-top:1px solid rgba(255,255,255,0.1);margin-top:4px;padding-top:4px"><span class="ct-label" style="font-size:0.7rem">CEO = ' + mult + '× worker pay</span></div>';
+                }
+            }
+
+            if (hasContent) {
+                showChartTooltip(event, html);
+            } else {
+                hideChartTooltip();
+            }
+
+            // Highlight dots at this year
+            svg.selectAll('.ceo-dot').attr('r', function(d) { return d.year === nearestYear ? 7 : 4; })
+                .attr('stroke-width', function(d) { return d.year === nearestYear ? 3 : 2; });
+            svg.selectAll('.worker-dot').attr('r', function(d) { return d.year === nearestYear ? 6 : 3.5; })
+                .attr('stroke-width', function(d) { return d.year === nearestYear ? 2.5 : 1.5; });
+            svg.selectAll('.ratio-dot').attr('r', function(d) { return d.year === nearestYear ? 6 : 3.5; })
+                .attr('stroke-width', function(d) { return d.year === nearestYear ? 2.5 : 1.5; });
+        })
+        .on('mouseout', function() {
+            hoverLine.attr('opacity', 0);
+            hideChartTooltip();
+            svg.selectAll('.ceo-dot').attr('r', 4).attr('stroke-width', 2);
+            svg.selectAll('.worker-dot').attr('r', 3.5).attr('stroke-width', 1.5);
+            svg.selectAll('.ratio-dot').attr('r', 3.5).attr('stroke-width', 1.5);
+        });
+
+    // YoY growth annotations (only when single CEO series for clarity)
+    if (showCeo && !showWorker && !showRatio) {
+        var yoyPairs = [];
+        for (var i = 1; i < ceoData.length; i++) {
+            if (ceoData[i].yoy_change) {
+                yoyPairs.push({
+                    fromYear: ceoData[i - 1].year,
+                    toYear: ceoData[i].year,
+                    fromPay: ceoData[i - 1].median_pay,
+                    toPay: ceoData[i].median_pay,
+                    change: ceoData[i].yoy_change
+                });
+            }
+        }
+
+        var yoyGroup = svg.append('g').attr('class', 'yoy-annotations');
+
+        yoyPairs.forEach(function(d) {
+            var midX = (x(d.fromYear) + x(d.toYear)) / 2;
+            var midY = (y(d.fromPay) + y(d.toPay)) / 2;
+            var isNeg = d.change.indexOf('-') === 0;
+            var labelColor = isNeg ? '#ef476f' : '#06d6a0';
+            var labelText = isNeg ? d.change : '+' + d.change;
+            var arrow = isNeg ? '\u25BC' : '\u25B2';
+            var labelY = midY + 22;
+
+            var annGroup = yoyGroup.append('g');
+            var textNode = annGroup.append('text')
+                .attr('x', midX).attr('y', labelY)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '9.5px')
+                .attr('font-weight', '600')
+                .attr('font-family', 'JetBrains Mono, monospace')
+                .attr('fill', labelColor)
+                .text(arrow + ' ' + labelText);
+
+            var bbox = textNode.node().getBBox();
+            var padX = 5, padY = 2;
+            annGroup.insert('rect', 'text')
+                .attr('x', bbox.x - padX).attr('y', bbox.y - padY)
+                .attr('width', bbox.width + padX * 2)
+                .attr('height', bbox.height + padY * 2)
+                .attr('rx', 6)
+                .attr('fill', bgColor);
+        });
+    }
+
+    // --- Growth rate summary annotation (when multi-series) ---
+    if ((showCeo && (showWorker || showRatio)) && ceoData.length >= 2) {
+        var summaryParts = [];
+        // CEO growth over available range
+        var ceoFirst = ceoData[0], ceoLast = ceoData[ceoData.length - 1];
+        var ceoGrowth = ((ceoLast.median_pay - ceoFirst.median_pay) / ceoFirst.median_pay * 100).toFixed(1);
+        summaryParts.push({ label: 'CEO', color: '#00b4d8', val: '+' + ceoGrowth + '% (' + ceoFirst.year + '\u2013' + ceoLast.year + ')' });
+
+        if (showWorker && workerData.length >= 2) {
+            var wFirst = workerData[0], wLast = workerData[workerData.length - 1];
+            var wGrowth = ((wLast.median_worker_pay - wFirst.median_worker_pay) / wFirst.median_worker_pay * 100).toFixed(1);
+            summaryParts.push({ label: 'Worker', color: '#06d6a0', val: '+' + wGrowth + '% (' + wFirst.year + '\u2013' + wLast.year + ')' });
+        }
+
+        if (showRatio && ratioData.length >= 2) {
+            var rFirst = ratioData[0], rLast = ratioData[ratioData.length - 1];
+            var rGrowth = ((rLast.median_ratio - rFirst.median_ratio) / rFirst.median_ratio * 100).toFixed(1);
+            summaryParts.push({ label: 'Ratio', color: '#ffd166', val: '+' + rGrowth + '% (' + rFirst.year + '\u2013' + rLast.year + ')' });
+        }
+
+        // Render growth summary in top-right area
+        summaryParts.forEach(function(sp, idx) {
+            svg.append('text')
+                .attr('x', w - 6)
+                .attr('y', 12 + idx * 16)
+                .attr('text-anchor', 'end')
+                .attr('fill', sp.color)
+                .attr('font-size', '10px')
+                .attr('font-weight', '600')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(sp.label + ': ' + sp.val);
+        });
+    }
+
+    // --- Inline legend (when multi-series) ---
+    if (showWorker || showRatio) {
+        var legY = h + 28;
+        var legX = 0;
+        var legItems = [];
+        if (showCeo) legItems.push({ label: 'CEO Median Pay', color: '#00b4d8', dash: null });
+        if (showWorker) legItems.push({ label: 'Worker Median Pay', color: '#06d6a0', dash: '6,3' });
+        if (showRatio) legItems.push({ label: 'Pay Ratio', color: '#ffd166', dash: '4,4' });
+
+        legItems.forEach(function(item, idx) {
+            var lx = legX + idx * 150;
+            svg.append('line')
+                .attr('x1', lx).attr('x2', lx + 20)
+                .attr('y1', legY).attr('y2', legY)
+                .attr('stroke', item.color)
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', item.dash || 'none');
+            svg.append('text')
+                .attr('x', lx + 25).attr('y', legY + 4)
+                .attr('fill', textColor)
+                .attr('font-size', '9px')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(item.label);
+        });
+    }
+
+    // Update chart title and description dynamically
+    var titleEl = document.getElementById('trend-title');
+    var descEl = document.getElementById('trend-desc');
+    if (titleEl) {
+        var seriesNames = ['CEO Pay'];
+        if (showWorker) seriesNames.push('Worker Pay');
+        if (showRatio) seriesNames.push('Pay Ratio');
+        titleEl.textContent = seriesNames.length > 1
+            ? 'Compensation Trends: ' + seriesNames.join(' + ')
+            : 'Median CEO Pay Trend';
+    }
+    if (descEl) {
+        if (showWorker || showRatio) {
+            var parts = ['S\u0026P 500 median CEO total compensation (2020\u20132025)'];
+            if (showWorker) parts.push('median worker pay (2023\u20132025)');
+            if (showRatio) parts.push('CEO-to-worker pay ratio (2018\u20132025)');
+            descEl.textContent = parts.join(', ') + '. Toggle series to compare growth trajectories.';
+        } else {
+            descEl.textContent = 'S\u0026P 500 median CEO total compensation, 2020\u20132025';
+        }
+    }
 }
 
 /* --- Pay Ratio Distribution (Histogram) --- */

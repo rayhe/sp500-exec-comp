@@ -6542,3 +6542,97 @@ footer li::before {
     border-radius: 2px;
     display: inline-block;
 }
+
+
+/* --- Trend Overlay Toggle --- */
+.trend-overlay-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+.trend-overlay-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #a1a1aa;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.trend-overlay-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+    color: #e4e4e7;
+}
+.trend-overlay-btn.active[data-series="ceo"] {
+    background: rgba(0,180,216,0.15);
+    border-color: rgba(0,180,216,0.5);
+    color: #00b4d8;
+    font-weight: 600;
+}
+.trend-overlay-btn.active[data-series="worker"] {
+    background: rgba(6,214,160,0.15);
+    border-color: rgba(6,214,160,0.5);
+    color: #06d6a0;
+    font-weight: 600;
+}
+.trend-overlay-btn.active[data-series="ratio"] {
+    background: rgba(255,209,102,0.15);
+    border-color: rgba(255,209,102,0.5);
+    color: #ffd166;
+    font-weight: 600;
+}
+/* Light theme */
+[data-theme="light"] .trend-overlay-btn {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.12);
+    color: #6b7280;
+}
+[data-theme="light"] .trend-overlay-btn:hover {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.2);
+    color: #1a1a2e;
+}
+[data-theme="light"] .trend-overlay-btn.active[data-series="ceo"] {
+    background: rgba(0,180,216,0.12);
+    border-color: rgba(0,180,216,0.4);
+    color: #0077b6;
+}
+[data-theme="light"] .trend-overlay-btn.active[data-series="worker"] {
+    background: rgba(6,214,160,0.12);
+    border-color: rgba(6,214,160,0.4);
+    color: #059669;
+}
+[data-theme="light"] .trend-overlay-btn.active[data-series="ratio"] {
+    background: rgba(255,209,102,0.15);
+    border-color: rgba(255,209,102,0.5);
+    color: #b45309;
+}
+/* Mobile */
+@media (max-width: 600px) {
+    .trend-overlay-toggle {
+        gap: 4px;
+    }
+    .trend-overlay-btn {
+        padding: 4px 8px;
+        font-size: 0.68rem;
+    }
+}
+/* Print */
+@media print {
+    .trend-overlay-toggle {
+        display: none;
+    }
+}
+
+/* Trend chart dual-axis label styling */
+.trend-axis-label-right {
+    font-size: 10px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+}

@@ -203,8 +203,13 @@
         </div>
         <div class="chart-panel" id="trend-chart-panel">
             <div class="section-header">
-                <h2>Median CEO Pay Trend</h2>
-                <p class="section-desc">S&P 500 median CEO total compensation, 2020–2025</p>
+                <h2 id="trend-title">Median CEO Pay Trend</h2>
+                <p class="section-desc" id="trend-desc">S&P 500 median CEO total compensation, 2020–2025</p>
+                <div class="trend-overlay-toggle" id="trend-overlay-toggle">
+                    <button class="trend-overlay-btn active" data-series="ceo" title="CEO median total compensation">💰 CEO Pay</button>
+                    <button class="trend-overlay-btn" data-series="worker" title="Median worker pay (from proxy disclosure)">👷 Worker Pay</button>
+                    <button class="trend-overlay-btn" data-series="ratio" title="CEO-to-worker pay ratio">📊 Pay Ratio</button>
+                </div>
             </div>
             <div id="trend-chart"></div>
         </div>
