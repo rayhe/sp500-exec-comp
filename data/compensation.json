@@ -16,7 +16,9 @@
       "Some companies (e.g., Amazon) have low SCT totals because equity grants span multiple years",
       "Tesla/Elon Musk has $0 compensation - correct per proxy filing",
       "Some entries are FY2025 (ADSK, BBY, CRM, TJX, WDAY, NVDA, KMX) due to non-calendar fiscal years",
-      "Data quality flags: verified = component sum matches stated total; recomputed = stated total replaced with component sum; incomplete_components = equity data not parsed, total from filing; bloated_component = one component appears inflated, total from filing retained"
+      "Data quality flags: verified = component sum matches stated total; recomputed = stated total replaced with component sum; incomplete_components = equity data not parsed, total from filing; bloated_component = one component appears inflated, total from filing retained",
+      "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 exec comp comes from carried interest, not traditional SCT packages",
+      "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant"
     ],
     "aggregate_stats": {
       "total_companies": 500,
@@ -491,9 +493,10 @@
       "_skip_enrichment": "no_def14a",
       "cik": "0001393818",
       "executives": [],
-      "data_source": "AFL-CIO Paywatch 2025",
+      "data_source": "AFL-CIO (partnership \u2014 no Summary Compensation Table in proxy)",
       "notes": "Partnership structure. NEO compensation primarily through partnership distributions and carried interest, not reported in standard Summary Compensation Table. AFL-CIO total includes realized distributions.",
-      "neo_count": 0
+      "neo_count": 0,
+      "_partnership_note": "Blackstone is structured as a limited partnership. Executive compensation comes from carried interest and distributions, not traditional salary/equity packages. No standard Summary Compensation Table in proxy filings."
     },
     {
       "ticker": "MSFT",
@@ -846,14 +849,15 @@
       "median_worker_pay": 210000,
       "pay_ratio": 327,
       "sector": "Financials",
-      "data_source": "AFL-CIO Paywatch 2025",
+      "data_source": "AFL-CIO (partnership \u2014 no Summary Compensation Table in proxy)",
       "cik": "0001404912",
       "filing_date": "2026-02-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1404912/000114036126007164/ny20061501x2_def14a.htm",
       "_skip_enrichment": "parser_incompatible",
       "executives": [],
       "notes": "Partnership structure. NEO compensation primarily through partnership distributions and carried interest, not reported in standard Summary Compensation Table. AFL-CIO total includes realized distributions.",
-      "neo_count": 0
+      "neo_count": 0,
+      "_partnership_note": "KKR is structured as a corporation but historically operated as a partnership. Executive compensation includes significant carried interest and investment income components not captured in traditional proxy tables."
     },
     {
       "ticker": "CARR",
@@ -30638,7 +30642,8 @@
         2025,
         2024
       ],
-      "data_source": "SEC EDGAR DEF 14A + AFL-CIO"
+      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "_mega_grant_note": "Verified against DEF 14A filed 2026-04-10: Shankh Mitra received $813.2M in stock awards in FY2025, a 60x increase from FY2024 ($13.5M). This is a front-loaded multi-year equity grant, not a recurring annual package."
     },
     {
       "ticker": "LOW",

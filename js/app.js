@@ -487,6 +487,69 @@ function computeTeamCompleteness(companies) {
     });
 }
 
+/* Pre-compute radar chart percentile data — 6 dimensions with S&P 500 and sector percentiles.
+   Each company gets c._radarProfile = { comp, stockPct, concPct, payRatio, workerPay, yoyChange }
+   where each value is 0-100 percentile (higher = more of that dimension).
+   Also computes sector median percentiles for overlay. */
+function computeRadarPercentiles(companies) {
+    // Helper: rank array and return percentile map (ticker → percentile 0-100)
+    function rankPercentiles(arr, accessor, higher_is_more) {
+        var valid = arr.filter(function(c) { return accessor(c) != null; });
+        if (higher_is_more) {
+            valid.sort(function(a, b) { return accessor(a) - accessor(b); });
+        } else {
+            valid.sort(function(a, b) { return accessor(b) - accessor(a); });
+        }
+        var map = {};
+        var n = valid.length;
+        valid.forEach(function(c, i) { map[c.ticker] = Math.round((i + 1) / n * 100); });
+        return map;
+    }
+
+    var compPctile = rankPercentiles(companies, function(c) { return c.total_compensation; }, true);
+    var stockPctile = rankPercentiles(companies, function(c) { return c._ceoStockPct; }, true);
+    var concPctile = rankPercentiles(companies, function(c) { return c._ceoConcPct; }, true);
+    var ratioPctile = rankPercentiles(companies, function(c) { return c.pay_ratio; }, true);
+    var workerPctile = rankPercentiles(companies, function(c) { return c.median_worker_pay; }, true);
+    var yoyPctile = rankPercentiles(companies, function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; }, true);
+
+    companies.forEach(function(c) {
+        c._radarProfile = {
+            comp: compPctile[c.ticker] || null,
+            stockPct: stockPctile[c.ticker] || null,
+            concPct: concPctile[c.ticker] || null,
+            payRatio: ratioPctile[c.ticker] || null,
+            workerPay: workerPctile[c.ticker] || null,
+            yoyChange: yoyPctile[c.ticker] || null
+        };
+    });
+
+    // Pre-compute sector median percentiles
+    var sectors = {};
+    companies.forEach(function(c) {
+        if (!c.sector) return;
+        if (!sectors[c.sector]) sectors[c.sector] = [];
+        sectors[c.sector].push(c);
+    });
+
+    window._radarSectorMedians = {};
+    Object.keys(sectors).forEach(function(sec) {
+        var scs = sectors[sec];
+        function medianOf(arr) {
+            var s = arr.slice().sort(function(a, b) { return a - b; });
+            var m = Math.floor(s.length / 2);
+            return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+        var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange'];
+        var result = {};
+        dims.forEach(function(d) {
+            var vals = scs.filter(function(c) { return c._radarProfile[d] != null; }).map(function(c) { return c._radarProfile[d]; });
+            result[d] = vals.length > 0 ? Math.round(medianOf(vals)) : 50;
+        });
+        window._radarSectorMedians[sec] = result;
+    });
+}
+
 /* Data completeness — reasons for missing pay ratio / median worker pay */
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
@@ -4562,6 +4625,39 @@ function setupDetailPanel(companies) {
             }
         })();
 
+        // --- Compensation Profile Radar Chart ---
+        if (company._radarProfile) {
+            var rp = company._radarProfile;
+            var radarDims = [
+                { key: 'comp', label: 'Total Comp', tip: 'CEO total compensation percentile' },
+                { key: 'stockPct', label: 'Equity Mix', tip: 'Stock awards as % of total comp' },
+                { key: 'payRatio', label: 'Pay Ratio', tip: 'CEO-to-median-worker pay ratio' },
+                { key: 'concPct', label: 'Concentration', tip: 'CEO pay as % of total NEO comp' },
+                { key: 'workerPay', label: 'Worker Pay', tip: 'Median worker pay percentile' },
+                { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year compensation change' }
+            ];
+            // Only render if at least 4 dimensions have data
+            var radarValidDims = radarDims.filter(function(d) { return rp[d.key] != null; });
+            if (radarValidDims.length >= 4) {
+                var sectorRadar = window._radarSectorMedians && window._radarSectorMedians[company.sector];
+                html += '<div class="radar-section">';
+                html += '<div class="radar-header">';
+                html += '<span class="radar-title">Compensation Profile</span>';
+                html += '<span class="radar-sub">Percentile position across 6 dimensions vs S&P 500 and ' + (company.sector || 'sector') + ' medians</span>';
+                html += '</div>';
+                html += '<div class="radar-chart-container" id="radar-chart-' + ticker + '" data-ticker="' + ticker + '"></div>';
+                html += '<div class="radar-legend">';
+                html += '<span class="radar-legend-item"><span class="radar-legend-swatch" style="background:rgba(0,180,216,0.3);border:2px solid #00b4d8"></span>' + ticker + '</span>';
+                html += '<span class="radar-legend-item"><span class="radar-legend-swatch" style="background:rgba(255,209,102,0.15);border:2px solid rgba(255,209,102,0.5)"></span>S&P 500 (P50)</span>';
+                if (sectorRadar) {
+                    var secColor = getSectorColor(company.sector);
+                    html += '<span class="radar-legend-item"><span class="radar-legend-swatch" style="background:' + secColor + '33;border:2px solid ' + secColor + '80"></span>' + (company.sector || 'Sector') + '</span>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+        }
+
         html += '</div></td>'; // detail-panel
 
         var detailRow = document.createElement('tr');
@@ -4720,6 +4816,137 @@ function setupDetailPanel(companies) {
                     _navigateDetail(1);
                 }
             });
+            // Render D3 radar chart if container exists
+            var radarContainer = detailRow.querySelector('#radar-chart-' + ticker);
+            if (radarContainer && company._radarProfile) {
+                (function() {
+                    var rp = company._radarProfile;
+                    var radarDims = [
+                        { key: 'comp', label: 'Total Comp' },
+                        { key: 'stockPct', label: 'Equity Mix' },
+                        { key: 'payRatio', label: 'Pay Ratio' },
+                        { key: 'concPct', label: 'Concentration' },
+                        { key: 'workerPay', label: 'Worker Pay' },
+                        { key: 'yoyChange', label: 'YoY Change' }
+                    ];
+                    var validDims = radarDims.filter(function(d) { return rp[d.key] != null; });
+                    if (validDims.length < 4) return;
+
+                    var size = 240;
+                    var cx = size / 2, cy = size / 2;
+                    var maxR = size / 2 - 32;
+                    var dark = isDarkTheme();
+                    var angleStep = (2 * Math.PI) / validDims.length;
+                    var startAngle = -Math.PI / 2; // Start from top
+
+                    function polarX(pct, i) { return cx + maxR * (pct / 100) * Math.cos(startAngle + i * angleStep); }
+                    function polarY(pct, i) { return cy + maxR * (pct / 100) * Math.sin(startAngle + i * angleStep); }
+
+                    var svg = d3.select(radarContainer).append('svg')
+                        .attr('width', size).attr('height', size)
+                        .attr('viewBox', '0 0 ' + size + ' ' + size)
+                        .style('max-width', '100%');
+
+                    // Grid rings at 25, 50, 75, 100%
+                    [25, 50, 75, 100].forEach(function(pct) {
+                        var pts = validDims.map(function(d, i) { return polarX(pct, i) + ',' + polarY(pct, i); }).join(' ');
+                        svg.append('polygon')
+                            .attr('points', pts)
+                            .attr('fill', 'none')
+                            .attr('stroke', dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)')
+                            .attr('stroke-width', pct === 50 ? 1.2 : 0.5);
+                    });
+
+                    // Axis lines
+                    validDims.forEach(function(d, i) {
+                        svg.append('line')
+                            .attr('x1', cx).attr('y1', cy)
+                            .attr('x2', polarX(100, i)).attr('y2', polarY(100, i))
+                            .attr('stroke', dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)')
+                            .attr('stroke-width', 0.5);
+                    });
+
+                    // S&P 500 median polygon (always at ~50th percentile)
+                    var sp500Pts = validDims.map(function(d, i) { return polarX(50, i) + ',' + polarY(50, i); }).join(' ');
+                    svg.append('polygon')
+                        .attr('points', sp500Pts)
+                        .attr('fill', 'rgba(255,209,102,0.08)')
+                        .attr('stroke', 'rgba(255,209,102,0.4)')
+                        .attr('stroke-width', 1.5)
+                        .attr('stroke-dasharray', '4,3');
+
+                    // Sector median polygon (if available)
+                    var sectorRadar = window._radarSectorMedians && window._radarSectorMedians[company.sector];
+                    if (sectorRadar) {
+                        var secColor = getSectorColor(company.sector);
+                        var secPts = validDims.map(function(d, i) {
+                            var val = sectorRadar[d.key] != null ? sectorRadar[d.key] : 50;
+                            return polarX(val, i) + ',' + polarY(val, i);
+                        }).join(' ');
+                        svg.append('polygon')
+                            .attr('points', secPts)
+                            .attr('fill', secColor + '15')
+                            .attr('stroke', secColor + '60')
+                            .attr('stroke-width', 1.5)
+                            .attr('stroke-dasharray', '6,3');
+                    }
+
+                    // Company polygon (main)
+                    var compPts = validDims.map(function(d, i) {
+                        var val = rp[d.key] != null ? rp[d.key] : 0;
+                        return polarX(val, i) + ',' + polarY(val, i);
+                    }).join(' ');
+                    svg.append('polygon')
+                        .attr('points', compPts)
+                        .attr('fill', 'rgba(0,180,216,0.18)')
+                        .attr('stroke', '#00b4d8')
+                        .attr('stroke-width', 2);
+
+                    // Company data point dots with hover
+                    validDims.forEach(function(d, i) {
+                        var val = rp[d.key] != null ? rp[d.key] : 0;
+                        var dx = polarX(val, i);
+                        var dy = polarY(val, i);
+                        svg.append('circle')
+                            .attr('cx', dx).attr('cy', dy).attr('r', 4)
+                            .attr('fill', '#00b4d8').attr('stroke', dark ? '#18181b' : '#fff').attr('stroke-width', 1.5)
+                            .style('cursor', 'default')
+                            .append('title').text(d.label + ': P' + val);
+                    });
+
+                    // Axis labels
+                    validDims.forEach(function(d, i) {
+                        var labelR = maxR + 18;
+                        var lx = cx + labelR * Math.cos(startAngle + i * angleStep);
+                        var ly = cy + labelR * Math.sin(startAngle + i * angleStep);
+                        var anchor = 'middle';
+                        if (Math.cos(startAngle + i * angleStep) < -0.3) anchor = 'end';
+                        else if (Math.cos(startAngle + i * angleStep) > 0.3) anchor = 'start';
+                        svg.append('text')
+                            .attr('x', lx).attr('y', ly)
+                            .attr('text-anchor', anchor)
+                            .attr('dominant-baseline', 'middle')
+                            .attr('font-size', '9px')
+                            .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+                            .attr('font-family', 'Inter, sans-serif')
+                            .text(d.label);
+                        // Show percentile value below label
+                        var pVal = rp[d.key];
+                        if (pVal != null) {
+                            var valColor = pVal >= 75 ? '#ef476f' : (pVal >= 50 ? '#ffd166' : (pVal >= 25 ? '#06d6a0' : '#00b4d8'));
+                            svg.append('text')
+                                .attr('x', lx).attr('y', ly + 11)
+                                .attr('text-anchor', anchor)
+                                .attr('dominant-baseline', 'middle')
+                                .attr('font-size', '8px')
+                                .attr('font-weight', '600')
+                                .attr('fill', valColor)
+                                .attr('font-family', 'Inter, sans-serif')
+                                .text('P' + pVal);
+                        }
+                    });
+                })();
+            }
             setTimeout(function() { panelEl.focus({ preventScroll: true }); }, 50);
         }
     });
@@ -5153,6 +5380,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute executive team completeness (C-suite role coverage per company)
     computeTeamCompleteness(companies);
+
+    // Pre-compute radar chart percentiles for 6-dimension compensation profile
+    computeRadarPercentiles(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();

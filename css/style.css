@@ -6481,3 +6481,64 @@ footer li::before {
 [data-theme="light"] .neo-dq-recomputed { background: #d97706; }
 [data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
 [data-theme="light"] .neo-dq-bloated { background: #dc2626; }
+
+
+/* === Compensation Profile Radar Chart === */
+.radar-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .radar-section {
+    border-top-color: rgba(0,0,0,0.08);
+}
+.radar-header {
+    margin-bottom: 10px;
+}
+.radar-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #e4e4e7;
+    display: block;
+}
+[data-theme="light"] .radar-title {
+    color: #1a1a2e;
+}
+.radar-sub {
+    font-size: 0.72rem;
+    color: #6b7280;
+    display: block;
+    margin-top: 2px;
+}
+.radar-chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 240px;
+}
+.radar-chart-container svg {
+    overflow: visible;
+}
+.radar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.radar-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: #a1a1aa;
+}
+[data-theme="light"] .radar-legend-item {
+    color: #4b5563;
+}
+.radar-legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+}
