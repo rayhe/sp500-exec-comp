@@ -6587,6 +6587,19 @@ footer li::before {
     color: #ffd166;
     font-weight: 600;
 }
+.trend-overlay-btn.active[data-series="indexed"] {
+    background: rgba(167,139,250,0.15);
+    border-color: rgba(167,139,250,0.5);
+    color: #a78bfa;
+    font-weight: 600;
+}
+.trend-toggle-divider {
+    color: rgba(255,255,255,0.15);
+    font-size: 0.8rem;
+    line-height: 28px;
+    user-select: none;
+    padding: 0 2px;
+}
 /* Light theme */
 [data-theme="light"] .trend-overlay-btn {
     background: rgba(0,0,0,0.03);
@@ -6613,6 +6626,14 @@ footer li::before {
     border-color: rgba(255,209,102,0.5);
     color: #b45309;
 }
+[data-theme="light"] .trend-overlay-btn.active[data-series="indexed"] {
+    background: rgba(167,139,250,0.12);
+    border-color: rgba(167,139,250,0.4);
+    color: #6d28d9;
+}
+[data-theme="light"] .trend-toggle-divider {
+    color: rgba(0,0,0,0.12);
+}
 /* Mobile */
 @media (max-width: 600px) {
     .trend-overlay-toggle {
@@ -6635,4 +6656,28 @@ footer li::before {
     font-size: 10px;
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 500;
+}
+
+/* Trend chart narrative annotation callout */
+.trend-narrative {
+    position: absolute;
+    left: 50%;
+    bottom: -30px;
+    transform: translateX(-50%);
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #a78bfa;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 2;
+}
+[data-theme="light"] .trend-narrative {
+    background: rgba(109,40,217,0.08);
+    border-color: rgba(109,40,217,0.2);
+    color: #6d28d9;
 }
