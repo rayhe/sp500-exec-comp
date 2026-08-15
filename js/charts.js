@@ -188,6 +188,10 @@ window._redrawSectorAwareCharts = function() {
     var el3 = document.getElementById('scatter-chart');
     if (el3) el3.innerHTML = '';
     drawScatterChart(_chartData.companies);
+    // Redraw Top 10 chart (sector-aware)
+    var el4 = document.getElementById('top10-chart');
+    if (el4) el4.innerHTML = '';
+    drawTop10Chart(_chartData.companies, _top10Mode);
 };
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -1069,24 +1073,54 @@ function drawTop10Chart(companies, mode) {
     var cfg = TOP10_MODES[mode];
     if (!cfg) return;
 
+    // Sector-aware filtering: when a sector is active, show that sector's top companies
+    var sectorName = window._activeSector || null;
+    var sectorFilteredCompanies = sectorName
+        ? companies.filter(function(c) { return c.sector === sectorName; })
+        : companies;
+    var sectorColor = sectorName && typeof getSectorColor === 'function' ? getSectorColor(sectorName) : null;
+
+    // Build sector-aware title and description
+    var sectorAbbr = sectorName
+        ? sectorName.replace('Information Technology', 'IT')
+            .replace('Communication Services', 'Comm Svcs')
+            .replace('Consumer Discretionary', 'Consumer Disc')
+            .replace('Consumer Staples', 'Consumer Stpls')
+            .replace('Health Care', 'Health Care')
+        : null;
+
     // Update title and description
     var titleEl = document.getElementById('top10-title');
     var descEl = document.getElementById('top10-desc');
-    if (titleEl) titleEl.textContent = cfg.title;
-    if (descEl) descEl.textContent = cfg.desc;
+    if (titleEl) titleEl.textContent = sectorName
+        ? cfg.title.replace('Top 10', 'Top ' + sectorAbbr)
+        : cfg.title;
+    if (descEl) descEl.textContent = sectorName
+        ? cfg.desc + ' — ' + sectorName + ' sector (' + sectorFilteredCompanies.length + ' companies)'
+        : cfg.desc;
 
     // Get and sort data
-    var filtered = companies.filter(cfg.filter);
+    var filtered = sectorFilteredCompanies.filter(cfg.filter);
     if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available for this view</p>';
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available' + (sectorName ? ' for ' + sectorName : '') + '</p>';
         return;
     }
     filtered.sort(cfg.sort);
-    var top10 = filtered.slice(0, 10);
+    var showCount = Math.min(10, filtered.length);
+    var top10 = filtered.slice(0, showCount);
+
+    // Also get S&P 500 overall #1 for reference line when in sector mode
+    var sp500Top1 = null;
+    if (sectorName) {
+        var sp500Filtered = companies.filter(cfg.filter);
+        sp500Filtered.sort(cfg.sort);
+        if (sp500Filtered.length > 0) sp500Top1 = sp500Filtered[0];
+    }
 
     var margin = { top: 20, right: 100, bottom: 30, left: 140 };
     var w = container.clientWidth - margin.left - margin.right;
-    var h = 320;
+    var barAreaH = Math.max(200, showCount * 32);
+    var h = Math.min(barAreaH, 320);
 
     var svg = d3.select('#top10-chart').append('svg')
         .attr('width', w + margin.left + margin.right)
@@ -1095,8 +1129,14 @@ function drawTop10Chart(companies, mode) {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     var maxVal = d3.max(top10, function(d) { return cfg.value(d); });
+    // When in sector mode, extend x-domain to include S&P 500 #1 so reference line is visible
+    var xMax = maxVal;
+    if (sp500Top1) {
+        var sp500Val = cfg.value(sp500Top1);
+        if (sp500Val > xMax) xMax = sp500Val;
+    }
     var x = d3.scaleLinear()
-        .domain([0, maxVal * 1.05])
+        .domain([0, xMax * 1.05])
         .range([0, w]);
 
     var y = d3.scaleBand()
@@ -1124,8 +1164,9 @@ function drawTop10Chart(companies, mode) {
         .attr('font-size', '10px')
         .text(cfg.xLabel);
 
-    // Bars
+    // Bars — use sector color when sector-filtered, otherwise mode gradient
     var colors = cfg.colors;
+    var useSectorColors = !!sectorName;
     svg.selectAll('.top-bar')
         .data(top10)
         .join('rect')
@@ -1133,26 +1174,46 @@ function drawTop10Chart(companies, mode) {
         .attr('y', function(d) { return y(cfg.label(d)); })
         .attr('width', function(d) { return Math.max(2, x(cfg.value(d))); })
         .attr('height', y.bandwidth())
-        .attr('fill', function(d, i) { return colors[Math.min(i, colors.length - 1)]; })
+        .attr('fill', function(d, i) {
+            if (useSectorColors && sectorColor) {
+                // Gradient effect: first bar full opacity, later bars slightly faded
+                return sectorColor;
+            }
+            return colors[Math.min(i, colors.length - 1)];
+        })
         .attr('rx', 3)
-        .attr('opacity', 0.85)
+        .attr('opacity', function(d, i) {
+            if (useSectorColors) return 0.95 - (i * 0.05);
+            return 0.85;
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
             // Dim other bars
             svg.selectAll('.top-bar').filter(function(o) { return o !== d; }).attr('opacity', 0.35);
             var rank = top10.indexOf(d) + 1;
-            var html = '<div class="ct-title">#' + rank + ' ' + (d.ceo_name || d.ticker) + '</div>';
+            var html = '<div class="ct-title">#' + rank + (sectorName ? ' in ' + sectorAbbr : '') + ' ' + (d.ceo_name || d.ticker) + '</div>';
             html += '<div class="ct-row"><span class="ct-label">Company</span><span class="ct-val">' + d.ticker + ' — ' + (d.company_name || '') + '</span></div>';
             html += '<div class="ct-row"><span class="ct-label">' + cfg.xLabel + '</span><span class="ct-val">' + cfg.format(cfg.value(d), d) + '</span></div>';
             html += cfg.tooltipExtra(d);
             if (d.sector) html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + d.sector + '</span></div>';
+            // Show S&P 500 rank when in sector mode
+            if (sectorName) {
+                var sp500All = companies.filter(cfg.filter);
+                sp500All.sort(cfg.sort);
+                var sp500Rank = sp500All.findIndex(function(c) { return c.ticker === d.ticker; }) + 1;
+                if (sp500Rank > 0) {
+                    html += '<div class="ct-row"><span class="ct-label">S&P 500 Rank</span><span class="ct-val">#' + sp500Rank + ' of ' + sp500All.length + '</span></div>';
+                }
+            }
             html += '<div class="ct-row ct-sub"><span class="ct-label">Click to find in table</span></div>';
             showChartTooltip(event, html);
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
-            svg.selectAll('.top-bar').attr('opacity', 0.85);
+            svg.selectAll('.top-bar').each(function(d, i) {
+                d3.select(this).attr('opacity', useSectorColors ? 0.95 - (i * 0.05) : 0.85);
+            });
             d3.select(this).attr('stroke', 'none');
             hideChartTooltip();
         })
@@ -1192,21 +1253,75 @@ function drawTop10Chart(companies, mode) {
 
     // Median reference line (for comp and worker modes)
     if (mode === 'comp' || mode === 'worker' || mode === 'ratio') {
-        var allVals = companies.filter(cfg.filter).map(function(c) { return cfg.value(c); }).sort(function(a, b) { return a - b; });
-        if (allVals.length > 0) {
-            var medIdx = Math.floor(allVals.length / 2);
-            var medVal = allVals.length % 2 === 0 ? (allVals[medIdx - 1] + allVals[medIdx]) / 2 : allVals[medIdx];
-            if (medVal > 0 && medVal < maxVal) {
-                svg.append('line')
-                    .attr('x1', x(medVal)).attr('x2', x(medVal))
-                    .attr('y1', 0).attr('y2', h)
-                    .attr('stroke', '#ffd166').attr('stroke-width', 1)
-                    .attr('stroke-dasharray', '6,4').attr('opacity', 0.6);
-                svg.append('text')
-                    .attr('x', x(medVal) + 4).attr('y', -4)
-                    .attr('fill', '#ffd166').attr('font-size', '9px').attr('opacity', 0.8)
-                    .text('S&P 500 Median: ' + cfg.format(medVal));
+        // When sector-filtered, show sector median; always show S&P 500 median
+        var sp500Vals = companies.filter(cfg.filter).map(function(c) { return cfg.value(c); }).sort(function(a, b) { return a - b; });
+        if (sp500Vals.length > 0) {
+            var sp500MedIdx = Math.floor(sp500Vals.length / 2);
+            var sp500MedVal = sp500Vals.length % 2 === 0 ? (sp500Vals[sp500MedIdx - 1] + sp500Vals[sp500MedIdx]) / 2 : sp500Vals[sp500MedIdx];
+
+            if (sectorName) {
+                // Show sector median as primary line
+                var sectorVals = filtered.map(function(c) { return cfg.value(c); }).sort(function(a, b) { return a - b; });
+                if (sectorVals.length > 0) {
+                    var secMedIdx = Math.floor(sectorVals.length / 2);
+                    var secMedVal = sectorVals.length % 2 === 0 ? (sectorVals[secMedIdx - 1] + sectorVals[secMedIdx]) / 2 : sectorVals[secMedIdx];
+                    if (secMedVal > 0 && x(secMedVal) > 20 && x(secMedVal) < w - 20) {
+                        svg.append('line')
+                            .attr('x1', x(secMedVal)).attr('x2', x(secMedVal))
+                            .attr('y1', 0).attr('y2', h)
+                            .attr('stroke', sectorColor).attr('stroke-width', 1.5)
+                            .attr('stroke-dasharray', '6,4').attr('opacity', 0.7);
+                        svg.append('text')
+                            .attr('x', x(secMedVal) + 4).attr('y', -4)
+                            .attr('fill', sectorColor).attr('font-size', '9px').attr('opacity', 0.9)
+                            .text(sectorAbbr + ' Median: ' + cfg.format(secMedVal));
+                    }
+                }
+                // Show S&P 500 median as secondary dashed line
+                if (sp500MedVal > 0 && x(sp500MedVal) > 20 && x(sp500MedVal) < w - 20) {
+                    svg.append('line')
+                        .attr('x1', x(sp500MedVal)).attr('x2', x(sp500MedVal))
+                        .attr('y1', 0).attr('y2', h)
+                        .attr('stroke', '#ffd166').attr('stroke-width', 1)
+                        .attr('stroke-dasharray', '3,3').attr('opacity', 0.4);
+                    svg.append('text')
+                        .attr('x', x(sp500MedVal) + 4).attr('y', h - 4)
+                        .attr('fill', '#ffd166').attr('font-size', '8px').attr('opacity', 0.5)
+                        .text('S&P 500 Median');
+                }
+            } else {
+                // Standard: show S&P 500 median
+                if (sp500MedVal > 0 && sp500MedVal < maxVal) {
+                    svg.append('line')
+                        .attr('x1', x(sp500MedVal)).attr('x2', x(sp500MedVal))
+                        .attr('y1', 0).attr('y2', h)
+                        .attr('stroke', '#ffd166').attr('stroke-width', 1)
+                        .attr('stroke-dasharray', '6,4').attr('opacity', 0.6);
+                    svg.append('text')
+                        .attr('x', x(sp500MedVal) + 4).attr('y', -4)
+                        .attr('fill', '#ffd166').attr('font-size', '9px').attr('opacity', 0.8)
+                        .text('S&P 500 Median: ' + cfg.format(sp500MedVal));
+                }
             }
+        }
+    }
+
+    // S&P 500 #1 reference line — when in sector mode, show where the S&P 500 leader sits
+    if (sectorName && sp500Top1) {
+        var sp500TopVal = cfg.value(sp500Top1);
+        // Only show if the S&P 500 #1 is not already in the sector list
+        var sp500TopInSector = top10.some(function(d) { return d.ticker === sp500Top1.ticker; });
+        if (!sp500TopInSector && sp500TopVal > 0 && x(sp500TopVal) > 20 && x(sp500TopVal) < w + margin.right - 10) {
+            svg.append('line')
+                .attr('x1', x(sp500TopVal)).attr('x2', x(sp500TopVal))
+                .attr('y1', -8).attr('y2', h + 4)
+                .attr('stroke', '#ef476f').attr('stroke-width', 1)
+                .attr('stroke-dasharray', '4,3').attr('opacity', 0.5);
+            svg.append('text')
+                .attr('x', x(sp500TopVal) - 4).attr('y', -4)
+                .attr('text-anchor', 'end')
+                .attr('fill', '#ef476f').attr('font-size', '8px').attr('opacity', 0.7)
+                .text('S&P 500 #1: ' + sp500Top1.ticker + ' ' + cfg.format(sp500TopVal, sp500Top1));
         }
     }
 }
