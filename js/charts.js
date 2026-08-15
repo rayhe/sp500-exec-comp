@@ -62,6 +62,7 @@ function initCharts(companies, trends, compData) {
     drawGenderPayChart(trends);
     drawSopDistChart(companies);
     drawSopScatterChart(companies);
+    drawCompTreemap(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -174,7 +175,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'sop-dist-chart', 'sop-scatter-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -193,6 +194,7 @@ function redrawAllCharts() {
     drawGenderPayChart(_chartData.trends);
     drawSopDistChart(_chartData.companies);
     drawSopScatterChart(_chartData.companies);
+    drawCompTreemap(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -4598,4 +4600,245 @@ function drawSopScatterChart(companies) {
         .style('font-size', '11px')
         .style('opacity', 0.7)
         .text('r = ' + corr.toFixed(3) + ' (n=' + n + ')');
+}
+
+/* --- Compensation Treemap --- */
+function drawCompTreemap(companies) {
+    var container = document.getElementById('comp-treemap-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var valid = companies.filter(function(c) { return c.total_compensation > 0 && c.sector; });
+    if (valid.length === 0) return;
+
+    var dark = typeof isDarkTheme === 'function' && isDarkTheme();
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#a1a1aa' : '#6b7280';
+    var bgColor = dark ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.65)';
+
+    // Build hierarchical data: root → sectors → companies
+    var sectorMap = {};
+    valid.forEach(function(c) {
+        if (!sectorMap[c.sector]) sectorMap[c.sector] = [];
+        sectorMap[c.sector].push(c);
+    });
+
+    var hierarchyData = {
+        name: 'S&P 500',
+        children: Object.keys(sectorMap).map(function(sec) {
+            return {
+                name: sec,
+                children: sectorMap[sec].map(function(c) {
+                    return {
+                        name: c.ticker,
+                        company: c.company_name,
+                        ceo: c.ceo_name,
+                        comp: c.total_compensation,
+                        sector: sec,
+                        value: c.total_compensation
+                    };
+                })
+            };
+        })
+    };
+
+    // Sort sectors by total compensation descending for layout
+    hierarchyData.children.sort(function(a, b) {
+        var sumA = a.children.reduce(function(s, c) { return s + c.value; }, 0);
+        var sumB = b.children.reduce(function(s, c) { return s + c.value; }, 0);
+        return sumB - sumA;
+    });
+
+    var cw = container.clientWidth || 900;
+    var ch = 520;
+    var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    var width = cw - margin.left - margin.right;
+    var height = ch - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', ch)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO compensation treemap grouped by sector');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Create hierarchy and compute treemap layout
+    var root = d3.hierarchy(hierarchyData)
+        .sum(function(d) { return d.value || 0; })
+        .sort(function(a, b) { return b.value - a.value; });
+
+    d3.treemap()
+        .size([width, height])
+        .paddingTop(22)
+        .paddingRight(2)
+        .paddingBottom(2)
+        .paddingLeft(2)
+        .paddingInner(1)
+        .round(true)(root);
+
+    var sectorColors = typeof SECTOR_COLORS_APP !== 'undefined' ? SECTOR_COLORS_APP : {};
+    function getSectorClr(s) { return sectorColors[s] || '#94a3b8'; }
+
+    // Sector groups (depth 1)
+    var sectorNodes = root.children || [];
+    var sectorGroups = g.selectAll('.treemap-sector')
+        .data(sectorNodes)
+        .enter()
+        .append('g')
+        .attr('class', 'treemap-sector');
+
+    // Sector background rect
+    sectorGroups.append('rect')
+        .attr('x', function(d) { return d.x0; })
+        .attr('y', function(d) { return d.y0; })
+        .attr('width', function(d) { return Math.max(0, d.x1 - d.x0); })
+        .attr('height', function(d) { return Math.max(0, d.y1 - d.y0); })
+        .attr('fill', function(d) {
+            var c = d3.color(getSectorClr(d.data.name));
+            return c ? c.copy({ opacity: 0.08 }) : 'rgba(128,128,128,0.08)';
+        })
+        .attr('stroke', function(d) {
+            var c = d3.color(getSectorClr(d.data.name));
+            return c ? c.copy({ opacity: 0.3 }) : 'rgba(128,128,128,0.3)';
+        })
+        .attr('stroke-width', 1);
+
+    // Sector label
+    sectorGroups.append('text')
+        .attr('x', function(d) { return d.x0 + 5; })
+        .attr('y', function(d) { return d.y0 + 15; })
+        .style('fill', function(d) { return getSectorClr(d.data.name); })
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .style('pointer-events', 'none')
+        .text(function(d) {
+            var w = d.x1 - d.x0;
+            // Abbreviate for narrow sectors
+            var name = d.data.name;
+            if (w < 80) return '';
+            if (w < 150) {
+                var abbr = {
+                    'Information Technology': 'IT',
+                    'Communication Services': 'Comm',
+                    'Consumer Discretionary': 'Cons Disc',
+                    'Consumer Staples': 'Staples',
+                    'Health Care': 'Health',
+                    'Financials': 'Finance',
+                    'Industrials': 'Indust',
+                    'Real Estate': 'RE',
+                    'Materials': 'Matls',
+                    'Utilities': 'Utils',
+                    'Energy': 'Energy'
+                };
+                return abbr[name] || name;
+            }
+            return name;
+        });
+
+    // Company leaf nodes (depth 2)
+    var leaves = root.leaves();
+    var leafGroups = g.selectAll('.treemap-leaf')
+        .data(leaves)
+        .enter()
+        .append('g')
+        .attr('class', 'treemap-leaf')
+        .style('cursor', 'pointer');
+
+    leafGroups.append('rect')
+        .attr('x', function(d) { return d.x0; })
+        .attr('y', function(d) { return d.y0; })
+        .attr('width', function(d) { return Math.max(0, d.x1 - d.x0); })
+        .attr('height', function(d) { return Math.max(0, d.y1 - d.y0); })
+        .attr('fill', function(d) {
+            var sec = d.parent ? d.parent.data.name : '';
+            var base = d3.color(getSectorClr(sec));
+            if (!base) return '#94a3b8';
+            // Vary opacity by compensation rank within sector to add depth
+            var siblings = d.parent ? d.parent.children : [];
+            var maxVal = siblings.length > 0 ? siblings[0].value : d.value;
+            var t = maxVal > 0 ? Math.max(0.35, Math.min(0.9, 0.35 + 0.55 * (d.value / maxVal))) : 0.5;
+            return base.copy({ opacity: t });
+        })
+        .attr('stroke', dark ? 'rgba(20,20,30,0.6)' : 'rgba(255,255,255,0.7)')
+        .attr('stroke-width', 0.5)
+        .attr('rx', 1)
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('stroke', '#fff').attr('stroke-width', 2);
+            var data = d.data;
+            var sec = d.parent ? d.parent.data.name : '';
+            var sectorTotal = d.parent ? d.parent.value : 0;
+            var pctOfSector = sectorTotal > 0 ? (d.value / sectorTotal * 100).toFixed(1) : '0';
+            var pctOfSP500 = root.value > 0 ? (d.value / root.value * 100).toFixed(2) : '0';
+            showChartTooltip(event,
+                '<strong>' + data.company + '</strong> (' + data.name + ')<br>' +
+                'CEO: ' + (data.ceo || 'N/A') + '<br>' +
+                'Total Comp: <strong>' + fmtCurr(data.comp) + '</strong><br>' +
+                sec + ': ' + pctOfSector + '% of sector<br>' +
+                'S&P 500: ' + pctOfSP500 + '% of total'
+            );
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function(event, d) {
+            d3.select(this)
+                .attr('stroke', dark ? 'rgba(20,20,30,0.6)' : 'rgba(255,255,255,0.7)')
+                .attr('stroke-width', 0.5);
+            hideChartTooltip();
+        })
+        .on('click', function(event, d) {
+            if (window.findCompanyInTable) window.findCompanyInTable(d.data.name);
+        });
+
+    // Labels for leaves — show ticker only if cell is large enough
+    leafGroups.append('text')
+        .attr('x', function(d) { return d.x0 + 3; })
+        .attr('y', function(d) { return d.y0 + 13; })
+        .style('fill', function() { return dark ? '#fff' : '#1a1a2e'; })
+        .style('font-size', function(d) {
+            var w = d.x1 - d.x0;
+            var h = d.y1 - d.y0;
+            if (w > 70 && h > 35) return '11px';
+            if (w > 45 && h > 22) return '9px';
+            return '7px';
+        })
+        .style('font-weight', '600')
+        .style('pointer-events', 'none')
+        .style('opacity', function(d) {
+            return (d.x1 - d.x0) > 28 && (d.y1 - d.y0) > 16 ? 1 : 0;
+        })
+        .text(function(d) { return d.data.name; });
+
+    // Compensation value label (only for large cells)
+    leafGroups.append('text')
+        .attr('x', function(d) { return d.x0 + 3; })
+        .attr('y', function(d) { return d.y0 + 25; })
+        .style('fill', mutedColor)
+        .style('font-size', '8px')
+        .style('font-weight', '400')
+        .style('pointer-events', 'none')
+        .style('opacity', function(d) {
+            return (d.x1 - d.x0) > 55 && (d.y1 - d.y0) > 30 ? 0.85 : 0;
+        })
+        .text(function(d) { return fmtCurr(d.value); });
+
+    // Stats summary below treemap
+    var totalComp = root.value;
+    var topSector = sectorNodes[0];
+    var topSectorPct = totalComp > 0 ? (topSector.value / totalComp * 100).toFixed(1) : '0';
+    var top10Companies = leaves.slice().sort(function(a, b) { return b.value - a.value; }).slice(0, 10);
+    var top10Sum = top10Companies.reduce(function(s, c) { return s + c.value; }, 0);
+    var top10Pct = totalComp > 0 ? (top10Sum / totalComp * 100).toFixed(1) : '0';
+
+    var statsEl = document.createElement('div');
+    statsEl.className = 'treemap-stats';
+    statsEl.innerHTML =
+        '<span class="treemap-stat">Total CEO Pay: <strong>' + fmtCurr(totalComp) + '</strong></span>' +
+        '<span class="treemap-stat-sep">·</span>' +
+        '<span class="treemap-stat">Largest Sector: <strong style="color:' + getSectorClr(topSector.data.name) + '">' + topSector.data.name + '</strong> (' + topSectorPct + '%)</span>' +
+        '<span class="treemap-stat-sep">·</span>' +
+        '<span class="treemap-stat">Top 10 CEOs: <strong>' + top10Pct + '%</strong> of total</span>' +
+        '<span class="treemap-stat-sep">·</span>' +
+        '<span class="treemap-stat">' + valid.length + ' companies</span>';
+    container.appendChild(statsEl);
 }

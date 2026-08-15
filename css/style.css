@@ -6766,3 +6766,61 @@ footer li::before {
         print-color-adjust: exact;
     }
 }
+
+
+/* --- Compensation Treemap --- */
+#comp-treemap-chart {
+    width: 100%;
+    min-height: 520px;
+}
+#comp-treemap-chart svg {
+    display: block;
+    width: 100%;
+}
+.treemap-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 2px;
+    margin: 10px 16px 4px;
+    font-size: 0.78rem;
+    font-family: 'Inter', sans-serif;
+    color: #a1a1aa;
+}
+.treemap-stat strong {
+    color: #e4e4e7;
+}
+.treemap-stat-sep {
+    color: #52525b;
+    margin: 0 6px;
+}
+[data-theme="light"] .treemap-stats {
+    color: #6b7280;
+}
+[data-theme="light"] .treemap-stat strong {
+    color: #1a1a2e;
+}
+[data-theme="light"] .treemap-stat-sep {
+    color: #d1d5db;
+}
+@media (max-width: 600px) {
+    #comp-treemap-chart {
+        min-height: 400px;
+    }
+    .treemap-stats {
+        font-size: 0.7rem;
+        margin: 8px 10px 4px;
+    }
+    .treemap-stat-sep {
+        margin: 0 3px;
+    }
+}
+@media print {
+    .treemap-stat strong {
+        color: #1a1a2e;
+    }
+    .treemap-stats {
+        color: #4b5563;
+    }
+}
