@@ -3658,7 +3658,7 @@ function drawLorenzChart(companies) {
     });
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
-    var margin = { top: 24, right: 30, bottom: 50, left: 55 };
+    var margin = { top: 24, right: 30, bottom: hasSectorOverlay ? 80 : 50, left: 55 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = Math.min(360, Math.max(280, w * 0.85));
 
@@ -3955,6 +3955,129 @@ function drawLorenzChart(companies) {
             .attr('font-size', '9.5px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text('Bottom 50% earn ' + (sp500.bot50Pct * 100).toFixed(1) + '% of total');
+    }
+
+    // --- Narrative annotation pill (sector overlay mode only) ---
+    if (hasSectorOverlay && sectorLorenz) {
+        var sTop10 = sectorLorenz.top10Pct;
+        var sBot50 = sectorLorenz.bot50Pct;
+        var iTop10 = sp500.top10Pct;
+        var iBot50 = sp500.bot50Pct;
+
+        // Helper: hex color to rgba string
+        function hexRgba(hex, alpha) {
+            var r = parseInt(hex.slice(1,3),16);
+            var g = parseInt(hex.slice(3,5),16);
+            var b = parseInt(hex.slice(5,7),16);
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        }
+
+        // Build narrative parts
+        var lorenzNarParts = [];
+
+        // Top 10% concentration comparison
+        var top10Delta = sTop10 - iTop10;
+        if (Math.abs(top10Delta) >= 0.005) {
+            var top10Dir = top10Delta > 0 ? 'more' : 'less';
+            lorenzNarParts.push('Top 10% of ' + sectorName + ' CEOs earn ' +
+                (sTop10 * 100).toFixed(1) + '% of sector comp (' +
+                (top10Delta > 0 ? '+' : '') + (top10Delta * 100).toFixed(1) +
+                'pp ' + top10Dir + ' concentrated than S&P 500)');
+        }
+
+        // Bottom 50% share comparison
+        var bot50Delta = sBot50 - iBot50;
+        if (Math.abs(bot50Delta) >= 0.005) {
+            lorenzNarParts.push('Bottom half earns ' +
+                (sBot50 * 100).toFixed(1) + '% (' +
+                (bot50Delta > 0 ? '+' : '') + (bot50Delta * 100).toFixed(1) +
+                'pp vs index)');
+        }
+
+        // Gini interpretation
+        var gDelta = sectorLorenz.gini - gini;
+        if (Math.abs(gDelta) >= 0.02) {
+            if (gDelta > 0) {
+                lorenzNarParts.push('pay is more concentrated than the broader index');
+            } else {
+                lorenzNarParts.push('pay is more evenly distributed than the broader index');
+            }
+        }
+
+        if (lorenzNarParts.length > 0) {
+            var lorenzNarText = lorenzNarParts.join(' \u00B7 ');
+            var lorenzNarY = h + 24;
+            var lorenzNarGroup = svg.append('g').attr('class', 'narrative-annotation');
+            var pillFill = hexRgba(sectorColor, dark ? 0.08 : 0.06);
+            var pillStroke = hexRgba(sectorColor, dark ? 0.2 : 0.15);
+
+            var lorenzNarTextNode = lorenzNarGroup.append('text')
+                .attr('x', w / 2)
+                .attr('y', lorenzNarY)
+                .attr('text-anchor', 'middle')
+                .attr('fill', sectorColor)
+                .attr('font-size', '10px')
+                .attr('font-weight', '500')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .attr('opacity', 0.85)
+                .text(lorenzNarText);
+
+            // Background pill behind text
+            var lorenzNarBbox = lorenzNarTextNode.node().getBBox();
+            var lnPadX = 10, lnPadY = 4;
+            lorenzNarGroup.insert('rect', 'text')
+                .attr('x', lorenzNarBbox.x - lnPadX)
+                .attr('y', lorenzNarBbox.y - lnPadY)
+                .attr('width', lorenzNarBbox.width + lnPadX * 2)
+                .attr('height', lorenzNarBbox.height + lnPadY * 2)
+                .attr('rx', 8)
+                .attr('fill', pillFill)
+                .attr('stroke', pillStroke)
+                .attr('stroke-width', 1);
+
+            // If text is too wide for the container, wrap to two lines
+            if (lorenzNarBbox.width > w - 20) {
+                lorenzNarTextNode.remove();
+                lorenzNarGroup.select('rect').remove();
+
+                // Split at the midpoint separator
+                var midIdx = Math.floor(lorenzNarParts.length / 2);
+                var line1 = lorenzNarParts.slice(0, Math.max(1, midIdx + 1)).join(' \u00B7 ');
+                var line2 = lorenzNarParts.slice(Math.max(1, midIdx + 1)).join(' \u00B7 ');
+
+                lorenzNarGroup.append('text')
+                    .attr('x', w / 2).attr('y', lorenzNarY - 6)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', sectorColor)
+                    .attr('font-size', '10px').attr('font-weight', '500')
+                    .attr('font-family', 'Inter, system-ui, sans-serif')
+                    .attr('opacity', 0.85)
+                    .text(line1);
+
+                if (line2) {
+                    lorenzNarGroup.append('text')
+                        .attr('x', w / 2).attr('y', lorenzNarY + 8)
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', sectorColor)
+                        .attr('font-size', '10px').attr('font-weight', '500')
+                        .attr('font-family', 'Inter, system-ui, sans-serif')
+                        .attr('opacity', 0.85)
+                        .text(line2);
+                }
+
+                // Background pill for wrapped text
+                var wrapBbox = lorenzNarGroup.node().getBBox();
+                lorenzNarGroup.insert('rect', 'text')
+                    .attr('x', wrapBbox.x - lnPadX)
+                    .attr('y', wrapBbox.y - lnPadY)
+                    .attr('width', wrapBbox.width + lnPadX * 2)
+                    .attr('height', wrapBbox.height + lnPadY * 2)
+                    .attr('rx', 8)
+                    .attr('fill', pillFill)
+                    .attr('stroke', pillStroke)
+                    .attr('stroke-width', 1);
+            }
+        }
     }
 
     // Interactive hover overlay
