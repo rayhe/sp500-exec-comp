@@ -5248,7 +5248,7 @@ function drawCorrelationMatrix(companies) {
         var desc = headerTitle.querySelector('.section-desc');
         if (h2) h2.textContent = sector ? sector + ' Metric Correlations' : 'Metric Correlations';
         if (desc) desc.textContent = sector
-            ? 'Pearson correlations for ' + filteredCompanies.length + ' ' + sector + ' companies. Click any cell to explore in the scatter plot.'
+            ? 'Pearson correlations for ' + filteredCompanies.length + ' ' + sector + ' companies. ▲▼ arrows show divergence from S&P 500 overall. Click any cell to explore in the scatter plot.'
             : 'Pearson correlation coefficients between key compensation metrics. Blue = negative correlation, red = positive. Click any cell to explore that pair in the scatter plot.';
     }
 
@@ -5304,6 +5304,25 @@ function drawCorrelationMatrix(companies) {
                 corrMatrix[i][j] = corrMatrix[j][i]; // symmetric
             } else {
                 corrMatrix[i][j] = pearson(metricArrays[i], metricArrays[j]);
+            }
+        }
+    }
+
+    // When sector is active, also compute S&P 500-wide correlation matrix for comparison
+    var overallCorrMatrix = null;
+    if (sector) {
+        var overallArrays = metrics.map(function(m) { return companies.map(m.get); });
+        overallCorrMatrix = [];
+        for (var oi = 0; oi < n; oi++) {
+            overallCorrMatrix[oi] = [];
+            for (var oj = 0; oj < n; oj++) {
+                if (oi === oj) {
+                    overallCorrMatrix[oi][oj] = { r: 1, n: companies.length, p: 0 };
+                } else if (oj < oi) {
+                    overallCorrMatrix[oi][oj] = overallCorrMatrix[oj][oi];
+                } else {
+                    overallCorrMatrix[oi][oj] = pearson(overallArrays[oi], overallArrays[oj]);
+                }
             }
         }
     }
@@ -5411,9 +5430,22 @@ function drawCorrelationMatrix(companies) {
                 var pVal = corr.p;
                 var stars = _sigStars(pVal);
 
+                // Compute delta vs S&P 500 when sector is active
+                var delta = null;
+                var overallR = null;
+                if (overallCorrMatrix && !isDiagonal) {
+                    overallR = overallCorrMatrix[row][col].r;
+                    if (r != null && overallR != null) {
+                        delta = r - overallR;
+                    }
+                }
+                var hasDelta = delta != null && sector;
+
                 // Correlation value text + significance indicator
                 var label = isDiagonal ? '—' : (r != null ? (r >= 0 ? '+' : '') + r.toFixed(2) : 'n/a');
-                var labelYOffset = r != null && !isDiagonal ? (stars ? -6 : -3) : 4;
+                // Tighter vertical layout when showing delta
+                var baseOffset = hasDelta ? -8 : (stars ? -6 : -3);
+                var labelYOffset = r != null && !isDiagonal ? baseOffset : 4;
                 svg.append('text')
                     .attr('x', cx + cellSize / 2)
                     .attr('y', cy + cellSize / 2 + labelYOffset)
@@ -5425,9 +5457,10 @@ function drawCorrelationMatrix(companies) {
 
                 // Significance stars (gold, below r value)
                 if (!isDiagonal && stars) {
+                    var starsY = hasDelta ? -1 : (cellSize > 55 ? 5 : 3);
                     svg.append('text')
                         .attr('x', cx + cellSize / 2)
-                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? 5 : 3))
+                        .attr('y', cy + cellSize / 2 + starsY)
                         .attr('text-anchor', 'middle')
                         .attr('fill', dark ? '#fbbf24' : '#d97706')
                         .attr('font-size', cellSize > 55 ? '0.68rem' : '0.55rem')
@@ -5435,11 +5468,39 @@ function drawCorrelationMatrix(companies) {
                         .text(stars);
                 }
 
-                // Sample size (small, below stars/r value)
-                if (!isDiagonal && r != null) {
+                // Delta vs S&P 500 (shown when sector is active)
+                if (hasDelta) {
+                    var deltaSign = delta >= 0 ? '▲' : '▼';
+                    var deltaStr = deltaSign + Math.abs(delta).toFixed(2);
+                    var deltaColor;
+                    if (Math.abs(delta) < 0.05) {
+                        deltaColor = dark ? '#71717a' : '#a1a1aa'; // negligible
+                    } else if (Math.abs(delta) >= 0.15) {
+                        deltaColor = delta > 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626'); // large divergence
+                    } else {
+                        deltaColor = dark ? '#fbbf24' : '#d97706'; // moderate divergence
+                    }
                     svg.append('text')
                         .attr('x', cx + cellSize / 2)
-                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? (stars ? 16 : 12) : (stars ? 12 : 9)))
+                        .attr('y', cy + cellSize / 2 + (stars ? 9 : 6))
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', deltaColor)
+                        .attr('font-size', cellSize > 55 ? '0.52rem' : '0.44rem')
+                        .attr('font-weight', '600')
+                        .text(deltaStr);
+                }
+
+                // Sample size (small, below stars/r value or delta)
+                if (!isDiagonal && r != null) {
+                    var nY;
+                    if (hasDelta) {
+                        nY = stars ? 18 : 15;
+                    } else {
+                        nY = cellSize > 55 ? (stars ? 16 : 12) : (stars ? 12 : 9);
+                    }
+                    svg.append('text')
+                        .attr('x', cx + cellSize / 2)
+                        .attr('y', cy + cellSize / 2 + nY)
                         .attr('text-anchor', 'middle')
                         .attr('fill', textColor(r))
                         .attr('font-size', cellSize > 55 ? '0.55rem' : '0.48rem')
@@ -5450,7 +5511,7 @@ function drawCorrelationMatrix(companies) {
                 // Hover and click for non-diagonal cells
                 if (!isDiagonal && r != null) {
                     // Capture variables for closure
-                    (function(rowIdx, colIdx, corrData) {
+                    (function(rowIdx, colIdx, corrData, cellDelta, cellOverallR) {
                         var strength = Math.abs(corrData.r) >= 0.7 ? 'Strong' : Math.abs(corrData.r) >= 0.4 ? 'Moderate' : Math.abs(corrData.r) >= 0.2 ? 'Weak' : 'Very weak';
                         var direction = Math.abs(corrData.r) >= 0.2 ? (corrData.r > 0 ? ' positive' : ' negative') : '';
                         var sigText = _sigLabel(corrData.p);
@@ -5462,8 +5523,15 @@ function drawCorrelationMatrix(companies) {
                                 '<div class="ct-row"><span class="ct-label">Pearson r</span><span class="ct-val">' + (corrData.r >= 0 ? '+' : '') + corrData.r.toFixed(3) + (sigStars ? ' <span style="color:#fbbf24;font-weight:700">' + sigStars + '</span>' : '') + '</span></div>' +
                                 '<div class="ct-row"><span class="ct-label">Significance</span><span class="ct-val">' + sigText + '</span></div>' +
                                 '<div class="ct-row"><span class="ct-label">Sample size</span><span class="ct-val">n = ' + corrData.n + '</span></div>' +
-                                '<div class="ct-row"><span class="ct-label">Strength</span><span class="ct-val">' + strength + direction + '</span></div>' +
-                                '<div style="margin-top:6px;font-size:0.65rem;color:#a1a1aa;text-align:center;">Click to explore in scatter plot</div>';
+                                '<div class="ct-row"><span class="ct-label">Strength</span><span class="ct-val">' + strength + direction + '</span></div>';
+                            // Sector comparison line
+                            if (cellOverallR != null && sector) {
+                                var dSign = cellDelta >= 0 ? '+' : '';
+                                var dColor = Math.abs(cellDelta) >= 0.15 ? (cellDelta > 0 ? '#34d399' : '#f87171') : (Math.abs(cellDelta) >= 0.05 ? '#fbbf24' : '#94a3b8');
+                                html += '<div class="ct-row" style="border-top:1px solid ' + (dark ? '#3f3f46' : '#e4e4e7') + ';margin-top:4px;padding-top:4px;"><span class="ct-label">S&P 500 r</span><span class="ct-val">' + (cellOverallR >= 0 ? '+' : '') + cellOverallR.toFixed(3) + '</span></div>' +
+                                    '<div class="ct-row"><span class="ct-label">Sector Δ</span><span class="ct-val" style="color:' + dColor + '">' + dSign + cellDelta.toFixed(3) + '</span></div>';
+                            }
+                            html += '<div style="margin-top:6px;font-size:0.65rem;color:#a1a1aa;text-align:center;">Click to explore in scatter plot</div>';
                             showChartTooltip(event, html);
                         })
                         .on('mousemove', function(event) {
@@ -5487,7 +5555,7 @@ function drawCorrelationMatrix(companies) {
                                 }
                             }
                         });
-                    })(row, col, corr);
+                    })(row, col, corr, delta, overallR);
                 }
             })(ri, ci);
         }
@@ -5592,8 +5660,42 @@ function drawCorrelationMatrix(companies) {
     }
     statsHtml += '<span class="corr-stat-sep">·</span>';
     statsHtml += '<span class="corr-stat">' + sigCount + '/' + allCorrs.length + ' pairs significant (p&lt;0.05)</span>';
-    statsHtml += '<span class="corr-stat-sep">·</span>';
-    statsHtml += '<span class="corr-stat corr-sig-legend"><span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">***</span> p&lt;0.001 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">**</span> p&lt;0.01 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">*</span> p&lt;0.05</span>';
+
+    // Sector divergence stats when sector filter is active
+    if (sector && overallCorrMatrix) {
+        var divergences = [];
+        for (var di = 0; di < n; di++) {
+            for (var dj = di + 1; dj < n; dj++) {
+                var sR = corrMatrix[di][dj].r;
+                var oR = overallCorrMatrix[di][dj].r;
+                if (sR != null && oR != null) {
+                    divergences.push({
+                        delta: sR - oR,
+                        sectorR: sR,
+                        overallR: oR,
+                        m1: metrics[di],
+                        m2: metrics[dj]
+                    });
+                }
+            }
+        }
+        divergences.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+        if (divergences.length > 0) {
+            var topDiv = divergences[0];
+            var divSign = topDiv.delta >= 0 ? '+' : '';
+            var divColor = topDiv.delta > 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626');
+            statsHtml += '<span class="corr-stat-sep">·</span>';
+            statsHtml += '<span class="corr-stat">Largest divergence: <strong>' + topDiv.m1.short + ' × ' + topDiv.m2.short + '</strong> (<span style="color:' + divColor + '">Δ' + divSign + topDiv.delta.toFixed(2) + '</span>, sector r=' + topDiv.sectorR.toFixed(2) + ' vs S&P r=' + topDiv.overallR.toFixed(2) + ')</span>';
+        }
+        var strongDiv = divergences.filter(function(d) { return Math.abs(d.delta) >= 0.15; }).length;
+        if (strongDiv > 0) {
+            statsHtml += '<span class="corr-stat-sep">·</span>';
+            statsHtml += '<span class="corr-stat">' + strongDiv + ' pairs diverge strongly (|Δ|≥0.15) from S&P 500</span>';
+        }
+    } else {
+        statsHtml += '<span class="corr-stat-sep">·</span>';
+        statsHtml += '<span class="corr-stat corr-sig-legend"><span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">***</span> p&lt;0.001 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">**</span> p&lt;0.01 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">*</span> p&lt;0.05</span>';
+    }
     statsEl.innerHTML = statsHtml;
     container.appendChild(statsEl);
 }
