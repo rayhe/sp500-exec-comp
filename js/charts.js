@@ -5143,6 +5143,85 @@ function drawCompTreemap(companies) {
    Shows Pearson correlations between all key compensation metrics.
    Click any cell to configure the scatter plot to that metric pair.
    ---------------------------------------------------------------- */
+/* === Statistical helper functions for p-value computation === */
+
+/* Log-gamma function (Lanczos approximation) */
+function _lnGamma(x) {
+    var cof = [76.18009172947146, -86.50532032941677, 24.01409824083091,
+               -1.231739572450155, 0.001208650973866179, -5.395239384953e-6];
+    var y = x, tmp = x + 5.5;
+    tmp -= (x + 0.5) * Math.log(tmp);
+    var ser = 1.000000000190015;
+    for (var j = 0; j < 6; j++) ser += cof[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / x);
+}
+
+/* Continued fraction for regularized incomplete beta (Lentz method) */
+function _betacf(a, b, x) {
+    var maxIter = 200, eps = 3e-12;
+    var qab = a + b, qap = a + 1, qam = a - 1;
+    var c = 1, d = 1 - qab * x / qap;
+    if (Math.abs(d) < 1e-30) d = 1e-30;
+    d = 1 / d;
+    var h = d;
+    for (var m = 1; m <= maxIter; m++) {
+        var m2 = 2 * m;
+        var aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+        d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d;
+        c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+        h *= d * c;
+        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+        d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d;
+        c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+        var del = d * c;
+        h *= del;
+        if (Math.abs(del - 1) < eps) break;
+    }
+    return h;
+}
+
+/* Regularized incomplete beta function I_x(a, b) */
+function _betainc(a, b, x) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    var bt = Math.exp(_lnGamma(a + b) - _lnGamma(a) - _lnGamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    if (x < (a + 1) / (a + b + 2)) {
+        return bt * _betacf(a, b, x) / a;
+    } else {
+        return 1 - bt * _betacf(b, a, 1 - x) / b;
+    }
+}
+
+/* Two-tailed p-value for Pearson r given sample size n.
+   Uses the t-distribution with df = n-2. */
+function _pearsonPValue(r, sampleN) {
+    if (r == null || sampleN < 3) return null;
+    var absR = Math.abs(r);
+    if (absR >= 1) return 0;
+    if (absR < 1e-15) return 1;
+    var df = sampleN - 2;
+    var t2 = r * r * df / (1 - r * r);
+    var x = df / (df + t2);
+    return _betainc(df / 2, 0.5, x);
+}
+
+/* Significance label from p-value */
+function _sigStars(p) {
+    if (p == null) return '';
+    if (p < 0.001) return '***';
+    if (p < 0.01) return '**';
+    if (p < 0.05) return '*';
+    return '';
+}
+
+function _sigLabel(p) {
+    if (p == null) return 'n/a';
+    if (p < 0.001) return 'p < 0.001';
+    if (p < 0.01) return 'p < 0.01';
+    if (p < 0.05) return 'p < 0.05';
+    return 'p = ' + (p < 0.1 ? p.toFixed(3) : p.toFixed(2));
+}
+
 function drawCorrelationMatrix(companies) {
     var container = document.getElementById('correlation-matrix-chart');
     if (!container) return;
@@ -5195,7 +5274,7 @@ function drawCorrelationMatrix(companies) {
                 pairs.push([xArr[k], yArr[k]]);
             }
         }
-        if (pairs.length < 10) return { r: null, n: pairs.length };
+        if (pairs.length < 10) return { r: null, n: pairs.length, p: null };
         var mx = 0, my = 0;
         pairs.forEach(function(p) { mx += p[0]; my += p[1]; });
         mx /= pairs.length; my /= pairs.length;
@@ -5204,8 +5283,9 @@ function drawCorrelationMatrix(companies) {
             var dx = p[0] - mx, dy = p[1] - my;
             sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
         });
-        if (sxx === 0 || syy === 0) return { r: 0, n: pairs.length };
-        return { r: sxy / Math.sqrt(sxx * syy), n: pairs.length };
+        if (sxx === 0 || syy === 0) return { r: 0, n: pairs.length, p: 1 };
+        var rVal = sxy / Math.sqrt(sxx * syy);
+        return { r: rVal, n: pairs.length, p: _pearsonPValue(rVal, pairs.length) };
     }
 
     // Pre-extract metric arrays
@@ -5219,7 +5299,7 @@ function drawCorrelationMatrix(companies) {
         corrMatrix[i] = [];
         for (var j = 0; j < n; j++) {
             if (i === j) {
-                corrMatrix[i][j] = { r: 1, n: filteredCompanies.length };
+                corrMatrix[i][j] = { r: 1, n: filteredCompanies.length, p: 0 };
             } else if (j < i) {
                 corrMatrix[i][j] = corrMatrix[j][i]; // symmetric
             } else {
@@ -5327,22 +5407,39 @@ function drawCorrelationMatrix(companies) {
                     .attr('cursor', isDiagonal ? 'default' : 'pointer')
                     .attr('opacity', isDiagonal ? 0.5 : 1);
 
-                // Correlation value text
+                // Significance stars
+                var pVal = corr.p;
+                var stars = _sigStars(pVal);
+
+                // Correlation value text + significance indicator
                 var label = isDiagonal ? '—' : (r != null ? (r >= 0 ? '+' : '') + r.toFixed(2) : 'n/a');
+                var labelYOffset = r != null && !isDiagonal ? (stars ? -6 : -3) : 4;
                 svg.append('text')
                     .attr('x', cx + cellSize / 2)
-                    .attr('y', cy + cellSize / 2 + (r != null && !isDiagonal ? -3 : 4))
+                    .attr('y', cy + cellSize / 2 + labelYOffset)
                     .attr('text-anchor', 'middle')
                     .attr('fill', isDiagonal ? (dark ? '#71717a' : '#a1a1aa') : textColor(r))
                     .attr('font-size', cellSize > 55 ? '0.78rem' : '0.65rem')
                     .attr('font-weight', '600')
                     .text(label);
 
-                // Sample size (small, below r value)
+                // Significance stars (gold, below r value)
+                if (!isDiagonal && stars) {
+                    svg.append('text')
+                        .attr('x', cx + cellSize / 2)
+                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? 5 : 3))
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', dark ? '#fbbf24' : '#d97706')
+                        .attr('font-size', cellSize > 55 ? '0.68rem' : '0.55rem')
+                        .attr('font-weight', '700')
+                        .text(stars);
+                }
+
+                // Sample size (small, below stars/r value)
                 if (!isDiagonal && r != null) {
                     svg.append('text')
                         .attr('x', cx + cellSize / 2)
-                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? 12 : 9))
+                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? (stars ? 16 : 12) : (stars ? 12 : 9)))
                         .attr('text-anchor', 'middle')
                         .attr('fill', textColor(r))
                         .attr('font-size', cellSize > 55 ? '0.55rem' : '0.48rem')
@@ -5352,36 +5449,45 @@ function drawCorrelationMatrix(companies) {
 
                 // Hover and click for non-diagonal cells
                 if (!isDiagonal && r != null) {
-                    rect.on('mouseenter', function() {
-                        d3.select(this).attr('stroke', dark ? '#ffd166' : '#f59e0b').attr('stroke-width', 2);
-                    })
-                    .on('mouseleave', function() {
-                        d3.select(this).attr('stroke', 'none');
-                    })
-                    .on('click', function() {
-                        // Update scatter plot axes to show this metric pair
-                        var xSel = document.getElementById('scatter-x-metric');
-                        var ySel = document.getElementById('scatter-y-metric');
-                        if (xSel && ySel) {
-                            xSel.value = metrics[col].key;
-                            ySel.value = metrics[row].key;
-                            xSel.dispatchEvent(new Event('change'));
-                            // Scroll to scatter chart
-                            var scatterPanel = document.getElementById('scatter-chart-panel');
-                            if (scatterPanel) {
-                                scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        }
-                    });
+                    // Capture variables for closure
+                    (function(rowIdx, colIdx, corrData) {
+                        var strength = Math.abs(corrData.r) >= 0.7 ? 'Strong' : Math.abs(corrData.r) >= 0.4 ? 'Moderate' : Math.abs(corrData.r) >= 0.2 ? 'Weak' : 'Very weak';
+                        var direction = Math.abs(corrData.r) >= 0.2 ? (corrData.r > 0 ? ' positive' : ' negative') : '';
+                        var sigText = _sigLabel(corrData.p);
+                        var sigStars = _sigStars(corrData.p);
 
-                    // Tooltip
-                    rect.append('title')
-                        .text(metrics[row].label + ' vs ' + metrics[col].label +
-                              '\nPearson r = ' + r.toFixed(3) +
-                              '\nn = ' + corr.n +
-                              '\nStrength: ' + (Math.abs(r) >= 0.7 ? 'Strong' : Math.abs(r) >= 0.4 ? 'Moderate' : Math.abs(r) >= 0.2 ? 'Weak' : 'Very weak') +
-                              (Math.abs(r) >= 0.2 ? (r > 0 ? ' positive' : ' negative') : '') +
-                              '\n\nClick to explore in scatter plot');
+                        rect.on('mouseenter', function(event) {
+                            d3.select(this).attr('stroke', dark ? '#ffd166' : '#f59e0b').attr('stroke-width', 2);
+                            var html = '<div class="ct-title">' + metrics[rowIdx].label + ' vs ' + metrics[colIdx].label + '</div>' +
+                                '<div class="ct-row"><span class="ct-label">Pearson r</span><span class="ct-val">' + (corrData.r >= 0 ? '+' : '') + corrData.r.toFixed(3) + (sigStars ? ' <span style="color:#fbbf24;font-weight:700">' + sigStars + '</span>' : '') + '</span></div>' +
+                                '<div class="ct-row"><span class="ct-label">Significance</span><span class="ct-val">' + sigText + '</span></div>' +
+                                '<div class="ct-row"><span class="ct-label">Sample size</span><span class="ct-val">n = ' + corrData.n + '</span></div>' +
+                                '<div class="ct-row"><span class="ct-label">Strength</span><span class="ct-val">' + strength + direction + '</span></div>' +
+                                '<div style="margin-top:6px;font-size:0.65rem;color:#a1a1aa;text-align:center;">Click to explore in scatter plot</div>';
+                            showChartTooltip(event, html);
+                        })
+                        .on('mousemove', function(event) {
+                            positionChartTooltip(event);
+                        })
+                        .on('mouseleave', function() {
+                            d3.select(this).attr('stroke', 'none');
+                            hideChartTooltip();
+                        })
+                        .on('click', function() {
+                            hideChartTooltip();
+                            var xSel = document.getElementById('scatter-x-metric');
+                            var ySel = document.getElementById('scatter-y-metric');
+                            if (xSel && ySel) {
+                                xSel.value = metrics[colIdx].key;
+                                ySel.value = metrics[rowIdx].key;
+                                xSel.dispatchEvent(new Event('change'));
+                                var scatterPanel = document.getElementById('scatter-chart-panel');
+                                if (scatterPanel) {
+                                    scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            }
+                        });
+                    })(row, col, corr);
                 }
             })(ri, ci);
         }
@@ -5462,6 +5568,7 @@ function drawCorrelationMatrix(companies) {
                 allCorrs.push({
                     r: corrMatrix[si][sj].r,
                     n: corrMatrix[si][sj].n,
+                    p: corrMatrix[si][sj].p,
                     m1: metrics[si],
                     m2: metrics[sj]
                 });
@@ -5473,6 +5580,7 @@ function drawCorrelationMatrix(companies) {
     var strongest = allCorrs[0];
     var weakest = allCorrs[allCorrs.length - 1];
     var strongestNeg = allCorrs.filter(function(c) { return c.r < 0; }).sort(function(a, b) { return a.r - b.r; })[0];
+    var sigCount = allCorrs.filter(function(c) { return c.p != null && c.p < 0.05; }).length;
 
     var statsHtml = '';
     if (strongest) {
@@ -5483,7 +5591,9 @@ function drawCorrelationMatrix(companies) {
         statsHtml += '<span class="corr-stat">Strongest −: <strong>' + strongestNeg.m1.short + ' × ' + strongestNeg.m2.short + '</strong> (r=' + strongestNeg.r.toFixed(2) + ')</span>';
     }
     statsHtml += '<span class="corr-stat-sep">·</span>';
-    statsHtml += '<span class="corr-stat">' + allCorrs.length + ' pairs' + (sector ? ' (' + filteredCompanies.length + ' ' + sector + ' companies)' : ' (S&P 500)') + '</span>';
+    statsHtml += '<span class="corr-stat">' + sigCount + '/' + allCorrs.length + ' pairs significant (p&lt;0.05)</span>';
+    statsHtml += '<span class="corr-stat-sep">·</span>';
+    statsHtml += '<span class="corr-stat corr-sig-legend"><span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">***</span> p&lt;0.001 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">**</span> p&lt;0.01 <span style="color:' + (dark ? '#fbbf24' : '#d97706') + ';font-weight:700">*</span> p&lt;0.05</span>';
     statsEl.innerHTML = statsHtml;
     container.appendChild(statsEl);
 }
