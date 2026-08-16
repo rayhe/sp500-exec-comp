@@ -970,34 +970,74 @@ function scrollToSectionById(sectionId) {
     }
 }
 
-function populateInsights(comp, trends) {
-    var companies = comp.companies;
+function populateInsights(comp, trends, sectorFilter) {
+    var allCompanies = comp.companies;
+    var companies = sectorFilter
+        ? allCompanies.filter(function(c) { return c.sector === sectorFilter; })
+        : allCompanies;
+    var scopeLabel = sectorFilter || 'S&P 500';
+    var scopeCount = companies.length;
     var grid = document.getElementById('insights-grid');
     if (!grid) return;
+
+    // Update insights header to reflect scope
+    var insHeader = document.querySelector('.insights-header h2');
+    var insDesc = document.querySelector('.insights-header .section-desc');
+    if (insHeader) insHeader.textContent = sectorFilter ? sectorFilter + ' Insights' : 'Key Insights';
+    if (insDesc) insDesc.textContent = sectorFilter
+        ? 'Statistical highlights computed from ' + scopeCount + ' ' + sectorFilter + ' companies'
+        : 'Statistical highlights computed from the full S&P 500 dataset';
+
+    // Toggle sector-active class on insights section for visual cue
+    var insSection = document.getElementById('insights-section');
+    if (insSection) {
+        insSection.classList.toggle('sector-active', !!sectorFilter);
+        if (sectorFilter) {
+            var sColor = typeof getSectorColor === 'function' ? getSectorColor(sectorFilter) : '#00b4d8';
+            insSection.style.borderTopColor = sColor;
+            if (insHeader) insHeader.style.color = sColor;
+        } else {
+            insSection.style.borderTopColor = '';
+            if (insHeader) insHeader.style.color = '';
+        }
+    }
 
     var insights = [];
 
     // 1. Pay Concentration — top 10 CEOs share of total
     var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
     var totalAllPay = companies.reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
-    var top10Pay = sorted.slice(0, 10).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
-    var top10Pct = totalAllPay > 0 ? (top10Pay / totalAllPay * 100).toFixed(1) : '0';
+    var topN = Math.min(10, companies.length);
+    var topNPay = sorted.slice(0, topN).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+    var topNPct = totalAllPay > 0 ? (topNPay / totalAllPay * 100).toFixed(1) : '0';
+    var remainCount = Math.max(0, companies.length - topN);
     insights.push({
         icon: '📊',
         label: 'Pay Concentration',
-        value: formatCurrency(top10Pay) + ' combined',
-        detail: 'The top 10 CEOs earned ' + top10Pct + '% of all S&P 500 CEO compensation. The remaining 490 CEOs share the other ' + (100 - parseFloat(top10Pct)).toFixed(1) + '%.'
+        value: formatCurrency(topNPay) + ' combined',
+        detail: 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation. The remaining ' + remainCount + ' CEOs share the other ' + (100 - parseFloat(topNPct)).toFixed(1) + '%.'
     });
 
     // 2. $50M+ Club
     var over50M = companies.filter(function(c) { return c.total_compensation >= 50000000; });
-    insights.push({
-        icon: '💰',
-        label: '$50M+ Club',
-        value: over50M.length + ' companies',
-        detail: over50M.length + ' CEOs received more than $50 million in total compensation — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.',
-        _tickers: sorted[0] ? [sorted[0].ticker] : []
-    });
+    if (over50M.length > 0) {
+        insights.push({
+            icon: '💰',
+            label: '$50M+ Club',
+            value: over50M.length + (over50M.length === 1 ? ' company' : ' companies'),
+            detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' : '.'),
+            _tickers: sorted[0] ? [sorted[0].ticker] : []
+        });
+    } else {
+        // No $50M+ CEOs — show top earner context instead
+        insights.push({
+            icon: '💰',
+            label: 'Highest Paid',
+            value: sorted[0] ? formatCurrency(sorted[0].total_compensation) : '—',
+            detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' : 'No compensation data available.',
+            _tickers: sorted[0] ? [sorted[0].ticker] : []
+        });
+    }
 
     // 3. Extreme Pay Ratios (>1000:1)
     var extremeRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 1000; });
@@ -1006,30 +1046,55 @@ function populateInsights(comp, trends) {
         icon: '⚖️',
         label: 'Extreme Ratios',
         value: extremeRatio.length + ' above 1,000:1',
-        detail: extremeRatio.length + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : ''),
+        detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : ''),
         _tickers: maxRatioComp ? [maxRatioComp.ticker] : []
     });
 
-    // 4. Top Sector by Median Pay
-    var sectorMedians = comp.metadata && comp.metadata.sector_medians;
-    if (sectorMedians) {
-        var topSector = null;
-        var topSectorPay = 0;
-        var bottomSector = null;
-        var bottomSectorPay = Infinity;
-        Object.keys(sectorMedians).forEach(function(s) {
-            var m = sectorMedians[s].median_ceo_pay;
-            if (m > topSectorPay) { topSectorPay = m; topSector = s; }
-            if (m < bottomSectorPay) { bottomSectorPay = m; bottomSector = s; }
-        });
-        var sectorSpread = topSectorPay > 0 && bottomSectorPay > 0 ? (topSectorPay / bottomSectorPay).toFixed(1) : null;
+    // 4. Top Sector by Median Pay — OR "vs S&P 500" context when sector is active
+    if (sectorFilter) {
+        // When viewing a sector, show how it compares to S&P 500
+        var allComps500 = allCompanies.filter(function(c) { return c.total_compensation > 0; }).map(function(c) { return c.total_compensation; }).sort(function(a,b){return a-b;});
+        var sp500Median = allComps500.length > 0 ? allComps500[Math.floor(allComps500.length / 2)] : 0;
+        var secComps = companies.filter(function(c) { return c.total_compensation > 0; }).map(function(c) { return c.total_compensation; }).sort(function(a,b){return a-b;});
+        var secMedian = secComps.length > 0 ? secComps[Math.floor(secComps.length / 2)] : 0;
+        var vsPct = sp500Median > 0 ? ((secMedian - sp500Median) / sp500Median * 100) : 0;
+        var vsSign = vsPct >= 0 ? '+' : '';
+        // Sector rank among all sectors
+        var sectorMedians = comp.metadata && comp.metadata.sector_medians;
+        var sectorRank = '';
+        if (sectorMedians) {
+            var sectorList = Object.keys(sectorMedians).map(function(s) { return { name: s, median: sectorMedians[s].median_ceo_pay }; })
+                .sort(function(a, b) { return b.median - a.median; });
+            var rank = sectorList.findIndex(function(s) { return s.name === sectorFilter; }) + 1;
+            if (rank > 0) sectorRank = ' Ranked #' + rank + ' of ' + sectorList.length + ' sectors by median CEO pay.';
+        }
         insights.push({
-            icon: '🏢',
-            label: 'Sector Spread',
-            value: topSector,
-            detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : ''),
-            _topSector: topSector
+            icon: '📈',
+            label: 'vs S&P 500',
+            value: vsSign + vsPct.toFixed(0) + '% median',
+            detail: sectorFilter + ' median CEO pay of ' + formatCurrency(secMedian) + ' is ' + vsSign + vsPct.toFixed(1) + '% versus the S&P 500 median of ' + formatCurrency(sp500Median) + '.' + sectorRank
         });
+    } else {
+        var sectorMedians = comp.metadata && comp.metadata.sector_medians;
+        if (sectorMedians) {
+            var topSector = null;
+            var topSectorPay = 0;
+            var bottomSector = null;
+            var bottomSectorPay = Infinity;
+            Object.keys(sectorMedians).forEach(function(s) {
+                var m = sectorMedians[s].median_ceo_pay;
+                if (m > topSectorPay) { topSectorPay = m; topSector = s; }
+                if (m < bottomSectorPay) { bottomSectorPay = m; bottomSector = s; }
+            });
+            var sectorSpread = topSectorPay > 0 && bottomSectorPay > 0 ? (topSectorPay / bottomSectorPay).toFixed(1) : null;
+            insights.push({
+                icon: '🏢',
+                label: 'Sector Spread',
+                value: topSector,
+                detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : ''),
+                _topSector: topSector
+            });
+        }
     }
 
     // 5. Zero/Near-Zero Pay
@@ -1045,11 +1110,12 @@ function populateInsights(comp, trends) {
             _tickers: zeroPay.slice(0, 3).map(function(c) { return c.ticker; })
         });
     } else if (under1M.length > 0) {
+        var medPayRef = comp.metadata && comp.metadata.aggregate_stats ? comp.metadata.aggregate_stats.median_ceo_pay : null;
         insights.push({
             icon: '🎯',
             label: 'Below $1M',
             value: under1M.length + (under1M.length === 1 ? ' CEO' : ' CEOs'),
-            detail: under1M.length + ' CEOs earned under $1M in total compensation, well below the S&P 500 median of ' + formatCurrency(comp.metadata.aggregate_stats.median_ceo_pay) + '.'
+            detail: under1M.length + ' CEOs earned under $1M in total compensation' + (medPayRef ? ', well below the S&P 500 median of ' + formatCurrency(medPayRef) : '') + '.'
         });
     }
 
@@ -1063,7 +1129,7 @@ function populateInsights(comp, trends) {
             icon: '📏',
             label: 'Pay Range',
             value: span.toLocaleString() + '× span',
-            detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across the S&P 500.',
+            detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across ' + scopeLabel + '.',
             _tickers: [maxPay.ticker, minPay.ticker]
         });
     }
@@ -1098,15 +1164,15 @@ function populateInsights(comp, trends) {
             icon: '📊',
             label: 'Equity-Heavy Pay',
             value: above90.length + ' CEOs ≥90% equity',
-            detail: above90.length + ' CEOs receive ≥90% of their compensation in stock/options — led by ' + topEquity.ceo_name + ' (' + topEquity.ticker + ') at ' + Math.round(topEquity._ceoStockPct) + '%. S&P 500 median: ' + medStockPct + '% equity.',
+            detail: above90.length + ' CEOs receive ≥90% of their compensation in stock/options — led by ' + topEquity.ceo_name + ' (' + topEquity.ticker + ') at ' + Math.round(topEquity._ceoStockPct) + '%. ' + scopeLabel + ' median: ' + medStockPct + '% equity.',
             _tickers: stockSorted.slice(0, 2).map(function(c) { return c.ticker; })
         });
     }
 
     // 9. Percentile Concentration — top 1% vs bottom 50%
     var pctileSorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
-    var top1PctCount = Math.max(1, Math.round(companies.length * 0.01)); // ~5 companies
-    var bottom50PctCount = Math.floor(companies.length * 0.50); // 250 companies
+    var top1PctCount = Math.max(1, Math.round(companies.length * 0.01));
+    var bottom50PctCount = Math.floor(companies.length * 0.50);
     var top1Pay = pctileSorted.slice(0, top1PctCount).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
     var bottom50Pay = pctileSorted.slice(pctileSorted.length - bottom50PctCount).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
     if (top1Pay > 0 && bottom50Pay > 0) {
@@ -1116,7 +1182,7 @@ function populateInsights(comp, trends) {
             icon: '🔺',
             label: 'Top 1% vs Bottom 50%',
             value: p1Ratio + '× more pay',
-            detail: 'The top ' + top1PctCount + ' CEO' + (top1PctCount > 1 ? 's' : '') + ' (P99: ' + top1Names + ') earned ' + formatCurrency(top1Pay) + ' combined — ' + p1Ratio + '× what the bottom 250 CEOs earned together (' + formatCurrency(bottom50Pay) + ').',
+            detail: 'The top ' + top1PctCount + ' CEO' + (top1PctCount > 1 ? 's' : '') + ' (P99: ' + top1Names + ') earned ' + formatCurrency(top1Pay) + ' combined — ' + p1Ratio + '× what the bottom ' + bottom50PctCount + ' CEOs earned together (' + formatCurrency(bottom50Pay) + ').',
             _tickers: pctileSorted.slice(0, Math.min(top1PctCount, 3)).map(function(c) { return c.ticker; })
         });
     }
@@ -1134,7 +1200,7 @@ function populateInsights(comp, trends) {
             icon: '👑',
             label: 'CEO Concentration',
             value: above50.length + ' CEOs take ≥50%',
-            detail: above50.length + ' CEOs earn at least half of their executive team\'s total compensation. Most concentrated: ' + mostConc.ceo_name + ' (' + mostConc.ticker + ') at ' + mostConc._ceoConcPct.toFixed(1) + '%. Most distributed: ' + leastConc.ticker + ' at ' + leastConc._ceoConcPct.toFixed(1) + '%. S&P 500 median: ' + medConc.toFixed(1) + '%.',
+            detail: above50.length + ' CEOs earn at least half of their executive team\'s total compensation. Most concentrated: ' + mostConc.ceo_name + ' (' + mostConc.ticker + ') at ' + mostConc._ceoConcPct.toFixed(1) + '%. Most distributed: ' + leastConc.ticker + ' at ' + leastConc._ceoConcPct.toFixed(1) + '%. ' + scopeLabel + ' median: ' + medConc.toFixed(1) + '%.',
             _tickers: [mostConc.ticker, leastConc.ticker]
         });
     }
@@ -1247,6 +1313,7 @@ function populateInsights(comp, trends) {
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        if (window._refreshInsights) window._refreshInsights(null);
         scrollToTable();
     }
 
@@ -1267,13 +1334,26 @@ function populateInsights(comp, trends) {
     };
     insights[2].actionHint = 'Filter extreme ratios';
 
-    // 4. Sector Spread → filter to highest-paying sector
+    // 4. Sector Spread or vs S&P 500 → navigate
     if (insights[3]) {
-        var spreadSector = insights[3]._topSector || null;
-        insights[3].action = function() {
-            if (spreadSector && window.filterBySector) window.filterBySector(spreadSector);
-        };
-        insights[3].actionHint = 'Filter by sector';
+        if (insights[3]._topSector) {
+            var spreadSector = insights[3]._topSector;
+            insights[3].action = function() {
+                if (spreadSector && window.filterBySector) window.filterBySector(spreadSector);
+            };
+            insights[3].actionHint = 'Filter by sector';
+        } else {
+            // Sector-mode: scroll to sector chart for context
+            insights[3].action = function() {
+                var chartPanel = document.getElementById('sector-chart-panel');
+                if (chartPanel) {
+                    var headerHeight = getStickyOffset();
+                    var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            };
+            insights[3].actionHint = 'View sector comparison';
+        }
     }
 
     // 5. Zero Pay / Below $1M → sort by comp asc to show lowest-paid
@@ -1414,7 +1494,7 @@ function populateInsights(comp, trends) {
                 icon: '⚖️',
                 label: 'Pay Inequality',
                 value: 'Gini ' + gini.toFixed(3),
-                detail: 'Top 10% of CEOs earn ' + top10Pct + '% of total S&P 500 CEO compensation. ' +
+                detail: 'Top 10% of CEOs earn ' + top10Pct + '% of total ' + scopeLabel + ' CEO compensation. ' +
                     'Bottom 50% earn ' + bot50Pct + '%. ' +
                     'Mean/median skew: ' + skew + '× — pay is right-skewed toward outliers. ' +
                     'Total combined CEO pay: ' + formatCurrency(totalComp) + '.',
@@ -1488,7 +1568,7 @@ function populateInsights(comp, trends) {
             icon: '♀',
             label: 'Gender Representation',
             value: femaleCeos.length + ' Female CEOs',
-            detail: femaleCeos.length + ' of ' + companies.length + ' S&P 500 CEOs (' + (femaleCeos.length / companies.length * 100).toFixed(1) + '%) are women. Female CEO median pay: ' + formatCurrency(fMed) + ' (' + (parseFloat(fPremium) >= 0 ? '+' : '') + fPremium + '% vs overall). Click to view all female CEOs.',
+            detail: femaleCeos.length + ' of ' + companies.length + ' ' + scopeLabel + ' CEOs (' + (femaleCeos.length / companies.length * 100).toFixed(1) + '%) are women. Female CEO median pay: ' + formatCurrency(fMed) + ' (' + (parseFloat(fPremium) >= 0 ? '+' : '') + fPremium + '% vs overall). Click to view all female CEOs.',
             action: function() { if (window.filterByGender) window.filterByGender('F'); },
             actionHint: 'View female CEOs',
             _tickers: femaleCeos.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5).map(function(c) { return c.ticker; })
@@ -1825,6 +1905,7 @@ function buildSectorChips(companies) {
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+        if (window._refreshInsights) window._refreshInsights(null);
     });
     container.appendChild(allChip);
 
@@ -1851,6 +1932,7 @@ function buildSectorChips(companies) {
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
             if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+            if (window._refreshInsights) window._refreshInsights(s);
         });
         container.appendChild(chip);
     });
@@ -5867,6 +5949,11 @@ function hideMetricSkeletons() {
     populateMetrics(data.comp, data.trends);
     setupReactiveMetrics(companies, data.comp, data.trends);
     populateInsights(data.comp, data.trends);
+
+    // Expose a refresh function so insights react to sector filter changes
+    window._refreshInsights = function(sector) {
+        populateInsights(data.comp, data.trends, sector || null);
+    };
     populateTrends(data.trends);
     buildSectorChips(companies);
     buildRoleChips(companies);
@@ -5902,6 +5989,9 @@ function hideMetricSkeletons() {
 
         // Highlight active bar in sector chart
         if (window.highlightSectorBar) window.highlightSectorBar(sectorName);
+
+        // Update insights for sector context
+        if (window._refreshInsights) window._refreshInsights(sectorName);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -7402,6 +7492,9 @@ function hideMetricSkeletons() {
 
     // Apply sector chart highlight if restored from hash
     if (activeSector && window.highlightSectorBar) window.highlightSectorBar(activeSector);
+
+    // Apply insights for sector context from hash
+    if (activeSector && window._refreshInsights) window._refreshInsights(activeSector);
 
     // Apply ratio bucket highlight if restored from hash
     if (window._activeRatioBucket && window.highlightRatioBucket) {

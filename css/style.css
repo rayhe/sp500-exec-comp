@@ -432,6 +432,10 @@ header h1 {
     max-width: 1440px;
     margin: 0 auto;
     padding: 12px 32px 24px;
+    transition: border-color 0.3s;
+}
+.insights-section.sector-active {
+    border-top: 3px solid var(--accent);
 }
 
 .insights-header { margin-bottom: 12px; }
@@ -439,6 +443,10 @@ header h1 {
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: -0.01em;
+    transition: color 0.3s;
+}
+.insights-section.sector-active .insights-header h2 {
+    color: var(--accent);
 }
 
 .insights-grid {
