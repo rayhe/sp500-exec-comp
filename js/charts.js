@@ -2770,7 +2770,7 @@ function drawScatterChart(companies) {
     if (yMetric.canBeNegative) logY = false;
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
-    var margin = { top: 30, right: 30, bottom: 55, left: 70 };
+    var margin = { top: 30, right: 30, bottom: 75, left: 70 };
     var w = container.clientWidth - margin.left - margin.right;
     var h = Math.max(400, Math.min(500, container.clientWidth * 0.55));
 
@@ -2963,23 +2963,112 @@ function drawScatterChart(companies) {
         }
     }
 
-    // Quadrant labels (subtle) — only for default axes, hide in sector or custom mode
-    var isDefaultAxes = xMetricKey === 'total_compensation' && yMetricKey === 'pay_ratio';
-    if (!hasSectorOverlay && isDefaultAxes) {
-        var qLabels = [
-            { label: 'Low Pay, High Ratio', x: margin.left + 8, y: 22, anchor: 'start' },
-            { label: 'High Pay, High Ratio', x: w - 8, y: 22, anchor: 'end' },
-            { label: 'Low Pay, Low Ratio', x: margin.left + 8, y: h - 8, anchor: 'start' },
-            { label: 'High Pay, Low Ratio', x: w - 8, y: h - 8, anchor: 'end' }
+    // Quadrant statistics — count and percentage of companies in each quadrant
+    // relative to the median crosshairs, for ALL axis combinations
+    if (medXInRange && medYInRange) {
+        var qDataSet = hasSectorOverlay ? sectorPts : pts;
+        var qTotal = qDataSet.length;
+
+        // Count companies in each quadrant (relative to median)
+        var qRef = hasSectorOverlay ? { x: secMedX, y: secMedY } : { x: medX, y: medY };
+        var qTL = 0, qTR = 0, qBL = 0, qBR = 0; // Top-left, Top-right, Bottom-left, Bottom-right
+        qDataSet.forEach(function(c) {
+            var xv = xMetric.get(c);
+            var yv = yMetric.get(c);
+            if (xv < qRef.x) {
+                if (yv >= qRef.y) qTL++; else qBL++;
+            } else {
+                if (yv >= qRef.y) qTR++; else qBR++;
+            }
+        });
+
+        function qPct(count) { return qTotal > 0 ? Math.round(count / qTotal * 100) : 0; }
+
+        // Build quadrant descriptive labels — Low/High relative to X and Y metric short names
+        var xShort = xMetric.shortLabel.replace('CEO Total ', '').replace('Median ', '');
+        var yShort = yMetric.shortLabel.replace('CEO Total ', '').replace('Median ', '');
+
+        // Position quadrant count labels in each corner with count and percentage
+        var qMutedColor = typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280';
+        var qLabelColor = hasSectorOverlay ? sectorColor : qMutedColor;
+        var qCountOpacity = hasSectorOverlay ? 0.55 : 0.45;
+        var qLabelOpacity = hasSectorOverlay ? 0.35 : 0.3;
+
+        var quadrants = [
+            { count: qTL, pct: qPct(qTL), label: 'Low ' + xShort + ', High ' + yShort, x: 8, y: 14, countY: 26, anchor: 'start' },
+            { count: qTR, pct: qPct(qTR), label: 'High ' + xShort + ', High ' + yShort, x: w - 8, y: 14, countY: 26, anchor: 'end' },
+            { count: qBL, pct: qPct(qBL), label: 'Low ' + xShort + ', Low ' + yShort, x: 8, y: h - 20, countY: h - 8, anchor: 'start' },
+            { count: qBR, pct: qPct(qBR), label: 'High ' + xShort + ', Low ' + yShort, x: w - 8, y: h - 20, countY: h - 8, anchor: 'end' }
         ];
-        qLabels.forEach(function(q) {
+
+        quadrants.forEach(function(q) {
+            // Quadrant count (primary — larger)
             svg.append('text')
+                .attr('class', 'scatter-quadrant-count')
+                .attr('x', q.x).attr('y', q.countY)
+                .attr('text-anchor', q.anchor)
+                .attr('fill', qLabelColor)
+                .attr('font-size', '11px')
+                .attr('font-weight', '600')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .attr('opacity', qCountOpacity)
+                .attr('pointer-events', 'none')
+                .text(q.count + ' (' + q.pct + '%)');
+
+            // Quadrant descriptor (secondary — smaller)
+            svg.append('text')
+                .attr('class', 'scatter-quadrant-label')
                 .attr('x', q.x).attr('y', q.y)
                 .attr('text-anchor', q.anchor)
-                .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
-                .attr('font-size', '9px').attr('opacity', 0.5)
+                .attr('fill', qMutedColor)
+                .attr('font-size', '8.5px')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .attr('opacity', qLabelOpacity)
+                .attr('pointer-events', 'none')
                 .text(q.label);
         });
+
+        // Dominant quadrant narrative pill — identifies the most populated quadrant
+        var maxQ = quadrants.reduce(function(best, q) { return q.count > best.count ? q : best; }, quadrants[0]);
+        if (maxQ.pct >= 30 && qTotal >= 10) {
+            var domLabel = maxQ.pct + '% of ' + (hasSectorOverlay ? sectorName : 'S&P 500') +
+                ' companies have ' + maxQ.label.toLowerCase();
+            var domG = svg.append('g').attr('class', 'scatter-quadrant-dominant');
+
+            var domTextNode = domG.append('text')
+                .attr('x', w / 2).attr('y', h + 58)
+                .attr('text-anchor', 'middle')
+                .attr('fill', hasSectorOverlay ? sectorColor : '#00b4d8')
+                .attr('font-size', '10px')
+                .attr('font-weight', '500')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .attr('opacity', 0.75)
+                .text(domLabel);
+
+            // Background pill
+            var domBbox = domTextNode.node().getBBox();
+            var dpx = 10, dpy = 4;
+            var pillFill = dark ? 'rgba(0,180,216,0.06)' : 'rgba(0,180,216,0.05)';
+            var pillStroke = dark ? 'rgba(0,180,216,0.15)' : 'rgba(0,180,216,0.12)';
+            if (hasSectorOverlay) {
+                // Extract sector color for pill
+                var cMatch = sectorColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+                if (cMatch) {
+                    var sr = parseInt(cMatch[1], 16), sg = parseInt(cMatch[2], 16), sb = parseInt(cMatch[3], 16);
+                    pillFill = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.06' : '0.05') + ')';
+                    pillStroke = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.15' : '0.12') + ')';
+                }
+            }
+            domG.insert('rect', 'text')
+                .attr('x', domBbox.x - dpx)
+                .attr('y', domBbox.y - dpy)
+                .attr('width', domBbox.width + dpx * 2)
+                .attr('height', domBbox.height + dpy * 2)
+                .attr('rx', 8)
+                .attr('fill', pillFill)
+                .attr('stroke', pillStroke)
+                .attr('stroke-width', 1);
+        }
     }
 
     // Compute Pearson correlation coefficient for the stats annotation
