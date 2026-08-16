@@ -7062,3 +7062,46 @@ footer li::before {
         box-shadow: none;
     }
 }
+
+/* Correlation Matrix */
+.corr-matrix-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    flex-wrap: wrap;
+}
+.corr-stat {
+    white-space: nowrap;
+}
+.corr-stat strong {
+    color: #e4e4e7;
+    font-weight: 600;
+}
+.corr-stat-sep {
+    color: #52525b;
+}
+body.light-mode .corr-matrix-stats {
+    color: #71717a;
+}
+body.light-mode .corr-stat strong {
+    color: #27272a;
+}
+body.light-mode .corr-stat-sep {
+    color: #d4d4d8;
+}
+@media (max-width: 600px) {
+    .corr-matrix-stats {
+        font-size: 0.65rem;
+        gap: 4px;
+    }
+}
+@media print {
+    .corr-stat-sep {
+        color: #999;
+    }
+}

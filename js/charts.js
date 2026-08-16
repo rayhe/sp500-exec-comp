@@ -64,6 +64,7 @@ function initCharts(companies, trends, compData) {
     drawSopDistChart(companies);
     drawSopScatterChart(companies);
     drawCompTreemap(companies);
+    drawCorrelationMatrix(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -176,7 +177,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -197,6 +198,7 @@ function redrawAllCharts() {
     drawSopDistChart(_chartData.companies);
     drawSopScatterChart(_chartData.companies);
     drawCompTreemap(_chartData.companies);
+    drawCorrelationMatrix(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -235,6 +237,10 @@ window._redrawSectorAwareCharts = function() {
     var el4 = document.getElementById('top10-chart');
     if (el4) el4.innerHTML = '';
     drawTop10Chart(_chartData.companies, _top10Mode);
+    // Redraw correlation matrix (sector-aware)
+    var el5 = document.getElementById('correlation-matrix-chart');
+    if (el5) el5.innerHTML = '';
+    drawCorrelationMatrix(_chartData.companies);
 };
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -5129,5 +5135,355 @@ function drawCompTreemap(companies) {
         '<span class="treemap-stat">Top 10 CEOs: <strong>' + top10Pct + '%</strong> of total</span>' +
         '<span class="treemap-stat-sep">·</span>' +
         '<span class="treemap-stat">' + valid.length + ' companies</span>';
+    container.appendChild(statsEl);
+}
+
+/* ----------------------------------------------------------------
+   Correlation Matrix Heatmap
+   Shows Pearson correlations between all key compensation metrics.
+   Click any cell to configure the scatter plot to that metric pair.
+   ---------------------------------------------------------------- */
+function drawCorrelationMatrix(companies) {
+    var container = document.getElementById('correlation-matrix-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var dark = document.body.classList.contains('dark-mode') ||
+               (!document.body.classList.contains('light-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    // Sector filter: use only sector companies if active
+    var sector = window._activeSector || null;
+    var filteredCompanies = sector
+        ? companies.filter(function(c) { return c.sector === sector; })
+        : companies;
+
+    if (filteredCompanies.length < 15) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for correlation analysis (' + filteredCompanies.length + ' companies)</p>';
+        return;
+    }
+
+    // Update chart panel header for sector context
+    var headerTitle = container.closest('.chart-panel');
+    if (headerTitle) {
+        var h2 = headerTitle.querySelector('h2');
+        var desc = headerTitle.querySelector('.section-desc');
+        if (h2) h2.textContent = sector ? sector + ' Metric Correlations' : 'Metric Correlations';
+        if (desc) desc.textContent = sector
+            ? 'Pearson correlations for ' + filteredCompanies.length + ' ' + sector + ' companies. Click any cell to explore in the scatter plot.'
+            : 'Pearson correlation coefficients between key compensation metrics. Blue = negative correlation, red = positive. Click any cell to explore that pair in the scatter plot.';
+    }
+
+    // Define metrics
+    var metrics = [
+        { key: 'total_compensation', label: 'CEO Pay', short: 'CEO Pay', get: function(c) { return c.total_compensation; } },
+        { key: 'pay_ratio', label: 'Pay Ratio', short: 'Ratio', get: function(c) { return c.pay_ratio; } },
+        { key: 'median_worker_pay', label: 'Worker Pay', short: 'Worker', get: function(c) { return c.median_worker_pay; } },
+        { key: '_ceoStockPctSort', label: 'Stock Awards %', short: 'Stock%', get: function(c) { return c._ceoStockPctSort; } },
+        { key: '_ceoConcPct', label: 'CEO Concentration %', short: 'Conc%', get: function(c) { return c._ceoConcPct; } },
+        { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
+        { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
+        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } }
+    ];
+
+    var n = metrics.length;
+
+    // Compute Pearson correlation for each pair
+    function pearson(xArr, yArr) {
+        var pairs = [];
+        for (var k = 0; k < xArr.length; k++) {
+            if (xArr[k] != null && yArr[k] != null && isFinite(xArr[k]) && isFinite(yArr[k])) {
+                pairs.push([xArr[k], yArr[k]]);
+            }
+        }
+        if (pairs.length < 10) return { r: null, n: pairs.length };
+        var mx = 0, my = 0;
+        pairs.forEach(function(p) { mx += p[0]; my += p[1]; });
+        mx /= pairs.length; my /= pairs.length;
+        var sxy = 0, sxx = 0, syy = 0;
+        pairs.forEach(function(p) {
+            var dx = p[0] - mx, dy = p[1] - my;
+            sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+        });
+        if (sxx === 0 || syy === 0) return { r: 0, n: pairs.length };
+        return { r: sxy / Math.sqrt(sxx * syy), n: pairs.length };
+    }
+
+    // Pre-extract metric arrays
+    var metricArrays = metrics.map(function(m) {
+        return filteredCompanies.map(m.get);
+    });
+
+    // Build correlation matrix
+    var corrMatrix = [];
+    for (var i = 0; i < n; i++) {
+        corrMatrix[i] = [];
+        for (var j = 0; j < n; j++) {
+            if (i === j) {
+                corrMatrix[i][j] = { r: 1, n: filteredCompanies.length };
+            } else if (j < i) {
+                corrMatrix[i][j] = corrMatrix[j][i]; // symmetric
+            } else {
+                corrMatrix[i][j] = pearson(metricArrays[i], metricArrays[j]);
+            }
+        }
+    }
+
+    // SVG dimensions
+    var fullW = container.clientWidth || 600;
+    var cellSize = Math.min(Math.floor((fullW - 140) / n), 72);
+    var labelW = 110;
+    var labelH = 90;
+    var w = labelW + cellSize * n;
+    var h = labelH + cellSize * n;
+    var totalW = w + 80; // extra for color legend
+
+    var svg = d3.select(container)
+        .append('svg')
+        .attr('width', totalW)
+        .attr('height', h + 10)
+        .attr('viewBox', '0 0 ' + totalW + ' ' + (h + 10))
+        .attr('role', 'img')
+        .attr('aria-label', 'Correlation matrix heatmap showing Pearson correlations between compensation metrics');
+
+    // Color scale: diverging blue-white-red
+    var colorScale = function(r) {
+        if (r == null) return dark ? '#27272a' : '#f4f4f5';
+        // Blue (negative) → neutral → Red (positive)
+        var abs = Math.abs(r);
+        if (r >= 0) {
+            // Neutral to red/warm
+            var warmR = Math.round(255 - (255 - 239) * abs);
+            var warmG = Math.round((dark ? 39 : 250) - (dark ? 39 : 250 - 68) * abs);
+            var warmB = Math.round((dark ? 68 : 245) - (dark ? 68 : 245 - 68) * abs);
+            return 'rgb(' + warmR + ',' + warmG + ',' + warmB + ')';
+        } else {
+            // Neutral to blue/cool
+            var coolR = Math.round((dark ? 39 : 250) - (dark ? 39 : 250 - 59) * abs);
+            var coolG = Math.round((dark ? 39 : 250) - (dark ? 39 : 250 - 130) * abs);
+            var coolB = Math.round(255 - (255 - 246) * abs);
+            return 'rgb(' + coolR + ',' + coolG + ',' + coolB + ')';
+        }
+    };
+
+    var textColor = function(r) {
+        if (r == null) return dark ? '#71717a' : '#a1a1aa';
+        var abs = Math.abs(r);
+        if (abs > 0.5) return '#fff';
+        return dark ? '#e4e4e7' : '#27272a';
+    };
+
+    // Column labels (top, rotated)
+    var colLabels = svg.selectAll('.corr-col-label')
+        .data(metrics)
+        .enter()
+        .append('text')
+        .attr('class', 'corr-col-label')
+        .attr('x', function(d, i) { return labelW + i * cellSize + cellSize / 2; })
+        .attr('y', labelH - 6)
+        .attr('text-anchor', 'end')
+        .attr('transform', function(d, i) {
+            var cx = labelW + i * cellSize + cellSize / 2;
+            return 'rotate(-45,' + cx + ',' + (labelH - 6) + ')';
+        })
+        .attr('fill', dark ? '#a1a1aa' : '#52525b')
+        .attr('font-size', '0.7rem')
+        .attr('font-weight', '500')
+        .text(function(d) { return d.short; });
+
+    // Row labels (left)
+    var rowLabels = svg.selectAll('.corr-row-label')
+        .data(metrics)
+        .enter()
+        .append('text')
+        .attr('class', 'corr-row-label')
+        .attr('x', labelW - 8)
+        .attr('y', function(d, i) { return labelH + i * cellSize + cellSize / 2 + 4; })
+        .attr('text-anchor', 'end')
+        .attr('fill', dark ? '#a1a1aa' : '#52525b')
+        .attr('font-size', '0.7rem')
+        .attr('font-weight', '500')
+        .text(function(d) { return d.short; });
+
+    // Cells
+    for (var ri = 0; ri < n; ri++) {
+        for (var ci = 0; ci < n; ci++) {
+            (function(row, col) {
+                var corr = corrMatrix[row][col];
+                var r = corr.r;
+                var cx = labelW + col * cellSize;
+                var cy = labelH + row * cellSize;
+                var pad = 2;
+                var isDiagonal = row === col;
+
+                // Cell background
+                var rect = svg.append('rect')
+                    .attr('x', cx + pad)
+                    .attr('y', cy + pad)
+                    .attr('width', cellSize - pad * 2)
+                    .attr('height', cellSize - pad * 2)
+                    .attr('rx', 4)
+                    .attr('fill', isDiagonal ? (dark ? '#3f3f46' : '#e4e4e7') : colorScale(r))
+                    .attr('stroke', 'none')
+                    .attr('cursor', isDiagonal ? 'default' : 'pointer')
+                    .attr('opacity', isDiagonal ? 0.5 : 1);
+
+                // Correlation value text
+                var label = isDiagonal ? '—' : (r != null ? (r >= 0 ? '+' : '') + r.toFixed(2) : 'n/a');
+                svg.append('text')
+                    .attr('x', cx + cellSize / 2)
+                    .attr('y', cy + cellSize / 2 + (r != null && !isDiagonal ? -3 : 4))
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', isDiagonal ? (dark ? '#71717a' : '#a1a1aa') : textColor(r))
+                    .attr('font-size', cellSize > 55 ? '0.78rem' : '0.65rem')
+                    .attr('font-weight', '600')
+                    .text(label);
+
+                // Sample size (small, below r value)
+                if (!isDiagonal && r != null) {
+                    svg.append('text')
+                        .attr('x', cx + cellSize / 2)
+                        .attr('y', cy + cellSize / 2 + (cellSize > 55 ? 12 : 9))
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', textColor(r))
+                        .attr('font-size', cellSize > 55 ? '0.55rem' : '0.48rem')
+                        .attr('opacity', 0.6)
+                        .text('n=' + corr.n);
+                }
+
+                // Hover and click for non-diagonal cells
+                if (!isDiagonal && r != null) {
+                    rect.on('mouseenter', function() {
+                        d3.select(this).attr('stroke', dark ? '#ffd166' : '#f59e0b').attr('stroke-width', 2);
+                    })
+                    .on('mouseleave', function() {
+                        d3.select(this).attr('stroke', 'none');
+                    })
+                    .on('click', function() {
+                        // Update scatter plot axes to show this metric pair
+                        var xSel = document.getElementById('scatter-x-metric');
+                        var ySel = document.getElementById('scatter-y-metric');
+                        if (xSel && ySel) {
+                            xSel.value = metrics[col].key;
+                            ySel.value = metrics[row].key;
+                            xSel.dispatchEvent(new Event('change'));
+                            // Scroll to scatter chart
+                            var scatterPanel = document.getElementById('scatter-chart-panel');
+                            if (scatterPanel) {
+                                scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                    });
+
+                    // Tooltip
+                    rect.append('title')
+                        .text(metrics[row].label + ' vs ' + metrics[col].label +
+                              '\nPearson r = ' + r.toFixed(3) +
+                              '\nn = ' + corr.n +
+                              '\nStrength: ' + (Math.abs(r) >= 0.7 ? 'Strong' : Math.abs(r) >= 0.4 ? 'Moderate' : Math.abs(r) >= 0.2 ? 'Weak' : 'Very weak') +
+                              (Math.abs(r) >= 0.2 ? (r > 0 ? ' positive' : ' negative') : '') +
+                              '\n\nClick to explore in scatter plot');
+                }
+            })(ri, ci);
+        }
+    }
+
+    // Color legend (right side)
+    var legendX = w + 16;
+    var legendH = cellSize * n - 20;
+    var legendY = labelH + 10;
+    var legendW = 14;
+
+    // Legend gradient
+    var gradId = 'corr-legend-grad-' + Date.now();
+    var defs = svg.append('defs');
+    var grad = defs.append('linearGradient')
+        .attr('id', gradId)
+        .attr('x1', '0')
+        .attr('y1', '0')
+        .attr('x2', '0')
+        .attr('y2', '1');
+
+    var gradStops = [
+        { offset: '0%', r: 1 },
+        { offset: '25%', r: 0.5 },
+        { offset: '50%', r: 0 },
+        { offset: '75%', r: -0.5 },
+        { offset: '100%', r: -1 }
+    ];
+    gradStops.forEach(function(s) {
+        grad.append('stop')
+            .attr('offset', s.offset)
+            .attr('stop-color', colorScale(s.r));
+    });
+
+    svg.append('rect')
+        .attr('x', legendX)
+        .attr('y', legendY)
+        .attr('width', legendW)
+        .attr('height', legendH)
+        .attr('rx', 3)
+        .attr('fill', 'url(#' + gradId + ')');
+
+    // Legend labels
+    var legendLabels = [
+        { val: '+1.0', y: legendY },
+        { val: '+0.5', y: legendY + legendH * 0.25 },
+        { val: '0', y: legendY + legendH * 0.5 },
+        { val: '−0.5', y: legendY + legendH * 0.75 },
+        { val: '−1.0', y: legendY + legendH }
+    ];
+    legendLabels.forEach(function(l) {
+        svg.append('text')
+            .attr('x', legendX + legendW + 6)
+            .attr('y', l.y + 4)
+            .attr('fill', dark ? '#a1a1aa' : '#71717a')
+            .attr('font-size', '0.55rem')
+            .text(l.val);
+    });
+
+    svg.append('text')
+        .attr('x', legendX + legendW / 2)
+        .attr('y', legendY - 8)
+        .attr('text-anchor', 'middle')
+        .attr('fill', dark ? '#a1a1aa' : '#71717a')
+        .attr('font-size', '0.55rem')
+        .attr('font-weight', '600')
+        .text('r');
+
+    // Summary stats below the matrix
+    var statsEl = document.createElement('div');
+    statsEl.className = 'corr-matrix-stats';
+
+    // Find strongest positive and negative correlations (excluding diagonal)
+    var allCorrs = [];
+    for (var si = 0; si < n; si++) {
+        for (var sj = si + 1; sj < n; sj++) {
+            if (corrMatrix[si][sj].r != null) {
+                allCorrs.push({
+                    r: corrMatrix[si][sj].r,
+                    n: corrMatrix[si][sj].n,
+                    m1: metrics[si],
+                    m2: metrics[sj]
+                });
+            }
+        }
+    }
+
+    allCorrs.sort(function(a, b) { return b.r - a.r; });
+    var strongest = allCorrs[0];
+    var weakest = allCorrs[allCorrs.length - 1];
+    var strongestNeg = allCorrs.filter(function(c) { return c.r < 0; }).sort(function(a, b) { return a.r - b.r; })[0];
+
+    var statsHtml = '';
+    if (strongest) {
+        statsHtml += '<span class="corr-stat">Strongest +: <strong>' + strongest.m1.short + ' × ' + strongest.m2.short + '</strong> (r=' + strongest.r.toFixed(2) + ')</span>';
+    }
+    if (strongestNeg) {
+        statsHtml += '<span class="corr-stat-sep">·</span>';
+        statsHtml += '<span class="corr-stat">Strongest −: <strong>' + strongestNeg.m1.short + ' × ' + strongestNeg.m2.short + '</strong> (r=' + strongestNeg.r.toFixed(2) + ')</span>';
+    }
+    statsHtml += '<span class="corr-stat-sep">·</span>';
+    statsHtml += '<span class="corr-stat">' + allCorrs.length + ' pairs' + (sector ? ' (' + filteredCompanies.length + ' ' + sector + ' companies)' : ' (S&P 500)') + '</span>';
+    statsEl.innerHTML = statsHtml;
     container.appendChild(statsEl);
 }
