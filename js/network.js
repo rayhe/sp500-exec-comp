@@ -186,21 +186,67 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
 
-            // Highlight pass
-            ctx.strokeStyle = _hiContrast ? 'rgba(0,180,216,0.85)' : 'rgba(0,180,216,0.6)';
-            ctx.lineWidth = (_hiContrast ? 2.5 : 1.5) / scale;
-            ctx.beginPath();
+            // Highlight pass — directional arrows with inbound/outbound color coding
+            // Outbound (hovered node selects these peers): cyan
+            // Inbound  (these companies select hovered node): green
+            var outColor = _hiContrast ? 'rgba(0,180,216,0.85)' : 'rgba(0,180,216,0.6)';
+            var inColor  = _hiContrast ? 'rgba(6,214,160,0.85)'  : 'rgba(6,214,160,0.6)';
+            var hlLineW  = (_hiContrast ? 2.5 : 1.5) / scale;
+            var arrowLen  = Math.max(6, Math.min(14, 10 / scale)); // arrowhead size
+
+            // Helper: draw arrowhead triangle at the edge of target node
+            function _drawArrow(sx, sy, tx, ty, targetR, color) {
+                var dx = tx - sx, dy = ty - sy;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < targetR * 2 + 2) return; // nodes overlap, skip
+                var angle = Math.atan2(dy, dx);
+                // Tip sits at target node edge
+                var tipX = tx - Math.cos(angle) * targetR;
+                var tipY = ty - Math.sin(angle) * targetR;
+                ctx.beginPath();
+                ctx.moveTo(tipX, tipY);
+                ctx.lineTo(tipX - arrowLen * Math.cos(angle - Math.PI / 7),
+                           tipY - arrowLen * Math.sin(angle - Math.PI / 7));
+                ctx.lineTo(tipX - arrowLen * Math.cos(angle + Math.PI / 7),
+                           tipY - arrowLen * Math.sin(angle + Math.PI / 7));
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+
+            // Draw outbound edges (hovered → peer)
+            ctx.strokeStyle = outColor;
+            ctx.lineWidth = hlLineW;
             edges.forEach(function(e) {
                 var src = e.source.ticker || e.source;
                 var tgt = e.target.ticker || e.target;
-                if (src !== hoveredNode.ticker && tgt !== hoveredNode.ticker) return;
+                if (src !== hoveredNode.ticker) return;
                 var s = nodeMap[src];
                 var t = nodeMap[tgt];
                 if (!s || !t) return;
+                ctx.beginPath();
                 ctx.moveTo(s.x, s.y);
                 ctx.lineTo(t.x, t.y);
+                ctx.stroke();
+                _drawArrow(s.x, s.y, t.x, t.y, getRadius(t), outColor);
             });
-            ctx.stroke();
+
+            // Draw inbound edges (peer → hovered)
+            ctx.strokeStyle = inColor;
+            ctx.lineWidth = hlLineW;
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (tgt !== hoveredNode.ticker) return;
+                var s = nodeMap[src];
+                var t = nodeMap[tgt];
+                if (!s || !t) return;
+                ctx.beginPath();
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+                ctx.stroke();
+                _drawArrow(s.x, s.y, t.x, t.y, getRadius(t), inColor);
+            });
         } else if (activeLegendSector && sectorNodeSet) {
             // Sector filter active — dim edges not involving the sector
             ctx.strokeStyle = edgeSectorDimColor;
@@ -442,13 +488,13 @@ function initNetwork(peerData) {
 
         var html = '<div class="tt-title">' + d.ticker + ' — ' + d.name + '</div>';
         html += '<div class="tt-row"><span class="tt-label">Sector</span><span class="tt-value">' + d.sector + '</span></div>';
-        html += '<div class="tt-row"><span class="tt-label">Selected by</span><span class="tt-value">' + d.in_degree + ' companies</span></div>';
+        html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-in"></span>Selected by</span><span class="tt-value">' + d.in_degree + ' companies</span></div>';
         if (inTotal > 0) {
             var inSamePct = Math.round(inSame / inTotal * 100);
             html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + inSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - inSamePct) + '%"></div></div>';
             html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + inSame + ' same-sector</span><span class="tt-peer-cross">' + inCross + ' cross-sector</span></div>';
         }
-        html += '<div class="tt-row"><span class="tt-label">Selects</span><span class="tt-value">' + d.out_degree + ' peers</span></div>';
+        html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-out"></span>Selects</span><span class="tt-value">' + d.out_degree + ' peers</span></div>';
         if (outTotal > 0) {
             var outSamePct = Math.round(outSame / outTotal * 100);
             html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + outSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - outSamePct) + '%"></div></div>';
