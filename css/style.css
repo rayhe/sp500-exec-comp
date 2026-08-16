@@ -403,6 +403,30 @@ header h1 {
 .metric-delta.positive { color: var(--positive); }
 .metric-delta.negative { color: var(--negative); }
 
+/* Reactive metrics: vs-index delta badge */
+.metric-delta-vs {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+.metric-delta-vs.positive {
+    color: var(--positive);
+    background: rgba(6, 214, 160, 0.1);
+}
+.metric-delta-vs.negative {
+    color: var(--negative);
+    background: rgba(239, 71, 111, 0.1);
+}
+[data-theme="light"] .metric-delta-vs.positive {
+    background: rgba(6, 214, 160, 0.12);
+}
+[data-theme="light"] .metric-delta-vs.negative {
+    background: rgba(239, 71, 111, 0.12);
+}
+
 /* === Key Insights === */
 .insights-section {
     max-width: 1440px;

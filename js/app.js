@@ -611,6 +611,8 @@ function setActiveSector(val) {
     window._activeSector = val;
     // Redraw sector-aware charts
     if (window._redrawSectorAwareCharts) window._redrawSectorAwareCharts();
+    // Update metrics strip to reflect active sector
+    if (window._updateMetricsStrip) window._updateMetricsStrip(val);
 }
 let activeRole = null;   // C-suite role filter: 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', or null (CEO/default)
 let _roleSectorDeltaMode = false; // Delta overlay mode for role × sector heatmap
@@ -737,6 +739,160 @@ function populateMetrics(comp, trends) {
                 def.action();
             }
         });
+    });
+}
+
+/* === Reactive Metrics Strip ===
+ * When a sector filter is active, the metrics strip updates to show
+ * sector-specific stats with vs-S&P 500 deltas. When cleared, reverts
+ * to S&P 500 aggregates. This makes the most prominent UI element
+ * respond to user exploration.
+ */
+var _sp500Metrics = null;
+
+function setupReactiveMetrics(companies, comp, trends) {
+    var stats = comp.metadata && comp.metadata.aggregate_stats;
+    var allComps = companies.filter(function(c) { return c.total_compensation > 0; })
+        .map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var allRatios = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 0; })
+        .map(function(c) { return c.pay_ratio; }).sort(function(a, b) { return a - b; });
+    var allWorker = companies.filter(function(c) { return c.median_worker_pay != null && c.median_worker_pay > 0; })
+        .map(function(c) { return c.median_worker_pay; }).sort(function(a, b) { return a - b; });
+    var allStock = companies.filter(function(c) { return c._ceoStockPctSort != null; })
+        .map(function(c) { return c._ceoStockPctSort; }).sort(function(a, b) { return a - b; });
+
+    _sp500Metrics = {
+        medianComp: computeMedian(allComps) || (stats ? stats.median_ceo_pay : null),
+        medianRatio: computeMedian(allRatios) || (stats ? stats.median_pay_ratio : null),
+        medianWorker: computeMedian(allWorker) || (stats ? stats.median_worker_pay : null),
+        medianStock: computeMedian(allStock),
+        topCeo: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].ceo_name : ''; })(),
+        topTicker: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].ticker : ''; })(),
+        topComp: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].total_compensation : 0; })(),
+        companies: companies,
+        trends: trends
+    };
+
+    // Store original label text
+    document.querySelectorAll('.metric-card .metric-label').forEach(function(lbl) {
+        if (!lbl.dataset.originalLabel) lbl.dataset.originalLabel = lbl.textContent;
+    });
+
+    window._updateMetricsStrip = function(sectorName) {
+        var strip = document.getElementById('metrics-strip');
+        if (!strip || !_sp500Metrics) return;
+        if (!sectorName) { _restoreDefaultMetrics(strip); return; }
+
+        var sectorColor = typeof getSectorColor === 'function' ? getSectorColor(sectorName) : '#00b4d8';
+        var sc = _sp500Metrics.companies.filter(function(c) { return c.sector === sectorName; });
+        if (sc.length === 0) { _restoreDefaultMetrics(strip); return; }
+
+        var sComps = sc.filter(function(c){return c.total_compensation>0;}).map(function(c){return c.total_compensation;}).sort(function(a,b){return a-b;});
+        var sRatios = sc.filter(function(c){return c.pay_ratio!=null&&c.pay_ratio>0;}).map(function(c){return c.pay_ratio;}).sort(function(a,b){return a-b;});
+        var sWorker = sc.filter(function(c){return c.median_worker_pay!=null&&c.median_worker_pay>0;}).map(function(c){return c.median_worker_pay;}).sort(function(a,b){return a-b;});
+        var sStock = sc.filter(function(c){return c._ceoStockPctSort!=null;}).map(function(c){return c._ceoStockPctSort;}).sort(function(a,b){return a-b;});
+
+        var sMedianComp = computeMedian(sComps);
+        var sMedianRatio = computeMedian(sRatios);
+        var sMedianWorker = computeMedian(sWorker);
+        var sMedianStock = computeMedian(sStock);
+        var sTop = sc.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;})[0];
+
+        var abbr = {'Information Technology':'IT','Communication Services':'Comm Svcs','Consumer Discretionary':'Cons Disc','Consumer Staples':'Cons Staples','Health Care':'Health Care','Financials':'Financials','Industrials':'Industrials','Real Estate':'Real Estate','Materials':'Materials','Utilities':'Utilities','Energy':'Energy'};
+        var short = abbr[sectorName] || sectorName;
+
+        strip.style.borderTop = '3px solid ' + sectorColor;
+        strip.style.transition = 'border-color 0.3s';
+
+        function fmtDelta(sv, sp) {
+            if (sv == null || sp == null || sp === 0) return '';
+            var p = ((sv - sp) / sp * 100);
+            var s = p >= 0 ? '+' : '';
+            var c = p >= 0 ? 'positive' : 'negative';
+            return '<span class="metric-delta-vs ' + c + '">' + s + p.toFixed(0) + '% vs Index</span>';
+        }
+
+        var labels = strip.querySelectorAll('.metric-label');
+
+        // 1. Median CEO Pay
+        var me = document.getElementById('metric-median');
+        var md = document.getElementById('metric-median-delta');
+        if (me) me.textContent = sMedianComp ? formatCurrency(sMedianComp) : '\u2014';
+        if (labels[0]) labels[0].innerHTML = short + ' Median CEO Pay';
+        if (md) md.innerHTML = sc.length + ' companies' + (sMedianComp && _sp500Metrics.medianComp ? ' \u00b7 ' + fmtDelta(sMedianComp, _sp500Metrics.medianComp) : '');
+
+        // 2. Pay Ratio
+        var re = document.getElementById('metric-ratio');
+        var rs = document.getElementById('metric-ratio-sub');
+        if (re) re.textContent = sMedianRatio ? formatRatio(sMedianRatio) : '\u2014';
+        if (labels[1]) labels[1].innerHTML = short + ' Pay Ratio';
+        if (rs) rs.innerHTML = 'CEO : Worker' + (sMedianRatio && _sp500Metrics.medianRatio ? ' \u00b7 ' + fmtDelta(sMedianRatio, _sp500Metrics.medianRatio) : '');
+
+        // 3. Worker Pay
+        var we = document.getElementById('metric-worker');
+        var wd = document.getElementById('metric-worker-delta');
+        if (we) we.textContent = sMedianWorker ? formatCompact(sMedianWorker) : '\u2014';
+        if (labels[2]) labels[2].innerHTML = short + ' Worker Pay';
+        if (wd) wd.innerHTML = 'Sector median' + (sMedianWorker && _sp500Metrics.medianWorker ? ' \u00b7 ' + fmtDelta(sMedianWorker, _sp500Metrics.medianWorker) : '');
+
+        // 4. Highest CEO
+        if (sTop) {
+            var he = document.getElementById('metric-highest');
+            var hn = document.getElementById('metric-highest-name');
+            if (he) he.textContent = formatCurrency(sTop.total_compensation);
+            if (hn) hn.textContent = sTop.ceo_name + ' \u2014 ' + sTop.ticker;
+            if (labels[3]) labels[3].innerHTML = short + ' Highest CEO';
+        }
+
+        // 5. Stock %
+        if (sMedianStock != null) {
+            var se = document.getElementById('metric-stock-pct');
+            var ss = document.getElementById('metric-stock-sub');
+            if (se) se.textContent = Math.round(sMedianStock) + '%';
+            if (labels[4]) labels[4].innerHTML = short + ' Stock %';
+            if (ss) ss.innerHTML = 'Sector median equity' + (_sp500Metrics.medianStock != null ? ' \u00b7 ' + fmtDelta(sMedianStock, _sp500Metrics.medianStock) : '');
+        }
+
+        // 6. 5-Year Growth stays S&P 500
+        if (labels[5]) labels[5].innerHTML = '5-Year Pay Growth';
+    };
+}
+
+function _restoreDefaultMetrics(strip) {
+    if (!_sp500Metrics) return;
+    strip.style.borderTop = '';
+
+    var me = document.getElementById('metric-median');
+    var md = document.getElementById('metric-median-delta');
+    if (me) me.textContent = _sp500Metrics.medianComp ? formatCurrency(_sp500Metrics.medianComp) : '$16.8M';
+    if (md) md.textContent = 'S&P 500, FY2024';
+
+    var re = document.getElementById('metric-ratio');
+    var rs = document.getElementById('metric-ratio-sub');
+    if (re) re.textContent = _sp500Metrics.medianRatio ? formatRatio(_sp500Metrics.medianRatio) : '195:1';
+    if (rs) rs.textContent = 'CEO : Worker';
+
+    var we = document.getElementById('metric-worker');
+    var wd = document.getElementById('metric-worker-delta');
+    if (we) we.textContent = _sp500Metrics.medianWorker ? formatCompact(_sp500Metrics.medianWorker) : '$81.9K';
+    if (wd) wd.textContent = 'S&P 500 median employee';
+
+    var he = document.getElementById('metric-highest');
+    var hn = document.getElementById('metric-highest-name');
+    if (he) he.textContent = formatCurrency(_sp500Metrics.topComp);
+    if (hn) hn.textContent = _sp500Metrics.topCeo + ' \u2014 ' + _sp500Metrics.topTicker;
+
+    var se = document.getElementById('metric-stock-pct');
+    var ss = document.getElementById('metric-stock-sub');
+    if (_sp500Metrics.trends && _sp500Metrics.trends.compensation_composition && _sp500Metrics.trends.compensation_composition.s_and_p_500) {
+        var sp = _sp500Metrics.trends.compensation_composition.s_and_p_500.stock_awards_pct;
+        var fy = _sp500Metrics.trends.compensation_composition.s_and_p_500.fiscal_year;
+        if (sp != null && se) se.textContent = sp + '%';
+        if (ss) ss.textContent = 'Equity dominates pay (FY' + fy + ')';
+    }
+
+    strip.querySelectorAll('.metric-label').forEach(function(lbl) {
+        if (lbl.dataset.originalLabel) lbl.textContent = lbl.dataset.originalLabel;
     });
 }
 
@@ -5709,6 +5865,7 @@ function hideMetricSkeletons() {
     hideMetricSkeletons();
 
     populateMetrics(data.comp, data.trends);
+    setupReactiveMetrics(companies, data.comp, data.trends);
     populateInsights(data.comp, data.trends);
     populateTrends(data.trends);
     buildSectorChips(companies);
