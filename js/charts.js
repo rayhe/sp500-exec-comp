@@ -60,6 +60,7 @@ function initCharts(companies, trends, compData) {
     drawScatterChart(companies);
     drawYoYDistChart(companies);
     drawGenderPayChart(trends);
+    drawCeoCfoChart(companies);
     drawSopDistChart(companies);
     drawSopScatterChart(companies);
     drawCompTreemap(companies);
@@ -175,7 +176,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -192,6 +193,7 @@ function redrawAllCharts() {
     drawScatterChart(_chartData.companies);
     drawYoYDistChart(_chartData.companies);
     drawGenderPayChart(_chartData.trends);
+    drawCeoCfoChart(_chartData.companies);
     drawSopDistChart(_chartData.companies);
     drawSopScatterChart(_chartData.companies);
     drawCompTreemap(_chartData.companies);
@@ -2703,6 +2705,16 @@ function drawScatterChart(companies) {
             unit: '%',
             minForLog: 1,
             canBeNegative: false
+        },
+        _ceoCfoPremium: {
+            label: 'CEO-to-CFO Premium',
+            shortLabel: 'CEO/CFO',
+            get: function(c) { return c._ceoCfoPremium; },
+            fmt: function(v) { return v != null ? v.toFixed(1) + '×' : '—'; },
+            fmtAxis: function(v) { return v.toFixed(1) + '×'; },
+            unit: '×',
+            minForLog: 0.5,
+            canBeNegative: false
         }
     };
 
@@ -4125,6 +4137,7 @@ function drawGenderPayChart(trends) {
         .attr('fill', femaleColor)
         .attr('rx', 3).attr('ry', 3)
         .attr('opacity', 0.85)
+        .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1);
             var premium = ((d.female_median_pay - d.overall_median_pay) / d.overall_median_pay * 100).toFixed(1);
@@ -4133,10 +4146,15 @@ function drawGenderPayChart(trends) {
                 '<div class="ct-row"><span class="ct-label">Female CEOs</span><span class="ct-val">' + d.num_female_ceos + ' / ' + d.total_ceos_in_study + '</span></div>' +
                 '<div class="ct-row"><span class="ct-label">Premium</span><span class="ct-val" style="color:' + premiumColor + '">+' + premium + '%</span></div>' +
                 (d.highest_paid_woman ? '<div class="ct-row ct-sub"><span class="ct-label">Highest</span><span class="ct-val">' + d.highest_paid_woman + '</span></div>' : '') +
-                (d.highest_paid_woman_comp ? '<div class="ct-row ct-sub"><span class="ct-label"></span><span class="ct-val">' + fmtCurr(d.highest_paid_woman_comp) + '</span></div>' : ''));
+                (d.highest_paid_woman_comp ? '<div class="ct-row ct-sub"><span class="ct-label"></span><span class="ct-val">' + fmtCurr(d.highest_paid_woman_comp) + '</span></div>' : '') +
+                '<div class="ct-row ct-sub" style="margin-top:4px;font-size:10px;color:' + mutedColor + '">Click to filter table to female CEOs</div>');
         })
         .on('mousemove', positionChartTooltip)
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); });
+        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); })
+        .on('click', function() {
+            hideChartTooltip();
+            if (window.filterByGender) window.filterByGender('F');
+        });
 
     // Bar value labels
     barGroups.append('text')
@@ -4336,6 +4354,211 @@ function drawGenderPayChart(trends) {
     }
 }
 
+
+/* ========================================================================
+   CEO-to-CFO Pay Premium Chart (histogram)
+   ======================================================================== */
+function drawCeoCfoChart(companies) {
+    var container = document.getElementById('ceo-cfo-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withPremium = companies.filter(function(c) {
+        return c._ceoCfoPremium != null && isFinite(c._ceoCfoPremium);
+    });
+
+    if (withPremium.length < 10) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient CEO-CFO data for chart</p>';
+        return;
+    }
+
+    var dark = typeof isDarkTheme === 'function' && isDarkTheme();
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#a1a1aa' : '#6b7280';
+    var subtleColor = dark ? '#3f3f46' : '#e5e7eb';
+
+    // Buckets for CEO/CFO premium ratio
+    var buckets = [
+        { label: '<1.5×', min: 0, max: 1.5, color: '#06d6a0' },
+        { label: '1.5–2×', min: 1.5, max: 2, color: '#34d399' },
+        { label: '2–3×', min: 2, max: 3, color: '#00b4d8' },
+        { label: '3–4×', min: 3, max: 4, color: '#a78bfa' },
+        { label: '4–5×', min: 4, max: 5, color: '#fbbf24' },
+        { label: '5–7×', min: 5, max: 7, color: '#fb923c' },
+        { label: '7–10×', min: 7, max: 10, color: '#ef476f' },
+        { label: '>10×', min: 10, max: Infinity, color: '#dc2626' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.companies = withPremium.filter(function(c) {
+            return c._ceoCfoPremium >= b.min && c._ceoCfoPremium < b.max;
+        });
+        b.count = b.companies.length;
+    });
+
+    var maxCount = d3.max(buckets, function(b) { return b.count; });
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 20, right: 20, bottom: 60, left: 50 };
+    var width = cw - margin.left - margin.right;
+    var height = 300 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', 300)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO-to-CFO pay premium distribution histogram');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(buckets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.15);
+
+    var y = d3.scaleLinear()
+        .domain([0, maxCount * 1.12])
+        .range([height, 0]);
+
+    // Grid
+    y.ticks(5).forEach(function(t) {
+        g.append('line')
+            .attr('x1', 0).attr('x2', width)
+            .attr('y1', y(t)).attr('y2', y(t))
+            .attr('stroke', subtleColor).attr('stroke-width', 0.5);
+    });
+
+    // Y-axis
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .call(function(ax) { ax.select('.domain').remove(); })
+        .call(function(ax) { ax.selectAll('.tick line').attr('stroke', subtleColor); })
+        .call(function(ax) { ax.selectAll('.tick text').attr('fill', mutedColor).attr('font-size', '10px'); });
+
+    // X-axis
+    g.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(function(ax) { ax.select('.domain').attr('stroke', subtleColor); })
+        .call(function(ax) { ax.selectAll('.tick text').attr('fill', textColor).attr('font-size', '11px').attr('dy', '10'); });
+
+    // Median line
+    var premiums = withPremium.map(function(c) { return c._ceoCfoPremium; }).sort(function(a, b) { return a - b; });
+    var medianPremium = premiums[Math.floor(premiums.length / 2)];
+    var meanPremium = premiums.reduce(function(s, v) { return s + v; }, 0) / premiums.length;
+
+    // Bars
+    var bars = g.selectAll('.cfo-bar')
+        .data(buckets)
+        .enter().append('rect')
+        .attr('class', 'cfo-bar')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return height - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('rx', 3).attr('ry', 3)
+        .attr('opacity', 0.8)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            d3.select(this).attr('opacity', 1);
+            var topCompanies = b.companies.slice().sort(function(a, c) {
+                return (c._ceoCfoPremium || 0) - (a._ceoCfoPremium || 0);
+            }).slice(0, 5);
+            var html = '<div class="ct-title">' + b.label + ' CEO/CFO Premium</div>' +
+                '<div class="ct-row"><span class="ct-label">Companies</span><span class="ct-val">' + b.count + '</span></div>' +
+                '<div class="ct-row"><span class="ct-label">% of Total</span><span class="ct-val">' + (b.count / withPremium.length * 100).toFixed(1) + '%</span></div>';
+            if (topCompanies.length > 0) {
+                html += '<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;font-size:11px;">';
+                topCompanies.forEach(function(c) {
+                    html += '<div>' + c.ticker + ' — ' + c._ceoCfoPremium.toFixed(1) + '× (' + fmtCurr(c.total_compensation) + ' / ' + fmtCurr(c._cfoExec.total) + ')</div>';
+                });
+                html += '</div>';
+            }
+            html += '<div style="margin-top:4px;font-size:10px;color:' + mutedColor + '">Click to filter table</div>';
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', positionChartTooltip)
+        .on('mouseout', function() { d3.select(this).attr('opacity', 0.8); hideChartTooltip(); })
+        .on('click', function(event, b) {
+            hideChartTooltip();
+            // Use the configurable scatter axes to show CEO comp vs CEO-CFO premium
+            // For now, just notify the label in the chart
+            // Highlight active bucket
+            var isActive = window._activeCeoCfoBucket &&
+                window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
+            if (isActive) {
+                window._activeCeoCfoBucket = null;
+            } else {
+                window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+            }
+            highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
+        });
+
+    // Count labels above bars
+    g.selectAll('.cfo-count')
+        .data(buckets)
+        .enter().append('text')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 5; })
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '11px').attr('font-weight', '600')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(function(b) { return b.count > 0 ? b.count : ''; });
+
+    // Median annotation
+    var medBucket = buckets.find(function(b) { return medianPremium >= b.min && medianPremium < b.max; });
+    if (medBucket) {
+        var medBarX = x(medBucket.label) + x.bandwidth() / 2;
+        g.append('line')
+            .attr('x1', medBarX).attr('x2', medBarX)
+            .attr('y1', 0).attr('y2', height)
+            .attr('stroke', '#ffd166')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '6,3')
+            .attr('opacity', 0.7);
+        g.append('text')
+            .attr('x', medBarX + 4).attr('y', 12)
+            .attr('fill', '#ffd166')
+            .attr('font-size', '10px').attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text('Median: ' + medianPremium.toFixed(1) + '×');
+    }
+
+    // Stats summary
+    svg.append('text')
+        .attr('x', cw - 12).attr('y', 16)
+        .attr('text-anchor', 'end')
+        .attr('fill', mutedColor).attr('font-size', '10px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('n=' + withPremium.length + ' · mean=' + meanPremium.toFixed(1) + '× · median=' + medianPremium.toFixed(1) + '×');
+
+    // X-axis label
+    svg.append('text')
+        .attr('x', margin.left + width / 2).attr('y', 295)
+        .attr('text-anchor', 'middle')
+        .attr('fill', mutedColor).attr('font-size', '11px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('CEO Total Compensation ÷ CFO Total Compensation');
+}
+
+/* Highlight/dim CEO-CFO chart bars when a bucket is active */
+window.highlightCeoCfoBucket = function(minRatio, maxRatio) {
+    var bars = d3.selectAll('.cfo-bar');
+    if (minRatio == null) {
+        bars.attr('opacity', 0.8);
+        return;
+    }
+    bars.each(function(b) {
+        var match = b.min === minRatio && b.max === maxRatio;
+        d3.select(this)
+            .attr('opacity', match ? 1 : 0.25)
+            .attr('stroke', match ? '#fff' : 'none')
+            .attr('stroke-width', match ? 2 : 0);
+    });
+};
 
 /* ========================================================================
    Say-on-Pay Distribution Chart (histogram)

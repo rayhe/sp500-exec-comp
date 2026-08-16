@@ -276,6 +276,13 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel" id="ceo-cfo-panel">
+            <div class="section-header">
+                <h2>CEO-to-CFO Pay Premium</h2>
+                <p class="section-desc">How much more does the CEO earn compared to the CFO? Distribution of CEO/CFO pay ratios across the S&P 500. Click a bucket to filter the table.</p>
+            </div>
+            <div id="ceo-cfo-chart"></div>
+        </div>
         <div class="chart-panel" id="sop-dist-panel">
             <div class="section-header">
                 <h2>Say-on-Pay Approval Distribution</h2>
@@ -319,6 +326,7 @@
                             <option value="_ceoConcPct">CEO Concentration %</option>
                             <option value="_ceoYoYPct">YoY Change %</option>
                             <option value="_sopApproval">Say-on-Pay %</option>
+                            <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                         </select>
                     </label>
                     <label class="scatter-axis-label">Y axis:
@@ -330,6 +338,7 @@
                             <option value="_ceoConcPct">CEO Concentration %</option>
                             <option value="_ceoYoYPct">YoY Change %</option>
                             <option value="_sopApproval">Say-on-Pay %</option>
+                            <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                         </select>
                     </label>
                 </div>

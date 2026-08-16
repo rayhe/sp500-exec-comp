@@ -249,6 +249,34 @@ function computeSayOnPay(companies) {
     });
 }
 
+/* Pre-compute CEO-to-CFO pay premium.
+   For each company with both CEO and CFO NEOs, sets _ceoCfoPremium (ratio of CEO total / CFO total)
+   and _cfoExec (the CFO exec record). */
+function computeCeoCfoPremium(companies) {
+    companies.forEach(function(c) {
+        c._ceoCfoPremium = null;
+        c._cfoExec = null;
+        if (!c.executives || c.executives.length === 0) return;
+        var latestYear = 0;
+        c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+        var ceo = null, cfo = null;
+        c.executives.forEach(function(e) {
+            if (e.year !== latestYear) return;
+            var t = (e.title || '').toLowerCase();
+            if (/\b(chief executive|(?:^|\s)ceo\b)/.test(t) || (/\bpresident\b/.test(t) && !/vice/i.test(t) && !ceo)) {
+                if (!ceo || (e.total || 0) > (ceo.total || 0)) ceo = e;
+            }
+            if (/chief financ|\bcfo\b|principal financial/i.test(t)) {
+                if (!cfo || (e.total || 0) > (cfo.total || 0)) cfo = e;
+            }
+        });
+        if (ceo && cfo && ceo.total > 0 && cfo.total > 0) {
+            c._ceoCfoPremium = ceo.total / cfo.total;
+            c._cfoExec = cfo;
+        }
+    });
+}
+
 function computeCompPercentile(companies) {
     var withComp = companies.filter(function(c) { return c.total_compensation != null && c.total_compensation > 0; });
     withComp.sort(function(a, b) { return a.total_compensation - b.total_compensation; });
@@ -727,6 +755,7 @@ function sortTableByKey(key, dir) {
     window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
     window._activePctileTier = null; // null=off, { min, max, label, color }
     window._activeStockPctTier = null; // null=off, { min, max, label, color }
+    window._activeGenderFilter = null; // null=off, 'F'=female CEOs, 'M'=male CEOs
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -1044,6 +1073,11 @@ function populateInsights(comp, trends) {
             var spf = document.getElementById('stockpct-filter-chip');
             if (spf) spf.remove();
         }
+        if (window._activeGenderFilter) {
+            window._activeGenderFilter = null;
+            var gfc = document.getElementById('gender-filter-chip');
+            if (gfc) gfc.remove();
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -1285,6 +1319,48 @@ function populateInsights(comp, trends) {
             }
         };
         insights[13].actionHint = 'View distribution';
+    }
+
+    // 16. Gender Representation
+    var femaleCeos = companies.filter(function(c) { return c.ceo_gender === 'F'; });
+    if (femaleCeos.length > 0) {
+        var fMedian = femaleCeos.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+        var fMed = fMedian[Math.floor(fMedian.length / 2)];
+        var allMed = companies.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; })[Math.floor(companies.length / 2)];
+        var fPremium = ((fMed - allMed) / allMed * 100).toFixed(1);
+        insights.push({
+            icon: '♀',
+            label: 'Gender Representation',
+            value: femaleCeos.length + ' Female CEOs',
+            detail: femaleCeos.length + ' of ' + companies.length + ' S&P 500 CEOs (' + (femaleCeos.length / companies.length * 100).toFixed(1) + '%) are women. Female CEO median pay: ' + formatCurrency(fMed) + ' (' + (parseFloat(fPremium) >= 0 ? '+' : '') + fPremium + '% vs overall). Click to view all female CEOs.',
+            action: function() { if (window.filterByGender) window.filterByGender('F'); },
+            actionHint: 'View female CEOs',
+            _tickers: femaleCeos.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5).map(function(c) { return c.ticker; })
+        });
+    }
+
+    // 17. CEO-CFO Pay Premium
+    var withCfoPremium = companies.filter(function(c) { return c._ceoCfoPremium != null; });
+    if (withCfoPremium.length > 10) {
+        var cfoPremiums = withCfoPremium.map(function(c) { return c._ceoCfoPremium; }).sort(function(a, b) { return a - b; });
+        var cfoPremMed = cfoPremiums[Math.floor(cfoPremiums.length / 2)];
+        var widestGap = withCfoPremium.slice().sort(function(a, b) { return b._ceoCfoPremium - a._ceoCfoPremium; })[0];
+        insights.push({
+            icon: '⚖️',
+            label: 'CEO-CFO Premium',
+            value: cfoPremMed.toFixed(1) + '× Median',
+            detail: 'The median CEO earns ' + cfoPremMed.toFixed(1) + '× their CFO across ' + withCfoPremium.length + ' companies. Widest gap: ' + widestGap.ticker + ' (' + widestGap._ceoCfoPremium.toFixed(1) + '×). Click to view the distribution.',
+            action: function() {
+                var chartPanel = document.getElementById('ceo-cfo-panel');
+                if (chartPanel) {
+                    var headerHeight = getStickyOffset();
+                    var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            },
+            actionHint: 'View distribution',
+            _tickers: [widestGap.ticker]
+        });
     }
 
     // Render cards
@@ -1588,6 +1664,7 @@ function buildSectorChips(companies) {
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+        if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -1613,6 +1690,7 @@ function buildSectorChips(companies) {
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+        if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -2943,6 +3021,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
     if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.label); }
     if (window._activeStockPctTier) { filterDims++; filterParts.push('Equity: ' + window._activeStockPctTier.label); }
+    if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -3368,6 +3447,11 @@ function renderTable(companies, options) {
             return c._ceoStockPct != null && c._ceoStockPct >= spt.min && c._ceoStockPct < spt.max;
         });
     }
+    if (window._activeGenderFilter) {
+        filtered = filtered.filter(function(c) {
+            return c.ceo_gender === window._activeGenderFilter;
+        });
+    }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
@@ -3609,6 +3693,7 @@ function renderTable(companies, options) {
     if (window._activeYoYBucket) announceMsg += ', YoY: ' + window._activeYoYBucket.label;
     if (window._activePctileTier) announceMsg += ', percentile: ' + window._activePctileTier.label;
     if (window._activeStockPctTier) announceMsg += ', equity: ' + window._activeStockPctTier.label;
+    if (window._activeGenderFilter) announceMsg += ', gender: ' + (window._activeGenderFilter === 'F' ? 'Female' : 'Male') + ' CEOs';
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -4179,6 +4264,15 @@ function setupDetailPanel(companies) {
             var premRatio = company._ceoPremiumRatio;
             var premStr = premRatio >= 10 ? premRatio.toFixed(0) + '×' : premRatio.toFixed(1) + '×';
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Premium</div><div class="detail-stat-value">' + premStr + '</div><div class="detail-stat-sub">CEO pay vs. #2 executive</div></div>';
+        }
+
+        // CEO-to-CFO premium ratio stat
+        if (company._ceoCfoPremium != null) {
+            var cfoPrem = company._ceoCfoPremium;
+            var cfoPremStr = cfoPrem >= 10 ? cfoPrem.toFixed(0) + '×' : cfoPrem.toFixed(1) + '×';
+            var cfoPremCls = cfoPrem > 5 ? 'negative' : cfoPrem > 3 ? '' : 'positive';
+            var cfoName = company._cfoExec ? company._cfoExec.name : 'CFO';
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO/CFO</div><div class="detail-stat-value ' + cfoPremCls + '">' + cfoPremStr + '</div><div class="detail-stat-sub">CEO pay vs. ' + cfoName + '</div></div>';
         }
 
         // Say-on-Pay shareholder approval stat
@@ -5220,6 +5314,9 @@ function serializeState() {
         params.push('sopmin=' + window._activeSopFilter.min);
         params.push('sopmax=' + window._activeSopFilter.max);
     }
+    if (window._activeGenderFilter) {
+        params.push('gender=' + window._activeGenderFilter);
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -5362,6 +5459,12 @@ function applyHashState(companies) {
         if (!isNaN(sopMin) && !isNaN(sopMax)) {
             window._activeSopFilter = { min: sopMin, max: sopMax, label: sopMin + '-' + sopMax + '%' };
         }
+    }
+
+    // Gender filter
+    if (state.gender === 'F' || state.gender === 'M') {
+        window._activeGenderFilter = state.gender;
+        if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
     }
 
     // Role filter
@@ -5583,6 +5686,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute say-on-pay approval field for sorting/filtering
     computeSayOnPay(companies);
+
+    // Pre-compute CEO-to-CFO premium ratio for analytical charts
+    computeCeoCfoPremium(companies);
 
     // Pre-compute CEO transitions (detect CEO changes between fiscal years)
     computeCeoTransitions(companies);
@@ -6334,6 +6440,79 @@ function hideMetricSkeletons() {
     }
     window._updateTeamCompletenessFilterIndicator = updateTeamCompletenessFilterIndicator;
 
+    /* ---- Gender Filter (click-to-filter from gender chart) ---- */
+    window.filterByGender = function(gender) {
+        // gender: 'F' = female CEOs, 'M' = male CEOs
+        // Toggle off if same gender re-clicked
+        if (window._activeGenderFilter === gender) {
+            window._activeGenderFilter = null;
+        } else {
+            window._activeGenderFilter = gender;
+        }
+        currentPage = 1;
+
+        // Sort by total compensation descending when activating
+        if (window._activeGenderFilter) {
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+        }
+
+        updateGenderFilterIndicator();
+        renderTable(companies);
+        pushState();
+
+        var genderLabel = gender === 'F' ? 'Female' : 'Male';
+        var msg = window._activeGenderFilter
+            ? 'Filtered to ' + genderLabel + ' CEOs'
+            : 'Gender filter cleared';
+        announce(msg);
+
+        // Scroll to table
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updateGenderFilterIndicator() {
+        var existing = document.getElementById('gender-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeGenderFilter) {
+            var isCombined = !!activeSector;
+            var gLabel = window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs';
+            var chipLabel = isCombined ? activeSector + ' × ' + gLabel : gLabel;
+            var chipColor = window._activeGenderFilter === 'F' ? '#e879a0' : '#00b4d8';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'gender-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(chipColor);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(chipColor);
+            chip.style.color = isCombined ? '#a78bfa' : chipColor;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + gender filter' : 'Click to clear gender filter';
+            chip.addEventListener('click', function() {
+                window._activeGenderFilter = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+                announce('Gender filter cleared');
+            });
+            var filtersBar = document.querySelector('.sector-chips') || document.querySelector('.table-controls');
+            if (filtersBar) filtersBar.appendChild(chip);
+        }
+    }
+    window._updateGenderFilterIndicator = updateGenderFilterIndicator;
+
     // Helper to derive rgba chip background from hex color
     function hexToChipBg(hex) {
         var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
@@ -6384,6 +6563,11 @@ function hideMetricSkeletons() {
             var sfChip = document.getElementById('sop-filter-chip');
             if (sfChip) sfChip.remove();
             if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        }
+        if (window._activeGenderFilter) {
+            window._activeGenderFilter = null;
+            var gfChip2 = document.getElementById('gender-filter-chip');
+            if (gfChip2) gfChip2.remove();
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -8904,7 +9088,7 @@ function hideMetricSkeletons() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || (activeRole && activeRole !== 'CEO')) {
                 setActiveSector(null);
                 searchTerm = '';
                 activeRole = null;
@@ -8950,6 +9134,11 @@ function hideMetricSkeletons() {
                     var sfcEsc = document.getElementById('sop-filter-chip');
                     if (sfcEsc) sfcEsc.remove();
                     if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+                }
+                if (window._activeGenderFilter) {
+                    window._activeGenderFilter = null;
+                    var gfcEsc = document.getElementById('gender-filter-chip');
+                    if (gfcEsc) gfcEsc.remove();
                 }
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
