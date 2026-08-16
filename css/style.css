@@ -6861,3 +6861,180 @@ footer li::before {
   .sop-dist-bracket-labels { gap: 1px; }
   .sop-dist-bar-label { font-size: 0.5rem; }
 }
+
+/* === Network Cluster Statistics Panel === */
+.network-cluster-stats {
+    display: none;
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background: rgba(15, 15, 26, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    max-width: 340px;
+    min-width: 260px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 10;
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.network-cluster-stats.visible {
+    display: block;
+    animation: cluster-stats-in 0.3s ease forwards;
+}
+@keyframes cluster-stats-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.cluster-stats-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cluster-stats-title .cs-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.cluster-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-bottom: 10px;
+}
+.cs-stat {
+    display: flex;
+    flex-direction: column;
+}
+.cs-stat-label {
+    font-size: 0.68rem;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+.cs-stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-feature-settings: 'tnum';
+}
+.cs-stat-value.cs-accent {
+    color: #00b4d8;
+}
+.cs-edge-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 4px 0 2px;
+    background: rgba(255, 255, 255, 0.06);
+}
+.cs-edge-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+.cs-edge-bar-fill.cs-intra {
+    background: #00b4d8;
+}
+.cs-edge-bar-fill.cs-cross {
+    background: #a78bfa;
+}
+.cs-edge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: #a1a1aa;
+}
+.cs-edge-labels .cs-intra-label { color: #00b4d8; }
+.cs-edge-labels .cs-cross-label { color: #a78bfa; }
+.cs-node-list {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+.cs-node-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 0.76rem;
+}
+.cs-node-role {
+    color: #a1a1aa;
+    font-size: 0.68rem;
+}
+.cs-node-ticker {
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.cs-node-ticker:hover {
+    color: #00b4d8;
+    text-decoration: underline;
+}
+.cs-node-degree {
+    font-size: 0.72rem;
+    color: #71717a;
+    font-feature-settings: 'tnum';
+}
+.cs-bridge-pill {
+    display: inline-block;
+    background: rgba(167, 139, 250, 0.15);
+    color: #a78bfa;
+    font-size: 0.62rem;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+    font-weight: 600;
+}
+/* Light theme */
+:root[data-theme="light"] .network-cluster-stats,
+.network-cluster-stats.light-theme {
+    background: rgba(244, 245, 247, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1a1a2e;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+:root[data-theme="light"] .cs-stat-label { color: #6b7280; }
+:root[data-theme="light"] .cs-edge-bar { background: rgba(0, 0, 0, 0.06); }
+:root[data-theme="light"] .cs-edge-labels { color: #6b7280; }
+:root[data-theme="light"] .cs-node-role { color: #6b7280; }
+:root[data-theme="light"] .cs-node-degree { color: #9ca3af; }
+:root[data-theme="light"] .cs-node-list { border-top-color: rgba(0, 0, 0, 0.08); }
+:root[data-theme="light"] .cs-bridge-pill { background: rgba(167, 139, 250, 0.12); }
+/* High contrast */
+@media (prefers-contrast: high) {
+    .network-cluster-stats { border-width: 2px; }
+    .cs-stat-label { color: #d4d4d8; }
+    .cs-edge-bar { height: 8px; }
+}
+/* Mobile */
+@media (max-width: 600px) {
+    .network-cluster-stats {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        max-width: none;
+        min-width: auto;
+        padding: 12px 14px;
+        font-size: 0.78rem;
+    }
+    .cs-stat-value { font-size: 1rem; }
+}
+/* Print */
+@media print {
+    .network-cluster-stats {
+        background: #fff;
+        border-color: #ccc;
+        color: #1a1a2e;
+        box-shadow: none;
+    }
+}

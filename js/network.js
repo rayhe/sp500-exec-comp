@@ -30,6 +30,14 @@ function initNetwork(peerData) {
     canvas.height = height * dpr;
     container.appendChild(canvas);
 
+    // Create cluster stats panel inside the container (survives innerHTML wipe)
+    var clusterStatsEl = document.createElement('div');
+    clusterStatsEl.id = 'network-cluster-stats';
+    clusterStatsEl.className = 'network-cluster-stats';
+    clusterStatsEl.setAttribute('role', 'complementary');
+    clusterStatsEl.setAttribute('aria-label', 'Sector cluster statistics');
+    container.appendChild(clusterStatsEl);
+
     var ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
@@ -1071,6 +1079,7 @@ function initNetwork(peerData) {
                 legendItems.forEach(function(li) { li.classList.remove('legend-dimmed'); });
             }
 
+            updateClusterStats(activeLegendSector);
             draw();
         });
     });
@@ -1081,8 +1090,144 @@ function initNetwork(peerData) {
         legendItems.forEach(function(li) {
             li.classList.remove('legend-active', 'legend-dimmed');
         });
+        updateClusterStats(null);
         draw();
     };
+
+    // === Cluster Statistics Panel ===
+    // Shows aggregate analytics when a sector filter is active
+
+    function updateClusterStats(sectorName) {
+        if (!clusterStatsEl) return;
+        if (!sectorName) {
+            clusterStatsEl.classList.remove('visible');
+            return;
+        }
+
+        var sectorColor = SECTOR_COLORS[sectorName] || '#94a3b8';
+
+        // Gather sector nodes
+        var sectorNodes = nodes.filter(function(n) { return n.sector === sectorName; });
+        var sectorTickers = new Set();
+        sectorNodes.forEach(function(n) { sectorTickers.add(n.ticker); });
+        var nodeCount = sectorNodes.length;
+
+        // Compute edge stats
+        var intraEdges = 0;
+        var crossEdges = 0;
+        allEdges.forEach(function(e) {
+            var src = e.source.ticker || e.source;
+            var tgt = e.target.ticker || e.target;
+            var srcIn = sectorTickers.has(src);
+            var tgtIn = sectorTickers.has(tgt);
+            if (srcIn && tgtIn) {
+                intraEdges++;
+            } else if (srcIn || tgtIn) {
+                crossEdges++;
+            }
+        });
+        var totalSectorEdges = intraEdges + crossEdges;
+        var intraPct = totalSectorEdges > 0 ? Math.round(intraEdges / totalSectorEdges * 100) : 0;
+
+        // Compute connectivity stats
+        var inDegrees = [];
+        var totalInDeg = 0;
+        var totalOutDeg = 0;
+        var maxInNode = null, maxInDeg = -1;
+        var minInNode = null, minInDeg = Infinity;
+        sectorNodes.forEach(function(n) {
+            var deg = n.in_degree || 0;
+            inDegrees.push(deg);
+            totalInDeg += deg;
+            totalOutDeg += (n.out_degree || 0);
+            if (deg > maxInDeg) { maxInDeg = deg; maxInNode = n; }
+            if (deg < minInDeg) { minInDeg = deg; minInNode = n; }
+        });
+        var avgInDeg = nodeCount > 0 ? (totalInDeg / nodeCount).toFixed(1) : '0';
+
+        // Find top bridge company — most cross-sector inbound connections
+        var bridgeScores = [];
+        sectorNodes.forEach(function(n) {
+            var adj = adjacency[n.ticker] || { in: [], out: [] };
+            var crossIn = 0;
+            adj.in.forEach(function(t) {
+                var peer = nodeMap[t];
+                if (peer && peer.sector !== sectorName) crossIn++;
+            });
+            var crossOut = 0;
+            adj.out.forEach(function(t) {
+                var peer = nodeMap[t];
+                if (peer && peer.sector !== sectorName) crossOut++;
+            });
+            bridgeScores.push({ node: n, crossTotal: crossIn + crossOut, crossIn: crossIn, crossOut: crossOut });
+        });
+        bridgeScores.sort(function(a, b) { return b.crossTotal - a.crossTotal; });
+        var topBridge = bridgeScores.length > 0 ? bridgeScores[0] : null;
+
+        // Compute density: actual intra-edges / possible intra-edges
+        var possibleIntra = nodeCount * (nodeCount - 1); // directed graph
+        var density = possibleIntra > 0 ? (intraEdges / possibleIntra * 100).toFixed(1) : '0';
+
+        // Build HTML
+        var html = '<div class="cluster-stats-title">' +
+            '<span class="cs-dot" style="background:' + sectorColor + '"></span>' +
+            sectorName + '</div>';
+
+        html += '<div class="cluster-stats-grid">';
+        html += '<div class="cs-stat"><span class="cs-stat-label">Companies</span><span class="cs-stat-value">' + nodeCount + '</span></div>';
+        html += '<div class="cs-stat"><span class="cs-stat-label">Avg Inbound</span><span class="cs-stat-value cs-accent">' + avgInDeg + '</span></div>';
+        html += '<div class="cs-stat"><span class="cs-stat-label">Total Edges</span><span class="cs-stat-value">' + totalSectorEdges.toLocaleString() + '</span></div>';
+        html += '<div class="cs-stat"><span class="cs-stat-label">Density</span><span class="cs-stat-value">' + density + '%</span></div>';
+        html += '</div>';
+
+        // Edge composition bar
+        html += '<div class="cs-edge-bar">';
+        html += '<div class="cs-edge-bar-fill cs-intra" style="width:' + intraPct + '%"></div>';
+        html += '<div class="cs-edge-bar-fill cs-cross" style="width:' + (100 - intraPct) + '%"></div>';
+        html += '</div>';
+        html += '<div class="cs-edge-labels">';
+        html += '<span class="cs-intra-label">' + intraEdges + ' intra-sector (' + intraPct + '%)</span>';
+        html += '<span class="cs-cross-label">' + crossEdges + ' cross-sector</span>';
+        html += '</div>';
+
+        // Notable nodes
+        html += '<div class="cs-node-list">';
+        if (maxInNode) {
+            html += '<div class="cs-node-row">';
+            html += '<span><span class="cs-node-role">Most selected </span><span class="cs-node-ticker" data-ticker="' + maxInNode.ticker + '">' + maxInNode.ticker + '</span></span>';
+            html += '<span class="cs-node-degree">' + maxInDeg + ' inbound</span>';
+            html += '</div>';
+        }
+        if (minInNode && minInNode !== maxInNode) {
+            html += '<div class="cs-node-row">';
+            html += '<span><span class="cs-node-role">Least selected </span><span class="cs-node-ticker" data-ticker="' + minInNode.ticker + '">' + minInNode.ticker + '</span></span>';
+            html += '<span class="cs-node-degree">' + minInDeg + ' inbound</span>';
+            html += '</div>';
+        }
+        if (topBridge && topBridge.crossTotal > 0) {
+            html += '<div class="cs-node-row">';
+            html += '<span><span class="cs-node-role">Top bridge </span><span class="cs-node-ticker" data-ticker="' + topBridge.node.ticker + '">' + topBridge.node.ticker + '</span>';
+            html += '<span class="cs-bridge-pill">' + topBridge.crossTotal + ' cross-sector</span></span>';
+            html += '</div>';
+        }
+        html += '</div>';
+
+        clusterStatsEl.innerHTML = html;
+        clusterStatsEl.classList.add('visible');
+
+        // Apply light theme class if needed
+        var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+        clusterStatsEl.classList.toggle('light-theme', !_dark);
+
+        // Attach click handlers to ticker links
+        clusterStatsEl.querySelectorAll('.cs-node-ticker').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var ticker = el.getAttribute('data-ticker');
+                var node = nodeMap[ticker];
+                if (node) selectSearchNode(node);
+            });
+        });
+    }
 
     // === Node Size Legend ===
     // Populate with data-driven sample circles showing the in-degree scale
