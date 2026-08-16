@@ -7105,3 +7105,64 @@ body.light-mode .corr-stat-sep {
         color: #999;
     }
 }
+
+
+/* === Cross-Sector Correlation Comparison === */
+.cross-sector-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0 0.75rem 0;
+    flex-wrap: wrap;
+}
+.cross-sector-pair-label {
+    font-size: 0.78rem;
+    color: #a1a1aa;
+    font-weight: 500;
+}
+.cross-sector-pair-select {
+    background: rgba(39, 39, 42, 0.8);
+    color: #e4e4e7;
+    border: 1px solid rgba(63, 63, 70, 0.6);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: 'Inter', sans-serif;
+}
+.cross-sector-pair-select:hover,
+.cross-sector-pair-select:focus {
+    border-color: rgba(0, 180, 216, 0.5);
+}
+body.light-mode .cross-sector-pair-label {
+    color: #52525b;
+}
+body.light-mode .cross-sector-pair-select {
+    background: #fff;
+    color: #27272a;
+    border-color: #d4d4d8;
+}
+body.light-mode .cross-sector-pair-select:hover,
+body.light-mode .cross-sector-pair-select:focus {
+    border-color: #00b4d8;
+}
+#cross-sector-corr-chart {
+    width: 100%;
+    overflow-x: auto;
+}
+#cross-sector-corr-chart svg {
+    display: block;
+    margin: 0 auto;
+}
+@media (max-width: 700px) {
+    .cross-sector-controls {
+        gap: 0.5rem;
+    }
+    .cross-sector-pair-select {
+        font-size: 0.72rem;
+        padding: 5px 8px;
+    }
+}

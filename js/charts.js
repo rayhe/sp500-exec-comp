@@ -65,6 +65,7 @@ function initCharts(companies, trends, compData) {
     drawSopScatterChart(companies);
     drawCompTreemap(companies);
     drawCorrelationMatrix(companies);
+    drawCrossSectorCorrelation(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -177,7 +178,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -199,6 +200,7 @@ function redrawAllCharts() {
     drawSopScatterChart(_chartData.companies);
     drawCompTreemap(_chartData.companies);
     drawCorrelationMatrix(_chartData.companies);
+    drawCrossSectorCorrelation(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -241,6 +243,10 @@ window._redrawSectorAwareCharts = function() {
     var el5 = document.getElementById('correlation-matrix-chart');
     if (el5) el5.innerHTML = '';
     drawCorrelationMatrix(_chartData.companies);
+    // Redraw cross-sector correlation (highlights active sector bar)
+    var el6 = document.getElementById('cross-sector-corr-chart');
+    if (el6) el6.innerHTML = '';
+    drawCrossSectorCorrelation(_chartData.companies);
 };
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -5677,6 +5683,10 @@ function drawCorrelationMatrix(companies) {
                                     scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
                             }
+                            // Also update cross-sector correlation chart with clicked pair
+                            var csEl = document.getElementById('cross-sector-corr-chart');
+                            if (csEl) csEl.innerHTML = '';
+                            drawCrossSectorCorrelation(_chartData.companies, colIdx, rowIdx);
                         });
                     })(row, col, corr, delta, overallR);
                 }
@@ -5821,4 +5831,370 @@ function drawCorrelationMatrix(companies) {
     }
     statsEl.innerHTML = statsHtml;
     container.appendChild(statsEl);
+}
+
+
+/* ============================================================
+   Cross-Sector Correlation Comparison — horizontal bar chart
+   showing how a single metric-pair Pearson r varies across
+   all 11 GICS sectors.
+   ============================================================ */
+
+var _crossSectorMetricX = 0; // default: CEO Pay
+var _crossSectorMetricY = 1; // default: Pay Ratio
+
+function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
+    var container = document.getElementById('cross-sector-corr-chart');
+    var controlsEl = document.getElementById('cross-sector-controls');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (metricIdxX != null) _crossSectorMetricX = metricIdxX;
+    if (metricIdxY != null) _crossSectorMetricY = metricIdxY;
+
+    var dark = document.body.classList.contains('dark-mode') ||
+               (!document.body.classList.contains('light-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    // Same metrics array as drawCorrelationMatrix
+    var metrics = [
+        { key: 'total_compensation', label: 'CEO Pay', short: 'CEO Pay', get: function(c) { return c.total_compensation; } },
+        { key: 'pay_ratio', label: 'Pay Ratio', short: 'Ratio', get: function(c) { return c.pay_ratio; } },
+        { key: 'median_worker_pay', label: 'Worker Pay', short: 'Worker', get: function(c) { return c.median_worker_pay; } },
+        { key: '_ceoStockPctSort', label: 'Stock Awards %', short: 'Stock%', get: function(c) { return c._ceoStockPctSort; } },
+        { key: '_ceoConcPct', label: 'CEO Concentration %', short: 'Conc%', get: function(c) { return c._ceoConcPct; } },
+        { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
+        { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
+        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } }
+    ];
+
+    var SECTOR_COLORS = {
+        'Information Technology': '#00b4d8',
+        'Communication Services': '#06d6a0',
+        'Consumer Discretionary': '#ef476f',
+        'Health Care': '#ffd166',
+        'Financials': '#a78bfa',
+        'Consumer Staples': '#fb923c',
+        'Industrials': '#94a3b8',
+        'Energy': '#34d399',
+        'Real Estate': '#f472b6',
+        'Materials': '#f9a8d4',
+        'Utilities': '#67e8f9'
+    };
+
+    // Build pair selector dropdown (28 unique pairs)
+    if (controlsEl) {
+        // Only build controls once — check for existing select
+        if (!controlsEl.querySelector('.cross-sector-pair-select')) {
+            var select = document.createElement('select');
+            select.className = 'cross-sector-pair-select';
+            select.setAttribute('aria-label', 'Select metric pair for cross-sector comparison');
+            var pairIdx = 0;
+            for (var pi = 0; pi < metrics.length; pi++) {
+                for (var pj = pi + 1; pj < metrics.length; pj++) {
+                    var opt = document.createElement('option');
+                    opt.value = pi + ',' + pj;
+                    opt.textContent = metrics[pi].short + ' × ' + metrics[pj].short;
+                    if (pi === _crossSectorMetricX && pj === _crossSectorMetricY) opt.selected = true;
+                    select.appendChild(opt);
+                }
+            }
+            select.addEventListener('change', function() {
+                var parts = this.value.split(',');
+                _crossSectorMetricX = parseInt(parts[0]);
+                _crossSectorMetricY = parseInt(parts[1]);
+                var el = document.getElementById('cross-sector-corr-chart');
+                if (el) el.innerHTML = '';
+                drawCrossSectorCorrelation(_chartData.companies);
+            });
+            controlsEl.innerHTML = '';
+            var label = document.createElement('span');
+            label.className = 'cross-sector-pair-label';
+            label.textContent = 'Metric pair:';
+            controlsEl.appendChild(label);
+            controlsEl.appendChild(select);
+        } else {
+            // Update selection state
+            var existingSel = controlsEl.querySelector('.cross-sector-pair-select');
+            existingSel.value = _crossSectorMetricX + ',' + _crossSectorMetricY;
+        }
+    }
+
+    var mX = metrics[_crossSectorMetricX];
+    var mY = metrics[_crossSectorMetricY];
+
+    // Update title/description
+    var titleEl = document.getElementById('cross-sector-corr-title');
+    var descEl = document.getElementById('cross-sector-corr-desc');
+    if (titleEl) titleEl.textContent = mX.short + ' × ' + mY.short + ' — Cross-Sector Comparison';
+    if (descEl) descEl.textContent = 'Pearson correlation between ' + mX.label + ' and ' + mY.label + ' computed independently for each GICS sector. Dashed line = S&P 500 overall.';
+
+    // Pearson helper (same as correlation matrix)
+    function pearson(arr, getX, getY) {
+        var pairs = [];
+        arr.forEach(function(c) {
+            var x = getX(c), y = getY(c);
+            if (x != null && y != null && isFinite(x) && isFinite(y)) pairs.push([x, y]);
+        });
+        if (pairs.length < 5) return { r: null, n: pairs.length, p: null };
+        var mx = 0, my = 0;
+        pairs.forEach(function(p) { mx += p[0]; my += p[1]; });
+        mx /= pairs.length; my /= pairs.length;
+        var sxy = 0, sxx = 0, syy = 0;
+        pairs.forEach(function(p) {
+            var dx = p[0] - mx, dy = p[1] - my;
+            sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+        });
+        if (sxx === 0 || syy === 0) return { r: 0, n: pairs.length, p: 1 };
+        var rVal = sxy / Math.sqrt(sxx * syy);
+        return { r: rVal, n: pairs.length, p: _pearsonPValue(rVal, pairs.length) };
+    }
+
+    // Compute overall S&P 500 correlation
+    var overallCorr = pearson(companies, mX.get, mY.get);
+
+    // Compute per-sector correlations
+    var sectorNames = Object.keys(SECTOR_COLORS);
+    var sectorData = [];
+    sectorNames.forEach(function(s) {
+        var sectorCompanies = companies.filter(function(c) { return c.sector === s; });
+        var corr = pearson(sectorCompanies, mX.get, mY.get);
+        sectorData.push({
+            sector: s,
+            r: corr.r,
+            n: corr.n,
+            p: corr.p,
+            insufficient: corr.n < 10
+        });
+    });
+
+    // Sort by r value (strongest positive at top), nulls at bottom
+    sectorData.sort(function(a, b) {
+        if (a.r == null && b.r == null) return 0;
+        if (a.r == null) return 1;
+        if (b.r == null) return -1;
+        return b.r - a.r;
+    });
+
+    // SVG dimensions
+    var fullW = container.clientWidth || 700;
+    var margin = { top: 30, right: 120, bottom: 40, left: 185 };
+    var barH = 28;
+    var gap = 6;
+    var chartH = sectorData.length * (barH + gap) + margin.top + margin.bottom;
+    var chartW = fullW;
+    var innerW = chartW - margin.left - margin.right;
+    var innerH = sectorData.length * (barH + gap);
+
+    var svg = d3.select(container)
+        .append('svg')
+        .attr('width', chartW)
+        .attr('height', chartH)
+        .attr('viewBox', '0 0 ' + chartW + ' ' + chartH)
+        .attr('role', 'img')
+        .attr('aria-label', 'Cross-sector correlation comparison bar chart');
+
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // X scale: -1 to +1
+    var xScale = d3.scaleLinear().domain([-1, 1]).range([0, innerW]);
+
+    // Color scale: diverging blue-red (same as correlation matrix)
+    function barColor(r) {
+        if (r == null) return dark ? '#3f3f46' : '#e4e4e7';
+        var abs = Math.abs(r);
+        if (r >= 0) {
+            var warmR = Math.round(255 - (255 - 239) * abs);
+            var warmG = Math.round((dark ? 80 : 200) - (dark ? 80 : 200 - 68) * abs);
+            var warmB = Math.round((dark ? 100 : 200) - (dark ? 100 : 200 - 68) * abs);
+            return 'rgb(' + warmR + ',' + warmG + ',' + warmB + ')';
+        } else {
+            var coolR = Math.round((dark ? 80 : 200) - (dark ? 80 : 200 - 59) * abs);
+            var coolG = Math.round((dark ? 80 : 200) - (dark ? 80 : 200 - 130) * abs);
+            var coolB = Math.round(255 - (255 - 246) * abs);
+            return 'rgb(' + coolR + ',' + coolG + ',' + coolB + ')';
+        }
+    }
+
+    // X axis
+    var xAxis = d3.axisBottom(xScale).ticks(9).tickFormat(function(d) { return d >= 0 ? '+' + d.toFixed(1) : d.toFixed(1); });
+    g.append('g')
+        .attr('transform', 'translate(0,' + innerH + ')')
+        .call(xAxis)
+        .selectAll('text')
+        .attr('fill', dark ? '#a1a1aa' : '#71717a')
+        .attr('font-size', '0.7rem');
+    g.selectAll('.domain, .tick line').attr('stroke', dark ? '#3f3f46' : '#e4e4e7');
+
+    // X axis label
+    g.append('text')
+        .attr('x', innerW / 2)
+        .attr('y', innerH + 34)
+        .attr('text-anchor', 'middle')
+        .attr('fill', dark ? '#71717a' : '#a1a1aa')
+        .attr('font-size', '0.7rem')
+        .text('Pearson r');
+
+    // Zero line
+    g.append('line')
+        .attr('x1', xScale(0))
+        .attr('y1', 0)
+        .attr('x2', xScale(0))
+        .attr('y2', innerH)
+        .attr('stroke', dark ? '#52525b' : '#d4d4d8')
+        .attr('stroke-width', 1);
+
+    // S&P 500 overall reference line
+    if (overallCorr.r != null) {
+        g.append('line')
+            .attr('x1', xScale(overallCorr.r))
+            .attr('y1', -5)
+            .attr('x2', xScale(overallCorr.r))
+            .attr('y2', innerH + 4)
+            .attr('stroke', dark ? '#fbbf24' : '#d97706')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '6,4')
+            .attr('opacity', 0.85);
+
+        g.append('text')
+            .attr('x', xScale(overallCorr.r))
+            .attr('y', -10)
+            .attr('text-anchor', 'middle')
+            .attr('fill', dark ? '#fbbf24' : '#d97706')
+            .attr('font-size', '0.65rem')
+            .attr('font-weight', '600')
+            .text('S&P 500 r = ' + (overallCorr.r >= 0 ? '+' : '') + overallCorr.r.toFixed(2));
+    }
+
+    // Active sector for highlighting
+    var activeSector = window._activeSector || null;
+
+    // Bars
+    sectorData.forEach(function(d, i) {
+        var y = i * (barH + gap);
+        var isActive = activeSector && d.sector === activeSector;
+        var sColor = SECTOR_COLORS[d.sector] || '#94a3b8';
+
+        // Sector label (left)
+        g.append('text')
+            .attr('x', -8)
+            .attr('y', y + barH / 2 + 4)
+            .attr('text-anchor', 'end')
+            .attr('fill', isActive ? sColor : (dark ? '#d4d4d8' : '#3f3f46'))
+            .attr('font-size', '0.72rem')
+            .attr('font-weight', isActive ? '700' : '500')
+            .text(d.sector);
+
+        if (d.insufficient || d.r == null) {
+            // Gray bar for insufficient data
+            g.append('rect')
+                .attr('x', xScale(0) - 1)
+                .attr('y', y + 2)
+                .attr('width', 3)
+                .attr('height', barH - 4)
+                .attr('rx', 2)
+                .attr('fill', dark ? '#3f3f46' : '#e4e4e7');
+
+            g.append('text')
+                .attr('x', xScale(0) + 10)
+                .attr('y', y + barH / 2 + 4)
+                .attr('fill', dark ? '#71717a' : '#a1a1aa')
+                .attr('font-size', '0.68rem')
+                .attr('font-style', 'italic')
+                .text('n/a (n=' + d.n + ')');
+            return;
+        }
+
+        var barX, barW;
+        if (d.r >= 0) {
+            barX = xScale(0);
+            barW = xScale(d.r) - xScale(0);
+        } else {
+            barX = xScale(d.r);
+            barW = xScale(0) - xScale(d.r);
+        }
+        barW = Math.max(barW, 2);
+
+        var barRect = g.append('rect')
+            .attr('x', barX)
+            .attr('y', y + 2)
+            .attr('width', barW)
+            .attr('height', barH - 4)
+            .attr('rx', 3)
+            .attr('fill', barColor(d.r))
+            .attr('opacity', d.insufficient ? 0.35 : 0.85)
+            .attr('cursor', 'pointer');
+
+        // Active sector highlight border
+        if (isActive) {
+            barRect.attr('stroke', sColor).attr('stroke-width', 2).attr('opacity', 1);
+        }
+
+        // Significance stars
+        var stars = _sigStars(d.p);
+
+        // r value + stars + n at end of bar
+        var endX = d.r >= 0 ? xScale(d.r) + 6 : xScale(d.r) - 6;
+        var anchor = d.r >= 0 ? 'start' : 'end';
+
+        var rLabel = (d.r >= 0 ? '+' : '') + d.r.toFixed(2);
+        if (stars) rLabel += ' ' + stars;
+        rLabel += '  n=' + d.n;
+
+        // Delta vs S&P 500
+        var delta = overallCorr.r != null ? d.r - overallCorr.r : null;
+
+        g.append('text')
+            .attr('x', endX)
+            .attr('y', y + barH / 2 + 4)
+            .attr('text-anchor', anchor)
+            .attr('fill', dark ? '#e4e4e7' : '#27272a')
+            .attr('font-size', '0.68rem')
+            .attr('font-weight', '500')
+            .html(function() {
+                var txt = (d.r >= 0 ? '+' : '') + d.r.toFixed(2);
+                if (stars) txt += ' <tspan fill="' + (dark ? '#fbbf24' : '#d97706') + '" font-weight="700">' + stars + '</tspan>';
+                txt += ' <tspan fill="' + (dark ? '#71717a' : '#a1a1aa') + '" font-size="0.6rem">n=' + d.n + '</tspan>';
+                return txt;
+            });
+
+        // Tooltip on hover
+        (function(datum, barEl) {
+            var strength = Math.abs(datum.r) >= 0.7 ? 'Strong' : Math.abs(datum.r) >= 0.4 ? 'Moderate' : Math.abs(datum.r) >= 0.2 ? 'Weak' : 'Very weak';
+            var direction = datum.r > 0 ? ' positive' : datum.r < 0 ? ' negative' : '';
+            var sigText = _sigLabel(datum.p);
+            var sigStars = _sigStars(datum.p);
+
+            barEl.on('mouseenter', function(event) {
+                d3.select(this).attr('opacity', 1).attr('stroke', sColor).attr('stroke-width', 2);
+                var html = '<div class="ct-title">' + datum.sector + '</div>' +
+                    '<div class="ct-row"><span class="ct-label">' + mX.short + ' × ' + mY.short + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Pearson r</span><span class="ct-val">' + (datum.r >= 0 ? '+' : '') + datum.r.toFixed(3) + (sigStars ? ' <span style="color:#fbbf24;font-weight:700">' + sigStars + '</span>' : '') + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Significance</span><span class="ct-val">' + sigText + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Sample size</span><span class="ct-val">n = ' + datum.n + '</span></div>' +
+                    '<div class="ct-row"><span class="ct-label">Strength</span><span class="ct-val">' + strength + direction + '</span></div>';
+                if (delta != null) {
+                    var dSign = (datum.r - overallCorr.r) >= 0 ? '+' : '';
+                    var dVal = datum.r - overallCorr.r;
+                    var dColor = Math.abs(dVal) >= 0.15 ? (dVal > 0 ? '#34d399' : '#f87171') : (Math.abs(dVal) >= 0.05 ? '#fbbf24' : '#94a3b8');
+                    html += '<div class="ct-row" style="border-top:1px solid ' + (dark ? '#3f3f46' : '#e4e4e7') + ';margin-top:4px;padding-top:4px;"><span class="ct-label">S&P 500 r</span><span class="ct-val">' + (overallCorr.r >= 0 ? '+' : '') + overallCorr.r.toFixed(3) + '</span></div>' +
+                        '<div class="ct-row"><span class="ct-label">Δ vs S&P</span><span class="ct-val" style="color:' + dColor + '">' + dSign + dVal.toFixed(3) + '</span></div>';
+                }
+                html += '<div style="margin-top:6px;font-size:0.65rem;color:#a1a1aa;text-align:center;">Click to filter table to this sector</div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseleave', function() {
+                if (!isActive) d3.select(this).attr('opacity', 0.85).attr('stroke', 'none');
+                else d3.select(this).attr('opacity', 1);
+                hideChartTooltip();
+            })
+            .on('click', function() {
+                hideChartTooltip();
+                // Apply sector filter (same as sector chip click)
+                if (typeof window.filterBySectorFromBar === 'function') {
+                    window.filterBySectorFromBar(datum.sector);
+                }
+            });
+        })(d, barRect);
+    });
 }
