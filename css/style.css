@@ -7166,3 +7166,27 @@ body.light-mode .cross-sector-pair-select:focus {
         padding: 5px 8px;
     }
 }
+
+
+/* === Pay Quartile Composition Chart === */
+.quartile-narrative {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    background: rgba(0,180,216,0.08);
+    color: #a1a1aa;
+    border: 1px solid rgba(0,180,216,0.15);
+}
+[data-theme="light"] .quartile-narrative {
+    background: rgba(0,120,180,0.06);
+    color: #4b5563;
+    border-color: rgba(0,120,180,0.12);
+}
+@media (max-width: 600px) {
+    .quartile-narrative { font-size: 0.72rem; }
+}
+@media print {
+    .quartile-narrative { border-color: #ccc; }
+}
