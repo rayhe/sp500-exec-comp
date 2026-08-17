@@ -3153,11 +3153,148 @@ function drawScatterChart(companies) {
             };
         }
 
+        // --- Pre-compute sector regression (needed for both CI band and line) ---
+        var sectorReg = null;
+        if (hasSectorOverlay && sectorPts.length >= 3) {
+            var _sn = sectorPts.length;
+            var _sSumX = 0, _sSumY = 0, _sSumXY = 0, _sSumX2 = 0, _sSumY2 = 0;
+            sectorPts.forEach(function(c) {
+                var xv = xMetric.get(c);
+                var yv = yMetric.get(c);
+                _sSumX += xv; _sSumY += yv;
+                _sSumXY += xv * yv;
+                _sSumX2 += xv * xv; _sSumY2 += yv * yv;
+            });
+            var _sDenom = _sn * _sSumX2 - _sSumX * _sSumX;
+            var _sSlope = _sDenom !== 0 ? (_sn * _sSumXY - _sSumX * _sSumY) / _sDenom : 0;
+            var _sIntercept = _sDenom !== 0 ? (_sSumY - _sSlope * _sSumX) / _sn : (_sSumY / _sn);
+            var _sCorrDenom = Math.sqrt((_sn * _sSumX2 - _sSumX * _sSumX) * (_sn * _sSumY2 - _sSumY * _sSumY));
+            var _sCorr = _sCorrDenom > 0 ? (_sn * _sSumXY - _sSumX * _sSumY) / _sCorrDenom : 0;
+            sectorReg = { n: _sn, slope: _sSlope, intercept: _sIntercept, corr: _sCorr,
+                          sumX: _sSumX, sumX2: _sSumX2 };
+        }
+
+        // --- 95% Confidence Interval Band ---
+        // Compute standard error of the regression for CI shading
+        var xMean = sumX / n;
+        var ssResid = 0; // sum of squared residuals
+        pts.forEach(function(c) {
+            var xv = xMetric.get(c);
+            var yv = yMetric.get(c);
+            var predicted = slope * xv + intercept;
+            ssResid += (yv - predicted) * (yv - predicted);
+        });
+        var mse = n > 2 ? ssResid / (n - 2) : 0; // mean squared error
+        var sResid = Math.sqrt(mse); // standard error of regression
+        var ssxDeviation = sumX2 - n * xMean * xMean; // Σ(xᵢ - x̄)²
+
+        // Helper: generate CI band polygon path for any regression
+        function buildCiBand(regSlope, regIntercept, regN, regSResid, regSsxDev, regXMean, bandXMin, bandXMax) {
+            var regTCrit = regN > 120 ? 1.96 : regN > 60 ? 2.0 : regN > 30 ? 2.04 : regN > 15 ? 2.13 : 2.26;
+            var steps = 60;
+            var stepSize = (bandXMax - bandXMin) / steps;
+            var upperPts = [];
+            var lowerPts = [];
+
+            for (var ci = 0; ci <= steps; ci++) {
+                var ciX = bandXMin + ci * stepSize;
+                var ciY = regSlope * ciX + regIntercept;
+                // SE(ŷ) = s × √(1/n + (x₀ − x̄)² / Σ(xᵢ − x̄)²)
+                var seY = regSResid * Math.sqrt(1.0 / regN + (ciX - regXMean) * (ciX - regXMean) / regSsxDev);
+                var ciHalf = regTCrit * seY;
+                var ciUpper = Math.max(yLo, Math.min(yHi, ciY + ciHalf));
+                var ciLower = Math.max(yLo, Math.min(yHi, ciY - ciHalf));
+
+                var pxX = x(ciX);
+                if (pxX >= 0 && pxX <= w) {
+                    upperPts.push({ x: pxX, y: yScale(ciUpper) });
+                    lowerPts.push({ x: pxX, y: yScale(ciLower) });
+                }
+            }
+
+            if (upperPts.length < 2) return null;
+            var bandPts = upperPts.concat(lowerPts.reverse());
+            return 'M' + bandPts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join('L') + 'Z';
+        }
+
+        // Draw CI bands (behind regression lines) if enough data
+        if (n >= 10 && sResid > 0 && ssxDeviation > 0) {
+            var sp500BandPath = buildCiBand(slope, intercept, n, sResid, ssxDeviation, xMean, x1Raw, x2Raw);
+
+            if (sp500BandPath) {
+                if (hasSectorOverlay) {
+                    // S&P 500 CI band in muted color
+                    svg.append('path')
+                        .attr('class', 'regression-ci-band regression-ci-sp500')
+                        .attr('d', sp500BandPath)
+                        .attr('fill', dark ? 'rgba(82,82,91,0.10)' : 'rgba(161,161,170,0.10)')
+                        .attr('stroke', 'none')
+                        .attr('pointer-events', 'none');
+
+                    // Sector-specific CI band
+                    if (sectorReg && sectorReg.n >= 10) {
+                        var sxMean = sectorReg.sumX / sectorReg.n;
+                        var sSsResid = 0;
+                        sectorPts.forEach(function(c) {
+                            var xv = xMetric.get(c);
+                            var yv = yMetric.get(c);
+                            var sPred = sectorReg.slope * xv + sectorReg.intercept;
+                            sSsResid += (yv - sPred) * (yv - sPred);
+                        });
+                        var sSResid = Math.sqrt(sectorReg.n > 2 ? sSsResid / (sectorReg.n - 2) : 0);
+                        var sSsxDev = sectorReg.sumX2 - sectorReg.n * sxMean * sxMean;
+
+                        if (sSResid > 0 && sSsxDev > 0) {
+                            var sCiXMin = d3.min(sectorPts, function(c) { return xMetric.get(c); });
+                            var sCiXMax = d3.max(sectorPts, function(c) { return xMetric.get(c); });
+                            var sCiRange = sCiXMax - sCiXMin;
+                            sCiXMin -= sCiRange * 0.05;
+                            sCiXMax += sCiRange * 0.05;
+
+                            var sectorBandPath = buildCiBand(sectorReg.slope, sectorReg.intercept, sectorReg.n, sSResid, sSsxDev, sxMean, sCiXMin, sCiXMax);
+
+                            if (sectorBandPath) {
+                                var scMatch = sectorColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+                                var sCiFill = dark ? 'rgba(0,180,216,0.10)' : 'rgba(0,180,216,0.08)';
+                                if (scMatch) {
+                                    var scR = parseInt(scMatch[1], 16), scG = parseInt(scMatch[2], 16), scB = parseInt(scMatch[3], 16);
+                                    sCiFill = 'rgba(' + scR + ',' + scG + ',' + scB + ',' + (dark ? '0.12' : '0.08') + ')';
+                                }
+
+                                svg.append('path')
+                                    .attr('class', 'regression-ci-band regression-ci-sector')
+                                    .attr('d', sectorBandPath)
+                                    .attr('fill', sCiFill)
+                                    .attr('stroke', 'none')
+                                    .attr('pointer-events', 'none');
+                            }
+                        }
+                    }
+                } else {
+                    // Standard (non-sector) CI band
+                    var trendColor2 = Math.abs(correlation) >= 0.5 ? '#06d6a0' : Math.abs(correlation) >= 0.3 ? '#ffd166' : '#94a3b8';
+                    var tcMatch = trendColor2.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+                    var ciFill = dark ? 'rgba(148,163,184,0.08)' : 'rgba(148,163,184,0.06)';
+                    if (tcMatch) {
+                        var tcR = parseInt(tcMatch[1], 16), tcG = parseInt(tcMatch[2], 16), tcB = parseInt(tcMatch[3], 16);
+                        ciFill = 'rgba(' + tcR + ',' + tcG + ',' + tcB + ',' + (dark ? '0.12' : '0.08') + ')';
+                    }
+
+                    svg.append('path')
+                        .attr('class', 'regression-ci-band')
+                        .attr('d', sp500BandPath)
+                        .attr('fill', ciFill)
+                        .attr('stroke', 'none')
+                        .attr('pointer-events', 'none');
+                }
+            }
+        }
+
+        // --- Regression Lines (on top of CI bands) ---
         var clipped = clipLine(x1Raw, y1Raw, x2Raw, y2Raw, yLo, yHi);
         if (clipped) {
             var trendColor = Math.abs(correlation) >= 0.5 ? '#06d6a0' : Math.abs(correlation) >= 0.3 ? '#ffd166' : '#94a3b8';
 
-            // For sector overlay, also draw sector-specific regression line
             if (hasSectorOverlay) {
                 // S&P 500 regression in muted color behind sector line
                 svg.append('line')
@@ -3170,34 +3307,18 @@ function drawScatterChart(companies) {
                     .attr('opacity', 0.3)
                     .attr('pointer-events', 'none');
 
-                // Compute sector-specific regression
-                if (sectorPts.length >= 3) {
-                    var sn = sectorPts.length;
-                    var sSumX = 0, sSumY = 0, sSumXY = 0, sSumX2 = 0, sSumY2 = 0;
-                    sectorPts.forEach(function(c) {
-                        var xv = xMetric.get(c);
-                        var yv = yMetric.get(c);
-                        sSumX += xv; sSumY += yv;
-                        sSumXY += xv * yv;
-                        sSumX2 += xv * xv; sSumY2 += yv * yv;
-                    });
-                    var sDenom = sn * sSumX2 - sSumX * sSumX;
-                    var sSlope = sDenom !== 0 ? (sn * sSumXY - sSumX * sSumY) / sDenom : 0;
-                    var sIntercept = sDenom !== 0 ? (sSumY - sSlope * sSumX) / sn : (sSumY / sn);
-                    var sCorrDenom = Math.sqrt((sn * sSumX2 - sSumX * sSumX) * (sn * sSumY2 - sSumY * sSumY));
-                    var sCorr = sCorrDenom > 0 ? (sn * sSumXY - sSumX * sSumY) / sCorrDenom : 0;
-
+                // Sector-specific regression line (uses pre-computed sectorReg)
+                if (sectorReg && Math.abs(sectorReg.corr) >= 0.02) {
                     var sx1Raw = d3.min(sectorPts, function(c) { return xMetric.get(c); });
                     var sx2Raw = d3.max(sectorPts, function(c) { return xMetric.get(c); });
-                    // Extend 5% beyond data range for visual continuity
                     var sRange = sx2Raw - sx1Raw;
                     sx1Raw -= sRange * 0.05;
                     sx2Raw += sRange * 0.05;
-                    var sy1Raw = sSlope * sx1Raw + sIntercept;
-                    var sy2Raw = sSlope * sx2Raw + sIntercept;
+                    var sy1Raw = sectorReg.slope * sx1Raw + sectorReg.intercept;
+                    var sy2Raw = sectorReg.slope * sx2Raw + sectorReg.intercept;
 
                     var sClipped = clipLine(sx1Raw, sy1Raw, sx2Raw, sy2Raw, yLo, yHi);
-                    if (sClipped && Math.abs(sCorr) >= 0.02) {
+                    if (sClipped) {
                         svg.append('line')
                             .attr('class', 'regression-line regression-line-sector')
                             .attr('x1', x(sClipped.x1)).attr('y1', yScale(sClipped.y1))
@@ -3435,7 +3556,8 @@ function drawScatterChart(companies) {
         corrLabel += correlation < 0 ? ' Negative' : ' Positive';
 
         var showTrendStats = showTrend && Math.abs(correlation) >= 0.02 && ssDenom !== 0;
-        var statsBoxH = showTrendStats ? 60 : 46;
+        var showCIInfo = showTrendStats && n >= 10;
+        var statsBoxH = showCIInfo ? 72 : showTrendStats ? 60 : 46;
 
         statsGroup.append('rect')
             .attr('x', -140).attr('y', -4)
@@ -3469,6 +3591,15 @@ function drawScatterChart(companies) {
                 .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
                 .attr('font-family', 'Inter, system-ui, sans-serif')
                 .text('slope: ' + slopeStr + ' · ' + xMetric.shortLabel + ' \u2192 ' + yMetric.shortLabel);
+
+            // 95% CI band label
+            if (showCIInfo) {
+                statsGroup.append('text')
+                    .attr('x', -132).attr('y', 60)
+                    .attr('fill', dark ? '#52525b' : '#a1a1aa').attr('font-size', '8px')
+                    .attr('font-family', 'Inter, system-ui, sans-serif')
+                    .text('Shaded area = 95% confidence interval');
+            }
         }
     }
 }
