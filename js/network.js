@@ -505,37 +505,100 @@ function initNetwork(peerData) {
                 ctx.fillText(String(idx + 1), n.x + r * 0.7, n.y - r * 0.7);
             });
 
-            // Draw path edges with animated purple lines
-            var pathAnimT = (Date.now() % 2000) / 2000; // 0-1 cycling
+            // Draw path edges — distinguish mutual vs one-directional
             activePath.edges.forEach(function(e) {
                 var s = nodeMap[e.source];
                 var t = nodeMap[e.target];
                 if (!s || !t) return;
 
-                // Thick purple edge
-                ctx.beginPath();
-                ctx.moveTo(s.x, s.y);
-                ctx.lineTo(t.x, t.y);
-                ctx.strokeStyle = 'rgba(168,85,247,0.7)';
-                ctx.lineWidth = 3 / scale;
-                ctx.stroke();
+                // Check if edge is mutual (both companies select each other)
+                var adjSrc = adjacency[e.source];
+                var isMutual = adjSrc && adjSrc.in.indexOf(e.target) >= 0;
 
-                // Arrowhead at target
-                var dx = t.x - s.x, dy = t.y - s.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist > 1) {
-                    var angle = Math.atan2(dy, dx);
-                    var tr = getRadius(t);
-                    var tipX = t.x - Math.cos(angle) * tr;
-                    var tipY = t.y - Math.sin(angle) * tr;
-                    var aLen = Math.max(8, 12 / scale);
+                if (isMutual) {
+                    // Mutual edge: gold double-line with glow
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(255,209,102,0.4)';
+                    ctx.shadowBlur = 6 / scale;
+
+                    // Compute perpendicular offset for double-line
+                    var dx = t.x - s.x, dy = t.y - s.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var px = -dy / dist * 1.5 / scale; // perpendicular
+                    var py = dx / dist * 1.5 / scale;
+
                     ctx.beginPath();
-                    ctx.moveTo(tipX, tipY);
-                    ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
-                    ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(168,85,247,0.8)';
-                    ctx.fill();
+                    ctx.moveTo(s.x + px, s.y + py);
+                    ctx.lineTo(t.x + px, t.y + py);
+                    ctx.strokeStyle = 'rgba(255,209,102,0.85)';
+                    ctx.lineWidth = 2.5 / scale;
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(s.x - px, s.y - py);
+                    ctx.lineTo(t.x - px, t.y - py);
+                    ctx.strokeStyle = 'rgba(255,209,102,0.85)';
+                    ctx.lineWidth = 2.5 / scale;
+                    ctx.stroke();
+
+                    ctx.restore();
+
+                    // Bidirectional arrowheads (both directions)
+                    if (dist > 1) {
+                        var angle = Math.atan2(dy, dx);
+                        var tr = getRadius(t);
+                        var sr = getRadius(s);
+                        var aLen = Math.max(8, 12 / scale);
+
+                        // Arrow at target
+                        var tipX = t.x - Math.cos(angle) * tr;
+                        var tipY = t.y - Math.sin(angle) * tr;
+                        ctx.beginPath();
+                        ctx.moveTo(tipX, tipY);
+                        ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
+                        ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(255,209,102,0.9)';
+                        ctx.fill();
+
+                        // Arrow at source (reverse direction)
+                        var rAngle = angle + Math.PI;
+                        var rtipX = s.x - Math.cos(rAngle) * sr;
+                        var rtipY = s.y - Math.sin(rAngle) * sr;
+                        ctx.beginPath();
+                        ctx.moveTo(rtipX, rtipY);
+                        ctx.lineTo(rtipX - aLen * Math.cos(rAngle - Math.PI / 6), rtipY - aLen * Math.sin(rAngle - Math.PI / 6));
+                        ctx.lineTo(rtipX - aLen * Math.cos(rAngle + Math.PI / 6), rtipY - aLen * Math.sin(rAngle + Math.PI / 6));
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(255,209,102,0.9)';
+                        ctx.fill();
+                    }
+                } else {
+                    // One-directional edge: purple (existing style)
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(t.x, t.y);
+                    ctx.strokeStyle = 'rgba(168,85,247,0.7)';
+                    ctx.lineWidth = 3 / scale;
+                    ctx.stroke();
+
+                    // Arrowhead at target
+                    var dx = t.x - s.x, dy = t.y - s.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 1) {
+                        var angle = Math.atan2(dy, dx);
+                        var tr = getRadius(t);
+                        var tipX = t.x - Math.cos(angle) * tr;
+                        var tipY = t.y - Math.sin(angle) * tr;
+                        var aLen = Math.max(8, 12 / scale);
+                        ctx.beginPath();
+                        ctx.moveTo(tipX, tipY);
+                        ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
+                        ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(168,85,247,0.8)';
+                        ctx.fill();
+                    }
                 }
             });
 
@@ -612,11 +675,34 @@ function initNetwork(peerData) {
             html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + outSame + ' same-sector</span><span class="tt-peer-cross">' + outCross + ' cross-sector</span></div>';
         }
         html += '<div class="tt-row"><span class="tt-label">Market cap</span><span class="tt-value">' + d.market_cap_tier + '</span></div>';
+        html += '<div class="tt-path-actions">';
+        html += '<span class="tt-path-btn" data-action="path-from" data-ticker="' + d.ticker + '">Path from here</span>';
+        html += '<span class="tt-path-sep">·</span>';
+        html += '<span class="tt-path-btn" data-action="path-to" data-ticker="' + d.ticker + '">Path to here</span>';
+        html += '</div>';
         html += '<div class="tt-hint">Click for details · Drag to reposition</div>';
         tooltip.innerHTML = html;
         tooltip.classList.add('visible');
         tooltip.style.left = (mx + 12) + 'px';
         tooltip.style.top = (my - 10) + 'px';
+
+        // Attach path action handlers
+        tooltip.querySelectorAll('.tt-path-btn').forEach(function(btn) {
+            btn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var ticker = btn.getAttribute('data-ticker');
+                var action = btn.getAttribute('data-action');
+                hideTooltip();
+                hoveredNode = null;
+                draw();
+                if (action === 'path-from') {
+                    pfPrefill(ticker, 'from');
+                } else if (action === 'path-to') {
+                    pfPrefill(ticker, 'to');
+                }
+            });
+        });
     }
     function hideTooltip() {
         tooltip.classList.remove('visible');
@@ -1750,8 +1836,15 @@ function initNetwork(peerData) {
                 var edge = pathResult.edges[idx];
                 // Determine direction relative to path flow
                 var isForward = edge.source === ticker;
-                html += '<span class="path-edge-arrow">';
-                html += isForward ? '→' : '←';
+                // Check if edge is mutual
+                var adjCheck = adjacency[edge.source];
+                var edgeIsMutual = adjCheck && adjCheck.in.indexOf(edge.target) >= 0;
+                html += '<span class="path-edge-arrow' + (edgeIsMutual ? ' path-edge-mutual' : '') + '">';
+                if (edgeIsMutual) {
+                    html += '⇄';
+                } else {
+                    html += isForward ? '→' : '←';
+                }
                 html += '</span>';
             }
         });
@@ -1773,7 +1866,7 @@ function initNetwork(peerData) {
             if (adj && adj.in.indexOf(e.target) >= 0) mutualCount++;
         });
         if (mutualCount > 0) {
-            html += ' · ' + mutualCount + ' mutual';
+            html += ' · <span class="path-mutual-badge">' + mutualCount + ' mutual ⇄</span>';
         }
         html += '</div>';
 
@@ -1787,6 +1880,30 @@ function initNetwork(peerData) {
                 if (window.findCompanyInTable) window.findCompanyInTable(ticker);
             });
         });
+    }
+
+    function pfPrefill(ticker, slot) {
+        // Open path finder bar if not already open
+        if (pfToggle && pfBar && !pfBar.classList.contains('visible')) {
+            pfBar.classList.add('visible');
+            pfToggle.classList.add('active');
+        }
+        if (slot === 'from') {
+            pfFromTicker = ticker;
+            if (pfFromInput) pfFromInput.value = ticker;
+            // Focus the "To" input so user can type the destination
+            if (pfToInput) setTimeout(function() { pfToInput.focus(); }, 100);
+        } else {
+            pfToTicker = ticker;
+            if (pfToInput) pfToInput.value = ticker;
+            // Focus the "From" input so user can type the origin
+            if (pfFromInput) setTimeout(function() { pfFromInput.focus(); }, 100);
+        }
+        pfUpdateGoState();
+        // If both are set, auto-execute
+        if (pfFromTicker && pfToTicker && pfFromTicker !== pfToTicker) {
+            pfExecute();
+        }
     }
 
     function pfExecute() {
