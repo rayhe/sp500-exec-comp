@@ -48,6 +48,7 @@ function initNetwork(peerData) {
     var dragNode = null;
     var transform = d3.zoomIdentity;
     var activeLegendSector = null; // sector legend click-to-filter state
+    var activePath = null; // { nodes: [ticker,...], edges: [{source, target},...] } for path finder
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -294,6 +295,14 @@ function initNetwork(peerData) {
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
 
+            // When path finder is active, dim all background edges further
+            if (activePath && activePath.nodes.length >= 2) {
+                edgeCrossColor = _dark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.015)';
+                edgeSameColor = _dark ? 'rgba(0,180,216,0.03)' : 'rgba(0,120,180,0.04)';
+                edgeCrossWidth = 0.3;
+                edgeSameWidth = 0.4;
+            }
+
             // High-contrast: significantly increase edge visibility
             if (_hiContrast) {
                 edgeCrossColor = _dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)';
@@ -348,6 +357,13 @@ function initNetwork(peerData) {
                     alpha = 0.9;
                 } else {
                     alpha = _hiContrast ? 0.25 : 0.15;
+                }
+            } else if (activePath && activePath.nodes.length >= 2) {
+                // When path is active, dim non-path nodes
+                if (activePath.nodes.indexOf(d.ticker) >= 0) {
+                    alpha = 1; // path nodes drawn again on top with glow
+                } else {
+                    alpha = _hiContrast ? 0.12 : 0.08;
                 }
             } else if (activeLegendSector && sectorNodeSet) {
                 if (sectorNodeSet.has(d.ticker)) {
@@ -446,6 +462,92 @@ function initNetwork(peerData) {
             }
         }
 
+        // === Path Finder Highlight ===
+        if (activePath && activePath.nodes.length >= 2 && !hoveredNode) {
+            var pathSet = new Set(activePath.nodes);
+            var pathEdgeSet = new Set();
+            activePath.edges.forEach(function(e) { pathEdgeSet.add(e.source + '>' + e.target); });
+
+            // Dim all non-path nodes
+            // (Already drawn above — draw path nodes on top with full opacity + glow)
+            activePath.nodes.forEach(function(ticker, idx) {
+                var n = nodeMap[ticker];
+                if (!n) return;
+                var r = getRadius(n);
+                var color = SECTOR_COLORS[n.sector] || '#94a3b8';
+
+                // Glow ring
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r + 4 / scale, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#a855f7';
+                ctx.lineWidth = 2.5 / scale;
+                ctx.stroke();
+
+                // Filled node on top
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = '#a855f7';
+                ctx.lineWidth = 2 / scale;
+                ctx.stroke();
+
+                // Step number badge
+                var badgeR = Math.max(6, 8 / scale);
+                ctx.beginPath();
+                ctx.arc(n.x + r * 0.7, n.y - r * 0.7, badgeR, 0, 2 * Math.PI);
+                ctx.fillStyle = '#a855f7';
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = '600 ' + Math.max(7, 9 / scale) + 'px Inter, system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(String(idx + 1), n.x + r * 0.7, n.y - r * 0.7);
+            });
+
+            // Draw path edges with animated purple lines
+            var pathAnimT = (Date.now() % 2000) / 2000; // 0-1 cycling
+            activePath.edges.forEach(function(e) {
+                var s = nodeMap[e.source];
+                var t = nodeMap[e.target];
+                if (!s || !t) return;
+
+                // Thick purple edge
+                ctx.beginPath();
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+                ctx.strokeStyle = 'rgba(168,85,247,0.7)';
+                ctx.lineWidth = 3 / scale;
+                ctx.stroke();
+
+                // Arrowhead at target
+                var dx = t.x - s.x, dy = t.y - s.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 1) {
+                    var angle = Math.atan2(dy, dx);
+                    var tr = getRadius(t);
+                    var tipX = t.x - Math.cos(angle) * tr;
+                    var tipY = t.y - Math.sin(angle) * tr;
+                    var aLen = Math.max(8, 12 / scale);
+                    ctx.beginPath();
+                    ctx.moveTo(tipX, tipY);
+                    ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
+                    ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(168,85,247,0.8)';
+                    ctx.fill();
+                }
+            });
+
+            // Request continuous redraw for animation (throttled)
+            if (!activePath._animFrame) {
+                activePath._animFrame = true;
+                requestAnimationFrame(function() {
+                    if (activePath) { activePath._animFrame = false; draw(); }
+                });
+            }
+        }
+
         // Labels
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
@@ -453,8 +555,9 @@ function initNetwork(peerData) {
         ctx.font = (_hiContrast ? '700 ' : '600 ') + fontSize + 'px Inter, system-ui, sans-serif';
 
         nodes.forEach(function(d) {
-            if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode) return;
-            if (!activeLegendSector && !shouldShowLabel(d, scale)) return;
+            var isPathNode = activePath && activePath.nodes.indexOf(d.ticker) >= 0;
+            if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode && !isPathNode) return;
+            if (!activeLegendSector && !isPathNode && !shouldShowLabel(d, scale)) return;
             if (hoveredNode && !connectedSet.has(d.ticker)) return;
             // When sector filter is active, show labels for sector nodes based on zoom
             if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
@@ -1465,4 +1568,318 @@ function initNetwork(peerData) {
     });
 
     mmCanvas.style.cursor = 'crosshair';
+
+    // === Path Finder ===
+    // BFS shortest path between two companies (treating edges as undirected)
+    function bfsShortestPath(fromTicker, toTicker) {
+        if (fromTicker === toTicker) return { nodes: [fromTicker], edges: [] };
+        var visited = new Set();
+        var parent = {}; // ticker → { from: ticker, edgeDir: 'out'|'in' }
+        var queue = [fromTicker];
+        visited.add(fromTicker);
+
+        while (queue.length > 0) {
+            var current = queue.shift();
+            var adj = adjacency[current];
+            if (!adj) continue;
+
+            // Check outbound neighbors
+            for (var oi = 0; oi < adj.out.length; oi++) {
+                var outN = adj.out[oi];
+                if (!visited.has(outN)) {
+                    visited.add(outN);
+                    parent[outN] = { from: current, dir: 'out' };
+                    if (outN === toTicker) break;
+                    queue.push(outN);
+                }
+            }
+            if (parent[toTicker]) break;
+
+            // Check inbound neighbors (treat as undirected)
+            for (var ii = 0; ii < adj.in.length; ii++) {
+                var inN = adj.in[ii];
+                if (!visited.has(inN)) {
+                    visited.add(inN);
+                    parent[inN] = { from: current, dir: 'in' };
+                    if (inN === toTicker) break;
+                    queue.push(inN);
+                }
+            }
+            if (parent[toTicker]) break;
+        }
+
+        if (!parent[toTicker]) return null; // No path
+
+        // Reconstruct path
+        var pathNodes = [];
+        var pathEdges = [];
+        var cur = toTicker;
+        while (cur !== fromTicker) {
+            pathNodes.unshift(cur);
+            var p = parent[cur];
+            // Edge direction: if dir='out', parent selected cur as peer (parent→cur)
+            // if dir='in', cur selected parent as peer (cur→parent)
+            if (p.dir === 'out') {
+                pathEdges.unshift({ source: p.from, target: cur });
+            } else {
+                pathEdges.unshift({ source: cur, target: p.from });
+            }
+            cur = p.from;
+        }
+        pathNodes.unshift(fromTicker);
+        return { nodes: pathNodes, edges: pathEdges };
+    }
+
+    // Path finder UI
+    var pfToggle = document.getElementById('path-finder-toggle');
+    var pfBar = document.getElementById('path-finder-bar');
+    var pfResult = document.getElementById('path-finder-result');
+    var pfFromInput = document.getElementById('path-from-input');
+    var pfToInput = document.getElementById('path-to-input');
+    var pfFromResults = document.getElementById('path-from-results');
+    var pfToResults = document.getElementById('path-to-results');
+    var pfGoBtn = document.getElementById('path-finder-go');
+    var pfClearBtn = document.getElementById('path-finder-clear');
+
+    var pfFromTicker = null;
+    var pfToTicker = null;
+
+    function pfMatchNodes(query) {
+        var q = query.trim().toLowerCase();
+        if (q.length === 0) return [];
+        var matches = nodes.filter(function(n) {
+            return n.ticker.toLowerCase().indexOf(q) >= 0 || n.name.toLowerCase().indexOf(q) >= 0;
+        });
+        matches.sort(function(a, b) {
+            var at = a.ticker.toLowerCase(), bt = b.ticker.toLowerCase();
+            if (at === q && bt !== q) return -1;
+            if (bt === q && at !== q) return 1;
+            var aS = at.indexOf(q) === 0 ? 0 : 1;
+            var bS = bt.indexOf(q) === 0 ? 0 : 1;
+            return aS !== bS ? aS - bS : (at < bt ? -1 : at > bt ? 1 : 0);
+        });
+        return matches.slice(0, 6);
+    }
+
+    function pfRenderDropdown(matches, container, onSelect) {
+        container.innerHTML = '';
+        if (matches.length === 0) { container.classList.remove('visible'); return; }
+        matches.forEach(function(n) {
+            var div = document.createElement('div');
+            div.className = 'network-search-result';
+            div.innerHTML = '<span class="nsr-ticker">' + n.ticker + '</span>' +
+                '<span class="nsr-name">' + n.name + '</span>' +
+                '<span class="nsr-sector">' + (n.sector || '') + '</span>';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                onSelect(n);
+            });
+            container.appendChild(div);
+        });
+        container.classList.add('visible');
+    }
+
+    function pfUpdateGoState() {
+        if (pfGoBtn) pfGoBtn.disabled = !(pfFromTicker && pfToTicker && pfFromTicker !== pfToTicker);
+    }
+
+    function pfClearPath() {
+        activePath = null;
+        pfFromTicker = null;
+        pfToTicker = null;
+        if (pfFromInput) pfFromInput.value = '';
+        if (pfToInput) pfToInput.value = '';
+        if (pfResult) pfResult.classList.remove('visible');
+        pfUpdateGoState();
+        draw();
+    }
+
+    function pfZoomToPath(pathResult) {
+        // Compute bounding box of path nodes and zoom to fit
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        pathResult.nodes.forEach(function(ticker) {
+            var n = nodeMap[ticker];
+            if (!n) return;
+            var r = getRadius(n);
+            if (n.x - r < minX) minX = n.x - r;
+            if (n.x + r > maxX) maxX = n.x + r;
+            if (n.y - r < minY) minY = n.y - r;
+            if (n.y + r > maxY) maxY = n.y + r;
+        });
+        // Add padding
+        var pad = 80;
+        minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+        var bw = maxX - minX || 100;
+        var bh = maxY - minY || 100;
+        var scaleX = width / bw;
+        var scaleY = height / bh;
+        var sc = Math.min(scaleX, scaleY, 3); // cap zoom
+        var cx = (minX + maxX) / 2;
+        var cy = (minY + maxY) / 2;
+        var tx = width / 2 - cx * sc;
+        var ty = height / 2 - cy * sc;
+        var newTransform = d3.zoomIdentity.translate(tx, ty).scale(sc);
+        d3.select(canvas)
+            .transition()
+            .duration(prefersReducedMotion() ? 0 : 800)
+            .call(zoom.transform, newTransform);
+    }
+
+    function pfShowResult(pathResult) {
+        if (!pfResult) return;
+        if (!pathResult) {
+            pfResult.innerHTML = '<div class="path-no-result">No peer connection path found between these companies.</div>';
+            pfResult.classList.add('visible');
+            return;
+        }
+        var hops = pathResult.nodes.length - 1;
+        var html = '<div class="path-result-header">' + hops + '-hop path found</div>';
+        html += '<div class="path-result-chain">';
+
+        pathResult.nodes.forEach(function(ticker, idx) {
+            var n = nodeMap[ticker];
+            var color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
+            var name = n ? n.name : ticker;
+            html += '<span class="path-node-chip" data-ticker="' + ticker + '" style="background:' + color + '20;color:' + color + ';border-color:' + color + '40">';
+            html += '<span class="pnc-dot" style="background:' + color + '"></span>';
+            html += ticker;
+            html += '<span class="pnc-name">' + name + '</span>';
+            html += '</span>';
+
+            if (idx < pathResult.edges.length) {
+                var edge = pathResult.edges[idx];
+                // Determine direction relative to path flow
+                var isForward = edge.source === ticker;
+                html += '<span class="path-edge-arrow">';
+                html += isForward ? '→' : '←';
+                html += '</span>';
+            }
+        });
+
+        html += '</div>';
+
+        // Stats line
+        var sectors = new Set();
+        pathResult.nodes.forEach(function(t) {
+            var n = nodeMap[t];
+            if (n && n.sector) sectors.add(n.sector);
+        });
+        html += '<div class="path-result-stats">';
+        html += hops + ' hop' + (hops !== 1 ? 's' : '') + ' · ' + sectors.size + ' sector' + (sectors.size !== 1 ? 's' : '') + ' crossed';
+        var mutualCount = 0;
+        pathResult.edges.forEach(function(e) {
+            // Check if edge is mutual (both companies select each other)
+            var adj = adjacency[e.source];
+            if (adj && adj.in.indexOf(e.target) >= 0) mutualCount++;
+        });
+        if (mutualCount > 0) {
+            html += ' · ' + mutualCount + ' mutual';
+        }
+        html += '</div>';
+
+        pfResult.innerHTML = html;
+        pfResult.classList.add('visible');
+
+        // Click handlers on chips
+        pfResult.querySelectorAll('.path-node-chip').forEach(function(chip) {
+            chip.addEventListener('click', function() {
+                var ticker = chip.getAttribute('data-ticker');
+                if (window.findCompanyInTable) window.findCompanyInTable(ticker);
+            });
+        });
+    }
+
+    function pfExecute() {
+        if (!pfFromTicker || !pfToTicker || pfFromTicker === pfToTicker) return;
+        var result = bfsShortestPath(pfFromTicker, pfToTicker);
+        activePath = result;
+        pfShowResult(result);
+        if (result) pfZoomToPath(result);
+        draw();
+    }
+
+    if (pfToggle) {
+        pfToggle.addEventListener('click', function() {
+            var isOpen = pfBar && pfBar.classList.contains('visible');
+            if (isOpen) {
+                pfBar.classList.remove('visible');
+                pfToggle.classList.remove('active');
+                pfClearPath();
+            } else {
+                pfBar.classList.add('visible');
+                pfToggle.classList.add('active');
+                if (pfFromInput) pfFromInput.focus();
+            }
+        });
+    }
+
+    function pfSetupInput(input, resultsEl, setTicker) {
+        if (!input) return;
+        input.addEventListener('input', function() {
+            var matches = pfMatchNodes(input.value);
+            pfRenderDropdown(matches, resultsEl, function(n) {
+                input.value = n.ticker;
+                resultsEl.classList.remove('visible');
+                setTicker(n.ticker);
+                pfUpdateGoState();
+            });
+        });
+        input.addEventListener('blur', function() {
+            setTimeout(function() { resultsEl.classList.remove('visible'); }, 150);
+        });
+        input.addEventListener('focus', function() {
+            if (input.value.trim().length > 0) input.dispatchEvent(new Event('input'));
+        });
+        input.addEventListener('keydown', function(e) {
+            var items = resultsEl.querySelectorAll('.network-search-result');
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                var active = resultsEl.querySelector('.network-search-result.active');
+                if (active) {
+                    active.dispatchEvent(new MouseEvent('mousedown'));
+                } else if (items.length > 0) {
+                    items[0].dispatchEvent(new MouseEvent('mousedown'));
+                } else if (pfFromTicker && pfToTicker) {
+                    pfExecute();
+                }
+            } else if (e.key === 'Escape') {
+                resultsEl.classList.remove('visible');
+                input.blur();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                var curIdx = -1;
+                items.forEach(function(el, i) { if (el.classList.contains('active')) curIdx = i; });
+                var newIdx = e.key === 'ArrowDown' ? Math.min(curIdx + 1, items.length - 1) : Math.max(curIdx - 1, 0);
+                items.forEach(function(el, i) { el.classList.toggle('active', i === newIdx); });
+            }
+        });
+    }
+
+    pfSetupInput(pfFromInput, pfFromResults, function(t) { pfFromTicker = t; });
+    pfSetupInput(pfToInput, pfToResults, function(t) { pfToTicker = t; });
+
+    if (pfGoBtn) {
+        pfGoBtn.addEventListener('click', function() { pfExecute(); });
+    }
+
+    if (pfClearBtn) {
+        pfClearBtn.addEventListener('click', function() { pfClearPath(); });
+    }
+
+    // Expose path finder API for external use (e.g., from detail panel)
+    window.findNetworkPath = function(fromTicker, toTicker) {
+        if (!pfToggle || !pfBar) return false;
+        pfToggle.classList.add('active');
+        pfBar.classList.add('visible');
+        pfFromTicker = fromTicker;
+        pfToTicker = toTicker;
+        if (pfFromInput) pfFromInput.value = fromTicker;
+        if (pfToInput) pfToInput.value = toTicker;
+        pfUpdateGoState();
+        pfExecute();
+        // Scroll to network section
+        var section = document.getElementById('peer-network-section');
+        if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
+        return true;
+    };
 }

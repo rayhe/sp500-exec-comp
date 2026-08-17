@@ -786,6 +786,9 @@ header h1 {
 }
 @media print {
     .touch-hint { display: none !important; }
+    .path-finder-toggle,
+    .path-finder-bar,
+    .path-finder-result { display: none !important; }
 }
 
 /* === Network Search Box === */
@@ -890,6 +893,183 @@ header h1 {
     opacity: 0.7;
 }
 .network-minimap:hover { opacity: 1; }
+
+/* === Path Finder === */
+.path-finder-toggle.active {
+    background: rgba(168,85,247,0.15);
+    border-color: #a855f7;
+    color: #a855f7;
+}
+.path-finder-toggle svg { vertical-align: -1px; margin-right: 3px; }
+
+.path-finder-bar {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 0 4px;
+    order: 10;
+}
+.path-finder-bar.visible { display: flex; }
+
+.path-finder-input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.path-finder-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.path-finder-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: var(--bg-secondary);
+    transition: border-color 0.2s;
+}
+.path-finder-search-box:focus-within { border-color: #a855f7; }
+.path-finder-search-box input {
+    font-family: var(--font);
+    font-size: 0.78rem;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    width: 100px;
+}
+.path-finder-search-box input::placeholder { color: var(--text-muted); }
+
+.path-finder-arrow {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0 2px;
+}
+
+.path-finder-go {
+    font-family: var(--font);
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid #a855f7;
+    background: rgba(168,85,247,0.15);
+    color: #a855f7;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.path-finder-go:hover:not(:disabled) { background: rgba(168,85,247,0.25); }
+.path-finder-go:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.path-finder-clear {
+    font-family: var(--font);
+    font-size: 0.82rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+}
+.path-finder-clear:hover { border-color: var(--accent); color: var(--text-primary); }
+
+.path-finder-result {
+    display: none;
+    width: 100%;
+    order: 11;
+    padding: 8px 12px;
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 8px;
+    margin-top: 4px;
+}
+.path-finder-result.visible { display: block; }
+
+.path-result-header {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #a855f7;
+    margin-bottom: 6px;
+}
+.path-result-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    row-gap: 6px;
+}
+.path-node-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 1px solid transparent;
+}
+.path-node-chip:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.path-node-chip .pnc-dot {
+    width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+}
+.path-node-chip .pnc-name {
+    font-size: 0.65rem; font-weight: 400; color: var(--text-secondary);
+    max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.path-edge-arrow {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+}
+.path-edge-arrow .pea-dir {
+    font-size: 0.6rem; display: block; color: var(--text-muted); opacity: 0.7;
+}
+.path-result-stats {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(168,85,247,0.12);
+}
+.path-no-result {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding: 4px 0;
+}
+
+/* Light theme overrides for path finder */
+[data-theme="light"] .path-finder-toggle.active {
+    background: rgba(126,34,206,0.1);
+    border-color: #7e22ce;
+    color: #7e22ce;
+}
+[data-theme="light"] .path-finder-go {
+    border-color: #7e22ce;
+    background: rgba(126,34,206,0.08);
+    color: #7e22ce;
+}
+[data-theme="light"] .path-finder-go:hover:not(:disabled) { background: rgba(126,34,206,0.15); }
+[data-theme="light"] .path-finder-result {
+    background: rgba(126,34,206,0.04);
+    border-color: rgba(126,34,206,0.15);
+}
+[data-theme="light"] .path-result-header { color: #7e22ce; }
 
 .tooltip {
     position: fixed;
@@ -3359,6 +3539,12 @@ footer li::before {
     .section-nav-link { padding: 8px 10px; font-size: 0.72rem; }
     #network-graph { height: 400px; }
     .network-minimap { width: 120px !important; height: 82px !important; bottom: 6px; right: 6px; }
+    .path-finder-bar { gap: 4px; }
+    .path-finder-search-box input { width: 70px; font-size: 0.72rem; }
+    .path-finder-label { font-size: 0.64rem; }
+    .path-node-chip { font-size: 0.66rem; padding: 2px 6px; }
+    .path-node-chip .pnc-name { display: none; }
+    .path-result-header { font-size: 0.68rem; }
     .table-footer {
         flex-direction: column;
         align-items: center;

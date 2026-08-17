@@ -94,6 +94,30 @@
                 <input type="text" id="network-search" placeholder="Find company in network..." autocomplete="off" aria-label="Search for a company in the peer network">
                 <div id="network-search-results" class="network-search-results"></div>
             </div>
+            <button class="control-btn path-finder-toggle" id="path-finder-toggle" title="Find shortest peer path between two companies">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="12" r="3"/><path d="M8 12h8"/></svg>
+                Find Path
+            </button>
+            <div class="path-finder-bar" id="path-finder-bar">
+                <div class="path-finder-input-group">
+                    <label class="path-finder-label">From</label>
+                    <div class="path-finder-search-box">
+                        <input type="text" id="path-from-input" placeholder="e.g. AAPL" autocomplete="off" aria-label="Path start company">
+                        <div id="path-from-results" class="network-search-results"></div>
+                    </div>
+                </div>
+                <span class="path-finder-arrow">→</span>
+                <div class="path-finder-input-group">
+                    <label class="path-finder-label">To</label>
+                    <div class="path-finder-search-box">
+                        <input type="text" id="path-to-input" placeholder="e.g. XOM" autocomplete="off" aria-label="Path destination company">
+                        <div id="path-to-results" class="network-search-results"></div>
+                    </div>
+                </div>
+                <button class="path-finder-go" id="path-finder-go" title="Find path" disabled>Find</button>
+                <button class="path-finder-clear" id="path-finder-clear" title="Clear path">✕</button>
+            </div>
+            <div class="path-finder-result" id="path-finder-result"></div>
             <button class="control-btn active" data-filter="all">All Peers</button>
             <button class="control-btn" data-filter="primary">Primary Only</button>
             <button class="control-btn" data-filter="secondary">Secondary Only</button>
