@@ -4144,6 +4144,8 @@ footer li::before {
     .comp-yoy-badge { font-size: 0.6rem; padding: 1px 4px; margin-left: 4px; }
     /* Hide sparklines on small screens to save column width */
     .yoy-spark-svg { display: none; }
+    .neo-spark-svg { display: none; }
+    .neo-sort-icon { display: none; }
     .yoy-cell-wrap { gap: 0; }
 }
 
@@ -4338,6 +4340,7 @@ footer li::before {
     .yoy-inline.positive { color: #059669 !important; background: #f0fdf4 !important; }
     .yoy-inline.negative { color: #dc2626 !important; background: #fef2f2 !important; }
     .yoy-spark-svg { display: none !important; }
+    .neo-spark-svg { display: none !important; }
     .pctile-badge { font-size: 7px !important; }
     .pctile-badge.pctile-top { color: #8B6914 !important; background: #fff8e1 !important; border-color: #b8860b !important; }
     .pctile-badge.pctile-high { color: #0077b6 !important; background: #f0f9ff !important; border-color: #0077b6 !important; }
@@ -5198,6 +5201,56 @@ footer li::before {
 [data-theme="light"] .neo-badge {
     background: rgba(0, 100, 150, 0.1);
     color: #0077a8;
+}
+
+/* NEO inline sparkline SVGs */
+.neo-spark-svg {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+[data-theme="light"] .neo-spark-svg polygon {
+    opacity: 0.7;
+}
+
+/* Sortable NEO table headers */
+.neo-sortable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
+    transition: color 0.15s ease;
+}
+.neo-sortable:hover {
+    color: var(--accent);
+}
+.neo-sort-icon {
+    display: inline-block;
+    width: 0.7em;
+    margin-left: 2px;
+    font-size: 0.7em;
+    vertical-align: middle;
+    opacity: 0.3;
+    transition: opacity 0.15s ease;
+}
+.neo-sort-icon::after {
+    content: '⇅';
+}
+.neo-sort-asc .neo-sort-icon,
+.neo-sort-desc .neo-sort-icon {
+    opacity: 1;
+}
+.neo-sort-asc .neo-sort-icon::after {
+    content: '▲';
+}
+.neo-sort-desc .neo-sort-icon::after {
+    content: '▼';
+}
+.neo-sort-asc,
+.neo-sort-desc {
+    color: var(--accent) !important;
 }
 
 /* Percentile rank column + badges */

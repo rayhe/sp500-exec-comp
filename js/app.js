@@ -4843,6 +4843,18 @@ function setupDetailPanel(companies) {
             allYears.sort(function(a,b) { return b - a; });
             var latestYear = allYears[0];
 
+            // Pre-compute per-executive compensation trend across all available years
+            var execTrendMap = {};
+            company.executives.forEach(function(e) {
+                var normName = (e.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                if (!normName) return;
+                if (!execTrendMap[normName]) execTrendMap[normName] = [];
+                execTrendMap[normName].push({ year: e.year, total: e.total || 0 });
+            });
+            Object.keys(execTrendMap).forEach(function(k) {
+                execTrendMap[k].sort(function(a, b) { return a.year - b.year; });
+            });
+
             html += '<div class="neo-section">';
             html += '<div class="neo-section-header">';
             html += '<span class="neo-section-title">Named Executive Officers</span>';
@@ -4872,11 +4884,11 @@ function setupDetailPanel(companies) {
                 var yrHasPension = yrExecs.some(function(e) { return (e.pension_nqdc && e.pension_nqdc > 0) || (e.pension_change && e.pension_change > 0); });
                 var neoCols = 6 + (yrHasBonus ? 1 : 0) + (yrHasPension ? 1 : 0); // name + title + data cols
 
-                html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num">Salary</th>';
-                if (yrHasBonus) html += '<th class="neo-num">Bonus</th>';
-                html += '<th class="neo-num">Stock Awards</th><th class="neo-num">Option Awards</th><th class="neo-num">Non-Equity Incentive</th>';
-                if (yrHasPension) html += '<th class="neo-num">Pension/NQDC</th>';
-                html += '<th class="neo-num">All Other</th><th class="neo-num neo-total">Total</th></tr></thead>';
+                html += '<thead><tr><th>Name</th><th>Title</th><th class="neo-num neo-sortable" data-sort-key="salary">Salary<span class="neo-sort-icon"></span></th>';
+                if (yrHasBonus) html += '<th class="neo-num neo-sortable" data-sort-key="bonus">Bonus<span class="neo-sort-icon"></span></th>';
+                html += '<th class="neo-num neo-sortable" data-sort-key="stock">Stock Awards<span class="neo-sort-icon"></span></th><th class="neo-num neo-sortable" data-sort-key="option">Option Awards<span class="neo-sort-icon"></span></th><th class="neo-num neo-sortable" data-sort-key="incentive">Non-Equity Incentive<span class="neo-sort-icon"></span></th>';
+                if (yrHasPension) html += '<th class="neo-num neo-sortable" data-sort-key="pension">Pension/NQDC<span class="neo-sort-icon"></span></th>';
+                html += '<th class="neo-num neo-sortable" data-sort-key="other">All Other<span class="neo-sort-icon"></span></th><th class="neo-num neo-total neo-sortable" data-sort-key="total">Total<span class="neo-sort-icon"></span></th></tr></thead>';
                 html += '<tbody>';
 
                 yrExecs.forEach(function(exec) {
@@ -4892,8 +4904,31 @@ function setupDetailPanel(companies) {
                     } else if (dqSrc === 'bloated_component') {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-bloated" title="One component may have parsing error — total from filing retained"></span>';
                     }
-                    html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + '>';
-                    html += '<td class="neo-name">' + (exec.name || '—') + '</td>';
+                    html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + ' data-sort-salary="' + (exec.salary || 0) + '" data-sort-bonus="' + (exec.bonus || 0) + '" data-sort-stock="' + (exec.stock_awards || 0) + '" data-sort-option="' + (exec.option_awards || 0) + '" data-sort-incentive="' + (exec.non_equity_incentive || 0) + '" data-sort-pension="' + ((exec.pension_nqdc || exec.pension_change) || 0) + '" data-sort-other="' + (exec.all_other || 0) + '" data-sort-total="' + (exec.total || 0) + '">';
+                    // Inline sparkline for this exec's multi-year trend
+                    var _execNormName = (exec.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                    var _execTrend = execTrendMap[_execNormName];
+                    var _neoSparkHtml = '';
+                    if (_execTrend && _execTrend.length >= 2) {
+                        var _nSpW = 40, _nSpH = 14, _nSpP = 1;
+                        var _nMin = Math.min.apply(null, _execTrend.map(function(d) { return d.total; }));
+                        var _nMax = Math.max.apply(null, _execTrend.map(function(d) { return d.total; }));
+                        var _nRng = _nMax - _nMin || 1;
+                        var _nPts = [];
+                        _execTrend.forEach(function(d, di) {
+                            var sx = _nSpP + di / (_execTrend.length - 1) * (_nSpW - _nSpP * 2);
+                            var sy = _nSpP + (1 - (d.total - _nMin) / _nRng) * (_nSpH - _nSpP * 2);
+                            _nPts.push(sx.toFixed(1) + ',' + sy.toFixed(1));
+                        });
+                        var _nLine = _nPts.join(' ');
+                        var _nArea = _nPts[0].split(',')[0] + ',' + (_nSpH - _nSpP) + ' ' + _nLine + ' ' + _nPts[_nPts.length - 1].split(',')[0] + ',' + (_nSpH - _nSpP);
+                        var _nIsUp = _execTrend[_execTrend.length - 1].total >= _execTrend[0].total;
+                        var _nColor = _nIsUp ? 'var(--positive)' : 'var(--negative)';
+                        var _nFill = _nIsUp ? 'rgba(6,214,160,0.15)' : 'rgba(239,71,111,0.15)';
+                        var _nTitle = 'FY' + _execTrend[0].year + '\u2013' + _execTrend[_execTrend.length - 1].year + ': ' + _execTrend.map(function(d) { return formatCurrency(d.total); }).join(' \u2192 ');
+                        _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true" title="' + _nTitle.replace(/"/g, '&quot;') + '"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    }
+                    html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
                     if (yrHasBonus) html += '<td class="neo-num">' + (exec.bonus ? formatCompact(exec.bonus) : '—') + '</td>';
@@ -5236,6 +5271,37 @@ function setupDetailPanel(companies) {
                 var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
                 tabs[next].click();
                 tabs[next].focus();
+            });
+        });
+
+        // Wire up sortable NEO table column headers
+        detailRow.querySelectorAll('.neo-sortable').forEach(function(th) {
+            th.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var key = th.getAttribute('data-sort-key');
+                var table = th.closest('table');
+                if (!table) return;
+                var tbody = table.querySelector('tbody');
+                if (!tbody) return;
+                // Determine sort direction toggle
+                var currentDir = th.getAttribute('data-sort-dir');
+                var newDir = currentDir === 'desc' ? 'asc' : 'desc';
+                // Reset all sortable headers in this table
+                table.querySelectorAll('.neo-sortable').forEach(function(h) {
+                    h.removeAttribute('data-sort-dir');
+                    h.classList.remove('neo-sort-asc', 'neo-sort-desc');
+                });
+                th.setAttribute('data-sort-dir', newDir);
+                th.classList.add('neo-sort-' + newDir);
+                // Sort data rows (skip total row)
+                var rows = Array.from(tbody.querySelectorAll('tr:not(.neo-total-row)'));
+                rows.sort(function(a, b) {
+                    var va = parseFloat(a.getAttribute('data-sort-' + key)) || 0;
+                    var vb = parseFloat(b.getAttribute('data-sort-' + key)) || 0;
+                    return newDir === 'desc' ? vb - va : va - vb;
+                });
+                var totalRow = tbody.querySelector('.neo-total-row');
+                rows.forEach(function(r) { tbody.insertBefore(r, totalRow); });
             });
         });
 
