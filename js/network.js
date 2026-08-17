@@ -641,6 +641,50 @@ function initNetwork(peerData) {
         return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
     }
 
+    // Build ticker→compensation lookup from global compData
+    var _compLookup = {};
+    function _buildCompLookup() {
+        if (typeof compData !== 'undefined' && compData && compData.companies) {
+            compData.companies.forEach(function(c) {
+                _compLookup[c.ticker] = {
+                    ceo: c.ceo_name || null,
+                    total: c.total_compensation || null,
+                    ratio: c.pay_ratio || null,
+                    worker: c.median_worker_pay || null,
+                    sector: c.sector || null
+                };
+            });
+        }
+    }
+    _buildCompLookup();
+
+    function _fmtComp(val) {
+        if (val == null) return '—';
+        if (val >= 1e9) return '$' + (val / 1e9).toFixed(1) + 'B';
+        if (val >= 1e6) return '$' + (val / 1e6).toFixed(1) + 'M';
+        if (val >= 1e3) return '$' + (val / 1e3).toFixed(0) + 'K';
+        return '$' + val;
+    }
+
+    // Compute peer group comp stats for a node (outbound peers = companies it benchmarks against)
+    function _peerCompStats(ticker) {
+        var adj = adjacency[ticker];
+        if (!adj) return null;
+        var peers = adj.out; // outbound = companies this node selected as peers
+        if (peers.length === 0) return null;
+        var vals = [];
+        peers.forEach(function(t) {
+            var c = _compLookup[t];
+            if (c && c.total != null && c.total > 0) vals.push(c.total);
+        });
+        if (vals.length === 0) return null;
+        vals.sort(function(a, b) { return a - b; });
+        var median = vals.length % 2 === 0 ? (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2 : vals[Math.floor(vals.length / 2)];
+        var min = vals[0];
+        var max = vals[vals.length - 1];
+        return { median: median, min: min, max: max, count: vals.length, vals: vals };
+    }
+
     // Tooltip
     var tooltip = document.getElementById('network-tooltip');
     function showTooltip(mx, my, d) {
@@ -660,7 +704,59 @@ function initNetwork(peerData) {
         var inTotal = inSame + inCross;
         var outTotal = outSame + outCross;
 
+        // Get compensation data for this company
+        var comp = _compLookup[d.ticker];
+        var peerStats = _peerCompStats(d.ticker);
+
         var html = '<div class="tt-title">' + d.ticker + ' — ' + d.name + '</div>';
+
+        // Compensation section — CEO pay + peer comparison
+        if (comp && comp.total != null && comp.total > 0) {
+            html += '<div class="tt-comp-section">';
+            html += '<div class="tt-row"><span class="tt-label">CEO Pay</span><span class="tt-value tt-comp-value">' + _fmtComp(comp.total) + '</span></div>';
+            if (comp.ceo) {
+                html += '<div class="tt-comp-ceo">' + comp.ceo + '</div>';
+            }
+            // Peer group comparison bar
+            if (peerStats && peerStats.count >= 2) {
+                var pctInGroup;
+                var logMin = Math.log(peerStats.min);
+                var logMax = Math.log(peerStats.max);
+                var logRange = logMax - logMin;
+                if (logRange > 0) {
+                    pctInGroup = Math.max(0, Math.min(100, ((Math.log(comp.total) - logMin) / logRange) * 100));
+                } else {
+                    pctInGroup = 50;
+                }
+                // Determine rank among peers
+                var rank = 1;
+                peerStats.vals.forEach(function(v) { if (v > comp.total) rank++; });
+                // Delta vs peer median
+                var deltaVsMedian = ((comp.total - peerStats.median) / peerStats.median * 100);
+                var deltaSign = deltaVsMedian >= 0 ? '+' : '';
+                var deltaClass = deltaVsMedian >= 10 ? 'tt-delta-high' : deltaVsMedian <= -10 ? 'tt-delta-low' : 'tt-delta-neutral';
+
+                html += '<div class="tt-comp-vs">';
+                html += '<span class="tt-comp-vs-label">vs ' + peerStats.count + ' peers</span>';
+                html += '<span class="tt-comp-vs-delta ' + deltaClass + '">' + deltaSign + deltaVsMedian.toFixed(0) + '% vs median</span>';
+                html += '</div>';
+                html += '<div class="tt-comp-bar-wrap">';
+                html += '<div class="tt-comp-bar">';
+                html += '<div class="tt-comp-bar-median" style="left:50%"></div>';
+                html += '<div class="tt-comp-bar-marker" style="left:' + pctInGroup.toFixed(1) + '%"></div>';
+                html += '</div>';
+                html += '<div class="tt-comp-bar-labels">';
+                html += '<span>' + _fmtComp(peerStats.min) + '</span>';
+                html += '<span>' + _fmtComp(peerStats.max) + '</span>';
+                html += '</div>';
+                html += '</div>';
+            }
+            if (comp.ratio != null && comp.ratio > 0) {
+                html += '<div class="tt-row"><span class="tt-label">Pay Ratio</span><span class="tt-value">' + Math.round(comp.ratio) + ':1</span></div>';
+            }
+            html += '</div>';
+        }
+
         html += '<div class="tt-row"><span class="tt-label">Sector</span><span class="tt-value">' + d.sector + '</span></div>';
         html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-in"></span>Selected by</span><span class="tt-value">' + d.in_degree + ' companies</span></div>';
         if (inTotal > 0) {

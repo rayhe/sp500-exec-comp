@@ -1084,7 +1084,7 @@ header h1 {
     z-index: 200;
     opacity: 0;
     transition: opacity 0.15s;
-    max-width: 280px;
+    max-width: 300px;
 }
 .tooltip.visible { opacity: 1; }
 
@@ -1151,6 +1151,82 @@ header h1 {
 [data-theme="light"] .tooltip .tt-path-btn { color: #7c3aed; }
 [data-theme="light"] .tooltip .tt-path-btn:hover { background: rgba(124,58,237,0.1); color: #6d28d9; }
 [data-theme="light"] .tooltip .tt-path-sep { color: rgba(0,0,0,0.15); }
+
+/* Tooltip Compensation Section */
+.tooltip .tt-comp-section {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+[data-theme="light"] .tooltip .tt-comp-section { border-bottom-color: rgba(0,0,0,0.08); }
+.tooltip .tt-comp-value {
+    color: #06d6a0;
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+[data-theme="light"] .tooltip .tt-comp-value { color: #059669; }
+.tooltip .tt-comp-ceo {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    margin: -1px 0 4px;
+    text-align: right;
+}
+.tooltip .tt-comp-vs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0 3px;
+    font-size: 0.68rem;
+}
+.tooltip .tt-comp-vs-label { color: var(--text-secondary); }
+.tooltip .tt-delta-high { color: #ef476f; font-weight: 600; }
+.tooltip .tt-delta-low { color: #06d6a0; font-weight: 600; }
+.tooltip .tt-delta-neutral { color: #ffd166; font-weight: 500; }
+[data-theme="light"] .tooltip .tt-delta-high { color: #dc2626; }
+[data-theme="light"] .tooltip .tt-delta-low { color: #059669; }
+[data-theme="light"] .tooltip .tt-delta-neutral { color: #d97706; }
+.tooltip .tt-comp-bar-wrap { margin: 2px 0 4px; }
+.tooltip .tt-comp-bar {
+    position: relative;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    overflow: visible;
+}
+[data-theme="light"] .tooltip .tt-comp-bar { background: rgba(0,0,0,0.06); }
+.tooltip .tt-comp-bar-median {
+    position: absolute;
+    top: -1px;
+    width: 1px;
+    height: 8px;
+    background: rgba(255,255,255,0.35);
+    transform: translateX(-50%);
+}
+[data-theme="light"] .tooltip .tt-comp-bar-median { background: rgba(0,0,0,0.2); }
+.tooltip .tt-comp-bar-marker {
+    position: absolute;
+    top: -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #06d6a0;
+    border: 1.5px solid rgba(255,255,255,0.9);
+    transform: translateX(-50%);
+    box-shadow: 0 0 4px rgba(6,214,160,0.5);
+}
+[data-theme="light"] .tooltip .tt-comp-bar-marker {
+    background: #059669;
+    border-color: #fff;
+    box-shadow: 0 0 4px rgba(5,150,105,0.4);
+}
+.tooltip .tt-comp-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    opacity: 0.7;
+}
 
 /* Mutual edge styling in path results */
 .path-edge-arrow.path-edge-mutual {
