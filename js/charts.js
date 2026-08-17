@@ -63,6 +63,7 @@ function initCharts(companies, trends, compData) {
     drawGenderPayChart(trends);
     drawCeoCfoChart(companies);
     drawSopDistChart(companies);
+    drawConcDistChart(companies);
     drawSopScatterChart(companies);
     drawCompTreemap(companies);
     drawCorrelationMatrix(companies);
@@ -179,7 +180,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -199,6 +200,7 @@ function redrawAllCharts() {
     drawGenderPayChart(_chartData.trends);
     drawCeoCfoChart(_chartData.companies);
     drawSopDistChart(_chartData.companies);
+    drawConcDistChart(_chartData.companies);
     drawSopScatterChart(_chartData.companies);
     drawCompTreemap(_chartData.companies);
     drawCorrelationMatrix(_chartData.companies);
@@ -253,6 +255,18 @@ window._redrawSectorAwareCharts = function() {
     var el7 = document.getElementById('quartile-comp-chart');
     if (el7) el7.innerHTML = '';
     drawQuartileComposition(_chartData.companies);
+    // Redraw concentration distribution chart (sector-aware)
+    var concTitle = document.getElementById('conc-dist-title');
+    var concDesc = document.getElementById('conc-dist-desc');
+    if (concTitle) concTitle.textContent = sector
+        ? sector + ' vs S&P 500 CEO Pay Concentration'
+        : 'CEO Pay Concentration';
+    if (concDesc) concDesc.textContent = sector
+        ? 'Comparing ' + sector + ' CEO pay concentration against the full S&P 500. Gray bars = index benchmark, colored bars = sector. Click a bucket to filter.'
+        : 'CEO pay as a share of total Named Executive Officer compensation. Higher concentration means the CEO captures a larger slice of the executive pay pool. Click a bucket to filter the table.';
+    var el8 = document.getElementById('conc-dist-chart');
+    if (el8) el8.innerHTML = '';
+    drawConcDistChart(_chartData.companies);
 };
 
 /* Update ratio histogram bar highlighting without full redraw */
@@ -4787,6 +4801,387 @@ window.highlightCeoCfoBucket = function(minRatio, maxRatio) {
             .attr('opacity', match ? 1 : 0.25)
             .attr('stroke', match ? '#fff' : 'none')
             .attr('stroke-width', match ? 2 : 0);
+    });
+};
+
+/* ========================================================================
+   CEO Pay Concentration Distribution Chart (histogram)
+   Shows how concentrated CEO pay is relative to total NEO compensation.
+   ======================================================================== */
+function drawConcDistChart(companies) {
+    var container = document.getElementById('conc-dist-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withConc = companies.filter(function(c) { return c._ceoConcPct != null; });
+    if (withConc.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No concentration data available</p>';
+        return;
+    }
+
+    // Sector overlay mode
+    var sectorName = window._activeSector || null;
+    var sectorCompanies = sectorName ? withConc.filter(function(c) { return c.sector === sectorName; }) : null;
+    var hasSectorOverlay = sectorCompanies && sectorCompanies.length >= 3;
+    var sectorColor = hasSectorOverlay && typeof getSectorColor === 'function' ? getSectorColor(sectorName) : '#00b4d8';
+
+    // Buckets: green → yellow → red gradient matching existing conc-badge tiers
+    var buckets = [
+        { min: 0, max: 25, label: '<25%', color: '#06d6a0', tag: 'Distributed' },
+        { min: 25, max: 30, label: '25–30%', color: '#34d399', tag: 'Distributed' },
+        { min: 30, max: 35, label: '30–35%', color: '#4ade80', tag: 'Distributed' },
+        { min: 35, max: 40, label: '35–40%', color: '#fcd34d', tag: 'Moderate' },
+        { min: 40, max: 45, label: '40–45%', color: '#fbbf24', tag: 'Moderate' },
+        { min: 45, max: 50, label: '45–50%', color: '#fb923c', tag: 'Moderate' },
+        { min: 50, max: 60, label: '50–60%', color: '#ef476f', tag: 'Concentrated' },
+        { min: 60, max: 101, label: '≥60%', color: '#dc2626', tag: 'Concentrated' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.companies = withConc.filter(function(c) {
+            return c._ceoConcPct >= b.min && c._ceoConcPct < b.max;
+        });
+        b.count = b.companies.length;
+        b.companies.sort(function(a, bb) { return bb._ceoConcPct - a._ceoConcPct; });
+        if (hasSectorOverlay) {
+            b.sectorCompanies = sectorCompanies.filter(function(c) {
+                return c._ceoConcPct >= b.min && c._ceoConcPct < b.max;
+            });
+            b.sectorCount = b.sectorCompanies.length;
+            b.sectorCompanies.sort(function(a, bb) { return bb._ceoConcPct - a._ceoConcPct; });
+        }
+    });
+
+    var activeBuckets = buckets.filter(function(b) { return b.count > 0 || (hasSectorOverlay && b.sectorCount > 0); });
+
+    // Stats
+    var concVals = withConc.map(function(c) { return c._ceoConcPct; }).sort(function(a, b) { return a - b; });
+    var n = concVals.length;
+    var medianConc = concVals[Math.floor(n / 2)];
+    var meanConc = concVals.reduce(function(s, v) { return s + v; }, 0) / n;
+    var above50 = withConc.filter(function(c) { return c._ceoConcPct >= 50; }).length;
+    var below25 = withConc.filter(function(c) { return c._ceoConcPct < 25; }).length;
+
+    // Sector stats
+    var sectorMedian = 0, sectorMean = 0;
+    if (hasSectorOverlay) {
+        var sVals = sectorCompanies.map(function(c) { return c._ceoConcPct; }).sort(function(a, b) { return a - b; });
+        sectorMedian = sVals[Math.floor(sVals.length / 2)];
+        sectorMean = sVals.reduce(function(s, v) { return s + v; }, 0) / sVals.length;
+    }
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 30, right: hasSectorOverlay ? 60 : 50, bottom: 55, left: 50 };
+    var width = cw - margin.left - margin.right;
+    var height = 300;
+
+    var maxCount = d3.max(activeBuckets, function(b) { return b.count; });
+
+    var ariaLabel = hasSectorOverlay
+        ? 'CEO pay concentration: ' + sectorName + ' (' + sectorCompanies.length + ' companies) vs S&P 500'
+        : 'CEO pay concentration distribution across S&P 500';
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', height + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', ariaLabel);
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(activeBuckets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.15);
+
+    var y = d3.scaleLinear()
+        .domain([0, maxCount * 1.15])
+        .range([height, 0]);
+
+    // Sector Y axis
+    var ySector = null;
+    if (hasSectorOverlay) {
+        var maxSectorCount = d3.max(activeBuckets, function(b) { return b.sectorCount || 0; });
+        ySector = d3.scaleLinear()
+            .domain([0, Math.max(maxSectorCount * 1.15, 1)])
+            .range([height, 0]);
+    }
+
+    // Grid
+    g.append('g').attr('class', 'grid')
+        .call(d3.axisLeft(y).tickSize(-width).tickFormat('').ticks(6));
+
+    // Axes
+    g.append('g').attr('class', 'axis')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).tickSize(0).tickPadding(10));
+
+    g.append('text')
+        .attr('x', width / 2).attr('y', height + 42)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+        .attr('font-size', '11px').attr('font-family', 'Inter, system-ui, sans-serif')
+        .text('CEO Share of Total NEO Compensation');
+
+    g.append('g').attr('class', 'axis')
+        .call(d3.axisLeft(y).ticks(6).tickFormat(function(d) { return d; }));
+
+    g.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -height / 2).attr('y', -38)
+        .attr('text-anchor', 'middle')
+        .attr('fill', typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280')
+        .attr('font-size', '11px').attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(hasSectorOverlay ? 'S&P 500 Companies' : 'Number of Companies');
+
+    if (hasSectorOverlay && ySector) {
+        g.append('g').attr('class', 'axis')
+            .attr('transform', 'translate(' + width + ',0)')
+            .call(d3.axisRight(ySector).ticks(4).tickFormat(function(d) { return d; }));
+        g.append('text')
+            .attr('transform', 'rotate(90)')
+            .attr('x', height / 2).attr('y', -width - 40)
+            .attr('text-anchor', 'middle')
+            .attr('fill', sectorColor)
+            .attr('font-size', '11px').attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(sectorName + ' Companies');
+    }
+
+    // Determine active filter state for initial bar rendering
+    var activeTier = window._activeConcTier;
+
+    // S&P 500 bars
+    var bars = g.selectAll('.conc-dist-bar')
+        .data(activeBuckets)
+        .join('g')
+        .attr('class', 'conc-dist-bar');
+
+    bars.append('rect')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return height - y(b.count); })
+        .attr('fill', function(b) {
+            return hasSectorOverlay ? (typeof isDarkTheme === 'function' && isDarkTheme() ? '#3f3f46' : '#d4d4d8') : b.color;
+        })
+        .attr('rx', 3)
+        .attr('opacity', function(b) {
+            if (hasSectorOverlay) return 0.5;
+            if (activeTier) return (b.min === activeTier.min && b.max === activeTier.max) ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(b) {
+            if (!hasSectorOverlay && activeTier && b.min === activeTier.min && b.max === activeTier.max) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            var compList = b.companies.slice(0, 8).map(function(c) {
+                return c.ticker + ' ' + c._ceoConcPct.toFixed(1) + '%';
+            }).join('<br>');
+            if (b.count > 8) compList += '<br>...+' + (b.count - 8) + ' more';
+            var html = '<strong>' + b.label + ' CEO Concentration</strong><br>' +
+                b.count + ' companies (' + (b.count / n * 100).toFixed(1) + '% of S&P 500)<br>';
+            if (hasSectorOverlay) {
+                html += '<br><strong>' + sectorName + '</strong>: ' + (b.sectorCount || 0) + ' companies<br>';
+            }
+            html += '<br>' + compList;
+            showChartTooltip(event, html);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() { hideChartTooltip(); })
+        .on('click', function(event, b) {
+            if (typeof filterByConcTier === 'function') {
+                filterByConcTier(b.min, b.max, b.tag, b.label);
+                if (window.highlightConcDistBucket) window.highlightConcDistBucket(
+                    window._activeConcTier ? window._activeConcTier.min : null,
+                    window._activeConcTier ? window._activeConcTier.max : null
+                );
+            }
+        });
+
+    // Count labels
+    bars.append('text')
+        .attr('class', 'conc-count-label')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 5; })
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .attr('opacity', function(b) {
+            if (activeTier && !hasSectorOverlay) return (b.min === activeTier.min && b.max === activeTier.max) ? 1 : 0.4;
+            return 1;
+        })
+        .text(function(b) { return b.count; });
+
+    // Sector overlay bars
+    if (hasSectorOverlay && ySector) {
+        var sectorBars = g.selectAll('.conc-sector-bar')
+            .data(activeBuckets.filter(function(b) { return b.sectorCount > 0; }))
+            .join('g')
+            .attr('class', 'conc-sector-bar');
+
+        sectorBars.append('rect')
+            .attr('x', function(b) { return x(b.label) + x.bandwidth() * 0.15; })
+            .attr('y', function(b) { return ySector(b.sectorCount); })
+            .attr('width', x.bandwidth() * 0.7)
+            .attr('height', function(b) { return height - ySector(b.sectorCount); })
+            .attr('fill', sectorColor)
+            .attr('rx', 2)
+            .attr('opacity', 0.85)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, b) {
+                var compList = b.sectorCompanies.slice(0, 8).map(function(c) {
+                    return c.ticker + ' ' + c._ceoConcPct.toFixed(1) + '%';
+                }).join('<br>');
+                if (b.sectorCount > 8) compList += '<br>...+' + (b.sectorCount - 8) + ' more';
+                showChartTooltip(event, '<strong>' + sectorName + ': ' + b.label + '</strong><br>' +
+                    b.sectorCount + ' companies<br><br>' + compList);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() { hideChartTooltip(); })
+            .on('click', function(event, b) {
+                if (typeof filterByConcTier === 'function') {
+                    filterByConcTier(b.min, b.max, b.tag, b.label);
+                    if (window.highlightConcDistBucket) window.highlightConcDistBucket(
+                        window._activeConcTier ? window._activeConcTier.min : null,
+                        window._activeConcTier ? window._activeConcTier.max : null
+                    );
+                }
+            });
+
+        sectorBars.append('text')
+            .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+            .attr('y', function(b) { return ySector(b.sectorCount) - 5; })
+            .attr('text-anchor', 'middle')
+            .style('fill', sectorColor)
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .text(function(b) { return b.sectorCount; });
+    }
+
+    // Median reference line
+    var medianBucket = activeBuckets.find(function(b) { return medianConc >= b.min && medianConc < b.max; });
+    if (medianBucket) {
+        var medianFrac = (medianConc - medianBucket.min) / (medianBucket.max - medianBucket.min);
+        var medianXPos = x(medianBucket.label) + x.bandwidth() * medianFrac;
+        var lineColor = typeof isDarkTheme === 'function' && isDarkTheme() ? '#ffd166' : '#d97706';
+        g.append('line')
+            .attr('x1', medianXPos).attr('x2', medianXPos)
+            .attr('y1', 0).attr('y2', height)
+            .attr('stroke', lineColor).attr('stroke-width', 2)
+            .attr('stroke-dasharray', '6,3').attr('opacity', 0.9);
+        g.append('text')
+            .attr('x', medianXPos + 4).attr('y', 12)
+            .style('fill', lineColor).style('font-size', '11px').style('font-weight', '600')
+            .text('Median: ' + medianConc.toFixed(1) + '%');
+    }
+
+    // Mean reference line (red dashed)
+    var meanBucket = activeBuckets.find(function(b) { return meanConc >= b.min && meanConc < b.max; });
+    if (meanBucket) {
+        var meanFrac = (meanConc - meanBucket.min) / (meanBucket.max - meanBucket.min);
+        var meanXPos = x(meanBucket.label) + x.bandwidth() * meanFrac;
+        var meanColor = typeof isDarkTheme === 'function' && isDarkTheme() ? '#ef476f' : '#dc2626';
+        g.append('line')
+            .attr('x1', meanXPos).attr('x2', meanXPos)
+            .attr('y1', 0).attr('y2', height)
+            .attr('stroke', meanColor).attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '4,4').attr('opacity', 0.7);
+        // Only show mean label if it's far enough from median
+        if (Math.abs(meanXPos - (medianBucket ? x(medianBucket.label) + x.bandwidth() * ((medianConc - medianBucket.min) / (medianBucket.max - medianBucket.min)) : 0)) > 30) {
+            g.append('text')
+                .attr('x', meanXPos + 4).attr('y', 26)
+                .style('fill', meanColor).style('font-size', '10px').style('font-weight', '500')
+                .text('Mean: ' + meanConc.toFixed(1) + '%');
+        }
+    }
+
+    // Sector median line
+    if (hasSectorOverlay) {
+        var sMedBucket = activeBuckets.find(function(b) { return sectorMedian >= b.min && sectorMedian < b.max; });
+        if (sMedBucket) {
+            var sMedFrac = (sectorMedian - sMedBucket.min) / (sMedBucket.max - sMedBucket.min);
+            var sMedXPos = x(sMedBucket.label) + x.bandwidth() * sMedFrac;
+            g.append('line')
+                .attr('x1', sMedXPos).attr('x2', sMedXPos)
+                .attr('y1', 0).attr('y2', height)
+                .attr('stroke', sectorColor).attr('stroke-width', 2)
+                .attr('stroke-dasharray', '3,3').attr('opacity', 0.8);
+            g.append('text')
+                .attr('x', sMedXPos + 4).attr('y', 40)
+                .style('fill', sectorColor).style('font-size', '10px').style('font-weight', '600')
+                .text(sectorName + ': ' + sectorMedian.toFixed(1) + '%');
+        }
+    }
+
+    // Tier region labels at top
+    var tierRegions = [
+        { label: 'Distributed', maxPct: 35, color: '#06d6a0' },
+        { label: 'Moderate', maxPct: 50, color: '#fbbf24' },
+        { label: 'Concentrated', maxPct: 101, color: '#ef476f' }
+    ];
+    var regionY = -8;
+    tierRegions.forEach(function(region) {
+        // Find buckets in this region
+        var regionBuckets = activeBuckets.filter(function(b) {
+            if (region.label === 'Distributed') return b.max <= 35;
+            if (region.label === 'Moderate') return b.min >= 35 && b.max <= 50;
+            return b.min >= 50;
+        });
+        if (regionBuckets.length === 0) return;
+        var firstB = regionBuckets[0], lastB = regionBuckets[regionBuckets.length - 1];
+        var regionX1 = x(firstB.label);
+        var regionX2 = x(lastB.label) + x.bandwidth();
+        var midX = (regionX1 + regionX2) / 2;
+        g.append('text')
+            .attr('x', midX).attr('y', regionY)
+            .attr('text-anchor', 'middle')
+            .style('fill', region.color)
+            .style('font-size', '9px')
+            .style('font-weight', '600')
+            .style('text-transform', 'uppercase')
+            .style('letter-spacing', '0.5px')
+            .style('opacity', 0.7)
+            .text(region.label);
+    });
+
+    // Stats annotation
+    var statsText = withConc.length + ' companies | Median ' + medianConc.toFixed(1) + '% | Mean ' + meanConc.toFixed(1) + '%';
+    statsText += ' | ' + above50 + ' above 50%';
+    if (hasSectorOverlay) {
+        statsText += ' | ' + sectorName + ': median ' + sectorMedian.toFixed(1) + '%';
+        var sectorAbove50 = sectorCompanies.filter(function(c) { return c._ceoConcPct >= 50; }).length;
+        if (sectorAbove50 > 0) statsText += ', ' + sectorAbove50 + ' above 50%';
+    }
+    svg.append('text')
+        .attr('x', cw / 2)
+        .attr('y', height + margin.top + margin.bottom - 5)
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('opacity', 0.7)
+        .text(statsText);
+}
+
+/* Update CEO concentration distribution chart bar highlighting */
+window.highlightConcDistBucket = function(minPct, maxPct) {
+    d3.selectAll('#conc-dist-chart .conc-dist-bar rect').each(function(d) {
+        if (!d) return;
+        if (minPct == null) {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
+        } else if (d.min === minPct && d.max === maxPct) {
+            d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+        } else {
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+        }
+    });
+    d3.selectAll('#conc-dist-chart .conc-dist-bar text.conc-count-label').each(function(d) {
+        if (!d) return;
+        d3.select(this).attr('opacity', minPct == null || (d.min === minPct && d.max === maxPct) ? 1 : 0.4);
     });
 };
 

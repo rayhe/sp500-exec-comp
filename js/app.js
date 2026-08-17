@@ -953,6 +953,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightSectorBar) window.highlightSectorBar(null);
     if (window.highlightRatioBucket) window.highlightRatioBucket(null);
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
     var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
@@ -1311,6 +1312,7 @@ function populateInsights(comp, trends, sectorFilter) {
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
         if (window._refreshInsights) window._refreshInsights(null);
@@ -1905,6 +1907,7 @@ function buildSectorChips(companies) {
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
         if (window._refreshInsights) window._refreshInsights(null);
     });
     container.appendChild(allChip);
@@ -1932,6 +1935,7 @@ function buildSectorChips(companies) {
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
             if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
             if (window._refreshInsights) window._refreshInsights(s);
         });
         container.appendChild(chip);
@@ -6055,6 +6059,7 @@ function hideMetricSkeletons() {
         if (window.highlightSectorBar) window.highlightSectorBar(window._activeDistFilter ? sector : null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -6194,6 +6199,7 @@ function hideMetricSkeletons() {
         var distChip = document.getElementById('dist-filter-chip');
         if (distChip) distChip.remove();
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
 
         // Sort by pay ratio descending
         currentSort = { key: 'pay_ratio', dir: 'desc' };
@@ -6214,6 +6220,7 @@ function hideMetricSkeletons() {
             } else {
                 window.highlightRatioBucket(null);
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
             }
         }
         // Restore YoY bucket highlight from hash state
@@ -6259,6 +6266,7 @@ function hideMetricSkeletons() {
                 renderTable(companies);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
@@ -6291,6 +6299,10 @@ function hideMetricSkeletons() {
         updateConcFilterIndicator();
         updateTeamCompletenessFilterIndicator();
         renderTable(companies);
+        if (window.highlightConcDistBucket) window.highlightConcDistBucket(
+            window._activeConcTier ? window._activeConcTier.min : null,
+            window._activeConcTier ? window._activeConcTier.max : null
+        );
         pushState();
         announce(window._activeConcTier ? 'Filtered to ' + tag + ' CEO concentration (' + label + ')' : 'Concentration filter cleared');
     };
@@ -6829,6 +6841,7 @@ function hideMetricSkeletons() {
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
         if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
 
@@ -7509,6 +7522,11 @@ function hideMetricSkeletons() {
     // Apply comp dist bracket highlight if restored from hash
     if (window._activeDistFilter && window.highlightCompDistBucket) {
         window.highlightCompDistBucket(window._activeDistFilter.min);
+    }
+
+    // Apply conc dist bucket highlight if restored from hash
+    if (window._activeConcTier && window.highlightConcDistBucket) {
+        window.highlightConcDistBucket(window._activeConcTier.min, window._activeConcTier.max);
     }
 
     // Apply YoY filter chip if restored from hash
@@ -9151,6 +9169,7 @@ function hideMetricSkeletons() {
             } else {
                 window.highlightRatioBucket(null);
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
             }
         }
         // Restore YoY bucket highlight from hash state
@@ -9165,6 +9184,10 @@ function hideMetricSkeletons() {
         if (window._activeDistFilter) {
             updateDistFilterIndicator();
             if (window.highlightCompDistBucket) window.highlightCompDistBucket(window._activeDistFilter.min);
+        }
+        // Restore conc dist bucket highlight from hash state
+        if (window._activeConcTier && window.highlightConcDistBucket) {
+            window.highlightConcDistBucket(window._activeConcTier.min, window._activeConcTier.max);
         }
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
@@ -9407,6 +9430,7 @@ function hideMetricSkeletons() {
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
                 if (window.highlightYoYBucket) window.highlightYoYBucket(null);
                 if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
                 e.preventDefault();
