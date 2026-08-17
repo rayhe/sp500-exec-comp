@@ -1271,8 +1271,13 @@ header h1 {
     font-weight: 500;
     white-space: nowrap;
 }
+.comp-heatmap-gradient-wrap {
+    position: relative;
+    width: 180px;
+    flex-shrink: 0;
+}
 .comp-heatmap-gradient {
-    width: 140px;
+    width: 100%;
     height: 10px;
     border-radius: 5px;
     background: linear-gradient(to right, #06d6a0, #ffd166, #ef476f);
@@ -1280,6 +1285,43 @@ header h1 {
 }
 [data-theme="light"] .comp-heatmap-gradient {
     border-color: rgba(0,0,0,0.1);
+}
+.comp-heatmap-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0 0;
+    position: relative;
+}
+.comp-heatmap-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.58rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+    line-height: 1;
+}
+.comp-heatmap-tick::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 4px;
+    background: var(--text-muted);
+    margin: 0 auto 1px;
+    opacity: 0.5;
+}
+[data-theme="light"] .comp-heatmap-tick {
+    color: #6b7280;
+}
+.comp-heatmap-sector-note {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    font-style: italic;
+    white-space: nowrap;
+    margin-left: 4px;
+}
+[data-theme="light"] .comp-heatmap-sector-note {
+    color: #9ca3af;
 }
 
 /* Mutual edge styling in path results */

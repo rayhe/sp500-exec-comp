@@ -398,9 +398,9 @@ function initNetwork(peerData) {
         // Cluster sector labels — floating sector names at centroids when zoomed out
         // Provides orientation without requiring users to match colors to the legend
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
-        // to reinforce which sector the user is viewing
-        // Hidden in compensation heatmap mode (sectors are not the color dimension)
-        if (!hoveredNode && !compHeatmapMode) {
+        // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
+        // (so users know which sector they're viewing in heatmap-filtered mode)
+        if (!hoveredNode && (!compHeatmapMode || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -718,6 +718,34 @@ function initNetwork(peerData) {
     })();
     var _compP10 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.1)] : 1e6;
     var _compP90 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.9)] : 50e6;
+    var _compP25 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.25)] : 5e6;
+    var _compP50 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.50)] : 15e6;
+    var _compP75 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.75)] : 25e6;
+
+    // Populate heatmap legend ticks with P25/P50/P75 values
+    (function _buildHeatmapTicks() {
+        var ticksEl = document.getElementById('comp-heatmap-ticks');
+        if (!ticksEl || _compVals.length === 0) return;
+        var logMin = Math.log(_compP10);
+        var logMax = Math.log(_compP90);
+        var percentiles = [
+            { val: _compP25, label: 'P25' },
+            { val: _compP50, label: 'P50' },
+            { val: _compP75, label: 'P75' }
+        ];
+        ticksEl.innerHTML = '';
+        percentiles.forEach(function(p) {
+            var logVal = Math.log(Math.max(p.val, _compP10));
+            var pct = Math.max(0, Math.min(100, ((logVal - logMin) / (logMax - logMin)) * 100));
+            var tick = document.createElement('span');
+            tick.className = 'comp-heatmap-tick';
+            tick.style.left = pct + '%';
+            var fmtVal = p.val >= 1e6 ? '$' + (p.val / 1e6).toFixed(0) + 'M' : '$' + (p.val / 1e3).toFixed(0) + 'K';
+            tick.textContent = fmtVal;
+            tick.title = p.label + ': ' + fmtVal;
+            ticksEl.appendChild(tick);
+        });
+    })();
 
     function getCompHeatmapColor(ticker) {
         var c = _compLookup[ticker];
@@ -1455,6 +1483,7 @@ function initNetwork(peerData) {
             }
 
             updateClusterStats(activeLegendSector);
+            _updateHeatmapSectorNote();
             draw();
         });
     });
@@ -1466,6 +1495,7 @@ function initNetwork(peerData) {
             li.classList.remove('legend-active', 'legend-dimmed');
         });
         updateClusterStats(null);
+        _updateHeatmapSectorNote();
         draw();
     };
 
@@ -1479,22 +1509,28 @@ function initNetwork(peerData) {
             compHeatmapMode = !compHeatmapMode;
             compHeatmapToggle.classList.toggle('active', compHeatmapMode);
 
-            // Swap legends
-            if (sectorLegendEl) sectorLegendEl.style.display = compHeatmapMode ? 'none' : '';
+            // Show heatmap legend when active; keep sector legend visible for filtering
             if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = compHeatmapMode ? 'flex' : 'none';
 
-            // Clear sector filter when entering heatmap mode
-            if (compHeatmapMode && activeLegendSector) {
-                activeLegendSector = null;
-                legendItems.forEach(function(li) {
-                    li.classList.remove('legend-active', 'legend-dimmed');
-                });
-                updateClusterStats(null);
-            }
+            // Update sector note in heatmap legend
+            _updateHeatmapSectorNote();
 
             draw();
-            announce(compHeatmapMode ? 'Compensation heatmap enabled' : 'Sector coloring restored');
+            announce(compHeatmapMode ? 'Compensation heatmap enabled' + (activeLegendSector ? ' — filtered to ' + activeLegendSector : '') : 'Sector coloring restored');
         });
+    }
+
+    // Update heatmap legend with sector filter context
+    function _updateHeatmapSectorNote() {
+        if (!compHeatmapLegendEl) return;
+        var existingNote = compHeatmapLegendEl.querySelector('.comp-heatmap-sector-note');
+        if (existingNote) existingNote.remove();
+        if (compHeatmapMode && activeLegendSector) {
+            var note = document.createElement('span');
+            note.className = 'comp-heatmap-sector-note';
+            note.textContent = '· ' + activeLegendSector + ' only';
+            compHeatmapLegendEl.appendChild(note);
+        }
     }
 
     // === Cluster Statistics Panel ===
