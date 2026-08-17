@@ -1227,6 +1227,60 @@ header h1 {
     margin-top: 2px;
     opacity: 0.7;
 }
+/* Inbound peer comparison bar — cyan-tinted marker */
+.tooltip .tt-comp-inbound {
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .tooltip .tt-comp-inbound { border-top-color: rgba(0,0,0,0.06); }
+.tooltip .tt-comp-bar-marker-in {
+    background: #06d6a0 !important;
+    box-shadow: 0 0 6px rgba(6,214,160,0.5) !important;
+}
+.tooltip .tt-comp-bar-inbound {
+    background: rgba(6,214,160,0.08);
+}
+[data-theme="light"] .tooltip .tt-comp-bar-inbound { background: rgba(6,214,160,0.1); }
+
+/* Compensation heatmap toggle button */
+.comp-heatmap-toggle {
+    gap: 4px;
+}
+.comp-heatmap-toggle.active {
+    background: rgba(255,209,102,0.15);
+    color: #ffd166;
+    border-color: rgba(255,209,102,0.3);
+}
+[data-theme="light"] .comp-heatmap-toggle.active {
+    background: rgba(217,119,6,0.1);
+    color: #b45309;
+    border-color: rgba(217,119,6,0.25);
+}
+
+/* Compensation heatmap gradient legend */
+.comp-heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    padding: 4px 0;
+}
+.comp-heatmap-label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+.comp-heatmap-gradient {
+    width: 140px;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #06d6a0, #ffd166, #ef476f);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+[data-theme="light"] .comp-heatmap-gradient {
+    border-color: rgba(0,0,0,0.1);
+}
 
 /* Mutual edge styling in path results */
 .path-edge-arrow.path-edge-mutual {

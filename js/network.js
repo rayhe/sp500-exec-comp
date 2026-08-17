@@ -49,6 +49,7 @@ function initNetwork(peerData) {
     var transform = d3.zoomIdentity;
     var activeLegendSector = null; // sector legend click-to-filter state
     var activePath = null; // { nodes: [ticker,...], edges: [{source, target},...] } for path finder
+    var compHeatmapMode = false; // when true, nodes colored by CEO pay instead of sector
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -347,7 +348,7 @@ function initNetwork(peerData) {
         // Nodes
         nodes.forEach(function(d) {
             var r = getRadius(d);
-            var color = SECTOR_COLORS[d.sector] || '#94a3b8';
+            var color = compHeatmapMode ? getCompHeatmapColor(d.ticker) : (SECTOR_COLORS[d.sector] || '#94a3b8');
             var alpha = 0.85;
 
             if (hoveredNode) {
@@ -398,7 +399,8 @@ function initNetwork(peerData) {
         // Provides orientation without requiring users to match colors to the legend
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // to reinforce which sector the user is viewing
-        if (!hoveredNode) {
+        // Hidden in compensation heatmap mode (sectors are not the color dimension)
+        if (!hoveredNode && !compHeatmapMode) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -474,7 +476,7 @@ function initNetwork(peerData) {
                 var n = nodeMap[ticker];
                 if (!n) return;
                 var r = getRadius(n);
-                var color = SECTOR_COLORS[n.sector] || '#94a3b8';
+                var color = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
 
                 // Glow ring
                 ctx.beginPath();
@@ -685,6 +687,63 @@ function initNetwork(peerData) {
         return { median: median, min: min, max: max, count: vals.length, vals: vals };
     }
 
+    // Compute peer group comp stats for INBOUND peers (companies that selected this node)
+    function _peerCompStatsInbound(ticker) {
+        var adj = adjacency[ticker];
+        if (!adj) return null;
+        var peers = adj.in; // inbound = companies that selected this node as a peer
+        if (peers.length === 0) return null;
+        var vals = [];
+        peers.forEach(function(t) {
+            var c = _compLookup[t];
+            if (c && c.total != null && c.total > 0) vals.push(c.total);
+        });
+        if (vals.length === 0) return null;
+        vals.sort(function(a, b) { return a - b; });
+        var median = vals.length % 2 === 0 ? (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2 : vals[Math.floor(vals.length / 2)];
+        var min = vals[0];
+        var max = vals[vals.length - 1];
+        return { median: median, min: min, max: max, count: vals.length, vals: vals };
+    }
+
+    // Compensation heatmap color — log-scale green→yellow→red gradient
+    var _compVals = [];
+    (function _buildCompScale() {
+        if (typeof compData !== 'undefined' && compData && compData.companies) {
+            compData.companies.forEach(function(c) {
+                if (c.total_compensation && c.total_compensation > 0) _compVals.push(c.total_compensation);
+            });
+            _compVals.sort(function(a, b) { return a - b; });
+        }
+    })();
+    var _compP10 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.1)] : 1e6;
+    var _compP90 = _compVals.length > 0 ? _compVals[Math.floor(_compVals.length * 0.9)] : 50e6;
+
+    function getCompHeatmapColor(ticker) {
+        var c = _compLookup[ticker];
+        if (!c || c.total == null || c.total <= 0) return '#555';
+        var val = c.total;
+        // Log-scale normalization between P10 and P90
+        var logMin = Math.log(_compP10);
+        var logMax = Math.log(_compP90);
+        var logVal = Math.log(Math.max(val, _compP10));
+        var t = Math.max(0, Math.min(1, (logVal - logMin) / (logMax - logMin)));
+        // Green (low) → Yellow (mid) → Red (high)
+        var r, g, b;
+        if (t < 0.5) {
+            var t2 = t * 2;
+            r = Math.round(6 + t2 * (255 - 6));
+            g = Math.round(214 - t2 * (214 - 209));
+            b = Math.round(160 - t2 * (160 - 102));
+        } else {
+            var t2 = (t - 0.5) * 2;
+            r = Math.round(255 - t2 * (255 - 239));
+            g = Math.round(209 - t2 * (209 - 71));
+            b = Math.round(102 - t2 * (102 - 111));
+        }
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
     // Tooltip
     var tooltip = document.getElementById('network-tooltip');
     function showTooltip(mx, my, d) {
@@ -707,6 +766,7 @@ function initNetwork(peerData) {
         // Get compensation data for this company
         var comp = _compLookup[d.ticker];
         var peerStats = _peerCompStats(d.ticker);
+        var inboundStats = _peerCompStatsInbound(d.ticker);
 
         var html = '<div class="tt-title">' + d.ticker + ' — ' + d.name + '</div>';
 
@@ -748,6 +808,36 @@ function initNetwork(peerData) {
                 html += '<div class="tt-comp-bar-labels">';
                 html += '<span>' + _fmtComp(peerStats.min) + '</span>';
                 html += '<span>' + _fmtComp(peerStats.max) + '</span>';
+                html += '</div>';
+                html += '</div>';
+            }
+            // Inbound peer comparison — companies that selected THIS company as a peer
+            if (inboundStats && inboundStats.count >= 2) {
+                var inPctInGroup;
+                var inLogMin = Math.log(inboundStats.min);
+                var inLogMax = Math.log(inboundStats.max);
+                var inLogRange = inLogMax - inLogMin;
+                if (inLogRange > 0) {
+                    inPctInGroup = Math.max(0, Math.min(100, ((Math.log(comp.total) - inLogMin) / inLogRange) * 100));
+                } else {
+                    inPctInGroup = 50;
+                }
+                var inDeltaVsMedian = ((comp.total - inboundStats.median) / inboundStats.median * 100);
+                var inDeltaSign = inDeltaVsMedian >= 0 ? '+' : '';
+                var inDeltaClass = inDeltaVsMedian >= 10 ? 'tt-delta-high' : inDeltaVsMedian <= -10 ? 'tt-delta-low' : 'tt-delta-neutral';
+
+                html += '<div class="tt-comp-vs tt-comp-inbound">';
+                html += '<span class="tt-comp-vs-label">vs ' + inboundStats.count + ' who chose us</span>';
+                html += '<span class="tt-comp-vs-delta ' + inDeltaClass + '">' + inDeltaSign + inDeltaVsMedian.toFixed(0) + '%</span>';
+                html += '</div>';
+                html += '<div class="tt-comp-bar-wrap">';
+                html += '<div class="tt-comp-bar tt-comp-bar-inbound">';
+                html += '<div class="tt-comp-bar-median" style="left:50%"></div>';
+                html += '<div class="tt-comp-bar-marker tt-comp-bar-marker-in" style="left:' + inPctInGroup.toFixed(1) + '%"></div>';
+                html += '</div>';
+                html += '<div class="tt-comp-bar-labels">';
+                html += '<span>' + _fmtComp(inboundStats.min) + '</span>';
+                html += '<span>' + _fmtComp(inboundStats.max) + '</span>';
                 html += '</div>';
                 html += '</div>';
             }
@@ -1379,6 +1469,34 @@ function initNetwork(peerData) {
         draw();
     };
 
+    // === Compensation Heatmap Mode Toggle ===
+    var compHeatmapToggle = document.getElementById('comp-heatmap-toggle');
+    var sectorLegendEl = document.getElementById('network-legend');
+    var compHeatmapLegendEl = document.getElementById('comp-heatmap-legend');
+
+    if (compHeatmapToggle) {
+        compHeatmapToggle.addEventListener('click', function() {
+            compHeatmapMode = !compHeatmapMode;
+            compHeatmapToggle.classList.toggle('active', compHeatmapMode);
+
+            // Swap legends
+            if (sectorLegendEl) sectorLegendEl.style.display = compHeatmapMode ? 'none' : '';
+            if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = compHeatmapMode ? 'flex' : 'none';
+
+            // Clear sector filter when entering heatmap mode
+            if (compHeatmapMode && activeLegendSector) {
+                activeLegendSector = null;
+                legendItems.forEach(function(li) {
+                    li.classList.remove('legend-active', 'legend-dimmed');
+                });
+                updateClusterStats(null);
+            }
+
+            draw();
+            announce(compHeatmapMode ? 'Compensation heatmap enabled' : 'Sector coloring restored');
+        });
+    }
+
     // === Cluster Statistics Panel ===
     // Shows aggregate analytics when a sector filter is active
 
@@ -1612,7 +1730,7 @@ function initNetwork(peerData) {
         nodes.forEach(function(n) {
             var mx = mmMapX(n.x);
             var my = mmMapY(n.y);
-            var color = SECTOR_COLORS[n.sector] || '#94a3b8';
+            var color = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
             var dotR = Math.max(_mmHiContrast ? 1.5 : 1.2, getRadius(n) / (_mmHiContrast ? 15 : 18));
             mmCtx.beginPath();
             mmCtx.arc(mx, my, dotR, 0, 2 * Math.PI);
