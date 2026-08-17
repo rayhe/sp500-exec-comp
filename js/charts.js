@@ -5165,6 +5165,99 @@ function drawConcDistChart(companies) {
         .style('font-size', '11px')
         .style('opacity', 0.7)
         .text(statsText);
+
+    // Sector skew narrative annotation (when no sector filter is active)
+    var existingNarr = container.querySelector('.conc-dist-narrative');
+    if (existingNarr) existingNarr.remove();
+
+    if (!hasSectorOverlay && withConc.length >= 20) {
+        // Compute per-sector median concentration
+        var sectorGroups = {};
+        withConc.forEach(function(c) {
+            var s = c.sector || 'Unknown';
+            if (!sectorGroups[s]) sectorGroups[s] = [];
+            sectorGroups[s].push(c._ceoConcPct);
+        });
+        var sectorMedians = [];
+        Object.keys(sectorGroups).forEach(function(s) {
+            if (sectorGroups[s].length >= 5) {
+                var sorted = sectorGroups[s].slice().sort(function(a, b) { return a - b; });
+                var med = sorted[Math.floor(sorted.length / 2)];
+                sectorMedians.push({ name: s, median: med, count: sectorGroups[s].length });
+            }
+        });
+        sectorMedians.sort(function(a, b) { return a.median - b.median; });
+
+        if (sectorMedians.length >= 4) {
+            var mostDistributed = sectorMedians[0];
+            var mostConcentrated = sectorMedians[sectorMedians.length - 1];
+            var spread = mostConcentrated.median - mostDistributed.median;
+
+            var shortName = function(n) {
+                return n.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs')
+                    .replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls')
+                    .replace('Health Care', 'Health');
+            };
+
+            var concColor = typeof getSectorColor === 'function' ? getSectorColor(mostConcentrated.name) : '#ef476f';
+            var distColor = typeof getSectorColor === 'function' ? getSectorColor(mostDistributed.name) : '#06d6a0';
+
+            var narrativeText = 'Sector skew: ';
+            narrativeText += shortName(mostConcentrated.name) + ' has the most CEO-concentrated pay pools (median ' + mostConcentrated.median.toFixed(1) + '%), ';
+            narrativeText += 'while ' + shortName(mostDistributed.name) + ' distributes compensation most evenly (median ' + mostDistributed.median.toFixed(1) + '%). ';
+            narrativeText += 'The ' + spread.toFixed(0) + 'pp sector gap suggests structural differences in how industries allocate executive compensation across the C-suite.';
+
+            var narrDiv = document.createElement('div');
+            narrDiv.className = 'conc-dist-narrative';
+
+            // Build with styled spans for sector names
+            var span1 = document.createElement('span');
+            span1.textContent = 'Sector skew: ';
+
+            var sConc = document.createElement('span');
+            sConc.style.color = concColor;
+            sConc.style.fontWeight = '600';
+            sConc.textContent = shortName(mostConcentrated.name);
+
+            var mid1 = document.createElement('span');
+            mid1.textContent = ' has the most CEO-concentrated pay pools (median ' + mostConcentrated.median.toFixed(1) + '%), while ';
+
+            var sDist = document.createElement('span');
+            sDist.style.color = distColor;
+            sDist.style.fontWeight = '600';
+            sDist.textContent = shortName(mostDistributed.name);
+
+            var mid2 = document.createElement('span');
+            mid2.textContent = ' distributes compensation most evenly (median ' + mostDistributed.median.toFixed(1) + '%). ';
+
+            var tail = document.createElement('span');
+            tail.textContent = 'The ' + spread.toFixed(0) + 'pp sector gap suggests structural differences in how industries allocate executive compensation across the C-suite.';
+
+            narrDiv.appendChild(span1);
+            narrDiv.appendChild(sConc);
+            narrDiv.appendChild(mid1);
+            narrDiv.appendChild(sDist);
+            narrDiv.appendChild(mid2);
+            narrDiv.appendChild(tail);
+
+            container.appendChild(narrDiv);
+        }
+    } else if (hasSectorOverlay) {
+        // Sector overlay narrative: compare this sector's concentration to S&P 500
+        var delta = sectorMedian - medianConc;
+        var sectorAbove50Count = sectorCompanies.filter(function(c) { return c._ceoConcPct >= 50; }).length;
+        var indexAbove50Pct = (above50 / n * 100).toFixed(0);
+        var sectorAbove50Pct = (sectorAbove50Count / sectorCompanies.length * 100).toFixed(0);
+
+        var narrText = sectorName + ' median CEO concentration is ' + sectorMedian.toFixed(1) + '% vs S&P 500 ' + medianConc.toFixed(1) + '% ';
+        narrText += '(' + (delta >= 0 ? '+' : '') + delta.toFixed(1) + 'pp). ';
+        narrText += sectorAbove50Pct + '% of ' + sectorName + ' companies are CEO-concentrated (\u226550%) vs ' + indexAbove50Pct + '% across the index.';
+
+        var narrDiv2 = document.createElement('div');
+        narrDiv2.className = 'conc-dist-narrative';
+        narrDiv2.textContent = narrText;
+        container.appendChild(narrDiv2);
+    }
 }
 
 /* Update CEO concentration distribution chart bar highlighting */
@@ -6864,8 +6957,9 @@ function drawQuartileComposition(companies) {
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text(q.label + ' \u2014 ' + q.desc + ' (median ' + medStr + ')');
 
-        // Stacked segments
-        componentKeys.forEach(function(key) {
+        // Stacked segments (with animated entry)
+        var segDelay = qi * 200; // stagger per quartile
+        componentKeys.forEach(function(key, ki) {
             var pct = q.avgPcts[key];
             if (pct < 0.3) return;
             var segW = x(pct);
@@ -6876,14 +6970,19 @@ function drawQuartileComposition(companies) {
             segG.append('rect')
                 .attr('x', cumX)
                 .attr('y', by)
-                .attr('width', segW)
+                .attr('width', 0) // start at 0 for animation
                 .attr('height', barH)
                 .attr('fill', componentColors[key])
                 .attr('opacity', 0.85)
                 .attr('rx', cumX === 0 ? 4 : 0)
-                .attr('ry', cumX === 0 ? 4 : 0);
+                .attr('ry', cumX === 0 ? 4 : 0)
+                .transition()
+                .duration(400)
+                .delay(segDelay + ki * 40)
+                .ease(d3.easeCubicOut)
+                .attr('width', segW);
 
-            // Percentage label (if >=8%)
+            // Percentage label (if >=8%) — fade in after bar grows
             if (pct >= 8 && segW > 30) {
                 svg.append('text')
                     .attr('x', cumX + segW / 2)
@@ -6895,10 +6994,15 @@ function drawQuartileComposition(companies) {
                     .attr('font-weight', '600')
                     .attr('font-family', 'Inter, system-ui, sans-serif')
                     .attr('pointer-events', 'none')
+                    .attr('opacity', 0)
+                    .transition()
+                    .duration(200)
+                    .delay(segDelay + ki * 40 + 300)
+                    .attr('opacity', 1)
                     .text(Math.round(pct) + '%');
             }
 
-            // Delta indicator vs S&P 500 (small triangle + delta text above segment)
+            // Delta indicator vs S&P 500 (small triangle + delta text above segment) — fade in with bar
             if (oq) {
                 var oPct = oq.avgPcts[key] || 0;
                 var delta = pct - oPct;
@@ -6916,6 +7020,11 @@ function drawQuartileComposition(companies) {
                         .attr('font-weight', '600')
                         .attr('font-family', 'Inter, system-ui, sans-serif')
                         .attr('pointer-events', 'none')
+                        .attr('opacity', 0)
+                        .transition()
+                        .duration(200)
+                        .delay(segDelay + ki * 40 + 300)
+                        .attr('opacity', 1)
                         .text(deltaSign + (delta > 0 ? '+' : '') + Math.round(delta) + 'pp');
                 }
             }

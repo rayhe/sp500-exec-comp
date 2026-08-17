@@ -7187,14 +7187,31 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #a1a1aa;
     border: 1px solid rgba(0,180,216,0.15);
 }
+.conc-dist-narrative {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    background: rgba(239,71,111,0.08);
+    color: #a1a1aa;
+    border: 1px solid rgba(239,71,111,0.15);
+}
 [data-theme="light"] .quartile-narrative {
     background: rgba(0,120,180,0.06);
     color: #4b5563;
     border-color: rgba(0,120,180,0.12);
 }
+[data-theme="light"] .conc-dist-narrative {
+    background: rgba(200,50,80,0.06);
+    color: #4b5563;
+    border-color: rgba(200,50,80,0.12);
+}
 @media (max-width: 600px) {
     .quartile-narrative { font-size: 0.72rem; }
+    .conc-dist-narrative { font-size: 0.72rem; }
 }
 @media print {
     .quartile-narrative { border-color: #ccc; }
+    .conc-dist-narrative { border-color: #ccc; }
 }
