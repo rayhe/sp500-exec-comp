@@ -6296,6 +6296,74 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
 
 
 /* === Pay Quartile Composition Chart === */
+function _extractCeoRows(companyPool) {
+    var rows = [];
+    companyPool.forEach(function(c) {
+        var execs = c.executives;
+        if (!execs || execs.length === 0) return;
+        var maxYear = 0;
+        execs.forEach(function(e) { if (e.year > maxYear) maxYear = e.year; });
+        var latestExecs = execs.filter(function(e) { return e.year === maxYear; });
+        var ceo = null;
+        for (var i = 0; i < latestExecs.length; i++) {
+            var e = latestExecs[i];
+            if (e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title))) {
+                ceo = e; break;
+            }
+        }
+        if (!ceo) {
+            var best = null;
+            latestExecs.forEach(function(e) { if (!best || (e.total || 0) > (best.total || 0)) best = e; });
+            ceo = best;
+        }
+        if (!ceo || !ceo.total || ceo.total <= 0) return;
+        var hasParts = (ceo.salary || 0) + (ceo.stock_awards || 0) + (ceo.option_awards || 0) +
+            (ceo.non_equity_incentive || 0) + (ceo.bonus || 0) + (ceo.pension_nqdc || 0) + (ceo.all_other || 0);
+        if (hasParts <= 0) return;
+        rows.push({
+            ticker: c.ticker, company: c.company_name, total: ceo.total,
+            salary: ceo.salary || 0, stock_awards: ceo.stock_awards || 0, option_awards: ceo.option_awards || 0,
+            non_equity_incentive: ceo.non_equity_incentive || 0, bonus: ceo.bonus || 0,
+            pension_nqdc: ceo.pension_nqdc || 0, all_other: ceo.all_other || 0
+        });
+    });
+    return rows;
+}
+
+function _buildQuartiles(ceoRows) {
+    ceoRows.sort(function(a, b) { return b.total - a.total; });
+    var qSize = Math.floor(ceoRows.length / 4);
+    var componentKeys = ['salary', 'stock_awards', 'option_awards', 'non_equity_incentive', 'bonus', 'pension_nqdc', 'all_other'];
+    var quartiles = [
+        { label: 'Q4', desc: 'Top 25%', rows: ceoRows.slice(0, qSize) },
+        { label: 'Q3', desc: 'Upper-Mid', rows: ceoRows.slice(qSize, qSize * 2) },
+        { label: 'Q2', desc: 'Lower-Mid', rows: ceoRows.slice(qSize * 2, qSize * 3) },
+        { label: 'Q1', desc: 'Bottom 25%', rows: ceoRows.slice(qSize * 3) }
+    ];
+    quartiles.forEach(function(q) {
+        var avgPcts = {};
+        componentKeys.forEach(function(k) { avgPcts[k] = 0; });
+        var avgTotal = 0;
+        q.rows.forEach(function(r) {
+            var rowTotal = 0;
+            componentKeys.forEach(function(k) { rowTotal += r[k]; });
+            if (rowTotal <= 0) return;
+            componentKeys.forEach(function(k) { avgPcts[k] += (r[k] / rowTotal) * 100; });
+            avgTotal += r.total;
+        });
+        var n = q.rows.length;
+        componentKeys.forEach(function(k) { avgPcts[k] /= n; });
+        q.avgPcts = avgPcts;
+        q.avgTotal = avgTotal / n;
+        var sortedTotals = q.rows.map(function(r) { return r.total; }).sort(function(a, b) { return a - b; });
+        var mid = Math.floor(sortedTotals.length / 2);
+        q.medianTotal = sortedTotals.length % 2 === 0 ? (sortedTotals[mid - 1] + sortedTotals[mid]) / 2 : sortedTotals[mid];
+        q.minComp = sortedTotals[0];
+        q.maxComp = sortedTotals[sortedTotals.length - 1];
+    });
+    return quartiles;
+}
+
 function drawQuartileComposition(companies) {
     var container = document.getElementById('quartile-comp-chart');
     if (!container) return;
@@ -6306,125 +6374,46 @@ function drawQuartileComposition(companies) {
         ? companies.filter(function(c) { return c.sector === sector; })
         : companies;
 
-    // For each company, find CEO-level exec from latest fiscal year with component data
-    var ceoRows = [];
-    pool.forEach(function(c) {
-        var execs = c.executives;
-        if (!execs || execs.length === 0) return;
-        // Latest year available
-        var maxYear = 0;
-        execs.forEach(function(e) { if (e.year > maxYear) maxYear = e.year; });
-        var latestExecs = execs.filter(function(e) { return e.year === maxYear; });
-        // Find CEO
-        var ceo = null;
-        for (var i = 0; i < latestExecs.length; i++) {
-            var e = latestExecs[i];
-            if (e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title))) {
-                ceo = e;
-                break;
-            }
-        }
-        // Fallback: highest total
-        if (!ceo) {
-            var best = null;
-            latestExecs.forEach(function(e) {
-                if (!best || (e.total || 0) > (best.total || 0)) best = e;
-            });
-            ceo = best;
-        }
-        if (!ceo || !ceo.total || ceo.total <= 0) return;
-        // Must have at least some component data (not just total)
-        var hasParts = (ceo.salary || 0) + (ceo.stock_awards || 0) + (ceo.option_awards || 0) +
-            (ceo.non_equity_incentive || 0) + (ceo.bonus || 0) + (ceo.pension_nqdc || 0) + (ceo.all_other || 0);
-        if (hasParts <= 0) return;
-        ceoRows.push({
-            ticker: c.ticker,
-            company: c.company_name,
-            total: ceo.total,
-            salary: ceo.salary || 0,
-            stock_awards: ceo.stock_awards || 0,
-            option_awards: ceo.option_awards || 0,
-            non_equity_incentive: ceo.non_equity_incentive || 0,
-            bonus: ceo.bonus || 0,
-            pension_nqdc: ceo.pension_nqdc || 0,
-            all_other: ceo.all_other || 0
-        });
-    });
+    var ceoRows = _extractCeoRows(pool);
 
     if (ceoRows.length < 8) {
         container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">' +
-            (sector ? 'Not enough ' + sector + ' companies with component data (need ≥8, have ' + ceoRows.length + ')' : 'Insufficient component data') + '</p>';
+            (sector ? 'Not enough ' + sector + ' companies with component data (need \u22658, have ' + ceoRows.length + ')' : 'Insufficient component data') + '</p>';
         return;
     }
 
-    // Sort descending by total comp
-    ceoRows.sort(function(a, b) { return b.total - a.total; });
+    var quartiles = _buildQuartiles(ceoRows);
 
-    // Split into 4 quartiles
-    var qSize = Math.floor(ceoRows.length / 4);
-    var quartiles = [
-        { label: 'Q4', desc: 'Top 25%', rows: ceoRows.slice(0, qSize) },
-        { label: 'Q3', desc: 'Upper-Mid', rows: ceoRows.slice(qSize, qSize * 2) },
-        { label: 'Q2', desc: 'Lower-Mid', rows: ceoRows.slice(qSize * 2, qSize * 3) },
-        { label: 'Q1', desc: 'Bottom 25%', rows: ceoRows.slice(qSize * 3) }
-    ];
+    // Compute S&P 500 overall quartiles when sector filter is active (for ghost bars)
+    var overallQuartiles = null;
+    if (sector) {
+        var overallRows = _extractCeoRows(companies);
+        if (overallRows.length >= 8) {
+            overallQuartiles = _buildQuartiles(overallRows);
+        }
+    }
 
     var componentKeys = ['salary', 'stock_awards', 'option_awards', 'non_equity_incentive', 'bonus', 'pension_nqdc', 'all_other'];
     var componentLabels = {
-        salary: 'Base Salary',
-        stock_awards: 'Stock Awards',
-        option_awards: 'Option Awards',
-        non_equity_incentive: 'Non-Equity Incentive',
-        bonus: 'Bonus',
-        pension_nqdc: 'Pension/NQDC',
-        all_other: 'All Other'
+        salary: 'Base Salary', stock_awards: 'Stock Awards', option_awards: 'Option Awards',
+        non_equity_incentive: 'Non-Equity Incentive', bonus: 'Bonus', pension_nqdc: 'Pension/NQDC', all_other: 'All Other'
     };
     var componentColors = {
-        salary: '#06d6a0',
-        stock_awards: '#00b4d8',
-        option_awards: '#0096c7',
-        non_equity_incentive: '#a78bfa',
-        bonus: '#8b5cf6',
-        pension_nqdc: '#fb923c',
-        all_other: '#ffd166'
+        salary: '#06d6a0', stock_awards: '#00b4d8', option_awards: '#0096c7',
+        non_equity_incentive: '#a78bfa', bonus: '#8b5cf6', pension_nqdc: '#fb923c', all_other: '#ffd166'
     };
-
-    // Compute average % breakdown per quartile
-    quartiles.forEach(function(q) {
-        var avgPcts = {};
-        componentKeys.forEach(function(k) { avgPcts[k] = 0; });
-        var avgTotal = 0;
-        q.rows.forEach(function(r) {
-            var rowTotal = 0;
-            componentKeys.forEach(function(k) { rowTotal += r[k]; });
-            if (rowTotal <= 0) return;
-            componentKeys.forEach(function(k) {
-                avgPcts[k] += (r[k] / rowTotal) * 100;
-            });
-            avgTotal += r.total;
-        });
-        var n = q.rows.length;
-        componentKeys.forEach(function(k) { avgPcts[k] /= n; });
-        q.avgPcts = avgPcts;
-        q.avgTotal = avgTotal / n;
-        // Compute median total
-        var sortedTotals = q.rows.map(function(r) { return r.total; }).sort(function(a, b) { return a - b; });
-        var mid = Math.floor(sortedTotals.length / 2);
-        q.medianTotal = sortedTotals.length % 2 === 0 ? (sortedTotals[mid - 1] + sortedTotals[mid]) / 2 : sortedTotals[mid];
-        // Min/max for click filtering
-        q.minComp = sortedTotals[0];
-        q.maxComp = sortedTotals[sortedTotals.length - 1];
-    });
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
     var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var ghostStroke = dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
+    var ghostFill = dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
 
     var margin = { top: 16, right: 90, bottom: 24, left: 200 };
     var cw = container.clientWidth;
     var w = cw - margin.left - margin.right;
     if (w < 200) w = 200;
-    var barH = 36;
+    var barH = sector && overallQuartiles ? 42 : 36; // taller bars when ghost bars shown
     var barGap = 14;
     var h = quartiles.length * (barH + barGap) - barGap;
 
@@ -6440,6 +6429,32 @@ function drawQuartileComposition(companies) {
     quartiles.forEach(function(q, qi) {
         var by = qi * (barH + barGap);
         var cumX = 0;
+        var oq = overallQuartiles ? overallQuartiles[qi] : null;
+
+        // --- Ghost bars (S&P 500 baseline) behind sector bars ---
+        if (oq) {
+            var ghostCumX = 0;
+            var ghostBarH = barH;
+            var ghostBarY = by;
+            componentKeys.forEach(function(key) {
+                var oPct = oq.avgPcts[key];
+                if (oPct < 0.3) return;
+                var gW = x(oPct);
+                svg.append('rect')
+                    .attr('x', ghostCumX)
+                    .attr('y', ghostBarY)
+                    .attr('width', gW)
+                    .attr('height', ghostBarH)
+                    .attr('fill', ghostFill)
+                    .attr('stroke', ghostStroke)
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-dasharray', '4,3')
+                    .attr('rx', ghostCumX === 0 ? 4 : 0)
+                    .attr('ry', ghostCumX === 0 ? 4 : 0)
+                    .attr('pointer-events', 'none');
+                ghostCumX += gW;
+            });
+        }
 
         // Quartile label
         var medStr = fmtCurr(q.medianTotal);
@@ -6452,12 +6467,12 @@ function drawQuartileComposition(companies) {
             .attr('font-size', '0.78rem')
             .attr('font-weight', '600')
             .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text(q.label + ' — ' + q.desc + ' (median ' + medStr + ')');
+            .text(q.label + ' \u2014 ' + q.desc + ' (median ' + medStr + ')');
 
         // Stacked segments
         componentKeys.forEach(function(key) {
             var pct = q.avgPcts[key];
-            if (pct < 0.3) return; // Skip negligible
+            if (pct < 0.3) return;
             var segW = x(pct);
             var segG = svg.append('g')
                 .attr('class', 'quartile-seg')
@@ -6488,15 +6503,46 @@ function drawQuartileComposition(companies) {
                     .text(Math.round(pct) + '%');
             }
 
-            // Tooltip
-            (function(segKey, segPct, quartileData, segCumX, segSegW) {
+            // Delta indicator vs S&P 500 (small triangle + delta text above segment)
+            if (oq) {
+                var oPct = oq.avgPcts[key] || 0;
+                var delta = pct - oPct;
+                if (Math.abs(delta) >= 2 && segW > 22) {
+                    var deltaColor = Math.abs(delta) >= 5
+                        ? (delta > 0 ? '#06d6a0' : '#ef476f')
+                        : mutedColor;
+                    var deltaSign = delta > 0 ? '\u25B2' : '\u25BC';
+                    svg.append('text')
+                        .attr('x', cumX + segW / 2)
+                        .attr('y', by - 3)
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', deltaColor)
+                        .attr('font-size', '0.52rem')
+                        .attr('font-weight', '600')
+                        .attr('font-family', 'Inter, system-ui, sans-serif')
+                        .attr('pointer-events', 'none')
+                        .text(deltaSign + (delta > 0 ? '+' : '') + Math.round(delta) + 'pp');
+                }
+            }
+
+            // Tooltip — with S&P 500 comparison when sector active
+            (function(segKey, segPct, quartileData, segCumX, segSegW, overallQ) {
                 segG.on('mouseover', function(event) {
                     d3.select(this).select('rect').attr('opacity', 1);
                     var avgVal = quartileData.avgTotal * segPct / 100;
                     var html = '<div class="ct-title">' + componentLabels[segKey] + '</div>' +
-                        '<div class="ct-row"><span class="ct-label">Avg Share</span><span class="ct-val">' + segPct.toFixed(1) + '%</span></div>' +
-                        '<div class="ct-row"><span class="ct-label">Avg Value</span><span class="ct-val">' + fmtCurr(avgVal) + '</span></div>' +
-                        '<div class="ct-row ct-sub"><span class="ct-label">' + quartileData.label + ' (' + quartileData.desc + ') — ' + quartileData.rows.length + ' CEOs</span></div>';
+                        '<div class="ct-row"><span class="ct-label">' + (sector || 'S&P 500') + ' Avg Share</span><span class="ct-val">' + segPct.toFixed(1) + '%</span></div>' +
+                        '<div class="ct-row"><span class="ct-label">Avg Value</span><span class="ct-val">' + fmtCurr(avgVal) + '</span></div>';
+                    if (overallQ) {
+                        var oVal = overallQ.avgPcts[segKey] || 0;
+                        var dv = segPct - oVal;
+                        var dvColor = Math.abs(dv) >= 5 ? (dv > 0 ? '#06d6a0' : '#ef476f') : '#a1a1aa';
+                        html += '<div style="border-top:1px solid rgba(161,161,170,0.2);margin:4px 0;"></div>' +
+                            '<div class="ct-row"><span class="ct-label">S&P 500 Avg</span><span class="ct-val">' + oVal.toFixed(1) + '%</span></div>' +
+                            '<div class="ct-row"><span class="ct-label">Sector \u0394</span><span class="ct-val" style="color:' + dvColor + '">' +
+                            (dv > 0 ? '+' : '') + dv.toFixed(1) + 'pp</span></div>';
+                    }
+                    html += '<div class="ct-row ct-sub"><span class="ct-label">' + quartileData.label + ' (' + quartileData.desc + ') \u2014 ' + quartileData.rows.length + ' CEOs</span></div>';
                     showChartTooltip(event, html);
                 })
                 .on('mousemove', function(event) { positionChartTooltip(event); })
@@ -6504,7 +6550,7 @@ function drawQuartileComposition(companies) {
                     d3.select(this).select('rect').attr('opacity', 0.85);
                     hideChartTooltip();
                 });
-            })(key, pct, q, cumX, segW);
+            })(key, pct, q, cumX, segW, oq);
 
             // Click to filter table to this quartile range
             (function(quartileData) {
@@ -6523,7 +6569,6 @@ function drawQuartileComposition(companies) {
             cumX += segW;
         });
 
-        // Round right edge of last segment
         // Total label on right
         svg.append('text')
             .attr('x', w + 6)
@@ -6536,36 +6581,106 @@ function drawQuartileComposition(companies) {
             .text(fmtCurr(q.avgTotal));
     });
 
-    // Legend below bars
+    // Legend below bars — wrapping layout for narrow screens
     var legendY = h + 8;
     var lx = 0;
+    var maxLegendW = w + margin.right;
+    var legendRow = 0;
     componentKeys.forEach(function(key) {
-        // Check if any quartile has >0.5% for this key
         var hasData = quartiles.some(function(q) { return q.avgPcts[key] > 0.5; });
         if (!hasData) return;
         var labelText = componentLabels[key];
+        var itemW = labelText.length * 5.5 + 24;
+        // Wrap to next line if overflowing
+        if (lx + itemW > maxLegendW && lx > 0) {
+            lx = 0;
+            legendRow++;
+        }
+        var ly = legendY + legendRow * 18;
         svg.append('rect')
-            .attr('x', lx).attr('y', legendY)
+            .attr('x', lx).attr('y', ly)
             .attr('width', 10).attr('height', 10)
             .attr('fill', componentColors[key])
             .attr('opacity', 0.85)
             .attr('rx', 2);
         svg.append('text')
-            .attr('x', lx + 14).attr('y', legendY + 8)
+            .attr('x', lx + 14).attr('y', ly + 8)
             .attr('fill', mutedColor)
             .attr('font-size', '0.62rem')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text(labelText);
-        lx += labelText.length * 5.5 + 24;
+        lx += itemW;
     });
+
+    // Add S&P 500 ghost bar legend entry when sector active
+    if (overallQuartiles) {
+        var ghostLabelText = 'S&P 500 baseline';
+        var ghostItemW = ghostLabelText.length * 5.5 + 24;
+        if (lx + ghostItemW > maxLegendW && lx > 0) {
+            lx = 0;
+            legendRow++;
+        }
+        var gly = legendY + legendRow * 18;
+        svg.append('rect')
+            .attr('x', lx).attr('y', gly)
+            .attr('width', 10).attr('height', 10)
+            .attr('fill', ghostFill)
+            .attr('stroke', ghostStroke)
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '3,2')
+            .attr('rx', 2);
+        svg.append('text')
+            .attr('x', lx + 14).attr('y', gly + 8)
+            .attr('fill', mutedColor)
+            .attr('font-size', '0.62rem')
+            .attr('font-style', 'italic')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(ghostLabelText);
+    }
+
+    // Resize SVG to accommodate legend rows
+    if (legendRow > 0) {
+        var svgEl = container.querySelector('svg');
+        if (svgEl) {
+            var newH = h + margin.top + margin.bottom + legendRow * 18;
+            svgEl.setAttribute('height', newH);
+        }
+    }
 
     // Narrative annotation pill
     var q4Equity = (quartiles[0].avgPcts.stock_awards || 0) + (quartiles[0].avgPcts.option_awards || 0);
     var q1Equity = (quartiles[3].avgPcts.stock_awards || 0) + (quartiles[3].avgPcts.option_awards || 0);
     var gap = Math.abs(q4Equity - q1Equity);
-    var narrativeText = 'Equity dominance grows with pay level: ' + quartiles[0].label + ' CEOs receive ' +
-        Math.round(q4Equity) + '% of pay from stock/options vs ' + Math.round(q1Equity) + '% for ' +
-        quartiles[3].label + ' — a ' + Math.round(gap) + ' percentage point gap.';
+
+    var narrativeText;
+    if (sector && overallQuartiles) {
+        // Sector vs S&P 500 comparative narrative
+        var oQ4Equity = (overallQuartiles[0].avgPcts.stock_awards || 0) + (overallQuartiles[0].avgPcts.option_awards || 0);
+        var oQ1Equity = (overallQuartiles[3].avgPcts.stock_awards || 0) + (overallQuartiles[3].avgPcts.option_awards || 0);
+        var q4Delta = q4Equity - oQ4Equity;
+        var q1Delta = q1Equity - oQ1Equity;
+
+        // Find the most divergent component across Q4
+        var biggestDivKey = null, biggestDivVal = 0;
+        componentKeys.forEach(function(k) {
+            var d = Math.abs((quartiles[0].avgPcts[k] || 0) - (overallQuartiles[0].avgPcts[k] || 0));
+            if (d > biggestDivVal) { biggestDivVal = d; biggestDivKey = k; }
+        });
+
+        narrativeText = sector + ' Q4 CEOs receive ' + Math.round(q4Equity) + '% from equity vs S&P 500 Q4 average of ' +
+            Math.round(oQ4Equity) + '% (' + (q4Delta >= 0 ? '+' : '') + Math.round(q4Delta) + 'pp). ';
+        narrativeText += 'Q1: ' + Math.round(q1Equity) + '% vs ' + Math.round(oQ1Equity) + '% S&P 500 (' +
+            (q1Delta >= 0 ? '+' : '') + Math.round(q1Delta) + 'pp). ';
+        if (biggestDivKey && biggestDivVal >= 5) {
+            narrativeText += 'Largest structural difference: ' + componentLabels[biggestDivKey] +
+                ' (' + (q4Delta >= 0 ? '+' : '') + Math.round(biggestDivVal) + 'pp in Q4 vs S&P 500). ';
+        }
+        narrativeText += 'Dashed outlines show S&P 500 baseline.';
+    } else {
+        narrativeText = 'Equity dominance grows with pay level: ' + quartiles[0].label + ' CEOs receive ' +
+            Math.round(q4Equity) + '% of pay from stock/options vs ' + Math.round(q1Equity) + '% for ' +
+            quartiles[3].label + ' \u2014 a ' + Math.round(gap) + ' percentage point gap.';
+    }
 
     // Remove existing narrative if any
     var existingNarr = container.querySelector('.quartile-narrative');
@@ -6579,7 +6694,7 @@ function drawQuartileComposition(companies) {
     var descEl = document.getElementById('quartile-comp-desc');
     if (descEl) {
         descEl.textContent = sector
-            ? 'How ' + sector + ' CEO compensation composition shifts by pay level — ' + pool.length + ' companies, ' + ceoRows.length + ' with component data.'
-            : 'How compensation composition shifts as pay levels rise — from salary-heavy in the bottom quartile to equity-dominant at the top. Computed from CEO-level DEF 14A data.';
+            ? 'How ' + sector + ' CEO compensation composition shifts by pay level vs S&P 500 baseline \u2014 ' + pool.length + ' companies, ' + ceoRows.length + ' with component data. Dashed outlines = S&P 500 overall.'
+            : 'How compensation composition shifts as pay levels rise \u2014 from salary-heavy in the bottom quartile to equity-dominant at the top. Computed from CEO-level DEF 14A data.';
     }
 }
