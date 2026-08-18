@@ -9473,6 +9473,13 @@ function hideMetricSkeletons() {
                 e.preventDefault();
                 return;
             }
+            // Clear scatter brush selection if active
+            var brushResults = document.getElementById('scatter-brush-results');
+            if (brushResults && brushResults.style.display !== 'none' && window._clearScatterBrush) {
+                window._clearScatterBrush();
+                e.preventDefault();
+                return;
+            }
             // Clear all filters and search
             if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || (activeRole && activeRole !== 'CEO')) {
                 setActiveSector(null);

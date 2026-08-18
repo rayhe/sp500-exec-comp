@@ -2647,6 +2647,9 @@ function drawScatterChart(companies) {
     var container = document.getElementById('scatter-chart');
     if (!container) return;
     container.innerHTML = '';
+    // Clear any previous brush selection results
+    var _prevBrushResults = document.getElementById('scatter-brush-results');
+    if (_prevBrushResults) _prevBrushResults.style.display = 'none';
 
     var SECTOR_COLORS = {
         'Information Technology': '#00b4d8',
@@ -3601,6 +3604,192 @@ function drawScatterChart(companies) {
                     .text('Shaded area = 95% confidence interval');
             }
         }
+    }
+
+    // === Brush Selection ===
+    // Users can click-and-drag on empty space to select a rectangular region of dots
+    // Dots remain hoverable/clickable — brush activates only on empty space
+    var brushResultsEl = document.getElementById('scatter-brush-results');
+    var brushG = svg.append('g').attr('class', 'scatter-brush-layer');
+
+    // Track whether a dot is currently under the pointer
+    var _dotUnderPointer = false;
+    svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector')
+        .on('mouseenter.brushtrack', function() { _dotUnderPointer = true; })
+        .on('mouseleave.brushtrack', function() { _dotUnderPointer = false; });
+
+    var brush = d3.brush()
+        .extent([[0, 0], [w, h]])
+        .filter(function(event) {
+            // Don't start brush if pointer is over a dot — let dot events handle it
+            if (_dotUnderPointer) return false;
+            // Only left-click, no ctrl/meta
+            return !event.ctrlKey && !event.metaKey && !event.button;
+        })
+        .on('start', function(event) {
+            if (event.sourceEvent && event.sourceEvent.type === 'mousedown') {
+                hideChartTooltip();
+            }
+        })
+        .on('brush', function(event) {
+            if (!event.selection) return;
+            var sel = event.selection;
+            // Dim dots outside selection
+            svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector').each(function(d) {
+                var cx = dotX(d), cy = dotY(d);
+                var inside = cx >= sel[0][0] && cx <= sel[1][0] && cy >= sel[0][1] && cy <= sel[1][1];
+                d3.select(this).attr('opacity', inside ? 1 : 0.08);
+            });
+        })
+        .on('end', function(event) {
+            if (!event.selection) {
+                // Brush cleared — restore opacities
+                if (hasSectorOverlay) {
+                    svg.selectAll('.scatter-dot-bg').attr('opacity', defaultOpacity);
+                    svg.selectAll('.scatter-dot-sector').attr('opacity', sectorDotOpacity);
+                } else {
+                    svg.selectAll('.scatter-dot').attr('opacity', 0.7);
+                }
+                if (brushResultsEl) brushResultsEl.style.display = 'none';
+                return;
+            }
+            var sel = event.selection;
+            // Find companies inside selection
+            var selected = pts.filter(function(d) {
+                var cx = dotX(d), cy = dotY(d);
+                return cx >= sel[0][0] && cx <= sel[1][0] && cy >= sel[0][1] && cy <= sel[1][1];
+            });
+            _renderBrushResults(selected, xMetric, yMetric, brushResultsEl, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity);
+        });
+
+    brushG.call(brush);
+    // Remove brush overlay rect default fill — let dots underneath handle events normally when not brushing
+    brushG.select('.overlay').attr('fill', 'none').attr('pointer-events', 'all').style('cursor', 'crosshair');
+    brushG.select('.selection')
+        .attr('fill', dark ? 'rgba(0,180,216,0.12)' : 'rgba(0,180,216,0.08)')
+        .attr('stroke', dark ? 'rgba(0,180,216,0.5)' : 'rgba(0,180,216,0.4)')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '4,3');
+    brushG.selectAll('.handle').attr('fill', dark ? 'rgba(0,180,216,0.35)' : 'rgba(0,180,216,0.3)');
+
+    // Expose global clear function for Escape key integration
+    window._clearScatterBrush = function() {
+        brushG.call(brush.move, null);
+        if (hasSectorOverlay) {
+            svg.selectAll('.scatter-dot-bg').attr('opacity', defaultOpacity);
+            svg.selectAll('.scatter-dot-sector').attr('opacity', sectorDotOpacity);
+        } else {
+            svg.selectAll('.scatter-dot').attr('opacity', 0.7);
+        }
+        if (brushResultsEl) brushResultsEl.style.display = 'none';
+    };
+
+    // Hint text for brush
+    svg.append('text')
+        .attr('class', 'scatter-brush-hint')
+        .attr('x', w / 2).attr('y', h + 66)
+        .attr('text-anchor', 'middle')
+        .attr('fill', dark ? '#52525b' : '#a1a1aa')
+        .attr('font-size', '9px')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .attr('pointer-events', 'none')
+        .text('Drag on empty space to select a region · Click dots to view details · Esc to clear');
+}
+
+function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity) {
+    if (!container) return;
+    if (selected.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+
+    // Sort by total comp descending
+    selected.sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); });
+
+    // Compute aggregate stats
+    var xVals = selected.map(function(c) { return xMetric.get(c); }).filter(function(v) { return v != null; }).sort(function(a, b) { return a - b; });
+    var yVals = selected.map(function(c) { return yMetric.get(c); }).filter(function(v) { return v != null; }).sort(function(a, b) { return a - b; });
+    var medianX = xVals.length > 0 ? xVals[Math.floor(xVals.length / 2)] : null;
+    var medianY = yVals.length > 0 ? yVals[Math.floor(yVals.length / 2)] : null;
+    var totalComp = selected.reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+
+    // Sector breakdown
+    var sectorCounts = {};
+    selected.forEach(function(c) {
+        var s = c.sector || 'Unknown';
+        sectorCounts[s] = (sectorCounts[s] || 0) + 1;
+    });
+    var sectorList = Object.keys(sectorCounts).sort(function(a, b) { return sectorCounts[b] - sectorCounts[a]; });
+
+    var html = '<div class="sbr-header">';
+    html += '<div class="sbr-title"><span class="sbr-count">' + selected.length + '</span> companies selected</div>';
+    html += '<button class="sbr-clear" title="Clear selection (Esc)">✕ Clear</button>';
+    html += '</div>';
+
+    // Stats bar
+    html += '<div class="sbr-stats">';
+    html += '<span class="sbr-stat">Median ' + xMetric.shortLabel + ': <b>' + xMetric.fmt(medianX) + '</b></span>';
+    html += '<span class="sbr-stat">Median ' + yMetric.shortLabel + ': <b>' + yMetric.fmt(medianY) + '</b></span>';
+    html += '<span class="sbr-stat">Combined Pay: <b>' + fmtCurr(totalComp) + '</b></span>';
+    html += '</div>';
+
+    // Sector badges
+    html += '<div class="sbr-sectors">';
+    sectorList.forEach(function(s) {
+        var color = typeof getSectorColor === 'function' ? getSectorColor(s) : '#94a3b8';
+        html += '<span class="sbr-sector-badge" style="border-color:' + color + ';color:' + color + '">' + s.replace('Information Technology', 'IT').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stpls') + ' <b>' + sectorCounts[s] + '</b></span>';
+    });
+    html += '</div>';
+
+    // Company list
+    html += '<div class="sbr-list-wrap"><table class="sbr-list">';
+    html += '<tr class="sbr-list-header"><th>Ticker</th><th>Company</th><th>CEO</th><th>' + xMetric.shortLabel + '</th><th>' + yMetric.shortLabel + '</th><th>Total Comp</th></tr>';
+    var showAll = selected.length <= 20;
+    var displayList = showAll ? selected : selected.slice(0, 15);
+    displayList.forEach(function(c) {
+        var sColor = typeof getSectorColor === 'function' ? getSectorColor(c.sector) : '#94a3b8';
+        html += '<tr class="sbr-row" data-ticker="' + c.ticker + '" style="cursor:pointer">';
+        html += '<td><span class="sbr-dot" style="background:' + sColor + '"></span><b>' + c.ticker + '</b></td>';
+        html += '<td>' + (c.company_name || '') + '</td>';
+        html += '<td>' + (c.ceo_name || '—') + '</td>';
+        html += '<td class="sbr-mono">' + xMetric.fmt(xMetric.get(c)) + '</td>';
+        html += '<td class="sbr-mono">' + yMetric.fmt(yMetric.get(c)) + '</td>';
+        html += '<td class="sbr-mono">' + fmtCurr(c.total_compensation) + '</td>';
+        html += '</tr>';
+    });
+    if (!showAll) {
+        html += '<tr class="sbr-more"><td colspan="6">+ ' + (selected.length - 15) + ' more companies in selection</td></tr>';
+    }
+    html += '</table></div>';
+
+    container.innerHTML = html;
+    container.style.display = 'block';
+
+    // Wire click handlers
+    container.querySelectorAll('.sbr-row').forEach(function(row) {
+        row.addEventListener('click', function() {
+            var ticker = row.dataset.ticker;
+            if (typeof window.findCompanyInTable === 'function') {
+                window.findCompanyInTable(ticker);
+            }
+        });
+    });
+
+    // Wire clear button
+    var clearBtn = container.querySelector('.sbr-clear');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            brushG.call(brush.move, null);
+            if (hasSectorOverlay) {
+                svg.selectAll('.scatter-dot-bg').attr('opacity', defaultOpacity);
+                svg.selectAll('.scatter-dot-sector').attr('opacity', sectorDotOpacity);
+            } else {
+                svg.selectAll('.scatter-dot').attr('opacity', 0.7);
+            }
+            container.style.display = 'none';
+        });
     }
 }
 

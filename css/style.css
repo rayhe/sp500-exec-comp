@@ -6210,6 +6210,178 @@ footer li::before {
     #scatter-chart svg { max-width: 100%; }
 }
 
+/* ── Scatter Brush Selection Results ── */
+.scatter-brush-results {
+    margin-top: 12px;
+    border: 1px solid rgba(0,180,216,0.25);
+    border-radius: 10px;
+    background: rgba(0,180,216,0.03);
+    padding: 14px 16px;
+    animation: sbrFadeIn 200ms ease-out;
+}
+@keyframes sbrFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.sbr-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.sbr-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e4e4e7;
+}
+.sbr-count {
+    color: #00b4d8;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-right: 4px;
+}
+.sbr-clear {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    color: #ef4444;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.sbr-clear:hover {
+    background: rgba(239,68,68,0.2);
+}
+.sbr-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+.sbr-stat b {
+    color: #e4e4e7;
+    font-weight: 600;
+}
+.sbr-sectors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.sbr-sector-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 2px 7px;
+    border: 1px solid;
+    border-radius: 4px;
+    background: transparent;
+    white-space: nowrap;
+}
+.sbr-sector-badge b {
+    font-weight: 700;
+    margin-left: 2px;
+}
+.sbr-list-wrap {
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 6px;
+    border: 1px solid rgba(63,63,70,0.3);
+}
+.sbr-list {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.73rem;
+}
+.sbr-list-header th {
+    position: sticky;
+    top: 0;
+    background: #18181b;
+    padding: 5px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #a1a1aa;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid rgba(63,63,70,0.5);
+    z-index: 1;
+}
+.sbr-row td {
+    padding: 4px 8px;
+    border-bottom: 1px solid rgba(63,63,70,0.15);
+    color: #d4d4d8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+.sbr-row:hover {
+    background: rgba(0,180,216,0.06);
+}
+.sbr-row td:first-child b {
+    color: #00b4d8;
+}
+.sbr-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.sbr-mono {
+    font-family: var(--mono, 'SF Mono', 'Monaco', monospace);
+    font-size: 0.71rem;
+}
+.sbr-more td {
+    padding: 6px 8px;
+    color: #71717a;
+    font-style: italic;
+    text-align: center;
+    font-size: 0.7rem;
+}
+/* Light theme */
+[data-theme="light"] .scatter-brush-results {
+    background: rgba(0,180,216,0.04);
+    border-color: rgba(0,180,216,0.2);
+}
+[data-theme="light"] .sbr-title {
+    color: #1a1a2e;
+}
+[data-theme="light"] .sbr-stat b {
+    color: #1a1a2e;
+}
+[data-theme="light"] .sbr-list-header th {
+    background: #f4f4f5;
+    color: #4b5563;
+    border-bottom-color: rgba(0,0,0,0.1);
+}
+[data-theme="light"] .sbr-row td {
+    color: #374151;
+    border-bottom-color: rgba(0,0,0,0.05);
+}
+[data-theme="light"] .sbr-row:hover {
+    background: rgba(0,180,216,0.05);
+}
+[data-theme="light"] .sbr-list-wrap {
+    border-color: rgba(0,0,0,0.1);
+}
+[data-theme="light"] .sbr-stats {
+    color: #6b7280;
+}
+@media (max-width: 600px) {
+    .sbr-stats { flex-direction: column; gap: 4px; }
+    .sbr-list-wrap { max-height: 200px; }
+    .sbr-row td { max-width: 100px; font-size: 0.65rem; }
+    .sbr-list-header th { font-size: 0.6rem; }
+}
+@media print {
+    .scatter-brush-results { display: none !important; }
+}
+
 
 /* ── Sector Analytics Summary Table ── */
 .sector-analytics-table {
