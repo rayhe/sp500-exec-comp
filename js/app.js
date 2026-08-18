@@ -993,7 +993,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', 'ceo_name': 'CEO name' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1719,21 +1719,8 @@ function populateInsights(comp, trends, sectorFilter) {
             label: 'Aspirational Benchmarking',
             value: value,
             detail: detail,
-            action: function() {
-                var section = document.getElementById('peer-network-section');
-                if (section) {
-                    var headerHeight = getStickyOffset();
-                    var top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
-                }
-                if (window.toggleCompHeatmap) {
-                    var btn = document.querySelector('.comp-heatmap-toggle');
-                    if (btn && !btn.classList.contains('active')) {
-                        btn.click();
-                    }
-                }
-            },
-            actionHint: 'View in network heatmap',
+            action: function() { insightResetAndSort('_aspDelta', 'desc'); },
+            actionHint: 'Sort table by peer delta',
             _tickers: (meaningfulAsp.length > 0 ? meaningfulAsp : allAspirational).slice(0, 5).map(function(c) { return c.ticker; })
         });
     })();
@@ -2241,6 +2228,9 @@ function renderSortContextSummary(companies) {
     }
     if (currentSort.key === '_sopApproval') {
         return renderSopSortSummary(companies);
+    }
+    if (currentSort.key === '_aspDelta') {
+        return renderAspDeltaSortSummary(companies);
     }
     return null;
 }
@@ -3384,6 +3374,103 @@ function renderSopSortSummary(companies) {
     return html;
 }
 
+/* Aspirational benchmarking delta summary — shown when sorted by _aspDelta.
+   Shows distribution of peer-group pay deltas, aspirational vs restrained split, mini histogram. */
+function renderAspDeltaSortSummary(companies) {
+    var withData = companies.filter(function(c) { return c._aspDelta != null; });
+    if (withData.length === 0) return null;
+
+    var vals = withData.map(function(c) { return c._aspDelta; }).sort(function(a, b) { return a - b; });
+    var median = vals[Math.floor(vals.length / 2)];
+    var mean = vals.reduce(function(s, v) { return s + v; }, 0) / vals.length;
+
+    var highlyAsp = withData.filter(function(c) { return c._aspDelta >= 30; });
+    var aspirational = withData.filter(function(c) { return c._aspDelta >= 10 && c._aspDelta < 30; });
+    var aligned = withData.filter(function(c) { return c._aspDelta > -10 && c._aspDelta < 10; });
+    var above = withData.filter(function(c) { return c._aspDelta <= -10 && c._aspDelta > -30; });
+    var wellAbove = withData.filter(function(c) { return c._aspDelta <= -30; });
+
+    var sortDir = currentSort.dir === 'desc' ? 'most aspirational first' : 'most restrained first';
+
+    var html = '<div class="sort-summary asp-sort-summary">';
+    html += '<span class="sort-summary-label">\ud83c\udfaf Peer Group Delta:</span> ';
+    html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span>';
+    html += '<span class="sort-summary-sep">\u00b7</span>';
+    html += '<span>Median <strong>' + (median >= 0 ? '+' : '') + median.toFixed(1) + '%</strong></span>';
+    html += '<span class="sort-summary-sep">\u00b7</span>';
+    html += '<span>Mean ' + (mean >= 0 ? '+' : '') + mean.toFixed(1) + '%</span>';
+
+    // Mini histogram of tiers
+    var tiers = [
+        { label: '\u226530%', count: highlyAsp.length, color: '#ef476f', cls: 'high' },
+        { label: '10\u201330%', count: aspirational.length, color: '#fb923c', cls: 'mod' },
+        { label: '\u00b110%', count: aligned.length, color: '#94a3b8', cls: 'aligned' },
+        { label: '-10\u2013-30%', count: above.length, color: '#06d6a0', cls: 'above' },
+        { label: '\u2264-30%', count: wellAbove.length, color: '#00b4d8', cls: 'over' }
+    ];
+    var maxTier = Math.max.apply(null, tiers.map(function(t) { return t.count; }));
+
+    html += '<div class="asp-dist-histogram"><div class="asp-dist-bars">';
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        var h = maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2;
+        html += '<div class="asp-dist-bar-group" title="' + t.label + ': ' + t.count + ' companies">';
+        html += '<div class="asp-dist-bar" style="height:' + h + 'px;background:' + t.color + '"></div>';
+        html += '<div class="asp-dist-bar-label">' + t.count + '</div>';
+        html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="asp-dist-bracket-labels">';
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        html += '<span class="asp-dist-bracket-label">' + t.label + '</span>';
+    });
+    html += '</div></div>';
+
+    // Notable outliers
+    var sortedByDelta = withData.slice().sort(function(a, b) { return b._aspDelta - a._aspDelta; });
+    var topAsp = sortedByDelta.filter(function(c) { return c._aspDelta >= 10 && c.total_compensation >= 5000000; }).slice(0, 5);
+    var topRestrained = sortedByDelta.filter(function(c) { return c._aspDelta <= -10; }).slice(-5).reverse();
+
+    if (topAsp.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#ef476f">\u26a0 Most aspirational (>$5M CEO pay)</span>: ';
+        html += topAsp.map(function(c) {
+            return '<span style="color:#ef476f">' + c.ticker + ' (+' + Math.round(c._aspDelta) + '%)</span>';
+        }).join(', ');
+        html += '</div>';
+    }
+    if (topRestrained.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#06d6a0">\u2713 Most restrained</span>: ';
+        html += topRestrained.map(function(c) {
+            return '<span style="color:#06d6a0">' + c.ticker + ' (' + Math.round(c._aspDelta) + '%)</span>';
+        }).join(', ');
+        html += '</div>';
+    }
+
+    // Sector skew
+    var sectorAsp = {};
+    withData.forEach(function(c) {
+        if (!sectorAsp[c.sector]) sectorAsp[c.sector] = { vals: [], aspCount: 0, total: 0 };
+        sectorAsp[c.sector].vals.push(c._aspDelta);
+        sectorAsp[c.sector].total++;
+        if (c._aspDelta >= 10) sectorAsp[c.sector].aspCount++;
+    });
+    var sectorEntries = Object.keys(sectorAsp).map(function(s) {
+        var sv = sectorAsp[s].vals.sort(function(a, b) { return a - b; });
+        return { sector: s, median: sv[Math.floor(sv.length / 2)], aspRate: sectorAsp[s].aspCount / sectorAsp[s].total * 100, count: sectorAsp[s].total };
+    }).filter(function(s) { return s.count >= 5; }).sort(function(a, b) { return b.median - a.median; });
+
+    if (sectorEntries.length >= 3) {
+        var mostAsp = sectorEntries[0];
+        var leastAsp = sectorEntries[sectorEntries.length - 1];
+        html += '<div class="sort-summary-detail">Sector skew: <strong style="color:' + getSectorColor(mostAsp.sector) + '">' + mostAsp.sector + '</strong> has the highest aspirational benchmarking (median +' + Math.round(mostAsp.median) + '%, ' + Math.round(mostAsp.aspRate) + '% aspirational), ';
+        html += 'while <strong style="color:' + getSectorColor(leastAsp.sector) + '">' + leastAsp.sector + '</strong> is most restrained (median ' + (leastAsp.median >= 0 ? '+' : '') + Math.round(leastAsp.median) + '%).</div>';
+    }
+
+    html += '</div>';
+    return html;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -4076,6 +4163,26 @@ function renderTable(companies, options) {
                 var sc = sp < 70 ? 'sop-low' : sp < 85 ? 'sop-mid' : 'sop-high';
                 var sl = sp < 70 ? 'Low approval' : sp < 85 ? 'Below average' : 'Strong approval';
                 return '<span class="sop-badge ' + sc + '" title="' + sl + ': ' + sp.toFixed(1) + '% shareholder approval (8-K Item 5.07)">' + sp.toFixed(1) + '%</span>';
+            })() + '</td>' +
+            '<td class="asp-cell">' + (function() {
+                if (c._aspDelta == null) return '\u2014';
+                var ad = c._aspDelta;
+                var absD = Math.abs(ad);
+                var aspCls, aspIcon, aspTip;
+                if (ad >= 30) {
+                    aspCls = 'asp-tbl-high'; aspIcon = '\u26a0'; aspTip = 'Highly aspirational: peer median is +' + Math.round(ad) + '% above CEO pay';
+                } else if (ad >= 10) {
+                    aspCls = 'asp-tbl-mod'; aspIcon = '\u2191'; aspTip = 'Aspirational peer selection: peer median is +' + Math.round(ad) + '% above CEO pay';
+                } else if (ad > -10) {
+                    aspCls = 'asp-tbl-aligned'; aspIcon = '\u2713'; aspTip = 'Aligned with peers: peer median is ' + (ad >= 0 ? '+' : '') + Math.round(ad) + '% vs CEO pay';
+                } else if (ad > -30) {
+                    aspCls = 'asp-tbl-above'; aspIcon = '\u2193'; aspTip = 'Above peer median: CEO pay is ' + Math.round(absD) + '% above peer group median';
+                } else {
+                    aspCls = 'asp-tbl-over'; aspIcon = '\u26a0'; aspTip = 'Paying well above peers: CEO pay is ' + Math.round(absD) + '% above peer group median';
+                }
+                aspTip += ' (' + c._aspPeerCount + ' peers with data)';
+                var sign = ad >= 0 ? '+' : '';
+                return '<span class="asp-tbl-badge ' + aspCls + '" title="' + aspTip + '">' + aspIcon + ' ' + sign + Math.round(ad) + '%</span>';
             })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
