@@ -4452,6 +4452,12 @@ function setupDetailPanel(companies) {
         }
         html += '</div>';
         html += '<button class="detail-nav-btn detail-nav-next" title="Next company (→)" aria-label="Next company"' + (_hasNext ? '' : ' disabled') + '>›</button>';
+        var _isCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
+        var _cmpFull = window._compareSet && window._compareSet.length >= 4 && !_isCompared;
+        html += '<button class="detail-compare-btn' + (_isCompared ? ' selected' : '') + '" data-ticker="' + ticker + '" title="' + (_isCompared ? 'Remove from comparison' : (_cmpFull ? 'Max 4 companies' : 'Add to comparison')) + '" aria-pressed="' + (_isCompared ? 'true' : 'false') + '"' + (_cmpFull ? ' disabled' : '') + '>';
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+        html += ' <span class="dcb-label">' + (_isCompared ? 'Comparing' : 'Compare') + '</span>';
+        html += '</button>';
         html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
         html += '</div>';
 
@@ -5515,6 +5521,26 @@ function setupDetailPanel(companies) {
             _expandedDetailTicker = null;
             pushState();
         });
+
+        // Wire up detail panel compare button
+        var _detailCmpBtn = detailRow.querySelector('.detail-compare-btn');
+        if (_detailCmpBtn) {
+            _detailCmpBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var t = _detailCmpBtn.dataset.ticker;
+                if (typeof toggleCompare === 'function') toggleCompare(t, e);
+                // Update button state
+                var isNowCompared = window._compareSet && window._compareSet.indexOf(t) >= 0;
+                var isFull = window._compareSet && window._compareSet.length >= 4 && !isNowCompared;
+                _detailCmpBtn.classList.toggle('selected', isNowCompared);
+                _detailCmpBtn.setAttribute('aria-pressed', isNowCompared ? 'true' : 'false');
+                _detailCmpBtn.disabled = isFull;
+                _detailCmpBtn.title = isNowCompared ? 'Remove from comparison' : (isFull ? 'Max 4 companies' : 'Add to comparison');
+                var lbl = _detailCmpBtn.querySelector('.dcb-label');
+                if (lbl) lbl.textContent = isNowCompared ? 'Comparing' : 'Compare';
+                announce(isNowCompared ? t + ' added to comparison' : t + ' removed from comparison');
+            });
+        }
 
         // ARIA announcement for detail panel
         announce(company.company_name + ' detail panel. Rank ' + overallRank + ' of ' + companies.length + ', ' + formatCurrency(company.total_compensation) + ' total compensation.');
@@ -8129,6 +8155,18 @@ function hideMetricSkeletons() {
                 if (icon) icon.textContent = '+';
                 btn.title = compareSet.length >= MAX_COMPARE ? 'Max ' + MAX_COMPARE + ' companies' : 'Add ' + t + ' to comparison';
             }
+        });
+        // Update detail panel compare button (if open)
+        document.querySelectorAll('.detail-compare-btn').forEach(function(btn) {
+            var t = btn.dataset.ticker;
+            var isIn = compareSet.indexOf(t) >= 0;
+            var isFull = compareSet.length >= MAX_COMPARE && !isIn;
+            btn.classList.toggle('selected', isIn);
+            btn.setAttribute('aria-pressed', isIn ? 'true' : 'false');
+            btn.disabled = isFull;
+            btn.title = isIn ? 'Remove from comparison' : (isFull ? 'Max 4 companies' : 'Add to comparison');
+            var lbl = btn.querySelector('.dcb-label');
+            if (lbl) lbl.textContent = isIn ? 'Comparing' : 'Compare';
         });
     }
 

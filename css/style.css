@@ -145,6 +145,9 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .detail-nav-btn:hover:not(:disabled) { background: #0077b6; color: #fff; border-color: #0077b6; }
 [data-theme="light"] .detail-close-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #6b7280; }
 [data-theme="light"] .detail-close-btn:hover { background: #ef476f; color: #fff; border-color: #ef476f; }
+[data-theme="light"] .detail-compare-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #6b7280; }
+[data-theme="light"] .detail-compare-btn:hover:not(:disabled) { background: rgba(0,119,182,0.08); border-color: #0077b6; color: #0077b6; }
+[data-theme="light"] .detail-compare-btn.selected { background: rgba(0,119,182,0.10); border-color: #0077b6; color: #0077b6; }
 [data-theme="light"] .detail-stat { background: #fff; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-profile-summary { background: linear-gradient(135deg, rgba(0,119,182,0.06) 0%, rgba(0,119,182,0.02) 100%); border-color: rgba(0,119,182,0.18); color: #4b5563; }
 [data-theme="light"] .detail-stat-distbar-dot { box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(0,119,182,0.3); }
@@ -866,6 +869,7 @@ header h1 {
     .path-finder-toggle,
     .path-finder-bar,
     .path-finder-result { display: none !important; }
+    .detail-compare-btn { display: none !important; }
 }
 
 /* === Network Search Box === */
@@ -2159,6 +2163,42 @@ tbody tr:last-child td { border-bottom: none; }
     color: #fff;
     border-color: var(--negative);
 }
+
+/* Detail panel compare button */
+.detail-compare-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    font-family: var(--sans);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 4px 10px;
+    margin-left: 4px;
+    height: 28px;
+}
+.detail-compare-btn:hover:not(:disabled) {
+    background: rgba(0,180,216,0.10);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.detail-compare-btn.selected {
+    background: rgba(0,180,216,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+.detail-compare-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.detail-compare-btn svg { flex-shrink: 0; }
 .detail-ticker {
     font-weight: 400;
     color: var(--accent);
@@ -4024,6 +4064,8 @@ footer li::before {
     .detail-profile-summary { font-size: 0.76rem; padding: 8px 10px; margin-bottom: 10px; }
     .detail-nav-btn { width: 24px; height: 24px; font-size: 0.95rem; }
     .detail-close-btn { width: 24px; height: 24px; font-size: 0.68rem; }
+    .detail-compare-btn .dcb-label { display: none; }
+    .detail-compare-btn { padding: 4px 6px; min-width: 28px; justify-content: center; }
     .detail-peer-tags { gap: 3px; }
     .detail-peer-tag { font-size: 0.68rem; padding: 2px 6px; }
     .detail-peer-label { font-size: 0.72rem; margin-bottom: 4px; }
