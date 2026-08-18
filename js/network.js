@@ -1273,6 +1273,14 @@ function initNetwork(peerData) {
     var searchResults = document.getElementById('network-search-results');
     var activeIdx = -1;
 
+    // Extract heatmap dot color from an .nsr-dot element and return as low-opacity background tint
+    function _dotBgTint(dotEl) {
+        var bg = dotEl.style.background || dotEl.style.backgroundColor || '';
+        var m = bg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+        if (m) return 'rgba(' + m[1] + ',' + m[2] + ',' + m[3] + ',0.18)';
+        return '';
+    }
+
     function renderSearchResults(matches) {
         searchResults.innerHTML = '';
         activeIdx = -1;
@@ -1417,11 +1425,25 @@ function initNetwork(peerData) {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 activeIdx = Math.min(activeIdx + 1, items.length - 1);
-                items.forEach(function(el, i) { el.classList.toggle('active', i === activeIdx); });
+                items.forEach(function(el, i) {
+                    el.classList.toggle('active', i === activeIdx);
+                    el.style.backgroundColor = '';
+                });
+                if (compHeatmapMode && activeIdx >= 0 && activeIdx < items.length) {
+                    var dot = items[activeIdx].querySelector('.nsr-dot');
+                    if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
+                }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 activeIdx = Math.max(activeIdx - 1, 0);
-                items.forEach(function(el, i) { el.classList.toggle('active', i === activeIdx); });
+                items.forEach(function(el, i) {
+                    el.classList.toggle('active', i === activeIdx);
+                    el.style.backgroundColor = '';
+                });
+                if (compHeatmapMode && activeIdx >= 0 && activeIdx < items.length) {
+                    var dot = items[activeIdx].querySelector('.nsr-dot');
+                    if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
+                }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 if (activeIdx >= 0 && activeIdx < items.length) {
@@ -2351,7 +2373,14 @@ function initNetwork(peerData) {
                 var curIdx = -1;
                 items.forEach(function(el, i) { if (el.classList.contains('active')) curIdx = i; });
                 var newIdx = e.key === 'ArrowDown' ? Math.min(curIdx + 1, items.length - 1) : Math.max(curIdx - 1, 0);
-                items.forEach(function(el, i) { el.classList.toggle('active', i === newIdx); });
+                items.forEach(function(el, i) {
+                    el.classList.toggle('active', i === newIdx);
+                    el.style.backgroundColor = '';
+                });
+                if (compHeatmapMode && newIdx >= 0 && newIdx < items.length) {
+                    var dot = items[newIdx].querySelector('.nsr-dot');
+                    if (dot) items[newIdx].style.backgroundColor = _dotBgTint(dot);
+                }
             }
         });
     }

@@ -69,15 +69,15 @@
       "bloated": 0,
       "filing": 0
     },
-    "say_on_pay_coverage": 246,
+    "say_on_pay_coverage": 361,
     "say_on_pay_stats": {
-      "count": 246,
-      "median_approval": 93.26,
-      "mean_approval": 91.5,
-      "min_approval": 53.59,
+      "count": 361,
+      "median_approval": 93.46,
+      "mean_approval": 90.8,
+      "min_approval": 15.69,
       "max_approval": 99.93,
-      "below_70": 8,
-      "below_50": 0
+      "below_70": 18,
+      "below_50": 3
     },
     "gender_coverage": {
       "female_ceos": 33,
@@ -258,7 +258,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 89.8,
+        "votes_for": 54903698,
+        "votes_against": 6239017,
+        "filing_date": "2026-06-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1069183/000162828026039483/axon-20260528.htm"
+      }
     },
     {
       "ticker": "SBUX",
@@ -505,7 +512,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.46,
+        "votes_for": 753387208,
+        "votes_against": 27686972,
+        "filing_date": "2026-05-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/40545/000004054526000032/ge-20260505.htm"
+      }
     },
     {
       "ticker": "BX",
@@ -988,7 +1002,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.86,
+        "votes_for": 654737091,
+        "votes_against": 58003980,
+        "filing_date": "2026-04-16",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1783180/000095014226001146/eh250762391_8k.htm"
+      }
     },
     {
       "ticker": "NFLX",
@@ -1297,7 +1318,14 @@
       "total_neo_compensation": 29996381,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 69.61,
+        "votes_for": 191490165,
+        "votes_against": 83587104,
+        "filing_date": "2026-05-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1063761/000110465926062012/tm2614706d1_8k.htm"
+      }
     },
     {
       "ticker": "PANW",
@@ -1488,7 +1516,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 46.57,
+        "votes_for": 221211579,
+        "votes_against": 253792757,
+        "filing_date": "2025-12-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1327567/000119312525315915/d15273d8k.htm"
+      }
     },
     {
       "ticker": "CRM",
@@ -2063,7 +2098,14 @@
         2025
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 15.69,
+        "votes_for": 244543743,
+        "votes_against": 1313562677,
+        "filing_date": "2026-06-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1437107/000119312526268519/d123211d8k.htm"
+      }
     },
     {
       "ticker": "NVDA",
@@ -5638,7 +5680,14 @@
       ],
       "total_neo_compensation": 53272113,
       "proxy_fiscal_year": 2024,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 86.0,
+        "votes_for": 63218873,
+        "votes_against": 10295567,
+        "filing_date": "2025-07-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1013462/000162828025033778/anss-20250627.htm"
+      }
     },
     {
       "ticker": "CVX",
@@ -8897,7 +8946,14 @@
       "total_neo_compensation": 73750888,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 90.24,
+        "votes_for": 426605552,
+        "votes_against": 46160769,
+        "filing_date": "2026-04-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/920760/000162828026024894/len-20260408.htm"
+      }
     },
     {
       "ticker": "GM",
@@ -10304,7 +10360,14 @@
       "total_neo_compensation": 88935186,
       "proxy_fiscal_year": 2025,
       "data_source": "sec_edgar_def14a",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.21,
+        "votes_for": 187589393,
+        "votes_against": 18087320,
+        "filing_date": "2026-05-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312526219846/d117087d8k.htm"
+      }
     },
     {
       "ticker": "AMP",
@@ -10628,7 +10691,14 @@
         2025
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.93,
+        "votes_for": 259720162,
+        "votes_against": 19769911,
+        "filing_date": "2026-04-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000012/smci-20260415.htm"
+      }
     },
     {
       "ticker": "CPAY",
@@ -10878,7 +10948,14 @@
         2025
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 55.72,
+        "votes_for": 32298662,
+        "votes_against": 25664167,
+        "filing_date": "2026-05-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1175454/000117545426000034/flt-20260507.htm"
+      }
     },
     {
       "ticker": "KO",
@@ -11759,7 +11836,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.02,
+        "votes_for": 552486796,
+        "votes_against": 41457649,
+        "filing_date": "2026-03-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6951/000119312526106339/d114932d8k.htm"
+      }
     },
     {
       "ticker": "WSM",
@@ -13314,7 +13398,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.21,
+        "votes_for": 977966533,
+        "votes_against": 38503766,
+        "filing_date": "2026-05-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/764180/000076418026000073/mo-20260513.htm"
+      }
     },
     {
       "ticker": "ALL",
@@ -15435,7 +15526,14 @@
         2025
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.12,
+        "votes_for": 307919503,
+        "votes_against": 15792946,
+        "filing_date": "2026-06-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/18230/000110465926072929/tm2617177d1_8k.htm"
+      }
     },
     {
       "ticker": "ADSK",
@@ -16236,7 +16334,14 @@
         2025
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 89.42,
+        "votes_for": 129923391,
+        "votes_against": 15369867,
+        "filing_date": "2026-06-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1324424/000132442426000042/expe-20260617.htm"
+      }
     },
     {
       "ticker": "ACN",
@@ -18045,7 +18150,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 95.36,
+        "votes_for": 107398463,
+        "votes_against": 5220362,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000162828026037375/noc-20260520.htm"
+      }
     },
     {
       "ticker": "GEV",
@@ -19627,7 +19739,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.24,
+        "votes_for": 224620110,
+        "votes_against": 13719583,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/64040/000006404026000028/spgi-20260520.htm"
+      }
     },
     {
       "ticker": "CME",
@@ -20771,7 +20890,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 77.72,
+        "votes_for": 323865898,
+        "votes_against": 92820632,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/798354/000119312526237041/d140530d8k.htm"
+      }
     },
     {
       "ticker": "LMT",
@@ -21181,7 +21307,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.49,
+        "votes_for": 954325805,
+        "votes_against": 77503947,
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/882095/000088209526000008/gild-20260430.htm"
+      }
     },
     {
       "ticker": "ROP",
@@ -22050,7 +22183,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.08,
+        "votes_for": 201746941,
+        "votes_against": 17359954,
+        "filing_date": "2026-04-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1739940/000114036126017123/ef20071227_8k.htm"
+      }
     },
     {
       "ticker": "MRK",
@@ -23365,7 +23505,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.39,
+        "votes_for": 100607405,
+        "votes_against": 8287035,
+        "filing_date": "2025-11-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/319201/000119312525272448/d30340d8k.htm"
+      }
     },
     {
       "ticker": "MMC",
@@ -23567,7 +23714,14 @@
       "total_neo_compensation": 53871711,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 88.49,
+        "votes_for": 362069913,
+        "votes_against": 47108150,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/62709/000006270926000128/a2026mmcagmresultsform8-k.htm"
+      }
     },
     {
       "ticker": "ABT",
@@ -24047,7 +24201,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 82.27,
+        "votes_for": 757601824,
+        "votes_against": 163240218,
+        "filing_date": "2026-02-09",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/100493/000010049326000011/tsn-20260205.htm"
+      }
     },
     {
       "ticker": "PSX",
@@ -24734,7 +24895,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.58,
+        "votes_for": 219278133,
+        "votes_against": 17564158,
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1035002/000162828026032765/vlo-20260507.htm"
+      }
     },
     {
       "ticker": "HWM",
@@ -26847,7 +27015,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.02,
+        "votes_for": 610434132,
+        "votes_against": 38800367,
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/24741/000120677426000265/glw4630381-8k.htm"
+      }
     },
     {
       "ticker": "OMC",
@@ -27977,7 +28152,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.79,
+        "votes_for": 48583255,
+        "votes_against": 1612610,
+        "filing_date": "2026-03-05",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1260221/000126022126000028/tdg-20260305.htm"
+      }
     },
     {
       "ticker": "BSX",
@@ -28478,7 +28660,14 @@
         2025,
         2024
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.82,
+        "votes_for": 408393920,
+        "votes_against": 26895776,
+        "filing_date": "2026-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/2005951/000110465926053535/tm2613273d1_8k.htm"
+      }
     },
     {
       "ticker": "FANG",
@@ -29167,7 +29356,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.53,
+        "votes_for": 342396161,
+        "votes_against": 19808604,
+        "filing_date": "2026-05-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/66740/000006674026000221/mmm-20260512.htm"
+      }
     },
     {
       "ticker": "WAB",
@@ -29703,7 +29899,14 @@
         2024,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 97.43,
+        "votes_for": 442112331,
+        "votes_against": 11656152,
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/51434/000005143426000075/ip-20260511.htm"
+      }
     },
     {
       "ticker": "LIN",
@@ -30454,7 +30657,14 @@
       "total_neo_compensation": 9148504,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 95.97,
+        "votes_for": 172363616,
+        "votes_against": 7240619,
+        "filing_date": "2026-05-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603926000046/elv-20260513.htm"
+      }
     },
     {
       "ticker": "TGT",
@@ -31446,7 +31656,14 @@
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "_mega_grant_note": "Verified against DEF 14A filed 2026-04-10: Shankh Mitra received $813.2M in stock awards in FY2025, a 60x increase from FY2024 ($13.5M). This is a front-loaded multi-year equity grant, not a recurring annual package.",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 18.93,
+        "votes_for": 120364416,
+        "votes_against": 515585650,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/766704/000119312526237176/d113025d8k.htm"
+      }
     },
     {
       "ticker": "LOW",
@@ -31588,7 +31805,14 @@
       ],
       "total_neo_compensation": 49429382,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.14,
+        "votes_for": 402276204,
+        "votes_against": 20533707,
+        "filing_date": "2026-06-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/60667/000006066726000091/low-20260529.htm"
+      }
     },
     {
       "ticker": "EMR",
@@ -33563,7 +33787,14 @@
         2025
       ],
       "data_source": "def14a_manual",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 86.85,
+        "votes_for": 135094531,
+        "votes_against": 20453712,
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1113169/000162828026033420/trow-20260507.htm"
+      }
     },
     {
       "ticker": "HPQ",
@@ -33909,7 +34140,14 @@
       ],
       "total_neo_compensation": 51105194,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.26,
+        "votes_for": 217375231,
+        "votes_against": 15702194,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/874766/000087476626000041/hig-20260520.htm"
+      }
     },
     {
       "ticker": "USB",
@@ -34307,7 +34545,14 @@
       ],
       "total_neo_compensation": 10965838,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.68,
+        "votes_for": 66519291,
+        "votes_against": 3735777,
+        "filing_date": "2026-05-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/920148/000092014826000143/lh-20260521.htm"
+      }
     },
     {
       "ticker": "CDNS",
@@ -35800,7 +36045,14 @@
       ],
       "total_neo_compensation": 36274978,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 98.98,
+        "votes_for": 173868222,
+        "votes_against": 1784268,
+        "filing_date": "2026-05-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/73309/000119312526230790/d45402d8k.htm"
+      }
     },
     {
       "ticker": "MCK",
@@ -35885,7 +36137,14 @@
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "total_neo_compensation": 41932715,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.8,
+        "votes_for": 86580776,
+        "votes_against": 7732776,
+        "filing_date": "2026-07-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/927653/000092765326000215/mck-20260722.htm"
+      }
     },
     {
       "ticker": "MPWR",
@@ -36568,7 +36827,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 89.34,
+        "votes_for": 166576769,
+        "votes_against": 19881838,
+        "filing_date": "2026-04-30",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1521332/000152133226000039/aptv-20260429.htm"
+      }
     },
     {
       "ticker": "PH",
@@ -36763,7 +37029,14 @@
       ],
       "total_neo_compensation": 45437244,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 88.03,
+        "votes_for": 92594865,
+        "votes_against": 12596621,
+        "filing_date": "2025-10-28",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/76334/000007633425000063/ph-20251022.htm"
+      }
     },
     {
       "ticker": "KEY",
@@ -37648,7 +37921,14 @@
       ],
       "total_neo_compensation": 43298250,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.21,
+        "votes_for": 156852214,
+        "votes_against": 11422390,
+        "filing_date": "2026-03-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085926000014/abc-20260305.htm"
+      }
     },
     {
       "ticker": "PHM",
@@ -38678,7 +38958,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 87.33,
+        "votes_for": 52244896,
+        "votes_against": 7577911,
+        "filing_date": "2026-06-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/749251/000074925126000198/it-20260528.htm"
+      }
     },
     {
       "ticker": "HAL",
@@ -39398,7 +39685,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.46,
+        "votes_for": 445365387,
+        "votes_against": 31184267,
+        "filing_date": "2026-05-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/773840/000119312526242011/d35048d8k.htm"
+      }
     },
     {
       "ticker": "CL",
@@ -39758,7 +40052,14 @@
         2025,
         2024
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.97,
+        "votes_for": 265030878,
+        "votes_against": 17018702,
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1035267/000103526726000035/isrg-20260430.htm"
+      }
     },
     {
       "ticker": "MCD",
@@ -40930,7 +41231,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.63,
+        "votes_for": 1006669958,
+        "votes_against": 35108448,
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/101829/000114036126018932/ef20072402_8k.htm"
+      }
     },
     {
       "ticker": "EL",
@@ -41325,7 +41633,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 98.56,
+        "votes_for": 1022555114,
+        "votes_against": 14973034,
+        "filing_date": "2026-05-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/64803/000006480326000082/cvs-20260514.htm"
+      }
     },
     {
       "ticker": "NTAP",
@@ -41750,7 +42065,14 @@
       ],
       "total_neo_compensation": 40274588,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 84.42,
+        "votes_for": 120634672,
+        "votes_against": 22256976,
+        "filing_date": "2026-05-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1035443/000103544326000054/are-20260513.htm"
+      }
     },
     {
       "ticker": "MLM",
@@ -41993,7 +42315,14 @@
       "total_neo_compensation": 39635833,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.08,
+        "votes_for": 823312573,
+        "votes_against": 42628482,
+        "filing_date": "2026-05-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/865752/000110465926062567/tm2614725d1_8k.htm"
+      }
     },
     {
       "ticker": "WDC",
@@ -42199,7 +42528,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.35,
+        "votes_for": 251110723,
+        "votes_against": 15038884,
+        "filing_date": "2025-11-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/106040/000162828025053809/wdc-20251120.htm"
+      }
     },
     {
       "ticker": "UNP",
@@ -43807,7 +44143,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 92.78,
+        "votes_for": 393580868,
+        "votes_against": 30606567,
+        "filing_date": "2026-02-05",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/38777/000003877726000051/ben-20260203.htm"
+      }
     },
     {
       "ticker": "ZTS",
@@ -44124,7 +44467,14 @@
       ],
       "total_neo_compensation": 35972942,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 64.78,
+        "votes_for": 146640626,
+        "votes_against": 79718672,
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1123360/000110465926054479/tm2613397d1_8k.htm"
+      }
     },
     {
       "ticker": "APH",
@@ -44229,7 +44579,14 @@
         2025,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.22,
+        "votes_for": 984297730,
+        "votes_against": 83096067,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926065682/tm2615386d1_8k.htm"
+      }
     },
     {
       "ticker": "KMX",
@@ -44999,7 +45356,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.72,
+        "votes_for": 257609478,
+        "votes_against": 8749875,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1489393/000148939326000034/lyb-20260522.htm"
+      }
     },
     {
       "ticker": "ROST",
@@ -45917,7 +46281,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.13,
+        "votes_for": 164995366,
+        "votes_against": 1448887,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1996862/000162828026037544/bg-20260520.htm"
+      }
     },
     {
       "ticker": "CTSH",
@@ -46758,7 +47129,14 @@
         2026
       ],
       "proxy_fiscal_year": 2026,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.27,
+        "votes_for": 247311631,
+        "votes_against": 1827343,
+        "filing_date": "2026-08-03",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1037038/000095014226002236/eh260814840_8k.htm"
+      }
     },
     {
       "ticker": "CCI",
@@ -47309,7 +47687,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 87.2,
+        "votes_for": 73410035,
+        "votes_against": 10776225,
+        "filing_date": "2026-02-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1024478/000102447826000007/rok-20260213.htm"
+      }
     },
     {
       "ticker": "HST",
@@ -48194,7 +48579,14 @@
       ],
       "total_neo_compensation": 36301525,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.0,
+        "votes_for": 223498878,
+        "votes_against": 14270233,
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/31462/000110465926058710/ecl-20260507x8k.htm"
+      }
     },
     {
       "ticker": "PGR",
@@ -49588,7 +49980,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.0,
+        "votes_for": 358082566,
+        "votes_against": 22852942,
+        "filing_date": "2025-10-03",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/40704/000119312525230114/d16961d8k.htm"
+      }
     },
     {
       "ticker": "SWK",
@@ -49770,7 +50169,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 97.35,
+        "votes_for": 121994523,
+        "votes_against": 3322929,
+        "filing_date": "2026-04-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/93556/000119312526182041/d930480d8k.htm"
+      }
     },
     {
       "ticker": "EMN",
@@ -51347,7 +51753,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.01,
+        "votes_for": 127327418,
+        "votes_against": 9565053,
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/789570/000078957026000037/mgm-20260506.htm"
+      }
     },
     {
       "ticker": "HOLX",
@@ -51690,7 +52103,14 @@
       "total_neo_compensation": 159505040,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 66.8,
+        "votes_for": 133116903,
+        "votes_against": 66173398,
+        "filing_date": "2026-06-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/891103/000089110326000095/mtch-20260616.htm"
+      }
     },
     {
       "ticker": "MSCI",
@@ -52633,7 +53053,14 @@
         2025,
         2023
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.13,
+        "votes_for": 114220186,
+        "votes_against": 7122529,
+        "filing_date": "2026-05-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1050915/000119312526241989/d122565d8k.htm"
+      }
     },
     {
       "ticker": "SYY",
@@ -53069,7 +53496,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.82,
+        "votes_for": 671264064,
+        "votes_against": 44192869,
+        "filing_date": "2026-05-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/354950/000035495026000105/hd-20260521.htm"
+      }
     },
     {
       "ticker": "TRGP",
@@ -53183,7 +53617,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.34,
+        "votes_for": 176432347,
+        "votes_against": 8616715,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1389170/000119312526237018/d13203d8k.htm"
+      }
     },
     {
       "ticker": "TPR",
@@ -54872,7 +55313,14 @@
         2026
       ],
       "proxy_fiscal_year": 2026,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.05,
+        "votes_for": 137687386,
+        "votes_against": 7170493,
+        "filing_date": "2026-07-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/16918/000001691826000032/stz-20260722.htm"
+      }
     },
     {
       "ticker": "ZBH",
@@ -56181,7 +56629,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 90.52,
+        "votes_for": 764185640,
+        "votes_against": 80018716,
+        "filing_date": "2026-04-30",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1109357/000110935726000053/exc-20260428.htm"
+      }
     },
     {
       "ticker": "AME",
@@ -56337,7 +56792,14 @@
       "total_neo_compensation": 26029367,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.18,
+        "votes_for": 183197200,
+        "votes_against": 11316518,
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1037868/000103786826000157/ame-20260507.htm"
+      }
     },
     {
       "ticker": "EW",
@@ -57327,7 +57789,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.39,
+        "votes_for": 86869738,
+        "votes_against": 7152448,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1022079/000102207926000052/dgx-20260520.htm"
+      }
     },
     {
       "ticker": "MPC",
@@ -58324,7 +58793,14 @@
       ],
       "total_neo_compensation": 14261568,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 89.94,
+        "votes_for": 98435762,
+        "votes_against": 11004916,
+        "filing_date": "2025-11-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/943819/000119312525289878/d74601d8k.htm"
+      }
     },
     {
       "ticker": "VRSN",
@@ -58655,7 +59131,14 @@
       "total_neo_compensation": 36503747,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.46,
+        "votes_for": 847000157,
+        "votes_against": 79114808,
+        "filing_date": "2026-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/92230/000119312526201455/d435501d8k.htm"
+      }
     },
     {
       "ticker": "EIX",
@@ -59467,7 +59950,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.37,
+        "votes_for": 159046609,
+        "votes_against": 7719494,
+        "filing_date": "2025-10-28",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1137789/000113778925000287/stx-20251025.htm"
+      }
     },
     {
       "ticker": "ES",
@@ -61187,7 +61677,14 @@
       ],
       "total_neo_compensation": 5216200,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.95,
+        "votes_for": 428986336,
+        "votes_against": 22828183,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1039684/000103968426000022/oke-20260520.htm"
+      }
     },
     {
       "ticker": "BF-A",
@@ -62320,7 +62817,14 @@
         2024,
         2025
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 92.21,
+        "votes_for": 184546419,
+        "votes_against": 15581622,
+        "filing_date": "2026-04-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/89800/000008980026000031/shw-20260422.htm"
+      }
     },
     {
       "ticker": "RSG",
@@ -65092,7 +65596,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 98.97,
+        "votes_for": 87241439,
+        "votes_against": 911643,
+        "filing_date": "2025-11-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/21076/000120677425000747/clx4562621-8k.htm"
+      }
     },
     {
       "ticker": "ENPH",
@@ -66035,7 +66546,14 @@
       ],
       "total_neo_compensation": 32414654,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.23,
+        "votes_for": 88904849,
+        "votes_against": 4449801,
+        "filing_date": "2026-05-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1336920/000133692026000177/ldos-20260501.htm"
+      }
     },
     {
       "ticker": "FDX",
@@ -66595,7 +67113,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.88,
+        "votes_for": 132780142,
+        "votes_against": 8660901,
+        "filing_date": "2026-03-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1601046/000160104626000015/keys-20260319.htm"
+      }
     },
     {
       "ticker": "BALL",
@@ -66834,7 +67359,14 @@
       ],
       "total_neo_compensation": 6420735,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.54,
+        "votes_for": 200367284,
+        "votes_against": 13845238,
+        "filing_date": "2026-04-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/9389/000000938926000075/ball-20260429x8k.htm"
+      }
     },
     {
       "ticker": "CF",
@@ -68496,7 +69028,14 @@
         2022
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 60.82,
+        "votes_for": 21125671,
+        "votes_against": 13610087,
+        "filing_date": "2026-05-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1590955/000119312526211919/payc-20260504.htm"
+      }
     },
     {
       "ticker": "VRSK",
@@ -68733,7 +69272,14 @@
       ],
       "total_neo_compensation": 26641486,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.72,
+        "votes_for": 106704722,
+        "votes_against": 4772523,
+        "filing_date": "2026-05-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1442145/000119312526234734/d286718d8k.htm"
+      }
     },
     {
       "ticker": "DRI",
@@ -69336,7 +69882,14 @@
       ],
       "total_neo_compensation": 7187336,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.3,
+        "votes_for": 93823710,
+        "votes_against": 5674907,
+        "filing_date": "2026-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/31791/000119312526201401/d146870d8k.htm"
+      }
     },
     {
       "ticker": "HSY",
@@ -69903,7 +70456,14 @@
       ],
       "total_neo_compensation": 3736248,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.53,
+        "votes_for": 436550197,
+        "votes_against": 2056663,
+        "filing_date": "2026-05-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/916365/000091636526000033/tsco-20260514.htm"
+      }
     },
     {
       "ticker": "TER",
@@ -70422,7 +70982,14 @@
       ],
       "total_neo_compensation": 23248273,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 85.0,
+        "votes_for": 240765556,
+        "votes_against": 42472512,
+        "filing_date": "2026-05-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/79282/000119312526212338/bro-20260506.htm"
+      }
     },
     {
       "ticker": "HSIC",
@@ -71868,7 +72435,14 @@
       ],
       "total_neo_compensation": 37493579,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.65,
+        "votes_for": 485915092,
+        "votes_against": 27460142,
+        "filing_date": "2026-04-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/33213/000110465926043807/tm2611806d1_8k.htm"
+      }
     },
     {
       "ticker": "IVZ",
@@ -72500,7 +73074,14 @@
       ],
       "total_neo_compensation": 26655523,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 97.29,
+        "votes_for": 98755016,
+        "votes_against": 2750428,
+        "filing_date": "2026-05-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/764622/000162828026036111/pnw-20260514.htm"
+      }
     },
     {
       "ticker": "INVH",
@@ -72926,7 +73507,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.13,
+        "votes_for": 55762575,
+        "votes_against": 5425721,
+        "filing_date": "2025-11-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/779152/000077915225000121/jkhy-20251112.htm"
+      }
     },
     {
       "ticker": "WEC",
@@ -73535,7 +74123,14 @@
       ],
       "total_neo_compensation": 27442622,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 91.15,
+        "votes_for": null,
+        "votes_against": null,
+        "filing_date": "2026-04-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/73124/000007312426000031/ntrs-20260421.htm"
+      }
     },
     {
       "ticker": "KIM",
@@ -74246,7 +74841,14 @@
       "total_neo_compensation": 17687972,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.88,
+        "votes_for": 133060912,
+        "votes_against": 5714611,
+        "filing_date": "2026-05-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/77360/000007736026000029/pnr-20260505.htm"
+      }
     },
     {
       "ticker": "GOOGL",
@@ -75687,7 +76289,14 @@
       ],
       "total_neo_compensation": 20983695,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.4,
+        "votes_for": 41158810,
+        "votes_against": 1539256,
+        "filing_date": "2026-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/91440/000009144026000114/sna-20260430.htm"
+      }
     },
     {
       "ticker": "CMS",
@@ -76476,7 +77085,14 @@
       ],
       "total_neo_compensation": 28419220,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.21,
+        "votes_for": 325894021,
+        "votes_against": 2600678,
+        "filing_date": "2026-05-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/74208/000007420826000060/udr-20260521x8k.htm"
+      }
     },
     {
       "ticker": "FITB",
@@ -77360,7 +77976,14 @@
       "total_neo_compensation": 22538072,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.32,
+        "votes_for": 230216606,
+        "votes_against": 8793975,
+        "filing_date": "2026-05-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1285785/000128578526000069/mos-20260529.htm"
+      }
     },
     {
       "ticker": "MCHP",
@@ -78240,7 +78863,14 @@
       ],
       "total_neo_compensation": 23473092,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 95.85,
+        "votes_for": 164324175,
+        "votes_against": 7114045,
+        "filing_date": "2026-05-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/910606/000119312526210895/reg-20260506.htm"
+      }
     },
     {
       "ticker": "STE",
@@ -78416,7 +79046,14 @@
       ],
       "total_neo_compensation": 48829211,
       "proxy_fiscal_year": 2026,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 90.14,
+        "votes_for": 77639271,
+        "votes_against": 8493021,
+        "filing_date": "2026-08-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1757898/000119312526338137/d141533d8k.htm"
+      }
     },
     {
       "ticker": "PSA",
@@ -78808,7 +79445,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 88.61,
+        "votes_for": 58071019,
+        "votes_against": 7464627,
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/832101/000083210126000012/iex-20260506.htm"
+      }
     },
     {
       "ticker": "HUBB",
@@ -79397,7 +80041,14 @@
       ],
       "total_neo_compensation": 10685210,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.49,
+        "votes_for": 69554400,
+        "votes_against": 4840747,
+        "filing_date": "2026-05-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/34903/000003490326000031/frt-20260506.htm"
+      }
     },
     {
       "ticker": "CNP",
@@ -80433,7 +81084,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.25,
+        "votes_for": 43808762,
+        "votes_against": 2183079,
+        "filing_date": "2026-05-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1352010/000135201026000034/epam-20260521.htm"
+      }
     },
     {
       "ticker": "A",
@@ -80770,7 +81428,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.3,
+        "votes_for": 846476891,
+        "votes_against": 51123740,
+        "filing_date": "2026-05-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1637459/000163745926000028/khc-20260514.htm"
+      }
     },
     {
       "ticker": "NSC",
@@ -80965,7 +81630,14 @@
       ],
       "total_neo_compensation": 38013631,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.45,
+        "votes_for": 145144991,
+        "votes_against": 8525943,
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/702165/000119312526214920/nsc-20260508.htm"
+      }
     },
     {
       "ticker": "EXE",
@@ -81043,7 +81715,14 @@
       ],
       "total_neo_compensation": 6456434,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 97.15,
+        "votes_for": 178548194,
+        "votes_against": 5243424,
+        "filing_date": "2026-06-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/895126/000089512626000032/exe-20260604.htm"
+      }
     },
     {
       "ticker": "ANET",
@@ -81203,7 +81882,14 @@
       ],
       "total_neo_compensation": 71292290,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 60.37,
+        "votes_for": 624907669,
+        "votes_against": 410157079,
+        "filing_date": "2026-06-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1596532/000159653226000118/anet-20260529.htm"
+      }
     },
     {
       "ticker": "DPZ",
@@ -81829,7 +82515,14 @@
       ],
       "total_neo_compensation": 27473672,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.26,
+        "votes_for": 90008560,
+        "votes_against": 5480418,
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1034054/000119312526236935/d28338d8k.htm"
+      }
     },
     {
       "ticker": "CTAS",
@@ -82460,7 +83153,14 @@
       ],
       "total_neo_compensation": 28869674,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.92,
+        "votes_for": 100338210,
+        "votes_against": 83001,
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1043277/000104327726000018/chrw-20260507.htm"
+      }
     },
     {
       "ticker": "AWK",
@@ -82596,7 +83296,14 @@
       ],
       "total_neo_compensation": 42450364,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "F"
+      "ceo_gender": "F",
+      "say_on_pay": {
+        "approval_pct": 91.56,
+        "votes_for": 150804137,
+        "votes_against": 13893824,
+        "filing_date": "2026-05-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1410636/000141063626000094/awk-20260513.htm"
+      }
     },
     {
       "ticker": "NDSN",
@@ -84623,7 +85330,14 @@
       ],
       "total_neo_compensation": 22734229,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.77,
+        "votes_for": 439276932,
+        "votes_against": 24227832,
+        "filing_date": "2026-02-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/48465/000004846526000006/hrl-20260127.htm"
+      }
     },
     {
       "ticker": "EXPD",
@@ -85649,7 +86363,14 @@
       ],
       "total_neo_compensation": 6613708,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.48,
+        "votes_for": 275491813,
+        "votes_against": 10038236,
+        "filing_date": "2025-10-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/723531/000119312525239171/payx-20251009.htm"
+      }
     },
     {
       "ticker": "AMCR",
@@ -86027,7 +86748,14 @@
       ],
       "total_neo_compensation": 3291366,
       "proxy_fiscal_year": 2024,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 86.56,
+        "votes_for": 12114623,
+        "votes_against": 1880392,
+        "filing_date": "2025-11-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811074/000110465925110352/tm2530852d1_8k.htm"
+      }
     },
     {
       "ticker": "EVRG",
@@ -86834,7 +87562,14 @@
       ],
       "total_neo_compensation": 17636104,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.49,
+        "votes_for": 85323173,
+        "votes_against": 5941847,
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/906345/000162828026032820/cpt-20260508.htm"
+      }
     },
     {
       "ticker": "L",
@@ -87878,7 +88613,14 @@
       ],
       "total_neo_compensation": 17280434,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 72.09,
+        "votes_for": 100792824,
+        "votes_against": 39025321,
+        "filing_date": "2025-11-05",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/842023/000110465925106631/tech-20251030x8k.htm"
+      }
     },
     {
       "ticker": "REGN",
@@ -88073,7 +88815,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 93.33,
+        "votes_for": 96469374,
+        "votes_against": 6898268,
+        "filing_date": "2026-06-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/872589/000110465926075127/tm2618117d1_8k.htm"
+      }
     },
     {
       "ticker": "MTD",
@@ -89477,7 +90226,14 @@
         2025
       ],
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 76.4,
+        "votes_for": 98047867,
+        "votes_against": 30289182,
+        "filing_date": "2026-04-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1091667/000109166726000024/chtr-20260421.htm"
+      }
     },
     {
       "ticker": "NRG",
@@ -89835,7 +90591,14 @@
       "total_neo_compensation": 12597212,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 94.92,
+        "votes_for": 28692946,
+        "votes_against": 1535600,
+        "filing_date": "2026-04-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/945841/000119312526191530/pool-20260429.htm"
+      }
     },
     {
       "ticker": "JBL",
@@ -91277,7 +92040,14 @@
       ],
       "total_neo_compensation": 168321811,
       "proxy_fiscal_year": 2026,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 96.92,
+        "votes_for": 3359870372,
+        "votes_against": 106600872,
+        "filing_date": "2026-07-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000157199626000036/dell-20260625.htm"
+      }
     },
     {
       "ticker": "ORLY",
@@ -91560,7 +92330,14 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 66.37,
+        "votes_for": 2433503375,
+        "votes_against": 1232879962,
+        "filing_date": "2026-04-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1730168/000173016826000039/avgo-20260420.htm"
+      }
     },
     {
       "ticker": "NVR",
@@ -92360,7 +93137,14 @@
       ],
       "total_neo_compensation": 13202068,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 89.03,
+        "votes_for": 831817569,
+        "votes_against": 102483487,
+        "filing_date": "2026-04-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/815556/000081555626000025/fast-20260423.htm"
+      }
     },
     {
       "ticker": "AMZN",
@@ -93306,7 +94090,14 @@
         2026
       ],
       "proxy_fiscal_year": 2026,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 95.07,
+        "votes_for": 143533691,
+        "votes_against": 7442714,
+        "filing_date": "2025-09-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/946581/000162828025042186/ttwo-20250918.htm"
+      }
     },
     {
       "ticker": "ABNB",
@@ -93459,7 +94250,14 @@
       ],
       "total_neo_compensation": 19582591,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 99.38,
+        "votes_for": 3785488625,
+        "votes_against": 23678837,
+        "filing_date": "2026-06-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1559720/000155972026000018/abnb-20260605.htm"
+      }
     },
     {
       "ticker": "TSLA",
@@ -93571,7 +94369,14 @@
         2023,
         2024
       ],
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 78.67,
+        "votes_for": 1931965361,
+        "votes_against": 523895380,
+        "filing_date": "2025-11-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465925108507/tm2530590d1_8k.htm"
+      }
     }
   ]
 }
