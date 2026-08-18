@@ -1283,8 +1283,19 @@ function initNetwork(peerData) {
         matches.forEach(function(n, i) {
             var div = document.createElement('div');
             div.className = 'network-search-result';
-            div.innerHTML = '<span class="nsr-ticker">' + n.ticker + '</span>' +
+            var comp = _compLookup[n.ticker];
+            var payHtml = '';
+            if (comp && comp.total != null && comp.total > 0) {
+                payHtml = '<span class="nsr-pay">' + _fmtComp(comp.total) + '</span>';
+            }
+            // In heatmap mode: show a colored dot matching the company's heatmap color
+            // Outside heatmap: show a sector-colored dot
+            var dotColor = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+            var dotHtml = '<span class="nsr-dot" style="background:' + dotColor + '"></span>';
+            div.innerHTML = dotHtml +
+                '<span class="nsr-ticker">' + n.ticker + '</span>' +
                 '<span class="nsr-name">' + n.name + '</span>' +
+                payHtml +
                 '<span class="nsr-sector">' + (n.sector || '') + '</span>';
             div.addEventListener('mousedown', function(e) {
                 e.preventDefault(); // prevent blur before click fires
@@ -1353,6 +1364,11 @@ function initNetwork(peerData) {
         }, prefersReducedMotion() ? 50 : 400);
 
         return true;
+    };
+
+    // Expose heatmap toggle for keyboard shortcut
+    window.toggleCompHeatmap = function() {
+        if (compHeatmapToggle) compHeatmapToggle.click();
     };
 
     if (searchInput) {
@@ -1517,6 +1533,8 @@ function initNetwork(peerData) {
 
             draw();
             announce(compHeatmapMode ? 'Compensation heatmap enabled' + (activeLegendSector ? ' — filtered to ' + activeLegendSector : '') : 'Sector coloring restored');
+            // Refresh cluster stats to show/hide compensation section
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
         });
     }
 
@@ -1650,6 +1668,65 @@ function initNetwork(peerData) {
             html += '</div>';
         }
         html += '</div>';
+
+        // Compensation stats section — shown when heatmap mode is active
+        if (compHeatmapMode) {
+            var sectorCompVals = [];
+            var highestPayNode = null, highestPay = -1;
+            var lowestPayNode = null, lowestPay = Infinity;
+            sectorNodes.forEach(function(n) {
+                var c = _compLookup[n.ticker];
+                if (c && c.total != null && c.total > 0) {
+                    sectorCompVals.push(c.total);
+                    if (c.total > highestPay) { highestPay = c.total; highestPayNode = n; }
+                    if (c.total < lowestPay) { lowestPay = c.total; lowestPayNode = n; }
+                }
+            });
+            if (sectorCompVals.length > 1) {
+                sectorCompVals.sort(function(a, b) { return a - b; });
+                var scMedian = sectorCompVals[Math.floor(sectorCompVals.length / 2)];
+                var scP25 = sectorCompVals[Math.floor(sectorCompVals.length * 0.25)];
+                var scP75 = sectorCompVals[Math.floor(sectorCompVals.length * 0.75)];
+                var scSpread = highestPay / lowestPay;
+                // Count aspirational benchmarkers: companies whose outbound peer median > their own pay
+                var aspirCount = 0;
+                sectorNodes.forEach(function(n) {
+                    var c = _compLookup[n.ticker];
+                    if (!c || c.total == null || c.total <= 0) return;
+                    var stats = _peerCompStats(n.ticker);
+                    if (stats && stats.median > c.total * 1.1) aspirCount++;
+                });
+                html += '<div class="cs-comp-section">';
+                html += '<div class="cs-comp-title">💰 Pay Distribution</div>';
+                html += '<div class="cluster-stats-grid">';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Median CEO</span><span class="cs-stat-value">' + _fmtComp(scMedian) + '</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">P25 – P75</span><span class="cs-stat-value">' + _fmtComp(scP25) + ' – ' + _fmtComp(scP75) + '</span></div>';
+                html += '</div>';
+                // Highest and lowest paid
+                html += '<div class="cs-node-list">';
+                if (highestPayNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Highest </span><span class="cs-node-ticker" data-ticker="' + highestPayNode.ticker + '">' + highestPayNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getCompHeatmapColor(highestPayNode.ticker) + '">' + _fmtComp(highestPay) + '</span>';
+                    html += '</div>';
+                }
+                if (lowestPayNode && lowestPayNode !== highestPayNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Lowest </span><span class="cs-node-ticker" data-ticker="' + lowestPayNode.ticker + '">' + lowestPayNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getCompHeatmapColor(lowestPayNode.ticker) + '">' + _fmtComp(lowestPay) + '</span>';
+                    html += '</div>';
+                }
+                if (aspirCount > 0) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span class="cs-node-role cs-aspir-label">⬆ Aspirational benchmarkers</span>';
+                    html += '<span class="cs-node-degree">' + aspirCount + ' / ' + sectorNodes.length + '</span>';
+                    html += '</div>';
+                }
+                html += '</div>';
+                html += '<div class="cs-comp-spread">Pay spread: ' + scSpread.toFixed(1) + '×</div>';
+                html += '</div>';
+            }
+        }
 
         clusterStatsEl.innerHTML = html;
         clusterStatsEl.classList.add('visible');
@@ -2003,8 +2080,18 @@ function initNetwork(peerData) {
         matches.forEach(function(n) {
             var div = document.createElement('div');
             div.className = 'network-search-result';
-            div.innerHTML = '<span class="nsr-ticker">' + n.ticker + '</span>' +
+            // Contextual color dot — heatmap color in heatmap mode, sector color otherwise
+            var dotColor = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+            var dotHtml = '<span class="nsr-dot" style="background:' + dotColor + '"></span>';
+            var comp = _compLookup[n.ticker];
+            var payHtml = '';
+            if (comp && comp.total != null && comp.total > 0) {
+                payHtml = '<span class="nsr-pay">' + _fmtComp(comp.total) + '</span>';
+            }
+            div.innerHTML = dotHtml +
+                '<span class="nsr-ticker">' + n.ticker + '</span>' +
                 '<span class="nsr-name">' + n.name + '</span>' +
+                payHtml +
                 '<span class="nsr-sector">' + (n.sector || '') + '</span>';
             div.addEventListener('mousedown', function(e) {
                 e.preventDefault();
@@ -2072,13 +2159,29 @@ function initNetwork(peerData) {
         var html = '<div class="path-result-header">' + hops + '-hop path found</div>';
         html += '<div class="path-result-chain">';
 
+        // Collect compensation values for path analysis
+        var pathCompVals = [];
         pathResult.nodes.forEach(function(ticker, idx) {
             var n = nodeMap[ticker];
-            var color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
+            // Use heatmap color in heatmap mode, sector color otherwise
+            var color;
+            if (compHeatmapMode) {
+                color = getCompHeatmapColor(ticker);
+            } else {
+                color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
+            }
             var name = n ? n.name : ticker;
+
+            // CEO compensation badge for this path node
+            var comp = _compLookup[ticker];
+            var compVal = (comp && comp.total != null && comp.total > 0) ? comp.total : null;
+            if (compVal !== null) pathCompVals.push(compVal);
+            var compBadge = compVal !== null ? '<span class="pnc-comp">' + _fmtComp(compVal) + '</span>' : '';
+
             html += '<span class="path-node-chip" data-ticker="' + ticker + '" style="background:' + color + '20;color:' + color + ';border-color:' + color + '40">';
             html += '<span class="pnc-dot" style="background:' + color + '"></span>';
             html += ticker;
+            html += compBadge;
             html += '<span class="pnc-name">' + name + '</span>';
             html += '</span>';
 
@@ -2119,6 +2222,37 @@ function initNetwork(peerData) {
             html += ' · <span class="path-mutual-badge">' + mutualCount + ' mutual ⇄</span>';
         }
         html += '</div>';
+
+        // Compensation flow analysis line
+        if (pathCompVals.length >= 2) {
+            var startComp = _compLookup[pathResult.nodes[0]];
+            var endComp = _compLookup[pathResult.nodes[pathResult.nodes.length - 1]];
+            var startVal = (startComp && startComp.total > 0) ? startComp.total : null;
+            var endVal = (endComp && endComp.total > 0) ? endComp.total : null;
+
+            html += '<div class="path-comp-flow">';
+            // Pay range across path
+            var minComp = Math.min.apply(null, pathCompVals);
+            var maxComp = Math.max.apply(null, pathCompVals);
+            html += '<span class="pcf-range">Pay range: ' + _fmtComp(minComp) + ' – ' + _fmtComp(maxComp) + '</span>';
+
+            // Pay delta from start to end
+            if (startVal && endVal) {
+                var delta = ((endVal - startVal) / startVal * 100);
+                var deltaSign = delta >= 0 ? '+' : '';
+                var deltaClass = delta >= 10 ? 'pcf-delta-up' : delta <= -10 ? 'pcf-delta-down' : 'pcf-delta-flat';
+                html += '<span class="pcf-sep">·</span>';
+                html += '<span class="pcf-delta ' + deltaClass + '">' + deltaSign + delta.toFixed(0) + '% end-to-end</span>';
+            }
+
+            // Compensation spread ratio (max/min) — indicates peer group homogeneity
+            if (maxComp > 0 && minComp > 0) {
+                var spread = (maxComp / minComp).toFixed(1);
+                html += '<span class="pcf-sep">·</span>';
+                html += '<span class="pcf-spread">' + spread + '× spread</span>';
+            }
+            html += '</div>';
+        }
 
         pfResult.innerHTML = html;
         pfResult.classList.add('visible');

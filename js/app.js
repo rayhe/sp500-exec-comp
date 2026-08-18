@@ -9693,6 +9693,12 @@ function hideMetricSkeletons() {
                 e.preventDefault();
                 toggleTheme();
                 break;
+
+            case 'h':
+            case 'H':
+                e.preventDefault();
+                if (window.toggleCompHeatmap) window.toggleCompHeatmap();
+                break;
         }
     });
 
