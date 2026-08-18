@@ -2214,6 +2214,35 @@ tbody tr:last-child td { border-bottom: none; }
     color: var(--text-secondary);
     margin-top: 2px;
 }
+/* Say-on-Pay vote breakdown bar */
+.sop-vote-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+    gap: 1px;
+}
+.sop-vote-for {
+    background: #06d6a0;
+    border-radius: 4px 0 0 4px;
+    min-width: 2px;
+    transition: width 0.3s ease-out;
+}
+.sop-vote-against {
+    background: #ef476f;
+    border-radius: 0 4px 4px 0;
+    min-width: 2px;
+    transition: width 0.3s ease-out;
+}
+.sop-vote-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    margin-top: 3px;
+}
+.sop-vote-for-label { color: #06d6a0; }
+.sop-vote-against-label { color: #ef476f; }
 /* Distribution position indicator */
 .detail-stat-distbar {
     position: relative;

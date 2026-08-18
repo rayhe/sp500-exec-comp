@@ -640,6 +640,15 @@ function formatRatio(val) {
     return val.toLocaleString() + ':1';
 }
 
+/* Format vote counts to human-readable short form (e.g. 244.5M, 1.31B) */
+function _fmtVotes(v) {
+    if (v == null) return '—';
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+    return String(v);
+}
+
 function csvEscape(val) {
     if (val == null) return '';
     var s = String(val);
@@ -1603,6 +1612,52 @@ function populateInsights(comp, trends, sectorFilter) {
             _tickers: [widestGap.ticker]
         });
     }
+
+    // 18. Shareholder Dissent — say-on-pay failures and low-approval outliers
+    (function() {
+        var withSop = companies.filter(function(c) { return c._sopApproval != null; });
+        if (withSop.length < 10) return;
+        var failed = withSop.filter(function(c) { return c._sopApproval < 50; });
+        var lowApproval = withSop.filter(function(c) { return c._sopApproval < 70; });
+        var highApproval = withSop.filter(function(c) { return c._sopApproval >= 95; });
+        var sopVals = withSop.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+        var medSop = sopVals[Math.floor(sopVals.length / 2)];
+        // Find worst offender
+        var worst = withSop.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; })[0];
+
+        var value, detailStr;
+        if (failed.length > 0) {
+            value = failed.length + ' Failed Vote' + (failed.length > 1 ? 's' : '');
+            var failedNames = failed.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; })
+                .map(function(c) { return c.ticker + ' (' + c._sopApproval.toFixed(1) + '%)'; });
+            detailStr = failed.length + ' ' + scopeLabel + ' companies had majority shareholder rejection of executive pay: ' + failedNames.join(', ') + '. ';
+        } else {
+            value = lowApproval.length + ' Below 70%';
+            detailStr = '';
+        }
+        detailStr += lowApproval.length + ' companies drew significant opposition (<70% approval). ';
+        detailStr += highApproval.length + ' earned strong support (≥95%). ';
+        detailStr += 'Median approval: ' + medSop.toFixed(1) + '% across ' + withSop.length + ' companies with data.';
+        if (worst && worst._sopApproval < 50) {
+            var vFor = worst.say_on_pay && worst.say_on_pay.votes_for;
+            var vAgainst = worst.say_on_pay && worst.say_on_pay.votes_against;
+            if (vFor && vAgainst) {
+                detailStr += ' Worst: ' + worst.ticker + ' — ' + _fmtVotes(vAgainst) + ' votes against vs ' + _fmtVotes(vFor) + ' for.';
+            }
+        }
+
+        insights.push({
+            icon: '🗳️',
+            label: 'Shareholder Dissent',
+            value: value,
+            detail: detailStr,
+            action: function() { insightResetAndSort('_sopApproval', 'asc'); },
+            actionHint: 'Sort by approval',
+            _tickers: failed.length > 0
+                ? failed.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; }).slice(0, 5).map(function(c) { return c.ticker; })
+                : lowApproval.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; }).slice(0, 5).map(function(c) { return c.ticker; })
+        });
+    })();
 
     // Render cards
     grid.innerHTML = '';
@@ -4570,7 +4625,24 @@ function setupDetailPanel(companies) {
             var sopCls = sopV < 70 ? 'negative' : sopV < 85 ? '' : 'positive';
             var sopLbl = sopV < 50 ? 'Failed' : sopV < 70 ? 'Low approval' : sopV < 85 ? 'Below average' : sopV >= 97 ? 'Near-unanimous' : 'Passed';
             var sopSrc = company.say_on_pay && company.say_on_pay.filing_date ? 'Filed ' + company.say_on_pay.filing_date : '8-K Item 5.07';
-            html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value ' + sopCls + '">' + sopV.toFixed(1) + '%</div>' + distBar(sopV, '0%', '100%') + '<div class="detail-stat-sub">' + sopLbl + ' — ' + sopSrc + '</div></div>';
+            // Build vote breakdown bar if raw vote counts available
+            var voteBarHtml = '';
+            if (company.say_on_pay && company.say_on_pay.votes_for != null && company.say_on_pay.votes_against != null) {
+                var vFor = company.say_on_pay.votes_for;
+                var vAgainst = company.say_on_pay.votes_against;
+                var vTotal = vFor + vAgainst;
+                var forPct = vTotal > 0 ? (vFor / vTotal * 100) : 0;
+                var againstPct = vTotal > 0 ? (vAgainst / vTotal * 100) : 0;
+                voteBarHtml = '<div class="sop-vote-bar" title="' + _fmtVotes(vFor) + ' for / ' + _fmtVotes(vAgainst) + ' against (' + vTotal.toLocaleString() + ' total)">' +
+                    '<div class="sop-vote-for" style="width:' + forPct.toFixed(1) + '%"></div>' +
+                    '<div class="sop-vote-against" style="width:' + againstPct.toFixed(1) + '%"></div>' +
+                    '</div>' +
+                    '<div class="sop-vote-labels">' +
+                    '<span class="sop-vote-for-label">' + _fmtVotes(vFor) + ' for (' + forPct.toFixed(1) + '%)</span>' +
+                    '<span class="sop-vote-against-label">' + _fmtVotes(vAgainst) + ' against</span>' +
+                    '</div>';
+            }
+            html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value ' + sopCls + '">' + sopV.toFixed(1) + '%</div>' + voteBarHtml + distBar(sopV, '0%', '100%') + '<div class="detail-stat-sub">' + sopLbl + ' — ' + sopSrc + '</div></div>';
         }
 
         // CEO History — transition/tenure data

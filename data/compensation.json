@@ -73,11 +73,11 @@
     "say_on_pay_stats": {
       "count": 361,
       "median_approval": 93.46,
-      "mean_approval": 90.8,
-      "min_approval": 15.69,
+      "mean_approval": 91.0,
+      "min_approval": 46.57,
       "max_approval": 99.93,
       "below_70": 18,
-      "below_50": 3
+      "below_50": 1
     },
     "gender_coverage": {
       "female_ceos": 33,
@@ -64590,7 +64590,14 @@
       ],
       "total_neo_compensation": 3000000,
       "proxy_fiscal_year": 2024,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 51.24,
+        "votes_for": 2032,
+        "votes_against": 1934,
+        "filing_date": "2026-08-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1513761/000110465926094888/nclh-20260611x8ka.htm"
+      }
     },
     {
       "ticker": "VICI",
@@ -93522,7 +93529,14 @@
       ],
       "total_neo_compensation": 221480364,
       "proxy_fiscal_year": 2025,
-      "ceo_gender": "M"
+      "ceo_gender": "M",
+      "say_on_pay": {
+        "approval_pct": 51.24,
+        "votes_for": 2032,
+        "votes_against": 1934,
+        "filing_date": "2026-08-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1858681/000095014226002321/eh260819538_8ka1.htm"
+      }
     },
     {
       "ticker": "BRK-B",
