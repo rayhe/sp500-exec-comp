@@ -1073,7 +1073,10 @@ function populateInsights(comp, trends, sectorFilter) {
             icon: '📈',
             label: 'vs S&P 500',
             value: vsSign + vsPct.toFixed(0) + '% median',
-            detail: sectorFilter + ' median CEO pay of ' + formatCurrency(secMedian) + ' is ' + vsSign + vsPct.toFixed(1) + '% versus the S&P 500 median of ' + formatCurrency(sp500Median) + '.' + sectorRank
+            detail: sectorFilter + ' median CEO pay of ' + formatCurrency(secMedian) + ' is ' + vsSign + vsPct.toFixed(1) + '% versus the S&P 500 median of ' + formatCurrency(sp500Median) + '.' + sectorRank,
+            _sectorRankData: sectorList || null,
+            _sectorRankActive: sectorFilter,
+            _sp500Median: sp500Median
         });
     } else {
         var sectorMedians = comp.metadata && comp.metadata.sector_medians;
@@ -1611,6 +1614,42 @@ function populateInsights(comp, trends, sectorFilter) {
             '<div class="insight-label">' + ins.label + '</div>' +
             '<div class="insight-value">' + ins.value + '</div>' +
             '<div class="insight-detail">' + ins.detail + '</div>';
+        // Sector pay ranking mini-chart (inline horizontal bar chart)
+        if (ins._sectorRankData && ins._sectorRankData.length > 0 && ins._sectorRankActive) {
+            var srd = ins._sectorRankData;
+            var maxMed = srd[0].median; // already sorted desc
+            var sp500Med = ins._sp500Median || 0;
+            html += '<div class="sector-rank-chart" aria-label="Sector ranking by median CEO pay">';
+            html += '<div class="src-title">All Sectors by Median CEO Pay</div>';
+            srd.forEach(function(s, idx) {
+                var barPct = maxMed > 0 ? (s.median / maxMed * 100) : 0;
+                var isActive = s.name === ins._sectorRankActive;
+                var sColor = typeof getSectorColor === 'function' ? getSectorColor(s.name) : '#94a3b8';
+                var barColor = isActive ? sColor : (typeof isDarkTheme === 'function' && !isDarkTheme() ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)');
+                var labelColor = isActive ? sColor : '';
+                // Short sector names for compact display
+                var shortNames = {
+                    'Information Technology': 'Info Tech',
+                    'Communication Services': 'Comm Svc',
+                    'Consumer Discretionary': 'Cons Disc',
+                    'Consumer Staples': 'Cons Staples',
+                    'Health Care': 'Health Care',
+                    'Financials': 'Financials',
+                    'Industrials': 'Industrials',
+                    'Real Estate': 'Real Estate',
+                    'Energy': 'Energy',
+                    'Materials': 'Materials',
+                    'Utilities': 'Utilities'
+                };
+                var shortName = shortNames[s.name] || s.name;
+                html += '<div class="src-row' + (isActive ? ' src-active' : '') + '" data-sector="' + s.name + '" title="' + s.name + ': ' + formatCurrency(s.median) + ' median CEO pay">';
+                html += '<span class="src-label" style="' + (labelColor ? 'color:' + labelColor : '') + '">' + (idx + 1) + '. ' + shortName + '</span>';
+                html += '<span class="src-bar-wrap"><span class="src-bar" style="width:' + barPct.toFixed(1) + '%;background:' + barColor + '"></span></span>';
+                html += '<span class="src-val">' + formatCompact(s.median) + '</span>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
         if (ins.action && ins.actionHint) {
             html += '<div class="insight-cta">' + ins.actionHint + ' →</div>';
         }
@@ -1629,6 +1668,14 @@ function populateInsights(comp, trends, sectorFilter) {
             card.style.cursor = 'pointer';
             card.addEventListener('click', ins.action);
         }
+        // Wire sector rank chart bar click handlers
+        card.querySelectorAll('.src-row').forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var sectorName = row.dataset.sector;
+                if (sectorName && window.filterBySector) window.filterBySector(sectorName);
+            });
+        });
         // Wire compare button click handlers (stop propagation to avoid triggering card action)
         card.querySelectorAll('.insight-compare-btn').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
