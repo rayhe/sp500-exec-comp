@@ -4952,7 +4952,9 @@ function setupDetailPanel(companies) {
                         var _wfLabelW = 75;
                         var _wfValueW = 85;
                         var _wfRowCount = _wfDeltas.length + 2; // start + deltas + end
-                        var _wfChartH = _wfRowCount * (_wfBarH + _wfGap) + 8;
+                        // Add extra height for start/end rows if CEO transition (two-line labels)
+                        var _wfTransitionExtra = _wfIsCeoTransition ? 24 : 0;
+                        var _wfChartH = _wfRowCount * (_wfBarH + _wfGap) + 8 + _wfTransitionExtra;
 
                         // Find the range for scaling — need to track cumulative running total
                         var _wfRunning = _wfPrevTotal;
@@ -4980,20 +4982,56 @@ function setupDetailPanel(companies) {
                         var _wfChangeSign = _wfNetChange >= 0 ? '+' : '\u2212';
                         var _wfPctStr = Math.abs(_wfPctChange) >= 100 ? Math.round(Math.abs(_wfPctChange)) + '%' : Math.abs(_wfPctChange).toFixed(1) + '%';
 
+                        // Detect CEO transition: compare names between the two years
+                        var _wfName1 = (_wfCeo1.name || '').trim();
+                        var _wfName2 = (_wfCeo2.name || '').trim();
+                        function _wfNormName(n) {
+                            return n.toLowerCase()
+                                .replace(/\b(jr|sr|iii|iv|ii|mr|ms|dr|phd|former)\b\.?/g, '')
+                                .replace(/[.,'\"()]/g, '')
+                                .replace(/\b[a-z]\b/g, '')
+                                .replace(/\s+/g, ' ').trim();
+                        }
+                        var _wfIsCeoTransition = _wfName1 && _wfName2 && _wfNormName(_wfName1) !== _wfNormName(_wfName2);
+
+                        // Short first name + last name for compact display
+                        function _wfShortName(n) {
+                            var parts = n.split(/\s+/).filter(function(p) { return p.length > 0; });
+                            if (parts.length <= 2) return n;
+                            // First name + last name (drop middle names/initials)
+                            return parts[0] + ' ' + parts[parts.length - 1];
+                        }
+
                         html += '<div class="yoy-waterfall-section">';
                         html += '<div class="yoy-waterfall-header">';
                         html += '<span class="yoy-waterfall-title">Compensation Change Drivers</span>';
                         html += '<span class="yoy-waterfall-sub">FY' + _wfYr2 + ' → FY' + _wfYr1 + ' · Net ' + _wfChangeSign + formatCurrency(Math.abs(_wfNetChange)) + ' (' + _wfChangeSign + _wfPctStr + ')</span>';
                         html += '</div>';
 
+                        // CEO transition warning banner
+                        if (_wfIsCeoTransition) {
+                            html += '<div class="wf-transition-banner">';
+                            html += '<span class="wf-transition-icon">⚠</span>';
+                            html += '<span class="wf-transition-text">';
+                            html += '<strong>CEO transition</strong> — comparing ';
+                            html += '<span class="wf-transition-name wf-transition-old">' + _wfShortName(_wfName2) + '</span>';
+                            html += ' <span class="wf-transition-arrow">→</span> ';
+                            html += '<span class="wf-transition-name wf-transition-new">' + _wfShortName(_wfName1) + '</span>';
+                            html += '. Pay change reflects different executives, not a raise or cut.';
+                            html += '</span>';
+                            html += '</div>';
+                        }
+
                         html += '<div class="yoy-waterfall-chart" style="height:' + _wfChartH + 'px">';
 
                         var _wfY = 4;
-                        // Starting total bar
+                        // Starting total bar — include CEO name if transition
                         var _wfStartX = _wfX(0);
                         var _wfStartW = _wfX(_wfPrevTotal) - _wfStartX;
-                        html += '<div class="wf-row" style="top:' + _wfY + 'px">';
-                        html += '<span class="wf-label">FY' + _wfYr2 + '</span>';
+                        var _wfStartLabel = 'FY' + _wfYr2 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName2) + '</span>' : '');
+                        var _wfTransRowCls = _wfIsCeoTransition ? ' wf-row-transition' : '';
+                        html += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
+                        html += '<span class="wf-label">' + _wfStartLabel + '</span>';
                         html += '<div class="wf-bar-area">';
                         html += '<div class="wf-bar wf-bar-total" style="left:' + _wfStartX.toFixed(1) + '%;width:' + _wfStartW.toFixed(1) + '%" title="FY' + _wfYr2 + ' Total: ' + formatCurrency(_wfPrevTotal) + '"></div>';
                         html += '</div>';
@@ -5035,12 +5073,13 @@ function setupDetailPanel(companies) {
                             _wfRunning += d.delta;
                         });
 
-                        // Ending total bar
+                        // Ending total bar — include CEO name if transition
                         _wfY += _wfBarH + _wfGap;
                         var _wfEndX = _wfX(0);
                         var _wfEndW = _wfX(_wfCurrTotal) - _wfEndX;
-                        html += '<div class="wf-row" style="top:' + _wfY + 'px">';
-                        html += '<span class="wf-label">FY' + _wfYr1 + '</span>';
+                        var _wfEndLabel = 'FY' + _wfYr1 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName1) + '</span>' : '');
+                        html += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
+                        html += '<span class="wf-label">' + _wfEndLabel + '</span>';
                         html += '<div class="wf-bar-area">';
                         html += '<div class="wf-bar wf-bar-total wf-bar-end" style="left:' + _wfEndX.toFixed(1) + '%;width:' + _wfEndW.toFixed(1) + '%" title="FY' + _wfYr1 + ' Total: ' + formatCurrency(_wfCurrTotal) + '"></div>';
                         html += '</div>';

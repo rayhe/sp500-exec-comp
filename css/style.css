@@ -2723,11 +2723,80 @@ tbody tr:last-child td { border-bottom: none; }
 .wf-value.negative { color: #ef476f; }
 [data-theme="light"] .wf-value.positive { color: #059669; }
 [data-theme="light"] .wf-value.negative { color: #dc2626; }
+/* Waterfall CEO transition banner */
+.wf-transition-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin: 0.35rem 0 0.5rem;
+    padding: 0.4rem 0.6rem;
+    background: rgba(255,209,102,0.08);
+    border: 1px solid rgba(255,209,102,0.2);
+    border-radius: 6px;
+    font-size: 0.7rem;
+    line-height: 1.45;
+    color: #94a3b8;
+}
+.wf-transition-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.wf-transition-text strong {
+    color: #ffd166;
+    font-weight: 600;
+}
+.wf-transition-name {
+    font-weight: 600;
+    white-space: nowrap;
+}
+.wf-transition-old { color: #94a3b8; }
+.wf-transition-new { color: #e4e4e7; }
+.wf-transition-arrow {
+    color: #6b7280;
+    margin: 0 0.1rem;
+}
+[data-theme="light"] .wf-transition-banner {
+    background: rgba(180,130,0,0.06);
+    border-color: rgba(180,130,0,0.18);
+    color: #4b5563;
+}
+[data-theme="light"] .wf-transition-text strong {
+    color: #b48200;
+}
+[data-theme="light"] .wf-transition-old { color: #6b7280; }
+[data-theme="light"] .wf-transition-new { color: #1a1a2e; }
+[data-theme="light"] .wf-transition-arrow { color: #9ca3af; }
+/* Waterfall CEO name in start/end bar labels */
+.wf-ceo-name {
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 400;
+    color: #6b7280;
+    line-height: 1.1;
+    margin-top: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+[data-theme="light"] .wf-ceo-name {
+    color: #9ca3af;
+}
+.wf-row-transition {
+    height: 34px;
+}
+.wf-row-transition .wf-label {
+    white-space: normal;
+    line-height: 1.2;
+}
+.wf-row-transition .wf-bar { top: 4px; }
 @media (max-width: 600px) {
     .yoy-waterfall-section { padding: 0.5rem 0.6rem; }
     .wf-label { width: 55px; min-width: 55px; font-size: 0.6rem; }
     .wf-value { width: 65px; min-width: 65px; font-size: 0.6rem; }
     .yoy-waterfall-header { flex-direction: column; gap: 0.2rem; }
+    .wf-ceo-name { display: none; }
+    .wf-transition-banner { font-size: 0.62rem; padding: 0.3rem 0.5rem; }
 }
 @media print {
     .yoy-waterfall-section { break-inside: avoid; }
