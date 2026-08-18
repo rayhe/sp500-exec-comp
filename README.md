@@ -23,7 +23,7 @@ Interactive single-page dashboard with:
 - Pay concentration distribution chart (D3 histogram, 8 color-coded buckets)
 - Quartile composition analysis with S&P 500 ghost bars
 - Compensation peer network force-directed graph
-- 17 reactive key insight cards that recompute on sector filter
+- 19 reactive key insight cards that recompute on sector filter
 - Responsive design with dark mode
 
 ### Key Findings

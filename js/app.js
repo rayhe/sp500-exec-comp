@@ -597,6 +597,35 @@ var MISSING_DATA_REASONS = {
     'TSLA': 'Tesla reports $0 CEO compensation (Elon Musk). Pay ratio not computed by Tesla in proxy filings.'
 };
 
+/* Pre-compute aspirational benchmarking score: how much each company's selected peer
+   group median exceeds its own CEO pay. Positive = aspirational (selects higher-paid peers),
+   negative = paying above self-selected peers. Requires peerData to be loaded.
+   Sets c._aspDelta (% difference from peer median), c._aspPeerMedian, c._aspPeerCount, or null. */
+function computeAspirationalBenchmarking(companies) {
+    companies.forEach(function(c) {
+        c._aspDelta = null;
+        c._aspPeerMedian = null;
+        c._aspPeerCount = null;
+    });
+    if (!peerData || !peerData.edges) return;
+    var compLookup = {};
+    companies.forEach(function(c) {
+        if (c.total_compensation > 0) compLookup[c.ticker] = c.total_compensation;
+    });
+    companies.forEach(function(c) {
+        if (!compLookup[c.ticker]) return;
+        var pi = getPeerInfo(c.ticker);
+        if (!pi || pi.selects.length < 3) return;
+        var peerComps = pi.selects.map(function(t) { return compLookup[t]; }).filter(function(v) { return v > 0; });
+        if (peerComps.length < 3) return;
+        peerComps.sort(function(a, b) { return a - b; });
+        var peerMedian = peerComps[Math.floor(peerComps.length / 2)];
+        c._aspDelta = (peerMedian - c.total_compensation) / c.total_compensation * 100;
+        c._aspPeerMedian = peerMedian;
+        c._aspPeerCount = peerComps.length;
+    });
+}
+
 function getMissingDataHtml(ticker, field) {
     var reason = MISSING_DATA_REASONS[ticker];
     if (!reason) return '<span class="data-na">N/A</span>';
@@ -1656,6 +1685,56 @@ function populateInsights(comp, trends, sectorFilter) {
             _tickers: failed.length > 0
                 ? failed.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; }).slice(0, 5).map(function(c) { return c.ticker; })
                 : lowApproval.slice().sort(function(a, b) { return a._sopApproval - b._sopApproval; }).slice(0, 5).map(function(c) { return c.ticker; })
+        });
+    })();
+
+    // 19. Aspirational Benchmarking — companies selecting higher-paid peers to justify CEO pay
+    (function() {
+        // Use pre-computed _aspDelta from computeAspirationalBenchmarking
+        var withData = companies.filter(function(c) { return c._aspDelta != null; });
+        if (withData.length === 0) return;
+        // Separate meaningful aspirational cases from founder-CEO anomalies
+        var allAspirational = withData.filter(function(c) { return c._aspDelta >= 10; });
+        var meaningfulAsp = allAspirational.filter(function(c) { return c.total_compensation >= 5000000; });
+        var restrained = withData.filter(function(c) { return c._aspDelta <= -10; });
+        if (allAspirational.length === 0 && restrained.length === 0) return;
+        meaningfulAsp.sort(function(a, b) { return b._aspDelta - a._aspDelta; });
+        allAspirational.sort(function(a, b) { return b._aspDelta - a._aspDelta; });
+        restrained.sort(function(a, b) { return a._aspDelta - b._aspDelta; });
+        var founderAnom = allAspirational.filter(function(c) { return c.total_compensation < 5000000; });
+        var value = allAspirational.length + ' Aspirational';
+        var detail = allAspirational.length + ' ' + scopeLabel + ' companies select peer groups with median CEO pay \u226510% above their own.';
+        if (meaningfulAsp.length > 0) {
+            var top = meaningfulAsp[0];
+            detail += ' Most notable: ' + top.ceo_name + ' (' + top.ticker + ') at ' + formatCurrency(top.total_compensation) + ' selects peers with ' + formatCurrency(top._aspPeerMedian) + ' median (+' + Math.round(top._aspDelta) + '%).';
+        }
+        if (founderAnom.length > 0) {
+            detail += ' ' + founderAnom.length + ' are founder-CEOs with <$5M reported comp whose low base inflates the gap.';
+        }
+        if (restrained.length > 0) {
+            detail += ' ' + restrained.length + ' companies pay above their peer median by \u226510%.';
+        }
+        insights.push({
+            icon: '\ud83c\udfaf',
+            label: 'Aspirational Benchmarking',
+            value: value,
+            detail: detail,
+            action: function() {
+                var section = document.getElementById('peer-network-section');
+                if (section) {
+                    var headerHeight = getStickyOffset();
+                    var top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+                if (window.toggleCompHeatmap) {
+                    var btn = document.querySelector('.comp-heatmap-toggle');
+                    if (btn && !btn.classList.contains('active')) {
+                        btn.click();
+                    }
+                }
+            },
+            actionHint: 'View in network heatmap',
+            _tickers: (meaningfulAsp.length > 0 ? meaningfulAsp : allAspirational).slice(0, 5).map(function(c) { return c.ticker; })
         });
     })();
 
@@ -5137,6 +5216,36 @@ function setupDetailPanel(companies) {
                 html += '<span class="peer-pay-rank">#' + _peerRank + ' of ' + _peerCount + '</span>';
                 html += '</div>';
                 html += '<div class="peer-pay-sub ' + _vsPeerCls + '">' + _vsPeerSign + _vsPeerAbsStr + ' vs peer median (' + formatCurrency(_peerMedian) + ')</div>';
+
+                // Aspirational benchmarking annotation
+                if (company._aspDelta != null) {
+                    var _aspLabel, _aspCls, _aspIcon;
+                    if (company._aspDelta >= 30) {
+                        _aspLabel = 'Highly aspirational';
+                        _aspCls = 'asp-badge-high';
+                        _aspIcon = '\u26a0';
+                    } else if (company._aspDelta >= 10) {
+                        _aspLabel = 'Aspirational peer selection';
+                        _aspCls = 'asp-badge-mod';
+                        _aspIcon = '\u2191';
+                    } else if (company._aspDelta <= -30) {
+                        _aspLabel = 'Paying well above peers';
+                        _aspCls = 'asp-badge-over';
+                        _aspIcon = '\u26a0';
+                    } else if (company._aspDelta <= -10) {
+                        _aspLabel = 'Above peer median';
+                        _aspCls = 'asp-badge-above';
+                        _aspIcon = '\u2193';
+                    } else {
+                        _aspLabel = 'Aligned with peers';
+                        _aspCls = 'asp-badge-aligned';
+                        _aspIcon = '\u2713';
+                    }
+                    html += '<div class="asp-badge ' + _aspCls + '" title="Peer group median is ' + (company._aspDelta >= 0 ? '+' : '') + Math.round(company._aspDelta) + '% vs CEO pay (' + company._aspPeerCount + ' peers with data)">';
+                    html += '<span class="asp-badge-icon">' + _aspIcon + '</span> ' + _aspLabel;
+                    html += '</div>';
+                }
+
                 html += '<div class="peer-pay-rows">';
 
                 _displayPeers.forEach(function(p) {
@@ -6355,6 +6464,9 @@ function hideMetricSkeletons() {
 
     // Pre-compute radar chart percentiles for 6-dimension compensation profile
     computeRadarPercentiles(companies);
+
+    // Pre-compute aspirational benchmarking scores (peer median vs own CEO pay)
+    computeAspirationalBenchmarking(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();

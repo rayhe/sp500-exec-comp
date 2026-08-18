@@ -2843,6 +2843,50 @@ tbody tr:last-child td { border-bottom: none; }
 }
 .peer-pay-sub.positive { color: var(--positive); }
 .peer-pay-sub.negative { color: var(--negative); }
+
+/* Aspirational benchmarking badge */
+.asp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.asp-badge-icon { font-size: 0.72rem; }
+.asp-badge-high {
+    background: rgba(239,71,111,0.12);
+    color: #ef476f;
+    border: 1px solid rgba(239,71,111,0.25);
+}
+.asp-badge-mod {
+    background: rgba(255,209,102,0.12);
+    color: #ffd166;
+    border: 1px solid rgba(255,209,102,0.25);
+}
+.asp-badge-over {
+    background: rgba(239,71,111,0.12);
+    color: #ef476f;
+    border: 1px solid rgba(239,71,111,0.25);
+}
+.asp-badge-above {
+    background: rgba(6,214,160,0.12);
+    color: #06d6a0;
+    border: 1px solid rgba(6,214,160,0.25);
+}
+.asp-badge-aligned {
+    background: rgba(148,163,184,0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(148,163,184,0.2);
+}
+[data-theme="light"] .asp-badge-high { background: rgba(239,71,111,0.08); color: #c0392b; border-color: rgba(239,71,111,0.2); }
+[data-theme="light"] .asp-badge-mod { background: rgba(255,209,102,0.1); color: #b8860b; border-color: rgba(255,209,102,0.3); }
+[data-theme="light"] .asp-badge-over { background: rgba(239,71,111,0.08); color: #c0392b; border-color: rgba(239,71,111,0.2); }
+[data-theme="light"] .asp-badge-above { background: rgba(6,214,160,0.08); color: #0f7d5f; border-color: rgba(6,214,160,0.25); }
+[data-theme="light"] .asp-badge-aligned { background: rgba(148,163,184,0.08); color: #64748b; border-color: rgba(148,163,184,0.2); }
+
 .peer-pay-rows {
     display: flex;
     flex-direction: column;
