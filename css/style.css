@@ -2595,6 +2595,144 @@ tbody tr:last-child td { border-bottom: none; }
     .ceo-trend-transition-badge { font-size: 0.6rem; padding: 1px 5px; }
 }
 
+/* === YoY Component Waterfall (detail panel) === */
+.yoy-waterfall-section {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .yoy-waterfall-section {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+.yoy-waterfall-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+}
+.yoy-waterfall-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+.yoy-waterfall-sub {
+    font-size: 0.72rem;
+    color: #6b7280;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.yoy-waterfall-chart {
+    position: relative;
+    width: 100%;
+}
+.wf-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.wf-label {
+    width: 75px;
+    min-width: 75px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.wf-bar-area {
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
+.wf-bar {
+    position: absolute;
+    top: 2px;
+    height: 18px;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: opacity 0.15s;
+}
+.wf-bar:hover { opacity: 0.85; }
+.wf-bar-total {
+    background: rgba(148,163,184,0.35);
+    border: 1px solid rgba(148,163,184,0.25);
+}
+.wf-bar-end {
+    background: rgba(148,163,184,0.5);
+    border: 1px solid rgba(148,163,184,0.35);
+}
+.wf-bar-up {
+    background: rgba(6,214,160,0.55);
+    border: 1px solid rgba(6,214,160,0.4);
+}
+.wf-bar-down {
+    background: rgba(239,71,111,0.55);
+    border: 1px solid rgba(239,71,111,0.4);
+}
+[data-theme="light"] .wf-bar-total {
+    background: rgba(100,116,139,0.2);
+    border-color: rgba(100,116,139,0.15);
+}
+[data-theme="light"] .wf-bar-end {
+    background: rgba(100,116,139,0.3);
+    border-color: rgba(100,116,139,0.2);
+}
+[data-theme="light"] .wf-bar-up {
+    background: rgba(5,150,105,0.35);
+    border-color: rgba(5,150,105,0.25);
+}
+[data-theme="light"] .wf-bar-down {
+    background: rgba(220,38,38,0.3);
+    border-color: rgba(220,38,38,0.2);
+}
+.wf-connector {
+    position: absolute;
+    top: -3px;
+    width: 1px;
+    height: 5px;
+    background: rgba(148,163,184,0.3);
+}
+[data-theme="light"] .wf-connector {
+    background: rgba(100,116,139,0.2);
+}
+.wf-value {
+    width: 85px;
+    min-width: 85px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-variant-numeric: tabular-nums;
+    color: #e4e4e7;
+    text-align: right;
+}
+[data-theme="light"] .wf-value {
+    color: #1a1a2e;
+}
+.wf-value.positive { color: #06d6a0; }
+.wf-value.negative { color: #ef476f; }
+[data-theme="light"] .wf-value.positive { color: #059669; }
+[data-theme="light"] .wf-value.negative { color: #dc2626; }
+@media (max-width: 600px) {
+    .yoy-waterfall-section { padding: 0.5rem 0.6rem; }
+    .wf-label { width: 55px; min-width: 55px; font-size: 0.6rem; }
+    .wf-value { width: 65px; min-width: 65px; font-size: 0.6rem; }
+    .yoy-waterfall-header { flex-direction: column; gap: 0.2rem; }
+}
+@media print {
+    .yoy-waterfall-section { break-inside: avoid; }
+}
+
 /* === Peer Pay Position (detail panel) === */
 .peer-pay-section {
     margin-top: 1rem;

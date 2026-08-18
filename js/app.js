@@ -4895,6 +4895,165 @@ function setupDetailPanel(companies) {
             }
         }
 
+        // YoY Component Waterfall — shows which compensation components drove the year-over-year change
+        if (company.executives && company.executives.length > 0 && company._ceoYoY) {
+            var _wfAllYears = [];
+            company.executives.forEach(function(e) { if (_wfAllYears.indexOf(e.year) < 0) _wfAllYears.push(e.year); });
+            _wfAllYears.sort(function(a,b) { return b - a; });
+
+            if (_wfAllYears.length >= 2) {
+                var _wfYr1 = _wfAllYears[0], _wfYr2 = _wfAllYears[1];
+                var _wfExecs1 = company.executives.filter(function(e) { return e.year === _wfYr1; });
+                var _wfExecs2 = company.executives.filter(function(e) { return e.year === _wfYr2; });
+
+                function _wfFindCeo(execs) {
+                    var c = execs.find(function(e) { return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title)); });
+                    if (!c && execs.length > 0) c = execs.slice().sort(function(a,b) { return (b.total||0) - (a.total||0); })[0];
+                    return c;
+                }
+
+                var _wfCeo1 = _wfFindCeo(_wfExecs1);
+                var _wfCeo2 = _wfFindCeo(_wfExecs2);
+
+                if (_wfCeo1 && _wfCeo2 && _wfCeo1.total > 0 && _wfCeo2.total > 0) {
+                    var _wfComponents = [
+                        { key: 'salary', label: 'Salary', color: '#06d6a0' },
+                        { key: 'stock_awards', label: 'Stock Awards', color: '#00b4d8' },
+                        { key: 'option_awards', label: 'Options', color: '#0096c7' },
+                        { key: 'bonus', label: 'Bonus', color: '#8b5cf6' },
+                        { key: 'non_equity_incentive', label: 'Incentive', color: '#a78bfa' },
+                        { key: 'pension_nqdc', label: 'Pension', color: '#fb923c' },
+                        { key: 'all_other', label: 'Other', color: '#ffd166' }
+                    ];
+
+                    // Compute component deltas
+                    var _wfDeltas = [];
+                    _wfComponents.forEach(function(comp) {
+                        var v1 = _wfCeo1[comp.key] || 0;
+                        var v2 = _wfCeo2[comp.key] || 0;
+                        var delta = v1 - v2;
+                        if (Math.abs(delta) > 0) {
+                            _wfDeltas.push({ label: comp.label, delta: delta, color: comp.color, prev: v2, curr: v1 });
+                        }
+                    });
+
+                    // Sort by absolute magnitude descending so biggest drivers show first
+                    _wfDeltas.sort(function(a,b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+
+                    if (_wfDeltas.length > 0) {
+                        var _wfPrevTotal = _wfCeo2.total;
+                        var _wfCurrTotal = _wfCeo1.total;
+                        var _wfNetChange = _wfCurrTotal - _wfPrevTotal;
+                        var _wfPctChange = _wfPrevTotal > 0 ? (_wfNetChange / _wfPrevTotal * 100) : 0;
+
+                        // Chart dimensions
+                        var _wfBarH = 22;
+                        var _wfGap = 6;
+                        var _wfLabelW = 75;
+                        var _wfValueW = 85;
+                        var _wfRowCount = _wfDeltas.length + 2; // start + deltas + end
+                        var _wfChartH = _wfRowCount * (_wfBarH + _wfGap) + 8;
+
+                        // Find the range for scaling — need to track cumulative running total
+                        var _wfRunning = _wfPrevTotal;
+                        var _wfMinX = _wfPrevTotal;
+                        var _wfMaxX = _wfPrevTotal;
+                        _wfDeltas.forEach(function(d) {
+                            var oldRunning = _wfRunning;
+                            _wfRunning += d.delta;
+                            _wfMinX = Math.min(_wfMinX, Math.min(oldRunning, _wfRunning));
+                            _wfMaxX = Math.max(_wfMaxX, Math.max(oldRunning, _wfRunning));
+                        });
+                        _wfMinX = Math.min(_wfMinX, _wfCurrTotal);
+                        _wfMaxX = Math.max(_wfMaxX, _wfCurrTotal);
+
+                        // Add some padding to range
+                        var _wfRange = _wfMaxX - _wfMinX;
+                        var _wfPadding = _wfRange * 0.08;
+                        var _wfScaleMin = Math.max(0, _wfMinX - _wfPadding);
+                        var _wfScaleMax = _wfMaxX + _wfPadding;
+                        var _wfScaleRange = _wfScaleMax - _wfScaleMin;
+
+                        function _wfX(val) { return _wfScaleRange > 0 ? ((val - _wfScaleMin) / _wfScaleRange * 100) : 50; }
+
+                        var _wfChangeCls = _wfNetChange >= 0 ? 'positive' : 'negative';
+                        var _wfChangeSign = _wfNetChange >= 0 ? '+' : '\u2212';
+                        var _wfPctStr = Math.abs(_wfPctChange) >= 100 ? Math.round(Math.abs(_wfPctChange)) + '%' : Math.abs(_wfPctChange).toFixed(1) + '%';
+
+                        html += '<div class="yoy-waterfall-section">';
+                        html += '<div class="yoy-waterfall-header">';
+                        html += '<span class="yoy-waterfall-title">Compensation Change Drivers</span>';
+                        html += '<span class="yoy-waterfall-sub">FY' + _wfYr2 + ' → FY' + _wfYr1 + ' · Net ' + _wfChangeSign + formatCurrency(Math.abs(_wfNetChange)) + ' (' + _wfChangeSign + _wfPctStr + ')</span>';
+                        html += '</div>';
+
+                        html += '<div class="yoy-waterfall-chart" style="height:' + _wfChartH + 'px">';
+
+                        var _wfY = 4;
+                        // Starting total bar
+                        var _wfStartX = _wfX(0);
+                        var _wfStartW = _wfX(_wfPrevTotal) - _wfStartX;
+                        html += '<div class="wf-row" style="top:' + _wfY + 'px">';
+                        html += '<span class="wf-label">FY' + _wfYr2 + '</span>';
+                        html += '<div class="wf-bar-area">';
+                        html += '<div class="wf-bar wf-bar-total" style="left:' + _wfStartX.toFixed(1) + '%;width:' + _wfStartW.toFixed(1) + '%" title="FY' + _wfYr2 + ' Total: ' + formatCurrency(_wfPrevTotal) + '"></div>';
+                        html += '</div>';
+                        html += '<span class="wf-value">' + formatCurrency(_wfPrevTotal) + '</span>';
+                        html += '</div>';
+
+                        // Component delta bars
+                        _wfRunning = _wfPrevTotal;
+                        _wfDeltas.forEach(function(d) {
+                            _wfY += _wfBarH + _wfGap;
+                            var barStart, barEnd;
+                            if (d.delta >= 0) {
+                                barStart = _wfRunning;
+                                barEnd = _wfRunning + d.delta;
+                            } else {
+                                barStart = _wfRunning + d.delta;
+                                barEnd = _wfRunning;
+                            }
+                            var leftPct = _wfX(barStart);
+                            var rightPct = _wfX(barEnd);
+                            var widthPct = rightPct - leftPct;
+                            var barCls = d.delta >= 0 ? 'wf-bar-up' : 'wf-bar-down';
+                            var deltaSign = d.delta >= 0 ? '+' : '\u2212';
+                            var deltaPctOfTotal = _wfPrevTotal > 0 ? Math.abs(d.delta) / _wfPrevTotal * 100 : 0;
+                            var deltaPctStr = deltaPctOfTotal >= 100 ? Math.round(deltaPctOfTotal) + '%' : deltaPctOfTotal.toFixed(1) + '%';
+                            var tipText = d.label + ': ' + formatCurrency(d.prev) + ' → ' + formatCurrency(d.curr) + ' (' + deltaSign + formatCurrency(Math.abs(d.delta)) + ')';
+
+                            // Connector line from running total
+                            var connX = _wfX(_wfRunning);
+                            html += '<div class="wf-row" style="top:' + _wfY + 'px">';
+                            html += '<span class="wf-label">' + d.label + '</span>';
+                            html += '<div class="wf-bar-area">';
+                            html += '<div class="wf-connector" style="left:' + connX.toFixed(1) + '%"></div>';
+                            html += '<div class="wf-bar ' + barCls + '" style="left:' + leftPct.toFixed(1) + '%;width:' + Math.max(0.5, widthPct).toFixed(1) + '%" title="' + tipText + '"></div>';
+                            html += '</div>';
+                            html += '<span class="wf-value ' + (d.delta >= 0 ? 'positive' : 'negative') + '">' + deltaSign + formatCurrency(Math.abs(d.delta)) + '</span>';
+                            html += '</div>';
+
+                            _wfRunning += d.delta;
+                        });
+
+                        // Ending total bar
+                        _wfY += _wfBarH + _wfGap;
+                        var _wfEndX = _wfX(0);
+                        var _wfEndW = _wfX(_wfCurrTotal) - _wfEndX;
+                        html += '<div class="wf-row" style="top:' + _wfY + 'px">';
+                        html += '<span class="wf-label">FY' + _wfYr1 + '</span>';
+                        html += '<div class="wf-bar-area">';
+                        html += '<div class="wf-bar wf-bar-total wf-bar-end" style="left:' + _wfEndX.toFixed(1) + '%;width:' + _wfEndW.toFixed(1) + '%" title="FY' + _wfYr1 + ' Total: ' + formatCurrency(_wfCurrTotal) + '"></div>';
+                        html += '</div>';
+                        html += '<span class="wf-value">' + formatCurrency(_wfCurrTotal) + '</span>';
+                        html += '</div>';
+
+                        html += '</div>'; // yoy-waterfall-chart
+                        html += '</div>'; // yoy-waterfall-section
+                    }
+                }
+            }
+        }
+
         // Peer Pay Position — horizontal bar chart showing this company vs. comp peers
         if (peerInfo && (peerInfo.selectedBy.length > 0 || peerInfo.selects.length > 0)) {
             var _peerAllTickers = [];
