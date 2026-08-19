@@ -672,6 +672,92 @@ header h1 {
     background: rgba(0,119,182,0.06);
 }
 
+/* Dual equity trend sparkline — sector vs S&P 500 */
+.eq-dual-trend-section {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.eq-dual-trend-title {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a1a1aa;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.eq-dual-trend-dir {
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: none;
+}
+.eq-dual-trend-dir.positive { color: var(--positive); }
+.eq-dual-trend-dir.negative { color: var(--negative); }
+.eq-dual-trend-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.eq-dual-sparkline {
+    flex-shrink: 0;
+}
+.eq-dual-trend-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.58rem;
+}
+.eq-dual-trend-leg-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+.eq-dual-leg-line {
+    display: inline-block;
+    width: 12px;
+    height: 2px;
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+.eq-dual-leg-dashed {
+    background: repeating-linear-gradient(to right, #94a3b8 0, #94a3b8 3px, transparent 3px, transparent 5px);
+}
+.eq-dual-leg-label {
+    color: #a1a1aa;
+}
+.eq-dual-leg-val {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.56rem;
+}
+.eq-dual-trend-years {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px 0;
+    font-size: 0.5rem;
+    color: #71717a;
+    width: 140px;
+}
+[data-theme="light"] .eq-dual-trend-section {
+    border-top-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .eq-dual-trend-title {
+    color: #6b7280;
+}
+[data-theme="light"] .eq-dual-leg-label {
+    color: #6b7280;
+}
+[data-theme="light"] .eq-dual-leg-val {
+    color: #1a1a2e;
+}
+[data-theme="light"] .eq-dual-trend-years {
+    color: #9ca3af;
+}
+
 /* === Sections === */
 .section {
     max-width: 1440px;
@@ -5119,6 +5205,7 @@ footer li::before {
     .neo-sort-icon { display: none; }
     .yoy-cell-wrap { gap: 0; }
     .sector-rank-chart { display: none; }
+    .eq-dual-trend-section { display: none; }
 }
 
 /* ============================================================
@@ -7185,6 +7272,78 @@ footer li::before {
 }
 [data-theme="light"] .eq-sparkline-tip-accent {
     color: #059669;
+}
+
+/* YoY inline sparkline tooltips */
+.yoy-sparkline-tip {
+    position: absolute;
+    z-index: 9999;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 8px 10px;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    min-width: 120px;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: #e4e4e7;
+}
+.yoy-sparkline-tip-year {
+    font-weight: 600;
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+}
+.yoy-sparkline-tip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 1px 0;
+}
+.yoy-sparkline-tip-label {
+    color: #a1a1aa;
+}
+.yoy-sparkline-tip-val {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-weight: 500;
+    text-align: right;
+}
+.yoy-sparkline-tip-accent {
+    color: #ffd166;
+    font-weight: 600;
+}
+.yoy-sparkline-tip-positive {
+    color: #06d6a0;
+    font-weight: 600;
+}
+.yoy-sparkline-tip-negative {
+    color: #ef476f;
+    font-weight: 600;
+}
+[data-theme="light"] .yoy-sparkline-tip {
+    background: #fff;
+    border-color: rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    color: #1a1a2e;
+}
+[data-theme="light"] .yoy-sparkline-tip-year {
+    color: #1a1a2e;
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .yoy-sparkline-tip-label {
+    color: #6b7280;
+}
+[data-theme="light"] .yoy-sparkline-tip-accent {
+    color: #d97706;
+}
+[data-theme="light"] .yoy-sparkline-tip-positive {
+    color: #059669;
+}
+[data-theme="light"] .yoy-sparkline-tip-negative {
+    color: #dc2626;
 }
 
 /* 5-tier equity table badges */

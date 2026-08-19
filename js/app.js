@@ -1028,6 +1028,48 @@ function scrollToSectionById(sectionId) {
     }
 }
 
+/* Compute equity % trend data for both overall S&P 500 and a sector subset.
+   Returns { years: [2023,2024,2025], overall: [{year, median},...], sector: [{year, median},...] } or null */
+function computeEquityTrendDual(allCompanies, sectorCompanies, sectorName) {
+    function getYearMedians(comps) {
+        var yearMap = {};
+        comps.forEach(function(c) {
+            if (!c._ceoStockPctHistory) return;
+            Object.keys(c._ceoStockPctHistory).forEach(function(yr) {
+                var y = parseInt(yr);
+                if (!yearMap[y]) yearMap[y] = [];
+                yearMap[y].push(c._ceoStockPctHistory[yr]);
+            });
+        });
+        var results = [];
+        Object.keys(yearMap).forEach(function(yr) {
+            var vals = yearMap[yr];
+            if (vals.length < 30) return; // need enough companies for reliable median
+            vals.sort(function(a, b) { return a - b; });
+            var med = vals[Math.floor(vals.length / 2)];
+            results.push({ year: parseInt(yr), median: Math.round(med * 10) / 10, count: vals.length });
+        });
+        results.sort(function(a, b) { return a.year - b.year; });
+        return results;
+    }
+
+    var overall = getYearMedians(allCompanies);
+    var sector = getYearMedians(sectorCompanies);
+
+    if (overall.length < 2 || sector.length < 2) return null;
+
+    // Only include years present in both
+    var overallYears = overall.map(function(d) { return d.year; });
+    var sectorYears = sector.map(function(d) { return d.year; });
+    var commonYears = overallYears.filter(function(y) { return sectorYears.indexOf(y) >= 0; });
+    if (commonYears.length < 2) return null;
+
+    overall = overall.filter(function(d) { return commonYears.indexOf(d.year) >= 0; });
+    sector = sector.filter(function(d) { return commonYears.indexOf(d.year) >= 0; });
+
+    return { years: commonYears, overall: overall, sector: sector, sectorName: sectorName };
+}
+
 function populateInsights(comp, trends, sectorFilter) {
     var allCompanies = comp.companies;
     var companies = sectorFilter
@@ -1133,7 +1175,8 @@ function populateInsights(comp, trends, sectorFilter) {
             detail: sectorFilter + ' median CEO pay of ' + formatCurrency(secMedian) + ' is ' + vsSign + vsPct.toFixed(1) + '% versus the S&P 500 median of ' + formatCurrency(sp500Median) + '.' + sectorRank,
             _sectorRankData: sectorList || null,
             _sectorRankActive: sectorFilter,
-            _sp500Median: sp500Median
+            _sp500Median: sp500Median,
+            _equityTrend: computeEquityTrendDual(allCompanies, companies, sectorFilter)
         });
     } else {
         var sectorMedians = comp.metadata && comp.metadata.sector_medians;
@@ -1793,6 +1836,54 @@ function populateInsights(comp, trends, sectorFilter) {
                 html += '<span class="src-val">' + formatCompact(s.median) + '</span>';
                 html += '</div>';
             });
+            html += '</div>';
+        }
+        // Dual equity trend sparkline — sector vs S&P 500
+        if (ins._equityTrend) {
+            var et = ins._equityTrend;
+            var allPts = et.overall.concat(et.sector);
+            var etMin = Math.min.apply(null, allPts.map(function(d) { return d.median; })) - 3;
+            var etMax = Math.max.apply(null, allPts.map(function(d) { return d.median; })) + 3;
+            var etRange = etMax - etMin || 1;
+            var svgW = 140, svgH = 36, padX = 4, padY = 4;
+            var xScale = function(i) { return padX + i / (et.years.length - 1) * (svgW - padX * 2); };
+            var yScale = function(v) { return padY + (1 - (v - etMin) / etRange) * (svgH - padY * 2); };
+
+            // Overall line (gray dashed)
+            var overallPts = et.overall.map(function(d, i) { return xScale(i).toFixed(1) + ',' + yScale(d.median).toFixed(1); }).join(' ');
+            // Sector line (colored solid)
+            var sectorPts = et.sector.map(function(d, i) { return xScale(i).toFixed(1) + ',' + yScale(d.median).toFixed(1); }).join(' ');
+            var sColor = typeof getSectorColor === 'function' ? getSectorColor(et.sectorName) : '#ffd166';
+
+            var sparkSvg = '<svg class="eq-dual-sparkline" width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '">';
+            sparkSvg += '<polyline points="' + overallPts + '" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2" stroke-linecap="round"/>';
+            sparkSvg += '<polyline points="' + sectorPts + '" fill="none" stroke="' + sColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+            // Dots for sector line
+            et.sector.forEach(function(d, i) {
+                sparkSvg += '<circle cx="' + xScale(i).toFixed(1) + '" cy="' + yScale(d.median).toFixed(1) + '" r="2.5" fill="' + sColor + '"/>';
+            });
+            sparkSvg += '</svg>';
+
+            // Direction and values
+            var secFirst = et.sector[0].median;
+            var secLast = et.sector[et.sector.length - 1].median;
+            var secDelta = secLast - secFirst;
+            var secDir = secDelta > 1 ? '\u2191 Rising' : secDelta < -1 ? '\u2193 Falling' : '\u2194 Stable';
+            var secDirCls = secDelta > 1 ? 'positive' : secDelta < -1 ? 'negative' : '';
+
+            var ovFirst = et.overall[0].median;
+            var ovLast = et.overall[et.overall.length - 1].median;
+
+            html += '<div class="eq-dual-trend-section">';
+            html += '<div class="eq-dual-trend-title">Equity % Trend <span class="eq-dual-trend-dir ' + secDirCls + '">' + secDir + '</span></div>';
+            html += '<div class="eq-dual-trend-body">';
+            html += sparkSvg;
+            html += '<div class="eq-dual-trend-legend">';
+            html += '<div class="eq-dual-trend-leg-row"><span class="eq-dual-leg-line" style="background:' + sColor + '"></span><span class="eq-dual-leg-label">' + (et.sectorName.length > 14 ? et.sectorName.substring(0, 12) + '\u2026' : et.sectorName) + '</span><span class="eq-dual-leg-val">' + secFirst.toFixed(1) + '% \u2192 ' + secLast.toFixed(1) + '%</span></div>';
+            html += '<div class="eq-dual-trend-leg-row"><span class="eq-dual-leg-line eq-dual-leg-dashed"></span><span class="eq-dual-leg-label">S&P 500</span><span class="eq-dual-leg-val">' + ovFirst.toFixed(1) + '% \u2192 ' + ovLast.toFixed(1) + '%</span></div>';
+            html += '</div></div>';
+            // Year labels
+            html += '<div class="eq-dual-trend-years">' + et.years.map(function(y) { return '<span>FY' + y + '</span>'; }).join('') + '</div>';
             html += '</div>';
         }
         if (ins.action && ins.actionHint) {
@@ -4283,7 +4374,26 @@ function renderTable(companies, options) {
                 var sparkFill = isPos ? 'rgba(6,214,160,0.15)' : 'rgba(239,71,111,0.15)';
                 // Sparkline tooltip: show year range
                 var sparkTitle = 'FY' + trendPts[0].year + '\u2013' + trendPts[trendPts.length - 1].year + ': ' + trendPts.map(function(d) { return formatCurrency(d.total); }).join(' \u2192 ');
-                sparkSvg = '<svg class="yoy-spark-svg" width="' + sparkW + '" height="' + sparkH + '" viewBox="0 0 ' + sparkW + ' ' + sparkH + '" aria-hidden="true" title="' + sparkTitle.replace(/"/g, '&quot;') + '"><polygon points="' + sparkArea + '" fill="' + sparkFill + '"/><polyline points="' + sparkLine + '" fill="none" stroke="' + sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                // Build interactive dots with invisible hit areas for tooltip
+                var sparkDots = '';
+                trendPts.forEach(function(d, di) {
+                    var dx = sparkPad + di / (trendPts.length - 1) * (sparkW - sparkPad * 2);
+                    var dy = sparkPad + (1 - (d.total - tMin) / tRange) * (sparkH - sparkPad * 2);
+                    // Compute YoY change from previous point
+                    var dotYoY = '';
+                    if (di > 0) {
+                        var prevTotal = trendPts[di - 1].total;
+                        if (prevTotal > 0) {
+                            var dotPct = ((d.total - prevTotal) / prevTotal * 100).toFixed(1);
+                            dotYoY = dotPct;
+                        }
+                    }
+                    // Invisible hit circle for mouse targeting
+                    sparkDots += '<circle class="yoy-trend-dot-hit" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="8" fill="transparent" style="cursor:pointer" data-year="' + d.year + '" data-total="' + d.total + '" data-yoy="' + dotYoY + '" data-idx="' + di + '" data-ticker="' + c.ticker + '"/>';
+                    // Visible dot
+                    sparkDots += '<circle class="yoy-trend-dot" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="1.5" fill="' + sparkColor + '" style="pointer-events:none"/>';
+                });
+                sparkSvg = '<svg class="yoy-spark-svg" width="' + sparkW + '" height="' + sparkH + '" viewBox="0 0 ' + sparkW + ' ' + sparkH + '" aria-hidden="true" title="' + sparkTitle.replace(/"/g, '&quot;') + '"><polygon points="' + sparkArea + '" fill="' + sparkFill + '"/><polyline points="' + sparkLine + '" fill="none" stroke="' + sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + sparkDots + '</svg>';
             }
 
             yoyCell = '<span class="yoy-cell-wrap">' + sparkSvg + '<span class="yoy-inline ' + yoyCls + '" title="' + yoyTitle.replace(/"/g, '&quot;') + '">' + yoyArrow + ' ' + yoySign + yoyStr + '</span></span>';
@@ -6915,6 +7025,104 @@ function setupSparklineTooltips() {
     });
 }
 
+/* === YoY Sparkline Tooltip — interactive hover tooltips for inline table row trend sparkline data points === */
+function setupYoYSparklineTooltips() {
+    var tableWrap = document.getElementById('company-table');
+    if (!tableWrap) return;
+
+    // Create reusable tooltip element
+    var tip = document.createElement('div');
+    tip.className = 'yoy-sparkline-tip';
+    tip.style.display = 'none';
+    document.body.appendChild(tip);
+
+    var activeDot = null;
+    var _lastHitEl = null;
+
+    tableWrap.addEventListener('mouseover', function(e) {
+        var hit = e.target.closest ? e.target.closest('.yoy-trend-dot-hit') : null;
+        if (!hit) {
+            if (_lastHitEl) {
+                tip.style.display = 'none';
+                if (activeDot) { activeDot.setAttribute('r', '1.5'); activeDot = null; }
+                _lastHitEl = null;
+            }
+            return;
+        }
+        if (hit === _lastHitEl) return;
+        _lastHitEl = hit;
+
+        var year = hit.getAttribute('data-year');
+        var total = parseFloat(hit.getAttribute('data-total'));
+        var yoyPct = hit.getAttribute('data-yoy');
+        var ticker = hit.getAttribute('data-ticker');
+
+        // Build tooltip content
+        var html = '<div class="yoy-sparkline-tip-year">FY' + year + '</div>';
+        html += '<div class="yoy-sparkline-tip-row"><span class="yoy-sparkline-tip-label">CEO Pay</span><span class="yoy-sparkline-tip-val yoy-sparkline-tip-accent">' + formatCurrency(total) + '</span></div>';
+        if (yoyPct !== '') {
+            var pctNum = parseFloat(yoyPct);
+            var pctCls = pctNum >= 0 ? 'positive' : 'negative';
+            var pctSign = pctNum >= 0 ? '+' : '\u2212';
+            var pctAbs = Math.abs(pctNum);
+            var pctStr = pctAbs >= 100 ? Math.round(pctAbs) + '%' : pctAbs.toFixed(1) + '%';
+            html += '<div class="yoy-sparkline-tip-row"><span class="yoy-sparkline-tip-label">vs Prior Year</span><span class="yoy-sparkline-tip-val yoy-sparkline-tip-' + pctCls + '">' + pctSign + pctStr + '</span></div>';
+        }
+        if (ticker) {
+            html += '<div class="yoy-sparkline-tip-row"><span class="yoy-sparkline-tip-label">Company</span><span class="yoy-sparkline-tip-val">' + ticker + '</span></div>';
+        }
+        tip.innerHTML = html;
+        tip.style.display = '';
+
+        // Position tooltip above the circle
+        var svgEl = hit.closest('svg');
+        if (svgEl) {
+            var svgRect = svgEl.getBoundingClientRect();
+            var cx = parseFloat(hit.getAttribute('cx'));
+            var cy = parseFloat(hit.getAttribute('cy'));
+            var svgW = parseFloat(svgEl.getAttribute('width')) || svgRect.width;
+            var svgH = parseFloat(svgEl.getAttribute('height')) || svgRect.height;
+            var dotX = svgRect.left + (cx / svgW) * svgRect.width;
+            var dotY = svgRect.top + (cy / svgH) * svgRect.height;
+
+            var tipRect = tip.getBoundingClientRect();
+            var left = dotX - tipRect.width / 2;
+            var top = dotY - tipRect.height - 10 + window.scrollY;
+
+            // Clamp to viewport
+            if (left < 4) left = 4;
+            if (left + tipRect.width > window.innerWidth - 4) left = window.innerWidth - tipRect.width - 4;
+            if (top < window.scrollY + 4) top = dotY + 14 + window.scrollY; // flip below if no room above
+
+            tip.style.left = left + 'px';
+            tip.style.top = top + 'px';
+        }
+
+        // Enlarge the visible dot
+        var idx = parseInt(hit.getAttribute('data-idx'));
+        var visibleDots = svgEl ? svgEl.querySelectorAll('.yoy-trend-dot') : [];
+        if (activeDot) activeDot.setAttribute('r', '1.5');
+        if (visibleDots[idx]) {
+            activeDot = visibleDots[idx];
+            activeDot.setAttribute('r', '3');
+        }
+    });
+
+    tableWrap.addEventListener('mouseout', function(e) {
+        var hit = e.target.closest ? e.target.closest('.yoy-trend-dot-hit') : null;
+        if (!hit) return;
+        var toEl = e.relatedTarget;
+        var toHit = toEl && toEl.closest ? toEl.closest('.yoy-trend-dot-hit') : null;
+        if (toHit) return;
+        tip.style.display = 'none';
+        _lastHitEl = null;
+        if (activeDot) {
+            activeDot.setAttribute('r', '1.5');
+            activeDot = null;
+        }
+    });
+}
+
 (async function init() {
     // Show skeletons immediately before data loads
     showSkeletons();
@@ -6980,6 +7188,7 @@ function setupSparklineTooltips() {
     setupSearch(companies);
     setupDetailPanel(companies);
     setupSparklineTooltips();
+    setupYoYSparklineTooltips();
 
     // Expose global API for chart → table cross-section linking
     window.filterBySector = function(sectorName) {
