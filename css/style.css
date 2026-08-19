@@ -8948,12 +8948,37 @@ body.light-mode .cross-sector-pair-select:focus {
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
 }
 .neo-pay-gap-year {
     font-weight: 400;
     color: #a1a1aa;
     font-size: 0.65rem;
 }
+.neo-pay-gap-metrics {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.6rem;
+    font-weight: 400;
+}
+.neo-pay-gap-share {
+    color: #ffd166;
+    font-family: 'SF Mono', 'Consolas', monospace;
+}
+.neo-pay-gap-gini {
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 0.55rem;
+    font-weight: 500;
+    cursor: help;
+}
+.neo-pay-gap-conc-high { background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3); }
+.neo-pay-gap-conc-mod { background: rgba(255,209,102,0.2); color: #ffd166; border: 1px solid rgba(255,209,102,0.3); }
+.neo-pay-gap-conc-mid { background: rgba(148,163,184,0.2); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+.neo-pay-gap-conc-low { background: rgba(6,214,160,0.15); color: #06d6a0; border: 1px solid rgba(6,214,160,0.25); }
 .neo-pay-gap-row {
     display: flex;
     align-items: center;
@@ -8980,7 +9005,7 @@ body.light-mode .cross-sector-pair-select:focus {
 .neo-pay-gap-bar {
     height: 100%;
     border-radius: 3px;
-    transition: width 0.3s ease;
+    transition: width 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
     min-width: 2px;
 }
 .neo-pay-gap-bar-ceo {
@@ -9006,13 +9031,19 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 [data-theme="light"] .neo-pay-gap-header { color: #1a1a2e; }
 [data-theme="light"] .neo-pay-gap-year { color: #6b7280; }
+[data-theme="light"] .neo-pay-gap-share { color: #d97706; }
 [data-theme="light"] .neo-pay-gap-name { color: #4b5563; }
 [data-theme="light"] .neo-pay-gap-bar-wrap { background: rgba(0,0,0,0.04); }
 [data-theme="light"] .neo-pay-gap-bar-ceo { background: #d97706; }
 [data-theme="light"] .neo-pay-gap-val { color: #1a1a2e; }
 [data-theme="light"] .neo-pay-gap-pct { color: #6b7280; }
+[data-theme="light"] .neo-pay-gap-conc-high { background: rgba(239,71,111,0.12); color: #dc2626; border-color: rgba(239,71,111,0.2); }
+[data-theme="light"] .neo-pay-gap-conc-mod { background: rgba(217,119,6,0.12); color: #d97706; border-color: rgba(217,119,6,0.2); }
+[data-theme="light"] .neo-pay-gap-conc-mid { background: rgba(100,116,139,0.12); color: #64748b; border-color: rgba(100,116,139,0.2); }
+[data-theme="light"] .neo-pay-gap-conc-low { background: rgba(5,150,105,0.1); color: #059669; border-color: rgba(5,150,105,0.18); }
 
 @media (max-width: 600px) {
     .neo-pay-gap-name { width: 70px; min-width: 70px; }
     .neo-pay-gap-val { min-width: 60px; }
+    .neo-pay-gap-metrics { margin-left: 0; font-size: 0.55rem; }
 }

@@ -5939,7 +5939,7 @@ function setupDetailPanel(companies) {
             html += '</div>';
             html += '</div>'; // neo-section
 
-            // --- CEO Pay Gap horizontal bar chart ---
+            // --- CEO Pay Gap horizontal bar chart with concentration metrics ---
             (function() {
                 var latestYr = allYears[0];
                 var latestExecs = company.executives.filter(function(e) { return e.year === latestYr && e.total > 0; });
@@ -5953,24 +5953,52 @@ function setupDetailPanel(companies) {
                     var ceoPay = ceoExec.total || 0;
                     if (ceoPay > 0) {
                         var others = latestExecs.filter(function(e) { return e !== ceoExec; }).sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
+                        var allExecPays = [ceoPay].concat(others.map(function(e) { return e.total || 0; }));
+                        var totalCSuite = allExecPays.reduce(function(s, v) { return s + v; }, 0);
+                        var ceoSharePct = totalCSuite > 0 ? (ceoPay / totalCSuite * 100) : 0;
+
+                        // Compute Gini coefficient for C-suite pay concentration
+                        var sortedPays = allExecPays.slice().sort(function(a, b) { return a - b; });
+                        var nExecs = sortedPays.length;
+                        var giniNum = 0;
+                        for (var gi = 0; gi < nExecs; gi++) {
+                            giniNum += (2 * (gi + 1) - nExecs - 1) * sortedPays[gi];
+                        }
+                        var gini = totalCSuite > 0 ? giniNum / (nExecs * totalCSuite) : 0;
+                        if (gini < 0) gini = 0;
+
+                        // Concentration label
+                        var concLabel, concCls;
+                        if (gini >= 0.5) { concLabel = 'Highly concentrated'; concCls = 'neo-pay-gap-conc-high'; }
+                        else if (gini >= 0.3) { concLabel = 'Concentrated'; concCls = 'neo-pay-gap-conc-mod'; }
+                        else if (gini >= 0.15) { concLabel = 'Moderate'; concCls = 'neo-pay-gap-conc-mid'; }
+                        else { concLabel = 'Distributed'; concCls = 'neo-pay-gap-conc-low'; }
+
                         var sectorColor = typeof getSectorColor === 'function' ? getSectorColor(company.sector) : '#73b5d0';
                         html += '<div class="neo-pay-gap-section">';
-                        html += '<div class="neo-pay-gap-header">C-Suite Pay Gap <span class="neo-pay-gap-year">FY' + latestYr + '</span></div>';
-                        // CEO bar (always 100%)
+                        html += '<div class="neo-pay-gap-header">';
+                        html += 'C-Suite Pay Gap <span class="neo-pay-gap-year">FY' + latestYr + '</span>';
+                        html += '<span class="neo-pay-gap-metrics">';
+                        html += '<span class="neo-pay-gap-share" title="CEO compensation as percentage of total C-suite pay">CEO ' + ceoSharePct.toFixed(0) + '% of total</span>';
+                        html += '<span class="neo-pay-gap-gini ' + concCls + '" title="Gini coefficient measures pay inequality among named executives (0 = equal, 1 = one person gets everything). ' + concLabel + ' (Gini ' + gini.toFixed(2) + ')">Gini ' + gini.toFixed(2) + '</span>';
+                        html += '</span>';
+                        html += '</div>';
+                        // CEO bar (always 100%) — animation via data-target-width, JS triggers on rAF
+                        var rowIdx = 0;
                         html += '<div class="neo-pay-gap-row">';
                         html += '<div class="neo-pay-gap-name" title="' + (ceoExec.name || '').replace(/"/g, '&quot;') + '">' + (ceoExec.name || 'CEO') + '</div>';
                         html += '<div class="neo-pay-gap-bar-wrap">';
-                        html += '<div class="neo-pay-gap-bar neo-pay-gap-bar-ceo" style="width:100%"></div>';
+                        html += '<div class="neo-pay-gap-bar neo-pay-gap-bar-ceo neo-pay-gap-bar-anim" data-target-width="100" style="width:0%"></div>';
                         html += '</div>';
                         html += '<div class="neo-pay-gap-val">' + formatCompact(ceoPay) + ' <span class="neo-pay-gap-pct">100%</span></div>';
                         html += '</div>';
                         // Other execs
-                        others.forEach(function(ex) {
+                        others.forEach(function(ex, idx) {
                             var pct = Math.min(((ex.total || 0) / ceoPay) * 100, 100);
                             html += '<div class="neo-pay-gap-row">';
                             html += '<div class="neo-pay-gap-name" title="' + (ex.name || '').replace(/"/g, '&quot;') + '">' + (ex.name || '—') + '</div>';
                             html += '<div class="neo-pay-gap-bar-wrap">';
-                            html += '<div class="neo-pay-gap-bar" style="width:' + pct.toFixed(1) + '%;background:' + sectorColor + '"></div>';
+                            html += '<div class="neo-pay-gap-bar neo-pay-gap-bar-anim" data-target-width="' + pct.toFixed(1) + '" data-bar-color="' + sectorColor + '" style="width:0%;background:' + sectorColor + '"></div>';
                             html += '</div>';
                             html += '<div class="neo-pay-gap-val">' + formatCompact(ex.total || 0) + ' <span class="neo-pay-gap-pct">' + pct.toFixed(0) + '%</span></div>';
                             html += '</div>';
@@ -6210,6 +6238,22 @@ function setupDetailPanel(companies) {
         detailRow.dataset.ticker = ticker;
         detailRow.innerHTML = html;
         row.after(detailRow);
+
+        // Animate pay gap bars from width:0 to target width (staggered)
+        (function() {
+            var payGapBars = detailRow.querySelectorAll('.neo-pay-gap-bar-anim');
+            if (payGapBars.length > 0) {
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        payGapBars.forEach(function(bar, i) {
+                            var tw = bar.getAttribute('data-target-width') || '0';
+                            bar.style.transitionDelay = (i * 60) + 'ms';
+                            bar.style.width = tw + '%';
+                        });
+                    });
+                });
+            }
+        })();
 
         // Track expanded detail for URL hash deep-linking
         _expandedDetailTicker = ticker;
