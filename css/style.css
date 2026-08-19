@@ -7346,6 +7346,91 @@ footer li::before {
     color: #dc2626;
 }
 
+/* Dual sparkline tooltip (sector vs S&P 500 equity trend in insights) */
+.eq-dual-sparkline-tip {
+    position: absolute;
+    z-index: 9999;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 8px 10px;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    min-width: 130px;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: #e4e4e7;
+}
+.eq-dual-tip-year {
+    font-weight: 600;
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+}
+.eq-dual-tip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 1px 0;
+}
+.eq-dual-tip-label {
+    color: #a1a1aa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+}
+.eq-dual-tip-val {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-weight: 500;
+    text-align: right;
+    white-space: nowrap;
+}
+.eq-dual-tip-sector {
+    color: #06d6a0;
+    font-weight: 600;
+}
+.eq-dual-tip-positive {
+    color: #06d6a0;
+    font-weight: 600;
+}
+.eq-dual-tip-negative {
+    color: #ef476f;
+    font-weight: 600;
+}
+.eq-dual-tip-counts {
+    margin-top: 2px;
+    padding-top: 2px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .eq-dual-sparkline-tip {
+    background: #fff;
+    border-color: rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    color: #1a1a2e;
+}
+[data-theme="light"] .eq-dual-tip-year {
+    color: #1a1a2e;
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .eq-dual-tip-label {
+    color: #6b7280;
+}
+[data-theme="light"] .eq-dual-tip-sector {
+    color: #059669;
+}
+[data-theme="light"] .eq-dual-tip-positive {
+    color: #059669;
+}
+[data-theme="light"] .eq-dual-tip-negative {
+    color: #dc2626;
+}
+[data-theme="light"] .eq-dual-tip-counts {
+    border-top-color: rgba(0,0,0,0.06);
+}
+
 /* 5-tier equity table badges */
 .eq-tbl-badge {
     display: inline-flex;
