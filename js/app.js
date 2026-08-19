@@ -2977,7 +2977,10 @@ function renderStockPctSortSummary(companies) {
         }
         svg += '<path d="' + linePath + '" fill="none" stroke="' + dirColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />';
         trendData.forEach(function(d, i) {
-            svg += '<circle cx="' + _tx(i).toFixed(1) + '" cy="' + _ty(d.median).toFixed(1) + '" r="2.5" fill="' + dirColor + '" />';
+            // Invisible larger hit area for easier hover targeting
+            svg += '<circle cx="' + _tx(i).toFixed(1) + '" cy="' + _ty(d.median).toFixed(1) + '" r="10" fill="transparent" class="eq-trend-dot-hit" data-idx="' + i + '" data-year="' + d.year + '" data-median="' + (Math.round(d.median * 10) / 10) + '" data-p25="' + (d.p25 != null ? Math.round(d.p25 * 10) / 10 : '') + '" data-p75="' + (d.p75 != null ? Math.round(d.p75 * 10) / 10 : '') + '" data-count="' + d.count + '" style="cursor:pointer" />';
+            // Visible dot
+            svg += '<circle cx="' + _tx(i).toFixed(1) + '" cy="' + _ty(d.median).toFixed(1) + '" r="2.5" fill="' + dirColor + '" class="eq-trend-dot" style="pointer-events:none;transition:r 0.15s ease" />';
         });
         svg += '</svg>';
 
@@ -6816,6 +6819,102 @@ function hideMetricSkeletons() {
     });
 }
 
+/* === Sparkline Tooltip — interactive hover tooltips for trend sparkline data points === */
+function setupSparklineTooltips() {
+    var bar = document.getElementById('table-summary-bar');
+    if (!bar) return;
+
+    // Create reusable tooltip element
+    var tip = document.createElement('div');
+    tip.className = 'eq-sparkline-tip';
+    tip.style.display = 'none';
+    document.body.appendChild(tip);
+
+    var activeDot = null; // track which visible dot is enlarged
+    var _lastHitEl = null; // dedup mouseover spam
+
+    bar.addEventListener('mouseover', function(e) {
+        var hit = e.target.closest ? e.target.closest('.eq-trend-dot-hit') : null;
+        if (!hit) {
+            // Mouse moved to non-hit element — hide tooltip
+            if (_lastHitEl) {
+                tip.style.display = 'none';
+                if (activeDot) { activeDot.setAttribute('r', '2.5'); activeDot = null; }
+                _lastHitEl = null;
+            }
+            return;
+        }
+        if (hit === _lastHitEl) return; // same dot, skip
+        _lastHitEl = hit;
+
+        var year = hit.getAttribute('data-year');
+        var median = hit.getAttribute('data-median');
+        var p25 = hit.getAttribute('data-p25');
+        var p75 = hit.getAttribute('data-p75');
+        var count = hit.getAttribute('data-count');
+
+        // Build tooltip content
+        var html = '<div class="eq-sparkline-tip-year">FY' + year + '</div>';
+        html += '<div class="eq-sparkline-tip-row"><span class="eq-sparkline-tip-label">Median</span><span class="eq-sparkline-tip-val eq-sparkline-tip-accent">' + median + '%</span></div>';
+        if (p25 && p75) {
+            html += '<div class="eq-sparkline-tip-row"><span class="eq-sparkline-tip-label">P25\u2013P75</span><span class="eq-sparkline-tip-val">' + p25 + '% \u2013 ' + p75 + '%</span></div>';
+            var spread = (parseFloat(p75) - parseFloat(p25)).toFixed(1);
+            html += '<div class="eq-sparkline-tip-row"><span class="eq-sparkline-tip-label">IQR Spread</span><span class="eq-sparkline-tip-val">' + spread + 'pp</span></div>';
+        }
+        html += '<div class="eq-sparkline-tip-row"><span class="eq-sparkline-tip-label">Companies</span><span class="eq-sparkline-tip-val">' + count + '</span></div>';
+        tip.innerHTML = html;
+        tip.style.display = '';
+
+        // Position tooltip above the circle
+        var svgEl = hit.closest('svg');
+        if (svgEl) {
+            var svgRect = svgEl.getBoundingClientRect();
+            var cx = parseFloat(hit.getAttribute('cx'));
+            var cy = parseFloat(hit.getAttribute('cy'));
+            var svgW = parseFloat(svgEl.getAttribute('width')) || svgRect.width;
+            var svgH = parseFloat(svgEl.getAttribute('height')) || svgRect.height;
+            var dotX = svgRect.left + (cx / svgW) * svgRect.width;
+            var dotY = svgRect.top + (cy / svgH) * svgRect.height;
+
+            var tipRect = tip.getBoundingClientRect();
+            var left = dotX - tipRect.width / 2;
+            var top = dotY - tipRect.height - 10 + window.scrollY;
+
+            // Clamp to viewport
+            if (left < 4) left = 4;
+            if (left + tipRect.width > window.innerWidth - 4) left = window.innerWidth - tipRect.width - 4;
+            if (top < window.scrollY + 4) top = dotY + 14 + window.scrollY; // flip below if no room above
+
+            tip.style.left = left + 'px';
+            tip.style.top = top + 'px';
+        }
+
+        // Enlarge the visible dot (sibling with class eq-trend-dot)
+        var idx = hit.getAttribute('data-idx');
+        var visibleDots = svgEl ? svgEl.querySelectorAll('.eq-trend-dot') : [];
+        if (activeDot) activeDot.setAttribute('r', '2.5'); // reset previous
+        if (visibleDots[idx]) {
+            activeDot = visibleDots[idx];
+            activeDot.setAttribute('r', '4.5');
+        }
+    });
+
+    bar.addEventListener('mouseout', function(e) {
+        var hit = e.target.closest ? e.target.closest('.eq-trend-dot-hit') : null;
+        if (!hit) return;
+        // Check if we're moving to another hit dot (relatedTarget)
+        var toEl = e.relatedTarget;
+        var toHit = toEl && toEl.closest ? toEl.closest('.eq-trend-dot-hit') : null;
+        if (toHit) return; // moving to another dot — mouseover will handle
+        tip.style.display = 'none';
+        _lastHitEl = null;
+        if (activeDot) {
+            activeDot.setAttribute('r', '2.5');
+            activeDot = null;
+        }
+    });
+}
+
 (async function init() {
     // Show skeletons immediately before data loads
     showSkeletons();
@@ -6880,6 +6979,7 @@ function hideMetricSkeletons() {
     setupSorting(companies);
     setupSearch(companies);
     setupDetailPanel(companies);
+    setupSparklineTooltips();
 
     // Expose global API for chart → table cross-section linking
     window.filterBySector = function(sectorName) {
