@@ -50,6 +50,7 @@ function initNetwork(peerData) {
     var activeLegendSector = null; // sector legend click-to-filter state
     var activePath = null; // { nodes: [ticker,...], edges: [{source, target},...] } for path finder
     var compHeatmapMode = false; // when true, nodes colored by CEO pay instead of sector
+    var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -348,7 +349,7 @@ function initNetwork(peerData) {
         // Nodes
         nodes.forEach(function(d) {
             var r = getRadius(d);
-            var color = compHeatmapMode ? getCompHeatmapColor(d.ticker) : (SECTOR_COLORS[d.sector] || '#94a3b8');
+            var color = getNodeColor(d.ticker, d.sector);
             var alpha = 0.85;
 
             if (hoveredNode) {
@@ -400,7 +401,7 @@ function initNetwork(peerData) {
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
         // (so users know which sector they're viewing in heatmap-filtered mode)
-        if (!hoveredNode && (!compHeatmapMode || activeLegendSector)) {
+        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode) || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -476,7 +477,7 @@ function initNetwork(peerData) {
                 var n = nodeMap[ticker];
                 if (!n) return;
                 var r = getRadius(n);
-                var color = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+                var color = getNodeColor(n.ticker, n.sector);
 
                 // Glow ring
                 ctx.beginPath();
@@ -772,6 +773,35 @@ function initNetwork(peerData) {
         return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 
+    // PageRank heatmap color — blue→cyan→gold gradient
+    function getPRHeatmapColor(ticker) {
+        if (!window._pageRankLookup) return '#555';
+        var pr = window._pageRankLookup[ticker];
+        if (!pr) return '#555';
+        var t = pr.percentile / 100; // 0–1
+        // Blue (low) → Cyan (mid) → Gold (high)
+        var r, g, b;
+        if (t < 0.5) {
+            var t2 = t * 2;
+            r = Math.round(30 + t2 * (0 - 30));
+            g = Math.round(58 + t2 * (180 - 58));
+            b = Math.round(138 + t2 * (216 - 138));
+        } else {
+            var t2 = (t - 0.5) * 2;
+            r = Math.round(0 + t2 * 255);
+            g = Math.round(180 + t2 * (209 - 180));
+            b = Math.round(216 - t2 * (216 - 102));
+        }
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
+    // Unified node color resolver: checks heatmap modes first, then sector
+    function getNodeColor(ticker, sector) {
+        if (prHeatmapMode) return getPRHeatmapColor(ticker);
+        if (compHeatmapMode) return getCompHeatmapColor(ticker);
+        return SECTOR_COLORS[sector] || '#94a3b8';
+    }
+
     // Tooltip
     var tooltip = document.getElementById('network-tooltip');
     function showTooltip(mx, my, d) {
@@ -889,6 +919,15 @@ function initNetwork(peerData) {
             html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + outSame + ' same-sector</span><span class="tt-peer-cross">' + outCross + ' cross-sector</span></div>';
         }
         html += '<div class="tt-row"><span class="tt-label">Market cap</span><span class="tt-value">' + d.market_cap_tier + '</span></div>';
+        // PageRank centrality score
+        if (window._pageRankLookup && window._pageRankLookup[d.ticker]) {
+            var _prData = window._pageRankLookup[d.ticker];
+            var _prPct = Math.round(_prData.percentile);
+            var _prScore = Math.round(_prData.score * 10000);
+            var _prTier = _prPct >= 99 ? 'P99' : _prPct >= 95 ? 'P95' : _prPct >= 90 ? 'P90' : _prPct >= 75 ? 'P75' : _prPct >= 50 ? 'P50' : _prPct >= 25 ? 'P25' : '<P25';
+            var _prCls = _prPct >= 95 ? 'tt-pr-high' : _prPct >= 75 ? 'tt-pr-mid' : 'tt-pr-low';
+            html += '<div class="tt-row"><span class="tt-label">PageRank</span><span class="tt-value ' + _prCls + '">' + _prTier + ' <span class="tt-pr-score">(' + _prScore + ')</span></span></div>';
+        }
         html += '<div class="tt-path-actions">';
         html += '<span class="tt-path-btn" data-action="path-from" data-ticker="' + d.ticker + '">Path from here</span>';
         html += '<span class="tt-path-sep">·</span>';
@@ -1298,7 +1337,7 @@ function initNetwork(peerData) {
             }
             // In heatmap mode: show a colored dot matching the company's heatmap color
             // Outside heatmap: show a sector-colored dot
-            var dotColor = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+            var dotColor = getNodeColor(n.ticker, n.sector);
             var dotHtml = '<span class="nsr-dot" style="background:' + dotColor + '"></span>';
             div.innerHTML = dotHtml +
                 '<span class="nsr-ticker">' + n.ticker + '</span>' +
@@ -1539,12 +1578,20 @@ function initNetwork(peerData) {
 
     // === Compensation Heatmap Mode Toggle ===
     var compHeatmapToggle = document.getElementById('comp-heatmap-toggle');
+    var prHeatmapToggle = document.getElementById('pr-heatmap-toggle');
     var sectorLegendEl = document.getElementById('network-legend');
     var compHeatmapLegendEl = document.getElementById('comp-heatmap-legend');
+    var prHeatmapLegendEl = document.getElementById('pr-heatmap-legend');
 
     if (compHeatmapToggle) {
         compHeatmapToggle.addEventListener('click', function() {
             compHeatmapMode = !compHeatmapMode;
+            // Mutual exclusion: turn off PageRank heatmap
+            if (compHeatmapMode && prHeatmapMode) {
+                prHeatmapMode = false;
+                if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
+                if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+            }
             compHeatmapToggle.classList.toggle('active', compHeatmapMode);
 
             // Show heatmap legend when active; keep sector legend visible for filtering
@@ -1556,6 +1603,24 @@ function initNetwork(peerData) {
             draw();
             announce(compHeatmapMode ? 'Compensation heatmap enabled' + (activeLegendSector ? ' — filtered to ' + activeLegendSector : '') : 'Sector coloring restored');
             // Refresh cluster stats to show/hide compensation section
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
+    // PageRank centrality heatmap toggle
+    if (prHeatmapToggle) {
+        prHeatmapToggle.addEventListener('click', function() {
+            prHeatmapMode = !prHeatmapMode;
+            // Mutual exclusion: turn off comp heatmap
+            if (prHeatmapMode && compHeatmapMode) {
+                compHeatmapMode = false;
+                if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
+                if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
+            }
+            prHeatmapToggle.classList.toggle('active', prHeatmapMode);
+            if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = prHeatmapMode ? 'flex' : 'none';
+            draw();
+            announce(prHeatmapMode ? 'PageRank centrality heatmap enabled' : 'Sector coloring restored');
             if (activeLegendSector) updateClusterStats(activeLegendSector);
         });
     }
@@ -1750,6 +1815,48 @@ function initNetwork(peerData) {
             }
         }
 
+        // PageRank centrality stats section — shown when PR heatmap mode is active
+        if (prHeatmapMode && window._pageRankLookup) {
+            var sectorPRVals = [];
+            var highestPRNode = null, highestPR = -1;
+            var lowestPRNode = null, lowestPR = Infinity;
+            sectorNodes.forEach(function(n) {
+                var pr = window._pageRankLookup[n.ticker];
+                if (pr) {
+                    sectorPRVals.push(pr.percentile);
+                    if (pr.percentile > highestPR) { highestPR = pr.percentile; highestPRNode = n; }
+                    if (pr.percentile < lowestPR) { lowestPR = pr.percentile; lowestPRNode = n; }
+                }
+            });
+            if (sectorPRVals.length > 1) {
+                sectorPRVals.sort(function(a, b) { return a - b; });
+                var prMedian = sectorPRVals[Math.floor(sectorPRVals.length / 2)];
+                var prP75 = sectorPRVals[Math.floor(sectorPRVals.length * 0.75)];
+                var p90Count = sectorPRVals.filter(function(v) { return v >= 90; }).length;
+                html += '<div class="cs-comp-section">';
+                html += '<div class="cs-comp-title">🕸️ Centrality Distribution</div>';
+                html += '<div class="cluster-stats-grid">';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Median Pctile</span><span class="cs-stat-value">' + Math.round(prMedian) + '</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Top 10% (P90+)</span><span class="cs-stat-value cs-accent">' + p90Count + ' / ' + sectorPRVals.length + '</span></div>';
+                html += '</div>';
+                html += '<div class="cs-node-list">';
+                if (highestPRNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Most central </span><span class="cs-node-ticker" data-ticker="' + highestPRNode.ticker + '">' + highestPRNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getPRHeatmapColor(highestPRNode.ticker) + '">P' + Math.round(highestPR) + '</span>';
+                    html += '</div>';
+                }
+                if (lowestPRNode && lowestPRNode !== highestPRNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Least central </span><span class="cs-node-ticker" data-ticker="' + lowestPRNode.ticker + '">' + lowestPRNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getPRHeatmapColor(lowestPRNode.ticker) + '">P' + Math.round(lowestPR) + '</span>';
+                    html += '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+        }
+
         clusterStatsEl.innerHTML = html;
         clusterStatsEl.classList.add('visible');
 
@@ -1865,7 +1972,7 @@ function initNetwork(peerData) {
         nodes.forEach(function(n) {
             var mx = mmMapX(n.x);
             var my = mmMapY(n.y);
-            var color = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+            var color = getNodeColor(n.ticker, n.sector);
             var dotR = Math.max(_mmHiContrast ? 1.5 : 1.2, getRadius(n) / (_mmHiContrast ? 15 : 18));
             mmCtx.beginPath();
             mmCtx.arc(mx, my, dotR, 0, 2 * Math.PI);
@@ -2103,7 +2210,7 @@ function initNetwork(peerData) {
             var div = document.createElement('div');
             div.className = 'network-search-result';
             // Contextual color dot — heatmap color in heatmap mode, sector color otherwise
-            var dotColor = compHeatmapMode ? getCompHeatmapColor(n.ticker) : (SECTOR_COLORS[n.sector] || '#94a3b8');
+            var dotColor = getNodeColor(n.ticker, n.sector);
             var dotHtml = '<span class="nsr-dot" style="background:' + dotColor + '"></span>';
             var comp = _compLookup[n.ticker];
             var payHtml = '';

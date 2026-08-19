@@ -644,6 +644,111 @@ function computeAspirationalBenchmarking(companies) {
     });
 }
 
+/* Pre-compute PageRank centrality scores from the peer network.
+   PageRank measures transitive influence: a company is central if it's benchmarked by
+   companies that are themselves benchmarked by many others. Uses the classic power iteration
+   method with damping factor 0.85 and 50 iterations (convergence is fast on 500-node graphs).
+   Sets c._pageRank (percentile 0–100), c._pageRankScore (raw score × 10000 for display),
+   c._pageRankLabel (P99/P95/etc tier label). Exposed globally for network.js heatmap. */
+function computePageRank(companies) {
+    companies.forEach(function(c) { c._pageRank = null; c._pageRankScore = null; c._pageRankLabel = null; });
+    if (!peerData || !peerData.edges || peerData.edges.length === 0) return;
+
+    var DAMPING = 0.85;
+    var ITERATIONS = 50;
+
+    // Build adjacency from peer edges. In the peer network, an edge source→target means
+    // "source selected target as a peer". PageRank flows from source to target (inbound links
+    // boost rank), matching: companies are important when selected by important companies.
+    var tickers = [];
+    var tickerIdx = {};
+    peerData.nodes.forEach(function(n, i) {
+        tickers.push(n.ticker);
+        tickerIdx[n.ticker] = i;
+    });
+    var N = tickers.length;
+    if (N === 0) return;
+
+    // outLinks[i] = array of indices that node i links TO
+    var outLinks = new Array(N);
+    var inLinks = new Array(N);
+    for (var i = 0; i < N; i++) { outLinks[i] = []; inLinks[i] = []; }
+
+    peerData.edges.forEach(function(e) {
+        var src = typeof e.source === 'object' ? e.source.ticker : e.source;
+        var tgt = typeof e.target === 'object' ? e.target.ticker : e.target;
+        var si = tickerIdx[src], ti = tickerIdx[tgt];
+        if (si != null && ti != null) {
+            outLinks[si].push(ti);
+            inLinks[ti].push(si);
+        }
+    });
+
+    // Initialize scores
+    var scores = new Float64Array(N);
+    var newScores = new Float64Array(N);
+    var initVal = 1 / N;
+    for (var j = 0; j < N; j++) scores[j] = initVal;
+
+    // Power iteration
+    var basePR = (1 - DAMPING) / N;
+    for (var iter = 0; iter < ITERATIONS; iter++) {
+        // Accumulate dangling node mass (nodes with no outlinks)
+        var danglingSum = 0;
+        for (var k = 0; k < N; k++) {
+            if (outLinks[k].length === 0) danglingSum += scores[k];
+        }
+        var danglingContrib = DAMPING * danglingSum / N;
+
+        for (var k2 = 0; k2 < N; k2++) {
+            var sum = 0;
+            var inArr = inLinks[k2];
+            for (var m = 0; m < inArr.length; m++) {
+                var src2 = inArr[m];
+                sum += scores[src2] / outLinks[src2].length;
+            }
+            newScores[k2] = basePR + DAMPING * sum + danglingContrib;
+        }
+        // Swap
+        var tmp = scores; scores = newScores; newScores = tmp;
+    }
+
+    // Map scores to companies
+    var scorePairs = [];
+    for (var p = 0; p < N; p++) {
+        scorePairs.push({ ticker: tickers[p], score: scores[p] });
+    }
+    scorePairs.sort(function(a, b) { return a.score - b.score; });
+
+    // Compute percentiles
+    var prLookup = {};
+    scorePairs.forEach(function(sp, idx) {
+        var pct = (idx / (scorePairs.length - 1)) * 100;
+        prLookup[sp.ticker] = { score: sp.score, percentile: pct };
+    });
+
+    // Assign to companies
+    companies.forEach(function(c) {
+        var pr = prLookup[c.ticker];
+        if (!pr) return;
+        c._pageRank = Math.round(pr.percentile);
+        c._pageRankScore = Math.round(pr.score * 10000); // scale for readable display
+        // Tier label
+        if (pr.percentile >= 99) c._pageRankLabel = 'P99';
+        else if (pr.percentile >= 95) c._pageRankLabel = 'P95';
+        else if (pr.percentile >= 90) c._pageRankLabel = 'P90';
+        else if (pr.percentile >= 75) c._pageRankLabel = 'P75';
+        else if (pr.percentile >= 50) c._pageRankLabel = 'P50';
+        else if (pr.percentile >= 25) c._pageRankLabel = 'P25';
+        else c._pageRankLabel = '<P25';
+    });
+
+    // Expose globally for network.js heatmap
+    window._pageRankLookup = prLookup;
+    window._pageRankMax = scorePairs[scorePairs.length - 1].score;
+    window._pageRankMin = scorePairs[0].score;
+}
+
 function getMissingDataHtml(ticker, field) {
     var reason = MISSING_DATA_REASONS[ticker];
     if (!reason) return '<span class="data-na">N/A</span>';
@@ -1012,7 +1117,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', 'ceo_name': 'CEO name' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1789,6 +1894,52 @@ function populateInsights(comp, trends, sectorFilter) {
             action: function() { insightResetAndSort('_aspDelta', 'desc'); },
             actionHint: 'Sort table by peer delta',
             _tickers: (meaningfulAsp.length > 0 ? meaningfulAsp : allAspirational).slice(0, 5).map(function(c) { return c.ticker; })
+        });
+    })();
+
+    // 20. Network Centrality — PageRank analysis of the peer network
+    (function() {
+        var withPR = companies.filter(function(c) { return c._pageRankScore != null && c._pageRankScore > 0; });
+        if (withPR.length < 10) return;
+        withPR.sort(function(a, b) { return b._pageRankScore - a._pageRankScore; });
+        var top5 = withPR.slice(0, 5);
+        var bottom5 = withPR.slice(-5).reverse();
+        var p99 = withPR.filter(function(c) { return c._pageRank >= 99; });
+        var p95 = withPR.filter(function(c) { return c._pageRank >= 95 && c._pageRank < 99; });
+
+        // Check if high-centrality companies also tend to pay more
+        var topQuartilePR = withPR.slice(0, Math.floor(withPR.length / 4));
+        var bottomQuartilePR = withPR.slice(-Math.floor(withPR.length / 4));
+        var topPRMedianPay = topQuartilePR.map(function(c) { return c.total_compensation; }).sort(function(a,b) { return a-b; });
+        var botPRMedianPay = bottomQuartilePR.map(function(c) { return c.total_compensation; }).sort(function(a,b) { return a-b; });
+        var tprMed = topPRMedianPay.length > 0 ? topPRMedianPay[Math.floor(topPRMedianPay.length/2)] : 0;
+        var bprMed = botPRMedianPay.length > 0 ? botPRMedianPay[Math.floor(botPRMedianPay.length/2)] : 0;
+        var payPremium = bprMed > 0 ? Math.round((tprMed - bprMed) / bprMed * 100) : 0;
+
+        var value = top5[0].ticker + ' #1';
+        var topNames = top5.map(function(c) { return c.ticker + ' (' + c._pageRankScore + ')'; }).join(', ');
+        var detail = top5[0].company_name + ' (' + top5[0].ticker + ') is the most central company in the S&P 500 peer network — the most-benchmarked by other influential companies. Top 5: ' + topNames + '.';
+        if (payPremium !== 0) {
+            detail += ' Top-quartile centrality companies have ' + (payPremium > 0 ? payPremium + '% higher' : Math.abs(payPremium) + '% lower') + ' median CEO pay than bottom-quartile.';
+        }
+
+        insights.push({
+            icon: '🕸️',
+            label: 'Network Centrality',
+            value: value,
+            detail: detail,
+            action: function() {
+                // Scroll to network and highlight the most central node
+                var networkSection = document.getElementById('peer-network-section');
+                if (networkSection) {
+                    var off = getStickyOffset();
+                    var top = networkSection.getBoundingClientRect().top + window.scrollY - off - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+                if (window.focusNetworkNode) window.focusNetworkNode(top5[0].ticker);
+            },
+            actionHint: 'View in network graph',
+            _tickers: top5.map(function(c) { return c.ticker; })
         });
     })();
 
@@ -5196,6 +5347,15 @@ function setupDetailPanel(companies) {
             html += '<div class="detail-stat detail-stat-wide"><div class="detail-stat-label">Team Completeness</div><div class="detail-stat-value ' + _tcCls + '">' + _tcCount + ' roles</div><div class="tc-dots">' + _tcDotsHtml + '</div><div class="detail-stat-sub">' + _tcSubText + '</div></div>';
         }
 
+        // PageRank Centrality stat
+        if (company._pageRank != null) {
+            var prPct = company._pageRank;
+            var prCls = prPct >= 95 ? 'positive' : prPct >= 75 ? '' : 'negative';
+            var prLabel = company._pageRankLabel || '';
+            var prTip = 'PageRank measures transitive peer-network influence — companies are central when benchmarked by other central companies';
+            html += '<div class="detail-stat"><div class="detail-stat-label" title="' + prTip + '">Network Centrality</div><div class="detail-stat-value ' + prCls + '">' + prLabel + '</div>' + distBar(prPct, 'Low', 'High') + '<div class="detail-stat-sub">PageRank score: ' + company._pageRankScore + ' · Percentile ' + prPct + '</div></div>';
+        }
+
         html += '</div>'; // detail-stats
 
         // CEO Compensation Breakdown — visual stacked bar
@@ -7489,6 +7649,9 @@ function setupDualSparklineTooltips() {
 
     // Pre-compute aspirational benchmarking scores (peer median vs own CEO pay)
     computeAspirationalBenchmarking(companies);
+
+    // Pre-compute PageRank centrality from peer network
+    computePageRank(companies);
 
     // Remove metric skeletons before populating with real data
     hideMetricSkeletons();
