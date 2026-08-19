@@ -5377,6 +5377,62 @@ function setupDetailPanel(companies) {
                     html += '</div>';
                 }
 
+                // Reach Peers Counterfactual — for aspirational companies, show which peers inflate the median
+                if (company._aspDelta != null && company._aspDelta >= 10 && company.total_compensation > 0) {
+                    var _reachPeers = _peerCompList.filter(function(p) { return !p.isSelf && p.total > company.total_compensation; });
+                    _reachPeers.sort(function(a, b) { return b.total - a.total; });
+                    var _belowPeers = _peerCompList.filter(function(p) { return !p.isSelf && p.total <= company.total_compensation; });
+
+                    if (_reachPeers.length > 0) {
+                        // Compute counterfactual: median without top 3 reach peers
+                        var _topN = Math.min(3, _reachPeers.length);
+                        var _topReach = _reachPeers.slice(0, _topN);
+                        var _topReachTickers = _topReach.map(function(p) { return p.ticker; });
+                        var _cfPeers = _peerCompList.filter(function(p) { return !p.isSelf && _topReachTickers.indexOf(p.ticker) < 0; });
+                        var _cfTotals = _cfPeers.map(function(p) { return p.total; }).sort(function(a, b) { return a - b; });
+                        var _cfMedian = _cfTotals.length > 0 ? _cfTotals[Math.floor(_cfTotals.length / 2)] : 0;
+                        var _cfDeltaPct = _peerMedian > 0 ? ((_peerMedian - _cfMedian) / _peerMedian * 100) : 0;
+                        var _cfNewAspDelta = company.total_compensation > 0 ? ((_cfMedian - company.total_compensation) / company.total_compensation * 100) : 0;
+
+                        html += '<div class="reach-peers-section">';
+                        html += '<div class="reach-peers-header">';
+                        html += '<span class="reach-peers-title">Reach Peer Analysis</span>';
+                        html += '<span class="reach-peers-count">' + _reachPeers.length + ' of ' + (_reachPeers.length + _belowPeers.length) + ' peers pay more</span>';
+                        html += '</div>';
+
+                        // Top reach peers list
+                        html += '<div class="reach-peers-list">';
+                        _topReach.forEach(function(rp) {
+                            var _rpDelta = company.total_compensation > 0 ? ((rp.total - company.total_compensation) / company.total_compensation * 100) : 0;
+                            var _rpDeltaStr = '+' + (Math.abs(_rpDelta) >= 100 ? Math.round(Math.abs(_rpDelta)) : Math.abs(_rpDelta).toFixed(0)) + '%';
+                            html += '<div class="reach-peer-row">';
+                            html += '<span class="reach-peer-ticker" data-ticker="' + rp.ticker + '">' + rp.ticker + '</span>';
+                            html += '<span class="reach-peer-pay">' + formatCurrency(rp.total) + '</span>';
+                            html += '<span class="reach-peer-delta">' + _rpDeltaStr + ' above</span>';
+                            html += '</div>';
+                        });
+                        if (_reachPeers.length > _topN) {
+                            html += '<div class="reach-peer-more">+ ' + (_reachPeers.length - _topN) + ' more above ' + ticker + '</div>';
+                        }
+                        html += '</div>';
+
+                        // Counterfactual
+                        if (_cfTotals.length >= 2 && _cfDeltaPct > 1) {
+                            html += '<div class="reach-peers-cf">';
+                            html += '<span class="reach-peers-cf-label">Without top ' + _topN + ':</span>';
+                            html += '<span class="reach-peers-cf-value">Median drops ' + formatCurrency(_peerMedian) + ' \u2192 ' + formatCurrency(_cfMedian);
+                            html += ' <span class="reach-peers-cf-pct">(\u2212' + Math.round(_cfDeltaPct) + '%)</span>';
+                            html += '</span>';
+                            if (_cfNewAspDelta < 10 && company._aspDelta >= 10) {
+                                html += '<div class="reach-peers-cf-insight">Peer \u0394 would drop from +' + Math.round(company._aspDelta) + '% to ' + (_cfNewAspDelta >= 0 ? '+' : '') + Math.round(_cfNewAspDelta) + '% \u2014 reclassified as <strong>' + (_cfNewAspDelta >= -10 ? 'aligned' : 'above peers') + '</strong></div>';
+                            }
+                            html += '</div>';
+                        }
+
+                        html += '</div>'; // reach-peers-section
+                    }
+                }
+
                 html += '<div class="peer-pay-rows">';
 
                 _displayPeers.forEach(function(p) {
@@ -5903,6 +5959,15 @@ function setupDetailPanel(companies) {
                 e.stopPropagation();
                 var peerTicker = row.getAttribute('data-ticker');
                 if (peerTicker && window.findCompanyInTable) window.findCompanyInTable(peerTicker);
+            });
+        });
+
+        // Wire up reach peer ticker clicks — navigate to that company
+        detailRow.querySelectorAll('.reach-peer-ticker[data-ticker]').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var rpTicker = el.getAttribute('data-ticker');
+                if (rpTicker && window.findCompanyInTable) window.findCompanyInTable(rpTicker);
             });
         });
 

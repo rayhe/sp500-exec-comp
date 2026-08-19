@@ -2887,6 +2887,108 @@ tbody tr:last-child td { border-bottom: none; }
 [data-theme="light"] .asp-badge-above { background: rgba(6,214,160,0.08); color: #0f7d5f; border-color: rgba(6,214,160,0.25); }
 [data-theme="light"] .asp-badge-aligned { background: rgba(148,163,184,0.08); color: #64748b; border-color: rgba(148,163,184,0.2); }
 
+/* Reach Peers Counterfactual */
+.reach-peers-section {
+    margin: 8px 0;
+    padding: 8px 10px;
+    background: rgba(239,71,111,0.06);
+    border: 1px solid rgba(239,71,111,0.15);
+    border-radius: 6px;
+    font-size: 0.78rem;
+}
+.reach-peers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.reach-peers-title {
+    font-weight: 600;
+    color: #ef476f;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.reach-peers-count {
+    color: #a1a1aa;
+    font-size: 0.72rem;
+}
+.reach-peers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 6px;
+}
+.reach-peer-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+}
+.reach-peer-ticker {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #e4e4e7;
+    min-width: 50px;
+    cursor: pointer;
+}
+.reach-peer-ticker:hover {
+    color: #00b4d8;
+    text-decoration: underline;
+}
+.reach-peer-pay {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.72rem;
+    color: #a1a1aa;
+}
+.reach-peer-delta {
+    font-size: 0.7rem;
+    color: #ef476f;
+    font-weight: 500;
+}
+.reach-peer-more {
+    font-size: 0.7rem;
+    color: #6b7280;
+    padding: 2px 0;
+}
+.reach-peers-cf {
+    padding-top: 6px;
+    border-top: 1px solid rgba(239,71,111,0.12);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px;
+}
+.reach-peers-cf-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #a1a1aa;
+}
+.reach-peers-cf-value {
+    font-size: 0.72rem;
+    color: #e4e4e7;
+}
+.reach-peers-cf-pct {
+    color: #06d6a0;
+    font-weight: 600;
+}
+.reach-peers-cf-insight {
+    width: 100%;
+    margin-top: 3px;
+    font-size: 0.7rem;
+    color: #ffd166;
+    line-height: 1.4;
+}
+[data-theme="light"] .reach-peers-section {
+    background: rgba(239,71,111,0.04);
+    border-color: rgba(239,71,111,0.12);
+}
+[data-theme="light"] .reach-peer-ticker { color: #1a1a2e; }
+[data-theme="light"] .reach-peer-pay { color: #4b5563; }
+[data-theme="light"] .reach-peers-cf-value { color: #1a1a2e; }
+[data-theme="light"] .reach-peers-cf-label { color: #6b7280; }
+[data-theme="light"] .reach-peers-cf-insight { color: #b8860b; }
+
 .peer-pay-rows {
     display: flex;
     flex-direction: column;
