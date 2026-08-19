@@ -2805,64 +2805,98 @@ function renderStockPctSortSummary(companies) {
     var withData = companies.filter(function(c) { return c._ceoStockPct != null; });
     if (withData.length === 0) return null;
 
-    var vals = withData.map(function(c) { return c._ceoStockPct; });
+    var vals = withData.map(function(c) { return c._ceoStockPct; }).sort(function(a, b) { return a - b; });
     var medianPct = Math.round(computeMedian(vals) * 10) / 10;
     var meanPct = Math.round(vals.reduce(function(s, v) { return s + v; }, 0) / vals.length * 10) / 10;
 
-    var above80 = withData.filter(function(c) { return c._ceoStockPct >= 80; });
-    var below20 = withData.filter(function(c) { return c._ceoStockPct < 20; });
+    // 5-tier distribution
+    var tiers = [
+        { label: '80\u2013100%', min: 80, max: 100.1, color: '#06d6a0', tag: 'Equity-dominant' },
+        { label: '60\u201380%', min: 60, max: 80, color: '#34d399', tag: 'Equity-leaning' },
+        { label: '40\u201360%', min: 40, max: 60, color: '#ffd166', tag: 'Balanced' },
+        { label: '20\u201340%', min: 20, max: 40, color: '#fb923c', tag: 'Below median' },
+        { label: '0\u201320%', min: 0, max: 20, color: '#ef476f', tag: 'Cash-heavy' }
+    ];
 
+    tiers.forEach(function(t) {
+        t.count = withData.filter(function(c) { return c._ceoStockPct >= t.min && c._ceoStockPct < t.max; }).length;
+    });
+    var maxTier = Math.max.apply(null, tiers.map(function(t) { return t.count; }));
+
+    var sortDir = currentSort.dir === 'desc' ? 'most equity-heavy first' : 'most cash-heavy first';
+
+    var html = '<div class="sort-summary eq-sort-summary">';
+    html += '<span class="sort-summary-label">\ud83d\udcca Equity Mix:</span> ';
+    html += '<span class="summary-stat-value">' + withData.length + ' companies, ' + sortDir + '</span>';
+    html += '<span class="sort-summary-sep">\u00b7</span>';
+    html += '<span>Median <strong>' + medianPct + '%</strong></span>';
+    html += '<span class="sort-summary-sep">\u00b7</span>';
+    html += '<span>Mean ' + meanPct + '%</span>';
+
+    // Clickable tier histogram
+    var activeT = window._activeStockPctTier;
+    html += '<div class="eq-dist-histogram"><div class="eq-dist-bars">';
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        var h = maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2;
+        var isActive = activeT && activeT.min === t.min && activeT.max === t.max;
+        var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:1px;' : '';
+        var barOpacity = activeT ? (isActive ? 1 : 0.3) : 1;
+        var tMaxStr = t.max > 100 ? '100.1' : t.max;
+        html += '<div class="eq-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByStockPctTier(' + t.min + ',' + tMaxStr + ',\'' + t.label.replace(/'/g, "\\\\'") + '\',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<div class="eq-dist-bar" style="height:' + h + 'px;background:' + t.color + ';opacity:' + barOpacity + '"></div>';
+        html += '<div class="eq-dist-bar-label">' + t.count + '</div>';
+        html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="eq-dist-bracket-labels">';
+    tiers.forEach(function(t) {
+        if (t.count === 0) return;
+        html += '<span class="eq-dist-bracket-label">' + t.label + '</span>';
+    });
+    html += '</div></div>';
+
+    // Outlier details
     var sorted = withData.slice().sort(function(a, b) { return b._ceoStockPctSort - a._ceoStockPctSort; });
-    var highest = sorted[0];
-    var lowest = sorted[sorted.length - 1];
+    var topEquity = sorted.filter(function(c) { return c._ceoStockPct >= 80; }).slice(0, 5);
+    var topCash = sorted.filter(function(c) { return c._ceoStockPct < 20; }).slice(-5).reverse();
 
-    var html = '';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value accent">' + withData.length + '</span>';
-    html += '<span class="summary-stat-label">with equity data</span>';
-    html += '</span>';
-
-    html += '<span class="summary-divider"></span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-label">Median</span>';
-    html += '<span class="summary-stat-value">' + medianPct + '%</span>';
-    html += '</span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-label">Mean</span>';
-    html += '<span class="summary-stat-value">' + meanPct + '%</span>';
-    html += '</span>';
-
-    html += '<span class="summary-divider"></span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value stock-pct-high">' + above80.length + '</span>';
-    html += '<span class="summary-stat-label">≥80% equity</span>';
-    html += '</span>';
-
-    html += '<span class="summary-stat">';
-    html += '<span class="summary-stat-value stock-pct-low">' + below20.length + '</span>';
-    html += '<span class="summary-stat-label">&lt;20% equity</span>';
-    html += '</span>';
-
-    html += '<span class="summary-divider"></span>';
-
-    if (highest) {
-        html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Most equity-heavy</span>';
-        html += '<span class="summary-stat-value stock-pct-high">' + highest.ticker + ' ' + Math.round(highest._ceoStockPct) + '%</span>';
-        html += '</span>';
+    if (topEquity.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#06d6a0">\u2191 Most equity-heavy</span>: ';
+        html += topEquity.map(function(c) {
+            return '<span style="color:#06d6a0">' + c.ticker + ' (' + Math.round(c._ceoStockPct) + '%)</span>';
+        }).join(', ');
+        html += '</div>';
+    }
+    if (topCash.length > 0) {
+        html += '<div class="sort-summary-detail"><span style="color:#ef476f">\u2193 Most cash-heavy</span>: ';
+        html += topCash.map(function(c) {
+            return '<span style="color:#ef476f">' + c.ticker + ' (' + Math.round(c._ceoStockPct) + '%)</span>';
+        }).join(', ');
+        html += '</div>';
     }
 
-    if (lowest) {
-        html += '<span class="summary-stat">';
-        html += '<span class="summary-stat-label">Least equity-heavy</span>';
-        html += '<span class="summary-stat-value stock-pct-low">' + lowest.ticker + ' ' + Math.round(lowest._ceoStockPct) + '%</span>';
-        html += '</span>';
+    // Sector equity skew analysis
+    var sectorEq = {};
+    withData.forEach(function(c) {
+        if (!sectorEq[c.sector]) sectorEq[c.sector] = { vals: [], dom: 0, total: 0 };
+        sectorEq[c.sector].vals.push(c._ceoStockPct);
+        sectorEq[c.sector].total++;
+        if (c._ceoStockPct >= 80) sectorEq[c.sector].dom++;
+    });
+    var sectorEntries = Object.keys(sectorEq).map(function(s) {
+        var sv = sectorEq[s].vals.sort(function(a, b) { return a - b; });
+        return { sector: s, median: sv[Math.floor(sv.length / 2)], domRate: sectorEq[s].dom / sectorEq[s].total * 100, count: sectorEq[s].total };
+    }).filter(function(s) { return s.count >= 5; }).sort(function(a, b) { return b.median - a.median; });
+
+    if (sectorEntries.length >= 3) {
+        var mostEq = sectorEntries[0];
+        var leastEq = sectorEntries[sectorEntries.length - 1];
+        html += '<div class="sort-summary-detail">Sector skew: <strong style="color:' + getSectorColor(mostEq.sector) + '">' + mostEq.sector + '</strong> is most equity-heavy (median ' + Math.round(mostEq.median) + '%, ' + Math.round(mostEq.domRate) + '% dominant), ';
+        html += 'while <strong style="color:' + getSectorColor(leastEq.sector) + '">' + leastEq.sector + '</strong> is most cash-weighted (median ' + Math.round(leastEq.median) + '%).</div>';
     }
 
+    html += '</div>';
     return html;
 }
 
@@ -4132,13 +4166,24 @@ function renderTable(companies, options) {
 
         var workerCell = c.median_worker_pay ? formatCompact(c.median_worker_pay) : getMissingDataHtml(c.ticker, 'median_worker_pay');
 
-        // Stock % cell
+        // Stock % cell — 5-tier clickable badges
         var stockPctCell = '\u2014';
         if (c._ceoStockPct != null) {
             var spVal = c._ceoStockPct;
-            var spCls = spVal >= 80 ? 'stock-pct-high' : spVal >= 50 ? 'stock-pct-mid' : 'stock-pct-low';
-            var spTitle = 'CEO equity (stock + options) = ' + spVal.toFixed(1) + '% of total comp';
-            stockPctCell = '<span class="stock-pct-badge ' + spCls + '" title="' + spTitle + '">' + Math.round(spVal) + '%</span>';
+            var spCls, spIcon, spTip, spMin, spMax, spTag, spLbl;
+            if (spVal >= 80) {
+                spCls = 'eq-tbl-dom'; spIcon = '\u2191'; spTip = 'Equity-dominant'; spMin = 80; spMax = 100.1; spTag = 'Equity-dominant'; spLbl = '80\u2013100%';
+            } else if (spVal >= 60) {
+                spCls = 'eq-tbl-lean'; spIcon = '\u2197'; spTip = 'Equity-leaning'; spMin = 60; spMax = 80; spTag = 'Equity-leaning'; spLbl = '60\u201380%';
+            } else if (spVal >= 40) {
+                spCls = 'eq-tbl-bal'; spIcon = '\u2194'; spTip = 'Balanced mix'; spMin = 40; spMax = 60; spTag = 'Balanced'; spLbl = '40\u201360%';
+            } else if (spVal >= 20) {
+                spCls = 'eq-tbl-below'; spIcon = '\u2199'; spTip = 'Below median equity'; spMin = 20; spMax = 40; spTag = 'Below median'; spLbl = '20\u201340%';
+            } else {
+                spCls = 'eq-tbl-cash'; spIcon = '\u2193'; spTip = 'Cash-heavy'; spMin = 0; spMax = 20; spTag = 'Cash-heavy'; spLbl = '0\u201320%';
+            }
+            spTip += ': CEO equity (stock + options) = ' + spVal.toFixed(1) + '% of total comp \u2014 click to filter';
+            stockPctCell = '<span class="eq-tbl-badge eq-tbl-badge-clickable ' + spCls + '" title="' + spTip + '" onclick="event.stopPropagation();filterByStockPctTier(' + spMin + ',' + spMax + ',\'' + spLbl.replace(/'/g, "\\\\'") + '\',\'' + spTag.replace(/'/g, "\\\\'") + '\')">' + spIcon + ' ' + Math.round(spVal) + '%</span>';
         }
 
         var isCompared = window._compareSet && window._compareSet.indexOf(c.ticker) >= 0;
