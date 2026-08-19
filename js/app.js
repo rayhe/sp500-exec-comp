@@ -5850,7 +5850,17 @@ function setupDetailPanel(companies) {
                         var _nColor = _nIsUp ? 'var(--positive)' : 'var(--negative)';
                         var _nFill = _nIsUp ? 'rgba(6,214,160,0.15)' : 'rgba(239,71,111,0.15)';
                         var _nTitle = 'FY' + _execTrend[0].year + '\u2013' + _execTrend[_execTrend.length - 1].year + ': ' + _execTrend.map(function(d) { return formatCurrency(d.total); }).join(' \u2192 ');
-                        _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true" title="' + _nTitle.replace(/"/g, '&quot;') + '"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                        // Build interactive dots for each data point
+                        var _nDots = '';
+                        _execTrend.forEach(function(d, di) {
+                            var sx = _nSpP + di / (_execTrend.length - 1) * (_nSpW - _nSpP * 2);
+                            var sy = _nSpP + (1 - (d.total - _nMin) / _nRng) * (_nSpH - _nSpP * 2);
+                            var _prevTotal = di > 0 ? _execTrend[di - 1].total : null;
+                            var _yoyAttr = _prevTotal != null && _prevTotal > 0 ? ' data-yoy="' + (((d.total - _prevTotal) / _prevTotal) * 100).toFixed(1) + '"' : ' data-yoy=""';
+                            _nDots += '<circle class="neo-spark-dot" cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="1" fill="' + _nColor + '" data-idx="' + di + '"/>';
+                            _nDots += '<circle class="neo-spark-dot-hit" cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="6" fill="transparent" data-idx="' + di + '" data-year="' + d.year + '" data-total="' + d.total + '" data-name="' + (exec.name || '').replace(/"/g, '&quot;') + '" data-ticker="' + ticker + '"' + _yoyAttr + '/>';
+                        });
+                        _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _nDots + '</svg>';
                     }
                     html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
@@ -5928,6 +5938,47 @@ function setupDetailPanel(companies) {
             }
             html += '</div>';
             html += '</div>'; // neo-section
+
+            // --- CEO Pay Gap horizontal bar chart ---
+            (function() {
+                var latestYr = allYears[0];
+                var latestExecs = company.executives.filter(function(e) { return e.year === latestYr && e.total > 0; });
+                if (latestExecs.length >= 2) {
+                    // Find CEO
+                    var ceoExec = null;
+                    latestExecs.forEach(function(e) {
+                        if (e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title))) ceoExec = e;
+                    });
+                    if (!ceoExec) ceoExec = latestExecs.reduce(function(a, b) { return (a.total || 0) >= (b.total || 0) ? a : b; });
+                    var ceoPay = ceoExec.total || 0;
+                    if (ceoPay > 0) {
+                        var others = latestExecs.filter(function(e) { return e !== ceoExec; }).sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
+                        var sectorColor = typeof getSectorColor === 'function' ? getSectorColor(company.sector) : '#73b5d0';
+                        html += '<div class="neo-pay-gap-section">';
+                        html += '<div class="neo-pay-gap-header">C-Suite Pay Gap <span class="neo-pay-gap-year">FY' + latestYr + '</span></div>';
+                        // CEO bar (always 100%)
+                        html += '<div class="neo-pay-gap-row">';
+                        html += '<div class="neo-pay-gap-name" title="' + (ceoExec.name || '').replace(/"/g, '&quot;') + '">' + (ceoExec.name || 'CEO') + '</div>';
+                        html += '<div class="neo-pay-gap-bar-wrap">';
+                        html += '<div class="neo-pay-gap-bar neo-pay-gap-bar-ceo" style="width:100%"></div>';
+                        html += '</div>';
+                        html += '<div class="neo-pay-gap-val">' + formatCompact(ceoPay) + ' <span class="neo-pay-gap-pct">100%</span></div>';
+                        html += '</div>';
+                        // Other execs
+                        others.forEach(function(ex) {
+                            var pct = Math.min(((ex.total || 0) / ceoPay) * 100, 100);
+                            html += '<div class="neo-pay-gap-row">';
+                            html += '<div class="neo-pay-gap-name" title="' + (ex.name || '').replace(/"/g, '&quot;') + '">' + (ex.name || '—') + '</div>';
+                            html += '<div class="neo-pay-gap-bar-wrap">';
+                            html += '<div class="neo-pay-gap-bar" style="width:' + pct.toFixed(1) + '%;background:' + sectorColor + '"></div>';
+                            html += '</div>';
+                            html += '<div class="neo-pay-gap-val">' + formatCompact(ex.total || 0) + ' <span class="neo-pay-gap-pct">' + pct.toFixed(0) + '%</span></div>';
+                            html += '</div>';
+                        });
+                        html += '</div>';
+                    }
+                }
+            })();
         }
 
         // Data completeness notice for companies with missing fields
@@ -7132,6 +7183,100 @@ function setupYoYSparklineTooltips() {
     });
 }
 
+/* === NEO Sparkline Tooltip — interactive hover tooltips for NEO inline sparklines in detail panel === */
+function setupNeoSparklineTooltips() {
+    var tableWrap = document.getElementById('company-table');
+    if (!tableWrap) return;
+
+    var tip = document.createElement('div');
+    tip.className = 'neo-sparkline-tip';
+    tip.style.display = 'none';
+    document.body.appendChild(tip);
+
+    var activeDot = null;
+    var _lastHitEl = null;
+
+    tableWrap.addEventListener('mouseover', function(e) {
+        var hit = e.target.closest ? e.target.closest('.neo-spark-dot-hit') : null;
+        if (!hit) {
+            if (_lastHitEl) {
+                tip.style.display = 'none';
+                if (activeDot) { activeDot.setAttribute('r', '1'); activeDot = null; }
+                _lastHitEl = null;
+            }
+            return;
+        }
+        if (hit === _lastHitEl) return;
+        _lastHitEl = hit;
+
+        var year = hit.getAttribute('data-year');
+        var total = parseFloat(hit.getAttribute('data-total'));
+        var yoyPct = hit.getAttribute('data-yoy');
+        var execName = hit.getAttribute('data-name');
+        var ticker = hit.getAttribute('data-ticker');
+
+        var html = '<div class="neo-sparkline-tip-year">FY' + year + '</div>';
+        html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">Total Comp</span><span class="neo-sparkline-tip-val neo-sparkline-tip-accent">' + formatCurrency(total) + '</span></div>';
+        if (yoyPct !== '') {
+            var pctNum = parseFloat(yoyPct);
+            var pctCls = pctNum >= 0 ? 'positive' : 'negative';
+            var pctSign = pctNum >= 0 ? '+' : '\u2212';
+            var pctAbs = Math.abs(pctNum);
+            var pctStr = pctAbs >= 100 ? Math.round(pctAbs) + '%' : pctAbs.toFixed(1) + '%';
+            html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">vs Prior Year</span><span class="neo-sparkline-tip-val neo-sparkline-tip-' + pctCls + '">' + pctSign + pctStr + '</span></div>';
+        }
+        if (execName) {
+            html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">Executive</span><span class="neo-sparkline-tip-val">' + execName + '</span></div>';
+        }
+        tip.innerHTML = html;
+        tip.style.display = '';
+
+        var svgEl = hit.closest('svg');
+        if (svgEl) {
+            var svgRect = svgEl.getBoundingClientRect();
+            var cx = parseFloat(hit.getAttribute('cx'));
+            var cy = parseFloat(hit.getAttribute('cy'));
+            var svgW = parseFloat(svgEl.getAttribute('width')) || svgRect.width;
+            var svgH = parseFloat(svgEl.getAttribute('height')) || svgRect.height;
+            var dotX = svgRect.left + (cx / svgW) * svgRect.width;
+            var dotY = svgRect.top + (cy / svgH) * svgRect.height;
+
+            var tipRect = tip.getBoundingClientRect();
+            var left = dotX - tipRect.width / 2;
+            var top = dotY - tipRect.height - 10 + window.scrollY;
+
+            if (left < 4) left = 4;
+            if (left + tipRect.width > window.innerWidth - 4) left = window.innerWidth - tipRect.width - 4;
+            if (top < window.scrollY + 4) top = dotY + 14 + window.scrollY;
+
+            tip.style.left = left + 'px';
+            tip.style.top = top + 'px';
+        }
+
+        var idx = parseInt(hit.getAttribute('data-idx'));
+        var visibleDots = svgEl ? svgEl.querySelectorAll('.neo-spark-dot') : [];
+        if (activeDot) activeDot.setAttribute('r', '1');
+        if (visibleDots[idx]) {
+            activeDot = visibleDots[idx];
+            activeDot.setAttribute('r', '2.5');
+        }
+    });
+
+    tableWrap.addEventListener('mouseout', function(e) {
+        var hit = e.target.closest ? e.target.closest('.neo-spark-dot-hit') : null;
+        if (!hit) return;
+        var toEl = e.relatedTarget;
+        var toHit = toEl && toEl.closest ? toEl.closest('.neo-spark-dot-hit') : null;
+        if (toHit) return;
+        tip.style.display = 'none';
+        _lastHitEl = null;
+        if (activeDot) {
+            activeDot.setAttribute('r', '1');
+            activeDot = null;
+        }
+    });
+}
+
 /* === Dual Sparkline Tooltip — interactive hover tooltips for sector vs S&P 500 equity trend sparkline in insights === */
 function setupDualSparklineTooltips() {
     var grid = document.getElementById('insights-grid');
@@ -7321,6 +7466,7 @@ function setupDualSparklineTooltips() {
     setupDetailPanel(companies);
     setupSparklineTooltips();
     setupYoYSparklineTooltips();
+    setupNeoSparklineTooltips();
     setupDualSparklineTooltips();
 
     // Expose global API for chart → table cross-section linking

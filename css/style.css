@@ -8876,3 +8876,143 @@ body.light-mode .cross-sector-pair-select:focus {
     .quartile-narrative { border-color: #ccc; }
     .conc-dist-narrative { border-color: #ccc; }
 }
+
+/* === NEO Sparkline Tooltips === */
+.neo-spark-dot { pointer-events: none; transition: r 0.12s ease; }
+.neo-spark-dot-hit { cursor: pointer; }
+.neo-sparkline-tip {
+    position: absolute;
+    z-index: 9999;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 8px 10px;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    min-width: 120px;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: #e4e4e7;
+}
+.neo-sparkline-tip-year {
+    font-weight: 600;
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+}
+.neo-sparkline-tip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 1px 0;
+}
+.neo-sparkline-tip-label { color: #a1a1aa; }
+.neo-sparkline-tip-val {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-weight: 500;
+    text-align: right;
+}
+.neo-sparkline-tip-accent { color: #ffd166; font-weight: 600; }
+.neo-sparkline-tip-positive { color: #06d6a0; font-weight: 600; }
+.neo-sparkline-tip-negative { color: #ef476f; font-weight: 600; }
+[data-theme="light"] .neo-sparkline-tip {
+    background: #fff;
+    border-color: rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    color: #1a1a2e;
+}
+[data-theme="light"] .neo-sparkline-tip-year {
+    color: #1a1a2e;
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .neo-sparkline-tip-label { color: #6b7280; }
+[data-theme="light"] .neo-sparkline-tip-accent { color: #d97706; }
+[data-theme="light"] .neo-sparkline-tip-positive { color: #059669; }
+[data-theme="light"] .neo-sparkline-tip-negative { color: #dc2626; }
+
+/* === CEO Pay Gap Visualization === */
+.neo-pay-gap-section {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+}
+.neo-pay-gap-header {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e4e4e7;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.neo-pay-gap-year {
+    font-weight: 400;
+    color: #a1a1aa;
+    font-size: 0.65rem;
+}
+.neo-pay-gap-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 0.65rem;
+}
+.neo-pay-gap-name {
+    width: 100px;
+    min-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #c4c4cc;
+    font-size: 0.62rem;
+}
+.neo-pay-gap-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.neo-pay-gap-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    min-width: 2px;
+}
+.neo-pay-gap-bar-ceo {
+    background: #ffd166;
+}
+.neo-pay-gap-val {
+    min-width: 72px;
+    text-align: right;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 0.6rem;
+    color: #e4e4e7;
+    white-space: nowrap;
+}
+.neo-pay-gap-pct {
+    color: #a1a1aa;
+    font-size: 0.55rem;
+    margin-left: 2px;
+}
+
+[data-theme="light"] .neo-pay-gap-section {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .neo-pay-gap-header { color: #1a1a2e; }
+[data-theme="light"] .neo-pay-gap-year { color: #6b7280; }
+[data-theme="light"] .neo-pay-gap-name { color: #4b5563; }
+[data-theme="light"] .neo-pay-gap-bar-wrap { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .neo-pay-gap-bar-ceo { background: #d97706; }
+[data-theme="light"] .neo-pay-gap-val { color: #1a1a2e; }
+[data-theme="light"] .neo-pay-gap-pct { color: #6b7280; }
+
+@media (max-width: 600px) {
+    .neo-pay-gap-name { width: 70px; min-width: 70px; }
+    .neo-pay-gap-val { min-width: 60px; }
+}
