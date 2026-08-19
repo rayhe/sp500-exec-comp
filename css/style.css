@@ -4944,6 +4944,95 @@ footer li::before {
 }
 
 /* === Peer Overlap Analysis Panel === */
+/* --- Comparison Radar Overlay --- */
+.comparison-radar-panel {
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.cmp-radar-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.cmp-radar-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+.cmp-radar-sub {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+.cmp-radar-body {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.cmp-radar-svg-wrap {
+    flex: 0 0 auto;
+}
+.cmp-radar-svg-wrap svg {
+    display: block;
+}
+.cmp-radar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.cmp-radar-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cmp-radar-legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.cmp-radar-legend-ref {
+    background: rgba(255,209,102,0.15) !important;
+}
+.cmp-radar-legend-ticker {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .comparison-radar-panel {
+    background: #fff;
+    border-color: rgba(0,0,0,0.08);
+}
+
+@media (max-width: 600px) {
+    .cmp-radar-body {
+        flex-direction: column;
+    }
+    .cmp-radar-legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+    }
+}
+
+@media print {
+    .comparison-radar-panel {
+        break-inside: avoid;
+    }
+    .cmp-radar-svg-wrap svg {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
 .peer-overlap-panel {
     margin-bottom: 20px;
     padding: 16px 20px;

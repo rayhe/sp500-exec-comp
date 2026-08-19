@@ -57,6 +57,8 @@ function toggleTheme() {
     if (window._redrawNetwork) window._redrawNetwork();
     // Re-render comparison chart if visible
     if (window._redrawComparisonChart) window._redrawComparisonChart();
+    // Re-render comparison radar overlay
+    if (window._redrawComparisonRadar) window._redrawComparisonRadar();
     // Re-render sector compensation heatmap (text contrast depends on theme)
     if (window._redrawSectorHeatmap) window._redrawSectorHeatmap();
     // Re-render role × sector heatmap (text contrast depends on theme)
@@ -9370,6 +9372,7 @@ function setupDualSparklineTooltips() {
             setTimeout(updateScrollIndicator, 300);
             // Redraw comparison chart on resize
             if (window._redrawComparisonChart) setTimeout(window._redrawComparisonChart, 260);
+            if (window._redrawComparisonRadar) setTimeout(window._redrawComparisonRadar, 280);
         });
 
         // Check after initial render and after any re-render
@@ -10297,6 +10300,202 @@ function setupDualSparklineTooltips() {
         }
     }
 
+    /* === Comparison Radar Overlay — multi-company percentile profile === */
+    function renderComparisonRadar(selected, parentEl) {
+        // Remove existing radar overlay if present
+        var existing = document.getElementById('comparison-radar-panel');
+        if (existing) existing.remove();
+
+        if (selected.length < 2) return;
+
+        // Only proceed if at least 2 companies have valid radar profiles
+        var withRadar = selected.filter(function(c) {
+            if (!c._radarProfile) return false;
+            var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange'];
+            var validCount = dims.filter(function(d) { return c._radarProfile[d] != null; }).length;
+            return validCount >= 4;
+        });
+        if (withRadar.length < 2) return;
+
+        var radarDims = [
+            { key: 'comp', label: 'Total Comp', tip: 'CEO total compensation percentile — higher = higher paid' },
+            { key: 'stockPct', label: 'Equity Mix', tip: 'Stock awards as % of total — higher = more equity-heavy' },
+            { key: 'payRatio', label: 'Pay Ratio', tip: 'CEO-to-worker pay ratio percentile — higher = wider gap' },
+            { key: 'concPct', label: 'Concentration', tip: 'CEO share of total NEO pay — higher = more concentrated' },
+            { key: 'workerPay', label: 'Worker Pay', tip: 'Median worker pay percentile — higher = better-paid workers' },
+            { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year comp change — higher = bigger increase' }
+        ];
+        // Use only dims that all compared companies have data for
+        var validDims = radarDims.filter(function(d) {
+            return withRadar.every(function(c) { return c._radarProfile[d.key] != null; });
+        });
+        if (validDims.length < 4) return;
+
+        var panel = document.createElement('div');
+        panel.id = 'comparison-radar-panel';
+        panel.className = 'comparison-radar-panel';
+
+        var dark = isDarkTheme();
+        var size = 300;
+        var cx = size / 2, cy = size / 2;
+        var maxR = size / 2 - 40;
+        var angleStep = (2 * Math.PI) / validDims.length;
+        var startAngle = -Math.PI / 2;
+
+        function polarX(pct, i) { return cx + maxR * (pct / 100) * Math.cos(startAngle + i * angleStep); }
+        function polarY(pct, i) { return cy + maxR * (pct / 100) * Math.sin(startAngle + i * angleStep); }
+
+        // Build header + SVG container
+        var html = '<div class="cmp-radar-header">';
+        html += '<span class="cmp-radar-title">Compensation Profile Overlay</span>';
+        html += '<span class="cmp-radar-sub">Percentile position across ' + validDims.length + ' dimensions — hover dots for detail</span>';
+        html += '</div>';
+        html += '<div class="cmp-radar-body">';
+        html += '<div class="cmp-radar-svg-wrap" id="cmp-radar-svg-wrap"></div>';
+        html += '<div class="cmp-radar-legend" id="cmp-radar-legend"></div>';
+        html += '</div>';
+
+        panel.innerHTML = html;
+
+        // Insert before the grid (after the bar chart, before peer overlap)
+        var chartEl = document.getElementById('comparison-chart');
+        if (chartEl && chartEl.nextSibling) {
+            chartEl.parentNode.insertBefore(panel, chartEl.nextSibling);
+        } else {
+            parentEl.parentNode.insertBefore(panel, parentEl);
+        }
+
+        // Draw SVG using D3
+        var svgWrap = document.getElementById('cmp-radar-svg-wrap');
+        if (!svgWrap) return;
+
+        var svg = d3.select(svgWrap).append('svg')
+            .attr('width', size).attr('height', size)
+            .attr('viewBox', '0 0 ' + size + ' ' + size)
+            .style('max-width', '100%');
+
+        // Grid rings at 25, 50, 75, 100%
+        [25, 50, 75, 100].forEach(function(pct) {
+            var pts = validDims.map(function(d, i) { return polarX(pct, i) + ',' + polarY(pct, i); }).join(' ');
+            svg.append('polygon')
+                .attr('points', pts)
+                .attr('fill', 'none')
+                .attr('stroke', dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)')
+                .attr('stroke-width', pct === 50 ? 1.2 : 0.5);
+            // Ring label at the top axis
+            svg.append('text')
+                .attr('x', cx + 3).attr('y', cy - maxR * (pct / 100) - 2)
+                .attr('fill', dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)')
+                .attr('font-size', '7px')
+                .attr('font-family', 'Inter, sans-serif')
+                .text('P' + pct);
+        });
+
+        // Axis lines
+        validDims.forEach(function(d, i) {
+            svg.append('line')
+                .attr('x1', cx).attr('y1', cy)
+                .attr('x2', polarX(100, i)).attr('y2', polarY(100, i))
+                .attr('stroke', dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)')
+                .attr('stroke-width', 0.5);
+        });
+
+        // S&P 500 median reference polygon (P50 on all axes)
+        var sp500Pts = validDims.map(function(d, i) { return polarX(50, i) + ',' + polarY(50, i); }).join(' ');
+        svg.append('polygon')
+            .attr('points', sp500Pts)
+            .attr('fill', 'rgba(255,209,102,0.06)')
+            .attr('stroke', 'rgba(255,209,102,0.35)')
+            .attr('stroke-width', 1.2)
+            .attr('stroke-dasharray', '4,3');
+
+        // Company polygons — each with its own color, drawn in order so last is on top
+        var compColors = ['#00b4d8', '#06d6a0', '#ffd166', '#a78bfa'];
+        withRadar.forEach(function(c, ci) {
+            var color = compColors[ci % compColors.length];
+            var rp = c._radarProfile;
+            var pts = validDims.map(function(d, i) {
+                var val = rp[d.key] != null ? rp[d.key] : 0;
+                return polarX(val, i) + ',' + polarY(val, i);
+            }).join(' ');
+
+            // Fill polygon
+            svg.append('polygon')
+                .attr('points', pts)
+                .attr('fill', color)
+                .attr('fill-opacity', 0.12)
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('stroke-opacity', 0.8);
+
+            // Data point dots with title tooltips
+            validDims.forEach(function(d, i) {
+                var val = rp[d.key] != null ? rp[d.key] : 0;
+                var dx = polarX(val, i);
+                var dy = polarY(val, i);
+
+                // Invisible larger hit circle
+                svg.append('circle')
+                    .attr('cx', dx).attr('cy', dy).attr('r', 10)
+                    .attr('fill', 'transparent')
+                    .attr('cursor', 'default')
+                    .append('title').text(c.ticker + ' — ' + d.label + ': P' + val + ' (' + d.tip + ')');
+
+                // Visible dot
+                svg.append('circle')
+                    .attr('cx', dx).attr('cy', dy).attr('r', 3.5)
+                    .attr('fill', color)
+                    .attr('stroke', dark ? '#18181b' : '#ffffff')
+                    .attr('stroke-width', 1.5)
+                    .attr('pointer-events', 'none');
+            });
+        });
+
+        // Axis labels with dimension name
+        validDims.forEach(function(d, i) {
+            var labelR = maxR + 24;
+            var lx = cx + labelR * Math.cos(startAngle + i * angleStep);
+            var ly = cy + labelR * Math.sin(startAngle + i * angleStep);
+            var anchor = 'middle';
+            if (Math.cos(startAngle + i * angleStep) < -0.3) anchor = 'end';
+            else if (Math.cos(startAngle + i * angleStep) > 0.3) anchor = 'start';
+            svg.append('text')
+                .attr('x', lx).attr('y', ly)
+                .attr('text-anchor', anchor)
+                .attr('dominant-baseline', 'middle')
+                .attr('font-size', '10px')
+                .attr('font-weight', '500')
+                .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+                .attr('font-family', 'Inter, sans-serif')
+                .text(d.label)
+                .append('title').text(d.tip);
+        });
+
+        // Build legend
+        var legendEl = document.getElementById('cmp-radar-legend');
+        if (legendEl) {
+            var legendHtml = '';
+            withRadar.forEach(function(c, ci) {
+                var color = compColors[ci % compColors.length];
+                legendHtml += '<span class="cmp-radar-legend-item">';
+                legendHtml += '<span class="cmp-radar-legend-swatch" style="background:' + color + '"></span>';
+                legendHtml += '<span class="cmp-radar-legend-ticker">' + c.ticker + '</span>';
+                legendHtml += '</span>';
+            });
+            // S&P 500 reference
+            legendHtml += '<span class="cmp-radar-legend-item">';
+            legendHtml += '<span class="cmp-radar-legend-swatch cmp-radar-legend-ref" style="background:rgba(255,209,102,0.3);border:1.5px dashed rgba(255,209,102,0.6)"></span>';
+            legendHtml += '<span class="cmp-radar-legend-ticker" style="color:' + (dark ? '#a1a1aa' : '#6b7280') + '">S&P 500 (P50)</span>';
+            legendHtml += '</span>';
+            legendEl.innerHTML = legendHtml;
+        }
+
+        // Store redraw function for theme toggle
+        window._redrawComparisonRadar = function() {
+            renderComparisonRadar(selected, parentEl);
+        };
+    }
+
     /* === Peer Overlap Analysis for Comparison View === */
     function renderPeerOverlap(selected, gridEl) {
         // Remove existing overlap panel if present
@@ -10544,6 +10743,9 @@ function setupDualSparklineTooltips() {
         }
         renderComparisonChart(chartContainer, selected, rankMap, roleCtx);
 
+        // === Comparison Radar Overlay ===
+        renderComparisonRadar(selected, grid);
+
         // === Peer Overlap Analysis ===
         renderPeerOverlap(selected, grid);
 
@@ -10731,6 +10933,9 @@ function setupDualSparklineTooltips() {
         if (chartEl) chartEl.innerHTML = '';
         var overlapEl = document.getElementById('peer-overlap-panel');
         if (overlapEl) overlapEl.remove();
+        var radarOverlayEl = document.getElementById('comparison-radar-panel');
+        if (radarOverlayEl) radarOverlayEl.remove();
+        window._redrawComparisonRadar = null;
         // Return focus to the element that triggered the comparison
         if (_preFocusElement && _preFocusElement.isConnected) {
             _preFocusElement.focus();
@@ -11031,6 +11236,9 @@ function setupDualSparklineTooltips() {
             if (chartEl) chartEl.innerHTML = '';
             var overlapEl = document.getElementById('peer-overlap-panel');
             if (overlapEl) overlapEl.remove();
+            var radarOvEl = document.getElementById('comparison-radar-panel');
+            if (radarOvEl) radarOvEl.remove();
+            window._redrawComparisonRadar = null;
         }
     });
 
@@ -11138,6 +11346,9 @@ function setupDualSparklineTooltips() {
                 compSection.classList.remove('visible');
                 var chartEl = document.getElementById('comparison-chart');
                 if (chartEl) chartEl.innerHTML = '';
+                var radarOvEsc = document.getElementById('comparison-radar-panel');
+                if (radarOvEsc) radarOvEsc.remove();
+                window._redrawComparisonRadar = null;
                 announce('Comparison panel closed');
                 // Return focus to the element that triggered the comparison
                 if (_preFocusElement && _preFocusElement.isConnected) {
