@@ -168,19 +168,37 @@ function computeCeoTrend(companies) {
 }
 
 /* Pre-compute CEO stock awards as percentage of total compensation.
-   Sets c._ceoStockPct (0-100 or null) for the latest fiscal year. */
+   Sets c._ceoStockPct (0-100 or null) for the latest fiscal year.
+   Also sets c._ceoStockPctHistory = { year: pct, ... } for multi-year trend analysis. */
 function computeCeoStockPct(companies) {
     companies.forEach(function(c) {
         c._ceoStockPct = null;
         c._ceoStockPctSort = null;
+        c._ceoStockPctHistory = {};
         if (!c.executives || c.executives.length === 0) return;
         var allYears = [];
         c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
         allYears.sort(function(a, b) { return b - a; });
         var latestYear = allYears[0];
+
+        // Compute stock % for each available year (multi-year trend)
+        allYears.forEach(function(yr) {
+            var yearExecs = c.executives.filter(function(e) { return e.year === yr; });
+            var ceo = yearExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo && yearExecs.length > 0) {
+                ceo = yearExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            if (ceo && ceo.total && ceo.total > 0) {
+                var sa = (ceo.stock_awards || 0) + (ceo.option_awards || 0);
+                c._ceoStockPctHistory[yr] = sa / ceo.total * 100;
+            }
+        });
+
         var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
 
-        // Find CEO
+        // Find CEO for latest year
         var ceo = latestExecs.find(function(e) {
             return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
         });
@@ -2894,6 +2912,126 @@ function renderStockPctSortSummary(companies) {
         var leastEq = sectorEntries[sectorEntries.length - 1];
         html += '<div class="sort-summary-detail">Sector skew: <strong style="color:' + getSectorColor(mostEq.sector) + '">' + mostEq.sector + '</strong> is most equity-heavy (median ' + Math.round(mostEq.median) + '%, ' + Math.round(mostEq.domRate) + '% dominant), ';
         html += 'while <strong style="color:' + getSectorColor(leastEq.sector) + '">' + leastEq.sector + '</strong> is most cash-weighted (median ' + Math.round(leastEq.median) + '%).</div>';
+    }
+
+    // Multi-year equity % trend sparkline — shows how equity mix has shifted across FY years
+    var yearBuckets = {};
+    withData.forEach(function(c) {
+        if (!c._ceoStockPctHistory) return;
+        var yrs = Object.keys(c._ceoStockPctHistory);
+        yrs.forEach(function(yr) {
+            var yri = parseInt(yr, 10);
+            if (!yearBuckets[yri]) yearBuckets[yri] = [];
+            yearBuckets[yri].push(c._ceoStockPctHistory[yr]);
+        });
+    });
+    var trendYears = Object.keys(yearBuckets).map(Number).sort(function(a, b) { return a - b; });
+    // Only show trend if we have 2+ years with meaningful coverage (50+ companies each)
+    var trendData = [];
+    trendYears.forEach(function(yr) {
+        if (yearBuckets[yr].length >= 50) {
+            var sv = yearBuckets[yr].slice().sort(function(a, b) { return a - b; });
+            trendData.push({ year: yr, median: computeMedian(sv), count: sv.length, p25: sv[Math.floor(sv.length * 0.25)], p75: sv[Math.floor(sv.length * 0.75)] });
+        }
+    });
+
+    if (trendData.length >= 2) {
+        var firstPt = trendData[0];
+        var lastPt = trendData[trendData.length - 1];
+        var delta = lastPt.median - firstPt.median;
+        var dirLabel = delta > 0.5 ? '\u2191 Rising' : delta < -0.5 ? '\u2193 Falling' : '\u2194 Stable';
+        var dirColor = delta > 0.5 ? '#06d6a0' : delta < -0.5 ? '#ef476f' : '#ffd166';
+
+        // Build inline SVG sparkline
+        var svgW = 120, svgH = 32, pad = 4;
+        var minVal = Math.min.apply(null, trendData.map(function(d) { return d.p25 != null ? d.p25 : d.median; }));
+        var maxVal = Math.max.apply(null, trendData.map(function(d) { return d.p75 != null ? d.p75 : d.median; }));
+        var range = Math.max(maxVal - minVal, 1);
+        // Add some padding to range
+        minVal = Math.max(0, minVal - range * 0.15);
+        maxVal = maxVal + range * 0.15;
+        range = maxVal - minVal;
+
+        function _tx(i) { return pad + (trendData.length > 1 ? i / (trendData.length - 1) : 0.5) * (svgW - 2 * pad); }
+        function _ty(v) { return svgH - pad - ((v - minVal) / range) * (svgH - 2 * pad); }
+
+        // IQR ribbon (P25-P75)
+        var ribbonPath = '';
+        var hasIQR = trendData.every(function(d) { return d.p25 != null && d.p75 != null; });
+        if (hasIQR) {
+            ribbonPath = 'M';
+            trendData.forEach(function(d, i) { ribbonPath += (i > 0 ? 'L' : '') + _tx(i).toFixed(1) + ',' + _ty(d.p75).toFixed(1); });
+            for (var ri = trendData.length - 1; ri >= 0; ri--) {
+                ribbonPath += 'L' + _tx(ri).toFixed(1) + ',' + _ty(trendData[ri].p25).toFixed(1);
+            }
+            ribbonPath += 'Z';
+        }
+
+        // Median line
+        var linePath = 'M';
+        trendData.forEach(function(d, i) { linePath += (i > 0 ? 'L' : '') + _tx(i).toFixed(1) + ',' + _ty(d.median).toFixed(1); });
+
+        var svg = '<svg class="eq-trend-sparkline" width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '">';
+        if (hasIQR) {
+            svg += '<path d="' + ribbonPath + '" fill="' + dirColor + '" opacity="0.15" />';
+        }
+        svg += '<path d="' + linePath + '" fill="none" stroke="' + dirColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />';
+        trendData.forEach(function(d, i) {
+            svg += '<circle cx="' + _tx(i).toFixed(1) + '" cy="' + _ty(d.median).toFixed(1) + '" r="2.5" fill="' + dirColor + '" />';
+        });
+        svg += '</svg>';
+
+        // Year labels below sparkline
+        var yearLabels = trendData.map(function(d) { return 'FY' + String(d.year).slice(-2); }).join(' \u2192 ');
+
+        html += '<div class="eq-trend-section">';
+        html += '<div class="eq-trend-row">';
+        html += svg;
+        html += '<div class="eq-trend-text">';
+        html += '<span class="eq-trend-dir" style="color:' + dirColor + '">' + dirLabel + '</span> ';
+        html += '<span class="eq-trend-vals">';
+        html += trendData.map(function(d) { return Math.round(d.median * 10) / 10 + '%'; }).join(' \u2192 ');
+        html += '</span>';
+        html += '<span class="eq-trend-years">' + yearLabels + '</span>';
+        html += '</div>';
+        html += '</div>';
+
+        // Show companies with biggest equity shift (latest - earliest, >15 pp, sensible range)
+        var shifters = [];
+        withData.forEach(function(c) {
+            if (!c._ceoStockPctHistory) return;
+            var cYears = Object.keys(c._ceoStockPctHistory).map(Number).sort(function(a, b) { return a - b; });
+            if (cYears.length < 2) return;
+            var earliest = c._ceoStockPctHistory[cYears[0]];
+            var latest = c._ceoStockPctHistory[cYears[cYears.length - 1]];
+            // Filter out anomalous values (>100% from accounting, or 0%->100% CEO transitions)
+            if (earliest < 0 || earliest > 100 || latest < 0 || latest > 100) return;
+            if ((earliest === 0 && latest === 100) || (earliest === 100 && latest === 0)) return;
+            shifters.push({ ticker: c.ticker, shift: latest - earliest, from: earliest, to: latest });
+        });
+        shifters.sort(function(a, b) { return Math.abs(b.shift) - Math.abs(a.shift); });
+        var bigUp = shifters.filter(function(s) { return s.shift >= 15; }).slice(0, 3);
+        var bigDown = shifters.filter(function(s) { return s.shift <= -15; }).slice(0, 3);
+
+        if (bigUp.length > 0 || bigDown.length > 0) {
+            html += '<div class="eq-trend-shifters">';
+            if (bigUp.length > 0) {
+                html += '<span style="color:#06d6a0">\u2191 Biggest equity shift:</span> ';
+                html += bigUp.map(function(s) {
+                    return '<span style="color:#06d6a0">' + s.ticker + ' (+' + Math.round(s.shift) + 'pp)</span>';
+                }).join(', ');
+            }
+            if (bigUp.length > 0 && bigDown.length > 0) html += ' &nbsp;\u00b7&nbsp; ';
+            if (bigDown.length > 0) {
+                html += '<span style="color:#ef476f">\u2193 Cash shift:</span> ';
+                html += bigDown.map(function(s) {
+                    return '<span style="color:#ef476f">' + s.ticker + ' (' + Math.round(s.shift) + 'pp)</span>';
+                }).join(', ');
+            }
+            html += '</div>';
+        }
+
+        html += '</div>';
     }
 
     html += '</div>';

@@ -7118,6 +7118,17 @@ footer li::before {
 .eq-dist-bracket-labels { display: flex; gap: 3px; }
 .eq-dist-bracket-label { flex: 1; text-align: center; font-size: 0.52rem; color: var(--text-muted); min-width: 20px; }
 
+/* Equity % multi-year trend sparkline */
+.eq-trend-section { margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); }
+.eq-trend-row { display: flex; align-items: center; gap: 10px; }
+.eq-trend-sparkline { flex-shrink: 0; }
+.eq-trend-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 0.72rem; }
+.eq-trend-dir { font-weight: 600; }
+.eq-trend-vals { font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.68rem; color: var(--text-primary); }
+.eq-trend-years { font-size: 0.6rem; color: var(--text-muted); }
+.eq-trend-shifters { margin-top: 4px; font-size: 0.66rem; line-height: 1.3; }
+[data-theme="light"] .eq-trend-section { border-top-color: rgba(0,0,0,0.08); }
+
 /* 5-tier equity table badges */
 .eq-tbl-badge {
     display: inline-flex;
