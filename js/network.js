@@ -712,7 +712,17 @@ function initNetwork(peerData) {
                 if (!s || !t) return;
                 ctx.beginPath();
                 ctx.moveTo(s.x, s.y);
-                ctx.lineTo(t.x, t.y);
+                // Use quadratic curve for same-sector edges (consistent with default rendering)
+                if (s.sector && t.sector && s.sector === t.sector) {
+                    var mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2;
+                    var dx = t.x - s.x, dy = t.y - s.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var curv = Math.min(dist * 0.12, 30);
+                    var side = (src.charCodeAt(0) + tgt.charCodeAt(0)) % 2 === 0 ? 1 : -1;
+                    ctx.quadraticCurveTo(mx + (-dy / (dist || 1) * curv * side), my + (dx / (dist || 1) * curv * side), t.x, t.y);
+                } else {
+                    ctx.lineTo(t.x, t.y);
+                }
                 ctx.stroke();
                 _drawArrow(s.x, s.y, t.x, t.y, getRadius(t), outColor);
             });
@@ -729,7 +739,17 @@ function initNetwork(peerData) {
                 if (!s || !t) return;
                 ctx.beginPath();
                 ctx.moveTo(s.x, s.y);
-                ctx.lineTo(t.x, t.y);
+                // Use quadratic curve for same-sector edges (consistent with default rendering)
+                if (s.sector && t.sector && s.sector === t.sector) {
+                    var mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2;
+                    var dx = t.x - s.x, dy = t.y - s.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    var curv = Math.min(dist * 0.12, 30);
+                    var side = (src.charCodeAt(0) + tgt.charCodeAt(0)) % 2 === 0 ? 1 : -1;
+                    ctx.quadraticCurveTo(mx + (-dy / (dist || 1) * curv * side), my + (dx / (dist || 1) * curv * side), t.x, t.y);
+                } else {
+                    ctx.lineTo(t.x, t.y);
+                }
                 ctx.stroke();
                 _drawArrow(s.x, s.y, t.x, t.y, getRadius(t), inColor);
             });

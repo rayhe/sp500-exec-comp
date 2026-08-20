@@ -1112,6 +1112,8 @@ function sortTableByKey(key, dir) {
     if (distChip) distChip.remove();
     var concChip = document.getElementById('conc-filter-chip');
     if (concChip) concChip.remove();
+    var tenureChip = document.getElementById('tenure-filter-chip');
+    if (tenureChip) tenureChip.remove();
 
     // Clear search input
     var searchInput = document.getElementById('table-search');
@@ -1471,13 +1473,20 @@ function populateInsights(comp, trends, sectorFilter) {
         var tenureVals = tenureCompanies.map(function(c) { return c._ceoTenureYears; }).sort(function(a, b) { return a - b; });
         var medTenure = computeMedian(tenureVals);
         var longTenure = tenureCompanies.filter(function(c) { return c._ceoTenureYears >= 20; });
+        var midTenure = tenureCompanies.filter(function(c) { return c._ceoTenureYears >= 10 && c._ceoTenureYears < 20; });
+        var shortTenure = tenureCompanies.filter(function(c) { return c._ceoTenureYears >= 3 && c._ceoTenureYears < 10; });
         var newCeos = tenureCompanies.filter(function(c) { return c._ceoTenureYears < 3; });
         var longestCeo = tenureCompanies.slice().sort(function(a, b) { return b._ceoTenureYears - a._ceoTenureYears; })[0];
         insights.push({
             icon: '⏱️',
             label: 'CEO Tenure',
             value: medTenure + ' year median',
-            detail: tenureCompanies.length + ' companies with tenure data (DEF 14A proxy). Median: ' + medTenure + ' years. ' + longTenure.length + ' veterans (20+ years), ' + newCeos.length + ' new CEOs (<3 years). Longest-tenured: ' + longestCeo.ceo_name + ' (' + longestCeo.ticker + ') at ' + longestCeo._ceoTenureYears + ' years (since ' + longestCeo._ceoTenureStart + ').',
+            detail: tenureCompanies.length + ' companies with tenure data (DEF 14A proxy). Median: ' + medTenure + ' years. ' +
+                '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(20,Infinity,\'Veterans (20+ yrs)\',\'20+ years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + longTenure.length + ' veterans (20+)</span>, ' +
+                '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(10,20,\'Established (10\u201320 yrs)\',\'10\u201320 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + midTenure.length + ' established (10\u201320)</span>, ' +
+                '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(3,10,\'Mid-tenure (3\u201310 yrs)\',\'3\u201310 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + shortTenure.length + ' mid-tenure (3\u201310)</span>, ' +
+                '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(0,3,\'New CEOs (<3 yrs)\',\'<3 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + newCeos.length + ' new (<3)</span>. ' +
+                'Longest-tenured: ' + longestCeo.ceo_name + ' (' + longestCeo.ticker + ') at ' + longestCeo._ceoTenureYears + ' years (since ' + longestCeo._ceoTenureStart + ').',
             _tickers: [longestCeo.ticker],
             action: function() {
                 insightResetAndSort('_ceoTenureYears', 'desc');
@@ -1539,6 +1548,7 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     }
 
+    // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
     // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
     (function() {
         var corrMetrics = [
@@ -8921,6 +8931,61 @@ function setupDualSparklineTooltips() {
     }
     window._updateAspDeltaFilterIndicator = updateAspDeltaFilterIndicator;
 
+    // CEO Tenure Quartile filter — filter table by tenure brackets
+    window.filterByTenureQuartile = function(minYrs, maxYrs, tag, label) {
+        // Toggle off if same quartile clicked again
+        if (window._activeTenureQuartile && window._activeTenureQuartile.min === minYrs && window._activeTenureQuartile.max === maxYrs) {
+            window._activeTenureQuartile = null;
+        } else {
+            window._activeTenureQuartile = { min: minYrs, max: maxYrs, tag: tag, label: label };
+        }
+
+        currentPage = 1;
+
+        // Sort by CEO tenure descending
+        currentSort = { key: '_ceoTenureYears', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_ceoTenureYears') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updateTenureFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeTenureQuartile ? 'Filtered to ' + tag + ' tenure (' + label + ')' : 'Tenure filter cleared');
+    };
+
+    function updateTenureFilterIndicator() {
+        var existing = document.getElementById('tenure-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeTenureQuartile) {
+            var tq = window._activeTenureQuartile;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × ' + tq.tag : tq.tag;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'tenure-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(6,214,160,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(6,214,160,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#06d6a0';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
+            chip.title = 'Click to clear tenure filter';
+            chip.addEventListener('click', function() {
+                window._activeTenureQuartile = null;
+                chip.remove();
+                renderTable(companies);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateTenureFilterIndicator = updateTenureFilterIndicator;
+
     // Helper to derive rgba chip background from hex color
     function hexToChipBg(hex) {
         var r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
@@ -9222,6 +9287,7 @@ function setupDualSparklineTooltips() {
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
+        if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
 
                 renderTable(companies);
 
