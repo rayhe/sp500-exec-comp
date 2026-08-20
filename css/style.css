@@ -5088,6 +5088,29 @@ footer li::before {
 .cmp-div-sep { color: var(--text-secondary); font-size: 0.6rem; }
 [data-theme="light"] .cmp-div-bar-wrap { background: rgba(0,0,0,0.04); }
 
+/* === Profile Similarity Score === */
+.cmp-radar-similarity { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+.cmp-sim-title { font-weight: 600; font-size: 0.75rem; color: var(--text-primary); margin-bottom: 6px; }
+.cmp-sim-score-wrap { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.cmp-sim-score { font-size: 1.8rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.cmp-sim-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.02em; }
+.cmp-sim-gauge { margin-bottom: 8px; }
+.cmp-sim-gauge-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; }
+.cmp-sim-gauge-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+.cmp-sim-gauge-labels { display: flex; justify-content: space-between; font-size: 0.55rem; color: var(--text-secondary); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.cmp-sim-pairs { margin-top: 8px; }
+.cmp-sim-pairs-title { font-size: 0.62rem; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.cmp-sim-pair { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-size: 0.68rem; }
+.cmp-sim-pair-tickers { display: flex; align-items: center; gap: 2px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-weight: 500; width: 80px; flex-shrink: 0; font-size: 0.62rem; }
+.cmp-sim-pair-x { color: var(--text-secondary); font-size: 0.55rem; }
+.cmp-sim-pair-bar { flex: 1; height: 3px; border-radius: 1.5px; background: rgba(255,255,255,0.05); overflow: hidden; min-width: 30px; }
+.cmp-sim-pair-fill { height: 100%; border-radius: 1.5px; transition: width 0.3s ease; }
+.cmp-sim-pair-val { font-weight: 600; font-variant-numeric: tabular-nums; width: 22px; text-align: right; flex-shrink: 0; font-size: 0.65rem; }
+.cmp-sim-note { font-size: 0.55rem; color: var(--text-secondary); margin-top: 8px; font-style: italic; opacity: 0.7; }
+[data-theme="light"] .cmp-radar-similarity { border-top-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .cmp-sim-gauge-track { background: rgba(0,0,0,0.05); }
+[data-theme="light"] .cmp-sim-pair-bar { background: rgba(0,0,0,0.04); }
+
 /* Comparison radar legend dot (for divergence indicators) */
 .cmp-radar-legend-dot {
     width: 6px;

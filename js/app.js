@@ -10625,6 +10625,84 @@ function setupDualSparklineTooltips() {
             divEl.innerHTML = divHtml;
         }
 
+        // === Profile Similarity Score ===
+        // Compute pairwise similarity using RMSD of radar percentile vectors
+        var radarPairs = [];
+        for (var rpi = 0; rpi < withRadar.length; rpi++) {
+            for (var rpj = rpi + 1; rpj < withRadar.length; rpj++) {
+                var rSumSq = 0, rDimCount = 0;
+                validDims.forEach(function(d) {
+                    var v1 = withRadar[rpi]._radarProfile[d.key] || 0;
+                    var v2 = withRadar[rpj]._radarProfile[d.key] || 0;
+                    rSumSq += (v1 - v2) * (v1 - v2);
+                    rDimCount++;
+                });
+                var rRmsd = rDimCount > 0 ? Math.sqrt(rSumSq / rDimCount) : 100;
+                var rSim = Math.max(0, Math.round((1 - rRmsd / 100) * 100));
+                radarPairs.push({
+                    i: rpi, j: rpj,
+                    tickerA: withRadar[rpi].ticker,
+                    tickerB: withRadar[rpj].ticker,
+                    colorA: compColors[rpi % compColors.length],
+                    colorB: compColors[rpj % compColors.length],
+                    sim: rSim
+                });
+            }
+        }
+
+        if (radarPairs.length > 0) {
+            var avgSimScore = Math.round(radarPairs.reduce(function(s, p) { return s + p.sim; }, 0) / radarPairs.length);
+            function _simLabel(s) { return s >= 80 ? 'Very Similar' : s >= 60 ? 'Similar' : s >= 40 ? 'Moderate' : s >= 20 ? 'Different' : 'Very Different'; }
+            function _simColor(s) { return s >= 80 ? '#06d6a0' : s >= 60 ? '#34d399' : s >= 40 ? '#ffd166' : s >= 20 ? '#f59e0b' : '#ef476f'; }
+
+            var rightEl = document.querySelector('.cmp-radar-right');
+            if (rightEl) {
+                var simSection = document.createElement('div');
+                simSection.id = 'cmp-radar-similarity';
+                simSection.className = 'cmp-radar-similarity';
+
+                var simHtml = '<div class="cmp-sim-title">Profile Similarity</div>';
+
+                // Big score + label
+                simHtml += '<div class="cmp-sim-score-wrap">';
+                simHtml += '<span class="cmp-sim-score" style="color:' + _simColor(avgSimScore) + '">' + avgSimScore + '</span>';
+                simHtml += '<span class="cmp-sim-label" style="color:' + _simColor(avgSimScore) + '">' + _simLabel(avgSimScore) + '</span>';
+                simHtml += '</div>';
+
+                // Gauge bar
+                simHtml += '<div class="cmp-sim-gauge">';
+                simHtml += '<div class="cmp-sim-gauge-track">';
+                simHtml += '<div class="cmp-sim-gauge-fill" style="width:' + avgSimScore + '%;background:' + _simColor(avgSimScore) + '"></div>';
+                simHtml += '</div>';
+                simHtml += '<div class="cmp-sim-gauge-labels"><span>0</span><span>50</span><span>100</span></div>';
+                simHtml += '</div>';
+
+                // Pairwise breakdown for 3+ companies
+                if (radarPairs.length > 1) {
+                    simHtml += '<div class="cmp-sim-pairs">';
+                    simHtml += '<div class="cmp-sim-pairs-title">Pairwise</div>';
+                    radarPairs.forEach(function(p) {
+                        simHtml += '<div class="cmp-sim-pair">';
+                        simHtml += '<span class="cmp-sim-pair-tickers">';
+                        simHtml += '<span style="color:' + p.colorA + '">' + p.tickerA + '</span>';
+                        simHtml += '<span class="cmp-sim-pair-x">×</span>';
+                        simHtml += '<span style="color:' + p.colorB + '">' + p.tickerB + '</span>';
+                        simHtml += '</span>';
+                        simHtml += '<span class="cmp-sim-pair-bar"><span class="cmp-sim-pair-fill" style="width:' + p.sim + '%;background:' + _simColor(p.sim) + '"></span></span>';
+                        simHtml += '<span class="cmp-sim-pair-val" style="color:' + _simColor(p.sim) + '">' + p.sim + '</span>';
+                        simHtml += '</div>';
+                    });
+                    simHtml += '</div>';
+                }
+
+                // Method note
+                simHtml += '<div class="cmp-sim-note">Based on RMSD of percentile profiles across ' + validDims.length + ' dimensions</div>';
+
+                simSection.innerHTML = simHtml;
+                rightEl.appendChild(simSection);
+            }
+        }
+
         // Store redraw function for theme toggle
         window._redrawComparisonRadar = function() {
             renderComparisonRadar(selected, parentEl);
