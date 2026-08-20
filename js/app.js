@@ -1097,6 +1097,7 @@ function sortTableByKey(key, dir) {
     window._activeStockPctTier = null; // null=off, { min, max, label, color }
     window._activeGenderFilter = null; // null=off, 'F'=female CEOs, 'M'=male CEOs
     window._activeAspDeltaTier = null; // null=off, { min, max, tag, label }
+    window._activeTenureQuartile = null; // null=off, { min, max, label, tag }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -1538,6 +1539,107 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     }
 
+    // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
+    (function() {
+        var corrMetrics = [
+            { key: 'total_compensation', label: 'Total Comp', short: 'Comp', scatterKey: 'total_compensation', get: function(c) { return c.total_compensation; } },
+            { key: 'stockPct', label: 'Equity %', short: 'Eq%', scatterKey: '_ceoStockPctSort', get: function(c) { return c._ceoStockPct; } },
+            { key: 'payRatio', label: 'Pay Ratio', short: 'Ratio', scatterKey: 'pay_ratio', get: function(c) { return c.pay_ratio; } },
+            { key: 'concPct', label: 'CEO Conc', short: 'Conc', scatterKey: '_ceoConcPct', get: function(c) { return c._ceoConcPct; } },
+            { key: 'workerPay', label: 'Worker Pay', short: 'Worker', scatterKey: 'median_worker_pay', get: function(c) { return c.median_worker_pay; } },
+            { key: 'yoyChange', label: 'YoY Change', short: 'YoY', scatterKey: '_ceoYoYPct', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
+            { key: 'tenure', label: 'Tenure', short: 'Tenure', scatterKey: '_ceoTenureYears', get: function(c) { return c._ceoTenureYears; } },
+            { key: 'sopApproval', label: 'SoP Approval', short: 'SoP', scatterKey: '_sopApproval', get: function(c) { return c._sopApproval; } },
+            { key: 'aspDelta', label: 'Peer Delta', short: 'PeerΔ', scatterKey: null, get: function(c) { return c._aspDelta; } }
+        ];
+
+        function pearsonR(xArr, yArr) {
+            var n = xArr.length;
+            if (n < 5) return null;
+            var sumX = 0, sumY = 0;
+            for (var i = 0; i < n; i++) { sumX += xArr[i]; sumY += yArr[i]; }
+            var mx = sumX / n, my = sumY / n;
+            var cov = 0, vx = 0, vy = 0;
+            for (var j = 0; j < n; j++) {
+                var dx = xArr[j] - mx, dy = yArr[j] - my;
+                cov += dx * dy; vx += dx * dx; vy += dy * dy;
+            }
+            return (vx > 0 && vy > 0) ? cov / Math.sqrt(vx * vy) : 0;
+        }
+
+        var nMetrics = corrMetrics.length;
+        var matrix = [];
+        var strongestPair = null;
+        var strongestR = 0;
+
+        for (var mi = 0; mi < nMetrics; mi++) {
+            matrix[mi] = [];
+            for (var mj = 0; mj < nMetrics; mj++) {
+                if (mi === mj) { matrix[mi][mj] = 1.0; continue; }
+                if (mj < mi) { matrix[mi][mj] = matrix[mj][mi]; continue; } // symmetric
+                var xVals = [], yVals = [];
+                companies.forEach(function(c) {
+                    var xv = corrMetrics[mi].get(c);
+                    var yv = corrMetrics[mj].get(c);
+                    if (xv != null && yv != null && isFinite(xv) && isFinite(yv)) {
+                        xVals.push(xv); yVals.push(yv);
+                    }
+                });
+                var r = pearsonR(xVals, yVals);
+                matrix[mi][mj] = r != null ? r : 0;
+                if (mi !== mj && r != null && Math.abs(r) > Math.abs(strongestR)) {
+                    strongestR = r;
+                    strongestPair = [mi, mj];
+                }
+            }
+        }
+
+        // Count notable correlations
+        var strongCount = 0, modCount = 0;
+        for (var si = 0; si < nMetrics; si++) {
+            for (var sj = si + 1; sj < nMetrics; sj++) {
+                var absR = Math.abs(matrix[si][sj]);
+                if (absR >= 0.5) strongCount++;
+                else if (absR >= 0.3) modCount++;
+            }
+        }
+
+        var strongestLabel = strongestPair ? corrMetrics[strongestPair[0]].label + ' × ' + corrMetrics[strongestPair[1]].label : '';
+        var strongestDir = strongestR >= 0 ? 'positive' : 'negative';
+
+        insights.push({
+            icon: '🔗',
+            label: 'Correlation Matrix',
+            value: strongCount + ' strong pair' + (strongCount !== 1 ? 's' : ''),
+            detail: nMetrics + '×' + nMetrics + ' Pearson correlation matrix across key compensation metrics. ' +
+                strongCount + ' strong (|r|≥0.5) and ' + modCount + ' moderate (|r|≥0.3) correlations. ' +
+                'Strongest: ' + strongestLabel + ' (r=' + (strongestR >= 0 ? '+' : '') + strongestR.toFixed(3) + ', ' + strongestDir + '). ' +
+                'Click any cell to view that pair in the scatter plot.',
+            _corrHeatmap: { metrics: corrMetrics, matrix: matrix },
+            action: function() {
+                // Scroll to scatter panel with strongest pair pre-selected
+                if (strongestPair) {
+                    var xKey = corrMetrics[strongestPair[0]].scatterKey;
+                    var yKey = corrMetrics[strongestPair[1]].scatterKey;
+                    if (xKey && yKey) {
+                        var scXSel = document.getElementById('scatter-x-metric');
+                        var scYSel = document.getElementById('scatter-y-metric');
+                        if (scXSel) scXSel.value = xKey;
+                        if (scYSel) scYSel.value = yKey;
+                        if (scXSel) scXSel.dispatchEvent(new Event('change'));
+                    }
+                }
+                var chartPanel = document.getElementById('scatter-panel');
+                if (chartPanel) {
+                    var headerHeight = getStickyOffset();
+                    var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            },
+            actionHint: 'View strongest correlation'
+        });
+    })();
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -1610,6 +1712,11 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeAspDeltaTier = null;
             var adc = document.getElementById('aspdelta-filter-chip');
             if (adc) adc.remove();
+        }
+        if (window._activeTenureQuartile) {
+            window._activeTenureQuartile = null;
+            var tqc = document.getElementById('tenure-filter-chip');
+            if (tqc) tqc.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -2143,6 +2250,59 @@ function populateInsights(comp, trends, sectorFilter) {
             html += '<div class="eq-dual-trend-years">' + et.years.map(function(y) { return '<span>FY' + y + '</span>'; }).join('') + '</div>';
             html += '</div>';
         }
+        // Correlation heatmap inline visualization
+        if (ins._corrHeatmap) {
+            var ch = ins._corrHeatmap;
+            var mets = ch.metrics;
+            var mat = ch.matrix;
+            var nm = mets.length;
+            // Color function: diverging red → neutral → green
+            function corrColor(r) {
+                if (r == null) return 'transparent';
+                var a = Math.min(Math.abs(r), 1);
+                var opacity = Math.round(a * 0.75 * 100) / 100;
+                if (r > 0.005) return 'rgba(34,197,94,' + opacity + ')';
+                if (r < -0.005) return 'rgba(239,68,68,' + opacity + ')';
+                return 'rgba(148,163,184,0.05)';
+            }
+            function corrStrLabel(r) {
+                var a = Math.abs(r);
+                if (a >= 0.7) return 'Very strong';
+                if (a >= 0.5) return 'Strong';
+                if (a >= 0.3) return 'Moderate';
+                if (a >= 0.1) return 'Weak';
+                return 'Negligible';
+            }
+            var isLight = typeof isDarkTheme === 'function' && !isDarkTheme();
+            html += '<div class="corr-heatmap-wrap">';
+            html += '<div class="corr-heatmap-title">Pairwise Pearson Correlations</div>';
+            html += '<table class="corr-heatmap-tbl" role="grid" aria-label="Correlation matrix heatmap">';
+            // Header row
+            html += '<tr><th class="corr-corner"></th>';
+            for (var hi = 0; hi < nm; hi++) {
+                html += '<th class="corr-col-hdr" title="' + mets[hi].label + '">' + mets[hi].short + '</th>';
+            }
+            html += '</tr>';
+            // Data rows
+            for (var ri = 0; ri < nm; ri++) {
+                html += '<tr>';
+                html += '<th class="corr-row-hdr" title="' + mets[ri].label + '">' + mets[ri].short + '</th>';
+                for (var ci = 0; ci < nm; ci++) {
+                    var rv = mat[ri][ci];
+                    var rDisp = ri === ci ? '' : (rv >= 0 ? '+' : '') + rv.toFixed(2);
+                    var bg = ri === ci ? (isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)') : corrColor(rv);
+                    var txtColor = ri === ci ? 'transparent' : (Math.abs(rv) >= 0.5 ? '#fff' : (isLight ? '#1a1a2e' : '#e4e4e7'));
+                    var cellTitle = ri === ci ? mets[ri].label : mets[ri].label + ' × ' + mets[ci].label + ': r=' + (rv >= 0 ? '+' : '') + rv.toFixed(3) + ' (' + corrStrLabel(rv) + ')';
+                    var dataAttrs = ri !== ci ? ' data-corr-ri="' + ri + '" data-corr-ci="' + ci + '"' : '';
+                    html += '<td class="corr-cell' + (ri !== ci ? ' corr-cell-active' : '') + '" style="background:' + bg + ';color:' + txtColor + '" title="' + cellTitle + '"' + dataAttrs + '>' + rDisp + '</td>';
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            // Scale legend
+            html += '<div class="corr-legend"><span class="corr-leg-neg">−1 Negative</span><span class="corr-leg-bar"></span><span class="corr-leg-pos">Positive +1</span></div>';
+            html += '</div>';
+        }
         if (ins.action && ins.actionHint) {
             html += '<div class="insight-cta">' + ins.actionHint + ' →</div>';
         }
@@ -2176,6 +2336,31 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (window._toggleCompare) window._toggleCompare(btn.dataset.ticker, e);
             });
         });
+        // Wire correlation heatmap cell click handlers — open scatter plot with that pair
+        if (ins._corrHeatmap) {
+            var chMets = ins._corrHeatmap.metrics;
+            card.querySelectorAll('.corr-cell-active').forEach(function(cell) {
+                cell.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var ri = parseInt(cell.dataset.corrRi);
+                    var ci = parseInt(cell.dataset.corrCi);
+                    var xKey = chMets[ri].scatterKey;
+                    var yKey = chMets[ci].scatterKey;
+                    if (!xKey || !yKey) return;
+                    var scXSel = document.getElementById('scatter-x-metric');
+                    var scYSel = document.getElementById('scatter-y-metric');
+                    if (scXSel) scXSel.value = xKey;
+                    if (scYSel) scYSel.value = yKey;
+                    if (scXSel) scXSel.dispatchEvent(new Event('change'));
+                    var chartPanel = document.getElementById('scatter-panel');
+                    if (chartPanel) {
+                        var headerHeight = getStickyOffset();
+                        var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                        window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                    }
+                });
+            });
+        }
         grid.appendChild(card);
     });
 }
@@ -2444,6 +2629,7 @@ function buildSectorChips(companies) {
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
+        if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -2473,6 +2659,7 @@ function buildSectorChips(companies) {
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
+        if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -4069,6 +4256,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeStockPctTier) { filterDims++; filterParts.push('Equity: ' + window._activeStockPctTier.label); }
     if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
     if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
+    if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -4506,6 +4694,14 @@ function renderTable(companies, options) {
             return c._aspDelta >= adt.min && c._aspDelta < adt.max;
         });
     }
+    if (window._activeTenureQuartile) {
+        var tq = window._activeTenureQuartile;
+        filtered = filtered.filter(function(c) {
+            if (c._ceoTenureYears == null) return false;
+            if (tq.max === Infinity) return c._ceoTenureYears >= tq.min;
+            return c._ceoTenureYears >= tq.min && c._ceoTenureYears < tq.max;
+        });
+    }
 
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
@@ -4811,6 +5007,7 @@ function renderTable(companies, options) {
     if (window._activeStockPctTier) announceMsg += ', equity: ' + window._activeStockPctTier.label;
     if (window._activeGenderFilter) announceMsg += ', gender: ' + (window._activeGenderFilter === 'F' ? 'Female' : 'Male') + ' CEOs';
     if (window._activeAspDeltaTier) announceMsg += ', peer delta: ' + window._activeAspDeltaTier.tag;
+    if (window._activeTenureQuartile) announceMsg += ', tenure: ' + window._activeTenureQuartile.tag;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -6955,6 +7152,12 @@ function serializeState() {
         params.push('admax=' + (window._activeAspDeltaTier.max === Infinity ? 'inf' : window._activeAspDeltaTier.max));
         params.push('adtag=' + encodeURIComponent(window._activeAspDeltaTier.tag));
     }
+    if (window._activeTenureQuartile) {
+        params.push('tqmin=' + window._activeTenureQuartile.min);
+        params.push('tqmax=' + (window._activeTenureQuartile.max === Infinity ? 'inf' : window._activeTenureQuartile.max));
+        params.push('tqtag=' + encodeURIComponent(window._activeTenureQuartile.tag));
+        params.push('tqlbl=' + encodeURIComponent(window._activeTenureQuartile.label));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -7116,6 +7319,16 @@ function applyHashState(companies) {
         if (!isNaN(adMin) || adMin === -Infinity) {
             window._activeAspDeltaTier = { min: adMin, max: adMax, tag: decodeURIComponent(state.adtag) };
             if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
+        }
+    }
+
+    // Tenure quartile filter
+    if (state.tqmin != null && state.tqmax != null && state.tqtag) {
+        var tqMin = parseFloat(state.tqmin);
+        var tqMax = state.tqmax === 'inf' ? Infinity : parseFloat(state.tqmax);
+        if (!isNaN(tqMin)) {
+            window._activeTenureQuartile = { min: tqMin, max: tqMax, tag: decodeURIComponent(state.tqtag), label: state.tqlbl ? decodeURIComponent(state.tqlbl) : '' };
+            if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
         }
     }
 

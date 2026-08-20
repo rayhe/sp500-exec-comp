@@ -9663,3 +9663,94 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .tenure-mid { background: rgba(0,120,180,0.1); color: #0078b4; border-color: rgba(0,120,180,0.18); }
 [data-theme="light"] .tenure-short { background: rgba(124,58,237,0.1); color: #7c3aed; border-color: rgba(124,58,237,0.18); }
 [data-theme="light"] .tenure-new { background: rgba(234,88,12,0.1); color: #ea580c; border-color: rgba(234,88,12,0.18); }
+
+/* ── Correlation Heatmap (insight card) ── */
+.corr-heatmap-wrap {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.corr-heatmap-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+.corr-heatmap-tbl {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+.corr-heatmap-tbl th,
+.corr-heatmap-tbl td {
+    text-align: center;
+    font-size: 0.6rem;
+    padding: 0;
+    line-height: 1;
+}
+.corr-corner {
+    width: 38px;
+}
+.corr-col-hdr {
+    color: #a1a1aa;
+    font-weight: 500;
+    padding-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.corr-row-hdr {
+    color: #a1a1aa;
+    font-weight: 500;
+    text-align: right;
+    padding-right: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.corr-cell {
+    border-radius: 2px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.55rem;
+    font-weight: 500;
+    height: 22px;
+    vertical-align: middle;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.corr-cell-active {
+    cursor: pointer;
+}
+.corr-cell-active:hover {
+    transform: scale(1.25);
+    z-index: 2;
+    position: relative;
+    box-shadow: 0 0 6px rgba(0,180,216,0.4);
+    outline: 1px solid rgba(0,180,216,0.5);
+}
+.corr-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.6rem;
+    color: #a1a1aa;
+}
+.corr-leg-neg { color: #ef4444; font-weight: 500; }
+.corr-leg-pos { color: #22c55e; font-weight: 500; }
+.corr-leg-bar {
+    width: 80px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, rgba(239,68,68,0.75), rgba(148,163,184,0.1) 50%, rgba(34,197,94,0.75));
+}
+
+/* Light theme overrides for correlation heatmap */
+[data-theme="light"] .corr-heatmap-wrap { border-top-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .corr-heatmap-title { color: #6b7280; }
+[data-theme="light"] .corr-col-hdr,
+[data-theme="light"] .corr-row-hdr { color: #6b7280; }
+[data-theme="light"] .corr-legend { color: #6b7280; }
+[data-theme="light"] .corr-cell-active:hover { box-shadow: 0 0 6px rgba(0,120,180,0.3); outline-color: rgba(0,120,180,0.4); }
