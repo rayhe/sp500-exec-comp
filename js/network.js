@@ -158,7 +158,60 @@ function initNetwork(peerData) {
         return { inDegrees: inDegrees, median: median, p90: p90, p99: p99, maxDeg: maxDeg, buckets: buckets, maxBucket: maxBucket, top8: top8, total: total };
     })();
 
+    // Pre-compute clustering coefficient distribution data for the CC panel
+    var ccDist = (function() {
+        // Only include nodes with >= 2 neighbors (meaningful CC)
+        var eligible = nodes.filter(function(n) { return adjSets[n.ticker] && adjSets[n.ticker].size >= 2; });
+        var ccValues = eligible.map(function(n) { return clusteringCoeff[n.ticker]; }).sort(function(a, b) { return a - b; });
+        var total = ccValues.length;
+        var median = total > 0 ? ccValues[Math.floor(total * 0.5)] : 0;
+        var p10 = total > 0 ? ccValues[Math.floor(total * 0.1)] : 0;
+        var p90 = total > 0 ? ccValues[Math.floor(total * 0.9)] : 0;
+        var maxVal = total > 0 ? ccValues[total - 1] : 0;
+        var insufficient = nodes.length - eligible.length; // nodes with < 2 neighbors
+
+        // Buckets (CC percentage ranges)
+        var buckets = [
+            { label: '0%', min: 0, max: 0, count: 0 },
+            { label: '1–10%', min: 0.001, max: 0.10, count: 0 },
+            { label: '11–20%', min: 0.101, max: 0.20, count: 0 },
+            { label: '21–30%', min: 0.201, max: 0.30, count: 0 },
+            { label: '31–50%', min: 0.301, max: 0.50, count: 0 },
+            { label: '51%+', min: 0.501, max: Infinity, count: 0 }
+        ];
+        ccValues.forEach(function(cc) {
+            for (var i = 0; i < buckets.length; i++) {
+                if (cc >= buckets[i].min && cc <= buckets[i].max) { buckets[i].count++; break; }
+            }
+        });
+        var maxBucket = 0;
+        buckets.forEach(function(b) { if (b.count > maxBucket) maxBucket = b.count; });
+
+        // Top 8 "Cluster Core" — highest CC (tightly interconnected peer groups)
+        var sortedHigh = eligible.slice().sort(function(a, b) {
+            return clusteringCoeff[b.ticker] - clusteringCoeff[a.ticker];
+        });
+        var clusterCores = sortedHigh.slice(0, 8).map(function(n) {
+            return { ticker: n.ticker, sector: n.sector, cc: clusteringCoeff[n.ticker], neighbors: adjSets[n.ticker].size };
+        });
+
+        // Top 8 "Bridge Companies" — lowest nonzero CC with >= 5 neighbors (connecting disparate groups)
+        var bridgeCandidates = eligible.filter(function(n) { return adjSets[n.ticker].size >= 5; });
+        bridgeCandidates.sort(function(a, b) { return clusteringCoeff[a.ticker] - clusteringCoeff[b.ticker]; });
+        var bridges = bridgeCandidates.slice(0, 8).map(function(n) {
+            return { ticker: n.ticker, sector: n.sector, cc: clusteringCoeff[n.ticker], neighbors: adjSets[n.ticker].size };
+        });
+
+        return {
+            ccValues: ccValues, total: total, insufficient: insufficient,
+            median: median, p10: p10, p90: p90, maxVal: maxVal,
+            buckets: buckets, maxBucket: maxBucket,
+            clusterCores: clusterCores, bridges: bridges
+        };
+    })();
+
     var degreeDistPanelOpen = false;
+    var ccDistPanelOpen = false;
 
     function renderGlobalStats() {
         var el = document.getElementById('network-global-stats');
@@ -184,17 +237,17 @@ function initNetwork(peerData) {
             { label: 'Nodes', value: fmt(totalNodes) },
             { label: 'Edges', value: fmt(totalEdges) },
             { label: 'Density', value: density.toFixed(2) + '%' },
-            { label: 'Avg Clustering', value: (globalAvgCC * 100).toFixed(1) + '%' },
+            { label: 'Avg Clustering', value: (globalAvgCC * 100).toFixed(1) + '%', clickable: true, id: 'ngs-avg-cc', panelOpen: ccDistPanelOpen, title: 'Click to explore clustering coefficient distribution' },
             { label: 'Mutual Pairs', value: fmt(mutualPairs) },
-            { label: 'Avg Degree', value: avgDegree.toFixed(1), clickable: true, id: 'ngs-avg-degree' }
+            { label: 'Avg Degree', value: avgDegree.toFixed(1), clickable: true, id: 'ngs-avg-degree', panelOpen: degreeDistPanelOpen, title: 'Click to explore degree distribution' }
         ];
 
         var html = '';
         stats.forEach(function(s) {
             if (s.clickable) {
-                html += '<span class="ngs-stat ngs-stat-clickable' + (degreeDistPanelOpen ? ' ngs-stat-active' : '') + '" id="' + s.id + '" title="Click to explore degree distribution" role="button" tabindex="0">';
+                html += '<span class="ngs-stat ngs-stat-clickable' + (s.panelOpen ? ' ngs-stat-active' : '') + '" id="' + s.id + '" title="' + s.title + '" role="button" tabindex="0">';
                 html += '<span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span>';
-                html += '<span class="ngs-expand-icon">' + (degreeDistPanelOpen ? '▾' : '▸') + '</span>';
+                html += '<span class="ngs-expand-icon">' + (s.panelOpen ? '▾' : '▸') + '</span>';
                 html += '</span>';
             } else {
                 html += '<span class="ngs-stat"><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
@@ -202,25 +255,52 @@ function initNetwork(peerData) {
         });
         el.innerHTML = html;
 
-        // Attach click handler to the clickable stat
+        // Attach click handler to the clickable degree stat
         var degEl = document.getElementById('ngs-avg-degree');
         if (degEl) {
             degEl.addEventListener('click', function() {
                 degreeDistPanelOpen = !degreeDistPanelOpen;
+                if (degreeDistPanelOpen) ccDistPanelOpen = false; // close CC panel when opening degree
                 renderGlobalStats();
                 renderDegreeDistPanel();
+                renderCCDistPanel();
             });
             degEl.addEventListener('keydown', function(ev) {
                 if (ev.key === 'Enter' || ev.key === ' ') {
                     ev.preventDefault();
                     degreeDistPanelOpen = !degreeDistPanelOpen;
+                    if (degreeDistPanelOpen) ccDistPanelOpen = false;
                     renderGlobalStats();
+                    renderDegreeDistPanel();
+                    renderCCDistPanel();
+                }
+            });
+        }
+
+        // Attach click handler to the clickable clustering stat
+        var ccEl = document.getElementById('ngs-avg-cc');
+        if (ccEl) {
+            ccEl.addEventListener('click', function() {
+                ccDistPanelOpen = !ccDistPanelOpen;
+                if (ccDistPanelOpen) degreeDistPanelOpen = false; // close degree panel when opening CC
+                renderGlobalStats();
+                renderCCDistPanel();
+                renderDegreeDistPanel();
+            });
+            ccEl.addEventListener('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    ccDistPanelOpen = !ccDistPanelOpen;
+                    if (ccDistPanelOpen) degreeDistPanelOpen = false;
+                    renderGlobalStats();
+                    renderCCDistPanel();
                     renderDegreeDistPanel();
                 }
             });
         }
 
         renderDegreeDistPanel();
+        renderCCDistPanel();
     }
 
     function renderDegreeDistPanel() {
@@ -307,6 +387,131 @@ function initNetwork(peerData) {
         panel.innerHTML = html;
 
         // Make darling tickers clickable to find in network
+        panel.querySelectorAll('.ngs-ddp-darling-ticker').forEach(function(el) {
+            el.style.cursor = 'pointer';
+            el.title = 'Click to find in network';
+            el.addEventListener('click', function() {
+                var ticker = el.textContent;
+                if (typeof window.focusNetworkNode === 'function') {
+                    window.focusNetworkNode(ticker);
+                }
+            });
+        });
+    }
+
+    function renderCCDistPanel() {
+        var existing = document.getElementById('ngs-cc-dist-panel');
+        if (!ccDistPanelOpen) {
+            if (existing) existing.remove();
+            return;
+        }
+
+        var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+
+        var panel = existing;
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'ngs-cc-dist-panel';
+            panel.className = 'ngs-degree-dist-panel';
+            panel.setAttribute('role', 'region');
+            panel.setAttribute('aria-label', 'Clustering coefficient distribution');
+            var statsBar = document.getElementById('network-global-stats');
+            if (statsBar && statsBar.parentNode) {
+                statsBar.parentNode.insertBefore(panel, statsBar.nextSibling);
+            }
+        }
+
+        var cd = ccDist;
+        var html = '<div class="ngs-ddp-inner">';
+
+        // Left: histogram
+        html += '<div class="ngs-ddp-hist-section">';
+        html += '<div class="ngs-ddp-title">Clustering Coefficient Distribution <span class="ngs-ddp-subtitle">How interconnected each company\'s peer neighborhood is</span></div>';
+        html += '<div class="ngs-ddp-histogram">';
+        cd.buckets.forEach(function(b) {
+            var pct = cd.maxBucket > 0 ? (b.count / cd.maxBucket) * 100 : 0;
+            // Color: bridges (low CC) = cyan, moderate = gold, dense clusters (high CC) = green
+            var barColor;
+            if (b.min >= 0.301) barColor = '#06d6a0';
+            else if (b.min >= 0.101) barColor = '#ffd166';
+            else barColor = '#00b4d8';
+            html += '<div class="ngs-ddp-bar-group">';
+            html += '<div class="ngs-ddp-bar-track">';
+            html += '<div class="ngs-ddp-bar" style="width:' + Math.max(2, pct) + '%;background:' + barColor + '" title="' + b.count + ' companies with CC ' + b.label + '"></div>';
+            html += '</div>';
+            html += '<span class="ngs-ddp-bar-label">' + b.label + '</span>';
+            html += '<span class="ngs-ddp-bar-count">' + b.count + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Distribution stats
+        html += '<div class="ngs-ddp-stats">';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">Median</span> <span class="ngs-ddp-stat-val">' + (cd.median * 100).toFixed(1) + '%</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">P10</span> <span class="ngs-ddp-stat-val">' + (cd.p10 * 100).toFixed(1) + '%</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">P90</span> <span class="ngs-ddp-stat-val">' + (cd.p90 * 100).toFixed(1) + '%</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">Max</span> <span class="ngs-ddp-stat-val">' + (cd.maxVal * 100).toFixed(1) + '%</span></span>';
+        if (cd.insufficient > 0) {
+            html += '<span class="ngs-ddp-stat ngs-ddp-stat-muted"><span class="ngs-ddp-stat-label">&lt;2 peers</span> <span class="ngs-ddp-stat-val">' + cd.insufficient + '</span></span>';
+        }
+        html += '</div>';
+        html += '</div>';
+
+        // Right: two columns — cluster cores and bridges
+        html += '<div class="ngs-ddp-darlings-section">';
+
+        // Cluster cores (highest CC)
+        html += '<div class="ngs-ddp-title">Cluster Cores <span class="ngs-ddp-subtitle">Tightest peer neighborhoods — all peers know each other</span></div>';
+        html += '<div class="ngs-ddp-darlings">';
+        cd.clusterCores.forEach(function(d, i) {
+            var sectorColor = SECTOR_COLORS[d.sector] || '#94a3b8';
+            var ccPct = (d.cc * 100).toFixed(1);
+            html += '<div class="ngs-ddp-darling">';
+            html += '<span class="ngs-ddp-darling-rank">' + (i + 1) + '</span>';
+            html += '<span class="ngs-ddp-darling-dot" style="background:' + sectorColor + '"></span>';
+            html += '<span class="ngs-ddp-darling-ticker">' + d.ticker + '</span>';
+            html += '<span class="ngs-ddp-darling-bar-track">';
+            html += '<span class="ngs-ddp-darling-bar" style="width:' + (cd.maxVal > 0 ? (d.cc / cd.maxVal * 100) : 0) + '%;background:#06d6a0"></span>';
+            html += '</span>';
+            html += '<span class="ngs-ddp-darling-count">' + ccPct + '%</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Bridge companies (lowest CC with >= 5 neighbors)
+        if (cd.bridges.length > 0) {
+            html += '<div class="ngs-ddp-title" style="margin-top:12px;">Bridge Companies <span class="ngs-ddp-subtitle">Connect disparate groups — low CC despite many peers</span></div>';
+            html += '<div class="ngs-ddp-darlings">';
+            cd.bridges.forEach(function(d, i) {
+                var sectorColor = SECTOR_COLORS[d.sector] || '#94a3b8';
+                var ccPct = (d.cc * 100).toFixed(1);
+                html += '<div class="ngs-ddp-darling">';
+                html += '<span class="ngs-ddp-darling-rank">' + (i + 1) + '</span>';
+                html += '<span class="ngs-ddp-darling-dot" style="background:' + sectorColor + '"></span>';
+                html += '<span class="ngs-ddp-darling-ticker">' + d.ticker + '</span>';
+                html += '<span class="ngs-ddp-darling-bar-track">';
+                // Invert scale — bridges have LOW CC so bar = neighbors count relative to max
+                var maxN = 0;
+                cd.bridges.forEach(function(b) { if (b.neighbors > maxN) maxN = b.neighbors; });
+                html += '<span class="ngs-ddp-darling-bar" style="width:' + (maxN > 0 ? (d.neighbors / maxN * 100) : 0) + '%;background:#00b4d8"></span>';
+                html += '</span>';
+                html += '<span class="ngs-ddp-darling-count">' + ccPct + '% <span class="ngs-cc-neighbors">(' + d.neighbors + 'p)</span></span>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+
+        // Interpretive note
+        var bridgePct = cd.total > 0 ? ((cd.buckets[0].count + cd.buckets[1].count) / cd.total * 100).toFixed(0) : '0';
+        var densePct = cd.total > 0 ? (cd.buckets.filter(function(b) { return b.min >= 0.301; }).reduce(function(s, b) { return s + b.count; }, 0) / cd.total * 100).toFixed(0) : '0';
+        html += '<div class="ngs-ddp-note">' + bridgePct + '% of companies occupy bridge positions (CC ≤ 10%) connecting disparate groups, while ' + densePct + '% sit in dense clusters (CC > 30%) where most peers benchmark against each other.</div>';
+
+        html += '</div>';
+        html += '</div>';
+
+        panel.innerHTML = html;
+
+        // Make tickers clickable to find in network
         panel.querySelectorAll('.ngs-ddp-darling-ticker').forEach(function(el) {
             el.style.cursor = 'pointer';
             el.title = 'Click to find in network';

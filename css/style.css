@@ -1200,6 +1200,14 @@ header h1 {
     line-height: 1.4;
     font-style: italic;
 }
+.ngs-ddp-stat-muted .ngs-ddp-stat-label,
+.ngs-ddp-stat-muted .ngs-ddp-stat-val {
+    opacity: 0.5;
+}
+.ngs-cc-neighbors {
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
 
 /* Light theme */
 [data-theme="light"] .ngs-degree-dist-panel {
