@@ -947,6 +947,43 @@ header h1 {
     font-style: italic;
     padding: 2px 0 0;
 }
+
+/* Global network statistics bar — always visible */
+.network-global-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding: 8px 14px;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ngs-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+}
+.ngs-label {
+    color: rgba(255,255,255,0.4);
+    font-weight: 400;
+}
+.ngs-value {
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-variant-numeric: tabular-nums;
+}
+[data-theme="light"] .network-global-stats {
+    color: rgba(0,0,0,0.5);
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .ngs-label {
+    color: rgba(0,0,0,0.45);
+}
+[data-theme="light"] .ngs-value {
+    color: rgba(0,0,0,0.75);
+}
 @media (hover: none) and (pointer: coarse) {
     .touch-hint { display: block; }
 }

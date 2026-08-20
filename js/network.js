@@ -121,12 +121,62 @@ function initNetwork(peerData) {
         reciprocalCount[n.ticker] = count;
     });
 
+    // === Global Network Statistics (always-visible summary bar) ===
+    function renderGlobalStats() {
+        var el = document.getElementById('network-global-stats');
+        if (!el) return;
+
+        var totalNodes = nodes.length;
+        var totalEdges = allEdges.length;
+        var density = totalNodes > 1 ? (totalEdges / (totalNodes * (totalNodes - 1))) * 100 : 0;
+
+        // Total reciprocal (mutual) edge pairs
+        var mutualPairs = 0;
+        nodes.forEach(function(n) { mutualPairs += reciprocalCount[n.ticker] || 0; });
+        mutualPairs = Math.round(mutualPairs / 2);
+
+        // Average degree (in-degree)
+        var degSum = 0;
+        nodes.forEach(function(n) { degSum += (n.in_degree || 0); });
+        var avgDegree = totalNodes > 0 ? degSum / totalNodes : 0;
+
+        function fmt(n) { return n.toLocaleString(); }
+
+        var stats = [
+            { label: 'Nodes', value: fmt(totalNodes) },
+            { label: 'Edges', value: fmt(totalEdges) },
+            { label: 'Density', value: density.toFixed(2) + '%' },
+            { label: 'Avg Clustering', value: (globalAvgCC * 100).toFixed(1) + '%' },
+            { label: 'Mutual Pairs', value: fmt(mutualPairs) },
+            { label: 'Avg Degree', value: avgDegree.toFixed(1) }
+        ];
+
+        var html = '';
+        stats.forEach(function(s) {
+            html += '<span class="ngs-stat"><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
+        });
+        el.innerHTML = html;
+    }
+    renderGlobalStats();
+
     // Node radius based on in-degree — area-proportional scaling
     // Range: 4px (0 peers) to 60px (max ~194 peers)
     // Uses area-proportional mapping so visual size reflects magnitude
     var maxInDegree = 1;
     nodes.forEach(function(n) { if ((n.in_degree || 0) > maxInDegree) maxInDegree = n.in_degree; });
     function getRadius(node) {
+        if (ccHeatmapMode) {
+            // In CC heatmap mode, size by clustering coefficient
+            var cc = clusteringCoeff[node.ticker];
+            var neighbors = adjSets[node.ticker] ? adjSets[node.ticker].size : 0;
+            if (neighbors < 2) return 5; // insufficient neighbors
+            if (maxCC <= 0) return 8;
+            var t = cc / maxCC;
+            var minR = 5, maxR = 40;
+            var minA = minR * minR;
+            var maxA = maxR * maxR;
+            return Math.sqrt(minA + t * (maxA - minA));
+        }
         var inDeg = node.in_degree || 0;
         if (inDeg === 0) return 4;
         // Normalize to 0-1, then map to area range [minA, maxA]
@@ -1753,6 +1803,10 @@ function initNetwork(peerData) {
             }
             ccHeatmapToggle.classList.toggle('active', ccHeatmapMode);
             if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = ccHeatmapMode ? 'flex' : 'none';
+            // Update node-size legend and recalculate collision force for new radii
+            updateNodeSizeLegend();
+            simulation.force('collision', d3.forceCollide().radius(function(d) { return getRadius(d) + 2; }).iterations(1));
+            simulation.alpha(0.15).restart();
             draw();
             announce(ccHeatmapMode ? 'Clustering coefficient heatmap enabled — cyan = bridge, green = dense cluster' : 'Sector coloring restored');
             if (activeLegendSector) updateClusterStats(activeLegendSector);
@@ -2078,38 +2132,79 @@ function initNetwork(peerData) {
     }
 
     // === Node Size Legend ===
-    // Populate with data-driven sample circles showing the in-degree scale
-    (function populateNodeSizeLegend() {
+    // Reusable function: updates legend based on ccHeatmapMode
+    function updateNodeSizeLegend() {
+        var labelEl = document.getElementById('node-size-legend-label');
         var samplesEl = document.getElementById('node-size-legend-samples');
         if (!samplesEl) return;
 
-        // Pick 3 representative in-degree values: low, mid, high
-        var lowDeg = 1;
-        var midDeg = Math.round(maxInDegree / 2);
-        var highDeg = maxInDegree;
+        if (ccHeatmapMode) {
+            // CC mode — show clustering coefficient samples
+            if (labelEl) labelEl.textContent = 'Node size = clustering coefficient';
 
-        var samples = [
-            { deg: lowDeg, label: lowDeg + '' },
-            { deg: midDeg, label: midDeg + '' },
-            { deg: highDeg, label: highDeg + '' }
-        ];
+            var lowCC = maxCC * 0.05;
+            var midCC = maxCC * 0.5;
+            var highCC = maxCC;
 
-        // Scale factor: map getRadius px to a visual legend size (capped for layout)
-        // getRadius returns 5–55px; scale down so the largest sample fits ~22px diameter
-        var maxR = getRadius({ in_degree: highDeg });
-        var scaleFactor = 11 / maxR; // largest circle = 11px radius = 22px diameter
+            var samples = [
+                { cc: lowCC, label: (lowCC * 100).toFixed(0) + '%' },
+                { cc: midCC, label: (midCC * 100).toFixed(0) + '%' },
+                { cc: highCC, label: (highCC * 100).toFixed(0) + '%' }
+            ];
 
-        var html = '';
-        samples.forEach(function(s) {
-            var r = getRadius({ in_degree: s.deg }) * scaleFactor;
-            var d = Math.max(Math.round(r * 2), 6); // diameter in px, min 6
-            html += '<span class="node-size-sample">' +
-                '<span class="node-size-sample-circle" style="width:' + d + 'px;height:' + d + 'px"></span>' +
-                '<span class="node-size-sample-text">' + s.label + '</span>' +
-                '</span>';
-        });
-        samplesEl.innerHTML = html;
-    })();
+            // Compute radius for each sample using CC sizing logic
+            function ccRadius(cc) {
+                if (maxCC <= 0) return 8;
+                var t = cc / maxCC;
+                var minR = 5, maxR = 40;
+                var minA = minR * minR;
+                var maxA = maxR * maxR;
+                return Math.sqrt(minA + t * (maxA - minA));
+            }
+
+            var maxR = ccRadius(highCC);
+            var scaleFactor = 11 / maxR;
+
+            var html = '';
+            samples.forEach(function(s) {
+                var r = ccRadius(s.cc) * scaleFactor;
+                var d = Math.max(Math.round(r * 2), 6);
+                html += '<span class="node-size-sample">' +
+                    '<span class="node-size-sample-circle" style="width:' + d + 'px;height:' + d + 'px"></span>' +
+                    '<span class="node-size-sample-text">' + s.label + '</span>' +
+                    '</span>';
+            });
+            samplesEl.innerHTML = html;
+        } else {
+            // Default — in-degree mode
+            if (labelEl) labelEl.textContent = 'Node size = inbound peers';
+
+            var lowDeg = 1;
+            var midDeg = Math.round(maxInDegree / 2);
+            var highDeg = maxInDegree;
+
+            var samples = [
+                { deg: lowDeg, label: lowDeg + '' },
+                { deg: midDeg, label: midDeg + '' },
+                { deg: highDeg, label: highDeg + '' }
+            ];
+
+            var maxR = getRadius({ in_degree: highDeg });
+            var scaleFactor = 11 / maxR;
+
+            var html = '';
+            samples.forEach(function(s) {
+                var r = getRadius({ in_degree: s.deg }) * scaleFactor;
+                var d = Math.max(Math.round(r * 2), 6);
+                html += '<span class="node-size-sample">' +
+                    '<span class="node-size-sample-circle" style="width:' + d + 'px;height:' + d + 'px"></span>' +
+                    '<span class="node-size-sample-text">' + s.label + '</span>' +
+                    '</span>';
+            });
+            samplesEl.innerHTML = html;
+        }
+    }
+    updateNodeSizeLegend();
 
     // === Mini-Map (Overview Indicator) ===
     // Small canvas in the bottom-right showing all nodes and the current viewport
