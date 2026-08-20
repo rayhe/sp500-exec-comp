@@ -122,6 +122,44 @@ function initNetwork(peerData) {
     });
 
     // === Global Network Statistics (always-visible summary bar) ===
+    // Pre-compute degree distribution data for the distribution panel
+    var degreeDist = (function() {
+        var inDegrees = nodes.map(function(n) { return n.in_degree || 0; }).sort(function(a, b) { return a - b; });
+        var total = inDegrees.length;
+        var median = total > 0 ? inDegrees[Math.floor(total * 0.5)] : 0;
+        var p90 = total > 0 ? inDegrees[Math.floor(total * 0.9)] : 0;
+        var p99 = total > 0 ? inDegrees[Math.floor(total * 0.99)] : 0;
+        var maxDeg = total > 0 ? inDegrees[total - 1] : 0;
+
+        // Buckets for histogram
+        var buckets = [
+            { label: '0', min: 0, max: 0, count: 0 },
+            { label: '1–5', min: 1, max: 5, count: 0 },
+            { label: '6–10', min: 6, max: 10, count: 0 },
+            { label: '11–20', min: 11, max: 20, count: 0 },
+            { label: '21–50', min: 21, max: 50, count: 0 },
+            { label: '51–100', min: 51, max: 100, count: 0 },
+            { label: '101+', min: 101, max: Infinity, count: 0 }
+        ];
+        inDegrees.forEach(function(d) {
+            for (var i = 0; i < buckets.length; i++) {
+                if (d >= buckets[i].min && d <= buckets[i].max) { buckets[i].count++; break; }
+            }
+        });
+        var maxBucket = 0;
+        buckets.forEach(function(b) { if (b.count > maxBucket) maxBucket = b.count; });
+
+        // Top 8 most-selected companies (benchmark darlings)
+        var sorted = nodes.slice().sort(function(a, b) { return (b.in_degree || 0) - (a.in_degree || 0); });
+        var top8 = sorted.slice(0, 8).map(function(n) {
+            return { ticker: n.ticker, sector: n.sector, inDeg: n.in_degree || 0 };
+        });
+
+        return { inDegrees: inDegrees, median: median, p90: p90, p99: p99, maxDeg: maxDeg, buckets: buckets, maxBucket: maxBucket, top8: top8, total: total };
+    })();
+
+    var degreeDistPanelOpen = false;
+
     function renderGlobalStats() {
         var el = document.getElementById('network-global-stats');
         if (!el) return;
@@ -148,15 +186,139 @@ function initNetwork(peerData) {
             { label: 'Density', value: density.toFixed(2) + '%' },
             { label: 'Avg Clustering', value: (globalAvgCC * 100).toFixed(1) + '%' },
             { label: 'Mutual Pairs', value: fmt(mutualPairs) },
-            { label: 'Avg Degree', value: avgDegree.toFixed(1) }
+            { label: 'Avg Degree', value: avgDegree.toFixed(1), clickable: true, id: 'ngs-avg-degree' }
         ];
 
         var html = '';
         stats.forEach(function(s) {
-            html += '<span class="ngs-stat"><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
+            if (s.clickable) {
+                html += '<span class="ngs-stat ngs-stat-clickable' + (degreeDistPanelOpen ? ' ngs-stat-active' : '') + '" id="' + s.id + '" title="Click to explore degree distribution" role="button" tabindex="0">';
+                html += '<span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span>';
+                html += '<span class="ngs-expand-icon">' + (degreeDistPanelOpen ? '▾' : '▸') + '</span>';
+                html += '</span>';
+            } else {
+                html += '<span class="ngs-stat"><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
+            }
         });
         el.innerHTML = html;
+
+        // Attach click handler to the clickable stat
+        var degEl = document.getElementById('ngs-avg-degree');
+        if (degEl) {
+            degEl.addEventListener('click', function() {
+                degreeDistPanelOpen = !degreeDistPanelOpen;
+                renderGlobalStats();
+                renderDegreeDistPanel();
+            });
+            degEl.addEventListener('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    degreeDistPanelOpen = !degreeDistPanelOpen;
+                    renderGlobalStats();
+                    renderDegreeDistPanel();
+                }
+            });
+        }
+
+        renderDegreeDistPanel();
     }
+
+    function renderDegreeDistPanel() {
+        var existing = document.getElementById('ngs-degree-dist-panel');
+        if (!degreeDistPanelOpen) {
+            if (existing) existing.remove();
+            return;
+        }
+
+        var _dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+
+        var panel = existing;
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'ngs-degree-dist-panel';
+            panel.className = 'ngs-degree-dist-panel';
+            panel.setAttribute('role', 'region');
+            panel.setAttribute('aria-label', 'In-degree distribution');
+            var statsBar = document.getElementById('network-global-stats');
+            if (statsBar && statsBar.parentNode) {
+                statsBar.parentNode.insertBefore(panel, statsBar.nextSibling);
+            }
+        }
+
+        var dd = degreeDist;
+        var html = '<div class="ngs-ddp-inner">';
+
+        // Left: histogram
+        html += '<div class="ngs-ddp-hist-section">';
+        html += '<div class="ngs-ddp-title">In-Degree Distribution <span class="ngs-ddp-subtitle">How many companies select each node as a peer</span></div>';
+        html += '<div class="ngs-ddp-histogram">';
+        dd.buckets.forEach(function(b) {
+            var pct = dd.maxBucket > 0 ? (b.count / dd.maxBucket) * 100 : 0;
+            var barColor = b.min >= 51 ? '#06d6a0' : b.min >= 11 ? '#00b4d8' : '#94a3b8';
+            html += '<div class="ngs-ddp-bar-group">';
+            html += '<div class="ngs-ddp-bar-track">';
+            html += '<div class="ngs-ddp-bar" style="width:' + Math.max(2, pct) + '%;background:' + barColor + '" title="' + b.count + ' companies with ' + b.label + ' inbound peers"></div>';
+            html += '</div>';
+            html += '<span class="ngs-ddp-bar-label">' + b.label + '</span>';
+            html += '<span class="ngs-ddp-bar-count">' + b.count + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Distribution stats
+        html += '<div class="ngs-ddp-stats">';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">Median</span> <span class="ngs-ddp-stat-val">' + dd.median + '</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">P90</span> <span class="ngs-ddp-stat-val">' + dd.p90 + '</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">P99</span> <span class="ngs-ddp-stat-val">' + dd.p99 + '</span></span>';
+        html += '<span class="ngs-ddp-stat"><span class="ngs-ddp-stat-label">Max</span> <span class="ngs-ddp-stat-val">' + dd.maxDeg + '</span></span>';
+        html += '</div>';
+        html += '</div>';
+
+        // Right: benchmark darlings
+        html += '<div class="ngs-ddp-darlings-section">';
+        html += '<div class="ngs-ddp-title">Benchmark Darlings <span class="ngs-ddp-subtitle">Most-selected peer companies</span></div>';
+        html += '<div class="ngs-ddp-darlings">';
+        dd.top8.forEach(function(d, i) {
+            var sectorColor = SECTOR_COLORS[d.sector] || '#94a3b8';
+            html += '<div class="ngs-ddp-darling">';
+            html += '<span class="ngs-ddp-darling-rank">' + (i + 1) + '</span>';
+            html += '<span class="ngs-ddp-darling-dot" style="background:' + sectorColor + '"></span>';
+            html += '<span class="ngs-ddp-darling-ticker">' + d.ticker + '</span>';
+            html += '<span class="ngs-ddp-darling-bar-track">';
+            html += '<span class="ngs-ddp-darling-bar" style="width:' + (dd.maxDeg > 0 ? (d.inDeg / dd.maxDeg * 100) : 0) + '%;background:' + sectorColor + '"></span>';
+            html += '</span>';
+            html += '<span class="ngs-ddp-darling-count">' + d.inDeg + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Power law note
+        var topPct = dd.total > 0 ? ((dd.top8.length / dd.total) * 100).toFixed(1) : '0';
+        var topDegSum = 0;
+        dd.top8.forEach(function(d) { topDegSum += d.inDeg; });
+        var totalDegSum = 0;
+        dd.inDegrees.forEach(function(d) { totalDegSum += d; });
+        var topSharePct = totalDegSum > 0 ? ((topDegSum / totalDegSum) * 100).toFixed(0) : '0';
+        html += '<div class="ngs-ddp-note">Top ' + dd.top8.length + ' (' + topPct + '%) account for ' + topSharePct + '% of all peer selections — a power-law distribution typical of benchmark networks.</div>';
+
+        html += '</div>';
+        html += '</div>';
+
+        panel.innerHTML = html;
+
+        // Make darling tickers clickable to find in network
+        panel.querySelectorAll('.ngs-ddp-darling-ticker').forEach(function(el) {
+            el.style.cursor = 'pointer';
+            el.title = 'Click to find in network';
+            el.addEventListener('click', function() {
+                var ticker = el.textContent;
+                if (typeof window.focusNetworkNode === 'function') {
+                    window.focusNetworkNode(ticker);
+                }
+            });
+        });
+    }
+
     renderGlobalStats();
 
     // Node radius based on in-degree — area-proportional scaling

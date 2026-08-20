@@ -984,6 +984,279 @@ header h1 {
 [data-theme="light"] .ngs-value {
     color: rgba(0,0,0,0.75);
 }
+
+/* Clickable stat in global stats bar */
+.ngs-stat-clickable {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin: -2px 0;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+}
+.ngs-stat-clickable:hover {
+    background: rgba(0,180,216,0.12);
+}
+.ngs-stat-clickable:hover .ngs-label,
+.ngs-stat-clickable:hover .ngs-value {
+    color: rgba(255,255,255,0.95);
+}
+.ngs-stat-active {
+    background: rgba(0,180,216,0.15);
+}
+.ngs-stat-active .ngs-label {
+    color: rgba(0,180,216,0.8);
+}
+.ngs-expand-icon {
+    font-size: 0.6rem;
+    margin-left: 2px;
+    opacity: 0.5;
+}
+[data-theme="light"] .ngs-stat-clickable:hover {
+    background: rgba(0,120,180,0.1);
+}
+[data-theme="light"] .ngs-stat-clickable:hover .ngs-label,
+[data-theme="light"] .ngs-stat-clickable:hover .ngs-value {
+    color: rgba(0,0,0,0.9);
+}
+[data-theme="light"] .ngs-stat-active {
+    background: rgba(0,120,180,0.08);
+}
+[data-theme="light"] .ngs-stat-active .ngs-label {
+    color: rgba(0,120,180,0.9);
+}
+
+/* Degree distribution panel */
+.ngs-degree-dist-panel {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    animation: ngs-ddp-in 0.2s ease forwards;
+    overflow: hidden;
+}
+@keyframes ngs-ddp-in {
+    from { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
+    to { opacity: 1; max-height: 400px; padding-top: 12px; padding-bottom: 12px; }
+}
+.ngs-ddp-inner {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.ngs-ddp-hist-section {
+    flex: 1;
+    min-width: 200px;
+}
+.ngs-ddp-darlings-section {
+    flex: 1;
+    min-width: 200px;
+}
+.ngs-ddp-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 8px;
+}
+.ngs-ddp-subtitle {
+    font-weight: 400;
+    color: rgba(255,255,255,0.35);
+    margin-left: 6px;
+    font-size: 0.68rem;
+}
+
+/* Histogram */
+.ngs-ddp-histogram {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.ngs-ddp-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 16px;
+}
+.ngs-ddp-bar-label {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.45);
+    width: 36px;
+    text-align: right;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+.ngs-ddp-bar-track {
+    flex: 1;
+    height: 12px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.ngs-ddp-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    min-width: 2px;
+}
+.ngs-ddp-bar-count {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.5);
+    width: 28px;
+    text-align: left;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+/* Distribution stats row */
+.ngs-ddp-stats {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    flex-wrap: wrap;
+}
+.ngs-ddp-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 0.68rem;
+}
+.ngs-ddp-stat-label {
+    color: rgba(255,255,255,0.4);
+    font-weight: 400;
+}
+.ngs-ddp-stat-val {
+    color: rgba(0,180,216,0.9);
+    font-weight: 600;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* Benchmark darlings */
+.ngs-ddp-darlings {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.ngs-ddp-darling {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 16px;
+}
+.ngs-ddp-darling-rank {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.3);
+    width: 14px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.ngs-ddp-darling-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.ngs-ddp-darling-ticker {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    width: 46px;
+    flex-shrink: 0;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    cursor: pointer;
+}
+.ngs-ddp-darling-ticker:hover {
+    color: #00b4d8;
+    text-decoration: underline;
+}
+.ngs-ddp-darling-bar-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.ngs-ddp-darling-bar {
+    height: 100%;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+.ngs-ddp-darling-count {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.6);
+    width: 28px;
+    text-align: right;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+/* Power law note */
+.ngs-ddp-note {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.35);
+    margin-top: 10px;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* Light theme */
+[data-theme="light"] .ngs-degree-dist-panel {
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .ngs-ddp-title {
+    color: rgba(0,0,0,0.75);
+}
+[data-theme="light"] .ngs-ddp-subtitle {
+    color: rgba(0,0,0,0.4);
+}
+[data-theme="light"] .ngs-ddp-bar-label {
+    color: rgba(0,0,0,0.45);
+}
+[data-theme="light"] .ngs-ddp-bar-track,
+[data-theme="light"] .ngs-ddp-darling-bar-track {
+    background: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .ngs-ddp-bar-count {
+    color: rgba(0,0,0,0.5);
+}
+[data-theme="light"] .ngs-ddp-stats {
+    border-top-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .ngs-ddp-stat-label {
+    color: rgba(0,0,0,0.45);
+}
+[data-theme="light"] .ngs-ddp-stat-val {
+    color: rgba(0,120,180,0.9);
+}
+[data-theme="light"] .ngs-ddp-darling-rank {
+    color: rgba(0,0,0,0.35);
+}
+[data-theme="light"] .ngs-ddp-darling-ticker {
+    color: rgba(0,0,0,0.8);
+}
+[data-theme="light"] .ngs-ddp-darling-ticker:hover {
+    color: #0077b6;
+}
+[data-theme="light"] .ngs-ddp-darling-count {
+    color: rgba(0,0,0,0.55);
+}
+[data-theme="light"] .ngs-ddp-note {
+    color: rgba(0,0,0,0.4);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .ngs-ddp-inner {
+        flex-direction: column;
+        gap: 14px;
+    }
+    .ngs-ddp-hist-section,
+    .ngs-ddp-darlings-section {
+        min-width: 0;
+    }
+}
 @media (hover: none) and (pointer: coarse) {
     .touch-hint { display: block; }
 }
