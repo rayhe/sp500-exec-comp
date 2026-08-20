@@ -63,6 +63,55 @@ function initNetwork(peerData) {
         if (adjacency[e.target]) adjacency[e.target].in.push(e.source);
     });
 
+    // Precompute adjacency sets for clustering coefficient
+    var adjSets = {};
+    nodes.forEach(function(n) {
+        var adj = adjacency[n.ticker];
+        var neighborSet = new Set();
+        adj.in.forEach(function(t) { neighborSet.add(t); });
+        adj.out.forEach(function(t) { neighborSet.add(t); });
+        adjSets[n.ticker] = neighborSet;
+    });
+
+    // Precompute local clustering coefficient for each node
+    // C(v) = number of edges among v's neighbors / (k * (k-1)) for directed graph
+    var clusteringCoeff = {};
+    nodes.forEach(function(n) {
+        var neighbors = adjSets[n.ticker];
+        var k = neighbors.size;
+        if (k < 2) { clusteringCoeff[n.ticker] = 0; return; }
+        var edgesAmongNeighbors = 0;
+        neighbors.forEach(function(a) {
+            var aAdj = adjSets[a];
+            if (!aAdj) return;
+            neighbors.forEach(function(b) {
+                if (a !== b && aAdj.has(b)) edgesAmongNeighbors++;
+            });
+        });
+        clusteringCoeff[n.ticker] = edgesAmongNeighbors / (k * (k - 1));
+    });
+
+    // Compute global average clustering coefficient
+    var ccSum = 0, ccCount = 0;
+    nodes.forEach(function(n) {
+        if (adjSets[n.ticker].size >= 2) {
+            ccSum += clusteringCoeff[n.ticker];
+            ccCount++;
+        }
+    });
+    var globalAvgCC = ccCount > 0 ? ccSum / ccCount : 0;
+
+    // Precompute reciprocal edge count for each node
+    var reciprocalCount = {};
+    nodes.forEach(function(n) {
+        var adj = adjacency[n.ticker];
+        var count = 0;
+        adj.out.forEach(function(t) {
+            if (adj.in.indexOf(t) >= 0) count++;
+        });
+        reciprocalCount[n.ticker] = count;
+    });
+
     // Node radius based on in-degree — area-proportional scaling
     // Range: 4px (0 peers) to 60px (max ~194 peers)
     // Uses area-proportional mapping so visual size reflects magnitude
@@ -928,6 +977,20 @@ function initNetwork(peerData) {
             var _prCls = _prPct >= 95 ? 'tt-pr-high' : _prPct >= 75 ? 'tt-pr-mid' : 'tt-pr-low';
             html += '<div class="tt-row"><span class="tt-label">PageRank</span><span class="tt-value ' + _prCls + '">' + _prTier + ' <span class="tt-pr-score">(' + _prScore + ')</span></span></div>';
         }
+        // Local clustering coefficient — how interconnected this node's peers are
+        var cc = clusteringCoeff[d.ticker];
+        var totalNeighbors = adjSets[d.ticker] ? adjSets[d.ticker].size : 0;
+        if (totalNeighbors >= 2) {
+            var ccPct = Math.round(cc * 100);
+            var ccCls = ccPct >= 40 ? 'tt-cc-high' : ccPct >= 20 ? 'tt-cc-mid' : 'tt-cc-low';
+            var ccLabel = ccPct >= 40 ? 'Dense cluster' : ccPct >= 20 ? 'Moderate' : 'Bridge position';
+            html += '<div class="tt-row"><span class="tt-label">Clustering</span><span class="tt-value ' + ccCls + '">' + ccPct + '% <span class="tt-cc-label">' + ccLabel + '</span></span></div>';
+        }
+        // Reciprocal peer selections
+        var rCount = reciprocalCount[d.ticker] || 0;
+        if (rCount > 0) {
+            html += '<div class="tt-row"><span class="tt-label">Mutual peers</span><span class="tt-value tt-mutual-val">' + rCount + ' ⇄</span></div>';
+        }
         html += '<div class="tt-path-actions">';
         html += '<span class="tt-path-btn" data-action="path-from" data-ticker="' + d.ticker + '">Path from here</span>';
         html += '<span class="tt-path-sep">·</span>';
@@ -1722,6 +1785,31 @@ function initNetwork(peerData) {
         html += '<div class="cs-stat"><span class="cs-stat-label">Avg Inbound</span><span class="cs-stat-value cs-accent">' + avgInDeg + '</span></div>';
         html += '<div class="cs-stat"><span class="cs-stat-label">Total Edges</span><span class="cs-stat-value">' + totalSectorEdges.toLocaleString() + '</span></div>';
         html += '<div class="cs-stat"><span class="cs-stat-label">Density</span><span class="cs-stat-value">' + density + '%</span></div>';
+
+        // Sector-level clustering coefficient
+        var sectorCcSum = 0, sectorCcCount = 0;
+        sectorNodes.forEach(function(n) {
+            if (adjSets[n.ticker] && adjSets[n.ticker].size >= 2) {
+                sectorCcSum += (clusteringCoeff[n.ticker] || 0);
+                sectorCcCount++;
+            }
+        });
+        var sectorAvgCC = sectorCcCount > 0 ? (sectorCcSum / sectorCcCount * 100).toFixed(1) : '0';
+        html += '<div class="cs-stat"><span class="cs-stat-label">Clustering</span><span class="cs-stat-value" title="Average local clustering coefficient — how interconnected peers are within this sector (S&P 500 avg: ' + (globalAvgCC * 100).toFixed(1) + '%)">' + sectorAvgCC + '%</span></div>';
+
+        // Reciprocal edges within sector
+        var sectorReciprocal = 0;
+        sectorNodes.forEach(function(n) {
+            var adj = adjacency[n.ticker];
+            adj.out.forEach(function(t) {
+                if (sectorTickers.has(t) && adj.in.indexOf(t) >= 0) sectorReciprocal++;
+            });
+        });
+        sectorReciprocal = Math.floor(sectorReciprocal / 2); // each mutual counted twice
+        if (sectorReciprocal > 0) {
+            html += '<div class="cs-stat"><span class="cs-stat-label">Mutual</span><span class="cs-stat-value" title="Reciprocal peer selections within sector">' + sectorReciprocal + ' ⇄</span></div>';
+        }
+
         html += '</div>';
 
         // Edge composition bar

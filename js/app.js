@@ -10539,7 +10539,17 @@ function setupDualSparklineTooltips() {
             tipEl.classList.remove('visible');
         });
 
-        // Axis labels with dimension name + annotation badges
+        // Map radar dimension keys to table sort keys for click-to-sort
+        var radarSortMap = {
+            comp: { key: 'total_compensation', dir: 'desc' },
+            stockPct: { key: '_ceoStockPctSort', dir: 'desc' },
+            payRatio: { key: 'pay_ratio', dir: 'desc' },
+            concPct: { key: '_ceoConcPct', dir: 'desc' },
+            workerPay: { key: 'median_worker_pay', dir: 'desc' },
+            yoyChange: { key: '_ceoYoYSort', dir: 'desc' }
+        };
+
+        // Axis labels with dimension name + annotation badges — CLICKABLE to sort table
         validDims.forEach(function(d, i) {
             var labelR = maxR + 24;
             var lx = cx + labelR * Math.cos(startAngle + i * angleStep);
@@ -10547,7 +10557,8 @@ function setupDualSparklineTooltips() {
             var anchor = 'middle';
             if (Math.cos(startAngle + i * angleStep) < -0.3) anchor = 'end';
             else if (Math.cos(startAngle + i * angleStep) > 0.3) anchor = 'start';
-            svg.append('text')
+            var sortInfo = radarSortMap[d.key];
+            var labelEl = svg.append('text')
                 .attr('x', lx).attr('y', ly)
                 .attr('text-anchor', anchor)
                 .attr('dominant-baseline', 'middle')
@@ -10556,6 +10567,15 @@ function setupDualSparklineTooltips() {
                 .attr('fill', dark ? '#a1a1aa' : '#6b7280')
                 .attr('font-family', 'Inter, sans-serif')
                 .text(d.label);
+            if (sortInfo) {
+                labelEl
+                    .attr('cursor', 'pointer')
+                    .attr('class', 'cmp-radar-dim-label')
+                    .append('title').text(d.label + ' — click to sort table by this dimension');
+                labelEl.on('click', function() {
+                    insightResetAndSort(sortInfo.key, sortInfo.dir);
+                });
+            }
 
             // If spread >= 30, mark as area of high divergence with a small indicator
             var stat = dimStats[i];
@@ -10609,7 +10629,9 @@ function setupDualSparklineTooltips() {
                 var barColor = stat.spread >= 50 ? '#ef4444' : stat.spread >= 30 ? '#f59e0b' : (dark ? '#52525b' : '#d1d5db');
                 var bestColor = compColors[stat.bestIdx % compColors.length];
                 var worstColor = compColors[stat.worstIdx % compColors.length];
-                divHtml += '<div class="cmp-div-row">';
+                var sortInfo = radarSortMap[stat.dim.key];
+                var rowClick = sortInfo ? ' style="cursor:pointer" title="Click to sort table by ' + stat.dim.label + '" data-sort-key="' + sortInfo.key + '" data-sort-dir="' + sortInfo.dir + '"' : '';
+                divHtml += '<div class="cmp-div-row' + (sortInfo ? ' cmp-div-row-clickable' : '') + '"' + rowClick + '>';
                 divHtml += '<div class="cmp-div-label">' + stat.dim.label + '</div>';
                 divHtml += '<div class="cmp-div-bar-wrap">';
                 divHtml += '<div class="cmp-div-bar" style="width:' + barPct + '%;background:' + barColor + '"></div>';
@@ -10623,6 +10645,14 @@ function setupDualSparklineTooltips() {
                 divHtml += '</div>';
             });
             divEl.innerHTML = divHtml;
+            // Event delegation for clickable divergence rows
+            divEl.addEventListener('click', function(e) {
+                var row = e.target.closest('.cmp-div-row-clickable');
+                if (!row) return;
+                var sk = row.getAttribute('data-sort-key');
+                var sd = row.getAttribute('data-sort-dir');
+                if (sk) insightResetAndSort(sk, sd);
+            });
         }
 
         // === Profile Similarity Score ===

@@ -1542,6 +1542,11 @@ header h1 {
 .tt-pr-mid { color: #00b4d8; }
 .tt-pr-low { color: #6b7280; }
 .tt-pr-score { font-size: 0.75em; opacity: 0.7; }
+.tt-cc-high { color: #06d6a0; font-weight: 600; }
+.tt-cc-mid { color: #ffd166; }
+.tt-cc-low { color: #00b4d8; font-weight: 600; }
+.tt-cc-label { font-size: 0.72em; opacity: 0.7; font-weight: 400; }
+.tt-mutual-val { color: #ffd166; font-weight: 500; }
 
 /* Mutual edge styling in path results */
 .path-edge-arrow.path-edge-mutual {
@@ -5079,6 +5084,12 @@ footer li::before {
 .cmp-div-title { font-weight: 600; font-size: 0.75rem; color: var(--text-primary); margin-bottom: 2px; }
 .cmp-div-desc { font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 8px; }
 .cmp-div-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 0.7rem; }
+.cmp-div-row-clickable { cursor: pointer; border-radius: 4px; padding: 3px 4px; margin: 0 -4px; transition: background 0.15s; }
+.cmp-div-row-clickable:hover { background: rgba(255,255,255,0.06); }
+[data-theme="light"] .cmp-div-row-clickable:hover { background: rgba(0,0,0,0.04); }
+.cmp-div-row-clickable .cmp-div-label { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; text-decoration-color: var(--text-secondary); }
+.cmp-radar-dim-label { transition: fill 0.15s; }
+.cmp-radar-dim-label:hover { fill: var(--accent) !important; text-decoration: underline; }
 .cmp-div-label { width: 70px; flex-shrink: 0; color: var(--text-secondary); font-weight: 500; }
 .cmp-div-bar-wrap { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; min-width: 40px; }
 .cmp-div-bar { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
