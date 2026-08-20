@@ -10305,6 +10305,9 @@ function setupDualSparklineTooltips() {
         // Remove existing radar overlay if present
         var existing = document.getElementById('comparison-radar-panel');
         if (existing) existing.remove();
+        // Remove stale tooltip
+        var oldTip = document.getElementById('cmp-radar-tooltip');
+        if (oldTip) oldTip.remove();
 
         if (selected.length < 2) return;
 
@@ -10345,14 +10348,29 @@ function setupDualSparklineTooltips() {
         function polarX(pct, i) { return cx + maxR * (pct / 100) * Math.cos(startAngle + i * angleStep); }
         function polarY(pct, i) { return cy + maxR * (pct / 100) * Math.sin(startAngle + i * angleStep); }
 
-        // Build header + SVG container
+        // Compute per-dimension divergence stats for annotations + divergence table
+        var compColors = ['#00b4d8', '#06d6a0', '#ffd166', '#a78bfa'];
+        var dimStats = validDims.map(function(d) {
+            var vals = withRadar.map(function(c) { return c._radarProfile[d.key] || 0; });
+            var maxVal = Math.max.apply(null, vals);
+            var minVal = Math.min.apply(null, vals);
+            var spread = maxVal - minVal;
+            var bestIdx = vals.indexOf(maxVal);
+            var worstIdx = vals.indexOf(minVal);
+            return { dim: d, vals: vals, max: maxVal, min: minVal, spread: spread, bestIdx: bestIdx, worstIdx: worstIdx };
+        });
+
+        // Build header + SVG container + divergence table container
         var html = '<div class="cmp-radar-header">';
         html += '<span class="cmp-radar-title">Compensation Profile Overlay</span>';
-        html += '<span class="cmp-radar-sub">Percentile position across ' + validDims.length + ' dimensions — hover dots for detail</span>';
+        html += '<span class="cmp-radar-sub">Percentile position across ' + validDims.length + ' dimensions — hover dots for side-by-side comparison</span>';
         html += '</div>';
         html += '<div class="cmp-radar-body">';
         html += '<div class="cmp-radar-svg-wrap" id="cmp-radar-svg-wrap"></div>';
+        html += '<div class="cmp-radar-right">';
         html += '<div class="cmp-radar-legend" id="cmp-radar-legend"></div>';
+        html += '<div class="cmp-radar-divergence" id="cmp-radar-divergence"></div>';
+        html += '</div>';
         html += '</div>';
 
         panel.innerHTML = html;
@@ -10364,6 +10382,12 @@ function setupDualSparklineTooltips() {
         } else {
             parentEl.parentNode.insertBefore(panel, parentEl);
         }
+
+        // Create the HTML tooltip element (positioned, not SVG <title>)
+        var tipEl = document.createElement('div');
+        tipEl.id = 'cmp-radar-tooltip';
+        tipEl.className = 'cmp-radar-tip';
+        document.body.appendChild(tipEl);
 
         // Draw SVG using D3
         var svgWrap = document.getElementById('cmp-radar-svg-wrap');
@@ -10410,7 +10434,6 @@ function setupDualSparklineTooltips() {
             .attr('stroke-dasharray', '4,3');
 
         // Company polygons — each with its own color, drawn in order so last is on top
-        var compColors = ['#00b4d8', '#06d6a0', '#ffd166', '#a78bfa'];
         withRadar.forEach(function(c, ci) {
             var color = compColors[ci % compColors.length];
             var rp = c._radarProfile;
@@ -10427,21 +10450,16 @@ function setupDualSparklineTooltips() {
                 .attr('stroke', color)
                 .attr('stroke-width', 2)
                 .attr('stroke-opacity', 0.8);
+        });
 
-            // Data point dots with title tooltips
-            validDims.forEach(function(d, i) {
-                var val = rp[d.key] != null ? rp[d.key] : 0;
+        // Data point dots with interactive HTML tooltips (per dimension — show all companies)
+        validDims.forEach(function(d, i) {
+            // Draw visible dots for each company first
+            withRadar.forEach(function(c, ci) {
+                var color = compColors[ci % compColors.length];
+                var val = c._radarProfile[d.key] != null ? c._radarProfile[d.key] : 0;
                 var dx = polarX(val, i);
                 var dy = polarY(val, i);
-
-                // Invisible larger hit circle
-                svg.append('circle')
-                    .attr('cx', dx).attr('cy', dy).attr('r', 10)
-                    .attr('fill', 'transparent')
-                    .attr('cursor', 'default')
-                    .append('title').text(c.ticker + ' — ' + d.label + ': P' + val + ' (' + d.tip + ')');
-
-                // Visible dot
                 svg.append('circle')
                     .attr('cx', dx).attr('cy', dy).attr('r', 3.5)
                     .attr('fill', color)
@@ -10449,9 +10467,79 @@ function setupDualSparklineTooltips() {
                     .attr('stroke-width', 1.5)
                     .attr('pointer-events', 'none');
             });
+
+            // One invisible hit area per dimension (at the centroid of all points on this axis)
+            // to show a combined tooltip for ALL companies on this dimension
+            var avgVal = withRadar.reduce(function(s, c) { return s + (c._radarProfile[d.key] || 0); }, 0) / withRadar.length;
+            var hitX = polarX(avgVal, i);
+            var hitY = polarY(avgVal, i);
+
+            // Larger invisible hit zone for each individual data point
+            withRadar.forEach(function(c, ci) {
+                var val = c._radarProfile[d.key] != null ? c._radarProfile[d.key] : 0;
+                var dx = polarX(val, i);
+                var dy = polarY(val, i);
+                svg.append('circle')
+                    .attr('cx', dx).attr('cy', dy).attr('r', 14)
+                    .attr('fill', 'transparent')
+                    .attr('cursor', 'default')
+                    .attr('data-dim-idx', i);
+            });
         });
 
-        // Axis labels with dimension name
+        // Attach event delegation on SVG for tooltip
+        var svgNode = svg.node();
+        svgNode.addEventListener('mousemove', function(e) {
+            var target = e.target;
+            var dimIdx = target.getAttribute && target.getAttribute('data-dim-idx');
+            if (dimIdx == null) { tipEl.classList.remove('visible'); return; }
+            dimIdx = parseInt(dimIdx);
+            var d = validDims[dimIdx];
+            if (!d) { tipEl.classList.remove('visible'); return; }
+
+            // Build side-by-side tooltip content
+            var stat = dimStats[dimIdx];
+            var tipHtml = '<div class="cmp-tip-title">' + d.label + '</div>';
+            tipHtml += '<div class="cmp-tip-desc">' + d.tip + '</div>';
+            withRadar.forEach(function(c, ci) {
+                var val = c._radarProfile[d.key] || 0;
+                var color = compColors[ci % compColors.length];
+                var annotation = '';
+                if (withRadar.length > 1 && stat.spread >= 20) {
+                    if (ci === stat.bestIdx) annotation = '<span class="cmp-tip-badge cmp-tip-best">Leads</span>';
+                    else if (ci === stat.worstIdx) annotation = '<span class="cmp-tip-badge cmp-tip-lag">Lags</span>';
+                }
+                tipHtml += '<div class="cmp-tip-row">';
+                tipHtml += '<span class="cmp-tip-swatch" style="background:' + color + '"></span>';
+                tipHtml += '<span class="cmp-tip-ticker">' + c.ticker + '</span>';
+                tipHtml += '<span class="cmp-tip-val">P' + val + '</span>';
+                tipHtml += annotation;
+                tipHtml += '</div>';
+            });
+            // Show spread
+            tipHtml += '<div class="cmp-tip-spread">Spread: ' + stat.spread + ' percentile pts</div>';
+
+            tipEl.innerHTML = tipHtml;
+            tipEl.classList.add('visible');
+
+            // Position tooltip near the cursor
+            var rect = svgNode.getBoundingClientRect();
+            var tipW = tipEl.offsetWidth || 200;
+            var tipH = tipEl.offsetHeight || 120;
+            var tx = e.clientX + 14;
+            var ty = e.clientY - tipH / 2;
+            // Keep on screen
+            if (tx + tipW > window.innerWidth - 8) tx = e.clientX - tipW - 14;
+            if (ty < 8) ty = 8;
+            if (ty + tipH > window.innerHeight - 8) ty = window.innerHeight - tipH - 8;
+            tipEl.style.left = tx + 'px';
+            tipEl.style.top = ty + 'px';
+        });
+        svgNode.addEventListener('mouseleave', function() {
+            tipEl.classList.remove('visible');
+        });
+
+        // Axis labels with dimension name + annotation badges
         validDims.forEach(function(d, i) {
             var labelR = maxR + 24;
             var lx = cx + labelR * Math.cos(startAngle + i * angleStep);
@@ -10467,8 +10555,19 @@ function setupDualSparklineTooltips() {
                 .attr('font-weight', '500')
                 .attr('fill', dark ? '#a1a1aa' : '#6b7280')
                 .attr('font-family', 'Inter, sans-serif')
-                .text(d.label)
-                .append('title').text(d.tip);
+                .text(d.label);
+
+            // If spread >= 30, mark as area of high divergence with a small indicator
+            var stat = dimStats[i];
+            if (stat.spread >= 30) {
+                var badgeR = maxR + 14;
+                var bx = cx + badgeR * Math.cos(startAngle + i * angleStep);
+                var by = cy + badgeR * Math.sin(startAngle + i * angleStep);
+                svg.append('circle')
+                    .attr('cx', bx).attr('cy', by).attr('r', 3)
+                    .attr('fill', stat.spread >= 50 ? '#ef4444' : '#f59e0b')
+                    .attr('opacity', 0.8);
+            }
         });
 
         // Build legend
@@ -10487,7 +10586,43 @@ function setupDualSparklineTooltips() {
             legendHtml += '<span class="cmp-radar-legend-swatch cmp-radar-legend-ref" style="background:rgba(255,209,102,0.3);border:1.5px dashed rgba(255,209,102,0.6)"></span>';
             legendHtml += '<span class="cmp-radar-legend-ticker" style="color:' + (dark ? '#a1a1aa' : '#6b7280') + '">S&P 500 (P50)</span>';
             legendHtml += '</span>';
+            // Divergence indicator legend
+            legendHtml += '<span class="cmp-radar-legend-item" style="margin-top:4px">';
+            legendHtml += '<span class="cmp-radar-legend-dot" style="background:#f59e0b"></span>';
+            legendHtml += '<span class="cmp-radar-legend-ticker" style="font-weight:400;color:' + (dark ? '#a1a1aa' : '#6b7280') + '">Notable divergence</span>';
+            legendHtml += '</span>';
+            legendHtml += '<span class="cmp-radar-legend-item">';
+            legendHtml += '<span class="cmp-radar-legend-dot" style="background:#ef4444"></span>';
+            legendHtml += '<span class="cmp-radar-legend-ticker" style="font-weight:400;color:' + (dark ? '#a1a1aa' : '#6b7280') + '">Major divergence</span>';
+            legendHtml += '</span>';
             legendEl.innerHTML = legendHtml;
+        }
+
+        // Build divergence summary table — sorted by spread descending
+        var divEl = document.getElementById('cmp-radar-divergence');
+        if (divEl) {
+            var sortedStats = dimStats.slice().sort(function(a, b) { return b.spread - a.spread; });
+            var divHtml = '<div class="cmp-div-title">Dimension Divergence</div>';
+            divHtml += '<div class="cmp-div-desc">Where compared companies differ most</div>';
+            sortedStats.forEach(function(stat) {
+                var barPct = Math.min(stat.spread, 100);
+                var barColor = stat.spread >= 50 ? '#ef4444' : stat.spread >= 30 ? '#f59e0b' : (dark ? '#52525b' : '#d1d5db');
+                var bestColor = compColors[stat.bestIdx % compColors.length];
+                var worstColor = compColors[stat.worstIdx % compColors.length];
+                divHtml += '<div class="cmp-div-row">';
+                divHtml += '<div class="cmp-div-label">' + stat.dim.label + '</div>';
+                divHtml += '<div class="cmp-div-bar-wrap">';
+                divHtml += '<div class="cmp-div-bar" style="width:' + barPct + '%;background:' + barColor + '"></div>';
+                divHtml += '</div>';
+                divHtml += '<div class="cmp-div-spread">' + stat.spread + 'pp</div>';
+                divHtml += '<div class="cmp-div-tags">';
+                divHtml += '<span class="cmp-div-tag" style="color:' + bestColor + '" title="Highest: ' + withRadar[stat.bestIdx].ticker + ' (P' + stat.max + ')">' + withRadar[stat.bestIdx].ticker + ' P' + stat.max + '</span>';
+                divHtml += '<span class="cmp-div-sep">→</span>';
+                divHtml += '<span class="cmp-div-tag" style="color:' + worstColor + '" title="Lowest: ' + withRadar[stat.worstIdx].ticker + ' (P' + stat.min + ')">' + withRadar[stat.worstIdx].ticker + ' P' + stat.min + '</span>';
+                divHtml += '</div>';
+                divHtml += '</div>';
+            });
+            divEl.innerHTML = divHtml;
         }
 
         // Store redraw function for theme toggle
@@ -10935,6 +11070,8 @@ function setupDualSparklineTooltips() {
         if (overlapEl) overlapEl.remove();
         var radarOverlayEl = document.getElementById('comparison-radar-panel');
         if (radarOverlayEl) radarOverlayEl.remove();
+        var radarTip1 = document.getElementById('cmp-radar-tooltip');
+        if (radarTip1) radarTip1.remove();
         window._redrawComparisonRadar = null;
         // Return focus to the element that triggered the comparison
         if (_preFocusElement && _preFocusElement.isConnected) {
@@ -11238,6 +11375,8 @@ function setupDualSparklineTooltips() {
             if (overlapEl) overlapEl.remove();
             var radarOvEl = document.getElementById('comparison-radar-panel');
             if (radarOvEl) radarOvEl.remove();
+            var radarTip2 = document.getElementById('cmp-radar-tooltip');
+            if (radarTip2) radarTip2.remove();
             window._redrawComparisonRadar = null;
         }
     });
@@ -11348,6 +11487,8 @@ function setupDualSparklineTooltips() {
                 if (chartEl) chartEl.innerHTML = '';
                 var radarOvEsc = document.getElementById('comparison-radar-panel');
                 if (radarOvEsc) radarOvEsc.remove();
+                var radarTip3 = document.getElementById('cmp-radar-tooltip');
+                if (radarTip3) radarTip3.remove();
                 window._redrawComparisonRadar = null;
                 announce('Comparison panel closed');
                 // Return focus to the element that triggered the comparison

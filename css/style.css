@@ -5033,6 +5033,77 @@ footer li::before {
     }
 }
 
+/* Comparison radar right column wrapper */
+.cmp-radar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 160px;
+}
+
+/* Comparison radar positioned HTML tooltip */
+.cmp-radar-tip {
+    position: fixed;
+    pointer-events: none;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    z-index: 210;
+    opacity: 0;
+    transition: opacity 0.12s;
+    max-width: 260px;
+    min-width: 170px;
+}
+.cmp-radar-tip.visible { opacity: 1; }
+.cmp-tip-title { font-weight: 600; font-size: 0.82rem; margin-bottom: 2px; }
+.cmp-tip-desc { font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 6px; }
+.cmp-tip-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.cmp-tip-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.cmp-tip-ticker { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-weight: 600; font-size: 0.75rem; min-width: 38px; }
+.cmp-tip-val { font-variant-numeric: tabular-nums; font-weight: 500; font-size: 0.78rem; }
+.cmp-tip-badge { font-size: 0.62rem; font-weight: 600; padding: 1px 5px; border-radius: 3px; margin-left: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+.cmp-tip-best { background: rgba(6,214,160,0.15); color: #06d6a0; }
+.cmp-tip-lag { background: rgba(239,68,68,0.15); color: #ef4444; }
+.cmp-tip-spread { font-size: 0.68rem; color: var(--text-secondary); margin-top: 5px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.06); font-style: italic; }
+[data-theme="light"] .cmp-radar-tip { background: #fff; border-color: rgba(0,0,0,0.1); color: #1a1a2e; }
+[data-theme="light"] .cmp-tip-spread { border-top-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .cmp-tip-best { background: rgba(5,150,105,0.12); color: #059669; }
+[data-theme="light"] .cmp-tip-lag { background: rgba(220,38,38,0.12); color: #dc2626; }
+
+/* Comparison radar divergence summary */
+.cmp-radar-divergence { margin-top: 2px; }
+.cmp-div-title { font-weight: 600; font-size: 0.75rem; color: var(--text-primary); margin-bottom: 2px; }
+.cmp-div-desc { font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 8px; }
+.cmp-div-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 0.7rem; }
+.cmp-div-label { width: 70px; flex-shrink: 0; color: var(--text-secondary); font-weight: 500; }
+.cmp-div-bar-wrap { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; min-width: 40px; }
+.cmp-div-bar { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+.cmp-div-spread { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text-primary); width: 32px; text-align: right; flex-shrink: 0; }
+.cmp-div-tags { display: flex; align-items: center; gap: 3px; font-size: 0.62rem; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; }
+.cmp-div-tag { font-weight: 500; }
+.cmp-div-sep { color: var(--text-secondary); font-size: 0.6rem; }
+[data-theme="light"] .cmp-div-bar-wrap { background: rgba(0,0,0,0.04); }
+
+/* Comparison radar legend dot (for divergence indicators) */
+.cmp-radar-legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .cmp-radar-right {
+        flex-direction: column;
+        width: 100%;
+    }
+    .cmp-div-tags { display: none; }
+}
+
 .peer-overlap-panel {
     margin-bottom: 20px;
     padding: 16px 20px;
