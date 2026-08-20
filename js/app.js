@@ -565,8 +565,8 @@ function computeTeamCompleteness(companies) {
     });
 }
 
-/* Pre-compute radar chart percentile data — 6 dimensions with S&P 500 and sector percentiles.
-   Each company gets c._radarProfile = { comp, stockPct, concPct, payRatio, workerPay, yoyChange }
+/* Pre-compute radar chart percentile data — 7 dimensions with S&P 500 and sector percentiles.
+   Each company gets c._radarProfile = { comp, stockPct, concPct, payRatio, workerPay, yoyChange, tenure }
    where each value is 0-100 percentile (higher = more of that dimension).
    Also computes sector median percentiles for overlay. */
 function computeRadarPercentiles(companies) {
@@ -590,6 +590,7 @@ function computeRadarPercentiles(companies) {
     var ratioPctile = rankPercentiles(companies, function(c) { return c.pay_ratio; }, true);
     var workerPctile = rankPercentiles(companies, function(c) { return c.median_worker_pay; }, true);
     var yoyPctile = rankPercentiles(companies, function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; }, true);
+    var tenurePctile = rankPercentiles(companies, function(c) { return c._ceoTenureYears; }, true);
 
     companies.forEach(function(c) {
         c._radarProfile = {
@@ -598,7 +599,8 @@ function computeRadarPercentiles(companies) {
             concPct: concPctile[c.ticker] || null,
             payRatio: ratioPctile[c.ticker] || null,
             workerPay: workerPctile[c.ticker] || null,
-            yoyChange: yoyPctile[c.ticker] || null
+            yoyChange: yoyPctile[c.ticker] || null,
+            tenure: tenurePctile[c.ticker] || null
         };
     });
 
@@ -618,7 +620,7 @@ function computeRadarPercentiles(companies) {
             var m = Math.floor(s.length / 2);
             return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
         }
-        var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange'];
+        var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange', 'tenure'];
         var result = {};
         dims.forEach(function(d) {
             var vals = scs.filter(function(c) { return c._radarProfile[d] != null; }).map(function(c) { return c._radarProfile[d]; });
@@ -6428,7 +6430,8 @@ function setupDetailPanel(companies) {
                 { key: 'payRatio', label: 'Pay Ratio', tip: 'CEO-to-median-worker pay ratio' },
                 { key: 'concPct', label: 'Concentration', tip: 'CEO pay as % of total NEO comp' },
                 { key: 'workerPay', label: 'Worker Pay', tip: 'Median worker pay percentile' },
-                { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year compensation change' }
+                { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year compensation change' },
+                { key: 'tenure', label: 'CEO Tenure', tip: 'CEO tenure length percentile (DEF 14A)' }
             ];
             // Only render if at least 4 dimensions have data
             var radarValidDims = radarDims.filter(function(d) { return rp[d.key] != null; });
@@ -6437,7 +6440,7 @@ function setupDetailPanel(companies) {
                 html += '<div class="radar-section">';
                 html += '<div class="radar-header">';
                 html += '<span class="radar-title">Compensation Profile</span>';
-                html += '<span class="radar-sub">Percentile position across 6 dimensions vs S&P 500 and ' + (company.sector || 'sector') + ' medians</span>';
+                html += '<span class="radar-sub">Percentile position across 7 dimensions vs S&P 500 and ' + (company.sector || 'sector') + ' medians</span>';
                 html += '</div>';
                 html += '<div class="radar-chart-container" id="radar-chart-' + ticker + '" data-ticker="' + ticker + '"></div>';
                 html += '<div class="radar-legend">';
@@ -6697,7 +6700,8 @@ function setupDetailPanel(companies) {
                         { key: 'payRatio', label: 'Pay Ratio' },
                         { key: 'concPct', label: 'Concentration' },
                         { key: 'workerPay', label: 'Worker Pay' },
-                        { key: 'yoyChange', label: 'YoY Change' }
+                        { key: 'yoyChange', label: 'YoY Change' },
+                        { key: 'tenure', label: 'CEO Tenure' }
                     ];
                     var validDims = radarDims.filter(function(d) { return rp[d.key] != null; });
                     if (validDims.length < 4) return;
@@ -10378,7 +10382,7 @@ function setupDualSparklineTooltips() {
         // Only proceed if at least 2 companies have valid radar profiles
         var withRadar = selected.filter(function(c) {
             if (!c._radarProfile) return false;
-            var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange'];
+            var dims = ['comp', 'stockPct', 'concPct', 'payRatio', 'workerPay', 'yoyChange', 'tenure'];
             var validCount = dims.filter(function(d) { return c._radarProfile[d] != null; }).length;
             return validCount >= 4;
         });
@@ -10390,7 +10394,8 @@ function setupDualSparklineTooltips() {
             { key: 'payRatio', label: 'Pay Ratio', tip: 'CEO-to-worker pay ratio percentile — higher = wider gap' },
             { key: 'concPct', label: 'Concentration', tip: 'CEO share of total NEO pay — higher = more concentrated' },
             { key: 'workerPay', label: 'Worker Pay', tip: 'Median worker pay percentile — higher = better-paid workers' },
-            { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year comp change — higher = bigger increase' }
+            { key: 'yoyChange', label: 'YoY Change', tip: 'Year-over-year comp change — higher = bigger increase' },
+            { key: 'tenure', label: 'CEO Tenure', tip: 'CEO tenure length percentile — higher = longer-serving CEO' }
         ];
         // Use only dims that all compared companies have data for
         var validDims = radarDims.filter(function(d) {
@@ -10610,7 +10615,8 @@ function setupDualSparklineTooltips() {
             payRatio: { key: 'pay_ratio', dir: 'desc' },
             concPct: { key: '_ceoConcPct', dir: 'desc' },
             workerPay: { key: 'median_worker_pay', dir: 'desc' },
-            yoyChange: { key: '_ceoYoYSort', dir: 'desc' }
+            yoyChange: { key: '_ceoYoYSort', dir: 'desc' },
+            tenure: { key: '_ceoTenureYears', dir: 'desc' }
         };
 
         // Axis labels with dimension name + annotation badges — CLICKABLE to sort table
