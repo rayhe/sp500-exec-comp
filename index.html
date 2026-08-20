@@ -129,6 +129,10 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
                 Centrality
             </button>
+            <button class="control-btn cc-heatmap-toggle" id="cc-heatmap-toggle" title="Color nodes by local clustering coefficient — tight peer clusters vs bridge companies connecting disparate groups">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 L22 8.5 L22 15.5 L12 22 L2 15.5 L2 8.5 Z"/><circle cx="12" cy="12" r="3"/></svg>
+                Clustering
+            </button>
             <div class="network-legend" id="network-legend">
                 <span class="legend-item"><span class="legend-dot" style="background:#00b4d8"></span>Info Tech</span>
                 <span class="legend-item"><span class="legend-dot" style="background:#06d6a0"></span>Comm Svcs</span>
@@ -156,6 +160,13 @@
                     <div class="pr-heatmap-gradient"></div>
                 </div>
                 <span class="comp-heatmap-label">High Centrality</span>
+            </div>
+            <div class="cc-heatmap-legend" id="cc-heatmap-legend" style="display:none">
+                <span class="comp-heatmap-label">Bridge</span>
+                <div class="comp-heatmap-gradient-wrap">
+                    <div class="cc-heatmap-gradient"></div>
+                </div>
+                <span class="comp-heatmap-label">Dense Cluster</span>
             </div>
             <div class="edge-legend">
                 <span class="edge-legend-item"><span class="edge-legend-line edge-same"></span>Same-sector peer</span>

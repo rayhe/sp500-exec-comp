@@ -51,6 +51,7 @@ function initNetwork(peerData) {
     var activePath = null; // { nodes: [ticker,...], edges: [{source, target},...] } for path finder
     var compHeatmapMode = false; // when true, nodes colored by CEO pay instead of sector
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
+    var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -100,6 +101,14 @@ function initNetwork(peerData) {
         }
     });
     var globalAvgCC = ccCount > 0 ? ccSum / ccCount : 0;
+
+    // Compute max clustering coefficient for heatmap normalization
+    var maxCC = 0;
+    nodes.forEach(function(n) {
+        if (adjSets[n.ticker].size >= 2 && clusteringCoeff[n.ticker] > maxCC) {
+            maxCC = clusteringCoeff[n.ticker];
+        }
+    });
 
     // Precompute reciprocal edge count for each node
     var reciprocalCount = {};
@@ -450,7 +459,7 @@ function initNetwork(peerData) {
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
         // (so users know which sector they're viewing in heatmap-filtered mode)
-        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode) || activeLegendSector)) {
+        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode) || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -844,8 +853,35 @@ function initNetwork(peerData) {
         return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 
+    // Clustering coefficient heatmap color — cyan→gold→green gradient
+    // Bridge positions (low CC) are cyan, moderate is gold, dense clusters (high CC) are green
+    function getCCHeatmapColor(ticker) {
+        var cc = clusteringCoeff[ticker];
+        if (cc === undefined || cc === null) return '#555';
+        var neighbors = adjSets[ticker] ? adjSets[ticker].size : 0;
+        if (neighbors < 2) return '#555'; // not enough neighbors for meaningful CC
+        // CC ranges from 0 to ~0.8 in practice; normalize using max observed
+        var t = Math.min(cc / (maxCC || 0.01), 1); // 0 (bridge) → 1 (dense cluster)
+        var r, g, b;
+        if (t < 0.5) {
+            // Cyan (bridge) → Gold (moderate)
+            var t2 = t * 2;
+            r = Math.round(0 + t2 * 255);
+            g = Math.round(180 + t2 * (209 - 180));
+            b = Math.round(216 - t2 * (216 - 102));
+        } else {
+            // Gold (moderate) → Green (dense cluster)
+            var t2 = (t - 0.5) * 2;
+            r = Math.round(255 - t2 * (255 - 6));
+            g = Math.round(209 + t2 * (214 - 209));
+            b = Math.round(102 - t2 * (102 - 160));
+        }
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
     // Unified node color resolver: checks heatmap modes first, then sector
     function getNodeColor(ticker, sector) {
+        if (ccHeatmapMode) return getCCHeatmapColor(ticker);
         if (prHeatmapMode) return getPRHeatmapColor(ticker);
         if (compHeatmapMode) return getCompHeatmapColor(ticker);
         return SECTOR_COLORS[sector] || '#94a3b8';
@@ -1531,7 +1567,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if (compHeatmapMode && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -1542,7 +1578,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if (compHeatmapMode && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -1645,15 +1681,22 @@ function initNetwork(peerData) {
     var sectorLegendEl = document.getElementById('network-legend');
     var compHeatmapLegendEl = document.getElementById('comp-heatmap-legend');
     var prHeatmapLegendEl = document.getElementById('pr-heatmap-legend');
+    var ccHeatmapToggle = document.getElementById('cc-heatmap-toggle');
+    var ccHeatmapLegendEl = document.getElementById('cc-heatmap-legend');
 
     if (compHeatmapToggle) {
         compHeatmapToggle.addEventListener('click', function() {
             compHeatmapMode = !compHeatmapMode;
-            // Mutual exclusion: turn off PageRank heatmap
+            // Mutual exclusion: turn off PageRank and clustering heatmaps
             if (compHeatmapMode && prHeatmapMode) {
                 prHeatmapMode = false;
                 if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
                 if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+            }
+            if (compHeatmapMode && ccHeatmapMode) {
+                ccHeatmapMode = false;
+                if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
+                if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
             }
             compHeatmapToggle.classList.toggle('active', compHeatmapMode);
 
@@ -1674,16 +1717,44 @@ function initNetwork(peerData) {
     if (prHeatmapToggle) {
         prHeatmapToggle.addEventListener('click', function() {
             prHeatmapMode = !prHeatmapMode;
-            // Mutual exclusion: turn off comp heatmap
+            // Mutual exclusion: turn off comp and clustering heatmaps
             if (prHeatmapMode && compHeatmapMode) {
                 compHeatmapMode = false;
                 if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
                 if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
             }
+            if (prHeatmapMode && ccHeatmapMode) {
+                ccHeatmapMode = false;
+                if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
+                if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
+            }
             prHeatmapToggle.classList.toggle('active', prHeatmapMode);
             if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = prHeatmapMode ? 'flex' : 'none';
             draw();
             announce(prHeatmapMode ? 'PageRank centrality heatmap enabled' : 'Sector coloring restored');
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
+    // Clustering coefficient heatmap toggle
+    if (ccHeatmapToggle) {
+        ccHeatmapToggle.addEventListener('click', function() {
+            ccHeatmapMode = !ccHeatmapMode;
+            // Mutual exclusion: turn off comp and PageRank heatmaps
+            if (ccHeatmapMode && compHeatmapMode) {
+                compHeatmapMode = false;
+                if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
+                if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
+            }
+            if (ccHeatmapMode && prHeatmapMode) {
+                prHeatmapMode = false;
+                if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
+                if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+            }
+            ccHeatmapToggle.classList.toggle('active', ccHeatmapMode);
+            if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = ccHeatmapMode ? 'flex' : 'none';
+            draw();
+            announce(ccHeatmapMode ? 'Clustering coefficient heatmap enabled — cyan = bridge, green = dense cluster' : 'Sector coloring restored');
             if (activeLegendSector) updateClusterStats(activeLegendSector);
         });
     }
@@ -1938,6 +2009,50 @@ function initNetwork(peerData) {
                     html += '<div class="cs-node-row">';
                     html += '<span><span class="cs-node-role">Least central </span><span class="cs-node-ticker" data-ticker="' + lowestPRNode.ticker + '">' + lowestPRNode.ticker + '</span></span>';
                     html += '<span class="cs-node-degree" style="color:' + getPRHeatmapColor(lowestPRNode.ticker) + '">P' + Math.round(lowestPR) + '</span>';
+                    html += '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+        }
+
+        // Clustering coefficient stats section — shown when CC heatmap mode is active
+        if (ccHeatmapMode) {
+            var sectorCCVals = [];
+            var highestCCNode = null, highestCCVal = -1;
+            var lowestCCNode = null, lowestCCVal = Infinity;
+            var bridgeNodes = [], denseNodes = [];
+            sectorNodes.forEach(function(n) {
+                var cc = clusteringCoeff[n.ticker];
+                var neighbors = adjSets[n.ticker] ? adjSets[n.ticker].size : 0;
+                if (neighbors < 2) return;
+                sectorCCVals.push(cc);
+                if (cc > highestCCVal) { highestCCVal = cc; highestCCNode = n; }
+                if (cc < lowestCCVal) { lowestCCVal = cc; lowestCCNode = n; }
+                if (cc < 0.2) bridgeNodes.push(n);
+                if (cc >= 0.4) denseNodes.push(n);
+            });
+            if (sectorCCVals.length > 1) {
+                sectorCCVals.sort(function(a, b) { return a - b; });
+                var ccMedian = sectorCCVals[Math.floor(sectorCCVals.length / 2)];
+                html += '<div class="cs-comp-section">';
+                html += '<div class="cs-comp-title">🔷 Clustering Distribution</div>';
+                html += '<div class="cluster-stats-grid">';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Median CC</span><span class="cs-stat-value">' + (ccMedian * 100).toFixed(1) + '%</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Dense (≥40%)</span><span class="cs-stat-value cs-accent">' + denseNodes.length + ' / ' + sectorCCVals.length + '</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Bridges (<20%)</span><span class="cs-stat-value">' + bridgeNodes.length + ' / ' + sectorCCVals.length + '</span></div>';
+                html += '</div>';
+                html += '<div class="cs-node-list">';
+                if (highestCCNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Most clustered </span><span class="cs-node-ticker" data-ticker="' + highestCCNode.ticker + '">' + highestCCNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getCCHeatmapColor(highestCCNode.ticker) + '">' + (highestCCVal * 100).toFixed(1) + '%</span>';
+                    html += '</div>';
+                }
+                if (lowestCCNode && lowestCCNode !== highestCCNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Most bridging </span><span class="cs-node-ticker" data-ticker="' + lowestCCNode.ticker + '">' + lowestCCNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getCCHeatmapColor(lowestCCNode.ticker) + '">' + (lowestCCVal * 100).toFixed(1) + '%</span>';
                     html += '</div>';
                 }
                 html += '</div>';
@@ -2382,8 +2497,8 @@ function initNetwork(peerData) {
             var n = nodeMap[ticker];
             // Use heatmap color in heatmap mode, sector color otherwise
             var color;
-            if (compHeatmapMode) {
-                color = getCompHeatmapColor(ticker);
+            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode) {
+                color = getNodeColor(ticker, n ? n.sector : '');
             } else {
                 color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
             }
@@ -2572,7 +2687,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === newIdx);
                     el.style.backgroundColor = '';
                 });
-                if (compHeatmapMode && newIdx >= 0 && newIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && newIdx >= 0 && newIdx < items.length) {
                     var dot = items[newIdx].querySelector('.nsr-dot');
                     if (dot) items[newIdx].style.backgroundColor = _dotBgTint(dot);
                 }
