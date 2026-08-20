@@ -416,6 +416,25 @@ function computeCeoTransitions(companies) {
     });
 }
 
+/* Compute CEO tenure from ceo_tenure EDGAR extraction data.
+   Sets c._ceoTenureYears (integer), c._ceoTenureStart (year), c._ceoTenureMonth (month or null),
+   c._ceoTenureConfidence (verified/high/medium/low), or null if no data. */
+function computeCeoTenure(companies) {
+    var currentYear = new Date().getFullYear();
+    companies.forEach(function(c) {
+        c._ceoTenureYears = null;
+        c._ceoTenureStart = null;
+        c._ceoTenureMonth = null;
+        c._ceoTenureConfidence = null;
+        if (!c.ceo_tenure || !c.ceo_tenure.year) return;
+        var startYear = c.ceo_tenure.year;
+        c._ceoTenureStart = startYear;
+        c._ceoTenureMonth = c.ceo_tenure.month || null;
+        c._ceoTenureConfidence = c.ceo_tenure.confidence || 'medium';
+        c._ceoTenureYears = currentYear - startYear;
+    });
+}
+
 /* Classify an executive's title into a standard C-suite role category.
    Returns one of: CEO, CFO, COO, GC/CLO, CHRO, CTO, CIO, Other */
 function classifyExecRole(title) {
@@ -1119,7 +1138,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1440,6 +1459,28 @@ function populateInsights(comp, trends, sectorFilter) {
             value: transitionCompanies.length + ' transitions',
             detail: transitionCompanies.length + ' companies changed CEOs in ' + yearRange + '. New CEO median pay: ' + formatCurrency(medNewCeo) + (compDeltaStr ? ' (' + compDeltaStr + ' vs continuing CEOs at ' + formatCurrency(medContinuingCeo) + ')' : '') + '. Highest-paid new CEO: ' + (topNewCeo.ceo_name || 'N/A') + ' (' + topNewCeo.ticker + ') at ' + formatCurrency(topNewCeo.total_compensation) + '.',
             _tickers: transitionCompanies.slice(0, 3).sort(function(a, b) { return (b.total_compensation || 0) - (a.total_compensation || 0); }).map(function(c) { return c.ticker; })
+        });
+    }
+
+    // 11b. CEO Tenure Distribution — from EDGAR DEF 14A extraction
+    var tenureCompanies = companies.filter(function(c) { return c._ceoTenureYears != null; });
+    if (tenureCompanies.length >= 10) {
+        var tenureVals = tenureCompanies.map(function(c) { return c._ceoTenureYears; }).sort(function(a, b) { return a - b; });
+        var medTenure = computeMedian(tenureVals);
+        var longTenure = tenureCompanies.filter(function(c) { return c._ceoTenureYears >= 20; });
+        var newCeos = tenureCompanies.filter(function(c) { return c._ceoTenureYears < 3; });
+        var longestCeo = tenureCompanies.slice().sort(function(a, b) { return b._ceoTenureYears - a._ceoTenureYears; })[0];
+        insights.push({
+            icon: '⏱️',
+            label: 'CEO Tenure',
+            value: medTenure + ' year median',
+            detail: tenureCompanies.length + ' companies with tenure data (DEF 14A proxy). Median: ' + medTenure + ' years. ' + longTenure.length + ' veterans (20+ years), ' + newCeos.length + ' new CEOs (<3 years). Longest-tenured: ' + longestCeo.ceo_name + ' (' + longestCeo.ticker + ') at ' + longestCeo._ceoTenureYears + ' years (since ' + longestCeo._ceoTenureStart + ').',
+            _tickers: [longestCeo.ticker],
+            action: function() {
+                insightResetAndSort('_ceoTenureYears', 'desc');
+                renderTable(companies, {});
+                scrollToTable();
+            }
         });
     }
 
@@ -4665,6 +4706,16 @@ function renderTable(companies, options) {
                 var aspMinStr = aspMin === -Infinity ? '-Infinity' : aspMin;
                 return '<span class="asp-tbl-badge ' + aspCls + ' asp-tbl-badge-clickable" title="' + aspTip + '" onclick="event.stopPropagation();filterByAspDeltaTier(' + aspMinStr + ',' + aspMaxStr + ',\'' + aspTag + '\')">' + aspIcon + ' ' + sign + Math.round(ad) + '%</span>';
             })() + '</td>' +
+            '<td class="tenure-cell">' + (function() {
+                if (c._ceoTenureYears == null) return '\u2014';
+                var ty = c._ceoTenureYears;
+                var tCls = ty >= 20 ? 'tenure-long' : ty >= 10 ? 'tenure-mid' : ty >= 3 ? 'tenure-short' : 'tenure-new';
+                var tLbl = ty >= 20 ? 'Veteran' : ty >= 10 ? 'Established' : ty >= 3 ? 'Building' : 'New';
+                var startInfo = c._ceoTenureStart ? 'Since ' + (c._ceoTenureMonth ? c._ceoTenureMonth + ' ' : '') + c._ceoTenureStart : '';
+                var confLbl = c._ceoTenureConfidence === 'verified' ? '\u2713 Verified' : c._ceoTenureConfidence === 'high' ? 'High confidence' : c._ceoTenureConfidence === 'medium' ? 'Medium confidence' : 'Low confidence';
+                var tip = tLbl + ': ' + ty + ' year' + (ty !== 1 ? 's' : '') + ' as CEO \u2014 ' + startInfo + ' (' + confLbl + ', source: DEF 14A proxy)';
+                return '<span class="tenure-badge ' + tCls + '" title="' + tip + '">' + ty + 'y</span>';
+            })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
@@ -5319,11 +5370,19 @@ function setupDetailPanel(companies) {
             html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value ' + sopCls + '">' + sopV.toFixed(1) + '%</div>' + voteBarHtml + distBar(sopV, '0%', '100%') + '<div class="detail-stat-sub">' + sopLbl + ' — ' + sopSrc + '</div></div>';
         }
 
-        // CEO History — transition/tenure data
+        // CEO History — transition/tenure data (enhanced with EDGAR DEF 14A data)
         if (company._ceoTransition) {
             var _tr = company._ceoTransition;
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Transition</div><div class="detail-stat-value ceo-transition-new">New CEO</div><div class="detail-stat-sub">Succeeded ' + (_tr.oldCeo.name || 'previous CEO') + ' after FY' + _tr.oldCeo.year + '</div></div>';
-        } else if (company._ceoDataYears && company._ceoDataYears >= 2) {
+        }
+        if (company._ceoTenureYears != null) {
+            var _ty = company._ceoTenureYears;
+            var _tyCls = _ty >= 20 ? 'tenure-long' : _ty >= 10 ? 'tenure-mid' : _ty >= 3 ? 'tenure-short' : 'tenure-new';
+            var _tyLbl = _ty >= 20 ? 'Veteran' : _ty >= 10 ? 'Established' : _ty >= 3 ? 'Building' : 'New';
+            var _tyStart = (company._ceoTenureMonth ? company._ceoTenureMonth + ' ' : '') + company._ceoTenureStart;
+            var _tyConf = company._ceoTenureConfidence === 'verified' ? '✓ Verified' : company._ceoTenureConfidence === 'high' ? 'High confidence' : 'Medium confidence';
+            html += '<div class="detail-stat"><div class="detail-stat-label">CEO Tenure</div><div class="detail-stat-value ' + _tyCls + '">' + _ty + ' years</div>' + distBar(_ty, '0', '30+') + '<div class="detail-stat-sub">' + _tyLbl + ' — appointed ' + _tyStart + ' (' + _tyConf + ', DEF 14A)</div></div>';
+        } else if (!company._ceoTransition && company._ceoDataYears && company._ceoDataYears >= 2) {
             html += '<div class="detail-stat"><div class="detail-stat-label">CEO Tenure</div><div class="detail-stat-value">' + company._ceoDataYears + '+ years</div><div class="detail-stat-sub">In role since at least FY' + (company.executives ? (function() { var yrs = []; company.executives.forEach(function(e) { if (yrs.indexOf(e.year) < 0) yrs.push(e.year); }); yrs.sort(function(a,b){return a-b;}); return yrs[0]; })() : '?') + '</div></div>';
         }
 
@@ -7637,6 +7696,9 @@ function setupDualSparklineTooltips() {
     // Pre-compute CEO transitions (detect CEO changes between fiscal years)
     computeCeoTransitions(companies);
 
+    // Pre-compute CEO tenure from EDGAR DEF 14A extraction data
+    computeCeoTenure(companies);
+
     // Pre-compute C-suite role benchmarks for role analysis section + detail panel context
     computeRoleBenchmarks(companies);
 
@@ -9465,7 +9527,7 @@ function setupDualSparklineTooltips() {
             // CSV header and rows — adapt labels and data to active role filter
             var isRoleExport = activeRole && activeRole !== 'CEO';
             var roleLabel = isRoleExport ? activeRole : 'CEO';
-            var headers = ['Rank', 'Ticker', 'Company', roleLabel, roleLabel + ' Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'Pay Ratio', 'Median Worker Pay ($)',
+            var headers = ['Rank', 'Ticker', 'Company', roleLabel, roleLabel + ' Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'CEO Tenure (Years)', 'CEO Start Year', 'Pay Ratio', 'Median Worker Pay ($)',
                 'CEO Concentration %', 'CEO Premium Ratio', 'CEO Transition', 'CEO Data Years',
                 'Team Roles Filled', 'Team Roles', 'Missing Expected Roles',
                 roleLabel + ' Salary ($)', roleLabel + ' Stock Awards ($)', roleLabel + ' Option Awards ($)', roleLabel + ' Bonus ($)',
@@ -9521,6 +9583,8 @@ function setupDualSparklineTooltips() {
                     c._compPercentile != null ? c._compPercentile : '',
                     csvEscape(yoyVal),
                     csvEscape(c.sector || ''),
+                    c._ceoTenureYears != null ? c._ceoTenureYears : '',
+                    c._ceoTenureStart || '',
                     c.pay_ratio || '',
                     c.median_worker_pay || '',
                     c._ceoConcPct != null ? c._ceoConcPct.toFixed(1) : '',

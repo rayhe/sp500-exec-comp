@@ -2750,6 +2750,16 @@ function drawScatterChart(companies) {
             unit: '×',
             minForLog: 0.5,
             canBeNegative: false
+        },
+        _ceoTenureYears: {
+            label: 'CEO Tenure (Years)',
+            shortLabel: 'Tenure',
+            get: function(c) { return c._ceoTenureYears; },
+            fmt: function(v) { return v != null ? v + ' years' : '—'; },
+            fmtAxis: function(v) { return v + 'y'; },
+            unit: ' years',
+            minForLog: 1,
+            canBeNegative: false
         }
     };
 
@@ -6293,7 +6303,8 @@ function drawCorrelationMatrix(companies) {
         { key: '_ceoConcPct', label: 'CEO Concentration %', short: 'Conc%', get: function(c) { return c._ceoConcPct; } },
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
-        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } }
+        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
+        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } }
     ];
 
     var n = metrics.length;
@@ -6767,7 +6778,8 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
         { key: '_ceoConcPct', label: 'CEO Concentration %', short: 'Conc%', get: function(c) { return c._ceoConcPct; } },
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
-        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } }
+        { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
+        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } }
     ];
 
     var SECTOR_COLORS = {
