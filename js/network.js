@@ -804,7 +804,7 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
 
-            // Same-sector edges (brighter, slightly thicker, accent-tinted)
+            // Same-sector edges (brighter, slightly thicker, accent-tinted, curved to reduce overlap)
             ctx.strokeStyle = edgeSameColor;
             ctx.lineWidth = edgeSameWidth / scale;
             ctx.beginPath();
@@ -815,8 +815,20 @@ function initNetwork(peerData) {
                 var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
                 if (!s.sector || !t.sector || s.sector !== t.sector) return;
+                // Quadratic curve with control point offset perpendicular to the midpoint
+                var mx = (s.x + t.x) / 2;
+                var my = (s.y + t.y) / 2;
+                var dx = t.x - s.x;
+                var dy = t.y - s.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                // Offset proportional to distance, capped — perpendicular direction
+                var curvature = Math.min(dist * 0.12, 30);
+                // Use source ticker charcode parity to alternate curve direction
+                var side = (src.charCodeAt(0) + tgt.charCodeAt(0)) % 2 === 0 ? 1 : -1;
+                var nx = -dy / (dist || 1) * curvature * side;
+                var ny =  dx / (dist || 1) * curvature * side;
                 ctx.moveTo(s.x, s.y);
-                ctx.lineTo(t.x, t.y);
+                ctx.quadraticCurveTo(mx + nx, my + ny, t.x, t.y);
             });
             ctx.stroke();
         }

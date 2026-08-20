@@ -1486,6 +1486,58 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     }
 
+    // 11c. Tenure vs Pay — do long-tenured CEOs earn more or less than new appointees?
+    if (tenureCompanies && tenureCompanies.length >= 20) {
+        var tvpSorted = tenureCompanies.slice().sort(function(a, b) { return a._ceoTenureYears - b._ceoTenureYears; });
+        var q1Cut = Math.floor(tvpSorted.length * 0.25);
+        var q3Cut = Math.floor(tvpSorted.length * 0.75);
+        var shortTenure = tvpSorted.slice(0, q1Cut);
+        var longTenureQ = tvpSorted.slice(q3Cut);
+        var shortPays = shortTenure.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; }).sort(function(a,b){return a-b;});
+        var longPays = longTenureQ.map(function(c) { return c.total_compensation || 0; }).filter(function(v) { return v > 0; }).sort(function(a,b){return a-b;});
+        var shortMed = shortPays.length > 0 ? shortPays[Math.floor(shortPays.length / 2)] : 0;
+        var longMed = longPays.length > 0 ? longPays[Math.floor(longPays.length / 2)] : 0;
+        // Pearson correlation
+        var tvpMeanT = 0, tvpMeanP = 0;
+        tenureCompanies.forEach(function(c) { tvpMeanT += c._ceoTenureYears; tvpMeanP += (c.total_compensation || 0); });
+        tvpMeanT /= tenureCompanies.length;
+        tvpMeanP /= tenureCompanies.length;
+        var tvpCovTP = 0, tvpVarT = 0, tvpVarP = 0;
+        tenureCompanies.forEach(function(c) {
+            var dt = c._ceoTenureYears - tvpMeanT;
+            var dp = (c.total_compensation || 0) - tvpMeanP;
+            tvpCovTP += dt * dp; tvpVarT += dt * dt; tvpVarP += dp * dp;
+        });
+        var tvpCorr = (tvpVarT > 0 && tvpVarP > 0) ? (tvpCovTP / Math.sqrt(tvpVarT * tvpVarP)) : 0;
+        var corrSign = tvpCorr >= 0 ? '+' : '';
+        var corrStrength = Math.abs(tvpCorr) < 0.1 ? 'negligible' : Math.abs(tvpCorr) < 0.3 ? 'weak' : Math.abs(tvpCorr) < 0.5 ? 'moderate' : 'strong';
+        var payDelta = longMed > 0 && shortMed > 0 ? ((longMed - shortMed) / shortMed * 100).toFixed(0) : null;
+        var payDeltaDir = payDelta && parseInt(payDelta) >= 0 ? 'more' : 'less';
+        var payDeltaAbs = payDelta ? Math.abs(parseInt(payDelta)) + '%' : '?';
+        insights.push({
+            icon: '📉',
+            label: 'Tenure vs Pay',
+            value: corrSign + tvpCorr.toFixed(2) + ' correlation',
+            detail: corrStrength.charAt(0).toUpperCase() + corrStrength.slice(1) + ' ' + (tvpCorr >= 0 ? 'positive' : 'negative') + ' correlation (r=' + corrSign + tvpCorr.toFixed(3) + ') between CEO tenure and total pay across ' + tenureCompanies.length + ' companies. Bottom-quartile tenure (<' + tvpSorted[q1Cut]._ceoTenureYears + ' yrs) median pay: ' + formatCurrency(shortMed) + '. Top-quartile (>' + tvpSorted[q3Cut]._ceoTenureYears + ' yrs): ' + formatCurrency(longMed) + ' — ' + payDeltaAbs + ' ' + payDeltaDir + '. Long-tenured CEOs ' + (payDelta && parseInt(payDelta) < 0 ? 'tend to earn less, often founders with low cash comp and large equity stakes.' : 'earn comparably, suggesting tenure alone does not drive higher pay packages.'),
+            action: function() {
+                // Navigate to scatter plot with tenure vs pay axes
+                var scXSel = document.getElementById('scatter-x-metric');
+                var scYSel = document.getElementById('scatter-y-metric');
+                if (scXSel) scXSel.value = '_ceoTenureYears';
+                if (scYSel) scYSel.value = 'total_compensation';
+                if (scXSel) scXSel.dispatchEvent(new Event('change'));
+                else if (scYSel) scYSel.dispatchEvent(new Event('change'));
+                var chartPanel = document.getElementById('scatter-panel');
+                if (chartPanel) {
+                    var headerHeight = getStickyOffset();
+                    var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            },
+            actionHint: 'View scatter plot'
+        });
+    }
+
     // Click actions for each insight — use closures over computed data
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
@@ -6916,6 +6968,10 @@ function serializeState() {
     if (_scYSel && _scYSel.value !== 'pay_ratio') params.push('scy=' + encodeURIComponent(_scYSel.value));
     var _trendCb = document.getElementById('scatter-trend-line');
     if (_trendCb && !_trendCb.checked) params.push('sct=0');
+    // Section deep-link (persisted only when user clicks section nav)
+    if (window._activeSectionDeepLink) {
+        params.push('section=' + encodeURIComponent(window._activeSectionDeepLink));
+    }
     return params.length > 0 ? '#' + params.join('&') : '';
 }
 
@@ -7151,6 +7207,36 @@ function applyHashState(companies) {
                 }
             }, 50);
         }
+    }
+
+    // Section deep-link: scroll to a named section (e.g., #section=network)
+    if (state.section && !state.detail) {
+        var sectionAliases = {
+            'insights': 'insights-section',
+            'network': 'peer-network-section',
+            'table': 'compensation-table-section',
+            'charts': 'sector-chart-panel',
+            'sectors': 'sector-analytics-section',
+            'composition': 'composition-section',
+            'trends': 'trends-section'
+        };
+        var sectionId = sectionAliases[state.section] || state.section;
+        setTimeout(function() {
+            var sectionEl = document.getElementById(sectionId);
+            if (sectionEl) {
+                var stickyH = getStickyOffset();
+                var targetTop = sectionEl.getBoundingClientRect().top + window.scrollY - stickyH - 8;
+                window.scrollTo({ top: targetTop, behavior: getScrollBehavior() });
+
+                // Update section nav active state
+                var nav = document.getElementById('section-nav');
+                if (nav) {
+                    nav.querySelectorAll('.section-nav-link').forEach(function(l) {
+                        l.classList.toggle('active', l.dataset.section === sectionId);
+                    });
+                }
+            }
+        }, 200);
     }
 }
 
@@ -12010,6 +12096,20 @@ function setupDualSparklineTooltips() {
                 var targetTop = target.getBoundingClientRect().top + window.scrollY - stickyH - 8;
                 window.scrollTo({ top: targetTop, behavior: getScrollBehavior() });
 
+                // Persist section in URL hash for deep-linking
+                // Map section IDs back to short aliases
+                var sectionToAlias = {
+                    'insights-section': 'insights',
+                    'peer-network-section': 'network',
+                    'compensation-table-section': 'table',
+                    'sector-chart-panel': 'charts',
+                    'sector-analytics-section': 'sectors',
+                    'composition-section': 'composition',
+                    'trends-section': 'trends'
+                };
+                window._activeSectionDeepLink = sectionToAlias[targetId] || targetId;
+                pushState();
+
                 // Update active state immediately
                 links.forEach(function(l) { l.classList.remove('active'); });
                 link.classList.add('active');
@@ -12101,12 +12201,27 @@ function setupDualSparklineTooltips() {
         });
 
         // Add scrolled shadow class to nav when page scrolls past metrics strip
+        // Also clear section deep-link on manual scroll (user navigated away from the linked section)
         var _navScrolledTimer = null;
+        var _lastScrollForSection = null;
         window.addEventListener('scroll', function() {
             if (_navScrolledTimer) return;
             _navScrolledTimer = requestAnimationFrame(function() {
                 _navScrolledTimer = null;
                 nav.classList.toggle('scrolled', window.scrollY > 120);
+
+                // Clear section deep-link after meaningful manual scroll
+                if (window._activeSectionDeepLink) {
+                    if (_lastScrollForSection === null) {
+                        _lastScrollForSection = window.scrollY;
+                    } else if (Math.abs(window.scrollY - _lastScrollForSection) > 300) {
+                        window._activeSectionDeepLink = null;
+                        _lastScrollForSection = null;
+                        pushState();
+                    }
+                } else {
+                    _lastScrollForSection = null;
+                }
             });
         }, { passive: true });
     })();
