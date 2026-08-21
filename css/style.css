@@ -2295,6 +2295,44 @@ header h1 {
     font-family: 'SF Mono', 'Fira Code', monospace;
 }
 
+/* Sector SoP approval bars */
+.sector-sop-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 8px;
+}
+.sector-sop-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
+    cursor: default;
+}
+.sector-sop-bar-abbr {
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    width: 32px;
+    text-align: right;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    flex-shrink: 0;
+}
+.sector-sop-bar {
+    height: 8px;
+    border-radius: 2px;
+    min-width: 6px;
+    transition: opacity 0.15s;
+}
+.sector-sop-bar-group:hover .sector-sop-bar {
+    opacity: 0.8;
+}
+.sector-sop-bar-val {
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
 /* Sector sort context summary bars */
 .sector-sort-dist {
     flex-direction: column;

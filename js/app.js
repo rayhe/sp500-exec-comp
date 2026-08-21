@@ -2178,6 +2178,103 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 18b. Sector-Level Say-on-Pay Analysis — median SoP approval by sector
+    (function() {
+        var sopCompanies = companies.filter(function(c) { return c._sopApproval != null; });
+        if (sopCompanies.length < 20) return;
+        var sectorSopMap = {};
+        sopCompanies.forEach(function(c) {
+            var sec = c.sector || 'Unknown';
+            if (!sectorSopMap[sec]) sectorSopMap[sec] = [];
+            sectorSopMap[sec].push(c._sopApproval);
+        });
+        var sectorSopArr = [];
+        var sectorSopColors = {
+            'Information Technology': '#00b4d8',
+            'Communication Services': '#06d6a0',
+            'Consumer Discretionary': '#ef476f',
+            'Health Care': '#ffd166',
+            'Financials': '#a78bfa',
+            'Consumer Staples': '#fb923c',
+            'Industrials': '#94a3b8',
+            'Energy': '#34d399',
+            'Real Estate': '#f472b6',
+            'Materials': '#f9a8d4',
+            'Utilities': '#67e8f9'
+        };
+        var sectorSopAbbr = {
+            'Information Technology': 'IT',
+            'Communication Services': 'Comm',
+            'Consumer Discretionary': 'CDisc',
+            'Health Care': 'Health',
+            'Financials': 'Fin',
+            'Consumer Staples': 'CStap',
+            'Industrials': 'Indus',
+            'Energy': 'Enrgy',
+            'Real Estate': 'RE',
+            'Materials': 'Matrl',
+            'Utilities': 'Util'
+        };
+        Object.keys(sectorSopMap).forEach(function(sec) {
+            var vals = sectorSopMap[sec].sort(function(a, b) { return a - b; });
+            if (vals.length >= 3) {
+                var below70 = vals.filter(function(v) { return v < 70; }).length;
+                var above95 = vals.filter(function(v) { return v >= 95; }).length;
+                sectorSopArr.push({
+                    name: sec,
+                    median: computeMedian(vals),
+                    count: vals.length,
+                    below70: below70,
+                    above95: above95,
+                    color: sectorSopColors[sec] || '#94a3b8',
+                    abbr: sectorSopAbbr[sec] || sec.substring(0, 4)
+                });
+            }
+        });
+        sectorSopArr.sort(function(a, b) { return a.median - b.median; }); // ascending: lowest approval first
+        if (sectorSopArr.length >= 3) {
+            var lowestSec = sectorSopArr[0];
+            var highestSec = sectorSopArr[sectorSopArr.length - 1];
+            // For bar widths, normalize to 50-100% range to make differences visible (SoP medians cluster 85-95%)
+            var minMed = lowestSec.median;
+            var maxMed = highestSec.median;
+            var sopRange = maxMed - minMed;
+
+            var secSopDetail = sectorSopArr.length + ' sectors analyzed. ';
+            secSopDetail += '<span style="color:' + lowestSec.color + '">' + lowestSec.name + '</span> faces the most dissent (' + lowestSec.median.toFixed(1) + '% median';
+            if (lowestSec.below70 > 0) secSopDetail += ', ' + lowestSec.below70 + ' below 70%';
+            secSopDetail += '). ';
+            secSopDetail += '<span style="color:' + highestSec.color + '">' + highestSec.name + '</span> has the strongest support (' + highestSec.median.toFixed(1) + '% median).';
+            secSopDetail += '<div class="sector-sop-bars">';
+            sectorSopArr.forEach(function(s) {
+                // Scale bars so differences are visible; min bar = 20%, max = 100%
+                var barPct = sopRange > 0 ? 20 + (s.median - minMed) / sopRange * 80 : 50;
+                var barW = Math.max(6, Math.round(barPct * 0.9));
+                // Color the bar based on approval level
+                var barColor = s.median >= 92 ? '#22c55e' : s.median >= 88 ? s.color : s.median >= 80 ? '#f59e0b' : '#ef476f';
+                secSopDetail += '<div class="sector-sop-bar-group" title="' + s.name + ': ' + s.median.toFixed(1) + '% median SoP (' + s.count + ' companies' + (s.below70 > 0 ? ', ' + s.below70 + ' below 70%' : '') + ')">';
+                secSopDetail += '<span class="sector-sop-bar-abbr">' + s.abbr + '</span>';
+                secSopDetail += '<span class="sector-sop-bar" style="width:' + barW + 'px;background:' + barColor + ';"></span>';
+                secSopDetail += '<span class="sector-sop-bar-val">' + s.median.toFixed(1) + '%</span>';
+                secSopDetail += '</div>';
+            });
+            secSopDetail += '</div>';
+            insights.push({
+                icon: '\uD83C\uDFDB\uFE0F',
+                label: 'Sector SoP',
+                value: lowestSec.abbr + ' ' + lowestSec.median.toFixed(1) + '% low',
+                detail: secSopDetail,
+                action: function() {
+                    insightResetAndSort('_sopApproval', 'asc');
+                    window._activeSectorFilter = lowestSec.name;
+                    renderTable(companies.filter(function(c) { return c.sector === lowestSec.name; }), {});
+                    scrollToTable();
+                },
+                actionHint: 'Filter to ' + lowestSec.name
+            });
+        }
+    })();
+
     // 19. Aspirational Benchmarking — companies selecting higher-paid peers to justify CEO pay
     (function() {
         // Use pre-computed _aspDelta from computeAspirationalBenchmarking
