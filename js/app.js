@@ -9636,6 +9636,11 @@ function setupDualSparklineTooltips() {
                 return (c.total_compensation || 0) > (best.total_compensation || 0) ? c : best;
             }, comps[0]);
 
+            // Governance median
+            var govScores = comps.filter(function(c) { return c._govScore != null; }).map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+            var medianGov = govScores.length ? govScores[Math.floor(govScores.length / 2)] : null;
+            var govGrade = medianGov != null ? (medianGov >= 80 ? 'A' : medianGov >= 65 ? 'B' : medianGov >= 50 ? 'C' : medianGov >= 35 ? 'D' : 'F') : null;
+
             saRows.push({
                 sector: sector,
                 count: count,
@@ -9645,6 +9650,8 @@ function setupDualSparklineTooltips() {
                 medianRatio: medianRatio,
                 medianSop: medianSop,
                 sopCoverage: sopCoverage,
+                medianGov: medianGov,
+                govGrade: govGrade,
                 highestName: highest ? highest.ceo_name : '—',
                 highestTicker: highest ? highest.ticker : '',
                 highestPay: highest ? highest.total_compensation : 0
@@ -9691,6 +9698,7 @@ function setupDualSparklineTooltips() {
                     '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
                     '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
                     '<td class="sa-sop">' + (r.medianSop != null ? '<span style="color:' + (r.medianSop < 70 ? '#ef476f' : r.medianSop < 85 ? '#fbbf24' : '#06d6a0') + '">' + r.medianSop.toFixed(1) + '%</span>' + (r.sopCoverage ? ' <span style="opacity:0.5;font-size:0.75em">(' + r.sopCoverage + ')</span>' : '') : '—') + '</td>' +
+                    '<td class="sa-gov">' + (r.medianGov != null ? '<span class="gov-badge gov-' + r.govGrade.toLowerCase() + '">' + r.govGrade + ' ' + r.medianGov + '</span>' : '—') + '</td>' +
                     '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
                     '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
                     '</tr>';

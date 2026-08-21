@@ -372,6 +372,23 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel" id="gov-dist-panel">
+            <div class="section-header">
+                <h2>Governance Score Distribution</h2>
+                <p class="section-desc">Distribution of compensation governance scores (0–100) across the S&P 500. Composite of SoP approval, CEO concentration, pay ratio, and team completeness. Click a bucket to filter the table.</p>
+            </div>
+            <div id="gov-dist-chart"></div>
+        </div>
+        <div class="chart-panel" id="sector-gov-panel">
+            <div class="section-header">
+                <h2>Governance Score by Sector</h2>
+                <p class="section-desc">Median compensation governance score per GICS sector with IQR range. Dashed line = S&P 500 overall median. Click a sector to filter the table.</p>
+            </div>
+            <div id="sector-gov-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="treemap-panel">
             <div class="section-header">
                 <h2>Where the Money Goes</h2>
@@ -486,6 +503,7 @@
                         <th class="sa-sortable" data-sa-sort="medianEq" tabindex="0" role="columnheader" aria-sort="none">Median Equity %</th>
                         <th class="sa-sortable" data-sa-sort="medianRatio" tabindex="0" role="columnheader" aria-sort="none">Median Pay Ratio</th>
                         <th class="sa-sortable" data-sa-sort="medianSop" tabindex="0" role="columnheader" aria-sort="none">Median SoP %</th>
+                        <th class="sa-sortable" data-sa-sort="medianGov" tabindex="0" role="columnheader" aria-sort="none">Median Gov</th>
                         <th class="sa-sortable" data-sa-sort="highestName" tabindex="0" role="columnheader" aria-sort="none">Highest Paid CEO</th>
                         <th class="sa-sortable" data-sa-sort="highestPay" tabindex="0" role="columnheader" aria-sort="none">Highest Pay</th>
                     </tr>

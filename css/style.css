@@ -7733,6 +7733,10 @@ footer li::before {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.sa-gov {
+    text-align: center;
+    white-space: nowrap;
+}
 
 /* Light theme overrides */
 [data-theme="light"] .sector-analytics-table thead th {

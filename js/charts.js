@@ -68,6 +68,8 @@ function initCharts(companies, trends, compData) {
     drawCompTreemap(companies);
     drawCorrelationMatrix(companies);
     drawCrossSectorCorrelation(companies);
+    drawGovDistChart(companies);
+    drawSectorGovChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -180,7 +182,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -205,6 +207,8 @@ function redrawAllCharts() {
     drawCompTreemap(_chartData.companies);
     drawCorrelationMatrix(_chartData.companies);
     drawCrossSectorCorrelation(_chartData.companies);
+    drawGovDistChart(_chartData.companies);
+    drawSectorGovChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -7543,4 +7547,347 @@ function drawQuartileComposition(companies) {
             ? 'How ' + sector + ' CEO compensation composition shifts by pay level vs S&P 500 baseline \u2014 ' + pool.length + ' companies, ' + ceoRows.length + ' with component data. Dashed outlines = S&P 500 overall.'
             : 'How compensation composition shifts as pay levels rise \u2014 from salary-heavy in the bottom quartile to equity-dominant at the top. Computed from CEO-level DEF 14A data.';
     }
+}
+
+/* ========================================================================
+   Governance Score Distribution Chart
+   ======================================================================== */
+function drawGovDistChart(companies) {
+    var container = document.getElementById('gov-dist-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withGov = companies.filter(function(c) { return c._govScore != null; });
+    if (withGov.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No governance score data available</p>';
+        return;
+    }
+
+    var buckets = [
+        { min: 0, max: 20, label: '0–20', grade: 'F', color: '#ef476f' },
+        { min: 20, max: 35, label: '20–35', grade: 'F/D', color: '#f77f7f' },
+        { min: 35, max: 50, label: '35–50', grade: 'D', color: '#fb923c' },
+        { min: 50, max: 65, label: '50–65', grade: 'C', color: '#fbbf24' },
+        { min: 65, max: 80, label: '65–80', grade: 'B', color: '#4ade80' },
+        { min: 80, max: 100.1, label: '80–100', grade: 'A', color: '#06d6a0' }
+    ];
+
+    buckets.forEach(function(b) {
+        b.companies = withGov.filter(function(c) {
+            return c._govScore >= b.min && c._govScore < b.max;
+        });
+        b.count = b.companies.length;
+        b.companies.sort(function(a, bb) { return bb._govScore - a._govScore; });
+    });
+
+    var activeBuckets = buckets.filter(function(b) { return b.count > 0; });
+    var maxCount = d3.max(activeBuckets, function(b) { return b.count; });
+
+    // Median / mean
+    var govVals = withGov.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+    var medianGov = govVals[Math.floor(govVals.length / 2)];
+    var meanGov = govVals.reduce(function(s, v) { return s + v; }, 0) / govVals.length;
+
+    // Grade counts
+    var gradeCounts = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+    withGov.forEach(function(c) { if (c._govGrade) gradeCounts[c._govGrade]++; });
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 30, right: 30, bottom: 65, left: 50 };
+    var width = cw - margin.left - margin.right;
+    var height = 320 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', 340)
+        .attr('role', 'img')
+        .attr('aria-label', 'Governance score distribution histogram');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(activeBuckets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.15);
+
+    var y = d3.scaleLinear()
+        .domain([0, maxCount * 1.15])
+        .range([height, 0]);
+
+    // Axes
+    g.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px');
+
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .selectAll('text')
+        .style('fill', chartStrokeColor());
+
+    // Grade labels under x-axis
+    g.selectAll('.gov-grade-label')
+        .data(activeBuckets)
+        .enter()
+        .append('text')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', height + 35)
+        .attr('text-anchor', 'middle')
+        .style('fill', function(b) { return b.color; })
+        .style('font-size', '10px')
+        .style('font-weight', '600')
+        .style('opacity', 0.9)
+        .text(function(b) { return b.grade; });
+
+    // Bars
+    g.selectAll('.gov-bar')
+        .data(activeBuckets)
+        .enter()
+        .append('rect')
+        .attr('class', 'gov-bar')
+        .attr('x', function(b) { return x(b.label); })
+        .attr('y', function(b) { return y(b.count); })
+        .attr('width', x.bandwidth())
+        .attr('height', function(b) { return height - y(b.count); })
+        .attr('fill', function(b) { return b.color; })
+        .attr('rx', 3)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, b) {
+            var compList = b.companies.slice(0, 8).map(function(c) {
+                return c.ticker + ' ' + c._govScore + ' (' + c._govGrade + ')';
+            }).join('<br>');
+            if (b.count > 8) compList += '<br>...+' + (b.count - 8) + ' more';
+            showChartTooltip(event, '<strong>Score ' + b.label + ' (Grade ' + b.grade + ')</strong><br>' +
+                b.count + ' companies<br><br>' + compList);
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() { hideChartTooltip(); })
+        .on('click', function(event, b) {
+            if (window.filterByGovGrade) {
+                // Use the grade letter of the first company in this bucket
+                var grade = b.companies.length > 0 ? b.companies[0]._govGrade : 'C';
+                window.filterByGovGrade(grade, b.min, b.max);
+            }
+        });
+
+    // Count labels on top of bars
+    g.selectAll('.gov-count-label')
+        .data(activeBuckets)
+        .enter()
+        .append('text')
+        .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
+        .attr('y', function(b) { return y(b.count) - 5; })
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .text(function(b) { return b.count; });
+
+    // Median line
+    var medianBucket = activeBuckets.find(function(b) { return medianGov >= b.min && medianGov < b.max; });
+    if (medianBucket) {
+        var medianXPos = x(medianBucket.label) + x.bandwidth() * ((medianGov - medianBucket.min) / (medianBucket.max - medianBucket.min));
+        g.append('line')
+            .attr('x1', medianXPos).attr('x2', medianXPos)
+            .attr('y1', 0).attr('y2', height)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '6,3')
+            .attr('opacity', 0.8);
+        g.append('text')
+            .attr('x', medianXPos + 4)
+            .attr('y', 12)
+            .style('fill', '#fff')
+            .style('font-size', '11px')
+            .style('font-weight', '600')
+            .text('Median: ' + medianGov);
+    }
+
+    // Stats annotation with grade breakdown
+    var statsText = withGov.length + ' companies | Median ' + medianGov + ' | Mean ' + meanGov.toFixed(1);
+    statsText += ' | A:' + gradeCounts.A + ' B:' + gradeCounts.B + ' C:' + gradeCounts.C + ' D:' + gradeCounts.D + ' F:' + gradeCounts.F;
+    svg.append('text')
+        .attr('x', cw / 2)
+        .attr('y', 335)
+        .attr('text-anchor', 'middle')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('opacity', 0.7)
+        .text(statsText);
+}
+
+/* ========================================================================
+   Sector Governance Score Chart — horizontal bar chart showing median 
+   governance score per sector with grade-colored bars
+   ======================================================================== */
+function drawSectorGovChart(companies) {
+    var container = document.getElementById('sector-gov-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withGov = companies.filter(function(c) { return c._govScore != null && c.sector; });
+    if (withGov.length < 20) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient governance data</p>';
+        return;
+    }
+
+    // Compute per-sector median governance score
+    var sectorMap = {};
+    withGov.forEach(function(c) {
+        if (!sectorMap[c.sector]) sectorMap[c.sector] = [];
+        sectorMap[c.sector].push(c._govScore);
+    });
+
+    var sectorData = [];
+    Object.keys(sectorMap).forEach(function(sector) {
+        var scores = sectorMap[sector].sort(function(a, b) { return a - b; });
+        var median = scores[Math.floor(scores.length / 2)];
+        var mean = scores.reduce(function(s, v) { return s + v; }, 0) / scores.length;
+        var min = scores[0];
+        var max = scores[scores.length - 1];
+        var p25 = scores[Math.floor(scores.length * 0.25)];
+        var p75 = scores[Math.floor(scores.length * 0.75)];
+        sectorData.push({
+            sector: sector,
+            median: median,
+            mean: Math.round(mean),
+            min: min,
+            max: max,
+            p25: p25,
+            p75: p75,
+            count: scores.length,
+            grade: median >= 80 ? 'A' : median >= 65 ? 'B' : median >= 50 ? 'C' : median >= 35 ? 'D' : 'F'
+        });
+    });
+
+    sectorData.sort(function(a, b) { return b.median - a.median; });
+
+    var cw = container.clientWidth || 700;
+    var barHeight = 28;
+    var margin = { top: 20, right: 80, bottom: 30, left: 150 };
+    var width = cw - margin.left - margin.right;
+    var chartHeight = sectorData.length * (barHeight + 6);
+    var totalHeight = chartHeight + margin.top + margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', totalHeight)
+        .attr('role', 'img')
+        .attr('aria-label', 'Governance score by sector');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleLinear()
+        .domain([0, 100])
+        .range([0, width]);
+
+    var y = d3.scaleBand()
+        .domain(sectorData.map(function(d) { return d.sector; }))
+        .range([0, chartHeight])
+        .padding(0.15);
+
+    // X axis at bottom
+    g.append('g')
+        .attr('transform', 'translate(0,' + chartHeight + ')')
+        .call(d3.axisBottom(x).ticks(5).tickFormat(function(v) { return v; }))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px');
+
+    // Y axis (sector names)
+    g.append('g')
+        .call(d3.axisLeft(y))
+        .selectAll('text')
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('cursor', 'pointer')
+        .on('click', function(event, sector) {
+            if (window.filterBySector) window.filterBySector(sector);
+        });
+
+    function gradeColor(score) {
+        if (score >= 80) return '#06d6a0';
+        if (score >= 65) return '#4ade80';
+        if (score >= 50) return '#fbbf24';
+        if (score >= 35) return '#fb923c';
+        return '#ef476f';
+    }
+
+    // IQR range bars (p25-p75)
+    g.selectAll('.gov-iqr')
+        .data(sectorData)
+        .enter()
+        .append('rect')
+        .attr('class', 'gov-iqr')
+        .attr('x', function(d) { return x(d.p25); })
+        .attr('y', function(d) { return y(d.sector) + y.bandwidth() * 0.2; })
+        .attr('width', function(d) { return Math.max(0, x(d.p75) - x(d.p25)); })
+        .attr('height', y.bandwidth() * 0.6)
+        .attr('fill', function(d) { return gradeColor(d.median); })
+        .attr('opacity', 0.25)
+        .attr('rx', 2);
+
+    // Median bars
+    g.selectAll('.gov-sector-bar')
+        .data(sectorData)
+        .enter()
+        .append('rect')
+        .attr('class', 'gov-sector-bar')
+        .attr('x', 0)
+        .attr('y', function(d) { return y(d.sector) + y.bandwidth() * 0.15; })
+        .attr('width', function(d) { return x(d.median); })
+        .attr('height', y.bandwidth() * 0.7)
+        .attr('fill', function(d) { return gradeColor(d.median); })
+        .attr('rx', 3)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            showChartTooltip(event,
+                '<strong>' + d.sector + '</strong><br>' +
+                'Median Gov Score: <strong>' + d.median + '</strong> (Grade ' + d.grade + ')<br>' +
+                'Mean: ' + d.mean + ' | Range: ' + d.min + '–' + d.max + '<br>' +
+                'IQR: ' + d.p25 + '–' + d.p75 + '<br>' +
+                d.count + ' companies');
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function() { hideChartTooltip(); })
+        .on('click', function(event, d) {
+            if (window.filterBySector) window.filterBySector(d.sector);
+        });
+
+    // Score + grade labels at end of bars
+    g.selectAll('.gov-sector-label')
+        .data(sectorData)
+        .enter()
+        .append('text')
+        .attr('x', function(d) { return x(d.median) + 6; })
+        .attr('y', function(d) { return y(d.sector) + y.bandwidth() / 2 + 4; })
+        .style('fill', chartStrokeColor())
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .text(function(d) { return d.median + ' (' + d.grade + ')'; });
+
+    // S&P 500 overall median line
+    var allScores = withGov.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+    var sp500Median = allScores[Math.floor(allScores.length / 2)];
+
+    g.append('line')
+        .attr('x1', x(sp500Median)).attr('x2', x(sp500Median))
+        .attr('y1', -5).attr('y2', chartHeight + 5)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '5,3')
+        .attr('opacity', 0.7);
+
+    g.append('text')
+        .attr('x', x(sp500Median) + 4)
+        .attr('y', -8)
+        .style('fill', '#fff')
+        .style('font-size', '10px')
+        .style('font-weight', '600')
+        .style('opacity', 0.8)
+        .text('S&P 500 Median: ' + sp500Median);
 }
