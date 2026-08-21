@@ -73,6 +73,7 @@ function initCharts(companies, trends, compData) {
     drawGovQuartileComp(companies);
     drawGovPayScatter(companies);
     drawPayAnomalyChart(companies);
+    drawTenurePayGrowthChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -185,7 +186,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -215,6 +216,7 @@ function redrawAllCharts() {
     drawGovQuartileComp(_chartData.companies);
     drawGovPayScatter(_chartData.companies);
     drawPayAnomalyChart(_chartData.companies);
+    drawTenurePayGrowthChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -1374,7 +1376,6 @@ function drawTrendChart(trends) {
         }
     }
 }
-
 /* --- Pay Ratio Distribution (Histogram) --- */
 function drawRatioChart(companies) {
     var container = document.getElementById('ratio-chart');
@@ -8750,7 +8751,7 @@ function drawPayAnomalyChart(companies) {
             .text('\u25C2 Underpaid vs Expected');
     }
 
-    // Sector summary stats when filtered
+    // Sector summary stats when filtered — clickable to navigate to Gov vs Pay scatter
     if (_anomalySectorFilter && filteredAnomalies.length > 0) {
         var sectorMedianDev = d3.median(filteredAnomalies, function(a) { return a.pctDev; });
         var sectorMeanGov = d3.mean(filteredAnomalies, function(a) { return a.govScore; });
@@ -8760,7 +8761,34 @@ function drawPayAnomalyChart(companies) {
         summaryParts.push('Median Pay ' + fmtCurr(sectorMedPay));
         summaryParts.push('Avg Gov ' + (sectorMeanGov || 0).toFixed(0));
         summaryParts.push('Median Deviation ' + (sectorMedianDev > 0 ? '+' : '') + (sectorMedianDev || 0).toFixed(0) + '%');
-        g.append('text')
+        var summaryG = g.append('g')
+            .style('cursor', 'pointer')
+            .on('mouseover', function() {
+                summaryG.select('.anomaly-summary-text').attr('text-decoration', 'underline');
+                summaryG.select('.anomaly-nav-hint').attr('opacity', 1);
+            })
+            .on('mouseout', function() {
+                summaryG.select('.anomaly-summary-text').attr('text-decoration', 'none');
+                summaryG.select('.anomaly-nav-hint').attr('opacity', 0);
+            })
+            .on('click', function() {
+                // Navigate to Gov vs Pay scatter section
+                var govPayPanel = document.getElementById('gov-pay-scatter-panel');
+                if (govPayPanel) {
+                    var navHeight = document.querySelector('.section-nav') ? document.querySelector('.section-nav').offsetHeight : 0;
+                    var panelTop = govPayPanel.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+                    window.scrollTo({ top: panelTop, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                    // Flash the panel border briefly
+                    govPayPanel.style.outline = '2px solid ' + (sectorColor || '#00b4d8');
+                    govPayPanel.style.outlineOffset = '4px';
+                    setTimeout(function() {
+                        govPayPanel.style.outline = 'none';
+                        govPayPanel.style.outlineOffset = '';
+                    }, 1500);
+                }
+            });
+        summaryG.append('text')
+            .attr('class', 'anomaly-summary-text')
             .attr('x', width / 2)
             .attr('y', chartH + 18)
             .attr('text-anchor', 'middle')
@@ -8768,6 +8796,15 @@ function drawPayAnomalyChart(companies) {
             .attr('font-size', '10px')
             .attr('font-weight', '500')
             .text(summaryParts.join(' \u00B7 '));
+        summaryG.append('text')
+            .attr('class', 'anomaly-nav-hint')
+            .attr('x', width / 2)
+            .attr('y', chartH + 32)
+            .attr('text-anchor', 'middle')
+            .attr('fill', sectorColor || mutedColor)
+            .attr('font-size', '9px')
+            .attr('opacity', 0)
+            .text('\u2192 View in Governance vs Pay scatter');
     }
 
     // Bars
@@ -8877,3 +8914,311 @@ function drawPayAnomalyChart(companies) {
             .text('Mean |deviation|: ' + meanAbsDev.toFixed(0) + '% \u00B7 ' + overCount + ' companies 2x+ expected \u00B7 ' + underCount + ' companies <50% expected');
     }
 }
+
+/* ── Tenure × Pay Growth Analysis ───────────────────────────────────── */
+
+function drawTenurePayGrowthChart(companies) {
+    var container = document.getElementById('tenure-pay-growth-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Gather companies with tenure + multi-year CEO data
+    var eligible = [];
+    companies.forEach(function(c) {
+        if (c._ceoTenureYears == null || !c._ceoYoY || c._ceoYoY.pctChange == null) return;
+        if (!isFinite(c._ceoYoY.pctChange)) return;
+        eligible.push({
+            ticker: c.ticker,
+            company: c.company_name,
+            ceo: c.ceo_name || '\u2014',
+            tenure: c._ceoTenureYears,
+            yoyPct: c._ceoYoY.pctChange,
+            fromComp: c._ceoYoY.fromComp,
+            toComp: c._ceoYoY.toComp,
+            fromYear: c._ceoYoY.fromYear,
+            toYear: c._ceoYoY.toYear,
+            sector: c.sector,
+            total: c.total_compensation
+        });
+    });
+
+    if (eligible.length < 20) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + pay growth data</p>';
+        return;
+    }
+
+    // Define tenure brackets
+    var brackets = [
+        { label: 'New CEOs\n(<3 yrs)', min: 0, max: 3, color: '#06d6a0', members: [] },
+        { label: 'Mid-tenure\n(3\u201310 yrs)', min: 3, max: 10, color: '#00b4d8', members: [] },
+        { label: 'Established\n(10\u201320 yrs)', min: 10, max: 20, color: '#a78bfa', members: [] },
+        { label: 'Veterans\n(20+ yrs)', min: 20, max: Infinity, color: '#f59e0b', members: [] }
+    ];
+
+    eligible.forEach(function(e) {
+        for (var i = 0; i < brackets.length; i++) {
+            if (e.tenure >= brackets[i].min && e.tenure < brackets[i].max) {
+                brackets[i].members.push(e);
+                break;
+            }
+        }
+    });
+
+    // Compute stats per bracket
+    brackets.forEach(function(b) {
+        if (b.members.length === 0) {
+            b.median = 0; b.mean = 0; b.q25 = 0; b.q75 = 0; b.count = 0;
+            return;
+        }
+        b.count = b.members.length;
+        var sorted = b.members.map(function(m) { return m.yoyPct; }).sort(function(a, b) { return a - b; });
+        // Cap outliers for display (keep data, just limit visual range)
+        b.median = sorted[Math.floor(sorted.length / 2)];
+        b.mean = sorted.reduce(function(s, v) { return s + v; }, 0) / sorted.length;
+        var q1i = Math.floor(sorted.length * 0.25);
+        var q3i = Math.floor(sorted.length * 0.75);
+        b.q25 = sorted[q1i];
+        b.q75 = sorted[q3i];
+
+        // Find best and worst in bracket
+        b.best = b.members.slice().sort(function(a, b) { return b.yoyPct - a.yoyPct; })[0];
+        b.worst = b.members.slice().sort(function(a, b) { return a.yoyPct - b.yoyPct; })[0];
+    });
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+    var bgPanel = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 40, right: 30, bottom: 60, left: 80 };
+    var width = cw - margin.left - margin.right;
+    var chartH = 320;
+    var totalH = chartH + margin.top + margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', totalH)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO pay growth by tenure bracket — do longer-tenured CEOs accumulate faster pay growth?');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // X scale — tenure brackets
+    var x = d3.scaleBand()
+        .domain(brackets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.35);
+
+    // Y scale — pay growth %
+    var allVals = [];
+    brackets.forEach(function(b) {
+        if (b.count > 0) { allVals.push(b.median, b.q25, b.q75); }
+    });
+    var yMin = Math.min(d3.min(allVals) * 1.3, -15);
+    var yMax = Math.max(d3.max(allVals) * 1.3, 30);
+
+    var y = d3.scaleLinear()
+        .domain([yMin, yMax])
+        .range([chartH, 0]);
+
+    // Grid lines
+    var ticks = y.ticks(6);
+    ticks.forEach(function(t) {
+        g.append('line')
+            .attr('x1', 0).attr('x2', width)
+            .attr('y1', y(t)).attr('y2', y(t))
+            .attr('stroke', gridColor);
+    });
+
+    // Zero line
+    g.append('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', y(0)).attr('y2', y(0))
+        .attr('stroke', textColor)
+        .attr('stroke-width', 1)
+        .attr('opacity', 0.4)
+        .attr('stroke-dasharray', '4,3');
+
+    g.append('text')
+        .attr('x', width + 4)
+        .attr('y', y(0))
+        .attr('dy', '0.35em')
+        .attr('fill', mutedColor)
+        .attr('font-size', '9px')
+        .text('0%');
+
+    // Draw bars + IQR whiskers for each bracket
+    brackets.forEach(function(b, i) {
+        if (b.count === 0) return;
+
+        var bx = x(b.label);
+        var bw = x.bandwidth();
+
+        // IQR whisker background
+        var iqrTop = y(b.q75);
+        var iqrBot = y(b.q25);
+        g.append('rect')
+            .attr('x', bx + bw * 0.3)
+            .attr('y', iqrTop)
+            .attr('width', bw * 0.4)
+            .attr('height', Math.max(1, iqrBot - iqrTop))
+            .attr('fill', b.color)
+            .attr('opacity', 0.15)
+            .attr('rx', 3);
+
+        // Whisker line
+        g.append('line')
+            .attr('x1', bx + bw / 2).attr('x2', bx + bw / 2)
+            .attr('y1', iqrTop).attr('y2', iqrBot)
+            .attr('stroke', b.color)
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.4);
+
+        // Median bar
+        var barH = Math.abs(y(0) - y(b.median));
+        var barY = b.median >= 0 ? y(b.median) : y(0);
+
+        g.append('rect')
+            .attr('x', bx)
+            .attr('y', barY)
+            .attr('width', bw)
+            .attr('height', 0)
+            .attr('fill', b.color)
+            .attr('opacity', 0.8)
+            .attr('rx', 4)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event) {
+                d3.select(this).attr('opacity', 1);
+                var tooltipLines = '<strong>' + b.label.replace('\n', ' ') + '</strong><br>' +
+                    b.count + ' CEOs<br>' +
+                    'Median YoY Growth: <strong style="color:' + b.color + '">' + (b.median > 0 ? '+' : '') + b.median.toFixed(1) + '%</strong><br>' +
+                    'Mean YoY Growth: ' + (b.mean > 0 ? '+' : '') + b.mean.toFixed(1) + '%<br>' +
+                    'IQR: ' + (b.q25 > 0 ? '+' : '') + b.q25.toFixed(1) + '% to ' + (b.q75 > 0 ? '+' : '') + b.q75.toFixed(1) + '%<br>' +
+                    '<span style="color:#06d6a0">\u25B2 ' + b.best.ticker + ' (' + b.best.ceo + '): +' + b.best.yoyPct.toFixed(0) + '%</span><br>' +
+                    '<span style="color:#ef476f">\u25BC ' + b.worst.ticker + ' (' + b.worst.ceo + '): ' + b.worst.yoyPct.toFixed(0) + '%</span>';
+                showChartTooltip(event, tooltipLines);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('opacity', 0.8);
+                hideChartTooltip();
+            })
+            .transition()
+            .duration(600)
+            .delay(i * 120)
+            .ease(d3.easeCubicOut)
+            .attr('height', barH);
+
+        // Median value label
+        var labelY = b.median >= 0 ? y(b.median) - 8 : y(b.median) + barH + 14;
+        g.append('text')
+            .attr('x', bx + bw / 2)
+            .attr('y', labelY)
+            .attr('text-anchor', 'middle')
+            .attr('fill', b.color)
+            .attr('font-size', '13px')
+            .attr('font-weight', '700')
+            .attr('opacity', 0)
+            .transition()
+            .delay(i * 120 + 400)
+            .duration(300)
+            .attr('opacity', 1)
+            .text((b.median > 0 ? '+' : '') + b.median.toFixed(1) + '%');
+
+        // Count label
+        g.append('text')
+            .attr('x', bx + bw / 2)
+            .attr('y', chartH + 18)
+            .attr('text-anchor', 'middle')
+            .attr('fill', mutedColor)
+            .attr('font-size', '10px')
+            .text(b.count + ' CEOs');
+
+        // Bracket label (handle multi-line)
+        var labelLines = b.label.split('\n');
+        labelLines.forEach(function(line, li) {
+            g.append('text')
+                .attr('x', bx + bw / 2)
+                .attr('y', chartH + 32 + li * 13)
+                .attr('text-anchor', 'middle')
+                .attr('fill', textColor)
+                .attr('font-size', '11px')
+                .attr('font-weight', li === 0 ? '600' : '400')
+                .text(line);
+        });
+
+        // Scatter individual company dots overlaid on bar
+        b.members.forEach(function(m) {
+            var dotY = y(m.yoyPct);
+            if (dotY < 0 || dotY > chartH) return; // skip out-of-range
+            var jitter = (Math.random() - 0.5) * bw * 0.6;
+            g.append('circle')
+                .attr('cx', bx + bw / 2 + jitter)
+                .attr('cy', dotY)
+                .attr('r', 2.5)
+                .attr('fill', b.color)
+                .attr('opacity', 0.3)
+                .style('cursor', 'pointer')
+                .on('mouseover', function(event) {
+                    d3.select(this).attr('r', 5).attr('opacity', 1);
+                    showChartTooltip(event,
+                        '<strong>' + m.ticker + '</strong> \u2014 ' + m.company + '<br>' +
+                        'CEO: ' + m.ceo + ' (' + m.tenure.toFixed(1) + ' yrs)<br>' +
+                        'Pay Growth: <strong style="color:' + (m.yoyPct >= 0 ? '#06d6a0' : '#ef476f') + '">' +
+                        (m.yoyPct > 0 ? '+' : '') + m.yoyPct.toFixed(1) + '%</strong><br>' +
+                        fmtCurr(m.fromComp) + ' \u2192 ' + fmtCurr(m.toComp) + ' (FY' + m.fromYear + '\u2013' + m.toYear + ')');
+                })
+                .on('mousemove', function(event) { positionChartTooltip(event); })
+                .on('mouseout', function() {
+                    d3.select(this).attr('r', 2.5).attr('opacity', 0.3);
+                    hideChartTooltip();
+                })
+                .on('click', function() {
+                    if (window.scrollToCompany) window.scrollToCompany(m.ticker);
+                });
+        });
+    });
+
+    // Y-axis labels
+    ticks.forEach(function(t) {
+        g.append('text')
+            .attr('x', -8)
+            .attr('y', y(t))
+            .attr('dy', '0.35em')
+            .attr('text-anchor', 'end')
+            .attr('fill', mutedColor)
+            .attr('font-size', '10px')
+            .text((t > 0 ? '+' : '') + t + '%');
+    });
+
+    // Y-axis title
+    svg.append('text')
+        .attr('x', 14)
+        .attr('y', margin.top + chartH / 2)
+        .attr('transform', 'rotate(-90,14,' + (margin.top + chartH / 2) + ')')
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '12px')
+        .text('CEO Pay Growth (YoY %)');
+
+    // Overall insight annotation
+    var newMedian = brackets[0].count > 0 ? brackets[0].median : null;
+    var vetMedian = brackets[3].count > 0 ? brackets[3].median : null;
+    if (newMedian != null && vetMedian != null) {
+        var insightText = 'New CEOs grow ' + (newMedian > 0 ? '+' : '') + newMedian.toFixed(0) + '% YoY vs veterans ' +
+            (vetMedian > 0 ? '+' : '') + vetMedian.toFixed(0) + '% \u2014 ' +
+            (newMedian > vetMedian + 5 ? 'early tenure drives the sharpest pay acceleration' :
+             Math.abs(newMedian - vetMedian) < 5 ? 'pay growth is relatively flat across tenure' :
+             'longer tenure correlates with higher growth');
+        svg.append('text')
+            .attr('x', margin.left)
+            .attr('y', totalH - 6)
+            .attr('fill', mutedColor)
+            .attr('font-size', '9px')
+            .text(insightText + ' \u00B7 ' + eligible.length + ' companies with tenure + YoY data');
+    }
+}
+

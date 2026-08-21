@@ -1720,6 +1720,56 @@ function populateInsights(comp, trends, sectorFilter) {
         }
     }
 
+    // 11f. Tenure × Pay Growth — do new CEOs get bigger raises?
+    (function() {
+        var tpgEligible = companies.filter(function(c) {
+            return c._ceoTenureYears != null && c._ceoYoY && c._ceoYoY.pctChange != null && isFinite(c._ceoYoY.pctChange);
+        });
+        if (tpgEligible.length < 20) return;
+        var tpgBrackets = [
+            { label: '<3 yrs', min: 0, max: 3, vals: [] },
+            { label: '3\u201310 yrs', min: 3, max: 10, vals: [] },
+            { label: '10\u201320 yrs', min: 10, max: 20, vals: [] },
+            { label: '20+ yrs', min: 20, max: Infinity, vals: [] }
+        ];
+        tpgEligible.forEach(function(c) {
+            for (var i = 0; i < tpgBrackets.length; i++) {
+                if (c._ceoTenureYears >= tpgBrackets[i].min && c._ceoTenureYears < tpgBrackets[i].max) {
+                    tpgBrackets[i].vals.push(c._ceoYoY.pctChange);
+                    break;
+                }
+            }
+        });
+        var tpgParts = [];
+        tpgBrackets.forEach(function(b) {
+            if (b.vals.length > 0) {
+                b.vals.sort(function(a, c) { return a - c; });
+                var med = b.vals[Math.floor(b.vals.length / 2)];
+                tpgParts.push(b.label + ': ' + (med > 0 ? '+' : '') + med.toFixed(1) + '% (' + b.vals.length + ')');
+            }
+        });
+        var newMed = tpgBrackets[0].vals.length > 0 ? tpgBrackets[0].vals[Math.floor(tpgBrackets[0].vals.length / 2)] : 0;
+        var vetMed = tpgBrackets[3].vals.length > 0 ? tpgBrackets[3].vals[Math.floor(tpgBrackets[3].vals.length / 2)] : 0;
+        insights.push({
+            icon: '\uD83D\uDCC8',
+            label: 'Tenure \u00D7 Growth',
+            value: 'New CEOs +' + newMed.toFixed(0) + '% YoY',
+            detail: 'Median year-over-year CEO pay growth by tenure bracket: ' + tpgParts.join('; ') + '. ' +
+                (newMed > vetMed + 5 ? 'New CEOs see the sharpest pay acceleration as their packages ramp up, while veterans\u2019 pay flattens.' :
+                 'Pay growth is relatively stable across tenure levels.') +
+                ' Based on ' + tpgEligible.length + ' companies with multi-year SCT + tenure data from DEF 14A proxy filings.',
+            action: function() {
+                var tpgPanel = document.getElementById('tenure-pay-growth-panel');
+                if (tpgPanel) {
+                    var headerHeight = typeof getStickyOffset === 'function' ? getStickyOffset() : 48;
+                    var top = tpgPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                }
+            },
+            actionHint: 'View chart'
+        });
+    })();
+
     // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
     // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
     (function() {
