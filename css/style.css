@@ -9790,6 +9790,31 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .tenure-short { background: rgba(124,58,237,0.1); color: #7c3aed; border-color: rgba(124,58,237,0.18); }
 [data-theme="light"] .tenure-new { background: rgba(234,88,12,0.1); color: #ea580c; border-color: rgba(234,88,12,0.18); }
 
+/* ── Governance Score column ── */
+.gov-col { min-width: 60px; }
+.gov-cell { text-align: center; }
+.gov-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: default;
+}
+.gov-badge-clickable { cursor: pointer; }
+.gov-badge-clickable:hover { filter: brightness(1.2); transform: scale(1.05); }
+.gov-a { background: rgba(0,180,216,0.15); color: #00b4d8; border: 1px solid rgba(0,180,216,0.25); }
+.gov-b { background: rgba(6,214,160,0.15); color: var(--positive); border: 1px solid rgba(6,214,160,0.25); }
+.gov-c { background: rgba(255,209,102,0.15); color: #ffd166; border: 1px solid rgba(255,209,102,0.25); }
+.gov-d { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+.gov-f { background: rgba(239,71,111,0.15); color: #ef476f; border: 1px solid rgba(239,71,111,0.25); }
+[data-theme="light"] .gov-a { background: rgba(0,120,180,0.1); color: #0078b4; border-color: rgba(0,120,180,0.18); }
+[data-theme="light"] .gov-b { background: rgba(5,150,105,0.1); color: #059669; border-color: rgba(5,150,105,0.18); }
+[data-theme="light"] .gov-c { background: rgba(202,138,4,0.1); color: #ca8a04; border-color: rgba(202,138,4,0.18); }
+[data-theme="light"] .gov-d { background: rgba(234,88,12,0.1); color: #ea580c; border-color: rgba(234,88,12,0.18); }
+[data-theme="light"] .gov-f { background: rgba(225,29,72,0.1); color: #e11d48; border-color: rgba(225,29,72,0.18); }
+
 /* ── Correlation Heatmap (insight card) ── */
 .corr-heatmap-wrap {
     margin-top: 10px;

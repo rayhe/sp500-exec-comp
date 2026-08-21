@@ -18,7 +18,8 @@
       "Some entries are FY2025 (ADSK, BBY, CRM, TJX, WDAY, NVDA, KMX) due to non-calendar fiscal years",
       "Data quality flags: verified = component sum matches stated total; recomputed = stated total replaced with component sum; incomplete_components = equity data not parsed, total from filing; bloated_component = one component appears inflated, total from filing retained",
       "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 exec comp comes from carried interest, not traditional SCT packages",
-      "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant"
+      "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant",
+      "Compensation Governance Score: composite 0-100 from SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness"
     ],
     "aggregate_stats": {
       "total_companies": 500,
@@ -45,7 +46,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-20",
+    "last_updated": "2026-08-21",
     "total_neo_records": 6141,
     "title_coverage": 6141,
     "data_quality": {
@@ -86,7 +87,8 @@
       "male_median_pay": 15989188,
       "female_premium_pct": 9.5
     },
-    "ceo_tenure_coverage": 492
+    "ceo_tenure_coverage": 492,
+    "governance_coverage": 496
   },
   "companies": [
     {

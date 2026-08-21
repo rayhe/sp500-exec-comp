@@ -229,6 +229,7 @@
                         <th class="sortable sop-col" data-sort="_sopApproval" role="columnheader" aria-sort="none" tabindex="0" title="Say-on-Pay shareholder approval percentage from 8-K Item 5.07 filings">SoP %</th>
                         <th class="sortable asp-col" data-sort="_aspDelta" role="columnheader" aria-sort="none" tabindex="0" title="Peer group median CEO pay vs own CEO pay — positive = selects higher-paid peers (aspirational), negative = pays above peers">Peer Δ</th>
                         <th class="sortable tenure-col" data-sort="_ceoTenureYears" role="columnheader" aria-sort="none" tabindex="0" title="CEO tenure — years since appointment (from DEF 14A proxy statements)">Tenure</th>
+                        <th class="sortable gov-col" data-sort="_govScore" role="columnheader" aria-sort="none" tabindex="0" title="Compensation Governance Score (0-100) — composite of SoP approval, CEO concentration, pay ratio, and team completeness">Gov</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
                         <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
                     </tr>
@@ -421,6 +422,7 @@
                             <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                             <option value="_pageRankScore">PageRank Centrality</option>
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
+                            <option value="_govScore">Governance Score</option>
                         </select>
                     </label>
                     <label class="scatter-axis-label">Y axis:
@@ -435,6 +437,7 @@
                             <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                             <option value="_pageRankScore">PageRank Centrality</option>
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
+                            <option value="_govScore">Governance Score</option>
                         </select>
                     </label>
                 </div>
@@ -448,6 +451,7 @@
                     <button class="scatter-preset-btn" data-x="total_compensation" data-y="_sopApproval" title="CEO total compensation vs say-on-pay approval — do shareholders resist higher pay?">Pay vs SoP</button>
                     <button class="scatter-preset-btn" data-x="_pageRankScore" data-y="total_compensation" title="PageRank centrality vs CEO pay — do the most central peer-network companies pay more?">Centrality vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="total_compensation" title="CEO tenure vs total compensation — does longer tenure correlate with higher pay?">Tenure vs Pay</button>
+                    <button class="scatter-preset-btn" data-x="_govScore" data-y="total_compensation" title="Governance score vs CEO pay — do well-governed companies pay more or less?">Gov vs Pay</button>
                 </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">

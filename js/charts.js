@@ -2760,6 +2760,16 @@ function drawScatterChart(companies) {
             unit: ' years',
             minForLog: 1,
             canBeNegative: false
+        },
+        _govScore: {
+            label: 'Governance Score',
+            shortLabel: 'Gov Score',
+            get: function(c) { return c._govScore; },
+            fmt: function(v) { return v != null ? v + '/100' : '—'; },
+            fmtAxis: function(v) { return Math.round(v); },
+            unit: '/100',
+            minForLog: 1,
+            canBeNegative: false
         }
     };
 

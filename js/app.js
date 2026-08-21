@@ -667,6 +667,72 @@ function computeAspirationalBenchmarking(companies) {
     });
 }
 
+/* Pre-compute Compensation Governance Score — a composite 0-100 metric combining
+   multiple governance-quality signals into a single comparable dimension.
+   Components (equal-weighted, each normalized to 0-100):
+     1. SoP approval percentile (higher approval = better governance)
+     2. Inverse CEO concentration (lower CEO share of NEO comp = more distributed = better)
+     3. Inverse pay ratio percentile (lower CEO:worker gap = better alignment)
+     4. Team disclosure completeness (more C-suite roles in NEO = better transparency)
+   Companies missing 2+ components get null. Score is the mean of available components.
+   Sets c._govScore (0-100), c._govGrade (A/B/C/D/F), c._govComponents (object),
+   c._govComponentCount (number of available components). */
+function computeGovernanceScore(companies) {
+    // Build percentile maps for each sub-dimension
+    function pctileMap(arr, accessor, invert) {
+        var valid = arr.filter(function(c) { return accessor(c) != null; });
+        if (invert) {
+            valid.sort(function(a, b) { return accessor(b) - accessor(a); }); // high value → low percentile
+        } else {
+            valid.sort(function(a, b) { return accessor(a) - accessor(b); }); // low value → low percentile
+        }
+        var map = {};
+        var n = valid.length;
+        valid.forEach(function(c, i) { map[c.ticker] = Math.round((i + 1) / n * 100); });
+        return map;
+    }
+
+    var sopPctile = pctileMap(companies, function(c) { return c._sopApproval; }, false);
+    var concPctile = pctileMap(companies, function(c) { return c._ceoConcPct; }, true); // invert: lower conc = higher score
+    var ratioPctile = pctileMap(companies, function(c) { return c.pay_ratio; }, true);   // invert: lower ratio = higher score
+    // Team completeness: 0-7 roles → scale to 0-100
+    var teamPctile = {};
+    companies.forEach(function(c) {
+        if (c._teamRoleCount != null) {
+            teamPctile[c.ticker] = Math.round(c._teamRoleCount / 7 * 100);
+        }
+    });
+
+    companies.forEach(function(c) {
+        c._govScore = null;
+        c._govGrade = null;
+        c._govComponents = null;
+        c._govComponentCount = 0;
+
+        var components = {};
+        var sum = 0;
+        var count = 0;
+
+        if (sopPctile[c.ticker] != null) { components.sop = sopPctile[c.ticker]; sum += components.sop; count++; }
+        if (concPctile[c.ticker] != null) { components.conc = concPctile[c.ticker]; sum += components.conc; count++; }
+        if (ratioPctile[c.ticker] != null) { components.ratio = ratioPctile[c.ticker]; sum += components.ratio; count++; }
+        if (teamPctile[c.ticker] != null) { components.team = teamPctile[c.ticker]; sum += components.team; count++; }
+
+        if (count < 2) return; // Need at least 2 components for meaningful score
+
+        c._govScore = Math.round(sum / count);
+        c._govComponents = components;
+        c._govComponentCount = count;
+
+        // Letter grade
+        if (c._govScore >= 80) c._govGrade = 'A';
+        else if (c._govScore >= 65) c._govGrade = 'B';
+        else if (c._govScore >= 50) c._govGrade = 'C';
+        else if (c._govScore >= 35) c._govGrade = 'D';
+        else c._govGrade = 'F';
+    });
+}
+
 /* Pre-compute PageRank centrality scores from the peer network.
    PageRank measures transitive influence: a company is central if it's benchmarked by
    companies that are themselves benchmarked by many others. Uses the classic power iteration
@@ -1143,7 +1209,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -1664,7 +1730,8 @@ function populateInsights(comp, trends, sectorFilter) {
             { key: 'yoyChange', label: 'YoY Change', short: 'YoY', scatterKey: '_ceoYoYPct', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
             { key: 'tenure', label: 'Tenure', short: 'Tenure', scatterKey: '_ceoTenureYears', get: function(c) { return c._ceoTenureYears; } },
             { key: 'sopApproval', label: 'SoP Approval', short: 'SoP', scatterKey: '_sopApproval', get: function(c) { return c._sopApproval; } },
-            { key: 'aspDelta', label: 'Peer Delta', short: 'PeerΔ', scatterKey: null, get: function(c) { return c._aspDelta; } }
+            { key: 'aspDelta', label: 'Peer Delta', short: 'PeerΔ', scatterKey: null, get: function(c) { return c._aspDelta; } },
+            { key: 'govScore', label: 'Gov Score', short: 'Gov', scatterKey: '_govScore', get: function(c) { return c._govScore; } }
         ];
 
         function pearsonR(xArr, yArr) {
@@ -1831,6 +1898,11 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeTenureQuartile = null;
             var tqc = document.getElementById('tenure-filter-chip');
             if (tqc) tqc.remove();
+        }
+        if (window._activeGovGrade) {
+            window._activeGovGrade = null;
+            var gfc = document.getElementById('gov-filter-chip');
+            if (gfc) gfc.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -2354,6 +2426,84 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (window.focusNetworkNode) window.focusNetworkNode(top5[0].ticker);
             },
             actionHint: 'View in network graph',
+            _tickers: top5.map(function(c) { return c.ticker; })
+        });
+    })();
+
+    // 21. Compensation Governance Score — composite governance quality metric
+    (function() {
+        var withGov = companies.filter(function(c) { return c._govScore != null; });
+        if (withGov.length < 20) return;
+        withGov.sort(function(a, b) { return b._govScore - a._govScore; });
+        var top5 = withGov.slice(0, 5);
+        var bottom5 = withGov.slice(-5).reverse();
+        var gradeA = withGov.filter(function(c) { return c._govGrade === 'A'; });
+        var gradeF = withGov.filter(function(c) { return c._govGrade === 'F'; });
+        var scores = withGov.map(function(c) { return c._govScore; });
+        scores.sort(function(a, b) { return a - b; });
+        var median = scores[Math.floor(scores.length / 2)];
+
+        // Check if good governance correlates with higher/lower pay
+        var topQ = withGov.slice(0, Math.floor(withGov.length / 4));
+        var botQ = withGov.slice(-Math.floor(withGov.length / 4));
+        var topQMedPay = topQ.map(function(c) { return c.total_compensation; }).sort(function(a,b) { return a-b; });
+        var botQMedPay = botQ.map(function(c) { return c.total_compensation; }).sort(function(a,b) { return a-b; });
+        var tgMed = topQMedPay.length > 0 ? topQMedPay[Math.floor(topQMedPay.length/2)] : 0;
+        var bgMed = botQMedPay.length > 0 ? botQMedPay[Math.floor(botQMedPay.length/2)] : 0;
+        var govPayDelta = bgMed > 0 ? Math.round((tgMed - bgMed) / bgMed * 100) : 0;
+
+        var value = gradeA.length + ' companies Grade A';
+        var topNames = top5.map(function(c) { return c.ticker + ' (' + c._govScore + ')'; }).join(', ');
+        var botNames = bottom5.map(function(c) { return c.ticker + ' (' + c._govScore + ')'; }).join(', ');
+        var detail = 'Composite score (0–100) from say-on-pay approval, CEO concentration, pay ratio, and team disclosure completeness. ' +
+            'S&amp;P 500 median: ' + median + '/100. ' +
+            'Top 5: ' + topNames + '. Bottom 5: ' + botNames + '.';
+        if (govPayDelta !== 0) {
+            detail += ' Top-quartile governance companies have ' + (govPayDelta > 0 ? govPayDelta + '% higher' : Math.abs(govPayDelta) + '% lower') + ' median CEO pay.';
+        }
+
+        // Build inline distribution bars (like YoY distribution)
+        var buckets = [0,0,0,0,0]; // F(<35), D(35-49), C(50-64), B(65-79), A(80+)
+        var bucketLabels = ['F', 'D', 'C', 'B', 'A'];
+        var bucketColors = ['#ef476f', '#fb923c', '#ffd166', '#06d6a0', '#00b4d8'];
+        withGov.forEach(function(c) {
+            if (c._govScore >= 80) buckets[4]++;
+            else if (c._govScore >= 65) buckets[3]++;
+            else if (c._govScore >= 50) buckets[2]++;
+            else if (c._govScore >= 35) buckets[1]++;
+            else buckets[0]++;
+        });
+        var maxBucket = Math.max.apply(null, buckets);
+        var distHtml = '<div class="gov-dist-inline" style="display:flex;gap:3px;align-items:flex-end;height:32px;margin-top:6px">';
+        for (var bi = 0; bi < 5; bi++) {
+            var bH = maxBucket > 0 ? Math.max(3, Math.round(buckets[bi] / maxBucket * 28)) : 3;
+            distHtml += '<div style="display:flex;flex-direction:column;align-items:center;flex:1">' +
+                '<div style="width:100%;height:' + bH + 'px;background:' + bucketColors[bi] + ';border-radius:2px" title="' + bucketLabels[bi] + ': ' + buckets[bi] + ' companies"></div>' +
+                '<span style="font-size:9px;color:var(--text-muted);margin-top:2px">' + bucketLabels[bi] + '</span></div>';
+        }
+        distHtml += '</div>';
+        detail += distHtml;
+
+        // Clickable grade spans for filtering
+        detail += '<div style="margin-top:4px;font-size:0.7rem;color:var(--text-muted)">';
+        bucketLabels.forEach(function(g, gi) {
+            var min = [0, 35, 50, 65, 80][gi];
+            var max = [34, 49, 64, 79, 100][gi];
+            detail += '<span class="gov-grade-filter" onclick="if(window.filterByGovGrade)window.filterByGovGrade(\'' + g + '\',' + min + ',' + max + ')" ' +
+                'style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted;margin-right:6px" title="Filter to Grade ' + g + '">' +
+                g + ': ' + buckets[gi] + '</span>';
+        });
+        detail += '</div>';
+
+        insights.push({
+            icon: '🏛️',
+            label: 'Governance Score',
+            value: value,
+            detail: detail,
+            action: function() {
+                insightResetAndSort('_govScore', 'desc');
+            },
+            actionHint: 'Sort by governance score',
             _tickers: top5.map(function(c) { return c.ticker; })
         });
     })();
@@ -4468,6 +4618,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
     if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
     if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
+    if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -4914,6 +5065,14 @@ function renderTable(companies, options) {
         });
     }
 
+    // Governance score grade filter
+    if (window._activeGovGrade) {
+        var gf = window._activeGovGrade;
+        filtered = filtered.filter(function(c) {
+            return c._govScore != null && c._govScore >= gf.min && c._govScore <= gf.max;
+        });
+    }
+
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
         filtered = filtered.filter(function(c) {
@@ -5177,6 +5336,23 @@ function renderTable(companies, options) {
                 var tip = tLbl + ': ' + ty + ' year' + (ty !== 1 ? 's' : '') + ' as CEO \u2014 ' + startInfo + ' (' + confLbl + ', source: DEF 14A proxy)';
                 return '<span class="tenure-badge ' + tCls + '" title="' + tip + '">' + ty + 'y</span>';
             })() + '</td>' +
+            '<td class="gov-cell">' + (function() {
+                if (c._govScore == null) return '\u2014';
+                var gs = c._govScore;
+                var gg = c._govGrade;
+                var gCls = gg === 'A' ? 'gov-a' : gg === 'B' ? 'gov-b' : gg === 'C' ? 'gov-c' : gg === 'D' ? 'gov-d' : 'gov-f';
+                var parts = [];
+                if (c._govComponents) {
+                    if (c._govComponents.sop != null) parts.push('SoP: ' + c._govComponents.sop);
+                    if (c._govComponents.conc != null) parts.push('Conc: ' + c._govComponents.conc);
+                    if (c._govComponents.ratio != null) parts.push('Ratio: ' + c._govComponents.ratio);
+                    if (c._govComponents.team != null) parts.push('Team: ' + c._govComponents.team);
+                }
+                var tip = 'Governance Score: ' + gs + '/100 (Grade ' + gg + ') \u2014 ' + parts.join(', ') + ' \u2014 click to filter';
+                var gMin = gg === 'A' ? 80 : gg === 'B' ? 65 : gg === 'C' ? 50 : gg === 'D' ? 35 : 0;
+                var gMax = gg === 'A' ? 100 : gg === 'B' ? 79 : gg === 'C' ? 64 : gg === 'D' ? 49 : 34;
+                return '<span class="gov-badge ' + gCls + ' gov-badge-clickable" title="' + tip + '" onclick="event.stopPropagation();if(window.filterByGovGrade)window.filterByGovGrade(\'' + gg + '\',' + gMin + ',' + gMax + ')">' + gg + ' ' + gs + '</span>';
+            })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
@@ -5219,6 +5395,7 @@ function renderTable(companies, options) {
     if (window._activeGenderFilter) announceMsg += ', gender: ' + (window._activeGenderFilter === 'F' ? 'Female' : 'Male') + ' CEOs';
     if (window._activeAspDeltaTier) announceMsg += ', peer delta: ' + window._activeAspDeltaTier.tag;
     if (window._activeTenureQuartile) announceMsg += ', tenure: ' + window._activeTenureQuartile.tag;
+    if (window._activeGovGrade) announceMsg += ', governance: Grade ' + window._activeGovGrade.grade;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;
@@ -5614,7 +5791,7 @@ function setupDetailPanel(companies) {
         var _pctileLabel = company._compPercentile != null ? getPercentileLabel(company._compPercentile) : '';
 
         // Build HTML
-        var html = '<td colspan="13"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="14"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">';
         html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
         html += '<div class="detail-header-center">';
@@ -5733,6 +5910,24 @@ function setupDetailPanel(companies) {
                     sopSentence = 'Say-on-pay passed with ' + sopPct.toFixed(1) + '% shareholder approval.';
                 }
                 sentences.push(sopSentence);
+            }
+
+            // Sentence 5: Governance Score composite
+            if (company._govScore != null) {
+                var gsc = company._govScore;
+                var govSentence = '';
+                if (gsc >= 80) {
+                    govSentence = 'Governance score of ' + gsc + '/100 (Grade ' + company._govGrade + ') places it among the best-governed compensation programs in the index.';
+                } else if (gsc >= 65) {
+                    govSentence = 'Governance score of ' + gsc + '/100 (Grade ' + company._govGrade + ') reflects above-average pay governance.';
+                } else if (gsc >= 50) {
+                    govSentence = 'Governance score of ' + gsc + '/100 (Grade ' + company._govGrade + ') is near the S&P 500 median.';
+                } else if (gsc >= 35) {
+                    govSentence = 'Governance score of ' + gsc + '/100 (Grade ' + company._govGrade + ') flags below-average pay governance.';
+                } else {
+                    govSentence = 'Governance score of ' + gsc + '/100 (Grade ' + company._govGrade + ') ranks among the weakest in the index.';
+                }
+                sentences.push(govSentence);
             }
 
             if (sentences.length > 0) {
@@ -5877,6 +6072,24 @@ function setupDetailPanel(companies) {
             var prLabel = company._pageRankLabel || '';
             var prTip = 'PageRank measures transitive peer-network influence — companies are central when benchmarked by other central companies';
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + prTip + '">Network Centrality</div><div class="detail-stat-value ' + prCls + '">' + prLabel + '</div>' + distBar(prPct, 'Low', 'High') + '<div class="detail-stat-sub">PageRank score: ' + company._pageRankScore + ' · Percentile ' + prPct + '</div></div>';
+        }
+
+        // Governance Score stat
+        if (company._govScore != null) {
+            var govS = company._govScore;
+            var govG = company._govGrade;
+            var govCls = govG === 'A' ? 'positive' : govG === 'B' ? 'positive' : govG === 'C' ? '' : 'negative';
+            var govTip = 'Composite of SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness';
+            var govSub = 'Grade ' + govG;
+            if (company._govComponents) {
+                var gParts = [];
+                if (company._govComponents.sop != null) gParts.push('SoP ' + company._govComponents.sop);
+                if (company._govComponents.conc != null) gParts.push('Conc ' + company._govComponents.conc);
+                if (company._govComponents.ratio != null) gParts.push('Ratio ' + company._govComponents.ratio);
+                if (company._govComponents.team != null) gParts.push('Team ' + company._govComponents.team);
+                govSub += ' · ' + gParts.join(', ');
+            }
+            html += '<div class="detail-stat"><div class="detail-stat-label" title="' + govTip + '">Governance Score</div><div class="detail-stat-value ' + govCls + '">' + govS + '/100</div>' + distBar(govS, '0', '100') + '<div class="detail-stat-sub">' + govSub + '</div></div>';
         }
 
         html += '</div>'; // detail-stats
@@ -7369,6 +7582,11 @@ function serializeState() {
         params.push('tqtag=' + encodeURIComponent(window._activeTenureQuartile.tag));
         params.push('tqlbl=' + encodeURIComponent(window._activeTenureQuartile.label));
     }
+    if (window._activeGovGrade) {
+        params.push('govgrade=' + window._activeGovGrade.grade);
+        params.push('govmin=' + window._activeGovGrade.min);
+        params.push('govmax=' + window._activeGovGrade.max);
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -7543,6 +7761,16 @@ function applyHashState(companies) {
         }
     }
 
+    // Governance grade filter
+    if (state.govgrade && state.govmin != null && state.govmax != null) {
+        var govMin = parseInt(state.govmin);
+        var govMax = parseInt(state.govmax);
+        if (!isNaN(govMin) && !isNaN(govMax)) {
+            window._activeGovGrade = { grade: state.govgrade, min: govMin, max: govMax };
+            updateGovFilterIndicator();
+        }
+    }
+
     // Role filter
     if (state.role) {
         var validRoles = ['CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
@@ -7711,7 +7939,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="13"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="14"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
@@ -8227,6 +8455,9 @@ function setupDualSparklineTooltips() {
 
     // Pre-compute aspirational benchmarking scores (peer median vs own CEO pay)
     computeAspirationalBenchmarking(companies);
+
+    // Pre-compute Compensation Governance Score (composite of SoP, concentration, ratio, team)
+    computeGovernanceScore(companies);
 
     // Pre-compute PageRank centrality from peer network
     computePageRank(companies);
@@ -9197,6 +9428,55 @@ function setupDualSparklineTooltips() {
         return 'rgba(' + r + ',' + g + ',' + b + ',0.5)';
     }
 
+    // --- Governance Score grade filter ---
+    window._activeGovGrade = null;
+    window.filterByGovGrade = function(grade, min, max) {
+        if (window._activeGovGrade && window._activeGovGrade.grade === grade) {
+            window._activeGovGrade = null;
+        } else {
+            window._activeGovGrade = { grade: grade, min: min, max: max };
+        }
+        currentPage = 1;
+        currentSort = { key: '_govScore', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_govScore') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+        updateGovFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeGovGrade ? 'Filtered to governance Grade ' + grade : 'Governance filter cleared');
+    };
+
+    function updateGovFilterIndicator() {
+        var existing = document.getElementById('gov-filter-chip');
+        if (existing) existing.remove();
+        if (window._activeGovGrade) {
+            var gf = window._activeGovGrade;
+            var gradeColors = { A: '#00b4d8', B: '#06d6a0', C: '#ffd166', D: '#fb923c', F: '#ef476f' };
+            var color = gradeColors[gf.grade] || '#94a3b8';
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'gov-filter-chip';
+            chip.style.background = hexToChipBg(color);
+            chip.style.borderColor = hexToChipBorder(color);
+            chip.style.color = color;
+            chip.innerHTML = 'Gov: Grade ' + gf.grade + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
+            chip.title = 'Click to clear governance filter';
+            chip.addEventListener('click', function() {
+                window._activeGovGrade = null;
+                chip.remove();
+                renderTable(companies);
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+
     // Find a specific company in the table by ticker — used by Top 10 chart click
     window.findCompanyInTable = function(ticker) {
         // Clear filters to ensure company is visible
@@ -10098,7 +10378,7 @@ function setupDualSparklineTooltips() {
             var isRoleExport = activeRole && activeRole !== 'CEO';
             var roleLabel = isRoleExport ? activeRole : 'CEO';
             var headers = ['Rank', 'Ticker', 'Company', roleLabel, roleLabel + ' Total Compensation ($)', 'Comp Percentile', 'CEO Comp YoY %', 'Sector', 'CEO Tenure (Years)', 'CEO Start Year', 'Pay Ratio', 'Median Worker Pay ($)',
-                'CEO Concentration %', 'CEO Premium Ratio', 'CEO Transition', 'CEO Data Years',
+                'CEO Concentration %', 'CEO Premium Ratio', 'Governance Score', 'Governance Grade', 'CEO Transition', 'CEO Data Years',
                 'Team Roles Filled', 'Team Roles', 'Missing Expected Roles',
                 roleLabel + ' Salary ($)', roleLabel + ' Stock Awards ($)', roleLabel + ' Option Awards ($)', roleLabel + ' Bonus ($)',
                 roleLabel + ' Non-Equity Incentive ($)', roleLabel + ' Pension/NQDC ($)', roleLabel + ' All Other ($)',
@@ -10159,6 +10439,8 @@ function setupDualSparklineTooltips() {
                     c.median_worker_pay || '',
                     c._ceoConcPct != null ? c._ceoConcPct.toFixed(1) : '',
                     c._ceoPremiumRatio != null ? c._ceoPremiumRatio.toFixed(2) : '',
+                    c._govScore != null ? c._govScore : '',
+                    c._govGrade || '',
                     c._ceoTransition ? csvEscape('Yes: ' + c._ceoTransition.oldCeo.name + ' → ' + c._ceoTransition.newCeo.name) : 'No',
                     c._ceoDataYears || '',
                     c._teamRoleCount || 0,
