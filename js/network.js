@@ -753,6 +753,70 @@ function initNetwork(peerData) {
                 ctx.stroke();
                 _drawArrow(s.x, s.y, t.x, t.y, getRadius(t), inColor);
             });
+
+            // Edge direction labels on hover
+            var adj = adjacency[hoveredNode.ticker];
+            if (adj) {
+                var outSet = {};
+                var inSet = {};
+                adj.out.forEach(function(t) { outSet[t] = true; });
+                adj.in.forEach(function(t) { inSet[t] = true; });
+                var labeledEdges = [];
+                // Collect outbound
+                adj.out.forEach(function(peer) {
+                    var isMutual = !!inSet[peer];
+                    labeledEdges.push({ peer: peer, dir: isMutual ? 'mutual' : 'out' });
+                });
+                // Collect inbound-only (not mutual)
+                adj.in.forEach(function(peer) {
+                    if (!outSet[peer]) {
+                        labeledEdges.push({ peer: peer, dir: 'in' });
+                    }
+                });
+                ctx.save();
+                ctx.font = (9 / scale) + 'px "SF Mono", "Fira Code", monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                labeledEdges.forEach(function(le) {
+                    var hn = nodeMap[hoveredNode.ticker];
+                    var pn = nodeMap[le.peer];
+                    if (!hn || !pn) return;
+                    var sx, sy, tx, ty;
+                    if (le.dir === 'in') {
+                        sx = pn.x; sy = pn.y; tx = hn.x; ty = hn.y;
+                    } else {
+                        sx = hn.x; sy = hn.y; tx = pn.x; ty = pn.y;
+                    }
+                    var lmx = (sx + tx) / 2;
+                    var lmy = (sy + ty) / 2;
+                    // Offset for same-sector curve
+                    if (hn.sector && pn.sector && hn.sector === pn.sector) {
+                        var ldx = tx - sx, ldy = ty - sy;
+                        var ldist = Math.sqrt(ldx * ldx + ldy * ldy);
+                        var lcurv = Math.min(ldist * 0.06, 15);
+                        var src0 = le.dir === 'in' ? le.peer : hoveredNode.ticker;
+                        var tgt0 = le.dir === 'in' ? hoveredNode.ticker : le.peer;
+                        var lside = (src0.charCodeAt(0) + tgt0.charCodeAt(0)) % 2 === 0 ? 1 : -1;
+                        lmx += (-ldy / (ldist || 1) * lcurv * lside);
+                        lmy += (ldx / (ldist || 1) * lcurv * lside);
+                    }
+                    var sym, clr;
+                    if (le.dir === 'mutual') {
+                        sym = '\u27F7'; clr = '#f59e0b';
+                    } else if (le.dir === 'out') {
+                        sym = '\u2192'; clr = outColor;
+                    } else {
+                        sym = '\u2190'; clr = inColor;
+                    }
+                    // Draw background for readability
+                    var tw = ctx.measureText(sym).width + 4 / scale;
+                    ctx.fillStyle = 'rgba(15,23,42,0.75)';
+                    ctx.fillRect(lmx - tw / 2, lmy - 5 / scale, tw, 10 / scale);
+                    ctx.fillStyle = clr;
+                    ctx.fillText(sym, lmx, lmy);
+                });
+                ctx.restore();
+            }
         } else if (activeLegendSector && sectorNodeSet) {
             // Sector filter active — dim edges not involving the sector
             ctx.strokeStyle = edgeSectorDimColor;

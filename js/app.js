@@ -1486,6 +1486,29 @@ function populateInsights(comp, trends, sectorFilter) {
                 '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(10,20,\'Established (10\u201320 yrs)\',\'10\u201320 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + midTenure.length + ' established (10\u201320)</span>, ' +
                 '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(3,10,\'Mid-tenure (3\u201310 yrs)\',\'3\u201310 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + shortTenure.length + ' mid-tenure (3\u201310)</span>, ' +
                 '<span class="insight-tenure-bracket clickable-bar" onclick="filterByTenureQuartile(0,3,\'New CEOs (<3 yrs)\',\'<3 years\')" title="Click to filter table" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">' + newCeos.length + ' new (<3)</span>. ' +
+                (function() {
+                    var tenureBrackets = [
+                        { label: '20+', count: longTenure.length, color: '#22c55e', min: 20, max: 'Infinity', tag: 'Veterans (20+ yrs)', tagShort: '20+ years' },
+                        { label: '10\u201320', count: midTenure.length, color: '#3b82f6', min: 10, max: 20, tag: 'Established (10\u201320 yrs)', tagShort: '10\u201320 years' },
+                        { label: '3\u201310', count: shortTenure.length, color: '#f59e0b', min: 3, max: 10, tag: 'Mid-tenure (3\u201310 yrs)', tagShort: '3\u201310 years' },
+                        { label: '<3', count: newCeos.length, color: '#ef4444', min: 0, max: 3, tag: 'New CEOs (<3 yrs)', tagShort: '<3 years' }
+                    ];
+                    var maxTenureBracket = Math.max.apply(null, tenureBrackets.map(function(b) { return b.count; }));
+                    var tHtml = '<div class="tenure-dist-histogram"><div class="tenure-dist-bars">';
+                    tenureBrackets.forEach(function(b) {
+                        var barH = maxTenureBracket > 0 ? Math.max(3, Math.round(b.count / maxTenureBracket * 24)) : 3;
+                        tHtml += '<span class="tenure-dist-bar-group clickable-bar" title="' + b.tag + ': ' + b.count + ' companies" onclick="filterByTenureQuartile(' + b.min + ',' + b.max + ',\'' + b.tag.replace(/'/g, "\\'") + '\',\'' + b.tagShort.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">';
+                        tHtml += '<span class="tenure-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';"></span>';
+                        tHtml += '<span class="tenure-dist-bar-label">' + b.count + '</span>';
+                        tHtml += '</span>';
+                    });
+                    tHtml += '</div><div class="tenure-dist-bracket-labels">';
+                    tenureBrackets.forEach(function(b) {
+                        tHtml += '<span class="tenure-dist-bracket-label">' + b.label + '</span>';
+                    });
+                    tHtml += '</div></div>';
+                    return tHtml;
+                })() +
                 'Longest-tenured: ' + longestCeo.ceo_name + ' (' + longestCeo.ticker + ') at ' + longestCeo._ceoTenureYears + ' years (since ' + longestCeo._ceoTenureStart + ').',
             _tickers: [longestCeo.ticker],
             action: function() {
@@ -1546,6 +1569,87 @@ function populateInsights(comp, trends, sectorFilter) {
             },
             actionHint: 'View scatter plot'
         });
+    }
+
+    // 11e. Sector-Level Tenure Analysis — median CEO tenure by sector
+    if (tenureCompanies && tenureCompanies.length >= 20) {
+        var sectorTenureMap = {};
+        tenureCompanies.forEach(function(c) {
+            var sec = c.sector || 'Unknown';
+            if (!sectorTenureMap[sec]) sectorTenureMap[sec] = [];
+            sectorTenureMap[sec].push(c._ceoTenureYears);
+        });
+        var sectorTenureArr = [];
+        var sectorTenureColors = {
+            'Information Technology': '#00b4d8',
+            'Communication Services': '#06d6a0',
+            'Consumer Discretionary': '#ef476f',
+            'Health Care': '#ffd166',
+            'Financials': '#a78bfa',
+            'Consumer Staples': '#fb923c',
+            'Industrials': '#94a3b8',
+            'Energy': '#34d399',
+            'Real Estate': '#f472b6',
+            'Materials': '#f9a8d4',
+            'Utilities': '#67e8f9'
+        };
+        var sectorTenureAbbr = {
+            'Information Technology': 'IT',
+            'Communication Services': 'Comm',
+            'Consumer Discretionary': 'CDisc',
+            'Health Care': 'Health',
+            'Financials': 'Fin',
+            'Consumer Staples': 'CStap',
+            'Industrials': 'Indus',
+            'Energy': 'Enrgy',
+            'Real Estate': 'RE',
+            'Materials': 'Matrl',
+            'Utilities': 'Util'
+        };
+        Object.keys(sectorTenureMap).forEach(function(sec) {
+            var vals = sectorTenureMap[sec].sort(function(a, b) { return a - b; });
+            if (vals.length >= 3) {
+                sectorTenureArr.push({
+                    name: sec,
+                    median: computeMedian(vals),
+                    count: vals.length,
+                    color: sectorTenureColors[sec] || '#94a3b8',
+                    abbr: sectorTenureAbbr[sec] || sec.substring(0, 4)
+                });
+            }
+        });
+        sectorTenureArr.sort(function(a, b) { return b.median - a.median; });
+        if (sectorTenureArr.length >= 3) {
+            var longestSec = sectorTenureArr[0];
+            var shortestSec = sectorTenureArr[sectorTenureArr.length - 1];
+            var maxSecTenure = longestSec.median;
+            var secTenureDetail = sectorTenureArr.length + ' sectors analyzed. ';
+            secTenureDetail += '<span style="color:' + longestSec.color + '">' + longestSec.name + '</span> has the longest median tenure at ' + longestSec.median + ' years (' + longestSec.count + ' CEOs). ';
+            secTenureDetail += '<span style="color:' + shortestSec.color + '">' + shortestSec.name + '</span> has the shortest at ' + shortestSec.median + ' years (' + shortestSec.count + ' CEOs).';
+            secTenureDetail += '<div class="sector-tenure-bars">';
+            sectorTenureArr.forEach(function(s) {
+                var barW = maxSecTenure > 0 ? Math.max(6, Math.round(s.median / maxSecTenure * 80)) : 6;
+                secTenureDetail += '<div class="sector-tenure-bar-group" title="' + s.name + ': ' + s.median + ' yr median (' + s.count + ' CEOs)">';
+                secTenureDetail += '<span class="sector-tenure-bar-abbr">' + s.abbr + '</span>';
+                secTenureDetail += '<span class="sector-tenure-bar" style="width:' + barW + 'px;background:' + s.color + ';"></span>';
+                secTenureDetail += '<span class="sector-tenure-bar-val">' + s.median + '</span>';
+                secTenureDetail += '</div>';
+            });
+            secTenureDetail += '</div>';
+            insights.push({
+                icon: '\uD83C\uDFE2',
+                label: 'Sector Tenure',
+                value: longestSec.name + ' leads',
+                detail: secTenureDetail,
+                action: function() {
+                    insightResetAndSort('_ceoTenureYears', 'desc');
+                    window._activeSectorFilter = longestSec.name;
+                    renderTable(companies.filter(function(c) { return c.sector === longestSec.name; }), {});
+                    scrollToTable();
+                },
+                actionHint: 'Filter to ' + longestSec.name
+            });
+        }
     }
 
     // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
