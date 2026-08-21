@@ -74,6 +74,7 @@ function initCharts(companies, trends, compData) {
     drawGovPayScatter(companies);
     drawPayAnomalyChart(companies);
     drawTenurePayGrowthChart(companies);
+    drawTenureGovCrossTab(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -186,7 +187,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -217,6 +218,7 @@ function redrawAllCharts() {
     drawGovPayScatter(_chartData.companies);
     drawPayAnomalyChart(_chartData.companies);
     drawTenurePayGrowthChart(_chartData.companies);
+    drawTenureGovCrossTab(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -9335,5 +9337,272 @@ function drawTenurePayGrowthChart(companies) {
             .attr('font-size', '9px')
             .text(summaryParts.join(' \u00B7 ') + ' \u2014 ' + eligible.length + ' ' + scopeLabel2 + ' companies');
     }
+}
+
+/* ── Tenure × Governance Cross-Tabulation ──────────────────────────── */
+
+function drawTenureGovCrossTab(companies) {
+    var container = document.getElementById('tenure-gov-crosstab-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var textColor = getThemeTextColor();
+    var mutedColor = getThemeMutedColor();
+    var dark = isDarkTheme();
+
+    // Filter to companies with both tenure and governance data
+    var eligible = companies.filter(function(c) {
+        return c._ceoTenureYears != null && c._govScore != null && c.total_compensation > 0;
+    });
+    if (eligible.length < 20) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + governance data (' + eligible.length + ' companies)</p>';
+        return;
+    }
+
+    // Define tenure brackets (rows)
+    var tenureBrackets = [
+        { label: 'New (<3 yrs)', min: 0, max: 3, key: 'new' },
+        { label: 'Mid (3–10)', min: 3, max: 10, key: 'mid' },
+        { label: 'Established (10–20)', min: 10, max: 20, key: 'est' },
+        { label: 'Veterans (20+)', min: 20, max: 999, key: 'vet' }
+    ];
+
+    // Define governance quartiles (columns) using data-driven breaks
+    var govVals = eligible.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+    var q1 = govVals[Math.floor(govVals.length * 0.25)];
+    var q2 = govVals[Math.floor(govVals.length * 0.5)];
+    var q3 = govVals[Math.floor(govVals.length * 0.75)];
+
+    var govBrackets = [
+        { label: 'Weak Gov (Q1)', min: 0, max: q1, key: 'q1', color: '#ef476f' },
+        { label: 'Below Avg (Q2)', min: q1, max: q2, key: 'q2', color: '#ffd166' },
+        { label: 'Above Avg (Q3)', min: q2, max: q3, key: 'q3', color: '#06d6a0' },
+        { label: 'Strong Gov (Q4)', min: q3, max: 101, key: 'q4', color: '#118ab2' }
+    ];
+
+    // Build cross-tab cells
+    var cells = {};
+    var allMedians = [];
+    tenureBrackets.forEach(function(tb) {
+        govBrackets.forEach(function(gb) {
+            var key = tb.key + '-' + gb.key;
+            var members = eligible.filter(function(c) {
+                return c._ceoTenureYears >= tb.min && c._ceoTenureYears < tb.max &&
+                       c._govScore >= gb.min && c._govScore < gb.max;
+            });
+            // Compute stats
+            var pays = members.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+            var medianPay = pays.length > 0 ? pays[Math.floor(pays.length / 2)] : 0;
+            var meanPay = pays.length > 0 ? d3.mean(pays) : 0;
+            // YoY growth
+            var yoyMembers = members.filter(function(c) { return c._ceoYoY && c._ceoYoY.pctChange != null && isFinite(c._ceoYoY.pctChange); });
+            var yoyVals = yoyMembers.map(function(c) { return c._ceoYoY.pctChange; }).sort(function(a, b) { return a - b; });
+            var medianYoY = yoyVals.length > 0 ? yoyVals[Math.floor(yoyVals.length / 2)] : null;
+
+            cells[key] = {
+                count: members.length,
+                medianPay: medianPay,
+                meanPay: meanPay,
+                medianYoY: medianYoY,
+                members: members,
+                tenureKey: tb.key,
+                govKey: gb.key
+            };
+            if (medianPay > 0) allMedians.push(medianPay);
+        });
+    });
+
+    // Color scale based on median pay (log scale for better contrast)
+    var payExtent = d3.extent(allMedians);
+    var payColorScale = d3.scaleSequential(d3.interpolateYlOrRd)
+        .domain([Math.log(payExtent[0] || 1), Math.log(payExtent[1] || 2)]);
+
+    // Build HTML table
+    var html = '<div class="crosstab-wrapper">';
+    html += '<table class="crosstab-table" role="grid" aria-label="Tenure × Governance cross-tabulation">';
+
+    // Header row
+    html += '<thead><tr><th class="crosstab-corner" aria-label="Tenure vs Governance"></th>';
+    govBrackets.forEach(function(gb) {
+        html += '<th class="crosstab-col-header" style="border-bottom:3px solid ' + gb.color + '">' + gb.label + '</th>';
+    });
+    html += '<th class="crosstab-col-header crosstab-row-total">Row Total</th>';
+    html += '</tr></thead>';
+
+    // Body rows
+    html += '<tbody>';
+    tenureBrackets.forEach(function(tb) {
+        html += '<tr>';
+        html += '<th class="crosstab-row-header">' + tb.label + '</th>';
+        var rowTotal = 0;
+        var rowTotalPays = [];
+        govBrackets.forEach(function(gb) {
+            var key = tb.key + '-' + gb.key;
+            var cell = cells[key];
+            rowTotal += cell.count;
+            cell.members.forEach(function(m) { rowTotalPays.push(m.total_compensation); });
+
+            // Cell background color based on median pay
+            var bgColor = 'transparent';
+            var cellTextColor = textColor;
+            if (cell.count > 0 && cell.medianPay > 0) {
+                var intensity = (Math.log(cell.medianPay) - Math.log(payExtent[0] || 1)) / (Math.log(payExtent[1] || 2) - Math.log(payExtent[0] || 1));
+                intensity = Math.max(0, Math.min(1, intensity));
+                if (dark) {
+                    bgColor = 'rgba(239, 71, 111, ' + (0.08 + intensity * 0.42) + ')';
+                    cellTextColor = intensity > 0.6 ? '#fff' : textColor;
+                } else {
+                    bgColor = 'rgba(239, 71, 111, ' + (0.05 + intensity * 0.35) + ')';
+                    cellTextColor = intensity > 0.7 ? '#1a1a2e' : '#1a1a2e';
+                }
+            }
+
+            // YoY arrow
+            var yoyStr = '';
+            if (cell.medianYoY != null) {
+                var yoyColor = cell.medianYoY >= 0 ? '#06d6a0' : '#ef476f';
+                yoyStr = '<span class="crosstab-yoy" style="color:' + yoyColor + '">' +
+                    (cell.medianYoY >= 0 ? '↑' : '↓') + Math.abs(cell.medianYoY).toFixed(1) + '%</span>';
+            }
+
+            // Top company names for tooltip
+            var topCompanies = cell.members.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 5);
+            var tooltipLines = topCompanies.map(function(c) { return c.ticker + ' (' + c.ceo_name + ') ' + fmtCurr(c.total_compensation); });
+            var tooltip = cell.count + ' companies\nMedian: ' + fmtCurr(cell.medianPay) + '\n' + (tooltipLines.length > 0 ? 'Top: ' + tooltipLines.join(', ') : '');
+
+            html += '<td class="crosstab-cell" style="background:' + bgColor + ';color:' + cellTextColor + '" ' +
+                'data-tenure="' + tb.key + '" data-gov="' + gb.key + '" ' +
+                'title="' + tooltip.replace(/"/g, '&quot;') + '" tabindex="0" role="gridcell">';
+            if (cell.count === 0) {
+                html += '<span class="crosstab-empty">—</span>';
+            } else {
+                html += '<span class="crosstab-count">' + cell.count + '</span>';
+                html += '<span class="crosstab-pay">' + fmtCurr(cell.medianPay) + '</span>';
+                html += yoyStr;
+            }
+            html += '</td>';
+        });
+        // Row total
+        rowTotalPays.sort(function(a, b) { return a - b; });
+        var rowMedian = rowTotalPays.length > 0 ? rowTotalPays[Math.floor(rowTotalPays.length / 2)] : 0;
+        html += '<td class="crosstab-cell crosstab-row-total">';
+        html += '<span class="crosstab-count">' + rowTotal + '</span>';
+        html += '<span class="crosstab-pay">' + fmtCurr(rowMedian) + '</span>';
+        html += '</td>';
+        html += '</tr>';
+    });
+
+    // Column totals row
+    html += '<tr class="crosstab-col-total-row">';
+    html += '<th class="crosstab-row-header">Column Total</th>';
+    var grandTotal = 0;
+    var grandTotalPays = [];
+    govBrackets.forEach(function(gb) {
+        var colTotal = 0;
+        var colPays = [];
+        tenureBrackets.forEach(function(tb) {
+            var key = tb.key + '-' + gb.key;
+            colTotal += cells[key].count;
+            cells[key].members.forEach(function(m) { colPays.push(m.total_compensation); });
+        });
+        grandTotal += colTotal;
+        colPays.forEach(function(p) { grandTotalPays.push(p); });
+        colPays.sort(function(a, b) { return a - b; });
+        var colMedian = colPays.length > 0 ? colPays[Math.floor(colPays.length / 2)] : 0;
+        html += '<td class="crosstab-cell crosstab-col-total">';
+        html += '<span class="crosstab-count">' + colTotal + '</span>';
+        html += '<span class="crosstab-pay">' + fmtCurr(colMedian) + '</span>';
+        html += '</td>';
+    });
+    // Grand total
+    grandTotalPays.sort(function(a, b) { return a - b; });
+    var grandMedian = grandTotalPays.length > 0 ? grandTotalPays[Math.floor(grandTotalPays.length / 2)] : 0;
+    html += '<td class="crosstab-cell crosstab-row-total crosstab-col-total">';
+    html += '<span class="crosstab-count">' + grandTotal + '</span>';
+    html += '<span class="crosstab-pay">' + fmtCurr(grandMedian) + '</span>';
+    html += '</td>';
+    html += '</tr>';
+    html += '</tbody></table>';
+
+    // Quadrant analysis narrative
+    var weakVet = cells['vet-q1'];
+    var strongNew = cells['new-q4'];
+    var weakNew = cells['new-q1'];
+    var strongVet = cells['vet-q4'];
+
+    var narrative = '';
+    // Key insight: does tenure erode governance?
+    var newInWeak = (cells['new-q1'].count + cells['new-q2'].count);
+    var newInStrong = (cells['new-q3'].count + cells['new-q4'].count);
+    var vetInWeak = (cells['vet-q1'].count + cells['vet-q2'].count);
+    var vetInStrong = (cells['vet-q3'].count + cells['vet-q4'].count);
+    var newTotal = newInWeak + newInStrong;
+    var vetTotal = vetInWeak + vetInStrong;
+
+    if (newTotal > 0 && vetTotal > 0) {
+        var newWeakPct = (newInWeak / newTotal * 100).toFixed(0);
+        var vetWeakPct = (vetInWeak / vetTotal * 100).toFixed(0);
+        var tenureErodesGov = vetInWeak / vetTotal > newInWeak / newTotal + 0.05;
+        var tenurePreservesGov = newInWeak / newTotal > vetInWeak / vetTotal + 0.05;
+
+        if (tenureErodesGov) {
+            narrative = '<span class="crosstab-finding warning">⚠️ Tenure appears to erode governance:</span> ' +
+                vetWeakPct + '% of veteran CEOs (20+ yrs) fall in weak governance (Q1–Q2), vs only ' +
+                newWeakPct + '% of new CEOs (<3 yrs).';
+        } else if (tenurePreservesGov) {
+            narrative = '<span class="crosstab-finding positive">✓ Tenure does not erode governance:</span> ' +
+                'New CEOs are actually more likely to have weak governance (' + newWeakPct + '% in Q1–Q2) than veterans (' + vetWeakPct + '%).';
+        } else {
+            narrative = '<span class="crosstab-finding neutral">≈ Governance is tenure-neutral:</span> ' +
+                'Weak-governance rates are similar for new CEOs (' + newWeakPct + '%) and veterans (' + vetWeakPct + '%).';
+        }
+
+        // Pay differential in the danger zone
+        if (weakVet.count > 0 && strongNew.count > 0) {
+            var dangerPay = weakVet.medianPay;
+            var safePay = strongNew.medianPay;
+            if (dangerPay > 0 && safePay > 0) {
+                var payDelta = ((dangerPay / safePay - 1) * 100).toFixed(0);
+                narrative += ' Veteran CEOs with weak governance earn ' +
+                    (parseInt(payDelta) > 0 ? payDelta + '% more' : Math.abs(parseInt(payDelta)) + '% less') +
+                    ' than new CEOs with strong governance (' + fmtCurr(dangerPay) + ' vs ' + fmtCurr(safePay) + ').';
+            }
+        }
+    }
+
+    html += '<div class="crosstab-narrative">' + narrative + '</div>';
+
+    // Legend
+    html += '<div class="crosstab-legend">';
+    html += '<span class="crosstab-legend-item">Cell color = median CEO pay intensity</span>';
+    html += '<span class="crosstab-legend-item"><span style="color:#06d6a0">↑</span> / <span style="color:#ef476f">↓</span> = median YoY pay change</span>';
+    html += '<span class="crosstab-legend-item">Governance quartiles: Q1 = bottom 25%, Q4 = top 25% by governance score</span>';
+    html += '</div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Click handler: click cell to scroll to & filter main table
+    container.querySelectorAll('.crosstab-cell[data-tenure]').forEach(function(td) {
+        td.style.cursor = 'pointer';
+        td.addEventListener('click', function() {
+            var tKey = td.getAttribute('data-tenure');
+            var gKey = td.getAttribute('data-gov');
+            var cellKey = tKey + '-' + gKey;
+            var cell = cells[cellKey];
+            if (!cell || cell.count === 0) return;
+
+            // Build ticker list and filter the main table
+            var tickers = cell.members.map(function(c) { return c.ticker; });
+            if (typeof window.filterTableByTickers === 'function') {
+                window.filterTableByTickers(tickers, 'Tenure: ' + tKey + ' × Gov: ' + gKey);
+            }
+            // Scroll to table
+            var tableSection = document.getElementById('compensation-table-section');
+            if (tableSection) {
+                tableSection.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
+            }
+        });
+    });
 }
 

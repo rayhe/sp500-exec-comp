@@ -9954,3 +9954,125 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: #0078b4;
     color: #1a1a2e;
 }
+
+/* ── Tenure × Governance Cross-Tab ───────────────────────── */
+.crosstab-wrapper {
+    overflow-x: auto;
+    padding: 8px 0;
+}
+.crosstab-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 3px;
+    font-size: 13px;
+    table-layout: fixed;
+}
+.crosstab-corner {
+    width: 120px;
+    background: transparent;
+}
+.crosstab-col-header {
+    text-align: center;
+    padding: 10px 6px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #e4e4e7;
+    letter-spacing: 0.02em;
+}
+.crosstab-row-header {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #e4e4e7;
+    white-space: nowrap;
+}
+.crosstab-cell {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 6px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    vertical-align: middle;
+    min-width: 90px;
+}
+.crosstab-cell:hover {
+    transform: scale(1.04);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    z-index: 2;
+    position: relative;
+}
+.crosstab-cell:focus-visible {
+    outline: 2px solid #00b4d8;
+    outline-offset: 2px;
+}
+.crosstab-count {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.crosstab-pay {
+    display: block;
+    font-size: 11px;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+.crosstab-yoy {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+.crosstab-empty {
+    color: #6b7280;
+    font-size: 14px;
+}
+.crosstab-row-total {
+    font-style: italic;
+    opacity: 0.7;
+}
+.crosstab-col-total {
+    font-style: italic;
+    opacity: 0.7;
+}
+.crosstab-col-total-row th {
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+.crosstab-narrative {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border-left: 3px solid #00b4d8;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e4e4e7;
+}
+.crosstab-finding {
+    font-weight: 600;
+}
+.crosstab-finding.warning { color: #ffd166; }
+.crosstab-finding.positive { color: #06d6a0; }
+.crosstab-finding.neutral { color: #a1a1aa; }
+.crosstab-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+.crosstab-legend-item {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .crosstab-col-header { color: #1a1a2e; }
+[data-theme="light"] .crosstab-row-header { color: #1a1a2e; }
+[data-theme="light"] .crosstab-cell:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
+[data-theme="light"] .crosstab-narrative {
+    background: rgba(0,0,0,0.02);
+    border-left-color: #0078b4;
+    color: #1a1a2e;
+}
+[data-theme="light"] .crosstab-col-total-row th { border-top-color: rgba(0,0,0,0.1); }

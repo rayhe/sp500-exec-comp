@@ -1770,7 +1770,43 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
-    // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
+    // 11c-2. Tenure × Governance cross-tab insight
+    (function() {
+        var tgEligible = companies.filter(function(c) {
+            return c._ceoTenureYears != null && c._govScore != null && c.total_compensation > 0;
+        });
+        if (tgEligible.length >= 20) {
+            var newCeos = tgEligible.filter(function(c) { return c._ceoTenureYears < 3; });
+            var veterans = tgEligible.filter(function(c) { return c._ceoTenureYears >= 20; });
+            // Median governance in each tenure group
+            var newGovs = newCeos.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+            var vetGovs = veterans.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+            var newMedGov = newGovs.length > 0 ? newGovs[Math.floor(newGovs.length / 2)] : 0;
+            var vetMedGov = vetGovs.length > 0 ? vetGovs[Math.floor(vetGovs.length / 2)] : 0;
+
+            var verdictIcon = vetMedGov < newMedGov - 3 ? '\u26A0\uFE0F' : (vetMedGov > newMedGov + 3 ? '\u2705' : '\u2796');
+            var verdictText = vetMedGov < newMedGov - 3 ? 'tenure may erode governance' :
+                (vetMedGov > newMedGov + 3 ? 'tenure preserves governance' : 'tenure-neutral governance');
+
+            insights.push({
+                icon: '\uD83C\uDFAF',
+                label: 'Tenure \u00D7 Gov',
+                value: verdictIcon + ' ' + verdictText.charAt(0).toUpperCase() + verdictText.slice(1),
+                detail: 'Median governance score: new CEOs (<3 yrs) = ' + newMedGov + ', veterans (20+ yrs) = ' + vetMedGov +
+                    '. ' + tgEligible.length + ' companies with both tenure and governance data. Click to view the cross-tabulation matrix.',
+                action: function() {
+                    var panel = document.getElementById('tenure-gov-crosstab-panel');
+                    if (panel) {
+                        var headerHeight = typeof getStickyOffset === 'function' ? getStickyOffset() : 48;
+                        var top = panel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                        window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                    }
+                },
+                actionHint: 'View matrix'
+            });
+        }
+    })();
+
     // 11d. Correlation Heatmap — full pairwise Pearson matrix across all key metrics
     (function() {
         var corrMetrics = [
