@@ -71,6 +71,8 @@ function initCharts(companies, trends, compData) {
     drawGovDistChart(companies);
     drawSectorGovChart(companies);
     drawGovQuartileComp(companies);
+    drawGovPayScatter(companies);
+    drawPayAnomalyChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -183,7 +185,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -211,6 +213,8 @@ function redrawAllCharts() {
     drawGovDistChart(_chartData.companies);
     drawSectorGovChart(_chartData.companies);
     drawGovQuartileComp(_chartData.companies);
+    drawGovPayScatter(_chartData.companies);
+    drawPayAnomalyChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -8197,4 +8201,534 @@ function drawGovQuartileComp(companies) {
         .attr('font-style', 'italic')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text(narrativeText);
+}
+
+
+/* --- Governance vs Pay Scatter (dedicated quadrant analysis) --- */
+function drawGovPayScatter(companies) {
+    var container = document.getElementById('gov-pay-scatter-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var withBoth = companies.filter(function(c) {
+        return c._govScore != null && c.total_compensation > 0;
+    });
+
+    if (withBoth.length < 10) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient governance + compensation data</p>';
+        return;
+    }
+
+    var sectorColors = {
+        'Information Technology': '#00b4d8', 'Communication Services': '#06d6a0',
+        'Consumer Discretionary': '#ef476f', 'Health Care': '#ffd166',
+        'Financials': '#a78bfa', 'Consumer Staples': '#fb923c',
+        'Industrials': '#94a3b8', 'Energy': '#34d399',
+        'Real Estate': '#f472b6', 'Materials': '#f9a8d4', 'Utilities': '#67e8f9'
+    };
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 24, right: 30, bottom: 56, left: 70 };
+    var width = cw - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', 400)
+        .attr('role', 'img')
+        .attr('aria-label', 'Governance score vs CEO total compensation scatter plot with quadrant analysis');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Compute medians for quadrant lines
+    var sortedGov = withBoth.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+    var sortedComp = withBoth.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+    var medianGov = sortedGov[Math.floor(sortedGov.length / 2)];
+    var medianComp = sortedComp[Math.floor(sortedComp.length / 2)];
+
+    // Scales
+    var x = d3.scaleLinear()
+        .domain([Math.max(0, d3.min(withBoth, function(c) { return c._govScore; }) - 5), 100])
+        .range([0, width]);
+
+    var y = d3.scaleLog()
+        .domain([d3.min(withBoth, function(c) { return c.total_compensation; }) * 0.7,
+                 d3.max(withBoth, function(c) { return c.total_compensation; }) * 1.15])
+        .range([height, 0]);
+
+    // Grid
+    g.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(d3.axisBottom(x).ticks(8))
+        .selectAll('text').style('fill', textColor).style('font-size', '10px');
+
+    g.append('g')
+        .call(d3.axisLeft(y).ticks(6, '$.2s'))
+        .selectAll('text').style('fill', textColor).style('font-size', '10px');
+
+    g.selectAll('.domain').attr('stroke', textColor).attr('opacity', 0.2);
+    g.selectAll('.tick line').attr('stroke', textColor).attr('opacity', 0.1);
+
+    // Quadrant shading
+    var quadrants = [
+        { x1: x(medianGov), y1: 0, w: width - x(medianGov), h: y(medianComp), label: 'Well-Governed\nHigh Pay', color: '#06d6a0', align: 'end' },
+        { x1: 0, y1: 0, w: x(medianGov), h: y(medianComp), label: 'Weak Governance\nHigh Pay', color: '#ef476f', align: 'start' },
+        { x1: x(medianGov), y1: y(medianComp), w: width - x(medianGov), h: height - y(medianComp), label: 'Well-Governed\nModerate Pay', color: '#00b4d8', align: 'end' },
+        { x1: 0, y1: y(medianComp), w: x(medianGov), h: height - y(medianComp), label: 'Weak Governance\nModerate Pay', color: '#fbbf24', align: 'start' }
+    ];
+
+    quadrants.forEach(function(q) {
+        g.append('rect')
+            .attr('x', q.x1).attr('y', q.y1)
+            .attr('width', q.w).attr('height', q.h)
+            .attr('fill', q.color).attr('opacity', 0.04);
+
+        var lines = q.label.split('\n');
+        var tx = q.align === 'end' ? q.x1 + q.w - 8 : q.x1 + 8;
+        var ty = q.y1 + 16;
+        lines.forEach(function(line, i) {
+            g.append('text')
+                .attr('x', tx).attr('y', ty + i * 14)
+                .attr('text-anchor', q.align)
+                .attr('fill', q.color)
+                .attr('font-size', '10px')
+                .attr('font-weight', '600')
+                .attr('opacity', 0.5)
+                .text(line);
+        });
+    });
+
+    // Median lines
+    g.append('line')
+        .attr('x1', x(medianGov)).attr('x2', x(medianGov))
+        .attr('y1', 0).attr('y2', height)
+        .attr('stroke', textColor).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '5,4').attr('opacity', 0.3);
+
+    g.append('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', y(medianComp)).attr('y2', y(medianComp))
+        .attr('stroke', textColor).attr('stroke-width', 1)
+        .attr('stroke-dasharray', '5,4').attr('opacity', 0.3);
+
+    // Median labels
+    g.append('text')
+        .attr('x', x(medianGov) + 4).attr('y', height - 4)
+        .attr('fill', mutedColor).attr('font-size', '9px')
+        .text('Median Gov: ' + medianGov.toFixed(0));
+
+    g.append('text')
+        .attr('x', width - 4).attr('y', y(medianComp) - 4)
+        .attr('text-anchor', 'end')
+        .attr('fill', mutedColor).attr('font-size', '9px')
+        .text('Median Pay: ' + fmtCurr(medianComp));
+
+    // Dots
+    g.selectAll('.gps-dot')
+        .data(withBoth)
+        .enter()
+        .append('circle')
+        .attr('class', 'gps-dot')
+        .attr('cx', function(c) { return x(c._govScore); })
+        .attr('cy', function(c) { return y(c.total_compensation); })
+        .attr('r', function(c) {
+            // Size by market significance — larger for extreme outliers
+            var comp = c.total_compensation;
+            if (comp > 100e6) return 7;
+            if (comp > 50e6) return 5.5;
+            return 4;
+        })
+        .attr('fill', function(c) { return sectorColors[c.sector] || '#94a3b8'; })
+        .attr('opacity', 0.7)
+        .attr('stroke', function(c) {
+            // Highlight companies in Low Gov / High Pay quadrant
+            return c._govScore < medianGov && c.total_compensation > medianComp ? '#ef476f' : 'none';
+        })
+        .attr('stroke-width', function(c) {
+            return c._govScore < medianGov && c.total_compensation > medianComp ? 1.5 : 0;
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, c) {
+            d3.select(this).attr('r', 9).attr('opacity', 1);
+            var quadLabel = '';
+            if (c._govScore >= medianGov && c.total_compensation >= medianComp) quadLabel = 'Well-Governed / High Pay';
+            else if (c._govScore < medianGov && c.total_compensation >= medianComp) quadLabel = 'Weak Gov / High Pay ⚠️';
+            else if (c._govScore >= medianGov && c.total_compensation < medianComp) quadLabel = 'Well-Governed / Moderate Pay';
+            else quadLabel = 'Weak Gov / Moderate Pay';
+
+            showChartTooltip(event,
+                '<strong>' + c.ticker + '</strong> — ' + c.company_name + '<br>' +
+                'CEO: ' + (c.ceo_name || '—') + '<br>' +
+                'Total Comp: ' + fmtCurr(c.total_compensation) + '<br>' +
+                'Governance: <strong>' + c._govScore.toFixed(0) + '</strong> (' + (c._govGrade || '—') + ')<br>' +
+                'Sector: ' + (c.sector || '—') + '<br>' +
+                '<span style="color:' + (quadLabel.indexOf('⚠️') >= 0 ? '#ef476f' : '#06d6a0') + '">' + quadLabel + '</span>');
+        })
+        .on('mousemove', function(event) { positionChartTooltip(event); })
+        .on('mouseout', function(event, c) {
+            var comp = c.total_compensation;
+            d3.select(this).attr('r', comp > 100e6 ? 7 : comp > 50e6 ? 5.5 : 4).attr('opacity', 0.7);
+            hideChartTooltip();
+        })
+        .on('click', function(event, c) {
+            if (window.scrollToCompany) window.scrollToCompany(c.ticker);
+        });
+
+    // Label notable outliers — high pay + low governance
+    var outliers = withBoth.filter(function(c) {
+        return c._govScore < medianGov - 10 && c.total_compensation > medianComp * 3;
+    }).sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 6);
+
+    outliers.forEach(function(c) {
+        g.append('text')
+            .attr('x', x(c._govScore) + 10)
+            .attr('y', y(c.total_compensation) + 4)
+            .attr('fill', '#ef476f')
+            .attr('font-size', '9px')
+            .attr('font-weight', '600')
+            .text(c.ticker);
+    });
+
+    // Also label top-right quadrant leaders
+    var topRight = withBoth.filter(function(c) {
+        return c._govScore > medianGov + 10 && c.total_compensation > medianComp * 3;
+    }).sort(function(a, b) { return b.total_compensation - a.total_compensation; }).slice(0, 4);
+
+    topRight.forEach(function(c) {
+        g.append('text')
+            .attr('x', x(c._govScore) + 10)
+            .attr('y', y(c.total_compensation) + 4)
+            .attr('fill', '#06d6a0')
+            .attr('font-size', '9px')
+            .attr('font-weight', '600')
+            .text(c.ticker);
+    });
+
+    // Regression line (log comp vs gov score)
+    var lnComps = withBoth.map(function(c) { return Math.log(c.total_compensation); });
+    var govVals = withBoth.map(function(c) { return c._govScore; });
+    var n = withBoth.length;
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+    for (var i = 0; i < n; i++) {
+        sumX += govVals[i]; sumY += lnComps[i];
+        sumXY += govVals[i] * lnComps[i];
+        sumX2 += govVals[i] * govVals[i];
+        sumY2 += lnComps[i] * lnComps[i];
+    }
+    var corrNum = n * sumXY - sumX * sumY;
+    var corrDen = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    var corr = corrDen > 0 ? corrNum / corrDen : 0;
+
+    // Linear regression: lnComp = a + b * govScore
+    var b = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    var a = (sumY - b * sumX) / n;
+    var xDomain = x.domain();
+    var regPts = [
+        { gv: xDomain[0], comp: Math.exp(a + b * xDomain[0]) },
+        { gv: xDomain[1], comp: Math.exp(a + b * xDomain[1]) }
+    ];
+
+    g.append('line')
+        .attr('x1', x(regPts[0].gv)).attr('x2', x(regPts[1].gv))
+        .attr('y1', y(Math.max(y.domain()[0], Math.min(y.domain()[1], regPts[0].comp))))
+        .attr('y2', y(Math.max(y.domain()[0], Math.min(y.domain()[1], regPts[1].comp))))
+        .attr('stroke', '#a78bfa').attr('stroke-width', 2)
+        .attr('stroke-dasharray', '8,4').attr('opacity', 0.6);
+
+    // Correlation annotation
+    svg.append('text')
+        .attr('x', cw - margin.right - 5)
+        .attr('y', margin.top + 14)
+        .attr('text-anchor', 'end')
+        .attr('fill', textColor)
+        .attr('font-size', '11px')
+        .attr('opacity', 0.7)
+        .text('r = ' + corr.toFixed(3) + ' (n=' + n + ')');
+
+    // Quadrant counts
+    var qCounts = { hh: 0, lh: 0, hl: 0, ll: 0 };
+    withBoth.forEach(function(c) {
+        if (c._govScore >= medianGov && c.total_compensation >= medianComp) qCounts.hh++;
+        else if (c._govScore < medianGov && c.total_compensation >= medianComp) qCounts.lh++;
+        else if (c._govScore >= medianGov && c.total_compensation < medianComp) qCounts.hl++;
+        else qCounts.ll++;
+    });
+
+    svg.append('text')
+        .attr('x', margin.left + 5)
+        .attr('y', 400 - 6)
+        .attr('fill', mutedColor)
+        .attr('font-size', '10px')
+        .text('Quadrants — Well-Gov/High: ' + qCounts.hh + ' · Weak/High: ' + qCounts.lh +
+              ' · Well-Gov/Mod: ' + qCounts.hl + ' · Weak/Mod: ' + qCounts.ll);
+
+    // Axis labels
+    svg.append('text')
+        .attr('x', margin.left + width / 2)
+        .attr('y', 400 - 6)
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '12px')
+        .attr('opacity', 0);
+
+    svg.append('text')
+        .attr('x', margin.left + width / 2)
+        .attr('y', 400 - 4)
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '12px')
+        .text('Governance Score (0–100)');
+
+    svg.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -(margin.top + height / 2))
+        .attr('y', 14)
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '12px')
+        .text('CEO Total Compensation (log scale)');
+}
+
+/* --- Pay Anomaly Chart — companies whose CEO pay deviates most from sector+governance norm --- */
+function drawPayAnomalyChart(companies) {
+    var container = document.getElementById('pay-anomaly-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Build sector × governance-bucket expected pay model
+    var withData = companies.filter(function(c) {
+        return c._govScore != null && c.total_compensation > 0 && c.sector;
+    });
+
+    if (withData.length < 50) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for anomaly detection</p>';
+        return;
+    }
+
+    // Group by sector, compute sector median and sector-level regression
+    var sectorGroups = {};
+    withData.forEach(function(c) {
+        if (!sectorGroups[c.sector]) sectorGroups[c.sector] = [];
+        sectorGroups[c.sector].push(c);
+    });
+
+    // For each company, compute expected pay as: sector median adjusted by governance position
+    // Simple model: expectedPay = sectorMedian * (1 + govAdjustment)
+    // where govAdjustment is from linear regression within sector
+    var anomalies = [];
+
+    Object.keys(sectorGroups).forEach(function(sector) {
+        var group = sectorGroups[sector];
+        if (group.length < 3) return;
+
+        // Compute sector median
+        var sortedPay = group.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+        var mid = Math.floor(sortedPay.length / 2);
+        var sectorMedian = sortedPay.length % 2 === 0 ? (sortedPay[mid - 1] + sortedPay[mid]) / 2 : sortedPay[mid];
+
+        // Log-linear regression within sector: ln(comp) = a + b*govScore
+        var n = group.length;
+        var sX = 0, sY = 0, sXY = 0, sX2 = 0;
+        group.forEach(function(c) {
+            var lnC = Math.log(c.total_compensation);
+            sX += c._govScore;
+            sY += lnC;
+            sXY += c._govScore * lnC;
+            sX2 += c._govScore * c._govScore;
+        });
+        var denom = n * sX2 - sX * sX;
+        var bCoeff = denom !== 0 ? (n * sXY - sX * sY) / denom : 0;
+        var aCoeff = (sY - bCoeff * sX) / n;
+
+        group.forEach(function(c) {
+            var expectedLn = aCoeff + bCoeff * c._govScore;
+            var expectedPay = Math.exp(expectedLn);
+            var ratio = c.total_compensation / expectedPay;
+            var pctDev = (ratio - 1) * 100;
+            anomalies.push({
+                ticker: c.ticker,
+                company: c.company_name,
+                ceo: c.ceo_name || '—',
+                sector: c.sector,
+                actual: c.total_compensation,
+                expected: expectedPay,
+                ratio: ratio,
+                pctDev: pctDev,
+                govScore: c._govScore,
+                govGrade: c._govGrade || '—',
+                sectorMedian: sectorMedian
+            });
+        });
+    });
+
+    // Sort by absolute deviation
+    anomalies.sort(function(a, b) { return Math.abs(b.pctDev) - Math.abs(a.pctDev); });
+
+    // Take top 15 overpaid and top 15 underpaid
+    var overpaid = anomalies.filter(function(a) { return a.pctDev > 0; }).slice(0, 15);
+    var underpaid = anomalies.filter(function(a) { return a.pctDev < 0; }).slice(0, 15).reverse();
+    var displayData = overpaid.concat(underpaid);
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+
+    var cw = container.clientWidth || 700;
+    var barH = 22;
+    var barGap = 4;
+    var margin = { top: 30, right: 120, bottom: 40, left: 170 };
+    var width = cw - margin.left - margin.right;
+    var chartH = displayData.length * (barH + barGap) + 30;
+    var totalH = chartH + margin.top + margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', totalH)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO pay anomaly chart — companies paying most above or below sector + governance expectations');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var maxDev = d3.max(displayData, function(d) { return Math.abs(d.pctDev); });
+    var x = d3.scaleLinear()
+        .domain([-maxDev * 1.05, maxDev * 1.05])
+        .range([0, width]);
+
+    // Zero line
+    g.append('line')
+        .attr('x1', x(0)).attr('x2', x(0))
+        .attr('y1', -5).attr('y2', chartH)
+        .attr('stroke', textColor).attr('stroke-width', 1)
+        .attr('opacity', 0.3);
+
+    g.append('text')
+        .attr('x', x(0)).attr('y', -10)
+        .attr('text-anchor', 'middle')
+        .attr('fill', mutedColor)
+        .attr('font-size', '9px')
+        .text('Expected Pay (sector + governance model)');
+
+    // Section labels
+    if (overpaid.length > 0) {
+        g.append('text')
+            .attr('x', x(maxDev * 0.5))
+            .attr('y', -10)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ef476f')
+            .attr('font-size', '10px')
+            .attr('font-weight', '600')
+            .text('▸ Overpaid vs Expected');
+    }
+    if (underpaid.length > 0) {
+        g.append('text')
+            .attr('x', x(-maxDev * 0.5))
+            .attr('y', -10)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#06d6a0')
+            .attr('font-size', '10px')
+            .attr('font-weight', '600')
+            .text('◂ Underpaid vs Expected');
+    }
+
+    // Bars
+    displayData.forEach(function(d, i) {
+        var by = i * (barH + barGap);
+        var barW = Math.abs(x(d.pctDev) - x(0));
+        var barX = d.pctDev >= 0 ? x(0) : x(d.pctDev);
+        var barColor = d.pctDev >= 0 ? '#ef476f' : '#06d6a0';
+        var barOpacity = Math.min(0.9, 0.4 + Math.abs(d.pctDev) / maxDev * 0.5);
+
+        // Bar
+        g.append('rect')
+            .attr('x', barX).attr('y', by)
+            .attr('width', 0).attr('height', barH)
+            .attr('fill', barColor)
+            .attr('opacity', barOpacity)
+            .attr('rx', 3)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event) {
+                d3.select(this).attr('opacity', 1);
+                showChartTooltip(event,
+                    '<strong>' + d.ticker + '</strong> — ' + d.company + '<br>' +
+                    'CEO: ' + d.ceo + '<br>' +
+                    'Actual Pay: ' + fmtCurr(d.actual) + '<br>' +
+                    'Expected (model): ' + fmtCurr(d.expected) + '<br>' +
+                    'Deviation: <strong style="color:' + barColor + '">' + (d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '%</strong><br>' +
+                    'Sector Median: ' + fmtCurr(d.sectorMedian) + '<br>' +
+                    'Governance: ' + d.govScore.toFixed(0) + ' (' + d.govGrade + ')');
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('opacity', barOpacity);
+                hideChartTooltip();
+            })
+            .on('click', function() {
+                if (window.scrollToCompany) window.scrollToCompany(d.ticker);
+            })
+            .transition()
+            .duration(500)
+            .delay(i * 20)
+            .ease(d3.easeCubicOut)
+            .attr('width', barW);
+
+        // Company label
+        g.append('text')
+            .attr('x', -6)
+            .attr('y', by + barH / 2)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', 'end')
+            .attr('fill', textColor)
+            .attr('font-size', '11px')
+            .attr('font-weight', '500')
+            .style('cursor', 'pointer')
+            .on('click', function() {
+                if (window.scrollToCompany) window.scrollToCompany(d.ticker);
+            })
+            .text(d.ticker + ' — ' + d.ceo.split(/\s+/).slice(-1)[0]);
+
+        // Deviation % label
+        var labelX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
+        var labelAnchor = d.pctDev >= 0 ? 'start' : 'end';
+        g.append('text')
+            .attr('x', labelX)
+            .attr('y', by + barH / 2)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', labelAnchor)
+            .attr('fill', barColor)
+            .attr('font-size', '10px')
+            .attr('font-weight', '600')
+            .attr('opacity', 0)
+            .transition()
+            .duration(200)
+            .delay(i * 20 + 400)
+            .attr('opacity', 1)
+            .text((d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '% (' + fmtCurr(d.actual) + ')');
+    });
+
+    // Axis label
+    svg.append('text')
+        .attr('x', margin.left + width / 2)
+        .attr('y', totalH - 8)
+        .attr('text-anchor', 'middle')
+        .attr('fill', textColor)
+        .attr('font-size', '12px')
+        .text('% Deviation from Expected Pay (sector + governance adjusted)');
+
+    // Summary stats
+    var meanAbsDev = d3.mean(anomalies, function(a) { return Math.abs(a.pctDev); });
+    var overCount = anomalies.filter(function(a) { return a.pctDev > 100; }).length;
+    var underCount = anomalies.filter(function(a) { return a.pctDev < -50; }).length;
+    svg.append('text')
+        .attr('x', margin.left)
+        .attr('y', totalH - 8)
+        .attr('fill', mutedColor)
+        .attr('font-size', '9px')
+        .text('Mean |deviation|: ' + meanAbsDev.toFixed(0) + '% · ' + overCount + ' companies 2x+ expected · ' + underCount + ' companies <50% expected');
 }

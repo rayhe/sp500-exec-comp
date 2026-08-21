@@ -399,6 +399,23 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel" id="gov-pay-scatter-panel">
+            <div class="section-header">
+                <h2>Governance vs CEO Pay</h2>
+                <p class="section-desc">Each dot is an S&P 500 company. X = governance score, Y = CEO total compensation (log scale). Quadrants split at median values. Regression line shows the relationship between governance quality and pay level. Red-outlined dots are in the "Weak Governance / High Pay" quadrant.</p>
+            </div>
+            <div id="gov-pay-scatter-chart"></div>
+        </div>
+        <div class="chart-panel" id="pay-anomaly-panel">
+            <div class="section-header">
+                <h2>Pay Anomalies</h2>
+                <p class="section-desc">Companies whose CEO pay deviates most from what their sector and governance profile would predict. Expected pay is modeled per-sector using log-linear regression on governance score. Overpaid (red) and underpaid (green) relative to the model.</p>
+            </div>
+            <div id="pay-anomaly-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="treemap-panel">
             <div class="section-header">
                 <h2>Where the Money Goes</h2>
