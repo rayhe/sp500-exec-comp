@@ -9341,10 +9341,110 @@ function drawTenurePayGrowthChart(companies) {
 
 /* ── Tenure × Governance Cross-Tabulation ──────────────────────────── */
 
+var _crosstabSectorFilter = null; // null = all sectors
+var _crosstabCompaniesRef = null; // stash for redraw
+
+function _buildCrosstabSectorChips(companies) {
+    var chipWrap = document.getElementById('crosstab-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+
+    // Gather sectors from eligible companies (has tenure + governance data)
+    var sectorSet = {};
+    companies.forEach(function(c) {
+        if (c._ceoTenureYears != null && c._govScore != null && c.total_compensation > 0 && c.sector) {
+            sectorSet[c.sector] = (sectorSet[c.sector] || 0) + 1;
+        }
+    });
+    var sectors = Object.keys(sectorSet).sort();
+
+    // "All S&P 500" chip
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_crosstabSectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All S\u0026P 500';
+    allChip.title = 'Show tenure vs governance across all sectors';
+    allChip.addEventListener('click', function() {
+        _crosstabSectorFilter = null;
+        _refreshCrosstabChips();
+        var el = document.getElementById('tenure-gov-crosstab-chart');
+        if (el) el.innerHTML = '';
+        drawTenureGovCrossTab(_crosstabCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sectors.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_crosstabSectorFilter === sec ? ' active' : '');
+        chip.setAttribute('data-sector', sec);
+        chip.textContent = sec.replace('Consumer ', 'Cons. ').replace('Communication ', 'Comm. ').replace('Information ', 'Info ');
+        chip.title = sec + ' (' + sectorSet[sec] + ' companies)';
+        chip.style.borderColor = typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280';
+        if (_crosstabSectorFilter === sec) {
+            chip.style.backgroundColor = (typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280');
+            chip.style.color = '#111';
+        }
+        chip.addEventListener('click', function() {
+            if (_crosstabSectorFilter === sec) {
+                _crosstabSectorFilter = null; // toggle off
+            } else {
+                _crosstabSectorFilter = sec;
+            }
+            _refreshCrosstabChips();
+            var el = document.getElementById('tenure-gov-crosstab-chart');
+            if (el) el.innerHTML = '';
+            drawTenureGovCrossTab(_crosstabCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function _refreshCrosstabChips() {
+    var chipWrap = document.getElementById('crosstab-sector-chips');
+    if (!chipWrap) return;
+    var chips = chipWrap.querySelectorAll('.anomaly-chip');
+    for (var i = 0; i < chips.length; i++) {
+        var chip = chips[i];
+        var isAll = (i === 0);
+        var isActive;
+        if (isAll) {
+            isActive = (_crosstabSectorFilter == null);
+        } else {
+            isActive = (chip.getAttribute('data-sector') === _crosstabSectorFilter);
+        }
+        chip.classList.toggle('active', isActive);
+        if (!isAll && isActive) {
+            chip.style.backgroundColor = chip.style.borderColor;
+            chip.style.color = '#111';
+        } else if (!isAll) {
+            chip.style.backgroundColor = '';
+            chip.style.color = '';
+        }
+    }
+}
+
 function drawTenureGovCrossTab(companies) {
+    _crosstabCompaniesRef = companies;
     var container = document.getElementById('tenure-gov-crosstab-chart');
     if (!container) return;
     container.innerHTML = '';
+
+    // Build sector chips on first call
+    var chipWrap = document.getElementById('crosstab-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildCrosstabSectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('tenure-gov-crosstab-title');
+    var descEl = document.getElementById('tenure-gov-crosstab-desc');
+    var sectorFilter = _crosstabSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Governance \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = sectorFilter + ' CEO tenure vs governance quality. Cross-tabulation of tenure brackets by governance quartiles for all ' + sectorFilter + ' companies with tenure and governance data from DEF 14A proxy filings.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Governance';
+        if (descEl) descEl.textContent = 'Does longer CEO tenure erode corporate governance quality? Cross-tabulation of tenure brackets (rows) by governance score quartiles (columns). Each cell shows company count, median CEO pay, and YoY pay change. Cell color intensity reflects median pay. Click any cell to filter the main table.';
+    }
 
     var textColor = getThemeTextColor();
     var mutedColor = getThemeMutedColor();
@@ -9352,10 +9452,13 @@ function drawTenureGovCrossTab(companies) {
 
     // Filter to companies with both tenure and governance data
     var eligible = companies.filter(function(c) {
-        return c._ceoTenureYears != null && c._govScore != null && c.total_compensation > 0;
+        var base = c._ceoTenureYears != null && c._govScore != null && c.total_compensation > 0;
+        if (sectorFilter) return base && c.sector === sectorFilter;
+        return base;
     });
-    if (eligible.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + governance data (' + eligible.length + ' companies)</p>';
+    var minThreshold = sectorFilter ? 5 : 20;
+    if (eligible.length < minThreshold) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
         return;
     }
 
@@ -9531,6 +9634,7 @@ function drawTenureGovCrossTab(companies) {
     var strongVet = cells['vet-q4'];
 
     var narrative = '';
+    var sectorLabel = sectorFilter ? sectorFilter : 'S&P 500';
     // Key insight: does tenure erode governance?
     var newInWeak = (cells['new-q1'].count + cells['new-q2'].count);
     var newInStrong = (cells['new-q3'].count + cells['new-q4'].count);
@@ -9546,14 +9650,14 @@ function drawTenureGovCrossTab(companies) {
         var tenurePreservesGov = newInWeak / newTotal > vetInWeak / vetTotal + 0.05;
 
         if (tenureErodesGov) {
-            narrative = '<span class="crosstab-finding warning">⚠️ Tenure appears to erode governance:</span> ' +
-                vetWeakPct + '% of veteran CEOs (20+ yrs) fall in weak governance (Q1–Q2), vs only ' +
+            narrative = '<span class="crosstab-finding warning">\u26a0\ufe0f Tenure appears to erode governance' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
+                vetWeakPct + '% of veteran CEOs (20+ yrs) fall in weak governance (Q1\u2013Q2), vs only ' +
                 newWeakPct + '% of new CEOs (<3 yrs).';
         } else if (tenurePreservesGov) {
-            narrative = '<span class="crosstab-finding positive">✓ Tenure does not erode governance:</span> ' +
-                'New CEOs are actually more likely to have weak governance (' + newWeakPct + '% in Q1–Q2) than veterans (' + vetWeakPct + '%).';
+            narrative = '<span class="crosstab-finding positive">\u2713 Tenure does not erode governance' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
+                'New CEOs are actually more likely to have weak governance (' + newWeakPct + '% in Q1\u2013Q2) than veterans (' + vetWeakPct + '%).';
         } else {
-            narrative = '<span class="crosstab-finding neutral">≈ Governance is tenure-neutral:</span> ' +
+            narrative = '<span class="crosstab-finding neutral">\u2248 Governance is tenure-neutral' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
                 'Weak-governance rates are similar for new CEOs (' + newWeakPct + '%) and veterans (' + vetWeakPct + '%).';
         }
 
@@ -9568,6 +9672,16 @@ function drawTenureGovCrossTab(companies) {
                     ' than new CEOs with strong governance (' + fmtCurr(dangerPay) + ' vs ' + fmtCurr(safePay) + ').';
             }
         }
+    } else if (newTotal === 0 && vetTotal > 0) {
+        var vetWeakPct2 = (vetInWeak / vetTotal * 100).toFixed(0);
+        narrative = '<span class="crosstab-finding neutral">' + sectorLabel + ': No new CEOs (<3 yrs) in dataset.</span> ' +
+            vetWeakPct2 + '% of veteran CEOs fall in weak governance (Q1\u2013Q2).';
+    } else if (vetTotal === 0 && newTotal > 0) {
+        var newWeakPct2 = (newInWeak / newTotal * 100).toFixed(0);
+        narrative = '<span class="crosstab-finding neutral">' + sectorLabel + ': No veteran CEOs (20+ yrs) in dataset.</span> ' +
+            newWeakPct2 + '% of new CEOs fall in weak governance (Q1\u2013Q2).';
+    } else {
+        narrative = '<span class="crosstab-finding neutral">' + sectorLabel + ': Insufficient data for new and veteran CEO comparison.</span>';
     }
 
     html += '<div class="crosstab-narrative">' + narrative + '</div>';
