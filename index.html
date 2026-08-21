@@ -419,8 +419,9 @@
     <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="tenure-pay-growth-panel">
             <div class="section-header">
-                <h2>Tenure × Pay Growth</h2>
-                <p class="section-desc">Do long-tenured CEOs accumulate faster pay growth? Median year-over-year CEO compensation change by tenure bracket with IQR range. Individual company dots overlaid. Based on multi-year Summary Compensation Table data from DEF 14A proxy filings.</p>
+                <h2 id="tenure-pay-growth-title">Tenure × Pay Growth</h2>
+                <p class="section-desc" id="tenure-pay-growth-desc">Do long-tenured CEOs accumulate faster pay growth? Median year-over-year CEO compensation change by tenure bracket with IQR range. Individual company dots overlaid. Based on multi-year Summary Compensation Table data from DEF 14A proxy filings.</p>
+                <div class="anomaly-sector-chips" id="tenure-growth-sector-chips"></div>
             </div>
             <div id="tenure-pay-growth-chart"></div>
         </div>
@@ -507,6 +508,7 @@
                     <button class="scatter-preset-btn" data-x="_pageRankScore" data-y="total_compensation" title="PageRank centrality vs CEO pay — do the most central peer-network companies pay more?">Centrality vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="total_compensation" title="CEO tenure vs total compensation — does longer tenure correlate with higher pay?">Tenure vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_govScore" data-y="total_compensation" title="Governance score vs CEO pay — do well-governed companies pay more or less?">Gov vs Pay</button>
+                    <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="_govScore" title="CEO tenure vs governance score — does longer tenure erode governance quality?">Tenure vs Gov</button>
                 </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">

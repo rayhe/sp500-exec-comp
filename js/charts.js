@@ -8917,16 +8917,117 @@ function drawPayAnomalyChart(companies) {
 
 /* ── Tenure × Pay Growth Analysis ───────────────────────────────────── */
 
+var _tenureGrowthSectorFilter = null; // null = all sectors
+var _tenureGrowthCompaniesRef = null; // stash for redraw
+
+function _buildTenureGrowthSectorChips(companies) {
+    var chipWrap = document.getElementById('tenure-growth-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+
+    // Gather sectors from eligible companies (has tenure + yoy data)
+    var sectorSet = {};
+    companies.forEach(function(c) {
+        if (c._ceoTenureYears != null && c._ceoYoY && c._ceoYoY.pctChange != null && isFinite(c._ceoYoY.pctChange) && c.sector) {
+            sectorSet[c.sector] = (sectorSet[c.sector] || 0) + 1;
+        }
+    });
+    var sectors = Object.keys(sectorSet).sort();
+
+    // "All S&P 500" chip
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_tenureGrowthSectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All S&P 500';
+    allChip.title = 'Show tenure vs pay growth across all sectors';
+    allChip.addEventListener('click', function() {
+        _tenureGrowthSectorFilter = null;
+        _refreshTenureGrowthChips();
+        var el = document.getElementById('tenure-pay-growth-chart');
+        if (el) el.innerHTML = '';
+        drawTenurePayGrowthChart(_tenureGrowthCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sectors.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_tenureGrowthSectorFilter === sec ? ' active' : '');
+        chip.setAttribute('data-sector', sec);
+        chip.textContent = sec.replace('Consumer ', 'Cons. ').replace('Communication ', 'Comm. ').replace('Information ', 'Info ');
+        chip.title = sec + ' (' + sectorSet[sec] + ' companies)';
+        chip.style.borderColor = typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280';
+        if (_tenureGrowthSectorFilter === sec) {
+            chip.style.backgroundColor = (typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280');
+            chip.style.color = '#111';
+        }
+        chip.addEventListener('click', function() {
+            if (_tenureGrowthSectorFilter === sec) {
+                _tenureGrowthSectorFilter = null; // toggle off
+            } else {
+                _tenureGrowthSectorFilter = sec;
+            }
+            _refreshTenureGrowthChips();
+            var el = document.getElementById('tenure-pay-growth-chart');
+            if (el) el.innerHTML = '';
+            drawTenurePayGrowthChart(_tenureGrowthCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function _refreshTenureGrowthChips() {
+    var chipWrap = document.getElementById('tenure-growth-sector-chips');
+    if (!chipWrap) return;
+    var chips = chipWrap.querySelectorAll('.anomaly-chip');
+    for (var i = 0; i < chips.length; i++) {
+        var chip = chips[i];
+        var isAll = (i === 0);
+        var isActive;
+        if (isAll) {
+            isActive = (_tenureGrowthSectorFilter == null);
+        } else {
+            isActive = (chip.getAttribute('data-sector') === _tenureGrowthSectorFilter);
+        }
+        chip.classList.toggle('active', isActive);
+        if (!isAll && isActive) {
+            chip.style.backgroundColor = chip.style.borderColor;
+            chip.style.color = '#111';
+        } else if (!isAll) {
+            chip.style.backgroundColor = '';
+            chip.style.color = '';
+        }
+    }
+}
+
 function drawTenurePayGrowthChart(companies) {
+    _tenureGrowthCompaniesRef = companies;
     var container = document.getElementById('tenure-pay-growth-chart');
     if (!container) return;
     container.innerHTML = '';
+
+    // Build sector chips on first call
+    var chipWrap = document.getElementById('tenure-growth-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildTenureGrowthSectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('tenure-pay-growth-title');
+    var descEl = document.getElementById('tenure-pay-growth-desc');
+    var sectorFilter = _tenureGrowthSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Pay Growth \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = sectorFilter + ' CEO pay growth by tenure bracket. Showing all ' + sectorFilter + ' companies with tenure and year-over-year compensation data from DEF 14A proxy filings.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Pay Growth';
+        if (descEl) descEl.textContent = 'Do long-tenured CEOs accumulate faster pay growth? Median year-over-year CEO compensation change by tenure bracket with IQR range. Individual company dots overlaid. Based on multi-year Summary Compensation Table data from DEF 14A proxy filings.';
+    }
 
     // Gather companies with tenure + multi-year CEO data
     var eligible = [];
     companies.forEach(function(c) {
         if (c._ceoTenureYears == null || !c._ceoYoY || c._ceoYoY.pctChange == null) return;
         if (!isFinite(c._ceoYoY.pctChange)) return;
+        if (sectorFilter && c.sector !== sectorFilter) return;
         eligible.push({
             ticker: c.ticker,
             company: c.company_name,
@@ -8942,8 +9043,8 @@ function drawTenurePayGrowthChart(companies) {
         });
     });
 
-    if (eligible.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + pay growth data</p>';
+    if (eligible.length < (sectorFilter ? 5 : 20)) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + pay growth data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
         return;
     }
 
@@ -9208,6 +9309,7 @@ function drawTenurePayGrowthChart(companies) {
     var newMedian = brackets[0].count > 0 ? brackets[0].median : null;
     var vetMedian = brackets[3].count > 0 ? brackets[3].median : null;
     if (newMedian != null && vetMedian != null) {
+        var scopeLabel = sectorFilter || 'S&P 500';
         var insightText = 'New CEOs grow ' + (newMedian > 0 ? '+' : '') + newMedian.toFixed(0) + '% YoY vs veterans ' +
             (vetMedian > 0 ? '+' : '') + vetMedian.toFixed(0) + '% \u2014 ' +
             (newMedian > vetMedian + 5 ? 'early tenure drives the sharpest pay acceleration' :
@@ -9218,7 +9320,20 @@ function drawTenurePayGrowthChart(companies) {
             .attr('y', totalH - 6)
             .attr('fill', mutedColor)
             .attr('font-size', '9px')
-            .text(insightText + ' \u00B7 ' + eligible.length + ' companies with tenure + YoY data');
+            .text(insightText + ' \u00B7 ' + eligible.length + ' ' + scopeLabel + ' companies with tenure + YoY data');
+    } else if (eligible.length > 0) {
+        // Not enough data in both new and veteran brackets — show what we have
+        var scopeLabel2 = sectorFilter || 'S&P 500';
+        var activeBrackets = brackets.filter(function(b) { return b.count > 0; });
+        var summaryParts = activeBrackets.map(function(b) {
+            return b.label.replace('\n', ' ') + ': ' + (b.median > 0 ? '+' : '') + b.median.toFixed(1) + '% (' + b.count + ')';
+        });
+        svg.append('text')
+            .attr('x', margin.left)
+            .attr('y', totalH - 6)
+            .attr('fill', mutedColor)
+            .attr('font-size', '9px')
+            .text(summaryParts.join(' \u00B7 ') + ' \u2014 ' + eligible.length + ' ' + scopeLabel2 + ' companies');
     }
 }
 
