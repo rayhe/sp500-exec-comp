@@ -9909,3 +9909,48 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .corr-row-hdr { color: #6b7280; }
 [data-theme="light"] .corr-legend { color: #6b7280; }
 [data-theme="light"] .corr-cell-active:hover { box-shadow: 0 0 6px rgba(0,120,180,0.3); outline-color: rgba(0,120,180,0.4); }
+
+/* --- Anomaly sector filter chips --- */
+.anomaly-sector-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+.anomaly-chip {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-family: Inter, system-ui, sans-serif;
+    font-weight: 500;
+    color: #a1a1aa;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.anomaly-chip:hover {
+    background: rgba(255,255,255,0.08);
+    color: #e4e4e7;
+}
+.anomaly-chip.active {
+    background: rgba(0,180,216,0.18);
+    border-color: #00b4d8;
+    color: #e4e4e7;
+    font-weight: 600;
+}
+[data-theme="light"] .anomaly-chip {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.12);
+    color: #6b7280;
+}
+[data-theme="light"] .anomaly-chip:hover {
+    background: rgba(0,0,0,0.06);
+    color: #1a1a2e;
+}
+[data-theme="light"] .anomaly-chip.active {
+    background: rgba(0,120,180,0.12);
+    border-color: #0078b4;
+    color: #1a1a2e;
+}

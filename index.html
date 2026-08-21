@@ -408,8 +408,9 @@
         </div>
         <div class="chart-panel" id="pay-anomaly-panel">
             <div class="section-header">
-                <h2>Pay Anomalies</h2>
-                <p class="section-desc">Companies whose CEO pay deviates most from what their sector and governance profile would predict. Expected pay is modeled per-sector using log-linear regression on governance score. Overpaid (red) and underpaid (green) relative to the model.</p>
+                <h2 id="pay-anomaly-title">Pay Anomalies</h2>
+                <p class="section-desc" id="pay-anomaly-desc">Companies whose CEO pay deviates most from what their sector and governance profile would predict. Expected pay is modeled per-sector using log-linear regression on governance score. Overpaid (red) and underpaid (green) relative to the model.</p>
+                <div class="anomaly-sector-chips" id="anomaly-sector-chips"></div>
             </div>
             <div id="pay-anomaly-chart"></div>
         </div>

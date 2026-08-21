@@ -8496,10 +8496,100 @@ function drawGovPayScatter(companies) {
 }
 
 /* --- Pay Anomaly Chart — companies whose CEO pay deviates most from sector+governance norm --- */
+var _anomalySectorFilter = null; // null = all sectors
+var _anomalyCompaniesRef = null; // stash for redraw
+
+function _buildAnomalySectorChips(companies) {
+    var chipWrap = document.getElementById('anomaly-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+
+    // Gather sectors from companies with governance + comp data
+    var sectorSet = {};
+    companies.forEach(function(c) {
+        if (c._govScore != null && c.total_compensation > 0 && c.sector) sectorSet[c.sector] = true;
+    });
+    var sectors = Object.keys(sectorSet).sort();
+
+    // "All S&P 500" chip
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_anomalySectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All S&P 500';
+    allChip.title = 'Show top anomalies across all sectors';
+    allChip.addEventListener('click', function() {
+        _anomalySectorFilter = null;
+        _refreshAnomalyChips();
+        drawPayAnomalyChart(_anomalyCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sectors.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_anomalySectorFilter === sec ? ' active' : '');
+        chip.setAttribute('data-sector', sec);
+        chip.textContent = sec.replace('Consumer ', 'Cons. ').replace('Communication ', 'Comm. ').replace('Information ', 'Info ');
+        chip.title = 'Show anomalies within ' + sec;
+        chip.style.borderColor = typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280';
+        if (_anomalySectorFilter === sec) {
+            chip.style.backgroundColor = (typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280');
+            chip.style.color = '#111';
+        }
+        chip.addEventListener('click', function() {
+            _anomalySectorFilter = sec;
+            _refreshAnomalyChips();
+            drawPayAnomalyChart(_anomalyCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function _refreshAnomalyChips() {
+    var chipWrap = document.getElementById('anomaly-sector-chips');
+    if (!chipWrap) return;
+    var chips = chipWrap.querySelectorAll('.anomaly-chip');
+    for (var i = 0; i < chips.length; i++) {
+        var chip = chips[i];
+        var isAll = (i === 0);
+        var isActive;
+        if (isAll) {
+            isActive = (_anomalySectorFilter == null);
+        } else {
+            // Each non-All chip stores its full sector name in data attribute
+            isActive = (chip.getAttribute('data-sector') === _anomalySectorFilter);
+        }
+        chip.classList.toggle('active', isActive);
+        if (!isAll && isActive) {
+            chip.style.backgroundColor = chip.style.borderColor;
+            chip.style.color = '#111';
+        } else if (!isAll) {
+            chip.style.backgroundColor = '';
+            chip.style.color = '';
+        }
+    }
+}
+
 function drawPayAnomalyChart(companies) {
+    _anomalyCompaniesRef = companies;
     var container = document.getElementById('pay-anomaly-chart');
     if (!container) return;
     container.innerHTML = '';
+
+    // Build sector chips on first call (or if they don't exist yet)
+    var chipWrap = document.getElementById('anomaly-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildAnomalySectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('pay-anomaly-title');
+    var descEl = document.getElementById('pay-anomaly-desc');
+    if (_anomalySectorFilter) {
+        if (titleEl) titleEl.textContent = 'Pay Anomalies — ' + _anomalySectorFilter;
+        if (descEl) descEl.textContent = 'All ' + _anomalySectorFilter + ' companies ranked by pay deviation from the sector\u2019s governance-adjusted model. Showing every company in the sector.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Pay Anomalies';
+        if (descEl) descEl.textContent = 'Companies whose CEO pay deviates most from what their sector and governance profile would predict. Expected pay is modeled per-sector using log-linear regression on governance score. Overpaid (red) and underpaid (green) relative to the model.';
+    }
 
     // Build sector × governance-bucket expected pay model
     var withData = companies.filter(function(c) {
@@ -8518,9 +8608,7 @@ function drawPayAnomalyChart(companies) {
         sectorGroups[c.sector].push(c);
     });
 
-    // For each company, compute expected pay as: sector median adjusted by governance position
-    // Simple model: expectedPay = sectorMedian * (1 + govAdjustment)
-    // where govAdjustment is from linear regression within sector
+    // For each company, compute expected pay from sector regression model
     var anomalies = [];
 
     Object.keys(sectorGroups).forEach(function(sector) {
@@ -8554,14 +8642,14 @@ function drawPayAnomalyChart(companies) {
             anomalies.push({
                 ticker: c.ticker,
                 company: c.company_name,
-                ceo: c.ceo_name || '—',
+                ceo: c.ceo_name || '\u2014',
                 sector: c.sector,
                 actual: c.total_compensation,
                 expected: expectedPay,
                 ratio: ratio,
                 pctDev: pctDev,
                 govScore: c._govScore,
-                govGrade: c._govGrade || '—',
+                govGrade: c._govGrade || '\u2014',
                 sectorMedian: sectorMedian
             });
         });
@@ -8570,18 +8658,40 @@ function drawPayAnomalyChart(companies) {
     // Sort by absolute deviation
     anomalies.sort(function(a, b) { return Math.abs(b.pctDev) - Math.abs(a.pctDev); });
 
-    // Take top 15 overpaid and top 15 underpaid
-    var overpaid = anomalies.filter(function(a) { return a.pctDev > 0; }).slice(0, 15);
-    var underpaid = anomalies.filter(function(a) { return a.pctDev < 0; }).slice(0, 15).reverse();
-    var displayData = overpaid.concat(underpaid);
+    // Apply sector filter
+    var filteredAnomalies = anomalies;
+    if (_anomalySectorFilter) {
+        filteredAnomalies = anomalies.filter(function(a) { return a.sector === _anomalySectorFilter; });
+    }
+
+    // Select display data — in sector mode show ALL companies, otherwise top 15+15
+    var displayData;
+    if (_anomalySectorFilter) {
+        // Show all companies in the sector, split into overpaid then underpaid
+        var sectorOver = filteredAnomalies.filter(function(a) { return a.pctDev > 0; });
+        sectorOver.sort(function(a, b) { return b.pctDev - a.pctDev; });
+        var sectorUnder = filteredAnomalies.filter(function(a) { return a.pctDev <= 0; });
+        sectorUnder.sort(function(a, b) { return a.pctDev - b.pctDev; });
+        displayData = sectorOver.concat(sectorUnder);
+    } else {
+        var overpaid = filteredAnomalies.filter(function(a) { return a.pctDev > 0; }).slice(0, 15);
+        var underpaid = filteredAnomalies.filter(function(a) { return a.pctDev < 0; }).slice(0, 15).reverse();
+        displayData = overpaid.concat(underpaid);
+    }
+
+    if (displayData.length === 0) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No anomaly data for this sector</p>';
+        return;
+    }
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
     var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var sectorColor = _anomalySectorFilter && typeof getSectorColor === 'function' ? getSectorColor(_anomalySectorFilter) : null;
 
     var cw = container.clientWidth || 700;
-    var barH = 22;
-    var barGap = 4;
+    var barH = _anomalySectorFilter ? 20 : 22;
+    var barGap = _anomalySectorFilter ? 3 : 4;
     var margin = { top: 30, right: 120, bottom: 40, left: 170 };
     var width = cw - margin.left - margin.right;
     var chartH = displayData.length * (barH + barGap) + 30;
@@ -8591,12 +8701,13 @@ function drawPayAnomalyChart(companies) {
         .attr('width', cw)
         .attr('height', totalH)
         .attr('role', 'img')
-        .attr('aria-label', 'CEO pay anomaly chart — companies paying most above or below sector + governance expectations');
+        .attr('aria-label', 'CEO pay anomaly chart' + (_anomalySectorFilter ? ' \u2014 ' + _anomalySectorFilter : '') + ' \u2014 companies paying most above or below sector + governance expectations');
 
     var g = svg.append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     var maxDev = d3.max(displayData, function(d) { return Math.abs(d.pctDev); });
+    if (!maxDev || maxDev < 1) maxDev = 10;
     var x = d3.scaleLinear()
         .domain([-maxDev * 1.05, maxDev * 1.05])
         .range([0, width]);
@@ -8613,10 +8724,12 @@ function drawPayAnomalyChart(companies) {
         .attr('text-anchor', 'middle')
         .attr('fill', mutedColor)
         .attr('font-size', '9px')
-        .text('Expected Pay (sector + governance model)');
+        .text(_anomalySectorFilter ? 'Expected Pay (' + _anomalySectorFilter + ' model)' : 'Expected Pay (sector + governance model)');
 
     // Section labels
-    if (overpaid.length > 0) {
+    var overpaidDisplay = displayData.filter(function(d) { return d.pctDev > 0; });
+    var underpaidDisplay = displayData.filter(function(d) { return d.pctDev <= 0; });
+    if (overpaidDisplay.length > 0) {
         g.append('text')
             .attr('x', x(maxDev * 0.5))
             .attr('y', -10)
@@ -8624,9 +8737,9 @@ function drawPayAnomalyChart(companies) {
             .attr('fill', '#ef476f')
             .attr('font-size', '10px')
             .attr('font-weight', '600')
-            .text('▸ Overpaid vs Expected');
+            .text('\u25B8 Overpaid vs Expected');
     }
-    if (underpaid.length > 0) {
+    if (underpaidDisplay.length > 0) {
         g.append('text')
             .attr('x', x(-maxDev * 0.5))
             .attr('y', -10)
@@ -8634,7 +8747,27 @@ function drawPayAnomalyChart(companies) {
             .attr('fill', '#06d6a0')
             .attr('font-size', '10px')
             .attr('font-weight', '600')
-            .text('◂ Underpaid vs Expected');
+            .text('\u25C2 Underpaid vs Expected');
+    }
+
+    // Sector summary stats when filtered
+    if (_anomalySectorFilter && filteredAnomalies.length > 0) {
+        var sectorMedianDev = d3.median(filteredAnomalies, function(a) { return a.pctDev; });
+        var sectorMeanGov = d3.mean(filteredAnomalies, function(a) { return a.govScore; });
+        var sectorMedPay = d3.median(filteredAnomalies, function(a) { return a.actual; });
+        var summaryParts = [];
+        summaryParts.push(filteredAnomalies.length + ' companies');
+        summaryParts.push('Median Pay ' + fmtCurr(sectorMedPay));
+        summaryParts.push('Avg Gov ' + (sectorMeanGov || 0).toFixed(0));
+        summaryParts.push('Median Deviation ' + (sectorMedianDev > 0 ? '+' : '') + (sectorMedianDev || 0).toFixed(0) + '%');
+        g.append('text')
+            .attr('x', width / 2)
+            .attr('y', chartH + 18)
+            .attr('text-anchor', 'middle')
+            .attr('fill', sectorColor || mutedColor)
+            .attr('font-size', '10px')
+            .attr('font-weight', '500')
+            .text(summaryParts.join(' \u00B7 '));
     }
 
     // Bars
@@ -8655,14 +8788,24 @@ function drawPayAnomalyChart(companies) {
             .style('cursor', 'pointer')
             .on('mouseover', function(event) {
                 d3.select(this).attr('opacity', 1);
+                var rankInSector = '';
+                if (_anomalySectorFilter) {
+                    var sameDir = filteredAnomalies.filter(function(a) {
+                        return d.pctDev >= 0 ? a.pctDev >= 0 : a.pctDev < 0;
+                    });
+                    sameDir.sort(function(a, b) { return Math.abs(b.pctDev) - Math.abs(a.pctDev); });
+                    var rank = sameDir.findIndex(function(a) { return a.ticker === d.ticker; }) + 1;
+                    rankInSector = '<br>Sector Rank: #' + rank + ' ' + (d.pctDev >= 0 ? 'most overpaid' : 'most underpaid');
+                }
                 showChartTooltip(event,
-                    '<strong>' + d.ticker + '</strong> — ' + d.company + '<br>' +
+                    '<strong>' + d.ticker + '</strong> \u2014 ' + d.company + '<br>' +
                     'CEO: ' + d.ceo + '<br>' +
                     'Actual Pay: ' + fmtCurr(d.actual) + '<br>' +
                     'Expected (model): ' + fmtCurr(d.expected) + '<br>' +
                     'Deviation: <strong style="color:' + barColor + '">' + (d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '%</strong><br>' +
                     'Sector Median: ' + fmtCurr(d.sectorMedian) + '<br>' +
-                    'Governance: ' + d.govScore.toFixed(0) + ' (' + d.govGrade + ')');
+                    'Governance: ' + d.govScore.toFixed(0) + ' (' + d.govGrade + ')' +
+                    rankInSector);
             })
             .on('mousemove', function(event) { positionChartTooltip(event); })
             .on('mouseout', function() {
@@ -8673,8 +8816,8 @@ function drawPayAnomalyChart(companies) {
                 if (window.scrollToCompany) window.scrollToCompany(d.ticker);
             })
             .transition()
-            .duration(500)
-            .delay(i * 20)
+            .duration(_anomalySectorFilter ? 350 : 500)
+            .delay(i * (_anomalySectorFilter ? 12 : 20))
             .ease(d3.easeCubicOut)
             .attr('width', barW);
 
@@ -8685,13 +8828,13 @@ function drawPayAnomalyChart(companies) {
             .attr('dy', '0.35em')
             .attr('text-anchor', 'end')
             .attr('fill', textColor)
-            .attr('font-size', '11px')
+            .attr('font-size', _anomalySectorFilter ? '10px' : '11px')
             .attr('font-weight', '500')
             .style('cursor', 'pointer')
             .on('click', function() {
                 if (window.scrollToCompany) window.scrollToCompany(d.ticker);
             })
-            .text(d.ticker + ' — ' + d.ceo.split(/\s+/).slice(-1)[0]);
+            .text(d.ticker + ' \u2014 ' + d.ceo.split(/\s+/).slice(-1)[0]);
 
         // Deviation % label
         var labelX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
@@ -8702,12 +8845,12 @@ function drawPayAnomalyChart(companies) {
             .attr('dy', '0.35em')
             .attr('text-anchor', labelAnchor)
             .attr('fill', barColor)
-            .attr('font-size', '10px')
+            .attr('font-size', _anomalySectorFilter ? '9px' : '10px')
             .attr('font-weight', '600')
             .attr('opacity', 0)
             .transition()
             .duration(200)
-            .delay(i * 20 + 400)
+            .delay(i * (_anomalySectorFilter ? 12 : 20) + 300)
             .attr('opacity', 1)
             .text((d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '% (' + fmtCurr(d.actual) + ')');
     });
@@ -8719,16 +8862,18 @@ function drawPayAnomalyChart(companies) {
         .attr('text-anchor', 'middle')
         .attr('fill', textColor)
         .attr('font-size', '12px')
-        .text('% Deviation from Expected Pay (sector + governance adjusted)');
+        .text('% Deviation from Expected Pay (' + (_anomalySectorFilter ? _anomalySectorFilter + ' governance model' : 'sector + governance adjusted') + ')');
 
-    // Summary stats
-    var meanAbsDev = d3.mean(anomalies, function(a) { return Math.abs(a.pctDev); });
-    var overCount = anomalies.filter(function(a) { return a.pctDev > 100; }).length;
-    var underCount = anomalies.filter(function(a) { return a.pctDev < -50; }).length;
-    svg.append('text')
-        .attr('x', margin.left)
-        .attr('y', totalH - 8)
-        .attr('fill', mutedColor)
-        .attr('font-size', '9px')
-        .text('Mean |deviation|: ' + meanAbsDev.toFixed(0) + '% · ' + overCount + ' companies 2x+ expected · ' + underCount + ' companies <50% expected');
+    // Summary stats (cross-S&P 500 view only)
+    if (!_anomalySectorFilter) {
+        var meanAbsDev = d3.mean(anomalies, function(a) { return Math.abs(a.pctDev); });
+        var overCount = anomalies.filter(function(a) { return a.pctDev > 100; }).length;
+        var underCount = anomalies.filter(function(a) { return a.pctDev < -50; }).length;
+        svg.append('text')
+            .attr('x', margin.left)
+            .attr('y', totalH - 8)
+            .attr('fill', mutedColor)
+            .attr('font-size', '9px')
+            .text('Mean |deviation|: ' + meanAbsDev.toFixed(0) + '% \u00B7 ' + overCount + ' companies 2x+ expected \u00B7 ' + underCount + ' companies <50% expected');
+    }
 }
