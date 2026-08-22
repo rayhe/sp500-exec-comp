@@ -70,15 +70,15 @@
       "bloated": 0,
       "filing": 0
     },
-    "say_on_pay_coverage": 361,
+    "say_on_pay_coverage": 416,
     "say_on_pay_stats": {
-      "count": 361,
-      "median_approval": 93.46,
-      "mean_approval": 91.0,
-      "min_approval": 46.57,
+      "count": 416,
+      "median_approval": 93.33,
+      "mean_approval": 90.49,
+      "min_approval": 15.69,
       "max_approval": 99.93,
-      "below_70": 18,
-      "below_50": 1
+      "below_70": 24,
+      "below_50": 4
     },
     "gender_coverage": {
       "female_ceos": 33,
@@ -973,7 +973,8 @@
         "sources": [
           "manual_verify"
         ]
-      }
+      },
+      "say_on_pay": null
     },
     {
       "ticker": "CARR",
@@ -2382,6 +2383,10 @@
           "founder",
           "table_director"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.0,
+        "source": "DEF 14A proxy statement (prior year)"
       }
     },
     {
@@ -4808,6 +4813,14 @@
         "sources": [
           "table_director"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 84.93,
+        "votes_for": 16637219,
+        "votes_against": 2952607,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-03-05",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/814547/000119312526093964/d106510d8k.htm"
       }
     },
     {
@@ -7422,6 +7435,14 @@
         "sources": [
           "prose_since"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 91.45,
+        "votes_for": 121400188,
+        "votes_against": 11342954,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/68505/000119312526232694/d107048d8k.htm"
       }
     },
     {
@@ -9116,7 +9137,8 @@
         "sources": [
           "prose"
         ]
-      }
+      },
+      "say_on_pay": null
     },
     {
       "ticker": "TMUS",
@@ -9234,6 +9256,14 @@
           "ceo_tenure_section",
           "table_director"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 94.12,
+        "votes_for": 929341631,
+        "votes_against": 58074848,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1283699/000119312526275787/d167113d8k.htm"
       }
     },
     {
@@ -9563,6 +9593,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 91.02,
+        "votes_for": 665089824,
+        "votes_against": 65652240,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-06-05",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1467858/000146785825000112/gm-20250603.htm"
       }
     },
     {
@@ -9738,7 +9776,8 @@
           "experience_nearby",
           "experience_history"
         ]
-      }
+      },
+      "say_on_pay": null
     },
     {
       "ticker": "NKE",
@@ -10149,6 +10188,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 93.73,
+        "votes_for": 1105513902,
+        "votes_against": 73973820,
+        "source": "8-K Item 5.07",
+        "filing_date": "2024-05-03",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/77476/000007747624000026/pep-20240501.htm"
       }
     },
     {
@@ -13176,6 +13223,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 97.27,
+        "votes_for": 143264153,
+        "votes_against": 4027288,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/883241/000119312526164085/d467081d8k.htm"
       }
     },
     {
@@ -13516,7 +13571,8 @@
         "sources": [
           "experience"
         ]
-      }
+      },
+      "say_on_pay": null
     },
     {
       "ticker": "DAL",
@@ -14864,6 +14920,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.83,
+        "votes_for": 1334329063,
+        "votes_against": 102974299,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-22"
       }
     },
     {
@@ -15215,6 +15278,14 @@
         "year": 2005,
         "month": "April",
         "confidence": "medium"
+      },
+      "say_on_pay": {
+        "approval_pct": 89.07,
+        "votes_for": 156384747,
+        "votes_against": 19184418,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-07-03",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/315293/000119312525155525/d17498d8k.htm"
       }
     },
     {
@@ -15971,6 +16042,10 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 87.0,
+        "source": "DEF 14A proxy statement (prior year)"
       }
     },
     {
@@ -17247,7 +17322,8 @@
         "sources": [
           "manual_verify"
         ]
-      }
+      },
+      "say_on_pay": null
     },
     {
       "ticker": "MS",
@@ -17804,6 +17880,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 58.28,
+        "votes_for": 480405454,
+        "votes_against": 343890697,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-30",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1045609/000119312526197916/d112032d8k.htm"
       }
     },
     {
@@ -19969,6 +20053,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 87.25,
+        "votes_for": 199852600,
+        "votes_against": 29195584,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/51253/000114036126018910/ef20072401_8k.htm"
       }
     },
     {
@@ -20978,6 +21070,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.25,
+        "votes_for": 754894258,
+        "votes_against": 37651570,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-15",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/92122/000009212226000040/so-20260513.htm"
       }
     },
     {
@@ -22937,6 +23037,14 @@
         "year": 2022,
         "month": "September",
         "confidence": "high"
+      },
+      "say_on_pay": {
+        "approval_pct": 94.39,
+        "votes_for": 557011153,
+        "votes_against": 33100363,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-04-16",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000119312525082955/d28160d8k.htm"
       }
     },
     {
@@ -23348,6 +23456,14 @@
         "sources": [
           "experience"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 94.06,
+        "votes_for": 1730192132,
+        "votes_against": 109310633,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-28",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/310158/000110465926067509/tm2615833d1_8k.htm"
       }
     },
     {
@@ -26464,6 +26580,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 99.27,
+        "votes_for": 313755002,
+        "votes_against": 2308331,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-04-25",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/713676/000162828025019796/pnc-20250423.htm"
       }
     },
     {
@@ -26652,6 +26776,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.8,
+        "votes_for": 990330206,
+        "votes_against": 43420217,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1103982/000162828026038064/mdlz-20260520.htm"
       }
     },
     {
@@ -26840,6 +26972,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 93.02,
+        "votes_for": 553754519,
+        "votes_against": 41555863,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-07",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/313616/000031361626000127/dhr-20260505.htm"
       }
     },
     {
@@ -28680,6 +28820,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 91.36,
+        "votes_for": 230735191,
+        "votes_against": 21828542,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1138118/000119312526237130/cbre-20260521.htm"
       }
     },
     {
@@ -31591,6 +31739,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 98.7,
+        "votes_for": 201133578,
+        "votes_against": 2641949,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000039/nxpi-20260610.htm"
       }
     },
     {
@@ -32128,6 +32284,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 89.02,
+        "votes_for": 298234525,
+        "votes_against": 36795522,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000026/tgt-20260610.htm"
       }
     },
     {
@@ -32740,6 +32904,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 94.59,
+        "votes_for": 519208384,
+        "votes_against": 29698510,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000041/met-20260616.htm"
       }
     },
     {
@@ -33616,6 +33788,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 53.63,
+        "votes_for": 1282616011,
+        "votes_against": 1109198321,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-10-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1613103/000162828025045695/mdt-20251016.htm"
       }
     },
     {
@@ -34282,6 +34462,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 89.71,
+        "votes_for": 133528357,
+        "votes_against": 15315742,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/217346/000110465926054116/tm2613360d1_8k.htm"
       }
     },
     {
@@ -34697,6 +34885,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 96.83,
+        "votes_for": 220079230,
+        "votes_against": 7193973,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-28",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/884887/000088488726000030/rcl-20260528.htm"
       }
     },
     {
@@ -34818,6 +35014,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 96.44,
+        "votes_for": 351099781,
+        "votes_against": 12973200,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1932393/000193239326000034/gehc-20260507.htm"
       }
     },
     {
@@ -35365,6 +35569,14 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.04,
+        "votes_for": 602699016,
+        "votes_against": 52099574,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/47217/000004721726000019/hpq-20260416.htm"
       }
     },
     {
@@ -37343,6 +37555,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 83.17,
+        "votes_for": 629949018,
+        "votes_against": 127448980,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/97476/000009747626000094/txn-20260416.htm"
       }
     },
     {
@@ -38040,6 +38260,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.27,
+        "votes_for": 1459162310,
+        "votes_against": 72490026,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/14272/000114036126020036/ef20072750_8k.htm"
       }
     },
     {
@@ -46825,6 +47053,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 93.98,
+        "votes_for": 281781929,
+        "votes_against": 18039768,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/823768/000110465926060755/tm2614440d2_8k.htm"
       }
     },
     {
@@ -54159,6 +54395,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 91.57,
+        "votes_for": 185463767,
+        "votes_against": 17081640,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-02-28",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/859737/000114036125006521/ef20044540_8k.htm"
       }
     },
     {
@@ -56099,6 +56343,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 89.92,
+        "votes_for": 146147336,
+        "votes_against": 16387143,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-11-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1116132/000114036125042320/ef20058940_8k.htm"
       }
     },
     {
@@ -58255,6 +58507,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 99.16,
+        "votes_for": 278297435,
+        "votes_against": 2363168,
+        "source": "8-K Item 5.07",
+        "filing_date": "2024-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/55067/000005506724000025/k-20240426.htm"
       }
     },
     {
@@ -63483,6 +63743,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.93,
+        "votes_for": 475793626,
+        "votes_against": 20179586,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-30",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/874761/000087476126000100/aes-20260429.htm"
       }
     },
     {
@@ -63946,6 +64214,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 44.42,
+        "votes_for": 500386777,
+        "votes_against": 626190387,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-07-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1618921/000119312525158216/d94027d8k.htm"
       }
     },
     {
@@ -64107,6 +64383,14 @@
         "sources": [
           "table_director"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 82.45,
+        "votes_for": 332608628,
+        "votes_against": 70774562,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/4904/000000490426000026/aep-20260428.htm"
       }
     },
     {
@@ -66148,6 +66432,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 52.14,
+        "votes_for": 721042609,
+        "votes_against": 661779414,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/106535/000010653526000003/wy-20260514.htm"
       }
     },
     {
@@ -67972,6 +68264,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 97.44,
+        "votes_for": 242608932,
+        "votes_against": 6379733,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-05-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1043604/000104360425000092/jnpr-20250528.htm"
       }
     },
     {
@@ -68798,6 +69098,14 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 96.73,
+        "votes_for": 149823374,
+        "votes_against": 5061958,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-12",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/936340/000093634026000115/dte-20260507.htm"
       }
     },
     {
@@ -70742,6 +71050,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 98.92,
+        "votes_for": 245005925,
+        "votes_against": 2681633,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-11-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/16732/000001673225000117/cpb-20251118.htm"
       }
     },
     {
@@ -73213,6 +73529,14 @@
           "founder",
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.1,
+        "votes_for": 116027736,
+        "votes_against": 5978063,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1022671/000110465926057616/tm2613966d1_8k.htm"
       }
     },
     {
@@ -74528,6 +74852,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.63,
+        "votes_for": 198758419,
+        "votes_against": 15819308,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1967680/000196768026000028/vlto-20260513.htm"
       }
     },
     {
@@ -74943,6 +75275,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 89.81,
+        "votes_for": 303275382,
+        "votes_against": 34423665,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-22",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/906107/000119312526277623/eqr-20260618.htm"
       }
     },
     {
@@ -78493,6 +78833,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 91.48,
+        "votes_for": 161067793,
+        "votes_against": 15006136,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-14",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/62996/000006299626000016/mas-20260508.htm"
       }
     },
     {
@@ -79749,6 +80097,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.71,
+        "votes_for": 250583557,
+        "votes_against": 19690248,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-05-13",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/811156/000110465926060230/tm2614313d1_8k.htm"
       }
     },
     {
@@ -79989,6 +80345,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 96.42,
+        "votes_for": 74735892,
+        "votes_against": 2776717,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-08-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/91419/000009141926000076/sjm-20260812.htm"
       }
     },
     {
@@ -80206,6 +80570,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 99.01,
+        "votes_for": 119981130,
+        "votes_against": 1198348,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-04-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/36270/000003627026000027/mbt-20260421.htm"
       }
     },
     {
@@ -87073,6 +87445,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.11,
+        "votes_for": 44107303,
+        "votes_against": 2269515,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-03-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/72331/000007233126000017/ndsn-20260302.htm"
       }
     },
     {
@@ -89626,6 +90006,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 93.6,
+        "votes_for": 159741531,
+        "votes_against": 10923913,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/935703/000093570326000071/dltr-20260616.htm"
       }
     },
     {
@@ -90824,6 +91212,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 95.35,
+        "votes_for": 133143435,
+        "votes_against": 6492185,
+        "source": "8-K Item 5.07",
+        "filing_date": "2026-06-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1121788/000119312526261987/grmn-20260605.htm"
       }
     },
     {
@@ -91669,6 +92065,14 @@
         "confidence": "high",
         "source": "manual",
         "start_month": 1
+      },
+      "say_on_pay": {
+        "approval_pct": 95.13,
+        "votes_for": 104161555,
+        "votes_against": 5331386,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-09-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1679273/000167927325000066/lw-20250925.htm"
       }
     },
     {
@@ -93157,6 +93561,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 81.94,
+        "votes_for": 1922942188,
+        "votes_against": 423773929,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-11-21",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312525291441/d43173d8k.htm"
       }
     },
     {
@@ -96791,6 +97203,14 @@
         "sources": [
           "prose"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 92.37,
+        "votes_for": 770518442,
+        "votes_against": 63624957,
+        "source": "8-K Item 5.07",
+        "filing_date": "2025-12-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525315830/d53415d8k.htm"
       }
     },
     {
