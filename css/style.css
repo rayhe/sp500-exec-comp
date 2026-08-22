@@ -10414,3 +10414,79 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
+
+/* ── Crosstab → Scatter Navigation Strip ─────────────────── */
+.crosstab-scatter-nav-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    margin-top: 10px;
+    background: rgba(239, 71, 111, 0.04);
+    border: 1px solid rgba(239, 71, 111, 0.12);
+    border-radius: 8px;
+}
+[data-theme="light"] .crosstab-scatter-nav-strip {
+    background: rgba(239, 71, 111, 0.03);
+    border-color: rgba(239, 71, 111, 0.1);
+}
+
+.crosstab-scatter-nav-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ef476f;
+    white-space: nowrap;
+}
+
+.crosstab-scatter-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-decoration: none;
+    border: 1px solid;
+}
+
+.crosstab-scatter-nav-btn:hover {
+    transform: translateY(-1px);
+}
+
+.crosstab-scatter-nav-btn:active {
+    transform: translateY(0);
+}
+
+.crosstab-scatter-nav-btn.crosstab-nav-critical {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.25);
+}
+.crosstab-scatter-nav-btn.crosstab-nav-critical:hover {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.crosstab-scatter-nav-btn.crosstab-nav-high {
+    color: #ef476f;
+    background: rgba(239, 71, 111, 0.08);
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.crosstab-scatter-nav-btn.crosstab-nav-high:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
+.crosstab-scatter-nav-btn.crosstab-nav-elevated {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+.crosstab-scatter-nav-btn.crosstab-nav-elevated:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}

@@ -9806,6 +9806,7 @@ function drawTenureGovCrossTab(companies) {
     html += '<span class="crosstab-legend-item">Cell color = median CEO pay intensity</span>';
     html += '<span class="crosstab-legend-item"><span style="color:#06d6a0">↑</span> / <span style="color:#ef476f">↓</span> = median YoY pay change</span>';
     html += '<span class="crosstab-legend-item">Governance quartiles: Q1 = bottom 25%, Q4 = top 25% by governance score</span>';
+    html += '<span class="crosstab-legend-item">Click cell = filter table \u00b7 Shift+click = explore top company in scatter</span>';
     html += '</div>';
 
     html += '</div>';
@@ -9814,12 +9815,21 @@ function drawTenureGovCrossTab(companies) {
     // Click handler: click cell to scroll to & filter main table
     container.querySelectorAll('.crosstab-cell[data-tenure]').forEach(function(td) {
         td.style.cursor = 'pointer';
-        td.addEventListener('click', function() {
+        td.addEventListener('click', function(e) {
             var tKey = td.getAttribute('data-tenure');
             var gKey = td.getAttribute('data-gov');
             var cellKey = tKey + '-' + gKey;
             var cell = cells[cellKey];
             if (!cell || cell.count === 0) return;
+
+            // Shift-click or ⤴ icon click → navigate to scatter instead
+            if (e.shiftKey) {
+                var topCompany = cell.members.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; })[0];
+                if (topCompany && typeof window.navigateToScatter === 'function') {
+                    window.navigateToScatter(topCompany.ticker, '_ceoTenureYears', '_govScore');
+                }
+                return;
+            }
 
             // Build ticker list and filter the main table
             var tickers = cell.members.map(function(c) { return c.ticker; });
@@ -9833,6 +9843,77 @@ function drawTenureGovCrossTab(companies) {
             }
         });
     });
+
+    // Render danger-zone scatter navigation strip
+    _renderCrosstabScatterNav(cells, container);
+}
+
+/* Render a navigation strip below the crosstab showing danger-zone companies
+   (high tenure + weak governance) as clickable buttons to jump to Tenure vs Gov scatter */
+function _renderCrosstabScatterNav(cells, container) {
+    var existingStrip = document.getElementById('crosstab-scatter-nav-strip');
+    if (existingStrip) existingStrip.remove();
+
+    // Collect danger-zone companies: veteran or established CEOs in weak governance (Q1)
+    var dangerCompanies = [];
+    ['vet-q1', 'est-q1', 'vet-q2'].forEach(function(key) {
+        var cell = cells[key];
+        if (cell && cell.members) {
+            cell.members.forEach(function(m) {
+                dangerCompanies.push({
+                    ticker: m.ticker,
+                    ceo: m.ceo_name,
+                    tenure: m._ceoTenureYears,
+                    govScore: m._govScore,
+                    gerScore: m._gerScore || 0,
+                    pay: m.total_compensation,
+                    quadrant: key
+                });
+            });
+        }
+    });
+
+    if (dangerCompanies.length === 0) return;
+
+    // Sort by GER score (highest risk first), then by pay
+    dangerCompanies.sort(function(a, b) {
+        return (b.gerScore - a.gerScore) || (b.pay - a.pay);
+    });
+
+    // Take top 5 danger-zone companies
+    var topDanger = dangerCompanies.slice(0, 5);
+
+    var strip = document.createElement('div');
+    strip.id = 'crosstab-scatter-nav-strip';
+    strip.className = 'crosstab-scatter-nav-strip';
+
+    var label = document.createElement('span');
+    label.className = 'crosstab-scatter-nav-label';
+    label.textContent = '\u26a0\ufe0f Danger zone \u2192 Scatter';
+    strip.appendChild(label);
+
+    topDanger.forEach(function(d) {
+        var btn = document.createElement('button');
+        btn.className = 'crosstab-scatter-nav-btn';
+        var tenureStr = d.tenure != null ? d.tenure.toFixed(0) + 'yr' : '';
+        var govStr = d.govScore != null ? 'Gov ' + d.govScore.toFixed(0) : '';
+        btn.textContent = d.ticker + ' (' + tenureStr + ', ' + govStr + ') \u2192';
+        btn.title = d.ceo + ' \u2014 ' + fmtCurr(d.pay) + ' \u2014 GER ' + d.gerScore.toFixed(0) + '. Click to view in Tenure vs Gov scatter.';
+        // Color by GER severity
+        if (d.gerScore >= 70) btn.classList.add('crosstab-nav-critical');
+        else if (d.gerScore >= 50) btn.classList.add('crosstab-nav-high');
+        else btn.classList.add('crosstab-nav-elevated');
+
+        btn.addEventListener('click', function() {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_ceoTenureYears', '_govScore');
+            }
+        });
+        strip.appendChild(btn);
+    });
+
+    // Append after the container (crosstab chart)
+    container.parentNode.insertBefore(strip, container.nextSibling);
 }
 
 
