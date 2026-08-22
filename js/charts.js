@@ -90,8 +90,8 @@ function initCharts(companies, trends, compData) {
     // Scatter axis metric selectors
     var xMetricSel = document.getElementById('scatter-x-metric');
     var yMetricSel = document.getElementById('scatter-y-metric');
-    if (xMetricSel) xMetricSel.addEventListener('change', function() { _syncPresetActiveState(); _redrawScatter(); });
-    if (yMetricSel) yMetricSel.addEventListener('change', function() { _syncPresetActiveState(); _redrawScatter(); });
+    if (xMetricSel) xMetricSel.addEventListener('change', function() { _clearPersistentScatterHighlight(); _syncPresetActiveState(); _redrawScatter(); });
+    if (yMetricSel) yMetricSel.addEventListener('change', function() { _clearPersistentScatterHighlight(); _syncPresetActiveState(); _redrawScatter(); });
     // Scatter axis preset buttons
     setupScatterPresets(_redrawScatter);
     // Top 10 mode toggle buttons
@@ -123,6 +123,7 @@ function setupScatterPresets(redrawFn) {
             if (!xSel || !ySel) return;
             xSel.value = btn.dataset.x;
             ySel.value = btn.dataset.y;
+            _clearPersistentScatterHighlight();
             _syncPresetActiveState();
             if (redrawFn) redrawFn();
         });
@@ -8915,6 +8916,40 @@ function drawPayAnomalyChart(companies) {
             .delay(i * (_anomalySectorFilter ? 12 : 20) + 300)
             .attr('opacity', 1)
             .text((d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '% (' + fmtCurr(d.actual) + ')');
+
+        // Scatter navigation icon (⤴) — navigate to configurable scatter with this company highlighted
+        var navIconX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
+        var navIconOffset = d.pctDev >= 0
+            ? (d.pctDev.toFixed(0).length + fmtCurr(d.actual).length + 5) * (_anomalySectorFilter ? 5.4 : 6)
+            : -((d.pctDev.toFixed(0).length + fmtCurr(d.actual).length + 5) * (_anomalySectorFilter ? 5.4 : 6));
+        g.append('text')
+            .attr('x', navIconX + navIconOffset)
+            .attr('y', by + barH / 2)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', d.pctDev >= 0 ? 'start' : 'end')
+            .attr('fill', mutedColor)
+            .attr('font-size', '10px')
+            .attr('opacity', 0)
+            .style('cursor', 'pointer')
+            .on('mouseover', function() {
+                d3.select(this).attr('fill', '#00b4d8').attr('opacity', 1);
+                showChartTooltip(d3.event || event, 'View ' + d.ticker + ' in Scatter Plot (Gov Score vs Pay)');
+            })
+            .on('mousemove', function() { positionChartTooltip(d3.event || event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('fill', mutedColor).attr('opacity', 0.6);
+                hideChartTooltip();
+            })
+            .on('click', function() {
+                if (typeof window.navigateToScatter === 'function') {
+                    window.navigateToScatter(d.ticker, '_govScore', 'total_compensation');
+                }
+            })
+            .transition()
+            .duration(200)
+            .delay(i * (_anomalySectorFilter ? 12 : 20) + 500)
+            .attr('opacity', 0.6)
+            .text('\u2934');
     });
 
     // Axis label
@@ -8938,6 +8973,58 @@ function drawPayAnomalyChart(companies) {
             .attr('font-size', '9px')
             .text('Mean |deviation|: ' + meanAbsDev.toFixed(0) + '% \u00B7 ' + overCount + ' companies 2x+ expected \u00B7 ' + underCount + ' companies <50% expected');
     }
+
+    // Anomaly → Scatter navigation strip (shows top 3 overpaid as clickable buttons)
+    _renderAnomalyScatterNav(displayData);
+}
+
+/**
+ * Render a navigation strip below the anomaly chart showing top overpaid companies
+ * as clickable buttons that jump to the configurable scatter (Gov Score vs Pay).
+ */
+function _renderAnomalyScatterNav(displayData) {
+    var existingStrip = document.getElementById('anomaly-scatter-nav-strip');
+    if (existingStrip) existingStrip.remove();
+
+    if (!displayData || displayData.length === 0) return;
+
+    // Get top 3 most overpaid companies
+    var topOverpaid = displayData
+        .filter(function(d) { return d.pctDev > 50; })
+        .sort(function(a, b) { return b.pctDev - a.pctDev; })
+        .slice(0, 3);
+
+    if (topOverpaid.length === 0) return;
+
+    var container = document.getElementById('pay-anomaly-chart');
+    if (!container) return;
+
+    var strip = document.createElement('div');
+    strip.id = 'anomaly-scatter-nav-strip';
+    strip.className = 'anomaly-scatter-nav-strip';
+
+    var label = document.createElement('span');
+    label.className = 'anomaly-scatter-nav-label';
+    label.textContent = 'Explore in scatter \u2192';
+    strip.appendChild(label);
+
+    topOverpaid.forEach(function(d) {
+        var btn = document.createElement('button');
+        btn.className = 'anomaly-scatter-nav-btn';
+        var devSign = d.pctDev > 0 ? '+' : '';
+        btn.textContent = d.ticker + ' (' + devSign + d.pctDev.toFixed(0) + '%) \u2192';
+        if (d.pctDev > 200) btn.classList.add('anomaly-critical');
+        else if (d.pctDev > 100) btn.classList.add('anomaly-high');
+        else btn.classList.add('anomaly-elevated');
+        btn.addEventListener('click', function() {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_govScore', 'total_compensation');
+            }
+        });
+        strip.appendChild(btn);
+    });
+
+    container.parentNode.insertBefore(strip, container.nextSibling);
 }
 
 /* ── Tenure × Pay Growth Analysis ───────────────────────────────────── */
@@ -9295,7 +9382,8 @@ function drawTenurePayGrowthChart(companies) {
                         'CEO: ' + m.ceo + ' (' + m.tenure.toFixed(1) + ' yrs)<br>' +
                         'Pay Growth: <strong style="color:' + (m.yoyPct >= 0 ? '#06d6a0' : '#ef476f') + '">' +
                         (m.yoyPct > 0 ? '+' : '') + m.yoyPct.toFixed(1) + '%</strong><br>' +
-                        fmtCurr(m.fromComp) + ' \u2192 ' + fmtCurr(m.toComp) + ' (FY' + m.fromYear + '\u2013' + m.toYear + ')');
+                        fmtCurr(m.fromComp) + ' \u2192 ' + fmtCurr(m.toComp) + ' (FY' + m.fromYear + '\u2013' + m.toYear + ')<br>' +
+                        '<span style="color:#00b4d8;font-size:10px">\u2934 Click to view in scatter</span>');
                 })
                 .on('mousemove', function(event) { positionChartTooltip(event); })
                 .on('mouseout', function() {
@@ -9303,7 +9391,11 @@ function drawTenurePayGrowthChart(companies) {
                     hideChartTooltip();
                 })
                 .on('click', function() {
-                    if (window.scrollToCompany) window.scrollToCompany(m.ticker);
+                    if (typeof window.navigateToScatter === 'function') {
+                        window.navigateToScatter(m.ticker, '_ceoTenureYears', 'total_compensation');
+                    } else if (window.scrollToCompany) {
+                        window.scrollToCompany(m.ticker);
+                    }
                 });
         });
     });
@@ -10138,6 +10230,7 @@ function drawGERChart(companies) {
 // Pending highlight ticker — set before scatter redraws, consumed after dots render
 var _scatterHighlightTicker = null;
 var _scatterHighlightTimer = null;
+var _persistentScatterHighlight = null; // survives redraws (theme toggle, resize)
 
 /**
  * Navigate to the scatter chart, optionally switching to a preset axis combo,
@@ -10156,8 +10249,9 @@ window.navigateToScatter = function(ticker, presetX, presetY) {
     // Sync preset button active states
     if (typeof _syncPresetActiveState === 'function') _syncPresetActiveState();
 
-    // Set the highlight ticker before redrawing
+    // Set the highlight ticker before redrawing (persistent across redraws)
     _scatterHighlightTicker = ticker;
+    _persistentScatterHighlight = { ticker: ticker, presetX: presetX || null, presetY: presetY || null };
 
     // Redraw scatter
     var el = document.getElementById('scatter-chart');
@@ -10178,13 +10272,27 @@ window.navigateToScatter = function(ticker, presetX, presetY) {
 };
 
 /**
+ * Clear the persistent scatter highlight (called when user interacts with scatter axes).
+ */
+function _clearPersistentScatterHighlight() {
+    _persistentScatterHighlight = null;
+    if (_scatterHighlightTimer) { clearTimeout(_scatterHighlightTimer); _scatterHighlightTimer = null; }
+    var container = document.getElementById('scatter-chart');
+    if (container) {
+        var svg = d3.select(container).select('svg');
+        if (!svg.empty()) svg.selectAll('.scatter-highlight-ring').remove();
+    }
+}
+
+/**
  * After scatter dots render, check for pending highlight ticker and draw a pulsing ring.
- * Called at the end of drawScatterChart.
+ * Called at the end of drawScatterChart. Uses persistent highlight for theme toggle redraws.
  */
 function _applyScatterHighlight() {
-    if (!_scatterHighlightTicker) return;
-    var ticker = _scatterHighlightTicker;
-    _scatterHighlightTicker = null; // consume
+    // Use one-shot highlight if set, otherwise fall back to persistent
+    var ticker = _scatterHighlightTicker || (_persistentScatterHighlight ? _persistentScatterHighlight.ticker : null);
+    if (!ticker) return;
+    _scatterHighlightTicker = null; // consume one-shot
 
     // Clear any previous highlight timer
     if (_scatterHighlightTimer) { clearTimeout(_scatterHighlightTimer); _scatterHighlightTimer = null; }

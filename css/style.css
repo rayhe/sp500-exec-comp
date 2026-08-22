@@ -10338,3 +10338,79 @@ body.light-mode .cross-sector-pair-select:focus {
 .ger-highlight-pulse {
     animation: ger-highlight-pulse 1.2s ease-in-out infinite;
 }
+
+/* ── Anomaly → Scatter Navigation Strip ── */
+.anomaly-scatter-nav-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    background: rgba(239, 71, 111, 0.04);
+    border: 1px solid rgba(239, 71, 111, 0.12);
+    border-radius: 8px;
+}
+[data-theme="light"] .anomaly-scatter-nav-strip {
+    background: rgba(239, 71, 111, 0.03);
+    border-color: rgba(239, 71, 111, 0.1);
+}
+
+.anomaly-scatter-nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.anomaly-scatter-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-decoration: none;
+    border: 1px solid;
+}
+
+.anomaly-scatter-nav-btn:hover {
+    transform: translateY(-1px);
+}
+
+.anomaly-scatter-nav-btn:active {
+    transform: translateY(0);
+}
+
+.anomaly-scatter-nav-btn.anomaly-critical {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.25);
+}
+.anomaly-scatter-nav-btn.anomaly-critical:hover {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.anomaly-scatter-nav-btn.anomaly-high {
+    color: #ef476f;
+    background: rgba(239, 71, 111, 0.08);
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.anomaly-scatter-nav-btn.anomaly-high:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
+.anomaly-scatter-nav-btn.anomaly-elevated {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+.anomaly-scatter-nav-btn.anomaly-elevated:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
