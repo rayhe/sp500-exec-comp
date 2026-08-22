@@ -9921,6 +9921,12 @@ function setupDualSparklineTooltips() {
             var medianGov = govScores.length ? govScores[Math.floor(govScores.length / 2)] : null;
             var govGrade = medianGov != null ? (medianGov >= 80 ? 'A' : medianGov >= 65 ? 'B' : medianGov >= 50 ? 'C' : medianGov >= 35 ? 'D' : 'F') : null;
 
+            // GER median and high-risk count
+            var gerScores = comps.filter(function(c) { return c._gerScore != null; }).map(function(c) { return c._gerScore; }).sort(function(a, b) { return a - b; });
+            var medianGer = gerScores.length ? gerScores[Math.floor(gerScores.length / 2)] : null;
+            var gerHighRiskCount = comps.filter(function(c) { return c._gerScore != null && c._gerScore >= 60; }).length;
+            var gerRiskTier = medianGer != null ? (medianGer >= 75 ? 'Critical' : medianGer >= 60 ? 'High' : medianGer >= 45 ? 'Elevated' : medianGer >= 30 ? 'Moderate' : 'Low') : null;
+
             saRows.push({
                 sector: sector,
                 count: count,
@@ -9932,6 +9938,9 @@ function setupDualSparklineTooltips() {
                 sopCoverage: sopCoverage,
                 medianGov: medianGov,
                 govGrade: govGrade,
+                medianGer: medianGer,
+                gerHighRiskCount: gerHighRiskCount,
+                gerRiskTier: gerRiskTier,
                 highestName: highest ? highest.ceo_name : '—',
                 highestTicker: highest ? highest.ticker : '',
                 highestPay: highest ? highest.total_compensation : 0
@@ -9979,6 +9988,7 @@ function setupDualSparklineTooltips() {
                     '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
                     '<td class="sa-sop">' + (r.medianSop != null ? '<span style="color:' + (r.medianSop < 70 ? '#ef476f' : r.medianSop < 85 ? '#fbbf24' : '#06d6a0') + '">' + r.medianSop.toFixed(1) + '%</span>' + (r.sopCoverage ? ' <span style="opacity:0.5;font-size:0.75em">(' + r.sopCoverage + ')</span>' : '') : '—') + '</td>' +
                     '<td class="sa-gov">' + (r.medianGov != null ? '<span class="gov-badge gov-' + r.govGrade.toLowerCase() + '">' + r.govGrade + ' ' + r.medianGov + '</span>' : '—') + '</td>' +
+                    '<td class="sa-ger">' + (r.medianGer != null ? '<span class="ger-badge ger-tier-' + r.gerRiskTier.toLowerCase() + '">' + r.medianGer + '</span>' + (r.gerHighRiskCount > 0 ? ' <span class="ger-risk-count" title="' + r.gerHighRiskCount + ' companies with High or Critical GER">' + r.gerHighRiskCount + ' ⚠</span>' : '') : '—') + '</td>' +
                     '<td class="sa-ceo" title="' + r.highestTicker + '">' + (r.highestName || '—') + '</td>' +
                     '<td class="sa-pay">' + fmt(r.highestPay) + '</td>' +
                     '</tr>';

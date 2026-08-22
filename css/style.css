@@ -7770,6 +7770,36 @@ footer li::before {
     text-align: center;
     white-space: nowrap;
 }
+.sa-ger {
+    text-align: center;
+    white-space: nowrap;
+}
+.sa-ger .ger-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: default;
+}
+.ger-tier-low { background: rgba(6,214,160,0.15); color: var(--positive); border: 1px solid rgba(6,214,160,0.25); }
+.ger-tier-moderate { background: rgba(255,209,102,0.15); color: #ffd166; border: 1px solid rgba(255,209,102,0.25); }
+.ger-tier-elevated { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+.ger-tier-high { background: rgba(239,71,111,0.15); color: #ef476f; border: 1px solid rgba(239,71,111,0.25); }
+.ger-tier-critical { background: rgba(220,38,38,0.15); color: #dc2626; border: 1px solid rgba(220,38,38,0.25); }
+.ger-risk-count {
+    font-size: 0.7rem;
+    color: #ef476f;
+    opacity: 0.8;
+    margin-left: 2px;
+}
+[data-theme="light"] .ger-tier-low { background: rgba(5,150,105,0.1); color: #059669; border-color: rgba(5,150,105,0.18); }
+[data-theme="light"] .ger-tier-moderate { background: rgba(202,138,4,0.1); color: #ca8a04; border-color: rgba(202,138,4,0.18); }
+[data-theme="light"] .ger-tier-elevated { background: rgba(234,88,12,0.1); color: #ea580c; border-color: rgba(234,88,12,0.18); }
+[data-theme="light"] .ger-tier-high { background: rgba(239,71,111,0.1); color: #be123c; border-color: rgba(239,71,111,0.18); }
+[data-theme="light"] .ger-tier-critical { background: rgba(220,38,38,0.1); color: #dc2626; border-color: rgba(220,38,38,0.18); }
+[data-theme="light"] .ger-risk-count { color: #be123c; }
 
 /* Light theme overrides */
 [data-theme="light"] .sector-analytics-table thead th {
