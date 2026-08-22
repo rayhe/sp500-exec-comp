@@ -735,6 +735,92 @@ function computeGovernanceScore(companies) {
     });
 }
 
+/* Pre-compute Governance Erosion Risk (GER) score — a 0-100 composite measuring
+   the risk of governance erosion from CEO entrenchment. Four components (each 0-25):
+   1. Tenure risk — longer CEO tenure increases entrenchment risk
+   2. Governance deficit — inverse of governance score percentile
+   3. Pay-governance mismatch — high pay percentile with low governance percentile
+   4. CEO concentration risk — how much of NEO pay goes to the CEO
+   Sets c._gerScore (0-100), c._gerRisk (Critical/High/Elevated/Moderate/Low),
+   c._gerComponents (object with tenure, govDeficit, payMismatch, concentration). */
+function computeGovernanceErosionRisk(companies) {
+    // First compute percentiles for comp and gov among all companies
+    var compVals = [];
+    var govVals = [];
+    companies.forEach(function(c) {
+        if (c.total_compensation != null && c.total_compensation > 0) compVals.push(c.total_compensation);
+        if (c._govScore != null) govVals.push(c._govScore);
+    });
+    compVals.sort(function(a, b) { return a - b; });
+    govVals.sort(function(a, b) { return a - b; });
+
+    function pctileOf(arr, val) {
+        if (arr.length === 0 || val == null) return null;
+        var below = 0;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] < val) below++;
+        }
+        return Math.round(below / arr.length * 100);
+    }
+
+    // Compute gov score quartile thresholds
+    var govQ25 = govVals.length > 0 ? govVals[Math.floor(govVals.length * 0.25)] : null;
+    var govQ50 = govVals.length > 0 ? govVals[Math.floor(govVals.length * 0.50)] : null;
+    var govQ75 = govVals.length > 0 ? govVals[Math.floor(govVals.length * 0.75)] : null;
+
+    companies.forEach(function(c) {
+        // 1. Tenure risk (0-25)
+        var tenureRisk = 0;
+        var ty = c._ceoTenureYears;
+        if (ty != null) {
+            if (ty > 20) tenureRisk = 25;
+            else if (ty >= 16) tenureRisk = 20;
+            else if (ty >= 11) tenureRisk = 15;
+            else if (ty >= 6) tenureRisk = 10;
+            else if (ty >= 3) tenureRisk = 5;
+            else tenureRisk = 0;
+        }
+
+        // 2. Governance deficit (0-25) — inverse of gov score quartile
+        var govDeficit = 12; // neutral default
+        if (c._govScore != null && govQ25 != null) {
+            if (c._govScore <= govQ25) govDeficit = 25;
+            else if (c._govScore <= govQ50) govDeficit = 17;
+            else if (c._govScore <= govQ75) govDeficit = 8;
+            else govDeficit = 0;
+        }
+
+        // 3. Pay-governance mismatch (0-25)
+        var payMismatch = 0;
+        var compPctile = pctileOf(compVals, c.total_compensation);
+        var govPctile = pctileOf(govVals, c._govScore);
+        if (compPctile != null && govPctile != null) {
+            payMismatch = Math.round(Math.max(0, compPctile - govPctile) / 4);
+            if (payMismatch > 25) payMismatch = 25;
+        }
+
+        // 4. CEO concentration risk (0-25)
+        var concentration = 0;
+        if (c._ceoConcPct != null) {
+            if (c._ceoConcPct >= 60) concentration = 25;
+            else if (c._ceoConcPct >= 50) concentration = 18;
+            else if (c._ceoConcPct >= 40) concentration = 10;
+            else if (c._ceoConcPct >= 30) concentration = 5;
+            else concentration = 0;
+        }
+
+        var score = tenureRisk + govDeficit + payMismatch + concentration;
+        c._gerScore = score;
+        c._gerComponents = { tenure: tenureRisk, govDeficit: govDeficit, payMismatch: payMismatch, concentration: concentration };
+
+        if (score >= 75) c._gerRisk = 'Critical';
+        else if (score >= 60) c._gerRisk = 'High';
+        else if (score >= 45) c._gerRisk = 'Elevated';
+        else if (score >= 30) c._gerRisk = 'Moderate';
+        else c._gerRisk = 'Low';
+    });
+}
+
 /* Pre-compute PageRank centrality scores from the peer network.
    PageRank measures transitive influence: a company is central if it's benchmarked by
    companies that are themselves benchmarked by many others. Uses the classic power iteration
@@ -1211,7 +1297,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score', '_gerScore': 'governance erosion risk score' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -2593,6 +2679,60 @@ function populateInsights(comp, trends, sectorFilter) {
             },
             actionHint: 'Sort by governance score',
             _tickers: top5.map(function(c) { return c.ticker; })
+        });
+    })();
+
+    // 22. Governance Erosion Risk — composite risk score for CEO entrenchment
+    (function() {
+        var withGer = companies.filter(function(c) { return c._gerScore != null; });
+        if (withGer.length < 20) return;
+        withGer.sort(function(a, b) { return b._gerScore - a._gerScore; });
+        var critical = withGer.filter(function(c) { return c._gerRisk === 'Critical'; });
+        var high = withGer.filter(function(c) { return c._gerRisk === 'High'; });
+        var elevated = withGer.filter(function(c) { return c._gerRisk === 'Elevated'; });
+        var topRisk = withGer[0];
+        var medGer = withGer.map(function(c) { return c._gerScore; }).sort(function(a,b){return a-b;});
+        var median = medGer[Math.floor(medGer.length / 2)];
+
+        // Risk distribution mini bars
+        var riskBuckets = [
+            { label: 'Critical', count: critical.length, color: '#dc2626' },
+            { label: 'High', count: high.length, color: '#ef476f' },
+            { label: 'Elevated', count: elevated.length, color: '#fb923c' },
+            { label: 'Moderate', count: withGer.filter(function(c) { return c._gerRisk === 'Moderate'; }).length, color: '#ffd166' },
+            { label: 'Low', count: withGer.filter(function(c) { return c._gerRisk === 'Low'; }).length, color: '#06d6a0' }
+        ];
+        var maxBkt = Math.max.apply(null, riskBuckets.map(function(b) { return b.count; }));
+        var distHtml = '<div style="display:flex;gap:3px;align-items:flex-end;height:32px;margin-top:6px">';
+        riskBuckets.forEach(function(b) {
+            var bH = maxBkt > 0 ? Math.max(3, Math.round(b.count / maxBkt * 28)) : 3;
+            distHtml += '<div style="display:flex;flex-direction:column;align-items:center;flex:1">' +
+                '<div style="width:100%;height:' + bH + 'px;background:' + b.color + ';border-radius:2px" title="' + b.label + ': ' + b.count + ' companies"></div>' +
+                '<span style="font-size:9px;color:var(--text-muted);margin-top:2px">' + b.count + '</span></div>';
+        });
+        distHtml += '</div>';
+        distHtml += '<div style="display:flex;justify-content:space-between;font-size:8px;color:var(--text-muted);margin-top:1px"><span>Critical</span><span>Low</span></div>';
+
+        insights.push({
+            icon: '\ud83d\udd25',
+            label: 'Governance Erosion Risk',
+            value: (critical.length + high.length) + ' companies high risk',
+            detail: 'Composite 0\u2013100 risk score identifying companies where CEO entrenchment may erode governance. ' +
+                'Components: tenure duration, governance quality deficit, pay-governance mismatch, and CEO pay concentration. ' +
+                scopeLabel + ' median: ' + median + '/100. ' +
+                'Highest risk: ' + topRisk.ceo_name + ' (' + topRisk.ticker + ') at ' + topRisk._gerScore + '/100. ' +
+                (critical.length > 0 ? critical.length + ' critical, ' : '') + high.length + ' high, ' + elevated.length + ' elevated.' +
+                distHtml,
+            action: function() {
+                var panel = document.getElementById('ger-chart-panel');
+                if (panel) {
+                    var headerHeight = getStickyOffset();
+                    var top = panel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            },
+            actionHint: 'View erosion risk chart',
+            _tickers: withGer.slice(0, 3).map(function(c) { return c.ticker; })
         });
     })();
 
@@ -5441,6 +5581,21 @@ function renderTable(companies, options) {
                 var gMax = gg === 'A' ? 100 : gg === 'B' ? 79 : gg === 'C' ? 64 : gg === 'D' ? 49 : 34;
                 return '<span class="gov-badge ' + gCls + ' gov-badge-clickable" title="' + tip + '" onclick="event.stopPropagation();if(window.filterByGovGrade)window.filterByGovGrade(\'' + gg + '\',' + gMin + ',' + gMax + ')">' + gg + ' ' + gs + '</span>';
             })() + '</td>' +
+            '<td class="ger-cell">' + (function() {
+                if (c._gerScore == null) return '\u2014';
+                var gerS = c._gerScore;
+                var gerR = c._gerRisk;
+                var gerColor = gerR === 'Critical' ? '#dc2626' : gerR === 'High' ? '#ef476f' : gerR === 'Elevated' ? '#fb923c' : gerR === 'Moderate' ? '#ffd166' : '#06d6a0';
+                var gerParts = [];
+                if (c._gerComponents) {
+                    gerParts.push('Tenure: ' + c._gerComponents.tenure);
+                    gerParts.push('Gov Deficit: ' + c._gerComponents.govDeficit);
+                    gerParts.push('Pay-Gov: ' + c._gerComponents.payMismatch);
+                    gerParts.push('Concentration: ' + c._gerComponents.concentration);
+                }
+                var gerTip = 'GER Score: ' + gerS + '/100 (' + gerR + ') \u2014 ' + gerParts.join(', ');
+                return '<span class="ger-badge" style="color:' + gerColor + ';font-weight:600" title="' + gerTip + '">' + gerS + '</span>';
+            })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
@@ -6018,6 +6173,24 @@ function setupDetailPanel(companies) {
                 sentences.push(govSentence);
             }
 
+            // Sentence 6: Governance Erosion Risk
+            if (company._gerScore != null) {
+                var gerVal = company._gerScore;
+                var gerSentence = '';
+                if (gerVal >= 75) {
+                    gerSentence = 'Governance erosion risk is critical at ' + gerVal + '/100, signaling significant CEO entrenchment concerns.';
+                } else if (gerVal >= 60) {
+                    gerSentence = 'Governance erosion risk is high at ' + gerVal + '/100, suggesting elevated entrenchment risk.';
+                } else if (gerVal >= 45) {
+                    gerSentence = 'Governance erosion risk is elevated at ' + gerVal + '/100.';
+                } else if (gerVal >= 30) {
+                    gerSentence = 'Governance erosion risk is moderate at ' + gerVal + '/100.';
+                } else {
+                    gerSentence = 'Low governance erosion risk (' + gerVal + '/100) indicates healthy board-CEO dynamics.';
+                }
+                sentences.push(gerSentence);
+            }
+
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';
@@ -6178,6 +6351,24 @@ function setupDetailPanel(companies) {
                 govSub += ' · ' + gParts.join(', ');
             }
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + govTip + '">Governance Score</div><div class="detail-stat-value ' + govCls + '">' + govS + '/100</div>' + distBar(govS, '0', '100') + '<div class="detail-stat-sub">' + govSub + '</div></div>';
+        }
+
+        // Governance Erosion Risk stat
+        if (company._gerScore != null) {
+            var gerS = company._gerScore;
+            var gerR = company._gerRisk;
+            var gerCls = gerR === 'Critical' ? 'negative' : gerR === 'High' ? 'negative' : gerR === 'Elevated' ? '' : 'positive';
+            var gerTip = 'Composite risk of governance erosion from CEO entrenchment — tenure duration, governance deficit, pay-governance mismatch, CEO concentration';
+            var gerSub = gerR;
+            if (company._gerComponents) {
+                var gerParts = [];
+                gerParts.push('Tenure ' + company._gerComponents.tenure);
+                gerParts.push('GovDef ' + company._gerComponents.govDeficit);
+                gerParts.push('PayMis ' + company._gerComponents.payMismatch);
+                gerParts.push('Conc ' + company._gerComponents.concentration);
+                gerSub += ' \u00b7 ' + gerParts.join(', ');
+            }
+            html += '<div class="detail-stat"><div class="detail-stat-label" title="' + gerTip + '">Erosion Risk (GER)</div><div class="detail-stat-value ' + gerCls + '">' + gerS + '/100</div>' + distBar(gerS, 'Low', 'Critical') + '<div class="detail-stat-sub">' + gerSub + '</div></div>';
         }
 
         html += '</div>'; // detail-stats
@@ -8543,6 +8734,9 @@ function setupDualSparklineTooltips() {
     // Pre-compute Compensation Governance Score (composite of SoP, concentration, ratio, team)
     // Must run before radar percentiles so governance can be included as a radar dimension
     computeGovernanceScore(companies);
+
+    // Pre-compute Governance Erosion Risk (composite entrenchment risk score)
+    computeGovernanceErosionRisk(companies);
 
     // Pre-compute radar chart percentiles for 8-dimension compensation profile
     computeRadarPercentiles(companies);

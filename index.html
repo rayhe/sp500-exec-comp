@@ -230,6 +230,7 @@
                         <th class="sortable asp-col" data-sort="_aspDelta" role="columnheader" aria-sort="none" tabindex="0" title="Peer group median CEO pay vs own CEO pay — positive = selects higher-paid peers (aspirational), negative = pays above peers">Peer Δ</th>
                         <th class="sortable tenure-col" data-sort="_ceoTenureYears" role="columnheader" aria-sort="none" tabindex="0" title="CEO tenure — years since appointment (from DEF 14A proxy statements)">Tenure</th>
                         <th class="sortable gov-col" data-sort="_govScore" role="columnheader" aria-sort="none" tabindex="0" title="Compensation Governance Score (0-100) — composite of SoP approval, CEO concentration, pay ratio, and team completeness">Gov</th>
+                        <th class="sortable ger-col" data-sort="_gerScore" role="columnheader" aria-sort="none" tabindex="0" title="Governance Erosion Risk — composite score (0-100) measuring risk of governance erosion from CEO entrenchment">GER</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
                         <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
                     </tr>
@@ -435,6 +436,17 @@
             </div>
             <div class="anomaly-sector-chips" id="crosstab-sector-chips"></div>
             <div id="tenure-gov-crosstab-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
+        <div class="chart-panel chart-panel-full" id="ger-chart-panel">
+            <div class="section-header">
+                <h2 id="ger-chart-title">Governance Erosion Risk</h2>
+                <p class="section-desc" id="ger-chart-desc">Companies most at risk for governance erosion from CEO entrenchment. Score 0–100 from four components: tenure duration, governance quality deficit, pay-governance mismatch, and CEO pay concentration. Click any bar for company details.</p>
+                <div class="anomaly-sector-chips" id="ger-sector-chips"></div>
+            </div>
+            <div id="ger-chart"></div>
         </div>
     </section>
 

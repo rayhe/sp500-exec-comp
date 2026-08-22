@@ -4,6 +4,7 @@ function chartStrokeColor() {
     return typeof isDarkTheme === 'function' && !isDarkTheme() ? '#333' : '#fff';
 }
 
+
 function fmtCurr(val) {
     if (val == null) return '';
     if (val >= 1e9) return '$' + (val / 1e9).toFixed(1) + 'B';
@@ -75,6 +76,7 @@ function initCharts(companies, trends, compData) {
     drawPayAnomalyChart(companies);
     drawTenurePayGrowthChart(companies);
     drawTenureGovCrossTab(companies);
+    drawGERChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -187,7 +189,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -219,6 +221,7 @@ function redrawAllCharts() {
     drawPayAnomalyChart(_chartData.companies);
     drawTenurePayGrowthChart(_chartData.companies);
     drawTenureGovCrossTab(_chartData.companies);
+    drawGERChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -9720,3 +9723,340 @@ function drawTenureGovCrossTab(companies) {
     });
 }
 
+
+var _gerSectorFilter = null;
+var _gerCompaniesRef = null;
+
+function _buildGerSectorChips(companies) {
+    var chipWrap = document.getElementById('ger-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+    var sectorSet = {};
+    companies.forEach(function(c) {
+        if (c._gerScore != null && c.sector) {
+            sectorSet[c.sector] = (sectorSet[c.sector] || 0) + 1;
+        }
+    });
+    var sectors = Object.keys(sectorSet).sort();
+
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_gerSectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All S&P 500';
+    allChip.title = 'Show governance erosion risk across all sectors';
+    allChip.addEventListener('click', function() {
+        _gerSectorFilter = null;
+        _refreshGerChips();
+        var el = document.getElementById('ger-chart');
+        if (el) el.innerHTML = '';
+        drawGERChart(_gerCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sectors.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_gerSectorFilter === sec ? ' active' : '');
+        chip.setAttribute('data-sector', sec);
+        chip.textContent = sec.replace('Consumer ', 'Cons. ').replace('Communication ', 'Comm. ').replace('Information ', 'Info ');
+        chip.title = sec + ' (' + sectorSet[sec] + ' companies)';
+        chip.style.borderColor = typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280';
+        if (_gerSectorFilter === sec) {
+            chip.style.backgroundColor = (typeof getSectorColor === 'function' ? getSectorColor(sec) : '#6b7280');
+            chip.style.color = '#111';
+        }
+        chip.addEventListener('click', function() {
+            if (_gerSectorFilter === sec) {
+                _gerSectorFilter = null;
+            } else {
+                _gerSectorFilter = sec;
+            }
+            _refreshGerChips();
+            var el = document.getElementById('ger-chart');
+            if (el) el.innerHTML = '';
+            drawGERChart(_gerCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function _refreshGerChips() {
+    var chipWrap = document.getElementById('ger-sector-chips');
+    if (!chipWrap) return;
+    var chips = chipWrap.querySelectorAll('.anomaly-chip');
+    for (var i = 0; i < chips.length; i++) {
+        var chip = chips[i];
+        var isAll = (i === 0);
+        var isActive;
+        if (isAll) {
+            isActive = (_gerSectorFilter == null);
+        } else {
+            isActive = (chip.getAttribute('data-sector') === _gerSectorFilter);
+        }
+        chip.classList.toggle('active', isActive);
+        if (!isAll && isActive) {
+            chip.style.backgroundColor = chip.style.borderColor;
+            chip.style.color = '#111';
+        } else if (!isAll) {
+            chip.style.backgroundColor = '';
+            chip.style.color = '';
+        }
+    }
+}
+
+function drawGERChart(companies) {
+    _gerCompaniesRef = companies;
+    var container = document.getElementById('ger-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Build sector chips on first call
+    var chipWrap = document.getElementById('ger-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildGerSectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('ger-chart-title');
+    var descEl = document.getElementById('ger-chart-desc');
+    var sectorFilter = _gerSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Governance Erosion Risk \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = 'Top ' + sectorFilter + ' companies by governance erosion risk. Stacked components show what drives each company\'s risk profile.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Governance Erosion Risk';
+        if (descEl) descEl.textContent = 'Companies most at risk for governance erosion from CEO entrenchment. Score 0\u2013100 from four components: tenure duration, governance quality deficit, pay-governance mismatch, and CEO pay concentration. Click any bar for company details.';
+    }
+
+    var textColor = getThemeTextColor();
+    var mutedColor = getThemeMutedColor();
+    var dark = isDarkTheme();
+
+    // Filter companies
+    var eligible = companies.filter(function(c) {
+        var base = c._gerScore != null && c._gerScore > 0;
+        if (sectorFilter) return base && c.sector === sectorFilter;
+        return base;
+    });
+    eligible.sort(function(a, b) { return b._gerScore - a._gerScore; });
+
+    var showCount = Math.min(25, eligible.length);
+    if (showCount < 3) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        return;
+    }
+    var top = eligible.slice(0, showCount);
+
+    var margin = { top: 30, right: 100, bottom: 40, left: 120 };
+    var width = Math.min(container.clientWidth || 700, 900) - margin.left - margin.right;
+    var barHeight = 22;
+    var barGap = 4;
+    var height = showCount * (barHeight + barGap) + margin.top + margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height)
+        .attr('viewBox', '0 0 ' + (width + margin.left + margin.right) + ' ' + height)
+        .attr('role', 'img')
+        .attr('aria-label', 'Governance erosion risk chart');
+
+    var g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Scales
+    var xScale = d3.scaleLinear().domain([0, 100]).range([0, width]);
+    var yScale = d3.scaleBand()
+        .domain(top.map(function(c) { return c.ticker; }))
+        .range([0, showCount * (barHeight + barGap)])
+        .padding(0.15);
+
+    // X axis
+    g.append('g')
+        .attr('transform', 'translate(0,' + (showCount * (barHeight + barGap)) + ')')
+        .call(d3.axisBottom(xScale).ticks(5).tickFormat(function(d) { return d; }))
+        .selectAll('text').style('fill', mutedColor).style('font-size', '10px');
+    g.select('.domain').style('stroke', mutedColor);
+    g.selectAll('.tick line').style('stroke', mutedColor).style('opacity', 0.3);
+
+    // X axis label
+    g.append('text')
+        .attr('x', width / 2)
+        .attr('y', showCount * (barHeight + barGap) + 32)
+        .attr('text-anchor', 'middle')
+        .style('fill', mutedColor)
+        .style('font-size', '11px')
+        .text('Governance Erosion Risk Score (0\u2013100)');
+
+    // Gridlines
+    g.append('g').selectAll('line')
+        .data([25, 50, 75])
+        .enter().append('line')
+        .attr('x1', function(d) { return xScale(d); })
+        .attr('x2', function(d) { return xScale(d); })
+        .attr('y1', 0)
+        .attr('y2', showCount * (barHeight + barGap))
+        .style('stroke', mutedColor)
+        .style('stroke-opacity', 0.15)
+        .style('stroke-dasharray', '3,3');
+
+    // Risk threshold line at 60 (High)
+    g.append('line')
+        .attr('x1', xScale(60))
+        .attr('x2', xScale(60))
+        .attr('y1', -5)
+        .attr('y2', showCount * (barHeight + barGap))
+        .style('stroke', '#ef476f')
+        .style('stroke-width', 1.5)
+        .style('stroke-dasharray', '5,3')
+        .style('opacity', 0.7);
+    g.append('text')
+        .attr('x', xScale(60) + 3)
+        .attr('y', -8)
+        .style('fill', '#ef476f')
+        .style('font-size', '9px')
+        .style('font-weight', '600')
+        .text('High Risk \u2192');
+
+    // Component colors
+    var compColors = {
+        tenure: '#a78bfa',
+        govDeficit: '#ef476f',
+        payMismatch: '#fb923c',
+        concentration: '#ffd166'
+    };
+    var compLabels = {
+        tenure: 'Tenure Duration',
+        govDeficit: 'Gov Quality Deficit',
+        payMismatch: 'Pay-Gov Mismatch',
+        concentration: 'CEO Concentration'
+    };
+    var compKeys = ['tenure', 'govDeficit', 'payMismatch', 'concentration'];
+
+    // Stacked bars
+    top.forEach(function(c) {
+        var y = yScale(c.ticker);
+        var bh = yScale.bandwidth();
+        var x0 = 0;
+        compKeys.forEach(function(key, ki) {
+            var val = c._gerComponents[key] || 0;
+            var w = xScale(val);
+            if (w < 1) return;
+            var bar = g.append('rect')
+                .attr('x', x0)
+                .attr('y', y)
+                .attr('width', w)
+                .attr('height', bh)
+                .attr('fill', compColors[key])
+                .attr('rx', ki === 0 ? 3 : 0)
+                .style('cursor', 'pointer')
+                .style('opacity', 0.85)
+                .on('mouseover', function() {
+                    d3.select(this).style('opacity', 1);
+                })
+                .on('mouseout', function() {
+                    d3.select(this).style('opacity', 0.85);
+                });
+            // Round right edge of last visible component
+            if (ki === compKeys.length - 1) {
+                bar.attr('rx', 3);
+            }
+            x0 += w;
+        });
+
+        // Risk label on right
+        var riskColor = c._gerRisk === 'Critical' ? '#dc2626' : c._gerRisk === 'High' ? '#ef476f' :
+            c._gerRisk === 'Elevated' ? '#fb923c' : c._gerRisk === 'Moderate' ? '#ffd166' : '#06d6a0';
+        g.append('text')
+            .attr('x', xScale(c._gerScore) + 6)
+            .attr('y', y + bh / 2 + 4)
+            .style('fill', riskColor)
+            .style('font-size', '11px')
+            .style('font-weight', '700')
+            .text(c._gerScore);
+
+        // Company label on left
+        g.append('text')
+            .attr('x', -4)
+            .attr('y', y + bh / 2 + 4)
+            .attr('text-anchor', 'end')
+            .style('fill', textColor)
+            .style('font-size', '11px')
+            .style('font-weight', '500')
+            .style('cursor', 'pointer')
+            .text(c.ticker)
+            .on('click', function() {
+                if (typeof window.openDetailPanel === 'function') window.openDetailPanel(c.ticker);
+            });
+
+        // Tooltip rect overlay
+        g.append('rect')
+            .attr('x', 0)
+            .attr('y', y)
+            .attr('width', width)
+            .attr('height', bh)
+            .attr('fill', 'transparent')
+            .style('cursor', 'pointer')
+            .on('click', function() {
+                if (typeof window.openDetailPanel === 'function') window.openDetailPanel(c.ticker);
+            })
+            .append('title')
+            .text(c.company_name + ' (' + c.ticker + ')\nCEO: ' + c.ceo_name + '\nGER Score: ' + c._gerScore + '/100 (' + c._gerRisk + ')\n' +
+                'Tenure: ' + (c._ceoTenureYears || '?') + ' yrs (' + c._gerComponents.tenure + ' pts)\n' +
+                'Gov Deficit: ' + c._gerComponents.govDeficit + ' pts\n' +
+                'Pay-Gov Mismatch: ' + c._gerComponents.payMismatch + ' pts\n' +
+                'CEO Concentration: ' + c._gerComponents.concentration + ' pts\n' +
+                'Governance: ' + (c._govScore || '?') + '/100 (' + (c._govGrade || '?') + ')\n' +
+                'Total Comp: ' + (typeof fmtCurr === 'function' ? fmtCurr(c.total_compensation) : '$' + Math.round(c.total_compensation / 1000000) + 'M'));
+    });
+
+    // Legend
+    var legendY = -20;
+    var legendX = 0;
+    compKeys.forEach(function(key) {
+        g.append('rect')
+            .attr('x', legendX)
+            .attr('y', legendY)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('rx', 2)
+            .attr('fill', compColors[key]);
+        g.append('text')
+            .attr('x', legendX + 14)
+            .attr('y', legendY + 9)
+            .style('fill', mutedColor)
+            .style('font-size', '10px')
+            .text(compLabels[key]);
+        legendX += compLabels[key].length * 6.5 + 24;
+    });
+
+    // Summary narrative below chart
+    var narrativeDiv = document.createElement('div');
+    narrativeDiv.className = 'ger-narrative';
+    var highRiskCount = eligible.filter(function(c) { return c._gerScore >= 60; }).length;
+    var criticalCount = eligible.filter(function(c) { return c._gerScore >= 75; }).length;
+    var sectorLabel = sectorFilter || 'S&P 500';
+
+    // Which component contributes most across high-risk companies
+    var highRisk = eligible.filter(function(c) { return c._gerScore >= 60; });
+    var componentTotals = { tenure: 0, govDeficit: 0, payMismatch: 0, concentration: 0 };
+    highRisk.forEach(function(c) {
+        compKeys.forEach(function(k) { componentTotals[k] += (c._gerComponents[k] || 0); });
+    });
+    var topComponent = compKeys.reduce(function(a, b) { return componentTotals[a] > componentTotals[b] ? a : b; });
+
+    var narrativeHtml = '<div class="ger-narrative-inner">';
+    if (highRiskCount > 0) {
+        narrativeHtml += '<span class="crosstab-finding warning">\u26a0\ufe0f ' + highRiskCount + ' ' + sectorLabel + ' companies score \u226560 (high/critical risk)</span>';
+        if (criticalCount > 0) {
+            narrativeHtml += ' including ' + criticalCount + ' in the critical zone (\u226575).';
+        } else {
+            narrativeHtml += '.';
+        }
+        narrativeHtml += ' The dominant risk factor among high-risk companies is <strong>' + compLabels[topComponent].toLowerCase() + '</strong>.';
+    } else {
+        narrativeHtml += '<span class="crosstab-finding positive">\u2713 No ' + sectorLabel + ' companies score \u226560 \u2014 governance erosion risk is generally contained.</span>';
+    }
+    // Average GER by risk level for context
+    var avgGer = eligible.length > 0 ? Math.round(eligible.reduce(function(s, c) { return s + c._gerScore; }, 0) / eligible.length) : 0;
+    narrativeHtml += ' ' + sectorLabel + ' average GER score: ' + avgGer + '/100.';
+    narrativeHtml += '</div>';
+    narrativeDiv.innerHTML = narrativeHtml;
+    container.appendChild(narrativeDiv);
+}
