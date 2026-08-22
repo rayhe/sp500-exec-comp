@@ -10855,6 +10855,56 @@ function drawVolatilityDistChart(companies) {
         'Most volatile: <strong>' + topVol.ticker + '</strong> at ' + topVol._ceoVolatility.toFixed(1) + '% CV' +
         (topVol._ceoVolatilityYears ? ' across ' + topVol._ceoVolatilityYears + ' years' : '') + '.';
     container.appendChild(narDiv);
+
+    // Cross-chart navigation strip: top 3 most volatile companies → scatter
+    _renderVolatilityScatterNav(withVol, container);
+}
+
+/**
+ * Render scatter navigation strip below the volatility distribution chart.
+ * Shows top 3 most volatile companies as clickable buttons that navigate
+ * to the Volatility vs Pay scatter preset with that company highlighted.
+ */
+function _renderVolatilityScatterNav(withVol, container) {
+    var existingStrip = document.getElementById('vol-scatter-nav-strip');
+    if (existingStrip) existingStrip.remove();
+
+    if (!withVol || withVol.length === 0) return;
+
+    // Get top 3 most volatile companies (CV >= 40%)
+    var topVolatile = withVol
+        .filter(function(c) { return c._ceoVolatility >= 40; })
+        .sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; })
+        .slice(0, 3);
+
+    if (topVolatile.length === 0) return;
+
+    var strip = document.createElement('div');
+    strip.id = 'vol-scatter-nav-strip';
+    strip.className = 'vol-scatter-nav-strip';
+
+    var label = document.createElement('span');
+    label.className = 'vol-scatter-nav-label';
+    label.textContent = 'Explore in scatter \u2192';
+    strip.appendChild(label);
+
+    topVolatile.forEach(function(c) {
+        var btn = document.createElement('button');
+        btn.className = 'vol-scatter-nav-btn';
+        btn.textContent = c.ticker + ' (' + c._ceoVolatility.toFixed(0) + '% CV) \u2192';
+        if (c._ceoVolatility >= 80) btn.classList.add('vol-extreme');
+        else if (c._ceoVolatility >= 60) btn.classList.add('vol-very-high');
+        else btn.classList.add('vol-high');
+        btn.title = c.company_name + ' \u2014 ' + c.ceo_name + ': ' + c._ceoVolatility.toFixed(1) + '% pay volatility';
+        btn.addEventListener('click', function() {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(c.ticker, '_ceoVolatility', 'total_compensation');
+            }
+        });
+        strip.appendChild(btn);
+    });
+
+    container.appendChild(strip);
 }
 
 /* === Pay Volatility by Sector Chart === */
@@ -10970,11 +11020,31 @@ function drawVolatilitySectorChart(companies) {
             d3.select(this).attr('opacity', 1);
             showChartTooltip(event, '<div style="font-weight:600;">' + s.sector + '</div>' +
                 '<div>Median volatility: ' + s.median.toFixed(1) + '%</div>' +
-                '<div>IQR: ' + s.q25.toFixed(1) + '% – ' + s.q75.toFixed(1) + '%</div>' +
-                '<div style="color:#a1a1aa;">' + s.count + ' companies</div>');
+                '<div>IQR: ' + s.q25.toFixed(1) + '% \u2013 ' + s.q75.toFixed(1) + '%</div>' +
+                '<div style="color:#a1a1aa;">' + s.count + ' companies</div>' +
+                '<div style="color:#a1a1aa;font-size:10px;margin-top:4px;">Click to filter table \u00b7 Shift+click for scatter</div>');
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.75); hideChartTooltip(); });
+        .on('mouseout', function() { d3.select(this).attr('opacity', 0.75); hideChartTooltip(); })
+        .on('click', function(event, s) {
+            hideChartTooltip();
+            if (event.shiftKey && typeof window.navigateToScatter === 'function') {
+                // Shift+click: navigate to scatter filtered by sector context
+                var sectorCompanies = withVol.filter(function(c) { return c.sector === s.sector; })
+                    .sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; });
+                if (sectorCompanies.length > 0) {
+                    window.navigateToScatter(sectorCompanies[0].ticker, '_ceoVolatility', 'total_compensation');
+                }
+            } else {
+                // Regular click: filter table to this sector via sector chip
+                var chips = document.querySelectorAll('#sector-chips .chip');
+                chips.forEach(function(chip) {
+                    if (chip.textContent === s.sector) chip.click();
+                });
+                if (typeof scrollToTable === 'function') scrollToTable();
+                if (typeof announce === 'function') announce('Filtered to ' + s.sector + ' (' + s.count + ' companies)');
+            }
+        });
 
     // Median value labels
     g.selectAll('.med-label')

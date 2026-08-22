@@ -6343,12 +6343,25 @@ function setupDetailPanel(companies) {
             if (company._ceoVolatility != null) {
                 var volV = company._ceoVolatility;
                 var volSentence = '';
+                // Compute sector median for context
+                var _volSectorPeers = companies.filter(function(c) { return c.sector === company.sector && c._ceoVolatility != null; });
+                var _volSectorCtx = '';
+                if (_volSectorPeers.length >= 5) {
+                    var _volSectorVals = _volSectorPeers.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+                    var _volSectorMed = _volSectorVals[Math.floor(_volSectorVals.length / 2)];
+                    if (_volSectorMed > 0) {
+                        var _volDiff = volV - _volSectorMed;
+                        if (Math.abs(_volDiff) >= 3) {
+                            _volSectorCtx = ' (' + (_volDiff > 0 ? Math.round(_volDiff) + ' points above' : Math.round(Math.abs(_volDiff)) + ' points below') + ' the ' + company.sector + ' median)';
+                        }
+                    }
+                }
                 if (volV >= 60) {
-                    volSentence = 'Pay is highly volatile (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years), suggesting one-time grants, CEO transitions, or compensation restructuring.';
+                    volSentence = 'Pay is highly volatile (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years)' + _volSectorCtx + ', suggesting one-time grants, CEO transitions, or compensation restructuring.';
                 } else if (volV >= 30) {
-                    volSentence = 'Moderate pay volatility (' + volV.toFixed(1) + '% CV) over ' + (company._ceoVolatilityYears || '?') + ' years.';
+                    volSentence = 'Moderate pay volatility (' + volV.toFixed(1) + '% CV) over ' + (company._ceoVolatilityYears || '?') + ' years' + _volSectorCtx + '.';
                 } else if (volV < 10) {
-                    volSentence = 'Very stable compensation (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years), indicating consistent pay practices.';
+                    volSentence = 'Very stable compensation (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years)' + _volSectorCtx + ', indicating consistent pay practices.';
                 }
                 if (volSentence) sentences.push(volSentence);
             }
@@ -6542,6 +6555,18 @@ function setupDetailPanel(companies) {
             var volSub = volLbl + ' volatility';
             if (company._ceoVolatilityYears) {
                 volSub += ' \u00b7 ' + company._ceoVolatilityYears + ' years of data';
+            }
+            // Sector-aware volatility context
+            var sectorVolPeers = companies.filter(function(c) { return c.sector === company.sector && c._ceoVolatility != null; });
+            if (sectorVolPeers.length >= 5) {
+                var sectorVolVals = sectorVolPeers.map(function(c) { return c._ceoVolatility; }).sort(function(a, b) { return a - b; });
+                var sectorVolMedian = sectorVolVals[Math.floor(sectorVolVals.length / 2)];
+                if (sectorVolMedian > 0) {
+                    var volDelta = ((volVal - sectorVolMedian) / sectorVolMedian * 100).toFixed(0);
+                    var volDeltaSign = volDelta > 0 ? '+' : '';
+                    var volDeltaCls = volDelta > 30 ? 'negative' : volDelta < -30 ? 'positive' : '';
+                    volSub += ' \u00b7 <span class="' + volDeltaCls + '">' + volDeltaSign + volDelta + '% vs sector</span>';
+                }
             }
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + volTip + '">Pay Volatility</div><div class="detail-stat-value ' + volCls + '">' + volVal.toFixed(1) + '%</div>' + distBar(Math.min(volVal, 100), 'Stable', 'Volatile') + '<div class="detail-stat-sub">' + volSub + '</div></div>';
         }

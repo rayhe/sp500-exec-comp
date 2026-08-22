@@ -10503,3 +10503,80 @@ body.light-mode .cross-sector-pair-select:focus {
 /* === Sector Volatility Chart === */
 #volatility-sector-chart svg,
 #volatility-dist-chart svg { width: 100%; height: auto; }
+#volatility-sector-chart .med-bar { cursor: pointer; }
+
+/* === Volatility → Scatter Navigation Strip === */
+.vol-scatter-nav-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    background: rgba(163, 230, 53, 0.04);
+    border: 1px solid rgba(163, 230, 53, 0.12);
+    border-radius: 8px;
+}
+[data-theme="light"] .vol-scatter-nav-strip {
+    background: rgba(163, 230, 53, 0.03);
+    border-color: rgba(163, 230, 53, 0.1);
+}
+
+.vol-scatter-nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.vol-scatter-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-decoration: none;
+    border: 1px solid;
+}
+
+.vol-scatter-nav-btn:hover {
+    transform: translateY(-1px);
+}
+
+.vol-scatter-nav-btn:active {
+    transform: translateY(0);
+}
+
+.vol-scatter-nav-btn.vol-extreme {
+    color: #ef476f;
+    background: rgba(239, 71, 111, 0.08);
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.vol-scatter-nav-btn.vol-extreme:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
+.vol-scatter-nav-btn.vol-very-high {
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.25);
+}
+.vol-scatter-nav-btn.vol-very-high:hover {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: rgba(249, 115, 22, 0.4);
+}
+
+.vol-scatter-nav-btn.vol-high {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+.vol-scatter-nav-btn.vol-high:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
