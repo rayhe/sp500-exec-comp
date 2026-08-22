@@ -2786,6 +2786,16 @@ function drawScatterChart(companies) {
             unit: '/100',
             minForLog: 1,
             canBeNegative: false
+        },
+        _gerScore: {
+            label: 'Governance Erosion Risk',
+            shortLabel: 'GER Score',
+            get: function(c) { return c._gerScore; },
+            fmt: function(v) { return v != null ? v + '/100' : '—'; },
+            fmtAxis: function(v) { return Math.round(v); },
+            unit: '/100',
+            minForLog: 1,
+            canBeNegative: false
         }
     };
 
@@ -6330,7 +6340,9 @@ function drawCorrelationMatrix(companies) {
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
         { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
-        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } }
+        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } },
+        { key: '_govScore', label: 'Governance Score', short: 'Gov', get: function(c) { return c._govScore; } },
+        { key: '_gerScore', label: 'Governance Erosion Risk', short: 'GER', get: function(c) { return c._gerScore; } }
     ];
 
     var n = metrics.length;
@@ -6805,7 +6817,9 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
         { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
-        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } }
+        { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } },
+        { key: '_govScore', label: 'Governance Score', short: 'Gov', get: function(c) { return c._govScore; } },
+        { key: '_gerScore', label: 'Governance Erosion Risk', short: 'GER', get: function(c) { return c._gerScore; } }
     ];
 
     var SECTOR_COLORS = {
