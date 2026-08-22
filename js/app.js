@@ -1040,6 +1040,25 @@ function populateMetrics(comp, trends) {
         }
     }
 
+    // === Shareholder Sentiment (Say-on-Pay) Metric Card ===
+    var sopEl = document.getElementById('metric-sop-approval');
+    var sopSubEl = document.getElementById('metric-sop-sub');
+    if (sopEl) {
+        var sopCompanies = comp.companies.filter(function(c) { return c._sopApproval != null; });
+        if (sopCompanies.length > 0) {
+            var sopVals = sopCompanies.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+            var sopMedian = computeMedian(sopVals) || 0;
+            var sopFailed = sopCompanies.filter(function(c) { return c._sopApproval < 50; }).length;
+            var sopContested = sopCompanies.filter(function(c) { return c._sopApproval < 70; }).length;
+            sopEl.textContent = sopMedian.toFixed(1) + '%';
+            sopEl.className = 'metric-value' + (sopMedian >= 90 ? ' positive' : sopMedian < 80 ? ' negative' : '');
+            var subParts = [sopCompanies.length + '/' + comp.companies.length + ' companies'];
+            if (sopFailed > 0) subParts.push(sopFailed + ' failed');
+            if (sopContested > sopFailed) subParts.push((sopContested - sopFailed) + ' contested');
+            sopSubEl.textContent = subParts.join(', ');
+        }
+    }
+
     // === Interactive Metric Cards ===
     // Each metric card becomes a navigation entry point into the data
     var metricCards = document.querySelectorAll('.metric-card');
@@ -1050,6 +1069,7 @@ function populateMetrics(comp, trends) {
         { cta: 'Sort by worker pay →', action: function() { sortTableByKey('median_worker_pay', 'desc'); } },
         { cta: 'View ' + topTicker + ' details →', action: function() { if (window.findCompanyInTable) window.findCompanyInTable(topTicker); } },
         { cta: 'View composition →', action: function() { scrollToSectionById('composition-section'); } },
+        { cta: 'Sort by SoP approval →', action: function() { sortTableByKey('_sopApproval', 'asc'); } },
         { cta: 'View trends →', action: function() { scrollToSectionById('trends-section'); } }
     ];
 
@@ -1191,8 +1211,30 @@ function setupReactiveMetrics(companies, comp, trends) {
             if (ss) ss.innerHTML = 'Sector median equity' + (_sp500Metrics.medianStock != null ? ' \u00b7 ' + fmtDelta(sMedianStock, _sp500Metrics.medianStock) : '');
         }
 
-        // 6. 5-Year Growth stays S&P 500
-        if (labels[5]) labels[5].innerHTML = '5-Year Pay Growth';
+        // 6. SoP Approval (sector)
+        var sSopComps = sc.filter(function(c) { return c._sopApproval != null; });
+        if (sSopComps.length > 0) {
+            var sSopVals = sSopComps.map(function(c) { return c._sopApproval; }).sort(function(a, b) { return a - b; });
+            var sSopMedian = computeMedian(sSopVals) || 0;
+            var sSopFailed = sSopComps.filter(function(c) { return c._sopApproval < 50; }).length;
+            var sSopContested = sSopComps.filter(function(c) { return c._sopApproval < 70; }).length;
+            var soe = document.getElementById('metric-sop-approval');
+            var sos = document.getElementById('metric-sop-sub');
+            if (soe) {
+                soe.textContent = sSopMedian.toFixed(1) + '%';
+                soe.className = 'metric-value' + (sSopMedian >= 90 ? ' positive' : sSopMedian < 80 ? ' negative' : '');
+            }
+            if (labels[5]) labels[5].innerHTML = short + ' SoP Approval';
+            if (sos) {
+                var subParts = [sSopComps.length + ' companies'];
+                if (sSopFailed > 0) subParts.push(sSopFailed + ' failed');
+                if (sSopContested > sSopFailed) subParts.push((sSopContested - sSopFailed) + ' contested');
+                sos.textContent = subParts.join(', ');
+            }
+        }
+
+        // 7. 5-Year Growth stays S&P 500
+        if (labels[6]) labels[6].innerHTML = '5-Year Pay Growth';
     };
 }
 
