@@ -10283,6 +10283,9 @@ function _clearPersistentScatterHighlight() {
         if (!svg.empty()) svg.selectAll('.scatter-highlight-ring').remove();
     }
 }
+// Expose for keyboard shortcut integration (app.js Escape handler)
+window._clearPersistentScatterHighlight = _clearPersistentScatterHighlight;
+window._hasPersistentScatterHighlight = function() { return !!_persistentScatterHighlight; };
 
 /**
  * After scatter dots render, check for pending highlight ticker and draw a pulsing ring.
@@ -10448,6 +10451,20 @@ function _renderScatterGERNav(pts, xMetricKey, yMetricKey) {
 // Pending GER highlight ticker — set before GER chart redraws, consumed after bars render
 var _gerHighlightTicker = null;
 var _gerHighlightTimer = null;
+var _gerHighlightActive = false; // tracks whether a GER highlight ring is currently visible
+
+function _clearGERHighlight() {
+    _gerHighlightTicker = null;
+    _gerHighlightActive = false;
+    if (_gerHighlightTimer) { clearTimeout(_gerHighlightTimer); _gerHighlightTimer = null; }
+    var container = document.getElementById('ger-chart');
+    if (container) {
+        var svg = d3.select(container).select('svg');
+        if (!svg.empty()) svg.selectAll('.ger-highlight-ring').transition().duration(300).style('opacity', 0).remove();
+    }
+}
+window._clearGERHighlight = _clearGERHighlight;
+window._hasGERHighlight = function() { return _gerHighlightActive; };
 
 /**
  * Navigate to the GER chart, scrolling to it and highlighting a specific company's bar.
@@ -10536,6 +10553,7 @@ function _applyGERHighlight() {
     var barH = barRects[0].h;
 
     // Draw highlight rectangle around the full bar row
+    _gerHighlightActive = true;
     var hlGroup = g.append('g').attr('class', 'ger-highlight-ring');
 
     // Pulsing outer rectangle
@@ -10577,6 +10595,7 @@ function _applyGERHighlight() {
 
     // Auto-remove highlight after 6 seconds
     _gerHighlightTimer = setTimeout(function() {
+        _gerHighlightActive = false;
         hlGroup.transition().duration(800).style('opacity', 0).remove();
     }, 6000);
 }

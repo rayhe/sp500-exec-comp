@@ -12843,6 +12843,20 @@ function setupDualSparklineTooltips() {
                 e.preventDefault();
                 return;
             }
+            // Clear persistent scatter highlight if active (from cross-chart navigation)
+            if (typeof window._clearPersistentScatterHighlight === 'function' && typeof window._hasPersistentScatterHighlight === 'function' && window._hasPersistentScatterHighlight()) {
+                window._clearPersistentScatterHighlight();
+                announce('Scatter highlight dismissed');
+                e.preventDefault();
+                return;
+            }
+            // Clear GER chart highlight if active (from scatter → GER navigation)
+            if (typeof window._clearGERHighlight === 'function' && typeof window._hasGERHighlight === 'function' && window._hasGERHighlight()) {
+                window._clearGERHighlight();
+                announce('GER highlight dismissed');
+                e.preventDefault();
+                return;
+            }
             // Clear scatter brush selection if active
             var brushResults = document.getElementById('scatter-brush-results');
             if (brushResults && brushResults.style.display !== 'none' && window._clearScatterBrush) {
