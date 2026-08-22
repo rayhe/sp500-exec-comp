@@ -821,6 +821,62 @@ function computeGovernanceErosionRisk(companies) {
     });
 }
 
+/* Pre-compute CEO Pay Volatility — coefficient of variation (std/mean × 100) of CEO total
+   compensation over all available fiscal years. Requires ≥2 years of CEO-level data from
+   Summary Compensation Table. Higher values indicate more volatile pay packages — from
+   one-time equity grants, CEO transitions, or compensation committee instability.
+   Sets c._ceoVolatility (0-200+ scale, null if insufficient data),
+   c._ceoVolatilityLabel ('Very High'/'High'/'Moderate'/'Low'/'Very Low'),
+   c._ceoVolatilityYears (number of years used), c._ceoVolatilityValues (array of {year, total}). */
+function computeCeoPayVolatility(companies) {
+    companies.forEach(function(c) {
+        c._ceoVolatility = null;
+        c._ceoVolatilityLabel = null;
+        c._ceoVolatilityYears = null;
+        c._ceoVolatilityValues = null;
+        if (!c.executives || c.executives.length === 0) return;
+
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return a - b; });
+        if (allYears.length < 2) return;
+
+        var values = [];
+        allYears.forEach(function(yr) {
+            var yrExecs = c.executives.filter(function(e) { return e.year === yr; });
+            var ceo = yrExecs.find(function(e) {
+                return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+            });
+            if (!ceo && yrExecs.length > 0) {
+                ceo = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+            }
+            if (ceo && ceo.total > 0) {
+                values.push({ year: yr, total: ceo.total });
+            }
+        });
+
+        if (values.length < 2) return;
+
+        var totals = values.map(function(v) { return v.total; });
+        var mean = totals.reduce(function(s, t) { return s + t; }, 0) / totals.length;
+        if (mean <= 0) return;
+
+        var variance = totals.reduce(function(s, t) { return s + (t - mean) * (t - mean); }, 0) / totals.length;
+        var std = Math.sqrt(variance);
+        var cv = std / mean * 100;
+
+        c._ceoVolatility = Math.round(cv * 10) / 10;
+        c._ceoVolatilityYears = values.length;
+        c._ceoVolatilityValues = values;
+
+        if (cv >= 80) c._ceoVolatilityLabel = 'Very High';
+        else if (cv >= 40) c._ceoVolatilityLabel = 'High';
+        else if (cv >= 20) c._ceoVolatilityLabel = 'Moderate';
+        else if (cv >= 10) c._ceoVolatilityLabel = 'Low';
+        else c._ceoVolatilityLabel = 'Very Low';
+    });
+}
+
 /* Pre-compute PageRank centrality scores from the peer network.
    PageRank measures transitive influence: a company is central if it's benchmarked by
    companies that are themselves benchmarked by many others. Uses the classic power iteration
@@ -1339,7 +1395,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score', '_gerScore': 'governance erosion risk score' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score', '_gerScore': 'governance erosion risk score', '_ceoVolatility': 'CEO pay volatility' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -2120,6 +2176,9 @@ function populateInsights(comp, trends, sectorFilter) {
             var gfc = document.getElementById('gov-filter-chip');
             if (gfc) gfc.remove();
         }
+        if (window._activeVolatilityBucket) {
+            window._activeVolatilityBucket = null;
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -2775,6 +2834,37 @@ function populateInsights(comp, trends, sectorFilter) {
             },
             actionHint: 'View erosion risk chart',
             _tickers: withGer.slice(0, 3).map(function(c) { return c.ticker; })
+        });
+    })();
+
+    // 17. Pay Volatility — how stable is CEO compensation?
+    (function() {
+        var withVol = companies.filter(function(c) { return c._ceoVolatility != null; });
+        if (withVol.length < 20) return;
+        var highVol = withVol.filter(function(c) { return c._ceoVolatility >= 40; });
+        var stableCount = withVol.filter(function(c) { return c._ceoVolatility < 10; });
+        var allVols = withVol.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var medVol = allVols[Math.floor(allVols.length / 2)];
+        var topVol = withVol.slice().sort(function(a,b) { return b._ceoVolatility - a._ceoVolatility; })[0];
+        insights.push({
+            icon: '\ud83c\udf0a',
+            label: 'Pay Volatility',
+            value: highVol.length + ' with high volatility',
+            detail: 'CEO pay volatility measures year-to-year consistency (coefficient of variation). ' +
+                scopeLabel + ' median: ' + medVol.toFixed(1) + '% CV. ' +
+                highVol.length + ' companies (' + (highVol.length / withVol.length * 100).toFixed(0) + '%) have high volatility (>40% CV). ' +
+                stableCount.length + ' (' + (stableCount.length / withVol.length * 100).toFixed(0) + '%) are very stable (<10%). ' +
+                'Most volatile: ' + topVol.ceo_name + ' (' + topVol.ticker + ') at ' + topVol._ceoVolatility.toFixed(1) + '% CV.',
+            action: function() {
+                var panel = document.getElementById('volatility-dist-panel');
+                if (panel) {
+                    var headerHeight = getStickyOffset();
+                    var top = panel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            },
+            actionHint: 'View volatility chart',
+            _tickers: [topVol.ticker]
         });
     })();
 
@@ -4889,6 +4979,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
     if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
     if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
+    if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -5343,6 +5434,14 @@ function renderTable(companies, options) {
         });
     }
 
+    // Volatility bucket filter
+    if (window._activeVolatilityBucket) {
+        var vb = window._activeVolatilityBucket;
+        filtered = filtered.filter(function(c) {
+            return c._ceoVolatility != null && c._ceoVolatility >= vb.min && (vb.max === Infinity ? true : c._ceoVolatility < vb.max);
+        });
+    }
+
     // Role filter: filter to companies with that role + compute role-specific sort value
     if (activeRole && activeRole !== 'CEO') {
         filtered = filtered.filter(function(c) {
@@ -5637,6 +5736,13 @@ function renderTable(companies, options) {
                 }
                 var gerTip = 'GER Score: ' + gerS + '/100 (' + gerR + ') \u2014 ' + gerParts.join(', ');
                 return '<span class="ger-badge" style="color:' + gerColor + ';font-weight:600" title="' + gerTip + '">' + gerS + '</span>';
+            })() + '</td>' +
+            '<td class="vol-cell">' + (function() {
+                if (c._ceoVolatility == null) return '\u2014';
+                var vol = c._ceoVolatility;
+                var volColor = vol >= 60 ? '#ef476f' : vol >= 40 ? '#fb923c' : vol >= 20 ? '#fbbf24' : vol >= 10 ? '#a3e635' : '#06d6a0';
+                var volTip = 'Pay Volatility: ' + vol.toFixed(1) + '% CV (' + (c._ceoVolatilityLabel || '') + ') across ' + (c._ceoVolatilityYears || '?') + ' years';
+                return '<span style="color:' + volColor + ';font-weight:600" title="' + volTip + '">' + vol.toFixed(0) + '%</span>';
             })() + '</td>' +
             '<td>' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
@@ -6076,7 +6182,7 @@ function setupDetailPanel(companies) {
         var _pctileLabel = company._compPercentile != null ? getPercentileLabel(company._compPercentile) : '';
 
         // Build HTML
-        var html = '<td colspan="14"><div class="detail-panel" tabindex="-1">';
+        var html = '<td colspan="18"><div class="detail-panel" tabindex="-1">';
         html += '<div class="detail-header">';
         html += '<button class="detail-nav-btn detail-nav-prev" title="Previous company (←)" aria-label="Previous company"' + (_hasPrev ? '' : ' disabled') + '>‹</button>';
         html += '<div class="detail-header-center">';
@@ -6231,6 +6337,20 @@ function setupDetailPanel(companies) {
                     gerSentence = 'Low governance erosion risk (' + gerVal + '/100) indicates healthy board-CEO dynamics.';
                 }
                 sentences.push(gerSentence);
+            }
+
+            // Sentence 7: Pay Volatility
+            if (company._ceoVolatility != null) {
+                var volV = company._ceoVolatility;
+                var volSentence = '';
+                if (volV >= 60) {
+                    volSentence = 'Pay is highly volatile (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years), suggesting one-time grants, CEO transitions, or compensation restructuring.';
+                } else if (volV >= 30) {
+                    volSentence = 'Moderate pay volatility (' + volV.toFixed(1) + '% CV) over ' + (company._ceoVolatilityYears || '?') + ' years.';
+                } else if (volV < 10) {
+                    volSentence = 'Very stable compensation (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years), indicating consistent pay practices.';
+                }
+                if (volSentence) sentences.push(volSentence);
             }
 
             if (sentences.length > 0) {
@@ -6411,6 +6531,19 @@ function setupDetailPanel(companies) {
                 gerSub += ' \u00b7 ' + gerParts.join(', ');
             }
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + gerTip + '">Erosion Risk (GER)</div><div class="detail-stat-value ' + gerCls + '">' + gerS + '/100</div>' + distBar(gerS, 'Low', 'Critical') + '<div class="detail-stat-sub">' + gerSub + '</div></div>';
+        }
+
+        // Pay Volatility stat
+        if (company._ceoVolatility != null) {
+            var volVal = company._ceoVolatility;
+            var volLbl = company._ceoVolatilityLabel || '';
+            var volCls = volVal >= 60 ? 'negative' : volVal >= 30 ? '' : 'positive';
+            var volTip = 'Coefficient of variation of CEO total compensation across ' + (company._ceoVolatilityYears || '?') + ' fiscal years. Higher = more volatile pay package.';
+            var volSub = volLbl + ' volatility';
+            if (company._ceoVolatilityYears) {
+                volSub += ' \u00b7 ' + company._ceoVolatilityYears + ' years of data';
+            }
+            html += '<div class="detail-stat"><div class="detail-stat-label" title="' + volTip + '">Pay Volatility</div><div class="detail-stat-value ' + volCls + '">' + volVal.toFixed(1) + '%</div>' + distBar(Math.min(volVal, 100), 'Stable', 'Volatile') + '<div class="detail-stat-sub">' + volSub + '</div></div>';
         }
 
         html += '</div>'; // detail-stats
@@ -8262,7 +8395,7 @@ function showSkeletons() {
             var wTicker = 45 + (r % 3) * 10;
             var wCompany = 130 + (r % 4) * 20;
             var wCeo = 100 + (r % 3) * 25;
-            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="14"><div class="skeleton-table-row">' +
+            tHtml += '<tr class="skeleton-table-row-tr"><td colspan="18"><div class="skeleton-table-row">' +
                 '<div class="skeleton-bar skeleton-cell-sm"></div>' +
                 '<div class="skeleton-bar skeleton-cell-ticker" style="width:' + wTicker + 'px"></div>' +
                 '<div class="skeleton-bar skeleton-cell-lg" style="width:' + wCompany + 'px"></div>' +
@@ -8779,6 +8912,9 @@ function setupDualSparklineTooltips() {
 
     // Pre-compute Governance Erosion Risk (composite entrenchment risk score)
     computeGovernanceErosionRisk(companies);
+
+    // Pre-compute CEO pay volatility (coefficient of variation across fiscal years)
+    computeCeoPayVolatility(companies);
 
     // Pre-compute radar chart percentiles for 8-dimension compensation profile
     computeRadarPercentiles(companies);

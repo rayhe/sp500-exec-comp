@@ -10490,3 +10490,16 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
+
+/* === Pay Volatility Column === */
+.vol-col { min-width: 52px; text-align: center; }
+.vol-cell { text-align: center; }
+
+/* === Volatility Chart Narrative === */
+.vol-narrative { font-size: 12px; line-height: 1.5; padding: 12px 8px; }
+.vol-narrative strong { color: var(--text-primary, #e4e4e7); }
+[data-theme="light"] .vol-narrative strong { color: #1a1a2e; }
+
+/* === Sector Volatility Chart === */
+#volatility-sector-chart svg,
+#volatility-dist-chart svg { width: 100%; height: auto; }

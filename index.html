@@ -253,6 +253,7 @@
                         <th class="sortable tenure-col" data-sort="_ceoTenureYears" role="columnheader" aria-sort="none" tabindex="0" title="CEO tenure — years since appointment (from DEF 14A proxy statements)">Tenure</th>
                         <th class="sortable gov-col" data-sort="_govScore" role="columnheader" aria-sort="none" tabindex="0" title="Compensation Governance Score (0-100) — composite of SoP approval, CEO concentration, pay ratio, and team completeness">Gov</th>
                         <th class="sortable ger-col" data-sort="_gerScore" role="columnheader" aria-sort="none" tabindex="0" title="Governance Erosion Risk — composite score (0-100) measuring risk of governance erosion from CEO entrenchment">GER</th>
+                        <th class="sortable vol-col" data-sort="_ceoVolatility" role="columnheader" aria-sort="none" tabindex="0" title="CEO Pay Volatility — coefficient of variation (%) of CEO compensation across fiscal years. Higher = more volatile pay.">Vol%</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
                         <th class="sortable" data-sort="median_worker_pay" role="columnheader" aria-sort="none" tabindex="0">Median Worker Pay</th>
                     </tr>
@@ -473,6 +474,23 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel" id="volatility-dist-panel">
+            <div class="section-header">
+                <h2>CEO Pay Volatility</h2>
+                <p class="section-desc">Coefficient of variation (CV%) of CEO total compensation across 2–3 fiscal years. Higher values indicate more volatile pay — from one-time equity grants, CEO transitions, or compensation restructuring. Click a bucket to filter the table.</p>
+            </div>
+            <div id="volatility-dist-chart"></div>
+        </div>
+        <div class="chart-panel" id="volatility-sector-panel">
+            <div class="section-header">
+                <h2>Pay Volatility by Sector</h2>
+                <p class="section-desc">Median CEO pay volatility (CV%) per GICS sector. Dashed line = S&P 500 overall median. Which sectors have the most stable — or most volatile — CEO compensation?</p>
+            </div>
+            <div id="volatility-sector-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="treemap-panel">
             <div class="section-header">
                 <h2>Where the Money Goes</h2>
@@ -525,6 +543,7 @@
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
                             <option value="_govScore">Governance Score</option>
                             <option value="_gerScore">GER Score</option>
+                            <option value="_ceoVolatility">Pay Volatility</option>
                         </select>
                     </label>
                     <label class="scatter-axis-label">Y axis:
@@ -541,6 +560,7 @@
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
                             <option value="_govScore">Governance Score</option>
                             <option value="_gerScore">GER Score</option>
+                            <option value="_ceoVolatility">Pay Volatility</option>
                         </select>
                     </label>
                 </div>
@@ -557,6 +577,7 @@
                     <button class="scatter-preset-btn" data-x="_govScore" data-y="total_compensation" title="Governance score vs CEO pay — do well-governed companies pay more or less?">Gov vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="_govScore" title="CEO tenure vs governance score — does longer tenure erode governance quality?">Tenure vs Gov</button>
                     <button class="scatter-preset-btn" data-x="_gerScore" data-y="total_compensation" title="Governance erosion risk vs CEO pay — are the highest-risk companies also the highest-paid?">GER vs Pay</button>
+                    <button class="scatter-preset-btn" data-x="_ceoVolatility" data-y="total_compensation" title="CEO pay volatility (coefficient of variation) vs total compensation — do higher-paid CEOs have more volatile pay?">Volatility vs Pay</button>
                 </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">
