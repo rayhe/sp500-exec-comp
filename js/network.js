@@ -52,6 +52,7 @@ function initNetwork(peerData) {
     var compHeatmapMode = false; // when true, nodes colored by CEO pay instead of sector
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
     var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
+    var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -972,7 +973,7 @@ function initNetwork(peerData) {
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
         // (so users know which sector they're viewing in heatmap-filtered mode)
-        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode) || activeLegendSector)) {
+        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode && !gerHeatmapMode) || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -1225,7 +1226,10 @@ function initNetwork(peerData) {
                     total: c.total_compensation || null,
                     ratio: c.pay_ratio || null,
                     worker: c.median_worker_pay || null,
-                    sector: c.sector || null
+                    sector: c.sector || null,
+                    _gerScore: c._gerScore != null ? c._gerScore : null,
+                    _gerRisk: c._gerRisk || null,
+                    _gerComponents: c._gerComponents || null
                 };
             });
         }
@@ -1392,8 +1396,40 @@ function initNetwork(peerData) {
         return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
 
+    // Governance Erosion Risk heatmap color — green→yellow→orange→red gradient
+    // Low risk = green, moderate = yellow, high = orange, critical = red
+    function getGERHeatmapColor(ticker) {
+        var comp = _compLookup[ticker];
+        if (!comp || comp._gerScore == null) return '#555';
+        var score = comp._gerScore;
+        // GER ranges from 0–100; normalize
+        var t = Math.min(score / 100, 1);
+        var r, g, b;
+        if (t < 0.3) {
+            // Green (low) → Yellow-green (moderate)
+            var t2 = t / 0.3;
+            r = Math.round(6 + t2 * (180 - 6));
+            g = Math.round(214 + t2 * (209 - 214));
+            b = Math.round(160 - t2 * 130);
+        } else if (t < 0.6) {
+            // Yellow-green → Orange (elevated/high)
+            var t2 = (t - 0.3) / 0.3;
+            r = Math.round(180 + t2 * (251 - 180));
+            g = Math.round(209 - t2 * (209 - 146));
+            b = Math.round(30 + t2 * (60 - 30));
+        } else {
+            // Orange → Red (critical)
+            var t2 = (t - 0.6) / 0.4;
+            r = Math.round(251 - t2 * (251 - 220));
+            g = Math.round(146 - t2 * (146 - 38));
+            b = Math.round(60 - t2 * 22);
+        }
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
     // Unified node color resolver: checks heatmap modes first, then sector
     function getNodeColor(ticker, sector) {
+        if (gerHeatmapMode) return getGERHeatmapColor(ticker);
         if (ccHeatmapMode) return getCCHeatmapColor(ticker);
         if (prHeatmapMode) return getPRHeatmapColor(ticker);
         if (compHeatmapMode) return getCompHeatmapColor(ticker);
@@ -1534,6 +1570,13 @@ function initNetwork(peerData) {
             var ccCls = ccPct >= 40 ? 'tt-cc-high' : ccPct >= 20 ? 'tt-cc-mid' : 'tt-cc-low';
             var ccLabel = ccPct >= 40 ? 'Dense cluster' : ccPct >= 20 ? 'Moderate' : 'Bridge position';
             html += '<div class="tt-row"><span class="tt-label">Clustering</span><span class="tt-value ' + ccCls + '">' + ccPct + '% <span class="tt-cc-label">' + ccLabel + '</span></span></div>';
+        }
+        // Governance Erosion Risk
+        if (comp && comp._gerScore != null) {
+            var gerVal = comp._gerScore;
+            var gerRisk = comp._gerRisk || '';
+            var gerCls = gerVal >= 75 ? 'tt-ger-critical' : gerVal >= 60 ? 'tt-ger-high' : gerVal >= 45 ? 'tt-ger-elevated' : gerVal >= 30 ? 'tt-ger-moderate' : 'tt-ger-low';
+            html += '<div class="tt-row"><span class="tt-label">GER Risk</span><span class="tt-value ' + gerCls + '">' + gerVal + '/100 <span class="tt-cc-label">' + gerRisk + '</span></span></div>';
         }
         // Reciprocal peer selections
         var rCount = reciprocalCount[d.ticker] || 0;
@@ -2080,7 +2123,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -2091,7 +2134,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -2196,6 +2239,8 @@ function initNetwork(peerData) {
     var prHeatmapLegendEl = document.getElementById('pr-heatmap-legend');
     var ccHeatmapToggle = document.getElementById('cc-heatmap-toggle');
     var ccHeatmapLegendEl = document.getElementById('cc-heatmap-legend');
+    var gerHeatmapToggle = document.getElementById('ger-heatmap-toggle');
+    var gerHeatmapLegendEl = document.getElementById('ger-heatmap-legend');
 
     if (compHeatmapToggle) {
         compHeatmapToggle.addEventListener('click', function() {
@@ -2210,6 +2255,11 @@ function initNetwork(peerData) {
                 ccHeatmapMode = false;
                 if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
                 if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
+            }
+            if (compHeatmapMode && gerHeatmapMode) {
+                gerHeatmapMode = false;
+                if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
+                if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
             }
             compHeatmapToggle.classList.toggle('active', compHeatmapMode);
 
@@ -2241,6 +2291,11 @@ function initNetwork(peerData) {
                 if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
                 if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
             }
+            if (prHeatmapMode && gerHeatmapMode) {
+                gerHeatmapMode = false;
+                if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
+                if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
+            }
             prHeatmapToggle.classList.toggle('active', prHeatmapMode);
             if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = prHeatmapMode ? 'flex' : 'none';
             draw();
@@ -2264,6 +2319,11 @@ function initNetwork(peerData) {
                 if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
                 if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
             }
+            if (ccHeatmapMode && gerHeatmapMode) {
+                gerHeatmapMode = false;
+                if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
+                if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
+            }
             ccHeatmapToggle.classList.toggle('active', ccHeatmapMode);
             if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = ccHeatmapMode ? 'flex' : 'none';
             // Update node-size legend and recalculate collision force for new radii
@@ -2272,6 +2332,34 @@ function initNetwork(peerData) {
             simulation.alpha(0.15).restart();
             draw();
             announce(ccHeatmapMode ? 'Clustering coefficient heatmap enabled — cyan = bridge, green = dense cluster' : 'Sector coloring restored');
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
+    // Governance Erosion Risk heatmap toggle
+    if (gerHeatmapToggle) {
+        gerHeatmapToggle.addEventListener('click', function() {
+            gerHeatmapMode = !gerHeatmapMode;
+            // Mutual exclusion: turn off comp, PageRank, and clustering heatmaps
+            if (gerHeatmapMode && compHeatmapMode) {
+                compHeatmapMode = false;
+                if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
+                if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
+            }
+            if (gerHeatmapMode && prHeatmapMode) {
+                prHeatmapMode = false;
+                if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
+                if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+            }
+            if (gerHeatmapMode && ccHeatmapMode) {
+                ccHeatmapMode = false;
+                if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
+                if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
+            }
+            gerHeatmapToggle.classList.toggle('active', gerHeatmapMode);
+            if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = gerHeatmapMode ? 'flex' : 'none';
+            draw();
+            announce(gerHeatmapMode ? 'Governance erosion risk heatmap enabled — green = low risk, red = critical' : 'Sector coloring restored');
             if (activeLegendSector) updateClusterStats(activeLegendSector);
         });
     }
@@ -2570,6 +2658,50 @@ function initNetwork(peerData) {
                     html += '<div class="cs-node-row">';
                     html += '<span><span class="cs-node-role">Most bridging </span><span class="cs-node-ticker" data-ticker="' + lowestCCNode.ticker + '">' + lowestCCNode.ticker + '</span></span>';
                     html += '<span class="cs-node-degree" style="color:' + getCCHeatmapColor(lowestCCNode.ticker) + '">' + (lowestCCVal * 100).toFixed(1) + '%</span>';
+                    html += '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+        }
+
+        // GER risk stats section — shown when GER heatmap mode is active
+        if (gerHeatmapMode) {
+            var sectorGERVals = [];
+            var highestGERNode = null, highestGERVal = -1;
+            var lowestGERNode = null, lowestGERVal = Infinity;
+            var criticalNodes = [], highRiskNodes = [];
+            sectorNodes.forEach(function(n) {
+                var c = _compLookup[n.ticker];
+                if (!c || c._gerScore == null) return;
+                sectorGERVals.push(c._gerScore);
+                if (c._gerScore > highestGERVal) { highestGERVal = c._gerScore; highestGERNode = n; }
+                if (c._gerScore < lowestGERVal) { lowestGERVal = c._gerScore; lowestGERNode = n; }
+                if (c._gerScore >= 75) criticalNodes.push(n);
+                else if (c._gerScore >= 60) highRiskNodes.push(n);
+            });
+            if (sectorGERVals.length > 1) {
+                sectorGERVals.sort(function(a, b) { return a - b; });
+                var gerMedian = sectorGERVals[Math.floor(sectorGERVals.length / 2)];
+                html += '<div class="cs-comp-section">';
+                html += '<div class="cs-comp-title">🛡️ Governance Erosion Risk</div>';
+                html += '<div class="cluster-stats-grid">';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Median GER</span><span class="cs-stat-value">' + Math.round(gerMedian) + '/100</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">Critical (≥75)</span><span class="cs-stat-value" style="color:#dc2626">' + criticalNodes.length + '</span></div>';
+                html += '<div class="cs-stat"><span class="cs-stat-label">High (≥60)</span><span class="cs-stat-value" style="color:#ef476f">' + highRiskNodes.length + '</span></div>';
+                html += '</div>';
+                html += '<div class="cs-node-list">';
+                if (highestGERNode) {
+                    var hComp = _compLookup[highestGERNode.ticker];
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Highest risk </span><span class="cs-node-ticker" data-ticker="' + highestGERNode.ticker + '">' + highestGERNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getGERHeatmapColor(highestGERNode.ticker) + '">' + Math.round(highestGERVal) + '/100</span>';
+                    html += '</div>';
+                }
+                if (lowestGERNode && lowestGERNode !== highestGERNode) {
+                    html += '<div class="cs-node-row">';
+                    html += '<span><span class="cs-node-role">Lowest risk </span><span class="cs-node-ticker" data-ticker="' + lowestGERNode.ticker + '">' + lowestGERNode.ticker + '</span></span>';
+                    html += '<span class="cs-node-degree" style="color:' + getGERHeatmapColor(lowestGERNode.ticker) + '">' + Math.round(lowestGERVal) + '/100</span>';
                     html += '</div>';
                 }
                 html += '</div>';
@@ -3055,7 +3187,7 @@ function initNetwork(peerData) {
             var n = nodeMap[ticker];
             // Use heatmap color in heatmap mode, sector color otherwise
             var color;
-            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode) {
+            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) {
                 color = getNodeColor(ticker, n ? n.sector : '');
             } else {
                 color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
@@ -3245,7 +3377,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === newIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode) && newIdx >= 0 && newIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && newIdx >= 0 && newIdx < items.length) {
                     var dot = items[newIdx].querySelector('.nsr-dot');
                     if (dot) items[newIdx].style.backgroundColor = _dotBgTint(dot);
                 }

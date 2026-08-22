@@ -133,6 +133,10 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 L22 8.5 L22 15.5 L12 22 L2 15.5 L2 8.5 Z"/><circle cx="12" cy="12" r="3"/></svg>
                 Clustering
             </button>
+            <button class="control-btn ger-heatmap-toggle" id="ger-heatmap-toggle" title="Color nodes by Governance Erosion Risk score — red = high entrenchment risk, green = healthy governance">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7v5c0 5.55 4.27 10.74 10 12 5.73-1.26 10-6.45 10-12V7L12 2z"/><path d="M12 8v4M12 16h.01"/></svg>
+                GER Risk
+            </button>
             <div class="network-legend" id="network-legend">
                 <span class="legend-item"><span class="legend-dot" style="background:#00b4d8"></span>Info Tech</span>
                 <span class="legend-item"><span class="legend-dot" style="background:#06d6a0"></span>Comm Svcs</span>
@@ -167,6 +171,13 @@
                     <div class="cc-heatmap-gradient"></div>
                 </div>
                 <span class="comp-heatmap-label">Dense Cluster</span>
+            </div>
+            <div class="ger-heatmap-legend" id="ger-heatmap-legend" style="display:none">
+                <span class="comp-heatmap-label">Low Risk</span>
+                <div class="comp-heatmap-gradient-wrap">
+                    <div class="ger-heatmap-gradient"></div>
+                </div>
+                <span class="comp-heatmap-label">Critical</span>
             </div>
             <div class="edge-legend">
                 <span class="edge-legend-item"><span class="edge-legend-line edge-same"></span>Same-sector peer</span>

@@ -1873,6 +1873,34 @@ header h1 {
     color: #059669;
     border-color: rgba(6,214,160,0.3);
 }
+.ger-heatmap-gradient {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #06d6a0, #b4d806, #ffd166, #fb923c, #dc2626);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+[data-theme="light"] .ger-heatmap-gradient {
+    border-color: rgba(0,0,0,0.1);
+}
+.ger-heatmap-toggle.active {
+    background: rgba(239,71,111,0.15);
+    color: #ef476f;
+    border-color: rgba(239,71,111,0.3);
+}
+[data-theme="light"] .ger-heatmap-toggle.active {
+    background: rgba(239,71,111,0.12);
+    color: #be123c;
+    border-color: rgba(239,71,111,0.3);
+}
+.ger-heatmap-legend {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: #a1a1aa;
+    padding: 0 8px;
+}
 .pr-heatmap-toggle.active {
     background: rgba(0,180,216,0.15);
     color: #00b4d8;
@@ -1894,6 +1922,11 @@ header h1 {
 .tt-cc-low { color: #00b4d8; font-weight: 600; }
 .tt-cc-label { font-size: 0.72em; opacity: 0.7; font-weight: 400; }
 .tt-mutual-val { color: #ffd166; font-weight: 500; }
+.tt-ger-critical { color: #dc2626; font-weight: 700; }
+.tt-ger-high { color: #ef476f; font-weight: 600; }
+.tt-ger-elevated { color: #fb923c; font-weight: 500; }
+.tt-ger-moderate { color: #ffd166; }
+.tt-ger-low { color: #06d6a0; }
 
 /* Mutual edge styling in path results */
 .path-edge-arrow.path-edge-mutual {
