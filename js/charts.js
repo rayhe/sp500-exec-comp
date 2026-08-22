@@ -3743,6 +3743,9 @@ function drawScatterChart(companies) {
 
     // Apply any pending scatter highlight (cross-chart navigation)
     _applyScatterHighlight();
+
+    // Cross-chart navigation strip: Scatter → GER (when GER axis is active)
+    _renderScatterGERNav(pts, xMetricKey, yMetricKey);
 }
 
 function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity) {
@@ -10125,6 +10128,9 @@ function drawGERChart(companies) {
             }
         });
     });
+
+    // Apply any pending GER highlight (cross-chart navigation from scatter)
+    _applyGERHighlight();
 }
 
 /* === Cross-Chart Navigation: Navigate to Scatter with Company Highlight === */
@@ -10248,5 +10254,221 @@ function _applyScatterHighlight() {
     // Auto-remove highlight after 6 seconds
     _scatterHighlightTimer = setTimeout(function() {
         ringGroup.transition().duration(800).style('opacity', 0).remove();
+    }, 6000);
+}
+
+/* === Cross-Chart Navigation: Scatter → GER Chart === */
+
+/**
+ * Render a navigation strip below the scatter chart when either axis is GER Score.
+ * Shows top-N high-GER companies visible on the chart as clickable buttons that
+ * jump to the GER stacked bar chart with that company highlighted.
+ */
+function _renderScatterGERNav(pts, xMetricKey, yMetricKey) {
+    // Remove any existing strip
+    var existingStrip = document.getElementById('scatter-ger-nav-strip');
+    if (existingStrip) existingStrip.remove();
+
+    // Only show when GER is on at least one axis
+    var gerOnX = xMetricKey === '_gerScore';
+    var gerOnY = yMetricKey === '_gerScore';
+    if (!gerOnX && !gerOnY) return;
+
+    // Get companies with GER data, sorted by GER score descending
+    var gerPts = pts.filter(function(c) { return c._gerScore != null && c._gerScore > 0; });
+    if (gerPts.length === 0) return;
+    gerPts.sort(function(a, b) { return b._gerScore - a._gerScore; });
+
+    // Show top 5 high-GER companies
+    var topGer = gerPts.slice(0, 5);
+
+    var strip = document.createElement('div');
+    strip.id = 'scatter-ger-nav-strip';
+    strip.className = 'scatter-ger-nav-strip';
+
+    var label = document.createElement('span');
+    label.className = 'scatter-ger-nav-label';
+    label.textContent = 'Dive into GER chart:';
+    strip.appendChild(label);
+
+    topGer.forEach(function(c) {
+        var btn = document.createElement('button');
+        btn.className = 'scatter-ger-nav-btn';
+        btn.setAttribute('data-ticker', c.ticker);
+        var riskClass = c._gerRisk === 'Critical' ? 'critical' : c._gerRisk === 'High' ? 'high' :
+            c._gerRisk === 'Elevated' ? 'elevated' : 'moderate';
+        btn.classList.add('ger-risk-' + riskClass);
+        btn.textContent = c.ticker + ' (GER ' + c._gerScore + ') \u2193';
+        btn.title = c.company_name + ' \u2014 GER ' + c._gerScore + '/100 (' + c._gerRisk + '). Click to view in GER chart.';
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (typeof window.navigateToGER === 'function') {
+                window.navigateToGER(c.ticker);
+            }
+        });
+        strip.appendChild(btn);
+    });
+
+    // Also add a "View all \u2193" button
+    var viewAllBtn = document.createElement('button');
+    viewAllBtn.className = 'scatter-ger-nav-btn scatter-ger-nav-all';
+    viewAllBtn.textContent = 'View all \u2193';
+    viewAllBtn.title = 'Scroll to Governance Erosion Risk chart';
+    viewAllBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var section = document.getElementById('ger-chart-panel');
+        if (section) {
+            var headerHeight = typeof getStickyOffset === 'function' ? getStickyOffset() : 80;
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+        }
+    });
+    strip.appendChild(viewAllBtn);
+
+    // Insert after the scatter chart container
+    var scatterPanel = document.getElementById('scatter-chart-panel');
+    if (scatterPanel) {
+        var brushResults = document.getElementById('scatter-brush-results');
+        if (brushResults) {
+            brushResults.parentNode.insertBefore(strip, brushResults);
+        } else {
+            scatterPanel.appendChild(strip);
+        }
+    }
+}
+
+// Pending GER highlight ticker — set before GER chart redraws, consumed after bars render
+var _gerHighlightTicker = null;
+var _gerHighlightTimer = null;
+
+/**
+ * Navigate to the GER chart, scrolling to it and highlighting a specific company's bar.
+ * If the company is not in the current top-N displayed, expands the chart to include it.
+ * @param {string} ticker - Company ticker to highlight in the GER chart
+ */
+window.navigateToGER = function(ticker) {
+    // Set the highlight ticker before redrawing
+    _gerHighlightTicker = ticker;
+
+    // Redraw GER chart (it will pick up the highlight)
+    if (_chartData && _chartData.companies) {
+        var el = document.getElementById('ger-chart');
+        if (el) el.innerHTML = '';
+        drawGERChart(_chartData.companies);
+    }
+
+    // Scroll to GER chart section
+    var section = document.getElementById('ger-chart-panel');
+    if (section) {
+        var headerHeight = typeof getStickyOffset === 'function' ? getStickyOffset() : 80;
+        var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+        window.scrollTo({ top: sectionTop, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+    }
+
+    if (typeof announce === 'function') {
+        announce('GER chart: highlighting ' + ticker);
+    }
+};
+
+/**
+ * After GER chart bars render, check for pending highlight ticker and draw a pulsing
+ * highlight rectangle around the matching company's bar row.
+ * Called at the end of drawGERChart.
+ */
+function _applyGERHighlight() {
+    if (!_gerHighlightTicker) return;
+    var ticker = _gerHighlightTicker;
+    _gerHighlightTicker = null; // consume
+
+    // Clear any previous highlight timer
+    if (_gerHighlightTimer) { clearTimeout(_gerHighlightTimer); _gerHighlightTimer = null; }
+
+    var container = document.getElementById('ger-chart');
+    if (!container) return;
+    var svg = d3.select(container).select('svg');
+    if (svg.empty()) return;
+
+    // Find all text elements to locate the ticker label
+    var matchY = null;
+    var matchBH = null;
+    var g = svg.select('g');
+    if (g.empty()) return;
+
+    // Search for the ticker in the y-axis labels (text elements with text-anchor=end)
+    g.selectAll('text').each(function() {
+        var el = d3.select(this);
+        if (el.text() === ticker && el.attr('text-anchor') === 'end') {
+            // Found the ticker label — get its y position
+            var labelY = parseFloat(el.attr('y'));
+            matchY = labelY;
+        }
+    });
+
+    if (matchY === null) return;
+
+    // The label y is at bandCenter + 4, so band top is y - 4 - bandwidth/2
+    // Find the actual bar rects at this y level
+    var barRects = [];
+    g.selectAll('rect').each(function() {
+        var el = d3.select(this);
+        var ry = parseFloat(el.attr('y'));
+        var rh = parseFloat(el.attr('height'));
+        // Match bars within ~2px of the label position
+        if (Math.abs(ry + rh / 2 + 4 - matchY) < 6 && el.attr('fill') !== 'transparent') {
+            barRects.push({ y: ry, h: rh, x: parseFloat(el.attr('x')) || 0, w: parseFloat(el.attr('width')) || 0 });
+        }
+    });
+
+    if (barRects.length === 0) return;
+
+    // Get bounding box of all bar segments
+    var minX = d3.min(barRects, function(b) { return b.x; });
+    var maxX = d3.max(barRects, function(b) { return b.x + b.w; });
+    var barY = barRects[0].y;
+    var barH = barRects[0].h;
+
+    // Draw highlight rectangle around the full bar row
+    var hlGroup = g.append('g').attr('class', 'ger-highlight-ring');
+
+    // Pulsing outer rectangle
+    hlGroup.append('rect')
+        .attr('x', minX - 4)
+        .attr('y', barY - 3)
+        .attr('width', maxX - minX + 8)
+        .attr('height', barH + 6)
+        .attr('rx', 5)
+        .attr('fill', 'none')
+        .attr('stroke', '#ef476f')
+        .attr('stroke-width', 2.5)
+        .attr('opacity', 0.9)
+        .attr('class', 'ger-highlight-pulse');
+
+    // Inner static rectangle
+    hlGroup.append('rect')
+        .attr('x', minX - 2)
+        .attr('y', barY - 1)
+        .attr('width', maxX - minX + 4)
+        .attr('height', barH + 2)
+        .attr('rx', 4)
+        .attr('fill', 'none')
+        .attr('stroke', '#ef476f')
+        .attr('stroke-width', 1)
+        .attr('opacity', 0.5);
+
+    // "From scatter" label above the highlight
+    hlGroup.append('text')
+        .attr('x', maxX + 30)
+        .attr('y', barY + barH / 2 + 4)
+        .attr('text-anchor', 'start')
+        .attr('fill', '#ef476f')
+        .attr('font-size', '10px')
+        .attr('font-weight', '600')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .attr('opacity', 0.8)
+        .text('\u2190 from scatter');
+
+    // Auto-remove highlight after 6 seconds
+    _gerHighlightTimer = setTimeout(function() {
+        hlGroup.transition().duration(800).style('opacity', 0).remove();
     }, 6000);
 }

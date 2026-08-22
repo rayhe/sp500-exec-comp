@@ -10230,3 +10230,111 @@ body.light-mode .cross-sector-pair-select:focus {
     font-size: 0.72rem;
     color: var(--text-muted);
 }
+
+
+/* === Scatter → GER navigation strip === */
+.scatter-ger-nav-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    background: rgba(239, 71, 111, 0.04);
+    border: 1px solid rgba(239, 71, 111, 0.12);
+    border-radius: 8px;
+}
+[data-theme="light"] .scatter-ger-nav-strip {
+    background: rgba(239, 71, 111, 0.03);
+    border-color: rgba(239, 71, 111, 0.1);
+}
+
+.scatter-ger-nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.scatter-ger-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-decoration: none;
+    border: 1px solid;
+}
+
+.scatter-ger-nav-btn:hover {
+    transform: translateY(-1px);
+}
+
+.scatter-ger-nav-btn:active {
+    transform: translateY(0);
+}
+
+/* Risk-tier coloring for GER nav buttons */
+.scatter-ger-nav-btn.ger-risk-critical {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.25);
+}
+.scatter-ger-nav-btn.ger-risk-critical:hover {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.scatter-ger-nav-btn.ger-risk-high {
+    color: #ef476f;
+    background: rgba(239, 71, 111, 0.08);
+    border-color: rgba(239, 71, 111, 0.25);
+}
+.scatter-ger-nav-btn.ger-risk-high:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
+.scatter-ger-nav-btn.ger-risk-elevated {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.08);
+    border-color: rgba(251, 146, 60, 0.2);
+}
+.scatter-ger-nav-btn.ger-risk-elevated:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
+
+.scatter-ger-nav-btn.ger-risk-moderate {
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.08);
+    border-color: rgba(255, 209, 102, 0.2);
+}
+.scatter-ger-nav-btn.ger-risk-moderate:hover {
+    background: rgba(255, 209, 102, 0.15);
+    border-color: rgba(255, 209, 102, 0.35);
+}
+
+.scatter-ger-nav-btn.scatter-ger-nav-all {
+    color: var(--text-secondary);
+    background: transparent;
+    border-color: rgba(161, 161, 170, 0.2);
+}
+.scatter-ger-nav-btn.scatter-ger-nav-all:hover {
+    background: rgba(161, 161, 170, 0.08);
+    border-color: rgba(161, 161, 170, 0.35);
+}
+
+/* GER chart highlight pulse animation */
+@keyframes ger-highlight-pulse {
+    0%, 100% { stroke-opacity: 0.9; stroke-width: 2.5px; }
+    50% { stroke-opacity: 0.4; stroke-width: 1.5px; }
+}
+
+.ger-highlight-pulse {
+    animation: ger-highlight-pulse 1.2s ease-in-out infinite;
+}
