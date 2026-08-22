@@ -3740,6 +3740,9 @@ function drawScatterChart(companies) {
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .attr('pointer-events', 'none')
         .text('Drag on empty space to select a region · Click dots to view details · Esc to clear');
+
+    // Apply any pending scatter highlight (cross-chart navigation)
+    _applyScatterHighlight();
 }
 
 function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity) {
@@ -10017,7 +10020,31 @@ function drawGERChart(companies) {
                 'Pay-Gov Mismatch: ' + c._gerComponents.payMismatch + ' pts\n' +
                 'CEO Concentration: ' + c._gerComponents.concentration + ' pts\n' +
                 'Governance: ' + (c._govScore || '?') + '/100 (' + (c._govGrade || '?') + ')\n' +
-                'Total Comp: ' + (typeof fmtCurr === 'function' ? fmtCurr(c.total_compensation) : '$' + Math.round(c.total_compensation / 1000000) + 'M'));
+                'Total Comp: ' + (typeof fmtCurr === 'function' ? fmtCurr(c.total_compensation) : '$' + Math.round(c.total_compensation / 1000000) + 'M') +
+                '\nClick to open detail panel · Double-click for scatter view');
+
+        // Scatter navigation icon (small chart icon after the score label)
+        var scatterIconX = Math.min(xScale(c._gerScore) + 22, width - 10);
+        (function(ticker) {
+            g.append('text')
+                .attr('x', scatterIconX)
+                .attr('y', y + bh / 2 + 4)
+                .style('fill', mutedColor)
+                .style('font-size', '10px')
+                .style('cursor', 'pointer')
+                .style('opacity', 0.4)
+                .text('⤴')
+                .on('mouseover', function() { d3.select(this).style('opacity', 1); })
+                .on('mouseout', function() { d3.select(this).style('opacity', 0.4); })
+                .on('click', function(event) {
+                    event.stopPropagation();
+                    if (typeof window.navigateToScatter === 'function') {
+                        window.navigateToScatter(ticker, '_gerScore', 'total_compensation');
+                    }
+                })
+                .append('title')
+                .text('View ' + ticker + ' in GER vs Pay scatter');
+        })(c.ticker);
     });
 
     // Legend
@@ -10071,6 +10098,155 @@ function drawGERChart(companies) {
     var avgGer = eligible.length > 0 ? Math.round(eligible.reduce(function(s, c) { return s + c._gerScore; }, 0) / eligible.length) : 0;
     narrativeHtml += ' ' + sectorLabel + ' average GER score: ' + avgGer + '/100.';
     narrativeHtml += '</div>';
+
+    // Cross-chart navigation: top-3 high-GER companies with scatter links
+    if (highRiskCount > 0) {
+        var topRisk = eligible.filter(function(c) { return c._gerScore >= 60; })
+            .sort(function(a, b) { return b._gerScore - a._gerScore; })
+            .slice(0, 3);
+        narrativeHtml += '<div class="ger-scatter-nav-strip" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">';
+        narrativeHtml += '<span style="font-size:0.75rem;color:var(--text-muted);">Explore in scatter:</span>';
+        topRisk.forEach(function(c) {
+            narrativeHtml += '<button class="ger-scatter-nav" data-ticker="' + c.ticker + '">' + c.ticker + ' (GER ' + c._gerScore + ') →</button>';
+        });
+        narrativeHtml += '</div>';
+    }
+
     narrativeDiv.innerHTML = narrativeHtml;
     container.appendChild(narrativeDiv);
+
+    // Wire up scatter navigation buttons
+    narrativeDiv.querySelectorAll('.ger-scatter-nav').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var ticker = btn.getAttribute('data-ticker');
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(ticker, '_gerScore', 'total_compensation');
+            }
+        });
+    });
+}
+
+/* === Cross-Chart Navigation: Navigate to Scatter with Company Highlight === */
+
+// Pending highlight ticker — set before scatter redraws, consumed after dots render
+var _scatterHighlightTicker = null;
+var _scatterHighlightTimer = null;
+
+/**
+ * Navigate to the scatter chart, optionally switching to a preset axis combo,
+ * and highlight a specific company with a pulsing ring.
+ * @param {string} ticker - Company ticker to highlight
+ * @param {string} [presetX] - X axis metric key (e.g. '_gerScore')
+ * @param {string} [presetY] - Y axis metric key (e.g. 'total_compensation')
+ */
+window.navigateToScatter = function(ticker, presetX, presetY) {
+    // Set preset axes if specified
+    var xSel = document.getElementById('scatter-x-metric');
+    var ySel = document.getElementById('scatter-y-metric');
+    if (presetX && xSel) xSel.value = presetX;
+    if (presetY && ySel) ySel.value = presetY;
+
+    // Sync preset button active states
+    if (typeof _syncPresetActiveState === 'function') _syncPresetActiveState();
+
+    // Set the highlight ticker before redrawing
+    _scatterHighlightTicker = ticker;
+
+    // Redraw scatter
+    var el = document.getElementById('scatter-chart');
+    if (el) el.innerHTML = '';
+    if (_chartData && _chartData.companies) drawScatterChart(_chartData.companies);
+
+    // Scroll to scatter section
+    var section = document.getElementById('scatter-chart-panel');
+    if (section) {
+        var headerHeight = typeof getStickyOffset === 'function' ? getStickyOffset() : 80;
+        var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+        window.scrollTo({ top: sectionTop, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+    }
+
+    if (typeof announce === 'function') {
+        announce('Scatter chart: highlighting ' + ticker + (presetX ? ' on ' + (presetX === '_gerScore' ? 'GER' : presetX) + ' vs ' + (presetY === 'total_compensation' ? 'Pay' : presetY) : ''));
+    }
+};
+
+/**
+ * After scatter dots render, check for pending highlight ticker and draw a pulsing ring.
+ * Called at the end of drawScatterChart.
+ */
+function _applyScatterHighlight() {
+    if (!_scatterHighlightTicker) return;
+    var ticker = _scatterHighlightTicker;
+    _scatterHighlightTicker = null; // consume
+
+    // Clear any previous highlight timer
+    if (_scatterHighlightTimer) { clearTimeout(_scatterHighlightTimer); _scatterHighlightTimer = null; }
+
+    var container = document.getElementById('scatter-chart');
+    if (!container) return;
+    var svg = d3.select(container).select('svg');
+    if (svg.empty()) return;
+
+    // Find the matching dot
+    var matchDot = null;
+    svg.selectAll('.scatter-dot, .scatter-dot-sector, .scatter-dot-bg').each(function(d) {
+        if (d && d.ticker === ticker) {
+            matchDot = d3.select(this);
+        }
+    });
+
+    if (!matchDot) return;
+
+    var cx = parseFloat(matchDot.attr('cx'));
+    var cy = parseFloat(matchDot.attr('cy'));
+    var cr = parseFloat(matchDot.attr('r')) || 6;
+
+    // Get the inner <g> that holds the dots (first child g of the svg)
+    var g = svg.select('g');
+    if (g.empty()) g = svg;
+
+    // Add highlight ring with pulsing animation
+    var ringGroup = g.append('g').attr('class', 'scatter-highlight-ring');
+
+    // Outer pulse ring
+    ringGroup.append('circle')
+        .attr('cx', cx)
+        .attr('cy', cy)
+        .attr('r', cr + 8)
+        .attr('fill', 'none')
+        .attr('stroke', '#ef476f')
+        .attr('stroke-width', 2.5)
+        .attr('opacity', 0.9)
+        .attr('class', 'scatter-highlight-pulse');
+
+    // Inner static ring
+    ringGroup.append('circle')
+        .attr('cx', cx)
+        .attr('cy', cy)
+        .attr('r', cr + 4)
+        .attr('fill', 'none')
+        .attr('stroke', '#ef476f')
+        .attr('stroke-width', 1.5)
+        .attr('opacity', 0.6);
+
+    // Ticker label above dot
+    ringGroup.append('text')
+        .attr('x', cx)
+        .attr('y', cy - cr - 12)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#ef476f')
+        .attr('font-size', '12px')
+        .attr('font-weight', '700')
+        .attr('font-family', 'Inter, system-ui, sans-serif')
+        .text(ticker);
+
+    // Bring the matched dot to front
+    matchDot.raise();
+    matchDot.attr('stroke', '#ef476f').attr('stroke-width', 2).attr('opacity', 1);
+
+    // Auto-remove highlight after 6 seconds
+    _scatterHighlightTimer = setTimeout(function() {
+        ringGroup.transition().duration(800).style('opacity', 0).remove();
+    }, 6000);
 }

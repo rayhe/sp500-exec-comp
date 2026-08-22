@@ -53,6 +53,7 @@ function initNetwork(peerData) {
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
     var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
+    var gerThreshold = 0; // min GER score for node visibility (0 = show all)
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -884,6 +885,12 @@ function initNetwork(peerData) {
                 var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
                 if (s.sector && t.sector && s.sector === t.sector) return;
+                // GER threshold — hide edges where both endpoints are below threshold
+                if (gerHeatmapMode && gerThreshold > 0) {
+                    var gs1 = _compLookup[s.ticker] ? _compLookup[s.ticker]._gerScore : null;
+                    var gs2 = _compLookup[t.ticker] ? _compLookup[t.ticker]._gerScore : null;
+                    if ((gs1 == null || gs1 < gerThreshold) && (gs2 == null || gs2 < gerThreshold)) return;
+                }
                 ctx.moveTo(s.x, s.y);
                 ctx.lineTo(t.x, t.y);
             });
@@ -900,6 +907,12 @@ function initNetwork(peerData) {
                 var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
                 if (!s.sector || !t.sector || s.sector !== t.sector) return;
+                // GER threshold — hide edges where both endpoints are below threshold
+                if (gerHeatmapMode && gerThreshold > 0) {
+                    var gs1 = _compLookup[s.ticker] ? _compLookup[s.ticker]._gerScore : null;
+                    var gs2 = _compLookup[t.ticker] ? _compLookup[t.ticker]._gerScore : null;
+                    if ((gs1 == null || gs1 < gerThreshold) && (gs2 == null || gs2 < gerThreshold)) return;
+                }
                 // Quadratic curve with control point offset perpendicular to the midpoint
                 var mx = (s.x + t.x) / 2;
                 var my = (s.y + t.y) / 2;
@@ -924,7 +937,17 @@ function initNetwork(peerData) {
             var color = getNodeColor(d.ticker, d.sector);
             var alpha = 0.85;
 
-            if (hoveredNode) {
+            // GER threshold filter — dim nodes below threshold when GER heatmap is active
+            var belowGerThreshold = false;
+            if (gerHeatmapMode && gerThreshold > 0) {
+                var gerScore = _compLookup[d.ticker] ? _compLookup[d.ticker]._gerScore : null;
+                if (gerScore == null || gerScore < gerThreshold) {
+                    belowGerThreshold = true;
+                    alpha = 0.04;
+                }
+            }
+
+            if (!belowGerThreshold && hoveredNode) {
                 if (d === hoveredNode) {
                     alpha = 1;
                 } else if (connectedSet && connectedSet.has(d.ticker)) {
@@ -932,14 +955,14 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.25 : 0.15;
                 }
-            } else if (activePath && activePath.nodes.length >= 2) {
+            } else if (!belowGerThreshold && activePath && activePath.nodes.length >= 2) {
                 // When path is active, dim non-path nodes
                 if (activePath.nodes.indexOf(d.ticker) >= 0) {
                     alpha = 1; // path nodes drawn again on top with glow
                 } else {
                     alpha = _hiContrast ? 0.12 : 0.08;
                 }
-            } else if (activeLegendSector && sectorNodeSet) {
+            } else if (!belowGerThreshold && activeLegendSector && sectorNodeSet) {
                 if (sectorNodeSet.has(d.ticker)) {
                     alpha = 1;
                 } else {
@@ -1197,6 +1220,11 @@ function initNetwork(peerData) {
             if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode && !isPathNode) return;
             if (!activeLegendSector && !isPathNode && !shouldShowLabel(d, scale)) return;
             if (hoveredNode && !connectedSet.has(d.ticker)) return;
+            // GER threshold — hide labels for nodes below threshold
+            if (gerHeatmapMode && gerThreshold > 0) {
+                var _gerLabelScore = _compLookup[d.ticker] ? _compLookup[d.ticker]._gerScore : null;
+                if (_gerLabelScore == null || _gerLabelScore < gerThreshold) return;
+            }
             // When sector filter is active, show labels for sector nodes based on zoom
             if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
                 if (!shouldShowLabel(d, scale * 1.5)) return; // more lenient threshold
@@ -2358,9 +2386,63 @@ function initNetwork(peerData) {
             }
             gerHeatmapToggle.classList.toggle('active', gerHeatmapMode);
             if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = gerHeatmapMode ? 'flex' : 'none';
+            // Reset threshold when turning off GER mode
+            if (!gerHeatmapMode) {
+                gerThreshold = 0;
+                var _gSlider = document.getElementById('ger-threshold-slider');
+                var _gVal = document.getElementById('ger-threshold-value');
+                var _gCount = document.getElementById('ger-threshold-count');
+                if (_gSlider) _gSlider.value = 0;
+                if (_gVal) _gVal.textContent = '0';
+                if (_gCount) _gCount.textContent = '';
+            } else {
+                _updateGerThresholdCount();
+            }
             draw();
             announce(gerHeatmapMode ? 'Governance erosion risk heatmap enabled — green = low risk, red = critical' : 'Sector coloring restored');
             if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
+    // GER threshold slider — filter network nodes by minimum GER score
+    var gerThresholdSlider = document.getElementById('ger-threshold-slider');
+    var gerThresholdValueEl = document.getElementById('ger-threshold-value');
+    var gerThresholdCountEl = document.getElementById('ger-threshold-count');
+
+    function _updateGerThresholdCount() {
+        if (!gerThresholdCountEl) return;
+        if (!gerHeatmapMode || gerThreshold === 0) {
+            gerThresholdCountEl.textContent = '';
+            return;
+        }
+        var aboveCount = 0;
+        nodes.forEach(function(n) {
+            var s = _compLookup[n.ticker] ? _compLookup[n.ticker]._gerScore : null;
+            if (s != null && s >= gerThreshold) aboveCount++;
+        });
+        gerThresholdCountEl.textContent = '(' + aboveCount + ' of ' + nodes.length + ' visible)';
+    }
+
+    if (gerThresholdSlider) {
+        gerThresholdSlider.addEventListener('input', function() {
+            gerThreshold = parseInt(this.value, 10);
+            if (gerThresholdValueEl) gerThresholdValueEl.textContent = gerThreshold;
+            _updateGerThresholdCount();
+            draw();
+        });
+        gerThresholdSlider.addEventListener('change', function() {
+            if (typeof announce === 'function') {
+                if (gerThreshold > 0) {
+                    var count = 0;
+                    nodes.forEach(function(n) {
+                        var s = _compLookup[n.ticker] ? _compLookup[n.ticker]._gerScore : null;
+                        if (s != null && s >= gerThreshold) count++;
+                    });
+                    announce('Network filtered to ' + count + ' companies with GER score ' + gerThreshold + ' or above');
+                } else {
+                    announce('Network filter cleared — showing all companies');
+                }
+            }
         });
     }
 

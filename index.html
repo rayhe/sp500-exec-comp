@@ -178,6 +178,12 @@
                     <div class="ger-heatmap-gradient"></div>
                 </div>
                 <span class="comp-heatmap-label">Critical</span>
+                <div class="ger-threshold-control" id="ger-threshold-control">
+                    <label for="ger-threshold-slider">Min GER:</label>
+                    <input type="range" class="ger-threshold-slider" id="ger-threshold-slider" min="0" max="100" value="0" step="5" aria-label="Filter nodes by minimum GER score">
+                    <span class="ger-threshold-value" id="ger-threshold-value">0</span>
+                    <span class="ger-threshold-count" id="ger-threshold-count"></span>
+                </div>
             </div>
             <div class="edge-legend">
                 <span class="edge-legend-item"><span class="edge-legend-line edge-same"></span>Same-sector peer</span>

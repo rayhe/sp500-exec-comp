@@ -10160,3 +10160,73 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .ger-narrative {
     background: rgba(239, 71, 111, 0.05);
 }
+
+/* Scatter highlight pulse animation */
+@keyframes scatter-pulse {
+    0% { r: attr(r); opacity: 0.9; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.9; }
+}
+
+.scatter-highlight-pulse {
+    animation: scatter-highlight-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes scatter-highlight-pulse {
+    0% { stroke-opacity: 0.9; stroke-width: 2.5px; }
+    50% { stroke-opacity: 0.2; stroke-width: 4px; }
+    100% { stroke-opacity: 0.9; stroke-width: 2.5px; }
+}
+
+/* GER chart scatter navigation link */
+.ger-scatter-nav {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ef476f;
+    background: rgba(239, 71, 111, 0.08);
+    border: 1px solid rgba(239, 71, 111, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    text-decoration: none;
+}
+
+.ger-scatter-nav:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
+/* GER threshold slider for network */
+.ger-threshold-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.ger-threshold-control label {
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.ger-threshold-slider {
+    width: 120px;
+    accent-color: #ef476f;
+    cursor: pointer;
+}
+
+.ger-threshold-value {
+    font-weight: 700;
+    min-width: 28px;
+    color: var(--text-main);
+}
+
+.ger-threshold-count {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
