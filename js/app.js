@@ -2876,23 +2876,58 @@ function populateInsights(comp, trends, sectorFilter) {
         var withBoth = companies.filter(function(c) { return c._ceoVolatility != null && c._ceoTenureYears != null; });
         if (withBoth.length < 40) return;
         var newCEOs = withBoth.filter(function(c) { return c._ceoTenureYears < 3; });
+        var midCEOs = withBoth.filter(function(c) { return c._ceoTenureYears >= 3 && c._ceoTenureYears < 10; });
+        var estCEOs = withBoth.filter(function(c) { return c._ceoTenureYears >= 10 && c._ceoTenureYears < 20; });
         var veterans = withBoth.filter(function(c) { return c._ceoTenureYears >= 20; });
         if (newCEOs.length < 5 || veterans.length < 5) return;
         var newVols = newCEOs.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var midVols = midCEOs.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var estVols = estCEOs.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
         var vetVols = veterans.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
         var newMed = newVols[Math.floor(newVols.length / 2)];
+        var midMed = midVols.length > 0 ? midVols[Math.floor(midVols.length / 2)] : null;
+        var estMed = estVols.length > 0 ? estVols[Math.floor(estVols.length / 2)] : null;
         var vetMed = vetVols[Math.floor(vetVols.length / 2)];
         var delta = newMed - vetMed;
         var direction = delta > 3 ? 'New CEOs have more volatile pay' : delta < -3 ? 'Veterans have more volatile pay' : 'Similar volatility across tenures';
         var emoji = delta > 3 ? '\ud83d\udcc9' : delta < -3 ? '\ud83d\udcc8' : '\u2696\ufe0f';
+
+        // Build tenure-bracket mini-sparkline SVG
+        var _tbBrackets = [
+            { label: '<3y', med: newMed, n: newCEOs.length },
+            { label: '3\u201310y', med: midMed, n: midCEOs.length },
+            { label: '10\u201320y', med: estMed, n: estCEOs.length },
+            { label: '20y+', med: vetMed, n: veterans.length }
+        ].filter(function(b) { return b.med != null && b.n >= 3; });
+        var _tbMaxVol = Math.max.apply(null, _tbBrackets.map(function(b) { return b.med; }));
+        var _tbSparkHtml = '';
+        if (_tbBrackets.length >= 3) {
+            var _tbW = 160, _tbH = 32, _tbBarW = Math.floor((_tbW - 8) / _tbBrackets.length) - 4;
+            _tbSparkHtml = '<div class="insight-spark-wrap" title="Median volatility by tenure bracket"><svg width="' + _tbW + '" height="' + _tbH + '" viewBox="0 0 ' + _tbW + ' ' + _tbH + '" style="display:block;margin-top:6px;">';
+            _tbBrackets.forEach(function(b, bi) {
+                var x = 4 + bi * (_tbBarW + 4);
+                var barH = _tbMaxVol > 0 ? (b.med / _tbMaxVol) * (_tbH - 12) : 0;
+                var y = _tbH - barH - 10;
+                var isHighest = b.med === _tbMaxVol;
+                var color = b.med >= 30 ? 'rgba(239,71,111,0.7)' : b.med >= 15 ? 'rgba(255,209,102,0.7)' : 'rgba(6,214,160,0.7)';
+                _tbSparkHtml += '<rect x="' + x + '" y="' + y + '" width="' + _tbBarW + '" height="' + barH + '" rx="2" fill="' + color + '" opacity="' + (isHighest ? '1' : '0.6') + '"/>';
+                _tbSparkHtml += '<text x="' + (x + _tbBarW / 2) + '" y="' + (_tbH - 1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">' + b.label + '</text>';
+                _tbSparkHtml += '<text x="' + (x + _tbBarW / 2) + '" y="' + (y - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + b.med.toFixed(0) + '%</text>';
+            });
+            _tbSparkHtml += '</svg></div>';
+        }
+
         insights.push({
             icon: emoji,
             label: 'Volatility \u00d7 Tenure',
             value: direction,
             detail: 'New CEOs (<3 yrs, n=' + newCEOs.length + '): median ' + newMed.toFixed(1) + '% CV. ' +
+                (midMed != null ? 'Mid-tenure (3\u201310 yrs, n=' + midCEOs.length + '): ' + midMed.toFixed(1) + '% CV. ' : '') +
+                (estMed != null ? 'Established (10\u201320 yrs, n=' + estCEOs.length + '): ' + estMed.toFixed(1) + '% CV. ' : '') +
                 'Veterans (20+ yrs, n=' + veterans.length + '): median ' + vetMed.toFixed(1) + '% CV. ' +
-                'Delta: ' + Math.abs(delta).toFixed(1) + ' percentage points. ' +
+                'Delta (new vs veteran): ' + Math.abs(delta).toFixed(1) + ' pts. ' +
                 'Based on ' + withBoth.length + ' companies with both tenure and multi-year compensation data.',
+            sparkHtml: _tbSparkHtml,
             action: function() {
                 scrollToSectionById('volatility-tenure-panel');
             },
@@ -3017,6 +3052,10 @@ function populateInsights(comp, trends, sectorFilter) {
             '<div class="insight-label">' + ins.label + '</div>' +
             '<div class="insight-value">' + ins.value + '</div>' +
             '<div class="insight-detail">' + ins.detail + '</div>';
+        // Custom sparkline HTML (e.g. tenure-bracket mini bar chart)
+        if (ins.sparkHtml) {
+            html += ins.sparkHtml;
+        }
         // Sector pay ranking mini-chart (inline horizontal bar chart)
         if (ins._sectorRankData && ins._sectorRankData.length > 0 && ins._sectorRankActive) {
             var srd = ins._sectorRankData;

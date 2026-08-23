@@ -12232,8 +12232,76 @@ function drawSopVolCrossTab(companies) {
 
     var dangerZone = eligible.filter(function(c) { return c._sopApproval < 70 && c._ceoVolatility >= 40; });
 
+    // Compute Pearson correlation between SoP approval and pay volatility
+    var sopArr = eligible.map(function(c) { return c._sopApproval; });
+    var volArr = eligible.map(function(c) { return c._ceoVolatility; });
+    var pearsonR = null, pearsonP = null, pearsonN = eligible.length;
+    if (pearsonN >= 5) {
+        var sopMean = sopArr.reduce(function(s,v){return s+v;},0) / pearsonN;
+        var volMean = volArr.reduce(function(s,v){return s+v;},0) / pearsonN;
+        var ssxy = 0, ssxx = 0, ssyy = 0;
+        for (var pi = 0; pi < pearsonN; pi++) {
+            var dx = sopArr[pi] - sopMean;
+            var dy = volArr[pi] - volMean;
+            ssxy += dx * dy;
+            ssxx += dx * dx;
+            ssyy += dy * dy;
+        }
+        if (ssxx > 0 && ssyy > 0) {
+            pearsonR = ssxy / Math.sqrt(ssxx * ssyy);
+            // Two-tailed t-test for significance
+            if (Math.abs(pearsonR) < 1 && pearsonN > 2) {
+                var tStat = pearsonR * Math.sqrt((pearsonN - 2) / (1 - pearsonR * pearsonR));
+                // Approximate p-value from t-distribution using normal approx for large n
+                var absT = Math.abs(tStat);
+                var df = pearsonN - 2;
+                // Beta regularized incomplete function approximation
+                var x = df / (df + absT * absT);
+                // Simple approximation for p-value
+                if (df > 100) {
+                    // Normal approximation
+                    pearsonP = 2 * (1 - _normalCDF(absT));
+                } else {
+                    pearsonP = typeof _pearsonPValue === 'function' ? _pearsonPValue(pearsonR, pearsonN) : null;
+                }
+            }
+        }
+    }
+    // Normal CDF helper for p-value approximation
+    function _normalCDF(x) {
+        var t = 1 / (1 + 0.2316419 * Math.abs(x));
+        var d = 0.3989422804014327;
+        var p = d * Math.exp(-x * x / 2) * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.3302744))));
+        return x > 0 ? 1 - p : p;
+    }
+
     html += '<div class="crosstab-narrative" style="margin-top:16px;padding:14px 18px;border-radius:8px;background:' +
         (dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)') + ';color:' + textColor + ';font-size:13px;line-height:1.6;">';
+
+    // Pearson correlation badge
+    if (pearsonR != null) {
+        var rAbs = Math.abs(pearsonR);
+        var rStr = (pearsonR >= 0 ? '+' : '') + pearsonR.toFixed(3);
+        var rSquared = (pearsonR * pearsonR).toFixed(3);
+        var sigLabel = '';
+        var sigColor = mutedColor;
+        if (pearsonP != null) {
+            if (pearsonP < 0.001) { sigLabel = '***'; sigColor = dark ? '#fbbf24' : '#d97706'; }
+            else if (pearsonP < 0.01) { sigLabel = '**'; sigColor = dark ? '#fbbf24' : '#d97706'; }
+            else if (pearsonP < 0.05) { sigLabel = '*'; sigColor = dark ? '#fbbf24' : '#d97706'; }
+            else { sigLabel = ' n.s.'; }
+        }
+        var strengthLabel = rAbs >= 0.5 ? 'strong' : rAbs >= 0.3 ? 'moderate' : rAbs >= 0.1 ? 'weak' : 'negligible';
+        var dirLabel = pearsonR < 0 ? 'negative' : 'positive';
+        html += '<div style="margin-bottom:10px;font-size:12px;color:' + mutedColor + ';">' +
+            '<strong style="color:' + textColor + ';">Pearson r = ' + rStr + '</strong>' +
+            (sigLabel ? ' <span style="color:' + sigColor + ';font-weight:700;">' + sigLabel + '</span>' : '') +
+            ' · R\u00B2 = ' + rSquared +
+            ' · n = ' + pearsonN +
+            (pearsonP != null ? ' · p ' + (pearsonP < 0.001 ? '< 0.001' : '= ' + pearsonP.toFixed(3)) : '') +
+            ' (' + strengthLabel + ' ' + dirLabel + ' correlation)' +
+            '</div>';
+    }
 
     if (strongMedVol != null && weakMedVol != null) {
         var delta = weakMedVol - strongMedVol;

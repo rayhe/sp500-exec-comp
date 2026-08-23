@@ -508,6 +508,11 @@ header h1 {
     line-height: 1.45;
 }
 
+.insight-spark-wrap {
+    margin-top: 6px;
+    color: var(--text-secondary);
+}
+
 .insight-clickable {
     cursor: pointer;
 }
