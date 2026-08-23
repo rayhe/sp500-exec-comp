@@ -3062,6 +3062,123 @@ tbody tr:last-child td { border-bottom: none; }
     background: #f0f1f5;
 }
 
+/* Pay Mix Evolution — multi-year 100%-stacked composition bars */
+.comp-evo-section {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.comp-evo-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.comp-evo-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+}
+.comp-evo-shift {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-weight: 500;
+}
+.comp-evo-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.comp-evo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.comp-evo-year {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+    min-width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.comp-evo-bar-track {
+    flex: 1;
+    display: flex;
+    height: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+    gap: 1px;
+    background: var(--bg-primary);
+}
+.comp-evo-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2px;
+    transition: opacity 0.15s, filter 0.15s;
+    cursor: default;
+    position: relative;
+}
+.comp-evo-seg:hover {
+    opacity: 1 !important;
+    filter: brightness(1.2);
+    z-index: 1;
+}
+.comp-evo-bar-track:hover .comp-evo-seg:not(:hover) {
+    opacity: 0.5;
+}
+.comp-evo-seg-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    font-family: var(--mono);
+    pointer-events: none;
+    white-space: nowrap;
+}
+.comp-evo-total {
+    font-size: 0.68rem;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    min-width: 48px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.comp-evo-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 8px;
+}
+.comp-evo-leg-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+.comp-evo-leg-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+[data-theme="light"] .comp-evo-section {
+    background: #fff;
+    border-color: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .comp-evo-bar-track {
+    background: #f0f1f5;
+}
+
 /* CEO Pay Trend mini chart in detail panel */
 .ceo-trend-mini {
     margin-top: 16px;

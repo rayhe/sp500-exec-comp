@@ -3166,6 +3166,59 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // Insight: Compensation Structure Shifts — how many companies shifted toward equity over time
+    (function() {
+        var withHistory = companies.filter(function(c) { return c._ceoStockPctHistory && Object.keys(c._ceoStockPctHistory).length >= 2; });
+        if (withHistory.length < 20) return;
+
+        var shiftedUp = 0, shiftedDown = 0, stable = 0;
+        var biggestShiftUp = null, biggestShiftDown = null;
+        var allShifts = [];
+
+        withHistory.forEach(function(c) {
+            var years = Object.keys(c._ceoStockPctHistory).map(Number).sort(function(a, b) { return a - b; });
+            var first = c._ceoStockPctHistory[years[0]];
+            var last = c._ceoStockPctHistory[years[years.length - 1]];
+            if (first == null || last == null) return;
+            var delta = last - first;
+            allShifts.push({ ticker: c.ticker, name: c.ceo_name, delta: delta });
+            if (delta >= 5) {
+                shiftedUp++;
+                if (!biggestShiftUp || delta > biggestShiftUp.delta) biggestShiftUp = { ticker: c.ticker, name: c.ceo_name, delta: delta, from: first, to: last };
+            } else if (delta <= -5) {
+                shiftedDown++;
+                if (!biggestShiftDown || delta < biggestShiftDown.delta) biggestShiftDown = { ticker: c.ticker, name: c.ceo_name, delta: delta, from: first, to: last };
+            } else {
+                stable++;
+            }
+        });
+
+        if (allShifts.length < 20) return;
+
+        var medianShift = allShifts.map(function(s) { return s.delta; }).sort(function(a, b) { return a - b; });
+        var medVal = medianShift[Math.floor(medianShift.length / 2)];
+        var direction = medVal > 2 ? 'More equity-heavy' : medVal < -2 ? 'Less equity-heavy' : 'Stable mix';
+        var emoji = shiftedUp > shiftedDown ? '\uD83D\uDCC8' : shiftedDown > shiftedUp ? '\uD83D\uDCC9' : '\u2696\uFE0F';
+
+        var detail = shiftedUp + ' companies shifted toward more equity (\u22655pp increase), ' +
+            shiftedDown + ' shifted toward less equity, and ' + stable + ' remained stable. ' +
+            'Median shift: ' + (medVal >= 0 ? '+' : '') + medVal.toFixed(1) + 'pp.';
+        if (biggestShiftUp) {
+            detail += ' Biggest equity increase: ' + biggestShiftUp.name + ' (' + biggestShiftUp.ticker + ') from ' + biggestShiftUp.from.toFixed(0) + '% to ' + biggestShiftUp.to.toFixed(0) + '%.';
+        }
+
+        insights.push({
+            icon: emoji,
+            label: 'Pay Structure Shifts',
+            value: direction,
+            detail: detail,
+            action: function() {
+                scrollToSectionById('composition-section');
+            },
+            actionHint: 'View composition analysis'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
@@ -6772,6 +6825,23 @@ function setupDetailPanel(companies) {
                 }
             }
 
+            // Sentence 12: Pay structure evolution — equity shift over multiple years
+            if (company._ceoStockPctHistory && Object.keys(company._ceoStockPctHistory).length >= 2) {
+                var _psYears = Object.keys(company._ceoStockPctHistory).map(Number).sort(function(a, b) { return a - b; });
+                var _psFirst = company._ceoStockPctHistory[_psYears[0]];
+                var _psLast = company._ceoStockPctHistory[_psYears[_psYears.length - 1]];
+                if (_psFirst != null && _psLast != null) {
+                    var _psDelta = _psLast - _psFirst;
+                    if (Math.abs(_psDelta) >= 10) {
+                        var _psDir = _psDelta > 0 ? 'shifted heavily toward equity' : 'shifted away from equity';
+                        sentences.push('Pay structure ' + _psDir + ' over ' + _psYears.length + ' years (equity went from ' + _psFirst.toFixed(0) + '% to ' + _psLast.toFixed(0) + '% of total).');
+                    } else if (Math.abs(_psDelta) >= 5) {
+                        var _psMod = _psDelta > 0 ? 'became more equity-weighted' : 'became less equity-weighted';
+                        sentences.push('Compensation ' + _psMod + ' (' + _psFirst.toFixed(0) + '% \u2192 ' + _psLast.toFixed(0) + '% equity share).');
+                    }
+                }
+            }
+
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';
@@ -7063,6 +7133,130 @@ function setupDetailPanel(companies) {
                         html += '<span class="ceo-comp-legend-label">' + seg.label + '</span>';
                         html += '<span class="ceo-comp-legend-val">' + formatCurrency(seg.value) + ' <span class="ceo-comp-legend-pct">(' + seg.pct.toFixed(1) + '%)</span></span>';
                         html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+            }
+        }
+
+        // Multi-Year CEO Pay Composition Evolution — 100%-stacked bars showing how pay mix shifted across fiscal years
+        if (company.executives && company.executives.length > 0) {
+            var _ceYears = [];
+            company.executives.forEach(function(e) { if (_ceYears.indexOf(e.year) < 0) _ceYears.push(e.year); });
+            _ceYears.sort(function(a, b) { return a - b; });
+
+            if (_ceYears.length >= 2) {
+                var _ceData = []; // { year, name, segments: [{label, value, pct, color}], total }
+                var _ceColorMap = {
+                    'Salary': '#06d6a0',
+                    'Stock': '#00b4d8',
+                    'Options': '#0096c7',
+                    'Incentive': '#a78bfa',
+                    'Bonus': '#8b5cf6',
+                    'Pension': '#fb923c',
+                    'Other': '#ffd166'
+                };
+                var _ceCompKeys = [
+                    { key: 'salary', label: 'Salary', color: _ceColorMap['Salary'] },
+                    { key: 'stock_awards', label: 'Stock', color: _ceColorMap['Stock'] },
+                    { key: 'option_awards', label: 'Options', color: _ceColorMap['Options'] },
+                    { key: 'non_equity_incentive', label: 'Incentive', color: _ceColorMap['Incentive'] },
+                    { key: 'bonus', label: 'Bonus', color: _ceColorMap['Bonus'] },
+                    { key: 'pension_nqdc', label: 'Pension', color: _ceColorMap['Pension'] },
+                    { key: 'all_other', label: 'Other', color: _ceColorMap['Other'] }
+                ];
+
+                _ceYears.forEach(function(yr) {
+                    var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
+                    var ceo = yrExecs.find(function(e) {
+                        return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+                    });
+                    if (!ceo && yrExecs.length > 0) {
+                        ceo = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+                    }
+                    if (ceo && ceo.total > 0) {
+                        var segs = [];
+                        var segTotal = 0;
+                        _ceCompKeys.forEach(function(ck) {
+                            var v = ceo[ck.key] || 0;
+                            if (v > 0) {
+                                segs.push({ label: ck.label, value: v, color: ck.color });
+                                segTotal += v;
+                            }
+                        });
+                        if (segTotal > 0) {
+                            segs.forEach(function(s) { s.pct = s.value / segTotal * 100; });
+                            _ceData.push({ year: yr, name: ceo.name || company.ceo_name, segments: segs, total: segTotal });
+                        }
+                    }
+                });
+
+                if (_ceData.length >= 2) {
+                    // Compute the dominant shift: which component changed most from first to last year?
+                    var _ceFirst = _ceData[0], _ceLast = _ceData[_ceData.length - 1];
+                    var _ceShifts = [];
+                    _ceCompKeys.forEach(function(ck) {
+                        var firstSeg = _ceFirst.segments.find(function(s) { return s.label === ck.label; });
+                        var lastSeg = _ceLast.segments.find(function(s) { return s.label === ck.label; });
+                        var firstPct = firstSeg ? firstSeg.pct : 0;
+                        var lastPct = lastSeg ? lastSeg.pct : 0;
+                        var delta = lastPct - firstPct;
+                        if (Math.abs(delta) >= 1) {
+                            _ceShifts.push({ label: ck.label, delta: delta });
+                        }
+                    });
+                    _ceShifts.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+
+                    // Build shift summary text
+                    var _ceShiftText = '';
+                    if (_ceShifts.length > 0) {
+                        var top = _ceShifts[0];
+                        _ceShiftText = top.label + ' ' + (top.delta > 0 ? '+' : '') + top.delta.toFixed(1) + 'pp';
+                        if (_ceShifts.length > 1) {
+                            var s2 = _ceShifts[1];
+                            _ceShiftText += ', ' + s2.label + ' ' + (s2.delta > 0 ? '+' : '') + s2.delta.toFixed(1) + 'pp';
+                        }
+                    }
+
+                    html += '<div class="comp-evo-section">';
+                    html += '<div class="comp-evo-header">';
+                    html += '<span class="comp-evo-title">Pay Mix Evolution</span>';
+                    if (_ceShiftText) {
+                        html += '<span class="comp-evo-shift" title="Biggest composition shift from FY' + _ceFirst.year + ' to FY' + _ceLast.year + '">' + _ceShiftText + '</span>';
+                    }
+                    html += '</div>';
+
+                    // Render 100%-stacked bars for each year
+                    html += '<div class="comp-evo-bars">';
+                    _ceData.forEach(function(d, idx) {
+                        html += '<div class="comp-evo-row">';
+                        html += '<div class="comp-evo-year">FY' + d.year + '</div>';
+                        html += '<div class="comp-evo-bar-track">';
+                        d.segments.forEach(function(seg) {
+                            if (seg.pct < 0.5) return;
+                            html += '<div class="comp-evo-seg" style="width:' + seg.pct.toFixed(1) + '%;background:' + seg.color + '" title="' + seg.label + ': ' + formatCurrency(seg.value) + ' (' + seg.pct.toFixed(1) + '%)">';
+                            if (seg.pct >= 10) {
+                                html += '<span class="comp-evo-seg-label">' + Math.round(seg.pct) + '%</span>';
+                            }
+                            html += '</div>';
+                        });
+                        html += '</div>';
+                        html += '<div class="comp-evo-total">' + formatCompact(d.total) + '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+
+                    // Compact legend — only show components present in any year
+                    var _ceLegendLabels = {};
+                    _ceData.forEach(function(d) {
+                        d.segments.forEach(function(s) { _ceLegendLabels[s.label] = s.color; });
+                    });
+                    html += '<div class="comp-evo-legend">';
+                    _ceCompKeys.forEach(function(ck) {
+                        if (_ceLegendLabels[ck.label]) {
+                            html += '<span class="comp-evo-leg-item"><span class="comp-evo-leg-dot" style="background:' + ck.color + '"></span>' + ck.label + '</span>';
+                        }
                     });
                     html += '</div>';
                     html += '</div>';
