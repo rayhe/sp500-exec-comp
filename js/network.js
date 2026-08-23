@@ -267,8 +267,50 @@ function initNetwork(peerData) {
                 tickers: c.tickers,
                 sectors: sectors,
                 topTicker: topTicker,
-                color: palette[idx % palette.length]
+                color: palette[idx % palette.length],
+                label: '' // populated below
             });
+        });
+
+        // Auto-generate descriptive names for each community
+        var _sectorShort = {
+            'Information Technology': 'Tech',
+            'Communication Services': 'Media & Comms',
+            'Consumer Discretionary': 'Consumer',
+            'Health Care': 'Healthcare',
+            'Financials': 'Finance',
+            'Consumer Staples': 'Staples',
+            'Industrials': 'Industrial',
+            'Real Estate': 'Real Estate',
+            'Energy': 'Energy',
+            'Materials': 'Materials',
+            'Utilities': 'Utilities'
+        };
+        var _usedNames = {};
+        communityStats.forEach(function(cs) {
+            var total = cs.size;
+            var s0 = cs.sectors[0] || { name: 'Unknown', count: 0 };
+            var s1 = cs.sectors[1] || { name: 'Unknown', count: 0 };
+            var pct0 = total > 0 ? s0.count / total : 0;
+            var pct01 = total > 0 ? (s0.count + s1.count) / total : 0;
+            var short0 = _sectorShort[s0.name] || s0.name;
+            var short1 = _sectorShort[s1.name] || s1.name;
+            var baseName;
+            if (pct0 >= 0.55) {
+                baseName = short0;
+            } else if (pct01 >= 0.55) {
+                baseName = short0 + ' & ' + short1;
+            } else if (cs.sectors.length >= 4) {
+                baseName = 'Diversified';
+            } else {
+                baseName = short0 + '-led';
+            }
+            // Deduplicate: append anchor ticker if name reused
+            if (_usedNames[baseName]) {
+                baseName = baseName + ' · ' + cs.topTicker;
+            }
+            _usedNames[baseName] = true;
+            cs.label = baseName;
         });
     })();
 
@@ -1230,6 +1272,44 @@ function initNetwork(peerData) {
             }
         }
 
+        // Community labels — floating community names at centroids when community mode is active
+        if (!hoveredNode && communityMode) {
+            var _commAlpha = 0;
+            if (scale <= 0.6) {
+                _commAlpha = 0.9;
+            } else if (scale < 1.3) {
+                _commAlpha = 0.9 * (1 - (scale - 0.6) / 0.7);
+            }
+            if (_commAlpha > 0.02) {
+                // Compute centroids for each community
+                var _commSums = {};
+                nodes.forEach(function(n) {
+                    var cid = communityOf[n.ticker];
+                    if (cid == null) return;
+                    if (!_commSums[cid]) _commSums[cid] = { x: 0, y: 0, c: 0 };
+                    _commSums[cid].x += n.x;
+                    _commSums[cid].y += n.y;
+                    _commSums[cid].c++;
+                });
+                var commFontSize = Math.max(11, Math.min(20, 14 / scale));
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '700 ' + commFontSize + 'px Inter, system-ui, sans-serif';
+                communityStats.forEach(function(cs) {
+                    var cd = _commSums[cs.id];
+                    if (!cd || cd.c < 3) return; // skip tiny communities
+                    var cx = cd.x / cd.c;
+                    var cy = cd.y / cd.c;
+                    ctx.shadowColor = _dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.85)';
+                    ctx.shadowBlur = 8 / scale;
+                    ctx.fillStyle = hexToRGBA(cs.color, _commAlpha);
+                    ctx.fillText(cs.label, cx, cy);
+                });
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+        }
+
         // === Path Finder Highlight ===
         if (activePath && activePath.nodes.length >= 2 && !hoveredNode) {
             var pathSet = new Set(activePath.nodes);
@@ -1745,7 +1825,7 @@ function initNetwork(peerData) {
             var cStat = communityStats.find(function(cs) { return cs.id === cid; });
             if (cStat) {
                 var cIdx = communityStats.indexOf(cStat) + 1;
-                html += '<div class="tt-row"><span class="tt-label">Community</span><span class="tt-value" style="color:' + cStat.color + '">Cluster ' + cIdx + ' (' + cStat.size + ' companies)</span></div>';
+                html += '<div class="tt-row"><span class="tt-label">Community</span><span class="tt-value" style="color:' + cStat.color + '">' + cStat.label + ' (' + cStat.size + ' companies)</span></div>';
                 if (cStat.sectors.length > 0) {
                     html += '<div class="tt-row"><span class="tt-label">Top sectors</span><span class="tt-value">' + cStat.sectors.slice(0, 3).map(function(s) { return s.name.replace(/^(.{12}).+/, '$1…') + ' ' + s.count; }).join(', ') + '</span></div>';
                 }
@@ -2716,7 +2796,7 @@ function initNetwork(peerData) {
             }).join(', ');
             html += '<span class="community-legend-item" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ') + '">';
             html += '<span class="legend-dot" style="background:' + cs.color + '"></span>';
-            html += '<span class="community-legend-label">C' + (i + 1) + '</span>';
+            html += '<span class="community-legend-label">' + cs.label + '</span>';
             html += '<span class="community-legend-size">' + cs.size + '</span>';
             html += '<span class="community-legend-sectors">' + topSectors + '</span>';
             html += '</span>';

@@ -10520,7 +10520,7 @@ body.light-mode .cross-sector-pair-select:focus {
 .community-legend-label {
     font-weight: 600;
     color: var(--text-primary, #e4e4e7);
-    min-width: 18px;
+    white-space: nowrap;
 }
 .community-legend-size {
     font-weight: 500;
