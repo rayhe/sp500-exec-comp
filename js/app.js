@@ -6467,6 +6467,33 @@ function setupDetailPanel(companies) {
                 }
             }
 
+            // Sentence 9: Volatility × Governance context — danger zone detection
+            if (company._ceoVolatility != null && company._govScore != null) {
+                var _vgAll = companies.filter(function(c) { return c._ceoVolatility != null && c._govScore != null; });
+                if (_vgAll.length >= 20) {
+                    var _vgGovVals = _vgAll.map(function(c) { return c._govScore; }).sort(function(a,b){return a-b;});
+                    var _vgQ1 = _vgGovVals[Math.floor(_vgGovVals.length * 0.25)];
+                    var _vgQ3 = _vgGovVals[Math.floor(_vgGovVals.length * 0.75)];
+                    var isHighVol = company._ceoVolatility >= 40;
+                    var isWeakGov = company._govScore < _vgQ1;
+                    var isStrongGov = company._govScore >= _vgQ3;
+                    var isLowVol = company._ceoVolatility < 15;
+
+                    if (isHighVol && isWeakGov) {
+                        // Danger zone
+                        var _vgDangerPeers = _vgAll.filter(function(c) { return c._ceoVolatility >= 40 && c._govScore < _vgQ1; });
+                        sentences.push('This company is in the volatility-governance danger zone: high pay volatility (' + company._ceoVolatility.toFixed(0) + '% CV) combined with weak governance (' + company._govScore + '/100), one of ' + _vgDangerPeers.length + ' S&P 500 companies in this quadrant.');
+                    } else if (isLowVol && isStrongGov) {
+                        // Best quadrant
+                        sentences.push('The combination of stable pay (' + company._ceoVolatility.toFixed(0) + '% CV) and strong governance (' + company._govScore + '/100) places this in the best-governed, most-stable quadrant.');
+                    } else if (isHighVol && isStrongGov) {
+                        sentences.push('Despite strong governance (' + company._govScore + '/100), pay volatility is high (' + company._ceoVolatility.toFixed(0) + '% CV), possibly reflecting strategic pay restructuring or one-time equity grants.');
+                    } else if (isLowVol && isWeakGov) {
+                        sentences.push('Pay is stable (' + company._ceoVolatility.toFixed(0) + '% CV) despite weak governance (' + company._govScore + '/100), which may indicate entrenched but consistent compensation practices.');
+                    }
+                }
+            }
+
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';

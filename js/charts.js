@@ -10817,6 +10817,40 @@ function drawVolatilityDistChart(companies) {
         .style('font-weight', '600')
         .text(function(b) { return b.count > 0 ? b.count : ''; });
 
+    // Per-bar scatter navigation icon (⤴) — top company in each bucket → scatter
+    buckets.forEach(function(b) {
+        if (b.count === 0) return;
+        var bucketCompanies = withVol.filter(function(c) {
+            return c._ceoVolatility >= b.min && (b.max === Infinity ? true : c._ceoVolatility < b.max);
+        });
+        if (bucketCompanies.length === 0) return;
+        // Pick the company with highest volatility in the bucket (most extreme example)
+        var topInBucket = bucketCompanies.sort(function(a, bb) { return (bb._ceoVolatility || 0) - (a._ceoVolatility || 0); })[0];
+        g.append('text')
+            .attr('x', x(b.label) + x.bandwidth() - 2)
+            .attr('y', y(b.count) + 14)
+            .attr('text-anchor', 'end')
+            .attr('fill', mutedColor)
+            .attr('font-size', '10px')
+            .attr('opacity', 0.5)
+            .style('cursor', 'pointer')
+            .on('mouseover', function() {
+                d3.select(this).attr('fill', '#00b4d8').attr('opacity', 1);
+                showChartTooltip(d3.event || event, 'View ' + topInBucket.ticker + ' (' + topInBucket._ceoVolatility.toFixed(1) + '% CV) in Scatter Plot');
+            })
+            .on('mousemove', function() { positionChartTooltip(d3.event || event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('fill', mutedColor).attr('opacity', 0.5);
+                hideChartTooltip();
+            })
+            .on('click', function() {
+                if (typeof window.navigateToScatter === 'function') {
+                    window.navigateToScatter(topInBucket.ticker, '_ceoVolatility', 'total_compensation');
+                }
+            })
+            .text('\u2934');
+    });
+
     // Median line
     var medBucketIdx = buckets.findIndex(function(b) {
         return medianVol >= b.min && (b.max === Infinity ? true : medianVol < b.max);

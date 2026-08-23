@@ -10580,3 +10580,38 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
+
+/* === Mobile Responsiveness: Cross-tab tables and volatility charts === */
+@media (max-width: 640px) {
+    .crosstab-table {
+        font-size: 11px;
+    }
+    .crosstab-cell {
+        padding: 8px 4px;
+        min-width: 70px;
+    }
+    .crosstab-corner {
+        width: 80px;
+    }
+    .crosstab-col-header, .crosstab-row-header {
+        font-size: 10px;
+        padding: 6px 4px;
+    }
+    .vol-scatter-nav-strip {
+        padding: 8px 10px;
+        gap: 4px;
+    }
+    .vol-scatter-nav-btn {
+        padding: 3px 7px;
+        font-size: 0.65rem;
+    }
+    .vol-scatter-nav-label {
+        font-size: 0.68rem;
+    }
+    #vol-gov-crosstab-panel,
+    #volatility-tenure-panel,
+    #tenure-gov-crosstab-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
