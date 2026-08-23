@@ -1013,6 +1013,85 @@ function formatCurrency(val) {
     return '$' + val.toLocaleString();
 }
 
+/* === Animated Count-Up for Metric Values ===
+   Smoothly animates a numeric value from 0 (or a previous value) to the target.
+   Uses requestAnimationFrame with ease-out cubic easing.
+   Respects prefers-reduced-motion. */
+var _metricAnimFrames = {}; // track active animations per element id
+function animateMetricValue(el, endVal, formatter, duration) {
+    if (!el) return;
+    // Skip animation when reduced motion is preferred
+    if (prefersReducedMotion()) {
+        el.textContent = formatter(endVal);
+        return;
+    }
+    duration = duration || 800;
+    var elId = el.id || el.getAttribute('data-anim-id') || Math.random().toString(36).slice(2);
+    if (!el.id && !el.getAttribute('data-anim-id')) el.setAttribute('data-anim-id', elId);
+
+    // Cancel any existing animation on this element
+    if (_metricAnimFrames[elId]) {
+        cancelAnimationFrame(_metricAnimFrames[elId]);
+        _metricAnimFrames[elId] = null;
+    }
+
+    // Try to parse current displayed value as start point (for sector filter transitions)
+    var startVal = 0;
+    var curText = el.textContent || '';
+    var parsed = parseMetricText(curText);
+    if (parsed != null && parsed > 0 && parsed !== endVal) startVal = parsed;
+
+    var startTime = null;
+
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var elapsed = timestamp - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        var easedProgress = easeOutCubic(progress);
+        var currentVal = startVal + (endVal - startVal) * easedProgress;
+
+        el.textContent = formatter(currentVal);
+
+        if (progress < 1) {
+            _metricAnimFrames[elId] = requestAnimationFrame(step);
+        } else {
+            // Ensure final value is exact
+            el.textContent = formatter(endVal);
+            _metricAnimFrames[elId] = null;
+        }
+    }
+
+    _metricAnimFrames[elId] = requestAnimationFrame(step);
+}
+
+/* Parse a displayed metric string back to a raw number for smooth transitions.
+   Handles: $16.8M, $81.9K, $1.2B, 195:1, 92.5%, +45.2% */
+function parseMetricText(text) {
+    if (!text || text === '—') return null;
+    text = text.trim().replace(/,/g, '');
+    // Currency: $16.8M, $81.9K, $1.2B
+    var m = text.match(/^\$?([\d.]+)\s*(B|M|K)?$/i);
+    if (m) {
+        var v = parseFloat(m[1]);
+        var u = (m[2] || '').toUpperCase();
+        if (u === 'B') return v * 1e9;
+        if (u === 'M') return v * 1e6;
+        if (u === 'K') return v * 1e3;
+        return v;
+    }
+    // Ratio: 195:1
+    var rm = text.match(/^([\d,.]+):1$/);
+    if (rm) return parseFloat(rm[1].replace(/,/g, ''));
+    // Percentage: 92.5%, +45.2%
+    var pm = text.match(/^[+\-]?([\d.]+)%$/);
+    if (pm) return parseFloat(pm[1]);
+    return null;
+}
+
 function formatCompact(val) {
     if (val == null) return '—';
     if (val >= 1e6) return '$' + (val / 1e6).toFixed(1) + 'M';
@@ -1061,15 +1140,35 @@ function populateMetrics(comp, trends) {
     var medianRatio = stats ? stats.median_pay_ratio : null;
     var medianWorker = stats ? stats.median_worker_pay : null;
 
-    document.getElementById('metric-median').textContent = medianPay ? formatCurrency(medianPay) : '$16.8M';
+    // Animated count-up for primary metric values on initial load
+    var medianEl = document.getElementById('metric-median');
+    var ratioEl = document.getElementById('metric-ratio');
+    var workerEl = document.getElementById('metric-worker');
+
+    if (medianPay) {
+        animateMetricValue(medianEl, medianPay, formatCurrency, 900);
+    } else {
+        medianEl.textContent = '$16.8M';
+    }
     document.getElementById('metric-median-delta').textContent = 'S&P 500, FY2024';
-    document.getElementById('metric-ratio').textContent = medianRatio ? formatRatio(medianRatio) : '195:1';
-    document.getElementById('metric-worker').textContent = medianWorker ? formatCompact(medianWorker) : '$81.9K';
+
+    if (medianRatio) {
+        animateMetricValue(ratioEl, medianRatio, formatRatio, 900);
+    } else {
+        ratioEl.textContent = '195:1';
+    }
+
+    if (medianWorker) {
+        animateMetricValue(workerEl, medianWorker, formatCompact, 900);
+    } else {
+        workerEl.textContent = '$81.9K';
+    }
     document.getElementById('metric-worker-delta').textContent = 'S&P 500 median employee';
 
     var sorted = comp.companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
     var top = sorted[0];
-    document.getElementById('metric-highest').textContent = formatCurrency(top.total_compensation);
+    var highestEl = document.getElementById('metric-highest');
+    animateMetricValue(highestEl, top.total_compensation, formatCurrency, 1000);
     document.getElementById('metric-highest-name').textContent = top.ceo_name + ' \u2014 ' + top.ticker;
 
     // Dynamic metrics from trends.json
@@ -1082,7 +1181,7 @@ function populateMetrics(comp, trends) {
         var stockPct = trends.compensation_composition.s_and_p_500.stock_awards_pct;
         var stockFY = trends.compensation_composition.s_and_p_500.fiscal_year;
         if (stockPct != null) {
-            stockPctEl.textContent = stockPct + '%';
+            animateMetricValue(stockPctEl, parseFloat(stockPct), function(v) { return Math.round(v) + '%'; }, 900);
             stockSubEl.textContent = 'Equity dominates pay (FY' + stockFY + ')';
         }
     }
@@ -1091,8 +1190,9 @@ function populateMetrics(comp, trends) {
         var sp500Pct = trends.five_year_trends.s_and_p_500_5yr_increase;
         var period = trends.five_year_trends.period;
         if (sp500Pct) {
-            growthEl.textContent = '+' + sp500Pct.replace('%', '') + '%';
-            growthSubEl.textContent = 'S&P 500, ' + (period || '2020–2024');
+            var pctNum = parseFloat(sp500Pct.replace('%', ''));
+            animateMetricValue(growthEl, pctNum, function(v) { return '+' + v.toFixed(1) + '%'; }, 900);
+            growthSubEl.textContent = 'S&P 500, ' + (period || '2020\u20132024');
         }
     }
 
@@ -1106,7 +1206,7 @@ function populateMetrics(comp, trends) {
             var sopMedian = computeMedian(sopVals) || 0;
             var sopFailed = sopCompanies.filter(function(c) { return c._sopApproval < 50; }).length;
             var sopContested = sopCompanies.filter(function(c) { return c._sopApproval < 70; }).length;
-            sopEl.textContent = sopMedian.toFixed(1) + '%';
+            animateMetricValue(sopEl, sopMedian, function(v) { return v.toFixed(1) + '%'; }, 900);
             sopEl.className = 'metric-value' + (sopMedian >= 90 ? ' positive' : sopMedian < 80 ? ' negative' : '');
             var subParts = [sopCompanies.length + '/' + comp.companies.length + ' companies'];
             if (sopFailed > 0) subParts.push(sopFailed + ' failed');
@@ -1231,21 +1331,33 @@ function setupReactiveMetrics(companies, comp, trends) {
         // 1. Median CEO Pay
         var me = document.getElementById('metric-median');
         var md = document.getElementById('metric-median-delta');
-        if (me) me.textContent = sMedianComp ? formatCurrency(sMedianComp) : '\u2014';
+        if (me && sMedianComp) {
+            animateMetricValue(me, sMedianComp, formatCurrency, 600);
+        } else if (me) {
+            me.textContent = '\u2014';
+        }
         if (labels[0]) labels[0].innerHTML = short + ' Median CEO Pay';
         if (md) md.innerHTML = sc.length + ' companies' + (sMedianComp && _sp500Metrics.medianComp ? ' \u00b7 ' + fmtDelta(sMedianComp, _sp500Metrics.medianComp) : '');
 
         // 2. Pay Ratio
         var re = document.getElementById('metric-ratio');
         var rs = document.getElementById('metric-ratio-sub');
-        if (re) re.textContent = sMedianRatio ? formatRatio(sMedianRatio) : '\u2014';
+        if (re && sMedianRatio) {
+            animateMetricValue(re, sMedianRatio, formatRatio, 600);
+        } else if (re) {
+            re.textContent = '\u2014';
+        }
         if (labels[1]) labels[1].innerHTML = short + ' Pay Ratio';
         if (rs) rs.innerHTML = 'CEO : Worker' + (sMedianRatio && _sp500Metrics.medianRatio ? ' \u00b7 ' + fmtDelta(sMedianRatio, _sp500Metrics.medianRatio) : '');
 
         // 3. Worker Pay
         var we = document.getElementById('metric-worker');
         var wd = document.getElementById('metric-worker-delta');
-        if (we) we.textContent = sMedianWorker ? formatCompact(sMedianWorker) : '\u2014';
+        if (we && sMedianWorker) {
+            animateMetricValue(we, sMedianWorker, formatCompact, 600);
+        } else if (we) {
+            we.textContent = '\u2014';
+        }
         if (labels[2]) labels[2].innerHTML = short + ' Worker Pay';
         if (wd) wd.innerHTML = 'Sector median' + (sMedianWorker && _sp500Metrics.medianWorker ? ' \u00b7 ' + fmtDelta(sMedianWorker, _sp500Metrics.medianWorker) : '');
 
@@ -1253,7 +1365,7 @@ function setupReactiveMetrics(companies, comp, trends) {
         if (sTop) {
             var he = document.getElementById('metric-highest');
             var hn = document.getElementById('metric-highest-name');
-            if (he) he.textContent = formatCurrency(sTop.total_compensation);
+            if (he) animateMetricValue(he, sTop.total_compensation, formatCurrency, 600);
             if (hn) hn.textContent = sTop.ceo_name + ' \u2014 ' + sTop.ticker;
             if (labels[3]) labels[3].innerHTML = short + ' Highest CEO';
         }
@@ -1262,7 +1374,7 @@ function setupReactiveMetrics(companies, comp, trends) {
         if (sMedianStock != null) {
             var se = document.getElementById('metric-stock-pct');
             var ss = document.getElementById('metric-stock-sub');
-            if (se) se.textContent = Math.round(sMedianStock) + '%';
+            if (se) animateMetricValue(se, sMedianStock, function(v) { return Math.round(v) + '%'; }, 600);
             if (labels[4]) labels[4].innerHTML = short + ' Stock %';
             if (ss) ss.innerHTML = 'Sector median equity' + (_sp500Metrics.medianStock != null ? ' \u00b7 ' + fmtDelta(sMedianStock, _sp500Metrics.medianStock) : '');
         }
@@ -1277,7 +1389,7 @@ function setupReactiveMetrics(companies, comp, trends) {
             var soe = document.getElementById('metric-sop-approval');
             var sos = document.getElementById('metric-sop-sub');
             if (soe) {
-                soe.textContent = sSopMedian.toFixed(1) + '%';
+                animateMetricValue(soe, sSopMedian, function(v) { return v.toFixed(1) + '%'; }, 600);
                 soe.className = 'metric-value' + (sSopMedian >= 90 ? ' positive' : sSopMedian < 80 ? ' negative' : '');
             }
             if (labels[5]) labels[5].innerHTML = short + ' SoP Approval';
@@ -1300,22 +1412,34 @@ function _restoreDefaultMetrics(strip) {
 
     var me = document.getElementById('metric-median');
     var md = document.getElementById('metric-median-delta');
-    if (me) me.textContent = _sp500Metrics.medianComp ? formatCurrency(_sp500Metrics.medianComp) : '$16.8M';
+    if (me && _sp500Metrics.medianComp) {
+        animateMetricValue(me, _sp500Metrics.medianComp, formatCurrency, 600);
+    } else if (me) {
+        me.textContent = '$16.8M';
+    }
     if (md) md.textContent = 'S&P 500, FY2024';
 
     var re = document.getElementById('metric-ratio');
     var rs = document.getElementById('metric-ratio-sub');
-    if (re) re.textContent = _sp500Metrics.medianRatio ? formatRatio(_sp500Metrics.medianRatio) : '195:1';
+    if (re && _sp500Metrics.medianRatio) {
+        animateMetricValue(re, _sp500Metrics.medianRatio, formatRatio, 600);
+    } else if (re) {
+        re.textContent = '195:1';
+    }
     if (rs) rs.textContent = 'CEO : Worker';
 
     var we = document.getElementById('metric-worker');
     var wd = document.getElementById('metric-worker-delta');
-    if (we) we.textContent = _sp500Metrics.medianWorker ? formatCompact(_sp500Metrics.medianWorker) : '$81.9K';
+    if (we && _sp500Metrics.medianWorker) {
+        animateMetricValue(we, _sp500Metrics.medianWorker, formatCompact, 600);
+    } else if (we) {
+        we.textContent = '$81.9K';
+    }
     if (wd) wd.textContent = 'S&P 500 median employee';
 
     var he = document.getElementById('metric-highest');
     var hn = document.getElementById('metric-highest-name');
-    if (he) he.textContent = formatCurrency(_sp500Metrics.topComp);
+    if (he && _sp500Metrics.topComp) animateMetricValue(he, _sp500Metrics.topComp, formatCurrency, 600);
     if (hn) hn.textContent = _sp500Metrics.topCeo + ' \u2014 ' + _sp500Metrics.topTicker;
 
     var se = document.getElementById('metric-stock-pct');
@@ -1323,7 +1447,7 @@ function _restoreDefaultMetrics(strip) {
     if (_sp500Metrics.trends && _sp500Metrics.trends.compensation_composition && _sp500Metrics.trends.compensation_composition.s_and_p_500) {
         var sp = _sp500Metrics.trends.compensation_composition.s_and_p_500.stock_awards_pct;
         var fy = _sp500Metrics.trends.compensation_composition.s_and_p_500.fiscal_year;
-        if (sp != null && se) se.textContent = sp + '%';
+        if (sp != null && se) animateMetricValue(se, parseFloat(sp), function(v) { return Math.round(v) + '%'; }, 600);
         if (ss) ss.textContent = 'Equity dominates pay (FY' + fy + ')';
     }
 
