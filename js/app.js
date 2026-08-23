@@ -2900,6 +2900,46 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 19. Volatility × Governance — does weak governance correlate with volatile pay?
+    (function() {
+        var withBoth = companies.filter(function(c) { return c._ceoVolatility != null && c._govScore != null; });
+        if (withBoth.length < 40) return;
+        var weakGov = withBoth.filter(function(c) {
+            var govVals = withBoth.map(function(x) { return x._govScore; }).sort(function(a,b){return a-b;});
+            var median = govVals[Math.floor(govVals.length / 2)];
+            return c._govScore < median;
+        });
+        var strongGov = withBoth.filter(function(c) {
+            var govVals = withBoth.map(function(x) { return x._govScore; }).sort(function(a,b){return a-b;});
+            var median = govVals[Math.floor(govVals.length / 2)];
+            return c._govScore >= median;
+        });
+        if (weakGov.length < 10 || strongGov.length < 10) return;
+        var weakVols = weakGov.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var strongVols = strongGov.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var weakMed = weakVols[Math.floor(weakVols.length / 2)];
+        var strongMed = strongVols[Math.floor(strongVols.length / 2)];
+        var delta = weakMed - strongMed;
+        var correlated = delta > 3;
+        var inverted = delta < -3;
+        var emoji = correlated ? '\u26a0\ufe0f' : inverted ? '\u2705' : '\u2248';
+        var direction = correlated ? 'Weak governance \u2192 more volatile pay' : inverted ? 'Well-governed companies are more volatile' : 'No governance-volatility link';
+        var dangerCount = withBoth.filter(function(c) { return c._ceoVolatility >= 40 && c._govScore < weakVols[Math.floor(weakVols.length * 0.25)]; }).length;
+        insights.push({
+            icon: emoji,
+            label: 'Volatility \u00d7 Governance',
+            value: direction,
+            detail: 'Weakly governed companies (below-median gov score, n=' + weakGov.length + '): median ' + weakMed.toFixed(1) + '% CV. ' +
+                'Well-governed companies (n=' + strongGov.length + '): median ' + strongMed.toFixed(1) + '% CV. ' +
+                'Delta: ' + Math.abs(delta).toFixed(1) + ' pts. ' +
+                (dangerCount > 0 ? dangerCount + ' companies have both high volatility (\u226540%) and weak governance.' : 'No extreme danger-zone companies.'),
+            action: function() {
+                scrollToSectionById('vol-gov-crosstab-panel');
+            },
+            actionHint: 'View volatility \u00d7 governance cross-tab'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {

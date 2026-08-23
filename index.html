@@ -502,6 +502,17 @@
     </section>
 
     <section class="section charts-grid">
+        <div class="chart-panel chart-panel-full" id="vol-gov-crosstab-panel">
+            <div class="section-header">
+                <h2 id="vol-gov-crosstab-title">Volatility &times; Governance</h2>
+                <p class="section-desc" id="vol-gov-crosstab-desc">Do poorly governed companies also have volatile CEO pay? Cross-tabulation of pay volatility tiers (rows) by governance score quartiles (columns). Each cell shows company count, median CEO pay, and median CV%. Cell color intensity reflects median volatility. Click any cell to filter the main table.</p>
+                <div class="anomaly-sector-chips" id="vol-gov-sector-chips"></div>
+            </div>
+            <div id="vol-gov-crosstab-chart"></div>
+        </div>
+    </section>
+
+    <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="treemap-panel">
             <div class="section-header">
                 <h2>Where the Money Goes</h2>
@@ -589,6 +600,7 @@
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="_govScore" title="CEO tenure vs governance score — does longer tenure erode governance quality?">Tenure vs Gov</button>
                     <button class="scatter-preset-btn" data-x="_gerScore" data-y="total_compensation" title="Governance erosion risk vs CEO pay — are the highest-risk companies also the highest-paid?">GER vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoVolatility" data-y="total_compensation" title="CEO pay volatility (coefficient of variation) vs total compensation — do higher-paid CEOs have more volatile pay?">Volatility vs Pay</button>
+                    <button class="scatter-preset-btn" data-x="_ceoVolatility" data-y="_govScore" title="CEO pay volatility vs governance score — do poorly governed companies have more volatile pay?">Vol vs Gov</button>
                 </div>
                 <div class="scatter-toggles">
                     <label class="scatter-toggle">

@@ -80,6 +80,7 @@ function initCharts(companies, trends, compData) {
     drawVolatilityDistChart(companies);
     drawVolatilitySectorChart(companies);
     drawVolatilityTenureChart(companies);
+    drawVolGovCrossTab(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -193,7 +194,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -229,6 +230,7 @@ function redrawAllCharts() {
     drawVolatilityDistChart(_chartData.companies);
     drawVolatilitySectorChart(_chartData.companies);
     drawVolatilityTenureChart(_chartData.companies);
+    drawVolGovCrossTab(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -11479,4 +11481,442 @@ function drawVolatilityTenureChart(companies) {
         strip.appendChild(btn);
     });
     container.appendChild(strip);
+}
+
+
+/* === Volatility × Governance Cross-Tab === */
+var _volGovSectorFilter = null;
+var _volGovCompaniesRef = null;
+
+function _buildVolGovSectorChips(companies) {
+    var chipWrap = document.getElementById('vol-gov-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+
+    var sectors = {};
+    companies.forEach(function(c) {
+        if (c.sector && c._ceoVolatility != null && c._govScore != null) {
+            sectors[c.sector] = (sectors[c.sector] || 0) + 1;
+        }
+    });
+    var sectorList = Object.keys(sectors).sort(function(a, b) { return sectors[b] - sectors[a]; });
+
+    // All chip
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-sector-chip' + (_volGovSectorFilter ? '' : ' active');
+    allChip.textContent = 'All (' + companies.filter(function(c) { return c._ceoVolatility != null && c._govScore != null; }).length + ')';
+    allChip.addEventListener('click', function() {
+        _volGovSectorFilter = null;
+        chipWrap.querySelectorAll('.anomaly-sector-chip').forEach(function(ch) { ch.classList.remove('active'); });
+        allChip.classList.add('active');
+        drawVolGovCrossTab(_volGovCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sectorList.forEach(function(s) {
+        if (sectors[s] < 5) return;
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-sector-chip' + (_volGovSectorFilter === s ? ' active' : '');
+        chip.textContent = s.replace('Information Technology', 'Info Tech').replace('Communication Services', 'Comm Svcs').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Staples') + ' (' + sectors[s] + ')';
+        chip.style.borderColor = typeof getSectorColor === 'function' ? getSectorColor(s) : '#94a3b8';
+        if (_volGovSectorFilter === s) {
+            chip.style.backgroundColor = (typeof getSectorColor === 'function' ? getSectorColor(s) : '#94a3b8');
+            chip.style.color = '#111';
+        }
+        chip.addEventListener('click', function() {
+            _volGovSectorFilter = s;
+            chipWrap.querySelectorAll('.anomaly-sector-chip').forEach(function(ch) { ch.classList.remove('active'); ch.style.backgroundColor = ''; ch.style.color = ''; });
+            chip.classList.add('active');
+            chip.style.backgroundColor = chip.style.borderColor;
+            chip.style.color = '#111';
+            drawVolGovCrossTab(_volGovCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function drawVolGovCrossTab(companies) {
+    _volGovCompaniesRef = companies;
+    var container = document.getElementById('vol-gov-crosstab-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Build sector chips on first call
+    var chipWrap = document.getElementById('vol-gov-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildVolGovSectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('vol-gov-crosstab-title');
+    var descEl = document.getElementById('vol-gov-crosstab-desc');
+    var sectorFilter = _volGovSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Governance \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = sectorFilter + ' CEO pay volatility vs governance quality. Cross-tabulation of volatility tiers by governance quartiles for all ' + sectorFilter + ' companies with volatility and governance data.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Governance';
+        if (descEl) descEl.textContent = 'Do poorly governed companies also have volatile CEO pay? Cross-tabulation of pay volatility tiers (rows) by governance score quartiles (columns). Each cell shows company count, median CEO pay, and median CV%. Cell color intensity reflects median volatility. Click any cell to filter the main table.';
+    }
+
+    var textColor = getThemeTextColor();
+    var mutedColor = getThemeMutedColor();
+    var dark = isDarkTheme();
+
+    // Filter to companies with both volatility and governance data
+    var eligible = companies.filter(function(c) {
+        var base = c._ceoVolatility != null && c._govScore != null && c.total_compensation > 0;
+        if (sectorFilter) return base && c.sector === sectorFilter;
+        return base;
+    });
+    var minThreshold = sectorFilter ? 5 : 20;
+    if (eligible.length < minThreshold) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient volatility + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        return;
+    }
+
+    // Define volatility tiers (rows)
+    var volBrackets = [
+        { label: 'Very Low (<10%)', min: 0, max: 10, key: 'vlow' },
+        { label: 'Low (10\u201320%)', min: 10, max: 20, key: 'low' },
+        { label: 'Moderate (20\u201340%)', min: 20, max: 40, key: 'mod' },
+        { label: 'High (40\u201360%)', min: 40, max: 60, key: 'high' },
+        { label: 'Very High (60%+)', min: 60, max: 999, key: 'vhigh' }
+    ];
+
+    // Define governance quartiles (columns) using data-driven breaks
+    var govVals = eligible.map(function(c) { return c._govScore; }).sort(function(a, b) { return a - b; });
+    var q1 = govVals[Math.floor(govVals.length * 0.25)];
+    var q2 = govVals[Math.floor(govVals.length * 0.5)];
+    var q3 = govVals[Math.floor(govVals.length * 0.75)];
+
+    var govBrackets = [
+        { label: 'Weak Gov (Q1)', min: 0, max: q1, key: 'q1', color: '#ef476f' },
+        { label: 'Below Avg (Q2)', min: q1, max: q2, key: 'q2', color: '#ffd166' },
+        { label: 'Above Avg (Q3)', min: q2, max: q3, key: 'q3', color: '#06d6a0' },
+        { label: 'Strong Gov (Q4)', min: q3, max: 101, key: 'q4', color: '#118ab2' }
+    ];
+
+    // Build cross-tab cells
+    var cells = {};
+    var allMedianVols = [];
+    volBrackets.forEach(function(vb) {
+        govBrackets.forEach(function(gb) {
+            var key = vb.key + '-' + gb.key;
+            var members = eligible.filter(function(c) {
+                return c._ceoVolatility >= vb.min && c._ceoVolatility < vb.max &&
+                       c._govScore >= gb.min && c._govScore < gb.max;
+            });
+            // Compute stats
+            var pays = members.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+            var medianPay = pays.length > 0 ? pays[Math.floor(pays.length / 2)] : 0;
+            // Median volatility
+            var vols = members.map(function(c) { return c._ceoVolatility; }).sort(function(a, b) { return a - b; });
+            var medianVol = vols.length > 0 ? vols[Math.floor(vols.length / 2)] : 0;
+
+            cells[key] = {
+                count: members.length,
+                medianPay: medianPay,
+                medianVol: medianVol,
+                members: members,
+                volKey: vb.key,
+                govKey: gb.key
+            };
+            if (medianVol > 0) allMedianVols.push(medianVol);
+        });
+    });
+
+    // Color scale based on median volatility (green → red, low → high vol)
+    var volExtent = d3.extent(allMedianVols);
+    if (!volExtent[0]) volExtent[0] = 1;
+    if (!volExtent[1]) volExtent[1] = 100;
+
+    // Build HTML table
+    var html = '<div class="crosstab-wrapper">';
+    html += '<table class="crosstab-table" role="grid" aria-label="Volatility \u00D7 Governance cross-tabulation">';
+
+    // Header row
+    html += '<thead><tr><th class="crosstab-corner" aria-label="Volatility vs Governance"></th>';
+    govBrackets.forEach(function(gb) {
+        html += '<th class="crosstab-col-header" style="border-bottom:3px solid ' + gb.color + '">' + gb.label + '</th>';
+    });
+    html += '<th class="crosstab-col-header crosstab-row-total">Row Total</th>';
+    html += '</tr></thead>';
+
+    // Body rows
+    html += '<tbody>';
+    volBrackets.forEach(function(vb) {
+        html += '<tr>';
+        html += '<th class="crosstab-row-header">' + vb.label + '</th>';
+        var rowTotal = 0;
+        var rowTotalPays = [];
+        govBrackets.forEach(function(gb) {
+            var key = vb.key + '-' + gb.key;
+            var cell = cells[key];
+            rowTotal += cell.count;
+            cell.members.forEach(function(m) { rowTotalPays.push(m.total_compensation); });
+
+            // Cell background color based on median volatility (green→amber→red)
+            var bgColor = 'transparent';
+            var cellTextColor = textColor;
+            if (cell.count > 0 && cell.medianVol > 0) {
+                var intensity = (cell.medianVol - volExtent[0]) / (volExtent[1] - volExtent[0]);
+                intensity = Math.max(0, Math.min(1, intensity));
+                // Green (low vol) → yellow → red (high vol)
+                var r, g, b;
+                if (intensity < 0.5) {
+                    var t = intensity * 2;
+                    r = Math.round(6 + t * (251 - 6));
+                    g = Math.round(214 + t * (191 - 214));
+                    b = Math.round(160 + t * (36 - 160));
+                } else {
+                    var t2 = (intensity - 0.5) * 2;
+                    r = Math.round(251 + t2 * (239 - 251));
+                    g = Math.round(191 + t2 * (71 - 191));
+                    b = Math.round(36 + t2 * (111 - 36));
+                }
+                if (dark) {
+                    bgColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.1 + intensity * 0.35) + ')';
+                    cellTextColor = intensity > 0.6 ? '#fff' : textColor;
+                } else {
+                    bgColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.06 + intensity * 0.28) + ')';
+                    cellTextColor = '#1a1a2e';
+                }
+            }
+
+            // Volatility badge
+            var volStr = '';
+            if (cell.medianVol > 0) {
+                var volColor = cell.medianVol >= 40 ? '#ef476f' : cell.medianVol >= 20 ? '#fbbf24' : '#06d6a0';
+                volStr = '<span class="crosstab-yoy" style="color:' + volColor + '">' + cell.medianVol.toFixed(1) + '% CV</span>';
+            }
+
+            // Top company names for tooltip
+            var topCompanies = cell.members.slice().sort(function(a2, b2) { return b2.total_compensation - a2.total_compensation; }).slice(0, 5);
+            var tooltipLines = topCompanies.map(function(c) { return c.ticker + ' (' + c.ceo_name + ') Vol ' + c._ceoVolatility.toFixed(1) + '%'; });
+            var tooltip = cell.count + ' companies\nMedian pay: ' + fmtCurr(cell.medianPay) + '\nMedian vol: ' + cell.medianVol.toFixed(1) + '% CV\n' + (tooltipLines.length > 0 ? 'Top: ' + tooltipLines.join(', ') : '');
+
+            html += '<td class="crosstab-cell" style="background:' + bgColor + ';color:' + cellTextColor + '" ' +
+                'data-vol="' + vb.key + '" data-gov="' + gb.key + '" ' +
+                'title="' + tooltip.replace(/"/g, '&quot;') + '" tabindex="0" role="gridcell">';
+            if (cell.count === 0) {
+                html += '<span class="crosstab-empty">\u2014</span>';
+            } else {
+                html += '<span class="crosstab-count">' + cell.count + '</span>';
+                html += '<span class="crosstab-pay">' + fmtCurr(cell.medianPay) + '</span>';
+                html += volStr;
+            }
+            html += '</td>';
+        });
+        // Row total
+        rowTotalPays.sort(function(a, b) { return a - b; });
+        var rowMedian = rowTotalPays.length > 0 ? rowTotalPays[Math.floor(rowTotalPays.length / 2)] : 0;
+        html += '<td class="crosstab-cell crosstab-row-total">';
+        html += '<span class="crosstab-count">' + rowTotal + '</span>';
+        html += '<span class="crosstab-pay">' + fmtCurr(rowMedian) + '</span>';
+        html += '</td>';
+        html += '</tr>';
+    });
+
+    // Column totals row
+    html += '<tr class="crosstab-col-total-row">';
+    html += '<th class="crosstab-row-header">Column Total</th>';
+    var grandTotal = 0;
+    var grandTotalPays = [];
+    govBrackets.forEach(function(gb) {
+        var colTotal = 0;
+        var colPays = [];
+        volBrackets.forEach(function(vb) {
+            var key = vb.key + '-' + gb.key;
+            colTotal += cells[key].count;
+            cells[key].members.forEach(function(m) { colPays.push(m.total_compensation); });
+        });
+        grandTotal += colTotal;
+        colPays.forEach(function(p) { grandTotalPays.push(p); });
+        colPays.sort(function(a, b) { return a - b; });
+        var colMedian = colPays.length > 0 ? colPays[Math.floor(colPays.length / 2)] : 0;
+        html += '<td class="crosstab-cell crosstab-col-total">';
+        html += '<span class="crosstab-count">' + colTotal + '</span>';
+        html += '<span class="crosstab-pay">' + fmtCurr(colMedian) + '</span>';
+        html += '</td>';
+    });
+    // Grand total
+    grandTotalPays.sort(function(a, b) { return a - b; });
+    var grandMedian = grandTotalPays.length > 0 ? grandTotalPays[Math.floor(grandTotalPays.length / 2)] : 0;
+    html += '<td class="crosstab-cell crosstab-row-total crosstab-col-total">';
+    html += '<span class="crosstab-count">' + grandTotal + '</span>';
+    html += '<span class="crosstab-pay">' + fmtCurr(grandMedian) + '</span>';
+    html += '</td>';
+    html += '</tr>';
+    html += '</tbody></table>';
+
+    // Analytical narrative
+    var sectorLabel = sectorFilter ? sectorFilter : 'S&P 500';
+    var narrative = '';
+
+    // Key question: is volatility higher in weakly governed companies?
+    var weakGovVols = [];
+    var strongGovVols = [];
+    volBrackets.forEach(function(vb) {
+        cells[vb.key + '-q1'].members.forEach(function(m) { weakGovVols.push(m._ceoVolatility); });
+        cells[vb.key + '-q2'].members.forEach(function(m) { weakGovVols.push(m._ceoVolatility); });
+        cells[vb.key + '-q3'].members.forEach(function(m) { strongGovVols.push(m._ceoVolatility); });
+        cells[vb.key + '-q4'].members.forEach(function(m) { strongGovVols.push(m._ceoVolatility); });
+    });
+    weakGovVols.sort(function(a, b) { return a - b; });
+    strongGovVols.sort(function(a, b) { return a - b; });
+    var weakMedianVol = weakGovVols.length > 0 ? weakGovVols[Math.floor(weakGovVols.length / 2)] : 0;
+    var strongMedianVol = strongGovVols.length > 0 ? strongGovVols[Math.floor(strongGovVols.length / 2)] : 0;
+
+    // Count high-volatility companies in each governance half
+    var highVolWeak = 0, highVolStrong = 0;
+    volBrackets.filter(function(vb) { return vb.min >= 40; }).forEach(function(vb) {
+        highVolWeak += cells[vb.key + '-q1'].count + cells[vb.key + '-q2'].count;
+        highVolStrong += cells[vb.key + '-q3'].count + cells[vb.key + '-q4'].count;
+    });
+    var totalWeak = weakGovVols.length;
+    var totalStrong = strongGovVols.length;
+
+    if (totalWeak > 0 && totalStrong > 0) {
+        var delta = weakMedianVol - strongMedianVol;
+        var weakHighPct = (highVolWeak / totalWeak * 100).toFixed(0);
+        var strongHighPct = (highVolStrong / totalStrong * 100).toFixed(0);
+
+        if (delta > 3) {
+            narrative = '<span class="crosstab-finding warning">\u26a0\ufe0f Weak governance correlates with volatile pay' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
+                'Weakly governed companies (Q1\u2013Q2) have a median volatility of ' + weakMedianVol.toFixed(1) + '% CV vs ' + strongMedianVol.toFixed(1) + '% CV for well-governed companies (Q3\u2013Q4). ' +
+                weakHighPct + '% of weakly governed companies have high volatility (\u226540% CV) vs ' + strongHighPct + '% of well-governed companies.';
+        } else if (delta < -3) {
+            narrative = '<span class="crosstab-finding positive">\u2713 Well-governed companies show higher pay volatility' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
+                'Counterintuitively, well-governed companies (Q3\u2013Q4) have higher median volatility (' + strongMedianVol.toFixed(1) + '% CV) than weakly governed ones (' + weakMedianVol.toFixed(1) + '% CV). ' +
+                'This may reflect performance-sensitive pay structures with stronger equity alignment.';
+        } else {
+            narrative = '<span class="crosstab-finding neutral">\u2248 Pay volatility is governance-neutral' + (sectorFilter ? ' in ' + sectorFilter : '') + ':</span> ' +
+                'Median volatility is similar across governance quartiles (weak: ' + weakMedianVol.toFixed(1) + '% CV, strong: ' + strongMedianVol.toFixed(1) + '% CV). ' +
+                'Governance quality does not appear to predict pay stability.';
+        }
+
+        // Pay differential in the danger zone: high vol + weak gov vs low vol + strong gov
+        var dangerCell = cells['vhigh-q1'];
+        var safeCell = cells['vlow-q4'];
+        if (dangerCell.count > 0 && safeCell.count > 0) {
+            var dangerPay = dangerCell.medianPay;
+            var safePay = safeCell.medianPay;
+            if (dangerPay > 0 && safePay > 0) {
+                var payDelta = ((dangerPay / safePay - 1) * 100).toFixed(0);
+                narrative += ' CEOs with very high volatility and weak governance earn ' +
+                    (parseInt(payDelta) > 0 ? payDelta + '% more' : Math.abs(parseInt(payDelta)) + '% less') +
+                    ' than stable, well-governed CEOs (' + fmtCurr(dangerPay) + ' vs ' + fmtCurr(safePay) + ').';
+            }
+        }
+    }
+
+    html += '<div class="crosstab-narrative">' + narrative + '</div>';
+
+    // Legend
+    html += '<div class="crosstab-legend">';
+    html += '<span class="crosstab-legend-item">Cell color = median volatility intensity (green \u2192 red)</span>';
+    html += '<span class="crosstab-legend-item">CV% = coefficient of variation of CEO pay across fiscal years</span>';
+    html += '<span class="crosstab-legend-item">Governance quartiles: Q1 = bottom 25%, Q4 = top 25% by governance score</span>';
+    html += '<span class="crosstab-legend-item">Click cell = filter table \u00b7 Shift+click = explore top company in scatter</span>';
+    html += '</div>';
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Click handler: click cell to scroll to & filter main table
+    container.querySelectorAll('.crosstab-cell[data-vol]').forEach(function(td) {
+        td.style.cursor = 'pointer';
+        td.addEventListener('click', function(e) {
+            var vKey = td.getAttribute('data-vol');
+            var gKey = td.getAttribute('data-gov');
+            var cellKey = vKey + '-' + gKey;
+            var cell = cells[cellKey];
+            if (!cell || cell.count === 0) return;
+
+            // Shift-click → navigate to scatter instead
+            if (e.shiftKey) {
+                var topCompany = cell.members.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; })[0];
+                if (topCompany && typeof window.navigateToScatter === 'function') {
+                    window.navigateToScatter(topCompany.ticker, '_ceoVolatility', '_govScore');
+                }
+                return;
+            }
+
+            // Build ticker list and filter the main table
+            var tickers = cell.members.map(function(c) { return c.ticker; });
+            if (typeof window.filterTableByTickers === 'function') {
+                window.filterTableByTickers(tickers, 'Vol: ' + vKey + ' \u00D7 Gov: ' + gKey);
+            }
+            var tableSection = document.getElementById('compensation-table-section');
+            if (tableSection) {
+                tableSection.scrollIntoView({ behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // Render danger-zone scatter navigation strip
+    _renderVolGovScatterNav(cells, container);
+}
+
+/* Render navigation strip below the vol×gov crosstab showing danger-zone companies
+   (high volatility + weak governance) as clickable buttons to jump to Volatility vs Gov scatter */
+function _renderVolGovScatterNav(cells, container) {
+    var existingStrip = document.getElementById('vol-gov-scatter-nav-strip');
+    if (existingStrip) existingStrip.remove();
+
+    // Collect danger-zone companies: high/very-high volatility in weak governance (Q1)
+    var dangerCompanies = [];
+    ['vhigh-q1', 'high-q1', 'vhigh-q2', 'mod-q1'].forEach(function(key) {
+        var cell = cells[key];
+        if (cell && cell.members) {
+            cell.members.forEach(function(m) {
+                dangerCompanies.push({
+                    ticker: m.ticker,
+                    ceo: m.ceo_name,
+                    volatility: m._ceoVolatility,
+                    govScore: m._govScore,
+                    gerScore: m._gerScore || 0,
+                    pay: m.total_compensation,
+                    quadrant: key
+                });
+            });
+        }
+    });
+
+    if (dangerCompanies.length === 0) return;
+
+    // Sort by volatility (highest first), then by GER
+    dangerCompanies.sort(function(a, b) {
+        return (b.volatility - a.volatility) || (b.gerScore - a.gerScore);
+    });
+
+    // Take top 5
+    var topDanger = dangerCompanies.slice(0, 5);
+
+    var strip = document.createElement('div');
+    strip.id = 'vol-gov-scatter-nav-strip';
+    strip.className = 'vol-scatter-nav-strip';
+
+    var label = document.createElement('span');
+    label.className = 'vol-scatter-nav-label';
+    label.textContent = '\u26a0\ufe0f High vol + weak gov \u2192 Scatter';
+    strip.appendChild(label);
+
+    topDanger.forEach(function(d) {
+        var btn = document.createElement('button');
+        var volTier = d.volatility >= 60 ? 'vol-extreme' : d.volatility >= 40 ? 'vol-very-high' : 'vol-high';
+        btn.className = 'vol-scatter-nav-btn ' + volTier;
+        btn.textContent = d.ticker + ' (Vol ' + d.volatility.toFixed(0) + '%, Gov ' + d.govScore.toFixed(0) + ') \u2192';
+        btn.title = d.ceo + ' \u2014 ' + fmtCurr(d.pay) + ' \u2014 Volatility ' + d.volatility.toFixed(1) + '% CV, Governance ' + d.govScore.toFixed(0) + '. Click to view in scatter.';
+
+        btn.addEventListener('click', function() {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_ceoVolatility', '_govScore');
+            }
+        });
+        strip.appendChild(btn);
+    });
+
+    container.parentNode.insertBefore(strip, container.nextSibling);
 }
