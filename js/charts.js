@@ -79,6 +79,7 @@ function initCharts(companies, trends, compData) {
     drawGERChart(companies);
     drawVolatilityDistChart(companies);
     drawVolatilitySectorChart(companies);
+    drawVolatilityTenureChart(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -192,7 +193,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -227,6 +228,7 @@ function redrawAllCharts() {
     drawGERChart(_chartData.companies);
     drawVolatilityDistChart(_chartData.companies);
     drawVolatilitySectorChart(_chartData.companies);
+    drawVolatilityTenureChart(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -11073,4 +11075,408 @@ function drawVolatilitySectorChart(companies) {
         .style('font-size', '9px')
         .style('font-weight', '600')
         .text('S&P 500: ' + overallMedian.toFixed(1) + '%');
+}
+
+
+/* === Volatility × Tenure Cross-Analysis Chart === */
+var _volTenureSectorFilter = null;
+var _volTenureCompaniesRef = null;
+
+function _buildVolTenureSectorChips(companies) {
+    var chipWrap = document.getElementById('vol-tenure-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+    var eligible = companies.filter(function(c) {
+        return c._ceoVolatility != null && c._ceoTenureYears != null;
+    });
+    var sectors = {};
+    eligible.forEach(function(c) { if (c.sector) sectors[c.sector] = (sectors[c.sector] || 0) + 1; });
+    var sorted = Object.keys(sectors).sort(function(a, b) { return sectors[b] - sectors[a]; });
+
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_volTenureSectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All Sectors (' + eligible.length + ')';
+    allChip.title = 'Show volatility vs tenure across all sectors';
+    allChip.addEventListener('click', function() {
+        _volTenureSectorFilter = null;
+        var el = document.getElementById('volatility-tenure-chart');
+        if (el) el.innerHTML = '';
+        drawVolatilityTenureChart(_volTenureCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sorted.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_volTenureSectorFilter === sec ? ' active' : '');
+        chip.textContent = sec + ' (' + sectors[sec] + ')';
+        chip.setAttribute('data-sector', sec);
+        chip.addEventListener('click', function() {
+            if (_volTenureSectorFilter === sec) {
+                _volTenureSectorFilter = null;
+            } else {
+                _volTenureSectorFilter = sec;
+            }
+            var el = document.getElementById('volatility-tenure-chart');
+            if (el) el.innerHTML = '';
+            drawVolatilityTenureChart(_volTenureCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function _updateVolTenureSectorChips() {
+    var chipWrap = document.getElementById('vol-tenure-sector-chips');
+    if (!chipWrap) return;
+    var chips = chipWrap.querySelectorAll('.anomaly-chip');
+    chips.forEach(function(chip) {
+        var isAll = !chip.getAttribute('data-sector');
+        if (isAll) {
+            chip.className = 'anomaly-chip' + (_volTenureSectorFilter == null ? ' active' : '');
+        } else {
+            chip.className = 'anomaly-chip' + (chip.getAttribute('data-sector') === _volTenureSectorFilter ? ' active' : '');
+        }
+    });
+}
+
+function drawVolatilityTenureChart(companies) {
+    _volTenureCompaniesRef = companies;
+    var container = document.getElementById('volatility-tenure-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var chipWrap = document.getElementById('vol-tenure-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildVolTenureSectorChips(companies);
+    } else {
+        _updateVolTenureSectorChips();
+    }
+
+    var titleEl = document.getElementById('vol-tenure-title');
+    var descEl = document.getElementById('vol-tenure-desc');
+    var sectorFilter = _volTenureSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Tenure \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = sectorFilter + ' CEO pay volatility by tenure bracket. Do long-tenured ' + sectorFilter + ' CEOs have more stable or volatile compensation?';
+    } else {
+        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Tenure';
+        if (descEl) descEl.textContent = 'Do long-tenured CEOs have more stable or more volatile pay? Median CEO pay volatility (CV%) by tenure bracket with IQR range. Individual company dots overlaid. Click any bracket bar to filter the table.';
+    }
+
+    var eligible = [];
+    companies.forEach(function(c) {
+        if (c._ceoVolatility == null || c._ceoTenureYears == null) return;
+        if (sectorFilter && c.sector !== sectorFilter) return;
+        eligible.push(c);
+    });
+
+    if (eligible.length < (sectorFilter ? 5 : 20)) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient volatility + tenure data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
+        return;
+    }
+
+    var brackets = [
+        { label: 'New CEOs\n(<3 yrs)', min: 0, max: 3, color: '#06d6a0', members: [] },
+        { label: 'Mid-tenure\n(3\u201310 yrs)', min: 3, max: 10, color: '#00b4d8', members: [] },
+        { label: 'Established\n(10\u201320 yrs)', min: 10, max: 20, color: '#a78bfa', members: [] },
+        { label: 'Veterans\n(20+ yrs)', min: 20, max: Infinity, color: '#f59e0b', members: [] }
+    ];
+
+    eligible.forEach(function(c) {
+        for (var i = 0; i < brackets.length; i++) {
+            if (c._ceoTenureYears >= brackets[i].min && c._ceoTenureYears < brackets[i].max) {
+                brackets[i].members.push(c);
+                break;
+            }
+        }
+    });
+
+    brackets.forEach(function(b) {
+        if (b.members.length === 0) {
+            b.median = 0; b.mean = 0; b.q25 = 0; b.q75 = 0; b.count = 0;
+            return;
+        }
+        b.count = b.members.length;
+        var sorted = b.members.map(function(m) { return m._ceoVolatility; }).sort(function(a, bb) { return a - bb; });
+        b.median = sorted[Math.floor(sorted.length / 2)];
+        b.mean = sorted.reduce(function(s, v) { return s + v; }, 0) / sorted.length;
+        b.q25 = sorted[Math.floor(sorted.length * 0.25)];
+        b.q75 = sorted[Math.floor(sorted.length * 0.75)];
+        b.mostVolatile = b.members.slice().sort(function(a, bb) { return bb._ceoVolatility - a._ceoVolatility; })[0];
+        b.mostStable = b.members.slice().sort(function(a, bb) { return a._ceoVolatility - bb._ceoVolatility; })[0];
+    });
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+    var cw = container.clientWidth || 700;
+    var margin = { top: 40, right: 30, bottom: 80, left: 70 };
+    var width = cw - margin.left - margin.right;
+    var chartH = 300;
+    var totalH = chartH + margin.top + margin.bottom;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', cw)
+        .attr('height', totalH)
+        .attr('role', 'img')
+        .attr('aria-label', 'CEO pay volatility by tenure bracket');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleBand()
+        .domain(brackets.map(function(b) { return b.label; }))
+        .range([0, width])
+        .padding(0.3);
+
+    var allMedians = brackets.filter(function(b) { return b.count > 0; }).map(function(b) { return b.q75 || b.median; });
+    var yMax = Math.max(d3.max(allMedians) * 1.4, 40);
+    var y = d3.scaleLinear().domain([0, yMax]).range([chartH, 0]);
+
+    // Grid lines
+    y.ticks(6).forEach(function(t) {
+        g.append('line')
+            .attr('x1', 0).attr('x2', width)
+            .attr('y1', y(t)).attr('y2', y(t))
+            .attr('stroke', gridColor);
+    });
+
+    // Y axis label
+    g.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -chartH / 2).attr('y', -50)
+        .attr('text-anchor', 'middle')
+        .attr('fill', mutedColor)
+        .style('font-size', '11px')
+        .text('Pay Volatility (CV%)');
+
+    // X axis labels
+    brackets.forEach(function(b) {
+        var lines = b.label.split('\n');
+        var bx = x(b.label) + x.bandwidth() / 2;
+        lines.forEach(function(line, i) {
+            g.append('text')
+                .attr('x', bx)
+                .attr('y', chartH + 18 + i * 14)
+                .attr('text-anchor', 'middle')
+                .attr('fill', i === 0 ? textColor : mutedColor)
+                .style('font-size', i === 0 ? '11px' : '10px')
+                .style('font-weight', i === 0 ? '600' : '400')
+                .text(line);
+        });
+    });
+
+    // Overall median dashed line
+    var allVols = eligible.map(function(c) { return c._ceoVolatility; }).sort(function(a, b) { return a - b; });
+    var overallMedian = allVols[Math.floor(allVols.length / 2)];
+
+    g.append('line')
+        .attr('x1', 0).attr('x2', width)
+        .attr('y1', y(overallMedian)).attr('y2', y(overallMedian))
+        .attr('stroke', '#ef476f')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '6,3')
+        .attr('opacity', 0.6);
+
+    g.append('text')
+        .attr('x', width + 4).attr('y', y(overallMedian) + 4)
+        .attr('fill', '#ef476f')
+        .style('font-size', '9px')
+        .style('font-weight', '600')
+        .text(overallMedian.toFixed(1) + '%');
+
+    // Draw each bracket
+    brackets.forEach(function(b) {
+        if (b.count === 0) return;
+        var bx = x(b.label);
+        var bw = x.bandwidth();
+
+        // IQR whisker background
+        g.append('rect')
+            .attr('x', bx + bw * 0.25)
+            .attr('y', y(b.q75))
+            .attr('width', bw * 0.5)
+            .attr('height', Math.max(1, y(b.q25) - y(b.q75)))
+            .attr('fill', b.color)
+            .attr('opacity', 0.15)
+            .attr('rx', 3);
+
+        // IQR whisker line
+        g.append('line')
+            .attr('x1', bx + bw / 2).attr('x2', bx + bw / 2)
+            .attr('y1', y(b.q75)).attr('y2', y(b.q25))
+            .attr('stroke', b.color)
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.4);
+
+        // Median bar
+        g.append('rect')
+            .attr('x', bx)
+            .attr('y', y(b.median))
+            .attr('width', bw)
+            .attr('height', Math.max(2, chartH - y(b.median)))
+            .attr('fill', b.color)
+            .attr('opacity', 0.8)
+            .attr('rx', 4)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event) {
+                d3.select(this).attr('opacity', 1);
+                var trendWord = b.median > overallMedian ? 'above' : 'below';
+                var delta = Math.abs(b.median - overallMedian).toFixed(1);
+                showChartTooltip(event,
+                    '<strong>' + b.label.replace('\n', ' ') + '</strong><br>' +
+                    b.count + ' CEOs<br>' +
+                    'Median volatility: <strong style="color:' + b.color + '">' + b.median.toFixed(1) + '% CV</strong><br>' +
+                    'Mean: ' + b.mean.toFixed(1) + '% CV<br>' +
+                    'IQR: ' + b.q25.toFixed(1) + '% \u2013 ' + b.q75.toFixed(1) + '%<br>' +
+                    '<span style="color:#a1a1aa;">' + delta + ' pts ' + trendWord + ' overall median</span><br>' +
+                    (b.mostVolatile ? 'Most volatile: ' + b.mostVolatile.ticker + ' (' + b.mostVolatile._ceoVolatility.toFixed(1) + '%)' : '') + '<br>' +
+                    (b.mostStable ? 'Most stable: ' + b.mostStable.ticker + ' (' + b.mostStable._ceoVolatility.toFixed(1) + '%)' : '') +
+                    '<br><span style="color:#a1a1aa;font-size:10px;">Click to filter table \u00b7 Shift+click for scatter</span>');
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() { d3.select(this).attr('opacity', 0.8); hideChartTooltip(); })
+            .on('click', function(event) {
+                hideChartTooltip();
+                if (event.shiftKey && typeof window.navigateToScatter === 'function' && b.mostVolatile) {
+                    window.navigateToScatter(b.mostVolatile.ticker, '_ceoTenureYears', '_ceoVolatility');
+                } else {
+                    // Filter table to companies in this tenure bracket
+                    window._activeVolTenureBracket = { min: b.min, max: b.max, label: b.label.replace('\n', ' ') };
+                    if (typeof renderTable === 'function') renderTable(companies);
+                    if (typeof scrollToTable === 'function') scrollToTable();
+                    if (typeof announce === 'function') announce('Filtered to ' + b.count + ' ' + b.label.replace('\n', ' ') + ' companies');
+                }
+            });
+
+        // Median value label
+        g.append('text')
+            .attr('x', bx + bw / 2)
+            .attr('y', y(b.median) - 8)
+            .attr('text-anchor', 'middle')
+            .attr('fill', textColor)
+            .style('font-size', '12px')
+            .style('font-weight', '700')
+            .text(b.median.toFixed(1) + '%');
+
+        // Count label
+        g.append('text')
+            .attr('x', bx + bw / 2)
+            .attr('y', chartH + 52)
+            .attr('text-anchor', 'middle')
+            .attr('fill', mutedColor)
+            .style('font-size', '10px')
+            .text('n=' + b.count);
+
+        // Jitter dots for individual companies
+        var dotR = Math.max(2, Math.min(4, 60 / b.count));
+        b.members.forEach(function(c) {
+            var jitter = (Math.random() - 0.5) * bw * 0.7;
+            var cx = bx + bw / 2 + jitter;
+            var cy = y(Math.min(c._ceoVolatility, yMax * 0.98));
+            g.append('circle')
+                .attr('cx', cx)
+                .attr('cy', cy)
+                .attr('r', dotR)
+                .attr('fill', b.color)
+                .attr('opacity', 0.35)
+                .attr('stroke', 'none')
+                .style('cursor', 'pointer')
+                .on('mouseover', function(event) {
+                    d3.select(this).attr('opacity', 1).attr('r', dotR + 2);
+                    showChartTooltip(event,
+                        '<strong>' + c.ticker + '</strong> \u2014 ' + (c.company_name || '') + '<br>' +
+                        'CEO: ' + (c.ceo_name || '\u2014') + '<br>' +
+                        'Tenure: ' + c._ceoTenureYears + ' years<br>' +
+                        'Volatility: ' + c._ceoVolatility.toFixed(1) + '% CV (' + (c._ceoVolatilityLabel || '') + ')<br>' +
+                        'Total comp: ' + fmtCurr(c.total_compensation));
+                })
+                .on('mousemove', function(event) { positionChartTooltip(event); })
+                .on('mouseout', function() {
+                    d3.select(this).attr('opacity', 0.35).attr('r', dotR);
+                    hideChartTooltip();
+                })
+                .on('click', function() {
+                    if (typeof window.navigateToScatter === 'function') {
+                        window.navigateToScatter(c.ticker, '_ceoTenureYears', '_ceoVolatility');
+                    }
+                });
+        });
+    });
+
+    // Trend arrow annotation — Pearson correlation
+    var xs = eligible.map(function(c) { return c._ceoTenureYears; });
+    var ys = eligible.map(function(c) { return c._ceoVolatility; });
+    var n = xs.length;
+    var mx = xs.reduce(function(s, v) { return s + v; }, 0) / n;
+    var my = ys.reduce(function(s, v) { return s + v; }, 0) / n;
+    var num = 0, dx2 = 0, dy2 = 0;
+    for (var i = 0; i < n; i++) {
+        num += (xs[i] - mx) * (ys[i] - my);
+        dx2 += (xs[i] - mx) * (xs[i] - mx);
+        dy2 += (ys[i] - my) * (ys[i] - my);
+    }
+    var r = dx2 > 0 && dy2 > 0 ? num / Math.sqrt(dx2 * dy2) : 0;
+    var rLabel = r > 0.1 ? 'Positive correlation' : r < -0.1 ? 'Negative correlation' : 'No clear correlation';
+    var rColor = r > 0.1 ? '#ef476f' : r < -0.1 ? '#06d6a0' : mutedColor;
+
+    g.append('text')
+        .attr('x', width / 2).attr('y', -20)
+        .attr('text-anchor', 'middle')
+        .attr('fill', rColor)
+        .style('font-size', '11px')
+        .style('font-weight', '600')
+        .text(rLabel + ' (r = ' + r.toFixed(3) + ')');
+
+    // Narrative
+    var narDiv = document.createElement('div');
+    narDiv.style.cssText = 'font-size:12px;color:' + mutedColor + ';padding:12px 8px;line-height:1.5;';
+    var newMedian = brackets[0].count > 0 ? brackets[0].median : 0;
+    var vetMedian = brackets[3].count > 0 ? brackets[3].median : 0;
+    var trend = '';
+    if (newMedian > 0 && vetMedian > 0) {
+        if (vetMedian < newMedian * 0.8) {
+            trend = 'Long-tenured CEOs have <strong>significantly more stable</strong> pay than newer CEOs (' + vetMedian.toFixed(1) + '% vs ' + newMedian.toFixed(1) + '% CV).';
+        } else if (vetMedian > newMedian * 1.2) {
+            trend = 'Long-tenured CEOs have <strong>more volatile</strong> pay than newer CEOs (' + vetMedian.toFixed(1) + '% vs ' + newMedian.toFixed(1) + '% CV).';
+        } else {
+            trend = 'Pay volatility is <strong>similar</strong> across tenure brackets (new: ' + newMedian.toFixed(1) + '% vs veteran: ' + vetMedian.toFixed(1) + '% CV).';
+        }
+    }
+    narDiv.innerHTML = trend + ' Pearson r = ' + r.toFixed(3) +
+        ' across ' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + '.';
+    container.appendChild(narDiv);
+
+    // Cross-chart scatter navigation strip
+    var strip = document.createElement('div');
+    strip.className = 'vol-scatter-nav-strip';
+    var stripLabel = document.createElement('span');
+    stripLabel.className = 'vol-scatter-nav-label';
+    stripLabel.textContent = 'Explore in scatter \u2192';
+    strip.appendChild(stripLabel);
+
+    // Show most extreme from each end bracket
+    var highlights = [];
+    if (brackets[0].mostVolatile) highlights.push(brackets[0].mostVolatile);
+    if (brackets[3].mostVolatile && brackets[3].mostVolatile.ticker !== (brackets[0].mostVolatile || {}).ticker) highlights.push(brackets[3].mostVolatile);
+    if (brackets[3].mostStable && highlights.length < 3) highlights.push(brackets[3].mostStable);
+
+    highlights.forEach(function(c) {
+        var btn = document.createElement('button');
+        btn.className = 'vol-scatter-nav-btn';
+        var suffix = c._ceoTenureYears + 'yr tenure, ' + c._ceoVolatility.toFixed(0) + '% CV';
+        btn.textContent = c.ticker + ' (' + suffix + ') \u2192';
+        if (c._ceoVolatility >= 60) btn.classList.add('vol-extreme');
+        else if (c._ceoVolatility >= 40) btn.classList.add('vol-very-high');
+        else btn.classList.add('vol-high');
+        btn.title = (c.company_name || '') + ' \u2014 ' + (c.ceo_name || '') + ': ' + suffix;
+        btn.addEventListener('click', function() {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(c.ticker, '_ceoTenureYears', '_ceoVolatility');
+            }
+        });
+        strip.appendChild(btn);
+    });
+    container.appendChild(strip);
 }

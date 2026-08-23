@@ -2179,6 +2179,9 @@ function populateInsights(comp, trends, sectorFilter) {
         if (window._activeVolatilityBucket) {
             window._activeVolatilityBucket = null;
         }
+        if (window._activeVolTenureBracket) {
+            window._activeVolTenureBracket = null;
+        }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
         if (allChip) allChip.classList.add('active');
@@ -2865,6 +2868,35 @@ function populateInsights(comp, trends, sectorFilter) {
             },
             actionHint: 'View volatility chart',
             _tickers: [topVol.ticker]
+        });
+    })();
+
+    // 18. Volatility × Tenure — do veteran CEOs have more stable pay?
+    (function() {
+        var withBoth = companies.filter(function(c) { return c._ceoVolatility != null && c._ceoTenureYears != null; });
+        if (withBoth.length < 40) return;
+        var newCEOs = withBoth.filter(function(c) { return c._ceoTenureYears < 3; });
+        var veterans = withBoth.filter(function(c) { return c._ceoTenureYears >= 20; });
+        if (newCEOs.length < 5 || veterans.length < 5) return;
+        var newVols = newCEOs.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var vetVols = veterans.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var newMed = newVols[Math.floor(newVols.length / 2)];
+        var vetMed = vetVols[Math.floor(vetVols.length / 2)];
+        var delta = newMed - vetMed;
+        var direction = delta > 3 ? 'New CEOs have more volatile pay' : delta < -3 ? 'Veterans have more volatile pay' : 'Similar volatility across tenures';
+        var emoji = delta > 3 ? '\ud83d\udcc9' : delta < -3 ? '\ud83d\udcc8' : '\u2696\ufe0f';
+        insights.push({
+            icon: emoji,
+            label: 'Volatility \u00d7 Tenure',
+            value: direction,
+            detail: 'New CEOs (<3 yrs, n=' + newCEOs.length + '): median ' + newMed.toFixed(1) + '% CV. ' +
+                'Veterans (20+ yrs, n=' + veterans.length + '): median ' + vetMed.toFixed(1) + '% CV. ' +
+                'Delta: ' + Math.abs(delta).toFixed(1) + ' percentage points. ' +
+                'Based on ' + withBoth.length + ' companies with both tenure and multi-year compensation data.',
+            action: function() {
+                scrollToSectionById('volatility-tenure-panel');
+            },
+            actionHint: 'View volatility \u00d7 tenure chart'
         });
     })();
 
@@ -4980,6 +5012,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
     if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
     if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
+    if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Tenure: ' + window._activeVolTenureBracket.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -5439,6 +5472,14 @@ function renderTable(companies, options) {
         var vb = window._activeVolatilityBucket;
         filtered = filtered.filter(function(c) {
             return c._ceoVolatility != null && c._ceoVolatility >= vb.min && (vb.max === Infinity ? true : c._ceoVolatility < vb.max);
+        });
+    }
+
+    // Volatility × Tenure bracket filter
+    if (window._activeVolTenureBracket) {
+        var vtb = window._activeVolTenureBracket;
+        filtered = filtered.filter(function(c) {
+            return c._ceoTenureYears != null && c._ceoTenureYears >= vtb.min && (vtb.max === Infinity ? true : c._ceoTenureYears < vtb.max);
         });
     }
 
@@ -6364,6 +6405,26 @@ function setupDetailPanel(companies) {
                     volSentence = 'Very stable compensation (' + volV.toFixed(1) + '% CV across ' + (company._ceoVolatilityYears || '?') + ' years)' + _volSectorCtx + ', indicating consistent pay practices.';
                 }
                 if (volSentence) sentences.push(volSentence);
+            }
+
+            // Sentence 8: Volatility × Tenure context
+            if (company._ceoVolatility != null && company._ceoTenureYears != null) {
+                var _vtPeers = companies.filter(function(c) {
+                    return c._ceoVolatility != null && c._ceoTenureYears != null &&
+                        ((company._ceoTenureYears < 3 && c._ceoTenureYears < 3) ||
+                         (company._ceoTenureYears >= 3 && company._ceoTenureYears < 10 && c._ceoTenureYears >= 3 && c._ceoTenureYears < 10) ||
+                         (company._ceoTenureYears >= 10 && company._ceoTenureYears < 20 && c._ceoTenureYears >= 10 && c._ceoTenureYears < 20) ||
+                         (company._ceoTenureYears >= 20 && c._ceoTenureYears >= 20));
+                });
+                if (_vtPeers.length >= 5) {
+                    var _vtPeerVols = _vtPeers.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+                    var _vtPeerMed = _vtPeerVols[Math.floor(_vtPeerVols.length / 2)];
+                    var _vtDelta = company._ceoVolatility - _vtPeerMed;
+                    var _vtBracketName = company._ceoTenureYears < 3 ? 'new' : company._ceoTenureYears < 10 ? 'mid-tenure' : company._ceoTenureYears < 20 ? 'established' : 'veteran';
+                    if (Math.abs(_vtDelta) >= 5) {
+                        sentences.push('Among ' + _vtBracketName + ' CEOs (' + _vtPeers.length + ' peers), pay volatility is ' + Math.abs(Math.round(_vtDelta)) + ' points ' + (_vtDelta > 0 ? 'above' : 'below') + ' the tenure-bracket median of ' + _vtPeerMed.toFixed(1) + '% CV.');
+                    }
+                }
             }
 
             if (sentences.length > 0) {
