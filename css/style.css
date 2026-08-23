@@ -10360,6 +10360,81 @@ body.light-mode .cross-sector-pair-select:focus {
     color: var(--text-muted);
 }
 
+/* === Community Detection Legend === */
+.community-toggle.active {
+    background: rgba(191,239,69,0.15);
+    color: #bfef45;
+    border-color: rgba(191,239,69,0.3);
+}
+[data-theme="light"] .community-toggle.active {
+    background: rgba(100,150,20,0.12);
+    color: #4d7c0f;
+    border-color: rgba(100,150,20,0.3);
+}
+.community-legend {
+    padding: 8px 12px;
+    background: var(--bg-elevated, #1a1a2e);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 8px;
+    margin-top: 4px;
+}
+.community-legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.community-legend-title {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-primary, #e4e4e7);
+}
+.community-legend-modularity {
+    font-size: 0.68rem;
+    color: var(--text-muted, #6b7280);
+    font-family: 'Inter', monospace;
+}
+.community-legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+.community-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--text-secondary, #a1a1aa);
+    cursor: default;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.community-legend-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+[data-theme="light"] .community-legend-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.community-legend-label {
+    font-weight: 600;
+    color: var(--text-primary, #e4e4e7);
+    min-width: 18px;
+}
+.community-legend-size {
+    font-weight: 500;
+    color: var(--text-primary, #e4e4e7);
+    min-width: 20px;
+}
+.community-legend-sectors {
+    color: var(--text-muted, #6b7280);
+    font-size: 0.65rem;
+}
+.community-legend-more {
+    color: var(--text-muted, #6b7280);
+    font-style: italic;
+}
+
 
 /* === Scatter → GER navigation strip === */
 .scatter-ger-nav-strip {

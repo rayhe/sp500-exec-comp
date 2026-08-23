@@ -53,6 +53,7 @@ function initNetwork(peerData) {
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
     var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
+    var communityMode = false;  // when true, nodes colored by Louvain community
     var gerThreshold = 0; // min GER score for node visibility (0 = show all)
 
     var nodeMap = {};
@@ -122,6 +123,175 @@ function initNetwork(peerData) {
         });
         reciprocalCount[n.ticker] = count;
     });
+
+    // === Louvain Community Detection ===
+    // Treats the directed peer network as undirected for modularity optimization.
+    // Identifies natural peer clusters that cross sector boundaries.
+    var communityOf = {}; // ticker → community id
+    var communityColors = {}; // community id → color
+    var communityStats = []; // [{id, size, tickers, sectors, topTicker}]
+
+    (function louvainDetect() {
+        // Build undirected adjacency with weights
+        var tickers = nodes.map(function(n) { return n.ticker; });
+        var idx = {}; // ticker → index
+        tickers.forEach(function(t, i) { idx[t] = i; });
+        var N = tickers.length;
+
+        // Adjacency list (undirected, weight = number of directed edges between pair: 1 or 2)
+        var adj = new Array(N);
+        for (var i = 0; i < N; i++) adj[i] = {};
+        var m2 = 0; // 2 * total edge weight
+        allEdges.forEach(function(e) {
+            var si = idx[e.source], ti = idx[e.target];
+            if (si == null || ti == null || si === ti) return;
+            adj[si][ti] = (adj[si][ti] || 0) + 1;
+            adj[ti][si] = (adj[ti][si] || 0) + 1;
+            m2 += 2;
+        });
+
+        // Degree (sum of weights) for each node
+        var deg = new Array(N);
+        for (var i = 0; i < N; i++) {
+            var s = 0;
+            for (var j in adj[i]) s += adj[i][j];
+            deg[i] = s;
+        }
+
+        // Initial community = each node in its own community
+        var comm = new Array(N);
+        for (var i = 0; i < N; i++) comm[i] = i;
+
+        // Sum of weights inside each community, sum of degrees per community
+        var sIn = new Array(N).fill(0);
+        var sTot = new Array(N);
+        for (var i = 0; i < N; i++) sTot[i] = deg[i];
+
+        // Phase 1: local moves
+        var improved = true;
+        var maxIter = 20;
+        while (improved && maxIter-- > 0) {
+            improved = false;
+            for (var i = 0; i < N; i++) {
+                var ci = comm[i];
+                var ki = deg[i];
+
+                // Compute weights to each neighbor community
+                var neighborComms = {};
+                for (var j in adj[i]) {
+                    var cj = comm[j];
+                    neighborComms[cj] = (neighborComms[cj] || 0) + adj[i][j];
+                }
+
+                // Weight to own community
+                var kiIn = neighborComms[ci] || 0;
+
+                // Remove node from its community
+                sIn[ci] -= 2 * kiIn; // edges within community involving i
+                sTot[ci] -= ki;
+
+                // Find best community
+                var bestComm = ci;
+                var bestDQ = 0;
+                for (var c in neighborComms) {
+                    c = parseInt(c, 10);
+                    var kiC = neighborComms[c];
+                    // Modularity gain: kiC / m - (sTot[c] * ki) / (m*m) [simplified]
+                    var dq = kiC - sTot[c] * ki / (m2 || 1);
+                    if (dq > bestDQ) {
+                        bestDQ = dq;
+                        bestComm = c;
+                    }
+                }
+
+                // Move to best community
+                comm[i] = bestComm;
+                sIn[bestComm] += 2 * (neighborComms[bestComm] || 0);
+                sTot[bestComm] += ki;
+
+                if (bestComm !== ci) improved = true;
+            }
+        }
+
+        // Renumber communities to 0..K-1
+        var commMap = {};
+        var nextId = 0;
+        for (var i = 0; i < N; i++) {
+            if (commMap[comm[i]] == null) commMap[comm[i]] = nextId++;
+            communityOf[tickers[i]] = commMap[comm[i]];
+        }
+
+        // Community palette (20 distinct colors, high saturation)
+        var palette = [
+            '#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4',
+            '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990',
+            '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3',
+            '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#e6beff'
+        ];
+
+        // Gather stats per community
+        var commBuckets = {};
+        for (var i = 0; i < N; i++) {
+            var cid = communityOf[tickers[i]];
+            if (!commBuckets[cid]) commBuckets[cid] = [];
+            commBuckets[cid].push(tickers[i]);
+        }
+
+        // Sort by size descending, assign colors
+        var sortedComms = Object.keys(commBuckets).map(function(cid) {
+            return { id: parseInt(cid, 10), tickers: commBuckets[cid] };
+        }).sort(function(a, b) { return b.tickers.length - a.tickers.length; });
+
+        communityStats = [];
+        sortedComms.forEach(function(c, idx) {
+            communityColors[c.id] = palette[idx % palette.length];
+            // Sector breakdown
+            var sectorCounts = {};
+            c.tickers.forEach(function(t) {
+                var n = nodeMap[t];
+                var sec = n ? n.sector : 'Unknown';
+                sectorCounts[sec] = (sectorCounts[sec] || 0) + 1;
+            });
+            var sectors = Object.keys(sectorCounts).map(function(s) {
+                return { name: s, count: sectorCounts[s] };
+            }).sort(function(a, b) { return b.count - a.count; });
+
+            // Top company by in_degree
+            var topTicker = c.tickers.slice().sort(function(a, b) {
+                return (nodeMap[b] ? nodeMap[b].in_degree || 0 : 0) - (nodeMap[a] ? nodeMap[a].in_degree || 0 : 0);
+            })[0];
+
+            communityStats.push({
+                id: c.id,
+                size: c.tickers.length,
+                tickers: c.tickers,
+                sectors: sectors,
+                topTicker: topTicker,
+                color: palette[idx % palette.length]
+            });
+        });
+    })();
+
+    // Compute modularity score for the detected communities
+    var communityModularity = (function() {
+        var m = allEdges.length; // total directed edges
+        if (m === 0) return 0;
+        var q = 0;
+        allEdges.forEach(function(e) {
+            var ci = communityOf[e.source], cj = communityOf[e.target];
+            if (ci === cj) {
+                var ki = (adjacency[e.source] ? adjacency[e.source].in.length + adjacency[e.source].out.length : 0);
+                var kj = (adjacency[e.target] ? adjacency[e.target].in.length + adjacency[e.target].out.length : 0);
+                q += 1 - (ki * kj) / (2 * m);
+            }
+        });
+        return q / m;
+    })();
+
+    function getCommunityColor(ticker) {
+        var cid = communityOf[ticker];
+        return communityColors[cid] || '#94a3b8';
+    }
 
     // === Global Network Statistics (always-visible summary bar) ===
     // Pre-compute degree distribution data for the distribution panel
@@ -996,7 +1166,7 @@ function initNetwork(peerData) {
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
         // (so users know which sector they're viewing in heatmap-filtered mode)
-        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode && !gerHeatmapMode) || activeLegendSector)) {
+        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode && !gerHeatmapMode && !communityMode) || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -1457,6 +1627,7 @@ function initNetwork(peerData) {
 
     // Unified node color resolver: checks heatmap modes first, then sector
     function getNodeColor(ticker, sector) {
+        if (communityMode) return getCommunityColor(ticker);
         if (gerHeatmapMode) return getGERHeatmapColor(ticker);
         if (ccHeatmapMode) return getCCHeatmapColor(ticker);
         if (prHeatmapMode) return getPRHeatmapColor(ticker);
@@ -1568,6 +1739,18 @@ function initNetwork(peerData) {
         }
 
         html += '<div class="tt-row"><span class="tt-label">Sector</span><span class="tt-value">' + d.sector + '</span></div>';
+        // Show community info when community mode is active
+        if (communityMode) {
+            var cid = communityOf[d.ticker];
+            var cStat = communityStats.find(function(cs) { return cs.id === cid; });
+            if (cStat) {
+                var cIdx = communityStats.indexOf(cStat) + 1;
+                html += '<div class="tt-row"><span class="tt-label">Community</span><span class="tt-value" style="color:' + cStat.color + '">Cluster ' + cIdx + ' (' + cStat.size + ' companies)</span></div>';
+                if (cStat.sectors.length > 0) {
+                    html += '<div class="tt-row"><span class="tt-label">Top sectors</span><span class="tt-value">' + cStat.sectors.slice(0, 3).map(function(s) { return s.name.replace(/^(.{12}).+/, '$1…') + ' ' + s.count; }).join(', ') + '</span></div>';
+                }
+            }
+        }
         html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-in"></span>Selected by</span><span class="tt-value">' + d.in_degree + ' companies</span></div>';
         if (inTotal > 0) {
             var inSamePct = Math.round(inSame / inTotal * 100);
@@ -2151,7 +2334,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -2162,7 +2345,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -2273,7 +2456,8 @@ function initNetwork(peerData) {
     if (compHeatmapToggle) {
         compHeatmapToggle.addEventListener('click', function() {
             compHeatmapMode = !compHeatmapMode;
-            // Mutual exclusion: turn off PageRank and clustering heatmaps
+            // Mutual exclusion: turn off PageRank, clustering, and community heatmaps
+            if (compHeatmapMode) _clearCommunityMode();
             if (compHeatmapMode && prHeatmapMode) {
                 prHeatmapMode = false;
                 if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
@@ -2308,7 +2492,8 @@ function initNetwork(peerData) {
     if (prHeatmapToggle) {
         prHeatmapToggle.addEventListener('click', function() {
             prHeatmapMode = !prHeatmapMode;
-            // Mutual exclusion: turn off comp and clustering heatmaps
+            // Mutual exclusion: turn off comp, clustering, and community heatmaps
+            if (prHeatmapMode) _clearCommunityMode();
             if (prHeatmapMode && compHeatmapMode) {
                 compHeatmapMode = false;
                 if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
@@ -2336,7 +2521,8 @@ function initNetwork(peerData) {
     if (ccHeatmapToggle) {
         ccHeatmapToggle.addEventListener('click', function() {
             ccHeatmapMode = !ccHeatmapMode;
-            // Mutual exclusion: turn off comp and PageRank heatmaps
+            // Mutual exclusion: turn off comp, PageRank, and community heatmaps
+            if (ccHeatmapMode) _clearCommunityMode();
             if (ccHeatmapMode && compHeatmapMode) {
                 compHeatmapMode = false;
                 if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
@@ -2368,7 +2554,8 @@ function initNetwork(peerData) {
     if (gerHeatmapToggle) {
         gerHeatmapToggle.addEventListener('click', function() {
             gerHeatmapMode = !gerHeatmapMode;
-            // Mutual exclusion: turn off comp, PageRank, and clustering heatmaps
+            // Mutual exclusion: turn off comp, PageRank, clustering, and community heatmaps
+            if (gerHeatmapMode) _clearCommunityMode();
             if (gerHeatmapMode && compHeatmapMode) {
                 compHeatmapMode = false;
                 if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
@@ -2444,6 +2631,102 @@ function initNetwork(peerData) {
                 }
             }
         });
+    }
+
+    // === Community Detection Toggle ===
+    var communityToggle = document.getElementById('community-toggle');
+    var communityLegendEl = document.getElementById('community-legend');
+
+    if (communityToggle) {
+        communityToggle.addEventListener('click', function() {
+            communityMode = !communityMode;
+            // Mutual exclusion: turn off all other heatmap modes
+            if (communityMode) {
+                if (compHeatmapMode) {
+                    compHeatmapMode = false;
+                    if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
+                    if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
+                }
+                if (prHeatmapMode) {
+                    prHeatmapMode = false;
+                    if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
+                    if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+                }
+                if (ccHeatmapMode) {
+                    ccHeatmapMode = false;
+                    if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
+                    if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
+                }
+                if (gerHeatmapMode) {
+                    gerHeatmapMode = false;
+                    if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
+                    if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
+                    gerThreshold = 0;
+                    var _gs = document.getElementById('ger-threshold-slider');
+                    if (_gs) _gs.value = 0;
+                    var _gv = document.getElementById('ger-threshold-value');
+                    if (_gv) _gv.textContent = '0';
+                    var _gc = document.getElementById('ger-threshold-count');
+                    if (_gc) _gc.textContent = '';
+                }
+            }
+            communityToggle.classList.toggle('active', communityMode);
+            if (communityLegendEl) {
+                communityLegendEl.style.display = communityMode ? 'block' : 'none';
+                if (communityMode) _populateCommunityLegend();
+            }
+            draw();
+            var annMsg = communityMode
+                ? 'Community detection enabled — ' + communityStats.length + ' clusters detected (modularity ' + communityModularity.toFixed(2) + ')'
+                : 'Sector coloring restored';
+            announce(annMsg);
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
+    // Also update mutual exclusion in existing toggles to turn off community mode
+    function _clearCommunityMode() {
+        if (communityMode) {
+            communityMode = false;
+            if (communityToggle) communityToggle.classList.remove('active');
+            if (communityLegendEl) communityLegendEl.style.display = 'none';
+        }
+    }
+
+    // Build community legend HTML: show top clusters with color, size, dominant sectors
+    function _populateCommunityLegend() {
+        if (!communityLegendEl) return;
+        var maxShow = Math.min(communityStats.length, 12);
+        var html = '<div class="community-legend-header">';
+        html += '<span class="community-legend-title">Louvain Communities</span>';
+        html += '<span class="community-legend-modularity">Q = ' + communityModularity.toFixed(3) + '</span>';
+        html += '</div>';
+        html += '<div class="community-legend-items">';
+        for (var i = 0; i < maxShow; i++) {
+            var cs = communityStats[i];
+            var topSectors = cs.sectors.slice(0, 2).map(function(s) {
+                // Abbreviate sector names
+                var shortName = s.name.replace('Information Technology', 'IT')
+                    .replace('Communication Services', 'Comm')
+                    .replace('Consumer Discretionary', 'Cons Disc')
+                    .replace('Consumer Staples', 'Cons Stap')
+                    .replace('Health Care', 'Health')
+                    .replace('Real Estate', 'Real Est');
+                return shortName + ' ' + s.count;
+            }).join(', ');
+            html += '<span class="community-legend-item" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ') + '">';
+            html += '<span class="legend-dot" style="background:' + cs.color + '"></span>';
+            html += '<span class="community-legend-label">C' + (i + 1) + '</span>';
+            html += '<span class="community-legend-size">' + cs.size + '</span>';
+            html += '<span class="community-legend-sectors">' + topSectors + '</span>';
+            html += '</span>';
+        }
+        if (communityStats.length > maxShow) {
+            var remaining = communityStats.slice(maxShow).reduce(function(s, c) { return s + c.size; }, 0);
+            html += '<span class="community-legend-item community-legend-more">+' + (communityStats.length - maxShow) + ' more (' + remaining + ' nodes)</span>';
+        }
+        html += '</div>';
+        communityLegendEl.innerHTML = html;
     }
 
     // Update heatmap legend with sector filter context
@@ -3269,7 +3552,7 @@ function initNetwork(peerData) {
             var n = nodeMap[ticker];
             // Use heatmap color in heatmap mode, sector color otherwise
             var color;
-            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) {
+            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) {
                 color = getNodeColor(ticker, n ? n.sector : '');
             } else {
                 color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
@@ -3459,7 +3742,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === newIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode) && newIdx >= 0 && newIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && newIdx >= 0 && newIdx < items.length) {
                     var dot = items[newIdx].querySelector('.nsr-dot');
                     if (dot) items[newIdx].style.backgroundColor = _dotBgTint(dot);
                 }

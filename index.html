@@ -142,6 +142,10 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7v5c0 5.55 4.27 10.74 10 12 5.73-1.26 10-6.45 10-12V7L12 2z"/><path d="M12 8v4M12 16h.01"/></svg>
                 GER Risk
             </button>
+            <button class="control-btn community-toggle" id="community-toggle" title="Louvain community detection — color nodes by algorithmically detected peer clusters that cross sector boundaries">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="7" cy="7" r="4"/><circle cx="17" cy="7" r="4"/><circle cx="12" cy="17" r="4"/></svg>
+                Communities
+            </button>
             <div class="network-legend" id="network-legend">
                 <span class="legend-item"><span class="legend-dot" style="background:#00b4d8"></span>Info Tech</span>
                 <span class="legend-item"><span class="legend-dot" style="background:#06d6a0"></span>Comm Svcs</span>
@@ -190,6 +194,7 @@
                     <span class="ger-threshold-count" id="ger-threshold-count"></span>
                 </div>
             </div>
+            <div class="community-legend" id="community-legend" style="display:none"></div>
             <div class="edge-legend">
                 <span class="edge-legend-item"><span class="edge-legend-line edge-same"></span>Same-sector peer</span>
                 <span class="edge-legend-item"><span class="edge-legend-line edge-cross"></span>Cross-sector peer</span>
