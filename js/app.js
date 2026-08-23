@@ -2975,6 +2975,38 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 21. Pay Structure by SoP Tier — do low-approval companies have different equity/salary mixes?
+    (function() {
+        var withSop = companies.filter(function(c) {
+            return c._sopApproval != null && c._ceoStockPct != null;
+        });
+        if (withSop.length < 40) return;
+        var lowSop = withSop.filter(function(c) { return c._sopApproval < 70; });
+        var highSop = withSop.filter(function(c) { return c._sopApproval >= 95; });
+        if (lowSop.length < 3 || highSop.length < 10) return;
+        var lowEq = lowSop.map(function(c) { return c._ceoStockPct; }).sort(function(a,b){return a-b;});
+        var highEq = highSop.map(function(c) { return c._ceoStockPct; }).sort(function(a,b){return a-b;});
+        var lowMed = lowEq[Math.floor(lowEq.length / 2)];
+        var highMed = highEq[Math.floor(highEq.length / 2)];
+        var delta = lowMed - highMed;
+        var emoji = Math.abs(delta) > 5 ? '\ud83c\udfaf' : '\u2248';
+        var direction = delta > 5 ? 'Low-approval CEOs get more equity' :
+                        delta < -5 ? 'Low-approval CEOs get less equity' :
+                        'Similar equity mix across SoP tiers';
+        insights.push({
+            icon: emoji,
+            label: 'Pay Mix by SoP',
+            value: direction,
+            detail: 'Low-approval companies (<70% SoP, n=' + lowSop.length + '): median ' + lowMed.toFixed(1) + '% equity. ' +
+                'High-approval companies (\u226595%, n=' + highSop.length + '): median ' + highMed.toFixed(1) + '% equity. ' +
+                'Delta: ' + (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' percentage points.',
+            action: function() {
+                scrollToSectionById('sop-tier-comp-panel');
+            },
+            actionHint: 'View pay structure by SoP tier'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {

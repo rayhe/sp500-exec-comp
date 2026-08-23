@@ -82,6 +82,7 @@ function initCharts(companies, trends, compData) {
     drawVolatilityTenureChart(companies);
     drawVolGovCrossTab(companies);
     drawSopVolCrossTab(companies);
+    drawSopTierComp(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -195,7 +196,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart', 'sop-tier-comp-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -233,6 +234,7 @@ function redrawAllCharts() {
     drawVolatilityTenureChart(_chartData.companies);
     drawVolGovCrossTab(_chartData.companies);
     drawSopVolCrossTab(_chartData.companies);
+    drawSopTierComp(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -12327,5 +12329,317 @@ function drawSopVolCrossTab(companies) {
                 strip.appendChild(btn);
             });
         container.parentNode.insertBefore(strip, container.nextSibling);
+    }
+}
+
+/* === Pay Structure by SoP Tier === */
+function drawSopTierComp(companies) {
+    var container = document.getElementById('sop-tier-comp-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Filter to companies with SoP approval and executive data
+    var pool = companies.filter(function(c) {
+        return c._sopApproval != null && c.executives && c.executives.length > 0;
+    });
+
+    var ceoRows = [];
+    pool.forEach(function(c) {
+        if (!c.executives || c.executives.length === 0) return;
+        var allYears = [];
+        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
+        allYears.sort(function(a, b) { return b - a; });
+        var latestYear = allYears[0];
+        var yearExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        var ceo = yearExecs.find(function(e) {
+            return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
+        });
+        if (!ceo && yearExecs.length > 0) {
+            ceo = yearExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
+        }
+        if (!ceo || !ceo.total || ceo.total <= 0) return;
+        ceoRows.push({
+            ticker: c.ticker,
+            company: c.company_name,
+            sopApproval: c._sopApproval,
+            total: ceo.total,
+            salary: ceo.salary || 0,
+            stock_awards: ceo.stock_awards || 0,
+            option_awards: ceo.option_awards || 0,
+            non_equity_incentive: ceo.non_equity_incentive || 0,
+            bonus: ceo.bonus || 0,
+            pension_nqdc: ceo.pension_nqdc || 0,
+            all_other: ceo.all_other || 0
+        });
+    });
+
+    if (ceoRows.length < 20) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient SoP + compensation data</p>';
+        return;
+    }
+
+    var componentKeys = ['salary', 'stock_awards', 'option_awards', 'non_equity_incentive', 'bonus', 'pension_nqdc', 'all_other'];
+    var componentLabels = {
+        salary: 'Base Salary', stock_awards: 'Stock Awards', option_awards: 'Option Awards',
+        non_equity_incentive: 'Non-Equity Incentive', bonus: 'Bonus', pension_nqdc: 'Pension/NQDC', all_other: 'All Other'
+    };
+    var componentColors = {
+        salary: '#06d6a0', stock_awards: '#00b4d8', option_awards: '#0096c7',
+        non_equity_incentive: '#a78bfa', bonus: '#8b5cf6', pension_nqdc: '#fb923c', all_other: '#ffd166'
+    };
+
+    // SoP tiers using the same thresholds as SoP × Vol cross-tab
+    var tiers = [
+        { label: 'Low Approval (<70%)', desc: 'Failed or Significant Opposition', min: 0, max: 70 },
+        { label: 'Contested (70\u201385%)', desc: 'Below Average Approval', min: 70, max: 85 },
+        { label: 'Moderate (85\u201395%)', desc: 'Typical Approval', min: 85, max: 95 },
+        { label: 'Strong (\u226595%)', desc: 'Overwhelming Approval', min: 95, max: 101 }
+    ];
+
+    tiers.forEach(function(t) {
+        t.rows = ceoRows.filter(function(r) { return r.sopApproval >= t.min && r.sopApproval < t.max; });
+    });
+
+    // Remove empty tiers
+    tiers = tiers.filter(function(t) { return t.rows.length > 0; });
+
+    // Compute avg composition percentages, median total, and SoP range per tier
+    tiers.forEach(function(t) {
+        var avgPcts = {};
+        componentKeys.forEach(function(k) { avgPcts[k] = 0; });
+        var sopVals = [];
+        t.rows.forEach(function(r) {
+            var rowTotal = 0;
+            componentKeys.forEach(function(k) { rowTotal += r[k]; });
+            if (rowTotal <= 0) return;
+            componentKeys.forEach(function(k) { avgPcts[k] += (r[k] / rowTotal) * 100; });
+            sopVals.push(r.sopApproval);
+        });
+        var n = t.rows.length;
+        componentKeys.forEach(function(k) { avgPcts[k] /= n; });
+        t.avgPcts = avgPcts;
+        sopVals.sort(function(a, b) { return a - b; });
+        t.sopMin = sopVals[0];
+        t.sopMax = sopVals[sopVals.length - 1];
+        t.sopMedian = sopVals[Math.floor(sopVals.length / 2)];
+        var sortedTotals = t.rows.map(function(r) { return r.total; }).sort(function(a, b) { return a - b; });
+        var mid = Math.floor(sortedTotals.length / 2);
+        t.medianTotal = sortedTotals.length % 2 === 0 ? (sortedTotals[mid - 1] + sortedTotals[mid]) / 2 : sortedTotals[mid];
+    });
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var textColor = dark ? '#e4e4e7' : '#1a1a2e';
+    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+
+    var margin = { top: 16, right: 90, bottom: 60, left: 260 };
+    var cw = container.clientWidth || 700;
+    var w = cw - margin.left - margin.right;
+    if (w < 200) w = 200;
+    var barH = 36;
+    var barGap = 14;
+    var h = tiers.length * (barH + barGap) - barGap;
+
+    var svg = d3.select(container).append('svg')
+        .attr('width', w + margin.left + margin.right)
+        .attr('height', h + margin.top + margin.bottom + 30)
+        .attr('role', 'img')
+        .attr('aria-label', 'Pay composition by say-on-pay approval tier');
+
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var x = d3.scaleLinear().domain([0, 100]).range([0, w]);
+
+    // SoP tier color coding
+    function sopTierColor(sop) {
+        if (sop < 70) return '#ef476f';
+        if (sop < 85) return '#fbbf24';
+        if (sop < 95) return '#06d6a0';
+        return '#00b4d8';
+    }
+
+    // Draw stacked bars per tier
+    tiers.forEach(function(t, ti) {
+        var by = ti * (barH + barGap);
+        var cumX = 0;
+
+        // Label: tier name + count + median pay
+        var labelLine1 = t.label + '  (' + t.rows.length + ' companies)';
+        var labelLine2 = 'SoP ' + t.sopMin.toFixed(0) + '\u2013' + t.sopMax.toFixed(0) + '% | Median Pay ' + fmtCurr(t.medianTotal);
+
+        // Colored dot for tier
+        g.append('circle')
+            .attr('cx', -margin.left + 12)
+            .attr('cy', by + barH / 2)
+            .attr('r', 5)
+            .attr('fill', sopTierColor(t.min));
+
+        g.append('text')
+            .attr('x', -8)
+            .attr('y', by + barH / 2 - 6)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', 'end')
+            .attr('fill', textColor)
+            .attr('font-size', '0.78rem')
+            .attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(labelLine1);
+
+        g.append('text')
+            .attr('x', -8)
+            .attr('y', by + barH / 2 + 8)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', 'end')
+            .attr('fill', mutedColor)
+            .attr('font-size', '0.65rem')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(labelLine2);
+
+        var segDelay = ti * 200;
+        componentKeys.forEach(function(key, ki) {
+            var pct = t.avgPcts[key];
+            if (pct < 0.3) { cumX += pct; return; } // too thin to render
+
+            var segW = x(pct);
+            var seg = g.append('rect')
+                .attr('x', x(cumX))
+                .attr('y', by)
+                .attr('height', barH)
+                .attr('rx', ki === 0 ? 4 : (cumX + pct >= 99.5 ? 4 : 0))
+                .attr('ry', ki === 0 ? 4 : (cumX + pct >= 99.5 ? 4 : 0))
+                .attr('fill', componentColors[key])
+                .attr('opacity', 0.9)
+                .attr('cursor', 'pointer');
+
+            // Animate width
+            if (!prefersReducedMotion()) {
+                seg.attr('width', 0)
+                    .transition().duration(600).delay(segDelay + ki * 60)
+                    .attr('width', segW);
+            } else {
+                seg.attr('width', segW);
+            }
+
+            // Tooltip
+            seg.on('mouseover', function(event) {
+                seg.attr('opacity', 1);
+                showChartTooltip(event,
+                    '<strong>' + componentLabels[key] + '</strong><br>' +
+                    pct.toFixed(1) + '% of total comp<br>' +
+                    '<span style="color:#a1a1aa;">' + t.label + '</span>'
+                );
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() {
+                seg.attr('opacity', 0.9);
+                hideChartTooltip();
+            });
+
+            // Inline label if wide enough
+            if (segW > 40) {
+                var lbl = g.append('text')
+                    .attr('x', x(cumX) + segW / 2)
+                    .attr('y', by + barH / 2)
+                    .attr('dy', '0.35em')
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', '#fff')
+                    .attr('font-size', '0.65rem')
+                    .attr('font-weight', '500')
+                    .attr('font-family', 'Inter, system-ui, sans-serif')
+                    .attr('pointer-events', 'none')
+                    .text(pct.toFixed(1) + '%');
+
+                if (!prefersReducedMotion()) {
+                    lbl.attr('opacity', 0)
+                        .transition().duration(400).delay(segDelay + ki * 60 + 400)
+                        .attr('opacity', 1);
+                }
+            }
+
+            cumX += pct;
+        });
+
+        // Right-aligned median total label
+        g.append('text')
+            .attr('x', w + 8)
+            .attr('y', by + barH / 2)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', 'start')
+            .attr('fill', textColor)
+            .attr('font-size', '0.75rem')
+            .attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(fmtCurr(t.medianTotal));
+    });
+
+    // Legend row below bars
+    var legendY = h + barGap + 14;
+    var legX = 0;
+    componentKeys.forEach(function(key) {
+        var label = componentLabels[key];
+        g.append('rect')
+            .attr('x', legX)
+            .attr('y', legendY)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('rx', 2)
+            .attr('fill', componentColors[key])
+            .attr('opacity', 0.9);
+        g.append('text')
+            .attr('x', legX + 14)
+            .attr('y', legendY + 5)
+            .attr('dy', '0.35em')
+            .attr('fill', mutedColor)
+            .attr('font-size', '0.62rem')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .text(label);
+        legX += label.length * 5.5 + 26;
+    });
+
+    // Analytical narrative below the chart
+    if (tiers.length >= 2) {
+        var lowest = tiers[0];
+        var highest = tiers[tiers.length - 1];
+        var narrative = document.createElement('div');
+        narrative.className = 'sop-tier-narrative';
+        narrative.style.cssText = 'padding:12px 16px;margin-top:12px;font-size:0.82rem;color:' + (dark ? '#a1a1aa' : '#6b7280') + ';line-height:1.5;border-top:1px solid ' + (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)') + ';';
+
+        // Compare key structural differences
+        var lowEquity = (lowest.avgPcts.stock_awards + lowest.avgPcts.option_awards).toFixed(1);
+        var highEquity = (highest.avgPcts.stock_awards + highest.avgPcts.option_awards).toFixed(1);
+        var lowSalary = lowest.avgPcts.salary.toFixed(1);
+        var highSalary = highest.avgPcts.salary.toFixed(1);
+        var equityDelta = (parseFloat(lowEquity) - parseFloat(highEquity)).toFixed(1);
+        var salaryDelta = (parseFloat(lowSalary) - parseFloat(highSalary)).toFixed(1);
+
+        var parts = [];
+        parts.push('Companies with <strong>low shareholder approval (&lt;70%)</strong> allocate <strong>' + lowEquity + '%</strong> of CEO pay to equity, compared to <strong>' + highEquity + '%</strong> for companies with <strong>strong approval (\u226595%)</strong>');
+        if (Math.abs(parseFloat(equityDelta)) > 2) {
+            parts.push(' \u2014 a ' + Math.abs(parseFloat(equityDelta)).toFixed(1) + 'pp ' + (parseFloat(equityDelta) > 0 ? 'higher' : 'lower') + ' equity share.');
+        } else {
+            parts.push('.');
+        }
+        parts.push(' Base salary represents <strong>' + lowSalary + '%</strong> of pay at low-approval companies vs <strong>' + highSalary + '%</strong> at high-approval companies');
+        if (Math.abs(parseFloat(salaryDelta)) > 1) {
+            parts.push(' (' + (parseFloat(salaryDelta) > 0 ? '+' : '') + salaryDelta + 'pp).');
+        } else {
+            parts.push('.');
+        }
+
+        // Median pay comparison
+        if (lowest.medianTotal && highest.medianTotal) {
+            var payRatio = (lowest.medianTotal / highest.medianTotal).toFixed(1);
+            parts.push(' Median CEO pay: ' + fmtCurr(lowest.medianTotal) + ' (low approval) vs ' + fmtCurr(highest.medianTotal) + ' (strong approval)');
+            if (parseFloat(payRatio) > 1.1) {
+                parts.push(' \u2014 low-approval companies pay <strong>' + payRatio + '\u00d7</strong> more.');
+            } else if (parseFloat(payRatio) < 0.9) {
+                parts.push(' \u2014 low-approval companies pay <strong>' + (1 / parseFloat(payRatio)).toFixed(1) + '\u00d7</strong> less.');
+            } else {
+                parts.push('.');
+            }
+        }
+
+        narrative.innerHTML = parts.join('');
+        container.appendChild(narrative);
     }
 }
