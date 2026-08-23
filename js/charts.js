@@ -81,6 +81,7 @@ function initCharts(companies, trends, compData) {
     drawVolatilitySectorChart(companies);
     drawVolatilityTenureChart(companies);
     drawVolGovCrossTab(companies);
+    drawSopVolCrossTab(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -194,7 +195,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -231,6 +232,7 @@ function redrawAllCharts() {
     drawVolatilitySectorChart(_chartData.companies);
     drawVolatilityTenureChart(_chartData.companies);
     drawVolGovCrossTab(_chartData.companies);
+    drawSopVolCrossTab(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -11111,6 +11113,37 @@ function drawVolatilitySectorChart(companies) {
         .style('font-size', '9px')
         .style('font-weight', '600')
         .text('S&P 500: ' + overallMedian.toFixed(1) + '%');
+
+    // Per-bar scatter navigation icon (⤴) — most volatile company in each sector → scatter
+    sectors.forEach(function(s) {
+        var sectorCompanies = withVol.filter(function(c) { return c.sector === s.sector; })
+            .sort(function(a, b) { return (b._ceoVolatility || 0) - (a._ceoVolatility || 0); });
+        if (sectorCompanies.length === 0) return;
+        var topInSector = sectorCompanies[0];
+        g.append('text')
+            .attr('x', x(s.median) + 30)
+            .attr('y', function() { return y(s.sector) + y.bandwidth() / 2 + 4; })
+            .attr('text-anchor', 'start')
+            .attr('fill', mutedColor)
+            .attr('font-size', '10px')
+            .attr('opacity', 0.5)
+            .style('cursor', 'pointer')
+            .on('mouseover', function() {
+                d3.select(this).attr('fill', '#00b4d8').attr('opacity', 1);
+                showChartTooltip(d3.event || event, 'View ' + topInSector.ticker + ' (' + topInSector._ceoVolatility.toFixed(1) + '% CV) in Scatter Plot');
+            })
+            .on('mousemove', function() { positionChartTooltip(d3.event || event); })
+            .on('mouseout', function() {
+                d3.select(this).attr('fill', mutedColor).attr('opacity', 0.5);
+                hideChartTooltip();
+            })
+            .on('click', function() {
+                if (typeof window.navigateToScatter === 'function') {
+                    window.navigateToScatter(topInSector.ticker, '_ceoVolatility', 'total_compensation');
+                }
+            })
+            .text('\u2934');
+    });
 }
 
 
@@ -11953,4 +11986,346 @@ function _renderVolGovScatterNav(cells, container) {
     });
 
     container.parentNode.insertBefore(strip, container.nextSibling);
+}
+
+
+/* === Say-on-Pay × Volatility Cross-Analysis Chart === */
+var _sopVolSectorFilter = null;
+var _sopVolCompaniesRef = null;
+
+function _buildSopVolSectorChips(companies) {
+    var chipWrap = document.getElementById('sop-vol-sector-chips');
+    if (!chipWrap) return;
+    chipWrap.innerHTML = '';
+    var eligible = companies.filter(function(c) {
+        return c._sopApproval != null && c._ceoVolatility != null;
+    });
+    var sectors = {};
+    eligible.forEach(function(c) { if (c.sector) sectors[c.sector] = (sectors[c.sector] || 0) + 1; });
+    var sorted = Object.keys(sectors).sort(function(a, b) { return sectors[b] - sectors[a]; });
+
+    var allChip = document.createElement('button');
+    allChip.className = 'anomaly-chip' + (_sopVolSectorFilter == null ? ' active' : '');
+    allChip.textContent = 'All Sectors (' + eligible.length + ')';
+    allChip.title = 'Show SoP vs volatility across all sectors';
+    allChip.addEventListener('click', function() {
+        _sopVolSectorFilter = null;
+        var el = document.getElementById('sop-vol-crosstab-chart');
+        if (el) el.innerHTML = '';
+        drawSopVolCrossTab(_sopVolCompaniesRef || companies);
+    });
+    chipWrap.appendChild(allChip);
+
+    sorted.forEach(function(sec) {
+        var chip = document.createElement('button');
+        chip.className = 'anomaly-chip' + (_sopVolSectorFilter === sec ? ' active' : '');
+        chip.textContent = sec + ' (' + sectors[sec] + ')';
+        chip.setAttribute('data-sector', sec);
+        chip.title = 'Filter to ' + sec;
+        chip.addEventListener('click', function() {
+            _sopVolSectorFilter = sec;
+            var el = document.getElementById('sop-vol-crosstab-chart');
+            if (el) el.innerHTML = '';
+            drawSopVolCrossTab(_sopVolCompaniesRef || companies);
+        });
+        chipWrap.appendChild(chip);
+    });
+}
+
+function drawSopVolCrossTab(companies) {
+    _sopVolCompaniesRef = companies;
+    var container = document.getElementById('sop-vol-crosstab-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Build sector chips on first call
+    var chipWrap = document.getElementById('sop-vol-sector-chips');
+    if (chipWrap && chipWrap.children.length === 0) {
+        _buildSopVolSectorChips(companies);
+    }
+
+    // Update title/desc based on sector filter
+    var titleEl = document.getElementById('sop-vol-crosstab-title');
+    var descEl = document.getElementById('sop-vol-crosstab-desc');
+    var sectorFilter = _sopVolSectorFilter;
+    if (sectorFilter) {
+        if (titleEl) titleEl.textContent = 'Say-on-Pay \u00D7 Volatility \u2014 ' + sectorFilter;
+        if (descEl) descEl.textContent = sectorFilter + ' shareholder approval vs CEO pay volatility. Cross-tabulation of say-on-pay tiers by volatility buckets for all ' + sectorFilter + ' companies with both metrics.';
+    } else {
+        if (titleEl) titleEl.textContent = 'Say-on-Pay \u00D7 Volatility';
+        if (descEl) descEl.textContent = 'Do companies with low shareholder approval also have volatile CEO pay? Cross-tabulation of say-on-pay approval tiers (rows) by pay volatility buckets (columns). Each cell shows company count, median CEO pay, and median SoP%. Cell color intensity reflects median approval. Click any cell to filter the main table.';
+    }
+
+    var textColor = getThemeTextColor();
+    var mutedColor = getThemeMutedColor();
+    var dark = isDarkTheme();
+
+    // Filter to companies with both SoP and volatility data
+    var eligible = companies.filter(function(c) {
+        var base = c._sopApproval != null && c._ceoVolatility != null && c.total_compensation > 0;
+        if (sectorFilter) return base && c.sector === sectorFilter;
+        return base;
+    });
+    var minThreshold = sectorFilter ? 5 : 20;
+    if (eligible.length < minThreshold) {
+        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient SoP + volatility data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        return;
+    }
+
+    // Define SoP approval tiers (rows)
+    var sopBrackets = [
+        { label: 'Failed (<50%)', min: 0, max: 50, key: 'failed' },
+        { label: 'Weak (50\u201370%)', min: 50, max: 70, key: 'weak' },
+        { label: 'Contested (70\u201385%)', min: 70, max: 85, key: 'contested' },
+        { label: 'Moderate (85\u201395%)', min: 85, max: 95, key: 'moderate' },
+        { label: 'Strong (\u226595%)', min: 95, max: 101, key: 'strong' }
+    ];
+
+    // Define volatility buckets (columns)
+    var volBrackets = [
+        { label: 'Very Low\n(<10%)', min: 0, max: 10, key: 'vlow' },
+        { label: 'Low\n(10\u201320%)', min: 10, max: 20, key: 'low' },
+        { label: 'Moderate\n(20\u201340%)', min: 20, max: 40, key: 'mod' },
+        { label: 'High\n(40%+)', min: 40, max: 999, key: 'high' }
+    ];
+
+    function median(arr) {
+        if (arr.length === 0) return 0;
+        var s = arr.slice().sort(function(a, b) { return a - b; });
+        return s[Math.floor(s.length / 2)];
+    }
+
+    function formatPay(n) {
+        if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B';
+        if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+        if (n >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+        return '$' + n.toFixed(0);
+    }
+
+    // Build cross-tab grid
+    var grid = {};
+    var rowTotals = {};
+    var colTotals = {};
+    sopBrackets.forEach(function(sb) {
+        grid[sb.key] = {};
+        rowTotals[sb.key] = [];
+        volBrackets.forEach(function(vb) {
+            grid[sb.key][vb.key] = [];
+        });
+    });
+    volBrackets.forEach(function(vb) { colTotals[vb.key] = []; });
+
+    eligible.forEach(function(c) {
+        var sb = sopBrackets.find(function(b) { return c._sopApproval >= b.min && c._sopApproval < b.max; });
+        var vb = volBrackets.find(function(b) { return c._ceoVolatility >= b.min && c._ceoVolatility < b.max; });
+        if (sb && vb) {
+            grid[sb.key][vb.key].push(c);
+            rowTotals[sb.key].push(c);
+            colTotals[vb.key].push(c);
+        }
+    });
+
+    // Build HTML table
+    var html = '<div class="crosstab-wrapper" style="overflow-x:auto;">';
+    html += '<table class="crosstab-table" role="grid" aria-label="Say-on-Pay vs Volatility cross-tabulation">';
+
+    // Header row
+    html += '<thead><tr><th class="crosstab-corner">SoP Approval \u2193 / Volatility \u2192</th>';
+    volBrackets.forEach(function(vb) {
+        html += '<th class="crosstab-col-header">' + vb.label.replace('\n', '<br>') + '</th>';
+    });
+    html += '<th class="crosstab-col-header crosstab-total-header">Total</th>';
+    html += '</tr></thead><tbody>';
+
+    // Data rows (reversed so "Strong" is on top)
+    var reversedSop = sopBrackets.slice().reverse();
+    reversedSop.forEach(function(sb) {
+        html += '<tr>';
+        html += '<th class="crosstab-row-header">' + sb.label + '</th>';
+        volBrackets.forEach(function(vb) {
+            var cell = grid[sb.key][vb.key];
+            var count = cell.length;
+            if (count === 0) {
+                html += '<td class="crosstab-cell crosstab-empty" style="background:' + (dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)') + ';">\u2014</td>';
+            } else {
+                var medPay = median(cell.map(function(c) { return c.total_compensation; }));
+                var medSop = median(cell.map(function(c) { return c._sopApproval; }));
+                var medVol = median(cell.map(function(c) { return c._ceoVolatility; }));
+
+                // Color by SoP approval: green for high approval, red for low
+                var sopNorm = Math.max(0, Math.min(1, (medSop - 40) / 60)); // 40-100% range
+                var bgR, bgG, bgB, bgA;
+                if (sopNorm >= 0.5) {
+                    // Green gradient for high approval
+                    var greenIntensity = (sopNorm - 0.5) * 2;
+                    bgR = dark ? Math.round(6 + greenIntensity * 20) : Math.round(240 - greenIntensity * 40);
+                    bgG = dark ? Math.round(100 + greenIntensity * 114) : Math.round(255 - greenIntensity * 10);
+                    bgB = dark ? Math.round(80 + greenIntensity * 80) : Math.round(240 - greenIntensity * 30);
+                    bgA = dark ? 0.15 + greenIntensity * 0.15 : 0.15 + greenIntensity * 0.2;
+                } else {
+                    // Red gradient for low approval
+                    var redIntensity = (0.5 - sopNorm) * 2;
+                    bgR = dark ? Math.round(200 + redIntensity * 39) : Math.round(255);
+                    bgG = dark ? Math.round(60 - redIntensity * 40) : Math.round(230 - redIntensity * 80);
+                    bgB = dark ? Math.round(60 - redIntensity * 40) : Math.round(230 - redIntensity * 80);
+                    bgA = dark ? 0.15 + redIntensity * 0.2 : 0.1 + redIntensity * 0.15;
+                }
+                var bg = 'rgba(' + bgR + ',' + bgG + ',' + bgB + ',' + bgA.toFixed(2) + ')';
+
+                var isDanger = sb.key === 'failed' || sb.key === 'weak';
+                var isHighVol = vb.key === 'high';
+                var cellClass = 'crosstab-cell' + (isDanger && isHighVol ? ' crosstab-danger' : '');
+
+                html += '<td class="' + cellClass + '" style="background:' + bg + ';cursor:pointer;" ';
+                html += 'data-sop-key="' + sb.key + '" data-vol-key="' + vb.key + '" ';
+                html += 'data-sop-min="' + sb.min + '" data-sop-max="' + sb.max + '" ';
+                html += 'data-vol-min="' + vb.min + '" data-vol-max="' + vb.max + '" ';
+                html += 'title="' + count + ' companies: ' + sb.label + ' SoP × ' + vb.label.replace('\n', ' ') + ' volatility. Click to filter table.">';
+                html += '<div class="crosstab-count">' + count + '</div>';
+                html += '<div class="crosstab-pay">' + formatPay(medPay) + '</div>';
+                html += '<div class="crosstab-meta">SoP ' + medSop.toFixed(1) + '% · CV ' + medVol.toFixed(1) + '%</div>';
+                html += '</td>';
+            }
+        });
+
+        // Row total
+        var rowTotal = rowTotals[sb.key];
+        if (rowTotal.length > 0) {
+            var rowMedPay = median(rowTotal.map(function(c) { return c.total_compensation; }));
+            var rowMedSop = median(rowTotal.map(function(c) { return c._sopApproval; }));
+            html += '<td class="crosstab-cell crosstab-total-cell"><div class="crosstab-count">' + rowTotal.length + '</div>';
+            html += '<div class="crosstab-pay">' + formatPay(rowMedPay) + '</div>';
+            html += '<div class="crosstab-meta">SoP ' + rowMedSop.toFixed(1) + '%</div></td>';
+        } else {
+            html += '<td class="crosstab-cell crosstab-total-cell">\u2014</td>';
+        }
+        html += '</tr>';
+    });
+
+    // Column totals row
+    html += '<tr class="crosstab-total-row"><th class="crosstab-row-header">Total</th>';
+    volBrackets.forEach(function(vb) {
+        var col = colTotals[vb.key];
+        if (col.length > 0) {
+            var colMedPay = median(col.map(function(c) { return c.total_compensation; }));
+            var colMedVol = median(col.map(function(c) { return c._ceoVolatility; }));
+            html += '<td class="crosstab-cell crosstab-total-cell"><div class="crosstab-count">' + col.length + '</div>';
+            html += '<div class="crosstab-pay">' + formatPay(colMedPay) + '</div>';
+            html += '<div class="crosstab-meta">CV ' + colMedVol.toFixed(1) + '%</div></td>';
+        } else {
+            html += '<td class="crosstab-cell crosstab-total-cell">\u2014</td>';
+        }
+    });
+    html += '<td class="crosstab-cell crosstab-total-cell crosstab-grand-total"><div class="crosstab-count">' + eligible.length + '</div>';
+    html += '<div class="crosstab-pay">' + formatPay(median(eligible.map(function(c) { return c.total_compensation; }))) + '</div></td>';
+    html += '</tr></tbody></table>';
+
+    // Auto-generated analytical narrative
+    var strongApproval = eligible.filter(function(c) { return c._sopApproval >= 95; });
+    var weakApproval = eligible.filter(function(c) { return c._sopApproval < 70; });
+    var strongVols = strongApproval.length > 0 ? strongApproval.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;}) : [];
+    var weakVols = weakApproval.length > 0 ? weakApproval.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;}) : [];
+    var strongMedVol = strongVols.length > 0 ? strongVols[Math.floor(strongVols.length / 2)] : null;
+    var weakMedVol = weakVols.length > 0 ? weakVols[Math.floor(weakVols.length / 2)] : null;
+
+    var dangerZone = eligible.filter(function(c) { return c._sopApproval < 70 && c._ceoVolatility >= 40; });
+
+    html += '<div class="crosstab-narrative" style="margin-top:16px;padding:14px 18px;border-radius:8px;background:' +
+        (dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)') + ';color:' + textColor + ';font-size:13px;line-height:1.6;">';
+
+    if (strongMedVol != null && weakMedVol != null) {
+        var delta = weakMedVol - strongMedVol;
+        if (delta > 5) {
+            html += '<strong>\u26a0\ufe0f Correlated:</strong> Companies with weak shareholder approval (&lt;70% SoP, n=' + weakApproval.length + ') have higher pay volatility (' +
+                weakMedVol.toFixed(1) + '% median CV) than strong-approval peers (\u226595%, n=' + strongApproval.length + ', ' + strongMedVol.toFixed(1) + '% CV). ' +
+                'Delta: ' + delta.toFixed(1) + ' pts. ';
+        } else if (delta < -5) {
+            html += '<strong>\u2705 Inverted:</strong> Companies with weak shareholder approval (&lt;70% SoP, n=' + weakApproval.length + ') actually have <em>lower</em> pay volatility (' +
+                weakMedVol.toFixed(1) + '% median CV) than strong-approval peers (\u226595%, n=' + strongApproval.length + ', ' + strongMedVol.toFixed(1) + '% CV). ';
+        } else {
+            html += '<strong>\u2248 Neutral:</strong> No significant link between shareholder approval and pay volatility. Weak-approval companies (&lt;70%, n=' + weakApproval.length + '): ' +
+                weakMedVol.toFixed(1) + '% median CV. Strong-approval (\u226595%, n=' + strongApproval.length + '): ' + strongMedVol.toFixed(1) + '% CV. ';
+        }
+    } else if (weakApproval.length === 0) {
+        html += '<strong>No weak-approval companies</strong> (&lt;70% SoP) in this view' + (sectorFilter ? ' (' + sectorFilter + ')' : '') + '. ';
+    }
+
+    if (dangerZone.length > 0) {
+        html += '<br><strong style="color:' + (dark ? '#ef4444' : '#dc2626') + ';">\u26a0 Danger zone:</strong> ' + dangerZone.length +
+            ' company' + (dangerZone.length > 1 ? 'ies have' : ' has') + ' both weak shareholder approval (&lt;70%) <em>and</em> high pay volatility (\u226540% CV): ' +
+            dangerZone.slice(0, 5).map(function(c) { return c.ticker + ' (' + c._sopApproval.toFixed(1) + '% SoP, ' + c._ceoVolatility.toFixed(1) + '% CV)'; }).join(', ') +
+            (dangerZone.length > 5 ? ', +' + (dangerZone.length - 5) + ' more' : '') + '.';
+    }
+
+    // Median pay comparison
+    if (strongApproval.length > 0 && weakApproval.length > 0) {
+        var strongMedPay = median(strongApproval.map(function(c) { return c.total_compensation; }));
+        var weakMedPay = median(weakApproval.map(function(c) { return c.total_compensation; }));
+        var payDelta = ((weakMedPay / strongMedPay) - 1) * 100;
+        html += '<br><strong>Pay context:</strong> Weak-approval CEOs earn ' + (payDelta > 0 ? '+' : '') + payDelta.toFixed(0) + '% vs strong-approval peers (' +
+            formatPay(weakMedPay) + ' vs ' + formatPay(strongMedPay) + ' median).';
+    }
+    html += '</div>';
+
+    html += '</div>'; // crosstab-wrapper
+
+    container.innerHTML = html;
+
+    // Click handlers for cells
+    container.querySelectorAll('.crosstab-cell[data-sop-key]').forEach(function(cell) {
+        cell.addEventListener('click', function(evt) {
+            var sopMin = parseFloat(cell.getAttribute('data-sop-min'));
+            var sopMax = parseFloat(cell.getAttribute('data-sop-max'));
+            var volMin = parseFloat(cell.getAttribute('data-vol-min'));
+            var volMax = parseFloat(cell.getAttribute('data-vol-max'));
+
+            if (evt.shiftKey && typeof window.navigateToScatter === 'function') {
+                // Shift+click: navigate to scatter with company from this cell
+                var cellCompanies = eligible.filter(function(c) {
+                    return c._sopApproval >= sopMin && c._sopApproval < sopMax &&
+                           c._ceoVolatility >= volMin && c._ceoVolatility < volMax;
+                }).sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+                if (cellCompanies.length > 0) {
+                    window.navigateToScatter(cellCompanies[0].ticker, '_sopApproval', '_ceoVolatility');
+                }
+            } else {
+                // Regular click: filter table
+                var tickers = eligible.filter(function(c) {
+                    return c._sopApproval >= sopMin && c._sopApproval < sopMax &&
+                           c._ceoVolatility >= volMin && c._ceoVolatility < volMax;
+                }).map(function(c) { return c.ticker; });
+                if (typeof window.filterTableByTickers === 'function' && tickers.length > 0) {
+                    window.filterTableByTickers(tickers);
+                }
+                if (typeof scrollToTable === 'function') scrollToTable();
+            }
+        });
+    });
+
+    // Scatter navigation strip for danger-zone companies
+    if (dangerZone.length > 0) {
+        var strip = document.createElement('div');
+        strip.className = 'vol-scatter-nav-strip';
+        var label = document.createElement('span');
+        label.className = 'vol-scatter-nav-label';
+        label.textContent = '\u26a0 Low SoP + High Vol:';
+        strip.appendChild(label);
+
+        dangerZone.sort(function(a, b) { return a._sopApproval - b._sopApproval; })
+            .slice(0, 8)
+            .forEach(function(c) {
+                var btn = document.createElement('button');
+                var volTier = c._ceoVolatility >= 60 ? 'vol-extreme' : c._ceoVolatility >= 40 ? 'vol-very-high' : 'vol-high';
+                btn.className = 'vol-scatter-nav-btn ' + volTier;
+                btn.textContent = c.ticker;
+                btn.title = c.ceo_name + ' \u2014 SoP: ' + c._sopApproval.toFixed(1) + '%, Vol: ' + c._ceoVolatility.toFixed(1) + '% CV';
+                btn.addEventListener('click', function() {
+                    if (typeof window.navigateToScatter === 'function') {
+                        window.navigateToScatter(c.ticker, '_sopApproval', '_ceoVolatility');
+                    }
+                });
+                strip.appendChild(btn);
+            });
+        container.parentNode.insertBefore(strip, container.nextSibling);
+    }
 }

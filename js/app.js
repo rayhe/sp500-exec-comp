@@ -2940,6 +2940,41 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 20. SoP × Volatility — do companies with low shareholder approval also have volatile pay?
+    (function() {
+        var withBoth = companies.filter(function(c) { return c._sopApproval != null && c._ceoVolatility != null; });
+        if (withBoth.length < 40) return;
+        var lowSop = withBoth.filter(function(c) { return c._sopApproval < 70; });
+        var highSop = withBoth.filter(function(c) { return c._sopApproval >= 95; });
+        if (lowSop.length < 3 || highSop.length < 10) return;
+        var lowVols = lowSop.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var highVols = highSop.map(function(c) { return c._ceoVolatility; }).sort(function(a,b){return a-b;});
+        var lowMed = lowVols[Math.floor(lowVols.length / 2)];
+        var highMed = highVols[Math.floor(highVols.length / 2)];
+        var delta = lowMed - highMed;
+        var dangerZone = withBoth.filter(function(c) { return c._sopApproval < 70 && c._ceoVolatility >= 40; });
+        var correlated = delta > 5;
+        var inverted = delta < -5;
+        var emoji = correlated ? '\ud83d\udea8' : inverted ? '\u2705' : '\u2248';
+        var direction = correlated ? 'Low approval \u2192 volatile pay' : inverted ? 'Low approval \u2192 stable pay' : 'No SoP-volatility link';
+        insights.push({
+            icon: emoji,
+            label: 'SoP \u00d7 Volatility',
+            value: direction,
+            detail: 'Low-approval companies (<70% SoP, n=' + lowSop.length + '): median ' + lowMed.toFixed(1) + '% CV. ' +
+                'High-approval companies (\u226595%, n=' + highSop.length + '): median ' + highMed.toFixed(1) + '% CV. ' +
+                'Delta: ' + Math.abs(delta).toFixed(1) + ' pts. ' +
+                (dangerZone.length > 0 ? dangerZone.length + ' danger-zone companies (low SoP + high volatility): ' +
+                    dangerZone.slice(0, 3).map(function(c) { return c.ticker; }).join(', ') +
+                    (dangerZone.length > 3 ? ' +' + (dangerZone.length - 3) + ' more' : '') + '.'
+                    : 'No danger-zone companies.'),
+            action: function() {
+                scrollToSectionById('sop-vol-crosstab-panel');
+            },
+            actionHint: 'View SoP \u00d7 volatility cross-tab'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
@@ -6517,6 +6552,28 @@ function setupDetailPanel(companies) {
                     }
                     _vrSentence += ', #' + _vrAllRank + ' of ' + _vrAll.length + ' across the S&P 500.';
                     sentences.push(_vrSentence);
+                }
+            }
+
+            // Sentence 11: SoP × Volatility context — shareholder dissent + pay volatility
+            if (company._sopApproval != null && company._ceoVolatility != null) {
+                var _svAll = companies.filter(function(c) { return c._sopApproval != null && c._ceoVolatility != null; });
+                if (_svAll.length >= 20) {
+                    var _svSop = company._sopApproval;
+                    var _svVol = company._ceoVolatility;
+                    var _svSentence = '';
+                    if (_svSop < 50 && _svVol >= 40) {
+                        _svSentence = 'A red-flag combination: failed say-on-pay vote (' + _svSop.toFixed(1) + '%) paired with high pay volatility (' + _svVol.toFixed(1) + '% CV) — shareholders are rejecting a compensation program that also lacks consistency.';
+                    } else if (_svSop < 70 && _svVol >= 40) {
+                        _svSentence = 'Danger zone: weak shareholder approval (' + _svSop.toFixed(1) + '%) combined with volatile pay (' + _svVol.toFixed(1) + '% CV) suggests both shareholder concern and pay structure instability.';
+                    } else if (_svSop < 70 && _svVol < 20) {
+                        _svSentence = 'Despite low shareholder approval (' + _svSop.toFixed(1) + '%), pay is relatively stable (' + _svVol.toFixed(1) + '% CV) — the issue may be pay level rather than pay structure.';
+                    } else if (_svSop >= 95 && _svVol >= 40) {
+                        _svSentence = 'Strong shareholder approval (' + _svSop.toFixed(1) + '%) despite high pay volatility (' + _svVol.toFixed(1) + '% CV) — shareholders may accept volatility tied to performance incentives.';
+                    } else if (_svSop >= 95 && _svVol < 10) {
+                        _svSentence = 'Best quadrant: near-unanimous shareholder support (' + _svSop.toFixed(1) + '%) with very stable pay (' + _svVol.toFixed(1) + '% CV).';
+                    }
+                    if (_svSentence) sentences.push(_svSentence);
                 }
             }
 

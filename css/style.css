@@ -10068,6 +10068,13 @@ body.light-mode .cross-sector-pair-select:focus {
     outline: 2px solid #00b4d8;
     outline-offset: 2px;
 }
+.crosstab-danger {
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+.crosstab-danger:hover {
+    border-color: rgba(239, 68, 68, 0.8);
+}
 .crosstab-count {
     display: block;
     font-size: 20px;
@@ -10610,7 +10617,8 @@ body.light-mode .cross-sector-pair-select:focus {
     }
     #vol-gov-crosstab-panel,
     #volatility-tenure-panel,
-    #tenure-gov-crosstab-panel {
+    #tenure-gov-crosstab-panel,
+    #sop-vol-crosstab-panel {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
