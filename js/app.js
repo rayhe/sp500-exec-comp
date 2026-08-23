@@ -3219,6 +3219,129 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // Insight: Cross-Sector Divergence — which sector diverges most from S&P 500 norms?
+    (function() {
+        var sectors = {};
+        companies.forEach(function(c) {
+            if (!c.sector) return;
+            if (!sectors[c.sector]) sectors[c.sector] = { companies: [], pays: [], equities: [], govs: [], vols: [], tenures: [] };
+            var s = sectors[c.sector];
+            s.companies.push(c);
+            s.pays.push(c.total_compensation || 0);
+            if (c._ceoStockPct != null) s.equities.push(c._ceoStockPct);
+            if (c._govScore != null) s.govs.push(c._govScore);
+            if (c._ceoVolatility != null) s.vols.push(c._ceoVolatility);
+            if (c._ceoTenureYears != null) s.tenures.push(c._ceoTenureYears);
+        });
+
+        // Compute S&P 500-wide medians
+        function medianOf(arr) { if (!arr.length) return 0; var s = arr.slice().sort(function(a,b){return a-b;}); return s[Math.floor(s.length/2)]; }
+        var allPays = companies.filter(function(c){return c.total_compensation>0;}).map(function(c){return c.total_compensation;});
+        var allEquities = companies.filter(function(c){return c._ceoStockPct!=null;}).map(function(c){return c._ceoStockPct;});
+        var allGovs = companies.filter(function(c){return c._govScore!=null;}).map(function(c){return c._govScore;});
+        var allVols = companies.filter(function(c){return c._ceoVolatility!=null;}).map(function(c){return c._ceoVolatility;});
+        var sp500PayMed = medianOf(allPays);
+        var sp500EqMed = medianOf(allEquities);
+        var sp500GovMed = medianOf(allGovs);
+        var sp500VolMed = medianOf(allVols);
+
+        // Score each sector's divergence
+        var sectorScores = [];
+        Object.keys(sectors).forEach(function(sec) {
+            var s = sectors[sec];
+            if (s.companies.length < 5) return;
+            var payMed = medianOf(s.pays);
+            var eqMed = s.equities.length >= 3 ? medianOf(s.equities) : null;
+            var govMed = s.govs.length >= 3 ? medianOf(s.govs) : null;
+            var volMed = s.vols.length >= 3 ? medianOf(s.vols) : null;
+
+            var deviations = [];
+            var payDev = sp500PayMed > 0 ? Math.abs(payMed - sp500PayMed) / sp500PayMed * 100 : 0;
+            deviations.push({ metric: 'pay', dev: payDev, val: payMed, sp500: sp500PayMed, dir: payMed > sp500PayMed ? 'above' : 'below' });
+            if (eqMed !== null) {
+                var eqDev = Math.abs(eqMed - sp500EqMed);
+                deviations.push({ metric: 'equity', dev: eqDev, val: eqMed, sp500: sp500EqMed, dir: eqMed > sp500EqMed ? 'above' : 'below' });
+            }
+            if (govMed !== null) {
+                var govDev = Math.abs(govMed - sp500GovMed);
+                deviations.push({ metric: 'governance', dev: govDev, val: govMed, sp500: sp500GovMed, dir: govMed > sp500GovMed ? 'above' : 'below' });
+            }
+            if (volMed !== null) {
+                var volDev = Math.abs(volMed - sp500VolMed);
+                deviations.push({ metric: 'volatility', dev: volDev, val: volMed, sp500: sp500VolMed, dir: volMed > sp500VolMed ? 'above' : 'below' });
+            }
+
+            // Composite divergence score (normalized)
+            var composite = payDev / 50 + (eqMed !== null ? Math.abs(eqMed - sp500EqMed) / 20 : 0) +
+                (govMed !== null ? Math.abs(govMed - sp500GovMed) / 15 : 0) +
+                (volMed !== null ? Math.abs(volMed - sp500VolMed) / 15 : 0);
+
+            sectorScores.push({
+                sector: sec, count: s.companies.length, composite: composite,
+                deviations: deviations, payMed: payMed, eqMed: eqMed, govMed: govMed, volMed: volMed
+            });
+        });
+
+        sectorScores.sort(function(a, b) { return b.composite - a.composite; });
+        if (sectorScores.length < 3) return;
+
+        var top = sectorScores[0];
+        var topDevs = top.deviations.sort(function(a, b) { return b.dev - a.dev; });
+        var biggestDev = topDevs[0];
+
+        // Generate narrative
+        var narrative = top.sector + ' (' + top.count + ' companies) diverges most from S&P 500 norms. ';
+        if (biggestDev.metric === 'pay') {
+            narrative += 'Median CEO pay of ' + formatCurrency(top.payMed) + ' is ' +
+                Math.round(biggestDev.dev) + '% ' + biggestDev.dir + ' the S&P 500 median of ' +
+                formatCurrency(biggestDev.sp500) + '.';
+        } else if (biggestDev.metric === 'equity') {
+            narrative += 'Median equity share of ' + top.eqMed.toFixed(0) + '% is ' +
+                Math.round(biggestDev.dev) + ' points ' + biggestDev.dir + ' the S&P 500 median of ' +
+                sp500EqMed.toFixed(0) + '%.';
+        } else if (biggestDev.metric === 'governance') {
+            narrative += 'Median governance score of ' + top.govMed + '/100 is ' +
+                Math.round(biggestDev.dev) + ' points ' + biggestDev.dir + ' the S&P 500 median of ' +
+                sp500GovMed + '/100.';
+        } else {
+            narrative += 'Median pay volatility of ' + top.volMed.toFixed(1) + '% CV is ' +
+                Math.round(biggestDev.dev) + ' points ' + biggestDev.dir + ' the S&P 500 median of ' +
+                sp500VolMed.toFixed(1) + '%.';
+        }
+
+        // Secondary deviation
+        if (topDevs.length >= 2) {
+            var sec2 = topDevs[1];
+            if (sec2.metric === 'equity' && top.eqMed !== null) {
+                narrative += ' Equity weighting (' + top.eqMed.toFixed(0) + '%) is also ' + sec2.dir + ' average.';
+            } else if (sec2.metric === 'governance' && top.govMed !== null) {
+                narrative += ' Governance (' + top.govMed + '/100) is also ' + sec2.dir + ' average.';
+            } else if (sec2.metric === 'volatility' && top.volMed !== null) {
+                narrative += ' Pay volatility (' + top.volMed.toFixed(0) + '% CV) is also ' + sec2.dir + ' average.';
+            }
+        }
+
+        // Contrast with most aligned sector
+        var aligned = sectorScores[sectorScores.length - 1];
+        narrative += ' Most aligned: ' + aligned.sector + ' (composite divergence score ' + aligned.composite.toFixed(2) + ' vs ' + top.composite.toFixed(2) + ').';
+
+        insights.push({
+            icon: '\uD83C\uDF10',
+            label: 'Sector Divergence',
+            value: top.sector,
+            detail: narrative,
+            action: function() {
+                var chartPanel = document.getElementById('sector-chart-panel');
+                if (chartPanel) {
+                    var headerHeight = document.querySelector('.sticky-header') ? document.querySelector('.sticky-header').offsetHeight : 0;
+                    var topPos = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: topPos, behavior: 'smooth' });
+                }
+            },
+            actionHint: 'View sector breakdown'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
@@ -7747,6 +7870,72 @@ function setupDetailPanel(companies) {
 
                 html += '</div>'; // peer-pay-rows
                 html += '</div>'; // peer-pay-section
+
+                // Peer Pay Distribution Histogram — compact histogram of peer CEO pay with this company's position marked
+                if (_peerCompList.length >= 5) {
+                    var _phPeers = _peerCompList.filter(function(p) { return !p.isSelf; });
+                    var _phSelfPay = company.total_compensation || 0;
+                    var _phMin = Math.min.apply(null, _phPeers.map(function(p) { return p.total; }));
+                    var _phMax = Math.max.apply(null, _phPeers.map(function(p) { return p.total; }));
+                    // Include self in range
+                    if (_phSelfPay < _phMin) _phMin = _phSelfPay;
+                    if (_phSelfPay > _phMax) _phMax = _phSelfPay;
+
+                    var _phBucketCount = Math.min(8, Math.max(4, Math.ceil(_phPeers.length / 3)));
+                    var _phRange = _phMax - _phMin;
+                    var _phBucketWidth = _phRange > 0 ? _phRange / _phBucketCount : 1;
+
+                    // Build buckets
+                    var _phBuckets = [];
+                    for (var _bi = 0; _bi < _phBucketCount; _bi++) {
+                        _phBuckets.push({ min: _phMin + _bi * _phBucketWidth, max: _phMin + (_bi + 1) * _phBucketWidth, count: 0, tickers: [] });
+                    }
+                    _phPeers.forEach(function(p) {
+                        var idx = Math.min(_phBucketCount - 1, Math.max(0, Math.floor((p.total - _phMin) / _phBucketWidth)));
+                        _phBuckets[idx].count++;
+                        _phBuckets[idx].tickers.push(p.ticker);
+                    });
+
+                    var _phMaxCount = Math.max.apply(null, _phBuckets.map(function(b) { return b.count; }));
+                    // Find which bucket the selected company falls in
+                    var _phSelfBucket = Math.min(_phBucketCount - 1, Math.max(0, Math.floor((_phSelfPay - _phMin) / _phBucketWidth)));
+                    // Compute percentile position (0-100)
+                    var _phBelow = _phPeers.filter(function(p) { return p.total < _phSelfPay; }).length;
+                    var _phPctile = _phPeers.length > 0 ? Math.round(_phBelow / _phPeers.length * 100) : 50;
+                    var _phPctileLabel = _phPctile >= 90 ? 'top 10%' : _phPctile >= 75 ? 'top quartile' : _phPctile >= 50 ? 'upper half' : _phPctile >= 25 ? 'lower half' : 'bottom quartile';
+
+                    html += '<div class="peer-dist-section">';
+                    html += '<div class="peer-dist-header">';
+                    html += '<span class="peer-dist-title">Peer Pay Distribution</span>';
+                    html += '<span class="peer-dist-pctile">' + _phPctileLabel + ' (' + _phPctile + 'th percentile)</span>';
+                    html += '</div>';
+
+                    // Histogram bars
+                    html += '<div class="peer-dist-chart">';
+                    _phBuckets.forEach(function(b, bi) {
+                        var barH = _phMaxCount > 0 ? Math.max(3, Math.round(b.count / _phMaxCount * 48)) : 3;
+                        var isSelfBucket = (bi === _phSelfBucket);
+                        var bucketLabel = formatCompact(b.min) + '\u2013' + formatCompact(b.max);
+                        var tipText = b.count + ' peer' + (b.count !== 1 ? 's' : '') + ': ' + bucketLabel;
+                        if (b.tickers.length > 0 && b.tickers.length <= 5) tipText += ' (' + b.tickers.join(', ') + ')';
+                        else if (b.tickers.length > 5) tipText += ' (' + b.tickers.slice(0, 4).join(', ') + ' +' + (b.tickers.length - 4) + ')';
+                        html += '<div class="peer-dist-col' + (isSelfBucket ? ' peer-dist-self-bucket' : '') + '" title="' + tipText.replace(/"/g, '&quot;') + '">';
+                        html += '<div class="peer-dist-count">' + (b.count > 0 ? b.count : '') + '</div>';
+                        html += '<div class="peer-dist-bar" style="height:' + barH + 'px"></div>';
+                        if (isSelfBucket) {
+                            html += '<div class="peer-dist-marker" title="' + ticker + ': ' + formatCurrency(_phSelfPay) + '">\u25B2</div>';
+                        }
+                        html += '</div>';
+                    });
+                    html += '</div>';
+
+                    // Range labels
+                    html += '<div class="peer-dist-labels">';
+                    html += '<span>' + formatCompact(_phMin) + '</span>';
+                    html += '<span>' + formatCompact(_phMax) + '</span>';
+                    html += '</div>';
+                    html += '</div>'; // peer-dist-section
+                }
             }
         }
 

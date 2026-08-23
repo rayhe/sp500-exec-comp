@@ -3178,6 +3178,16 @@ tbody tr:last-child td { border-bottom: none; }
 [data-theme="light"] .comp-evo-bar-track {
     background: #f0f1f5;
 }
+@media (max-width: 600px) {
+    .comp-evo-section { padding: 8px 10px; }
+    .comp-evo-header { flex-direction: column; gap: 2px; }
+    .comp-evo-year { min-width: 36px; font-size: 0.65rem; }
+    .comp-evo-total { min-width: 40px; font-size: 0.62rem; }
+    .comp-evo-seg-label { font-size: 0.55rem; }
+    .comp-evo-legend { gap: 6px; }
+    .comp-evo-leg-item { font-size: 0.6rem; }
+    .comp-evo-shift { font-size: 0.6rem; }
+}
 
 /* CEO Pay Trend mini chart in detail panel */
 .ceo-trend-mini {
@@ -3827,6 +3837,97 @@ tbody tr:last-child td { border-bottom: none; }
     .peer-pay-val { min-width: 48px; font-size: 0.65rem; }
     .peer-pay-bar-track { height: 10px; }
     .peer-pay-row { height: 18px; }
+}
+
+/* Peer Pay Distribution Histogram */
+.peer-dist-section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px 8px;
+    margin-top: 10px;
+}
+.peer-dist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.peer-dist-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.peer-dist-pctile {
+    font-size: 0.7rem;
+    color: #00b4d8;
+    font-weight: 500;
+}
+.peer-dist-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 64px;
+    padding-bottom: 2px;
+}
+.peer-dist-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+}
+.peer-dist-count {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+    line-height: 1;
+}
+.peer-dist-bar {
+    width: 100%;
+    background: #334155;
+    border-radius: 2px 2px 0 0;
+    min-height: 3px;
+    transition: background 0.15s;
+}
+[data-theme="light"] .peer-dist-bar {
+    background: #94a3b8;
+}
+.peer-dist-self-bucket .peer-dist-bar {
+    background: #00b4d8;
+}
+[data-theme="light"] .peer-dist-self-bucket .peer-dist-bar {
+    background: #0284c7;
+}
+.peer-dist-col:hover .peer-dist-bar {
+    background: #475569;
+}
+[data-theme="light"] .peer-dist-col:hover .peer-dist-bar {
+    background: #64748b;
+}
+.peer-dist-self-bucket:hover .peer-dist-bar {
+    background: #0096c7;
+}
+.peer-dist-marker {
+    font-size: 0.65rem;
+    color: #00b4d8;
+    line-height: 1;
+    margin-top: 1px;
+}
+[data-theme="light"] .peer-dist-marker {
+    color: #0284c7;
+}
+.peer-dist-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+@media (max-width: 600px) {
+    .peer-dist-section { padding: 8px 10px 6px; }
+    .peer-dist-chart { height: 48px; gap: 2px; }
 }
 
 .detail-peers {
