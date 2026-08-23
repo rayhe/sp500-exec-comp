@@ -6494,6 +6494,32 @@ function setupDetailPanel(companies) {
                 }
             }
 
+            // Sentence 10: Peer-relative volatility rank within sector and S&P 500
+            if (company._ceoVolatility != null && company.sector) {
+                var _vrSectorPeers = companies.filter(function(c) { return c.sector === company.sector && c._ceoVolatility != null; });
+                if (_vrSectorPeers.length >= 5) {
+                    var _vrSorted = _vrSectorPeers.slice().sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; });
+                    var _vrRank = _vrSorted.findIndex(function(c) { return c.ticker === company.ticker; }) + 1;
+                    var _vrAll = companies.filter(function(c) { return c._ceoVolatility != null; });
+                    var _vrAllSorted = _vrAll.slice().sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; });
+                    var _vrAllRank = _vrAllSorted.findIndex(function(c) { return c.ticker === company.ticker; }) + 1;
+
+                    function _vrOrdinal(n) { return n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th'; }
+                    var _vrSentence = '';
+                    if (_vrRank <= 3) {
+                        _vrSentence = 'Ranked ' + _vrOrdinal(_vrRank) + ' most volatile among ' + _vrSectorPeers.length + ' ' + company.sector + ' peers';
+                    } else if (_vrRank >= _vrSectorPeers.length - 2) {
+                        var _vrStableRank = _vrSectorPeers.length - _vrRank + 1;
+                        _vrSentence = 'Ranked ' + _vrOrdinal(_vrStableRank) + ' most stable among ' + _vrSectorPeers.length + ' ' + company.sector + ' peers';
+                    } else {
+                        var _vrTopPct = Math.round(_vrRank / _vrSectorPeers.length * 100);
+                        _vrSentence = 'Volatility ranks #' + _vrRank + ' of ' + _vrSectorPeers.length + ' ' + company.sector + ' peers (top ' + _vrTopPct + '% most volatile)';
+                    }
+                    _vrSentence += ', #' + _vrAllRank + ' of ' + _vrAll.length + ' across the S&P 500.';
+                    sentences.push(_vrSentence);
+                }
+            }
+
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';
@@ -6697,6 +6723,21 @@ function setupDetailPanel(companies) {
                 }
             }
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + volTip + '">Pay Volatility</div><div class="detail-stat-value ' + volCls + '">' + volVal.toFixed(1) + '%</div>' + distBar(Math.min(volVal, 100), 'Stable', 'Volatile') + '<div class="detail-stat-sub">' + volSub + '</div></div>';
+
+            // Volatility Rank stat — sector and S&P 500 ranking with distribution bar
+            var _vrSectorPeersS = companies.filter(function(c) { return c.sector === company.sector && c._ceoVolatility != null; });
+            if (_vrSectorPeersS.length >= 5) {
+                var _vrSortedS = _vrSectorPeersS.slice().sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; });
+                var _vrRankS = _vrSortedS.findIndex(function(c) { return c.ticker === company.ticker; }) + 1;
+                var _vrAllS = companies.filter(function(c) { return c._ceoVolatility != null; });
+                var _vrAllSortedS = _vrAllS.slice().sort(function(a, b) { return b._ceoVolatility - a._ceoVolatility; });
+                var _vrAllRankS = _vrAllSortedS.findIndex(function(c) { return c.ticker === company.ticker; }) + 1;
+                var _vrSectorPctS = _vrSectorPeersS.length > 1 ? (_vrRankS - 1) / (_vrSectorPeersS.length - 1) * 100 : 50;
+                var _vrAllPctTop = Math.round(_vrAllRankS / _vrAllS.length * 100);
+                var _vrRankCls = _vrRankS <= 3 ? 'negative' : _vrRankS >= _vrSectorPeersS.length - 2 ? 'positive' : '';
+                var _vrRankTip = 'Rank by pay volatility within sector (1 = most volatile). S&P 500-wide rank shown below.';
+                html += '<div class="detail-stat"><div class="detail-stat-label" title="' + _vrRankTip + '">Volatility Rank</div><div class="detail-stat-value ' + _vrRankCls + '">#' + _vrRankS + ' of ' + _vrSectorPeersS.length + '</div>' + distBar(_vrSectorPctS, 'Most volatile', 'Most stable') + '<div class="detail-stat-sub">' + (company.sector || '') + ' · #' + _vrAllRankS + ' of ' + _vrAllS.length + ' S&P 500 (top ' + _vrAllPctTop + '%)</div></div>';
+            }
         }
 
         html += '</div>'; // detail-stats
