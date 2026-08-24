@@ -2956,7 +2956,7 @@ function initNetwork(peerData) {
                 }
             });
 
-            // Hover handlers: highlight community nodes on the network graph
+            // Hover handlers: highlight community nodes on the network graph + floating tooltip
             item.addEventListener('mouseenter', function() {
                 var cid = parseInt(item.dataset.community);
                 var cs = communityStats.find(function(s) { return s.id === cid; });
@@ -2965,14 +2965,140 @@ function initNetwork(peerData) {
                 _hoveredCommunityTickers = new Set(cs.tickers);
                 item.classList.add('community-legend-hover');
                 draw();
+                _showCommunityTooltip(cs, item);
             });
             item.addEventListener('mouseleave', function() {
                 _hoveredCommunityId = null;
                 _hoveredCommunityTickers = null;
                 item.classList.remove('community-legend-hover');
                 draw();
+                _hideCommunityTooltip();
             });
         });
+    }
+
+    // === Community Hover Floating Tooltip ===
+    var _communityTooltipEl = null;
+
+    function _ensureCommunityTooltip() {
+        if (_communityTooltipEl) return _communityTooltipEl;
+        _communityTooltipEl = document.createElement('div');
+        _communityTooltipEl.className = 'community-hover-tooltip';
+        _communityTooltipEl.setAttribute('role', 'tooltip');
+        document.body.appendChild(_communityTooltipEl);
+        return _communityTooltipEl;
+    }
+
+    function _showCommunityTooltip(cs, anchorEl) {
+        var tip = _ensureCommunityTooltip();
+
+        // Compute median CEO pay for this community
+        var payVals = [];
+        cs.tickers.forEach(function(t) {
+            var c = _compLookup[t];
+            if (c && c.total != null && c.total > 0) payVals.push(c.total);
+        });
+        payVals.sort(function(a, b) { return a - b; });
+        var medianPay = null;
+        if (payVals.length > 0) {
+            var mid = Math.floor(payVals.length / 2);
+            medianPay = payVals.length % 2 === 0
+                ? (payVals[mid - 1] + payVals[mid]) / 2
+                : payVals[mid];
+        }
+
+        // Compute average in-degree (connectivity) for this community
+        var totalInDeg = 0;
+        cs.tickers.forEach(function(t) {
+            var n = nodeMap[t];
+            if (n) totalInDeg += (n.in_degree || 0);
+        });
+        var avgInDeg = cs.size > 0 ? (totalInDeg / cs.size).toFixed(1) : '—';
+
+        // Top company by in-degree
+        var topNode = nodeMap[cs.topTicker];
+        var topName = topNode ? topNode.name : cs.topTicker;
+        var topComp = _compLookup[cs.topTicker];
+        var topPay = topComp && topComp.total ? _fmtComp(topComp.total) : '—';
+
+        // Intra-community edge density
+        var intraEdges = 0;
+        var tickerSet = new Set(cs.tickers);
+        allEdges.forEach(function(e) {
+            if (tickerSet.has(e.source) && tickerSet.has(e.target)) intraEdges++;
+        });
+        var maxEdges = cs.size * (cs.size - 1);
+        var density = maxEdges > 0 ? (intraEdges / maxEdges * 100).toFixed(1) : '0';
+
+        // Build tooltip HTML
+        var html = '<div class="comm-tip-header">';
+        html += '<span class="comm-tip-color" style="background:' + cs.color + '"></span>';
+        html += '<span class="comm-tip-name">' + cs.label + '</span>';
+        html += '<span class="comm-tip-size">' + cs.size + ' companies</span>';
+        html += '</div>';
+
+        // Sectors
+        html += '<div class="comm-tip-section">';
+        html += '<div class="comm-tip-section-label">Top Sectors</div>';
+        var maxSectors = Math.min(cs.sectors.length, 3);
+        for (var i = 0; i < maxSectors; i++) {
+            var sec = cs.sectors[i];
+            var secColor = SECTOR_COLORS[sec.name] || '#94a3b8';
+            var pct = (sec.count / cs.size * 100).toFixed(0);
+            html += '<div class="comm-tip-sector">';
+            html += '<span class="comm-tip-sector-dot" style="background:' + secColor + '"></span>';
+            html += '<span class="comm-tip-sector-name">' + sec.name + '</span>';
+            html += '<span class="comm-tip-sector-count">' + sec.count + ' (' + pct + '%)</span>';
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Stats
+        html += '<div class="comm-tip-stats">';
+        if (medianPay != null) {
+            html += '<div class="comm-tip-stat"><span class="comm-tip-stat-label">Median CEO Pay</span><span class="comm-tip-stat-value">' + _fmtComp(medianPay) + '</span></div>';
+        }
+        html += '<div class="comm-tip-stat"><span class="comm-tip-stat-label">Avg Connections</span><span class="comm-tip-stat-value">' + avgInDeg + '</span></div>';
+        html += '<div class="comm-tip-stat"><span class="comm-tip-stat-label">Edge Density</span><span class="comm-tip-stat-value">' + density + '%</span></div>';
+        html += '</div>';
+
+        // Top company
+        html += '<div class="comm-tip-top">';
+        html += '<span class="comm-tip-top-label">Most Benchmarked</span>';
+        html += '<span class="comm-tip-top-company">' + cs.topTicker + ' — ' + _truncName(topName, 22) + '</span>';
+        html += '<span class="comm-tip-top-pay">' + topPay + '</span>';
+        html += '</div>';
+
+        tip.innerHTML = html;
+        tip.style.display = 'block';
+
+        // Position tooltip near the anchor element
+        var rect = anchorEl.getBoundingClientRect();
+        var tipW = tip.offsetWidth;
+        var tipH = tip.offsetHeight;
+        var left = rect.left + rect.width / 2 - tipW / 2;
+        var top = rect.bottom + 8;
+
+        // Keep within viewport
+        if (left < 8) left = 8;
+        if (left + tipW > window.innerWidth - 8) left = window.innerWidth - tipW - 8;
+        if (top + tipH > window.innerHeight - 8) {
+            top = rect.top - tipH - 8; // flip above
+        }
+
+        tip.style.left = left + 'px';
+        tip.style.top = top + 'px';
+    }
+
+    function _hideCommunityTooltip() {
+        if (_communityTooltipEl) {
+            _communityTooltipEl.style.display = 'none';
+        }
+    }
+
+    function _truncName(name, maxLen) {
+        if (!name || name.length <= maxLen) return name || '';
+        return name.substring(0, maxLen - 1) + '\u2026';
     }
 
     // Update heatmap legend with sector filter context
