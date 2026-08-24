@@ -3461,11 +3461,56 @@ function populateInsights(comp, trends, sectorFilter) {
             anomDetail += mostAnomalous + ' has the most anomalies (' + sectorCounts[mostAnomalous] + ' of 4 metric pairs).';
         }
 
+        // Build inline anomaly distribution mini-chart (horizontal bars by sector)
+        var _anomBarHtml = '';
+        var _anomSectors = Object.keys(sectorCounts).sort(function(a, b) { return sectorCounts[b] - sectorCounts[a]; });
+        if (_anomSectors.length > 0) {
+            var _anomMax = sectorCounts[_anomSectors[0]]; // max count
+            var _anomShortNames = {
+                'Information Technology': 'Info Tech', 'Communication Services': 'Comm Svc',
+                'Consumer Discretionary': 'Cons Disc', 'Consumer Staples': 'Cons Staples',
+                'Health Care': 'Health Care', 'Financials': 'Financials',
+                'Industrials': 'Industrials', 'Real Estate': 'Real Estate',
+                'Energy': 'Energy', 'Materials': 'Materials', 'Utilities': 'Utilities'
+            };
+            _anomBarHtml = '<div class="anom-dist-chart" aria-label="Anomaly count by sector">';
+            _anomBarHtml += '<div class="src-title">Anomalies by Sector (of 4 metric pairs)</div>';
+            _anomSectors.forEach(function(sec) {
+                var cnt = sectorCounts[sec];
+                var barPct = _anomMax > 0 ? (cnt / 4 * 100) : 0; // scale to max possible (4 pairs)
+                var sColor = typeof getSectorColor === 'function' ? getSectorColor(sec) : '#94a3b8';
+                var shortName = _anomShortNames[sec] || sec;
+                var isTop = sec === mostAnomalous;
+                // Build per-anomaly dot indicators (filled = anomaly, empty = normal)
+                var dotHtml = '';
+                // Determine which metric pairs are anomalous for this sector
+                var pairFlags = [false, false, false, false];
+                Object.keys(flags).forEach(function(k) {
+                    var kParts = k.split('|');
+                    if (kParts[0] === sec) pairFlags[parseInt(kParts[1])] = true;
+                });
+                for (var pi = 0; pi < 4; pi++) {
+                    var dotColor = pairFlags[pi] ? sColor : (typeof isDarkTheme === 'function' && !isDarkTheme() ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.10)');
+                    var dotBorder = pairFlags[pi] ? sColor : (typeof isDarkTheme === 'function' && !isDarkTheme() ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)');
+                    var _pairTip = _metricPairLabels[pi] + (pairFlags[pi] ? ' \u2014 anomalous' : '');
+                    dotHtml += '<span class="anom-dot' + (pairFlags[pi] ? ' anom-dot-active' : '') + '" style="background:' + dotColor + ';border-color:' + dotBorder + '" title="' + _pairTip + '"></span>';
+                }
+                _anomBarHtml += '<div class="src-row' + (isTop ? ' src-active' : '') + '" title="' + sec + ': ' + cnt + ' anomalous metric pair' + (cnt > 1 ? 's' : '') + '">';
+                _anomBarHtml += '<span class="src-label" style="' + (isTop ? 'color:' + sColor : '') + '">' + shortName + '</span>';
+                _anomBarHtml += '<span class="anom-dots">' + dotHtml + '</span>';
+                _anomBarHtml += '<span class="src-bar-wrap"><span class="src-bar" style="width:' + barPct.toFixed(1) + '%;background:' + sColor + '"></span></span>';
+                _anomBarHtml += '<span class="src-val">' + cnt + '/4</span>';
+                _anomBarHtml += '</div>';
+            });
+            _anomBarHtml += '</div>';
+        }
+
         insights.push({
             icon: '\u26A0\uFE0F',
             label: 'Correlation Anomalies',
             value: scdData.anomalyCount + ' outlier' + (scdData.anomalyCount > 1 ? 's' : ''),
             detail: anomDetail,
+            sparkHtml: _anomBarHtml,
             action: function() {
                 // Navigate to scatter with the most anomalous sector-metric pair
                 var xSel = document.getElementById('scatter-x-metric');

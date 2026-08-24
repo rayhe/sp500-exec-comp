@@ -677,6 +677,38 @@ header h1 {
     background: rgba(0,119,182,0.06);
 }
 
+/* Anomaly distribution mini-chart */
+.anom-dist-chart {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+}
+[data-theme="light"] .anom-dist-chart {
+    border-top-color: rgba(0,0,0,0.06);
+}
+.anom-dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+.anom-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid;
+    display: inline-block;
+    transition: transform 0.15s;
+}
+.anom-dot.anom-dot-active {
+    box-shadow: 0 0 3px rgba(255,255,255,0.15);
+}
+[data-theme="light"] .anom-dot.anom-dot-active {
+    box-shadow: 0 0 3px rgba(0,0,0,0.10);
+}
+
 /* Dual equity trend sparkline — sector vs S&P 500 */
 .eq-dual-trend-section {
     margin-top: 10px;
@@ -6234,6 +6266,7 @@ footer li::before {
     .neo-sort-icon { display: none; }
     .yoy-cell-wrap { gap: 0; }
     .sector-rank-chart { display: none; }
+    .anom-dist-chart { display: none; }
     .eq-dual-trend-section { display: none; }
 }
 
