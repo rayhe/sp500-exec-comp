@@ -11065,6 +11065,38 @@ body.light-mode .cross-sector-pair-select:focus {
     font-style: italic;
 }
 
+/* Sortable column headers */
+.sector-corr-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.sector-corr-sortable:hover {
+    background: rgba(0, 180, 216, 0.12) !important;
+    color: #00b4d8;
+}
+[data-theme="light"] .sector-corr-sortable:hover {
+    background: rgba(0, 180, 216, 0.08) !important;
+    color: #0077b6;
+}
+.sector-corr-sortable:focus-visible {
+    outline: 2px solid var(--accent, #00b4d8);
+    outline-offset: -2px;
+}
+.sector-corr-sorted {
+    color: #00b4d8 !important;
+}
+[data-theme="light"] .sector-corr-sorted {
+    color: #0077b6 !important;
+}
+.sector-corr-sort-arrow {
+    font-size: 0.65rem;
+    margin-left: 3px;
+    opacity: 0.8;
+    display: inline-block;
+    min-width: 8px;
+}
+
 /* Mobile responsive for sector correlation */
 @media (max-width: 600px) {
     .sector-corr-table {

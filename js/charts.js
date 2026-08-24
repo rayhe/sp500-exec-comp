@@ -12806,27 +12806,139 @@ function drawSectorCorrDeepDive(companies) {
     var table = document.createElement('div');
     table.className = 'sector-corr-table';
 
+    // Sort state: col -2=sector, -1=N, 0..3=metric pair index; asc=true/false
+    var _corrSortCol = -2; // default: sector alphabetical
+    var _corrSortAsc = true;
+
     // Header row
     var headerRow = document.createElement('div');
     headerRow.className = 'sector-corr-row sector-corr-header-row';
     var cornerCell = document.createElement('div');
-    cornerCell.className = 'sector-corr-cell sector-corr-corner';
-    cornerCell.textContent = 'Sector';
+    cornerCell.className = 'sector-corr-cell sector-corr-corner sector-corr-sortable';
+    cornerCell.setAttribute('role', 'columnheader');
+    cornerCell.setAttribute('tabindex', '0');
+    cornerCell.setAttribute('aria-sort', 'ascending');
+    cornerCell.innerHTML = 'Sector <span class="sector-corr-sort-arrow">▲</span>';
+    cornerCell.title = 'Sort by sector name';
+    cornerCell.dataset.sortCol = '-2';
     headerRow.appendChild(cornerCell);
 
     var nCell = document.createElement('div');
-    nCell.className = 'sector-corr-cell sector-corr-n-header';
-    nCell.textContent = 'N';
+    nCell.className = 'sector-corr-cell sector-corr-n-header sector-corr-sortable';
+    nCell.setAttribute('role', 'columnheader');
+    nCell.setAttribute('tabindex', '0');
+    nCell.setAttribute('aria-sort', 'none');
+    nCell.innerHTML = 'N <span class="sector-corr-sort-arrow"></span>';
+    nCell.title = 'Sort by company count';
+    nCell.dataset.sortCol = '-1';
     headerRow.appendChild(nCell);
 
-    metricPairs.forEach(function(pair) {
+    metricPairs.forEach(function(pair, idx) {
         var hCell = document.createElement('div');
-        hCell.className = 'sector-corr-cell sector-corr-col-header';
-        hCell.textContent = pair.label;
-        hCell.title = pair.label + ' — Pearson correlation coefficient';
+        hCell.className = 'sector-corr-cell sector-corr-col-header sector-corr-sortable';
+        hCell.setAttribute('role', 'columnheader');
+        hCell.setAttribute('tabindex', '0');
+        hCell.setAttribute('aria-sort', 'none');
+        hCell.innerHTML = pair.label + ' <span class="sector-corr-sort-arrow"></span>';
+        hCell.title = pair.label + ' — click to sort by correlation strength';
+        hCell.dataset.sortCol = String(idx);
         headerRow.appendChild(hCell);
     });
     table.appendChild(headerRow);
+
+    // --- Sort & rebuild logic ---
+    function getSortValue(rowData, col) {
+        if (col === -2) return rowData.sector;
+        if (col === -1) return rowData.count;
+        // Metric pair column: sort by absolute r value (null → -1 for sort-to-bottom)
+        var cell = rowData.cells[col];
+        return cell && cell.r != null ? cell.r : null;
+    }
+
+    function sortSectorData() {
+        sectorData.sort(function(a, b) {
+            var va = getSortValue(a, _corrSortCol);
+            var vb = getSortValue(b, _corrSortCol);
+            // Nulls always sort to bottom
+            if (va == null && vb == null) return 0;
+            if (va == null) return 1;
+            if (vb == null) return -1;
+            // For metric columns (>=0), sort by absolute r value by default
+            if (_corrSortCol >= 0) {
+                var cmp = Math.abs(vb) - Math.abs(va); // descending absolute
+                if (!_corrSortAsc) cmp = -cmp; // ascending absolute when toggled
+                return cmp === 0 ? (a.sector < b.sector ? -1 : 1) : cmp;
+            }
+            // For sector name: alphabetical
+            if (typeof va === 'string') {
+                var cmp2 = va < vb ? -1 : va > vb ? 1 : 0;
+                return _corrSortAsc ? cmp2 : -cmp2;
+            }
+            // For N: numeric
+            var cmp3 = va - vb;
+            return _corrSortAsc ? cmp3 : -cmp3;
+        });
+    }
+
+    function updateSortIndicators() {
+        headerRow.querySelectorAll('.sector-corr-sortable').forEach(function(h) {
+            var col = parseInt(h.dataset.sortCol);
+            var arrow = h.querySelector('.sector-corr-sort-arrow');
+            if (col === _corrSortCol) {
+                h.classList.add('sector-corr-sorted');
+                h.setAttribute('aria-sort', _corrSortAsc ? 'ascending' : 'descending');
+                if (col >= 0) {
+                    // Metric columns: ↓|r| or ↑|r|
+                    arrow.textContent = _corrSortAsc ? '▲' : '▼';
+                } else {
+                    arrow.textContent = _corrSortAsc ? '▲' : '▼';
+                }
+            } else {
+                h.classList.remove('sector-corr-sorted');
+                h.setAttribute('aria-sort', 'none');
+                arrow.textContent = '';
+            }
+        });
+    }
+
+    function rebuildDataRows() {
+        // Remove existing data rows (everything except header row)
+        var children = Array.from(table.children);
+        children.forEach(function(child) {
+            if (child !== headerRow) table.removeChild(child);
+        });
+        // Re-add sorted sector rows
+        sectorData.forEach(function(sd) {
+            table.appendChild(makeDataRow(sd, false));
+        });
+        // S&P 500 summary row always at bottom
+        table.appendChild(makeDataRow(sp500Row, true));
+    }
+
+    // Wire up click handlers on all sortable headers
+    headerRow.querySelectorAll('.sector-corr-sortable').forEach(function(h) {
+        h.style.cursor = 'pointer';
+        h.addEventListener('click', function() {
+            var col = parseInt(h.dataset.sortCol);
+            if (col === _corrSortCol) {
+                _corrSortAsc = !_corrSortAsc; // toggle direction
+            } else {
+                _corrSortCol = col;
+                // Default direction: metric cols = descending (strongest first), others = ascending
+                _corrSortAsc = col < 0;
+            }
+            sortSectorData();
+            updateSortIndicators();
+            rebuildDataRows();
+            if (typeof announce === 'function') {
+                var colName = col === -2 ? 'sector name' : col === -1 ? 'company count' : metricPairs[col].label;
+                announce('Sorted by ' + colName + ', ' + (_corrSortAsc ? 'ascending' : 'descending'));
+            }
+        });
+        h.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); }
+        });
+    });
 
     function rToColor(r, isDark) {
         if (r == null) return isDark ? '#2a2a2a' : '#f0f0f0';
@@ -12914,13 +13026,14 @@ function drawSectorCorrDeepDive(companies) {
         return row;
     }
 
-    // Data rows (sorted by sector name)
-    sectorData.sort(function(a, b) { return a.sector < b.sector ? -1 : a.sector > b.sector ? 1 : 0; });
+    // Initial data rows (sorted by sector name — default sort)
+    sortSectorData();
+    updateSortIndicators();
     sectorData.forEach(function(sd) {
         table.appendChild(makeDataRow(sd, false));
     });
 
-    // Summary row
+    // Summary row (always at bottom)
     table.appendChild(makeDataRow(sp500Row, true));
 
     container.appendChild(table);
