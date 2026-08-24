@@ -3421,6 +3421,74 @@ function populateInsights(comp, trends, sectorFilter) {
         }
     })();
 
+    // 24. Sector Correlation Anomalies — outlier sector-metric pairs from deep-dive z-scores
+    (function() {
+        var scdData = window._sectorCorrDeepDiveData;
+        if (!scdData || !scdData.anomalyFlags || scdData.anomalyCount < 1) return;
+        var flags = scdData.anomalyFlags;
+        var _metricPairLabels = ['Comp vs Gov', 'Comp vs Ratio', 'Comp vs Tenure', 'Comp vs Volatility'];
+        var _metricPairScatter = [
+            { x: 'total_compensation', y: '_govScore' },
+            { x: 'total_compensation', y: 'pay_ratio' },
+            { x: 'total_compensation', y: '_ceoTenureYears' },
+            { x: 'total_compensation', y: '_ceoVolatility' }
+        ];
+        // Find the most anomalous entry
+        var topKey = null, topAbs = 0;
+        Object.keys(flags).forEach(function(k) {
+            var absZ = Math.abs(flags[k].zScore);
+            if (absZ > topAbs) { topAbs = absZ; topKey = k; }
+        });
+        if (!topKey) return;
+        var parts = topKey.split('|');
+        var topSector = parts[0];
+        var topPairIdx = parseInt(parts[1]);
+        var topFlag = flags[topKey];
+        var dirLabel = topFlag.direction === 'high' ? 'unusually strong' : 'unusually weak';
+        var pairLabel = _metricPairLabels[topPairIdx] || 'Unknown';
+
+        // Count anomalies per sector
+        var sectorCounts = {};
+        Object.keys(flags).forEach(function(k) {
+            var sec = k.split('|')[0];
+            sectorCounts[sec] = (sectorCounts[sec] || 0) + 1;
+        });
+        var mostAnomalous = Object.keys(sectorCounts).sort(function(a, b) { return sectorCounts[b] - sectorCounts[a]; })[0];
+
+        var anomDetail = scdData.anomalyCount + ' outlier sector-metric correlations detected (z \u2265 1.5\u03C3). ';
+        anomDetail += 'Most extreme: <strong>' + topSector + '</strong> \u2014 ' + pairLabel + ' (r=' + topFlag.sectorR.toFixed(2) + ', z=' + topFlag.zScore.toFixed(2) + ', ' + dirLabel + ' vs sector avg r=' + topFlag.meanR.toFixed(2) + '). ';
+        if (mostAnomalous && sectorCounts[mostAnomalous] > 1) {
+            anomDetail += mostAnomalous + ' has the most anomalies (' + sectorCounts[mostAnomalous] + ' of 4 metric pairs).';
+        }
+
+        insights.push({
+            icon: '\u26A0\uFE0F',
+            label: 'Correlation Anomalies',
+            value: scdData.anomalyCount + ' outlier' + (scdData.anomalyCount > 1 ? 's' : ''),
+            detail: anomDetail,
+            action: function() {
+                // Navigate to scatter with the most anomalous sector-metric pair
+                var xSel = document.getElementById('scatter-x-metric');
+                var ySel = document.getElementById('scatter-y-metric');
+                var sp = _metricPairScatter[topPairIdx];
+                if (xSel && sp) xSel.value = sp.x;
+                if (ySel && sp) ySel.value = sp.y;
+                if (topSector !== 'S&P 500' && typeof setActiveSector === 'function') {
+                    setActiveSector(topSector);
+                    document.querySelectorAll('.chip').forEach(function(chip) {
+                        chip.classList.remove('active');
+                        if (chip.textContent === topSector) chip.classList.add('active');
+                    });
+                }
+                var scEl = document.getElementById('scatter-chart');
+                if (scEl) scEl.innerHTML = '';
+                if (typeof drawScatterChart === 'function' && _chartData) drawScatterChart(_chartData.companies);
+                scrollToSectionById('scatter-chart-panel');
+            },
+            actionHint: 'View ' + topSector + ' in scatter plot'
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
