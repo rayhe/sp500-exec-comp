@@ -11538,3 +11538,48 @@ body.light-mode .cross-sector-pair-select:focus {
 .scatter-sector-pulse-ring {
     pointer-events: none;
 }
+
+/* Sector Correlation Deep-Dive — Anomaly Density Footer Row */
+.sector-corr-anomaly-density-row {
+    font-style: italic;
+    font-size: 11px;
+    border-top: 1.5px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.03);
+}
+[data-theme="light"] .sector-corr-anomaly-density-row {
+    border-top: 1.5px solid rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.02);
+}
+.sector-corr-anomaly-density-row .sector-corr-row-header {
+    font-weight: 500;
+    color: #a1a1aa;
+}
+[data-theme="light"] .sector-corr-anomaly-density-row .sector-corr-row-header {
+    color: #71717a;
+}
+.sector-corr-anomaly-density-row .sector-corr-data-cell {
+    font-size: 10px;
+}
+
+/* Scatter Pulse Legend Floating Tooltip */
+.scatter-pulse-legend {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(24, 24, 27, 0.88);
+    color: #e4e4e7;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: Inter, system-ui, sans-serif;
+    pointer-events: none;
+    z-index: 20;
+    border-left: 3px solid #ffd166;
+    transition: opacity 0.6s ease;
+    max-width: 280px;
+}
+[data-theme="light"] .scatter-pulse-legend {
+    background: rgba(255,255,255,0.92);
+    color: #27272a;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}

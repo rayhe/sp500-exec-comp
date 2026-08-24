@@ -2937,13 +2937,24 @@ function initNetwork(peerData) {
                 if (isActive) {
                     // Clear community filter
                     window._activeCommunityFilter = null;
+                    window._activeCommunityScatterTickers = null;
                     if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    // Redraw scatter to clear community highlight
+                    var scEl = document.getElementById('scatter-chart');
+                    if (scEl) scEl.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     if (typeof announce === 'function') announce('Community filter cleared');
                 } else {
                     // Set community filter
                     item.classList.add('community-legend-active');
                     window._activeCommunityFilter = { tickers: cs.tickers, label: cs.label, id: cid };
+                    window._activeCommunityScatterTickers = new Set(cs.tickers);
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
                     if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    // Redraw scatter to highlight community tickers
+                    var scEl2 = document.getElementById('scatter-chart');
+                    if (scEl2) scEl2.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     // Scroll to table
                     var tableSection = document.getElementById('compensation-table-section');
                     if (tableSection) {

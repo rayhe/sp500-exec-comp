@@ -3772,6 +3772,20 @@ function drawScatterChart(companies) {
     // Apply any pending sector pulse (from correlation anomaly click)
     _applyScatterSectorPulse();
 
+    // Apply community scatter highlighting (from network community legend click)
+    if (window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0) {
+        var commTickers = window._activeCommunityScatterTickers;
+        svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector').each(function(d) {
+            if (!d || !d.ticker) return;
+            var el = d3.select(this);
+            if (commTickers.has(d.ticker)) {
+                el.attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            } else {
+                el.attr('opacity', 0.1);
+            }
+        });
+    }
+
     // Cross-chart navigation strip: Scatter → GER (when GER axis is active)
     _renderScatterGERNav(pts, xMetricKey, yMetricKey);
 }
@@ -8924,7 +8938,7 @@ function drawPayAnomalyChart(companies) {
                 hideChartTooltip();
             })
             .on('click', function() {
-                if (window.scrollToCompany) window.scrollToCompany(d.ticker);
+                if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
             })
             .transition()
             .duration(_anomalySectorFilter ? 350 : 500)
@@ -8991,7 +9005,7 @@ function drawPayAnomalyChart(companies) {
             .attr('font-weight', '500')
             .style('cursor', 'pointer')
             .on('click', function() {
-                if (window.scrollToCompany) window.scrollToCompany(d.ticker);
+                if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
             })
             .text(d.ticker + ' \u2014 ' + d.ceo.split(/\s+/).slice(-1)[0]);
 
@@ -10602,9 +10616,21 @@ function _applyScatterSectorPulse() {
     });
 
     if (dotCount > 0) {
+        // Add floating legend badge
+        var legendDiv = document.createElement('div');
+        legendDiv.className = 'scatter-pulse-legend';
+        legendDiv.style.borderLeftColor = sectorColor;
+        legendDiv.textContent = '\uD83D\uDD0D Highlighting: ' + sector + ' \u2014 anomalous correlation';
+        container.style.position = 'relative';
+        container.appendChild(legendDiv);
+
         // Auto-fade after 3 seconds
         setTimeout(function() {
             pulseGroup.transition().duration(1000).style('opacity', 0).remove();
+            legendDiv.style.opacity = '0';
+            setTimeout(function() {
+                if (legendDiv.parentNode) legendDiv.parentNode.removeChild(legendDiv);
+            }, 700);
         }, 3000);
     } else {
         pulseGroup.remove();
@@ -13105,6 +13131,8 @@ function drawSectorCorrDeepDive(companies) {
         });
         // S&P 500 summary row always at bottom
         table.appendChild(makeDataRow(sp500Row, true));
+        // Anomaly density footer row
+        table.appendChild(makeAnomalyDensityRow());
     }
 
     // Wire up click handlers on all sortable headers
@@ -13263,6 +13291,52 @@ function drawSectorCorrDeepDive(companies) {
         return row;
     }
 
+    function makeAnomalyDensityRow() {
+        var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        var row = document.createElement('div');
+        row.className = 'sector-corr-row sector-corr-anomaly-density-row';
+
+        var labelCell = document.createElement('div');
+        labelCell.className = 'sector-corr-cell sector-corr-row-header';
+        labelCell.textContent = 'Anomaly Density';
+        row.appendChild(labelCell);
+
+        var nCell = document.createElement('div');
+        nCell.className = 'sector-corr-cell sector-corr-n-cell';
+        nCell.textContent = _anomalyCount;
+        nCell.title = 'Total anomalies across all sectors and metric pairs';
+        row.appendChild(nCell);
+
+        metricPairs.forEach(function(pair, ci) {
+            var flagged = 0;
+            sectorData.forEach(function(sd) {
+                var key = sd.sector + '|' + ci;
+                if (_anomalyFlags[key]) flagged++;
+            });
+            var pct = Math.round((flagged / 11) * 100);
+            var d = document.createElement('div');
+            d.className = 'sector-corr-cell sector-corr-data-cell';
+            d.textContent = flagged + '/11 (' + pct + '%)';
+            d.title = pair.label + ': ' + flagged + ' of 11 sectors flagged as anomalous';
+            if (flagged > 3) {
+                d.style.background = isDark ? 'rgba(239,71,111,0.18)' : 'rgba(239,71,111,0.12)';
+            } else if (flagged >= 2) {
+                d.style.background = isDark ? 'rgba(245,158,11,0.15)' : 'rgba(245,158,11,0.10)';
+            } else {
+                d.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
+            }
+            d.style.color = isDark ? '#a1a1aa' : '#71717a';
+            row.appendChild(d);
+        });
+
+        // Empty sparkline cell to match columns
+        var sparkCell = document.createElement('div');
+        sparkCell.className = 'sector-corr-cell sector-corr-spark-cell';
+        row.appendChild(sparkCell);
+
+        return row;
+    }
+
     // Initial data rows (sorted by sector name — default sort)
     sortSectorData();
     updateSortIndicators();
@@ -13272,6 +13346,9 @@ function drawSectorCorrDeepDive(companies) {
 
     // Summary row (always at bottom)
     table.appendChild(makeDataRow(sp500Row, true));
+
+    // Anomaly density footer
+    table.appendChild(makeAnomalyDensityRow());
 
     container.appendChild(table);
 
