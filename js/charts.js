@@ -12844,6 +12844,15 @@ function drawSectorCorrDeepDive(companies) {
         hCell.dataset.sortCol = String(idx);
         headerRow.appendChild(hCell);
     });
+
+    // Sparkline column header
+    var sparkHeader = document.createElement('div');
+    sparkHeader.className = 'sector-corr-cell sector-corr-spark-header';
+    sparkHeader.setAttribute('role', 'columnheader');
+    sparkHeader.textContent = 'Profile';
+    sparkHeader.title = 'Correlation profile across all 4 metrics';
+    headerRow.appendChild(sparkHeader);
+
     table.appendChild(headerRow);
 
     // --- Sort & rebuild logic ---
@@ -13023,6 +13032,35 @@ function drawSectorCorrDeepDive(companies) {
             }
             row.appendChild(d);
         });
+
+        // Sparkline cell: inline SVG showing r-values as positioned dots on a -1 to +1 axis
+        var sparkCell = document.createElement('div');
+        sparkCell.className = 'sector-corr-cell sector-corr-spark-cell';
+        var svgW = 80, svgH = 24, pad = 4;
+        var sparkSvg = '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" class="sector-corr-sparkline">';
+        // Zero line
+        var zeroX = pad + (svgW - 2 * pad) / 2;
+        sparkSvg += '<line x1="' + pad + '" y1="' + (svgH / 2) + '" x2="' + (svgW - pad) + '" y2="' + (svgH / 2) + '" stroke="' + (isDark ? '#555' : '#ccc') + '" stroke-width="1"/>';
+        sparkSvg += '<line x1="' + zeroX + '" y1="4" x2="' + zeroX + '" y2="' + (svgH - 4) + '" stroke="' + (isDark ? '#666' : '#bbb') + '" stroke-width="1" stroke-dasharray="2,2"/>';
+        // Dots for each metric pair
+        var dotColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444']; // indigo, emerald, amber, red
+        var dotLabels = ['Gov', 'Ratio', 'Tenure', 'Vol'];
+        rowData.cells.forEach(function(cell, ci) {
+            if (cell.r != null) {
+                var cx = pad + ((cell.r + 1) / 2) * (svgW - 2 * pad);
+                var cy = svgH / 2;
+                sparkSvg += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy + '" r="3.5" fill="' + dotColors[ci] + '" opacity="0.85">';
+                sparkSvg += '<title>' + dotLabels[ci] + ': r=' + cell.r.toFixed(3) + '</title>';
+                sparkSvg += '</circle>';
+            }
+        });
+        sparkSvg += '</svg>';
+        sparkCell.innerHTML = sparkSvg;
+        sparkCell.title = 'Correlation profile: ' + rowData.cells.map(function(cell, ci) {
+            return dotLabels[ci] + '=' + (cell.r != null ? cell.r.toFixed(2) : 'n/a');
+        }).join(', ');
+        row.appendChild(sparkCell);
+
         return row;
     }
 

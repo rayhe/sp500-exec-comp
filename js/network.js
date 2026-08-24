@@ -274,7 +274,11 @@ function initNetwork(peerData) {
             });
         });
 
-        // Auto-generate descriptive names for each community
+        // Expose community data for cross-section filtering
+    window._communityOf = communityOf;
+    window._communityStats = communityStats;
+
+    // Auto-generate descriptive names for each community
         var _sectorShort = {
             'Information Technology': 'Tech',
             'Communication Services': 'Media & Comms',
@@ -2869,6 +2873,44 @@ function initNetwork(peerData) {
         }
         html += '</div>';
         communityLegendEl.innerHTML = html;
+
+        // Wire click handlers on community legend items to filter the compensation table
+        communityLegendEl.querySelectorAll('.community-legend-item[data-community]').forEach(function(item) {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var cid = parseInt(item.dataset.community);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                // Toggle: if already filtering this community, clear
+                var isActive = item.classList.contains('community-legend-active');
+                communityLegendEl.querySelectorAll('.community-legend-item').forEach(function(el) {
+                    el.classList.remove('community-legend-active');
+                });
+
+                if (isActive) {
+                    // Clear community filter
+                    window._activeCommunityFilter = null;
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    if (typeof announce === 'function') announce('Community filter cleared');
+                } else {
+                    // Set community filter
+                    item.classList.add('community-legend-active');
+                    window._activeCommunityFilter = { tickers: cs.tickers, label: cs.label, id: cid };
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    // Scroll to table
+                    var tableSection = document.getElementById('compensation-table-section');
+                    if (tableSection) {
+                        var hdr = document.querySelector('.sticky-header, header');
+                        var off = hdr ? hdr.offsetHeight : 0;
+                        var top = tableSection.getBoundingClientRect().top + window.scrollY - off - 12;
+                        window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                    }
+                    if (typeof announce === 'function') announce('Filtered to ' + cs.tickers.length + ' companies in ' + cs.label);
+                }
+            });
+        });
     }
 
     // Update heatmap legend with sector filter context

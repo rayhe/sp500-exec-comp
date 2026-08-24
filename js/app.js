@@ -1475,6 +1475,7 @@ function sortTableByKey(key, dir) {
     window._activeAspDeltaTier = null; // null=off, { min, max, tag, label }
     window._activeTenureQuartile = null; // null=off, { min, max, label, tag }
     window._activePeerDistFilter = null; // null=off, { tickers: [...], label: "..." }
+    window._activeCommunityFilter = null; // null=off, { tickers: [...], label: "...", id: n }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -2311,6 +2312,13 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activePeerDistFilter = null;
             var pdfc = document.getElementById('peerdist-filter-chip');
             if (pdfc) pdfc.remove();
+        }
+        if (window._activeCommunityFilter) {
+            window._activeCommunityFilter = null;
+            // Clear community legend active state
+            document.querySelectorAll('.community-legend-active').forEach(function(el) {
+                el.classList.remove('community-legend-active');
+            });
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -5531,6 +5539,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
     if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Tenure: ' + window._activeVolTenureBracket.label); }
     if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
+    if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -6006,6 +6015,14 @@ function renderTable(companies, options) {
         var _pdfTickers = window._activePeerDistFilter.tickers;
         filtered = filtered.filter(function(c) {
             return _pdfTickers.indexOf(c.ticker) >= 0;
+        });
+    }
+
+    // Community filter: filter to companies in a Louvain community cluster
+    if (window._activeCommunityFilter) {
+        var _cfTickers = window._activeCommunityFilter.tickers;
+        filtered = filtered.filter(function(c) {
+            return _cfTickers.indexOf(c.ticker) >= 0;
         });
     }
 
