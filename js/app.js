@@ -1474,6 +1474,7 @@ function sortTableByKey(key, dir) {
     window._activeGenderFilter = null; // null=off, 'F'=female CEOs, 'M'=male CEOs
     window._activeAspDeltaTier = null; // null=off, { min, max, tag, label }
     window._activeTenureQuartile = null; // null=off, { min, max, label, tag }
+    window._activePeerDistFilter = null; // null=off, { tickers: [...], label: "..." }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -2305,6 +2306,11 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         if (window._activeVolTenureBracket) {
             window._activeVolTenureBracket = null;
+        }
+        if (window._activePeerDistFilter) {
+            window._activePeerDistFilter = null;
+            var pdfc = document.getElementById('peerdist-filter-chip');
+            if (pdfc) pdfc.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -3340,6 +3346,71 @@ function populateInsights(comp, trends, sectorFilter) {
             },
             actionHint: 'View sector breakdown'
         });
+    })();
+
+    // Insight #23: Sector Correlation Deep-Dive summary
+    // Computed here using same pearsonR as correlation matrix, but per-sector for 4 comp-vs-X pairs
+    (function() {
+        var _scdSectors = [
+            'Communication Services', 'Consumer Discretionary', 'Consumer Staples',
+            'Energy', 'Financials', 'Health Care', 'Industrials',
+            'Information Technology', 'Materials', 'Real Estate', 'Utilities'
+        ];
+        var _scdPairs = [
+            { label: 'Comp vs Gov', xGet: function(c) { return c.total_compensation; }, yGet: function(c) { return c._govScore; } },
+            { label: 'Comp vs Ratio', xGet: function(c) { return c.total_compensation; }, yGet: function(c) { return c.pay_ratio; } },
+            { label: 'Comp vs Tenure', xGet: function(c) { return c.total_compensation; }, yGet: function(c) { return c._ceoTenureYears; } },
+            { label: 'Comp vs Volatility', xGet: function(c) { return c.total_compensation; }, yGet: function(c) { return c._ceoVolatility; } }
+        ];
+        function _scdPearson(arr1, arr2) {
+            var n = arr1.length;
+            if (n < 5) return null;
+            var sx = 0, sy = 0;
+            for (var i = 0; i < n; i++) { sx += arr1[i]; sy += arr2[i]; }
+            var mx = sx / n, my = sy / n;
+            var cv = 0, vx2 = 0, vy2 = 0;
+            for (var j = 0; j < n; j++) {
+                var dx = arr1[j] - mx, dy = arr2[j] - my;
+                cv += dx * dy; vx2 += dx * dx; vy2 += dy * dy;
+            }
+            return (vx2 > 0 && vy2 > 0) ? cv / Math.sqrt(vx2 * vy2) : 0;
+        }
+        var _scdStrongest = { r: 0, sector: '', pair: '' };
+        var _scdWeakest = { r: Infinity, sector: '', pair: '' };
+        _scdSectors.forEach(function(sec) {
+            var sc = companies.filter(function(c) { return c.sector === sec; });
+            _scdPairs.forEach(function(pair) {
+                var xs = [], ys = [];
+                sc.forEach(function(c) {
+                    var xv = pair.xGet(c), yv = pair.yGet(c);
+                    if (xv != null && yv != null && isFinite(xv) && isFinite(yv)) { xs.push(xv); ys.push(yv); }
+                });
+                var r = _scdPearson(xs, ys);
+                if (r != null && Math.abs(r) > Math.abs(_scdStrongest.r)) {
+                    _scdStrongest = { r: r, sector: sec, pair: pair.label };
+                }
+                if (r != null && xs.length >= 5 && Math.abs(r) < Math.abs(_scdWeakest.r)) {
+                    _scdWeakest = { r: r, sector: sec, pair: pair.label };
+                }
+            });
+        });
+        if (_scdStrongest.sector) {
+            var _scdDir = _scdStrongest.r >= 0 ? 'positive' : 'negative';
+            var _scdDetail = _scdStrongest.sector + ' shows the strongest sector-level correlation: ' + _scdStrongest.pair + ' (r=' + _scdStrongest.r.toFixed(2) + ', ' + _scdDir + ').';
+            if (_scdWeakest.sector && _scdWeakest.r !== Infinity) {
+                _scdDetail += ' Weakest: ' + _scdWeakest.sector + ' ' + _scdWeakest.pair + ' (r=' + _scdWeakest.r.toFixed(2) + ').';
+            }
+            insights.push({
+                icon: '\uD83E\uDDEA',
+                label: 'Sector Correlations',
+                value: 'Strongest r=' + Math.abs(_scdStrongest.r).toFixed(2),
+                detail: _scdDetail,
+                action: function() {
+                    scrollToSectionById('sector-corr-deepdive-panel');
+                },
+                actionHint: 'View sector correlation deep-dive'
+            });
+        }
     })();
 
     // Render cards
@@ -5459,6 +5530,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
     if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
     if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Tenure: ' + window._activeVolTenureBracket.label); }
+    if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -5926,6 +5998,14 @@ function renderTable(companies, options) {
         var vtb = window._activeVolTenureBracket;
         filtered = filtered.filter(function(c) {
             return c._ceoTenureYears != null && c._ceoTenureYears >= vtb.min && (vtb.max === Infinity ? true : c._ceoTenureYears < vtb.max);
+        });
+    }
+
+    // Peer distribution filter: filter to companies whose ticker is in the peer bucket
+    if (window._activePeerDistFilter) {
+        var _pdfTickers = window._activePeerDistFilter.tickers;
+        filtered = filtered.filter(function(c) {
+            return _pdfTickers.indexOf(c.ticker) >= 0;
         });
     }
 
@@ -7919,9 +7999,15 @@ function setupDetailPanel(companies) {
                         var tipText = b.count + ' peer' + (b.count !== 1 ? 's' : '') + ': ' + bucketLabel;
                         if (b.tickers.length > 0 && b.tickers.length <= 5) tipText += ' (' + b.tickers.join(', ') + ')';
                         else if (b.tickers.length > 5) tipText += ' (' + b.tickers.slice(0, 4).join(', ') + ' +' + (b.tickers.length - 4) + ')';
-                        html += '<div class="peer-dist-col' + (isSelfBucket ? ' peer-dist-self-bucket' : '') + '" title="' + tipText.replace(/"/g, '&quot;') + '">';
-                        html += '<div class="peer-dist-count">' + (b.count > 0 ? b.count : '') + '</div>';
-                        html += '<div class="peer-dist-bar" style="height:' + barH + 'px"></div>';
+                        var isActiveFilter = window._activePeerDistFilter && window._activePeerDistFilter.label === bucketLabel;
+                        var isDimmedPeer = window._activePeerDistFilter && !isActiveFilter;
+                        var dimStyle = isDimmedPeer ? 'opacity:0.3;' : '';
+                        var activeOutline = isActiveFilter ? 'outline:2px solid var(--accent, #00b4d8);outline-offset:2px;border-radius:3px;' : '';
+                        var clickTip = b.count > 0 ? ' \u2014 click to ' + (isActiveFilter ? 'clear' : 'filter table') : '';
+                        var tickerData = b.tickers.join(',');
+                        html += '<div class="peer-dist-col' + (isSelfBucket ? ' peer-dist-self-bucket' : '') + (isActiveFilter ? ' peer-dist-active-bucket' : '') + '" title="' + (tipText + clickTip).replace(/"/g, '&quot;') + '" style="cursor:pointer;' + activeOutline + '" data-peer-tickers="' + tickerData + '" data-peer-label="' + bucketLabel.replace(/"/g, '&quot;') + '">';
+                        html += '<div class="peer-dist-count" style="' + dimStyle + '">' + (b.count > 0 ? b.count : '') + '</div>';
+                        html += '<div class="peer-dist-bar" style="height:' + barH + 'px;' + dimStyle + '"></div>';
                         if (isSelfBucket) {
                             html += '<div class="peer-dist-marker" title="' + ticker + ': ' + formatCurrency(_phSelfPay) + '">\u25B2</div>';
                         }
@@ -8532,6 +8618,30 @@ function setupDetailPanel(companies) {
             });
         });
 
+        // Wire up peer distribution histogram click-to-filter
+        detailRow.querySelectorAll('.peer-dist-col[data-peer-tickers]').forEach(function(col) {
+            col.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var tickerStr = col.getAttribute('data-peer-tickers');
+                var label = col.getAttribute('data-peer-label');
+                if (!tickerStr || tickerStr.length === 0) return;
+                var tickers = tickerStr.split(',');
+                // Toggle off if same bucket clicked again
+                if (window._activePeerDistFilter && window._activePeerDistFilter.label === label) {
+                    window._activePeerDistFilter = null;
+                } else {
+                    window._activePeerDistFilter = { tickers: tickers, label: label };
+                }
+                currentPage = 1;
+                renderTable(companies);
+                pushState();
+                scrollToTable();
+                if (typeof announce === 'function') {
+                    announce(window._activePeerDistFilter ? 'Filtered to ' + tickers.length + ' peer companies in ' + label + ' range' : 'Peer distribution filter cleared');
+                }
+            });
+        });
+
         // Wire up clickable peer pay rows — click to find peer in table
         detailRow.querySelectorAll('.peer-pay-row[data-ticker]').forEach(function(row) {
             if (row.classList.contains('peer-pay-self')) return; // Skip self
@@ -8872,6 +8982,10 @@ function serializeState() {
         params.push('govmin=' + window._activeGovGrade.min);
         params.push('govmax=' + window._activeGovGrade.max);
     }
+    if (window._activePeerDistFilter) {
+        params.push('pdtk=' + encodeURIComponent(window._activePeerDistFilter.tickers.join(',')));
+        params.push('pdlbl=' + encodeURIComponent(window._activePeerDistFilter.label));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -9053,6 +9167,14 @@ function applyHashState(companies) {
         if (!isNaN(govMin) && !isNaN(govMax)) {
             window._activeGovGrade = { grade: state.govgrade, min: govMin, max: govMax };
             updateGovFilterIndicator();
+        }
+    }
+
+    // Peer distribution filter
+    if (state.pdtk && state.pdlbl) {
+        var pdTickers = decodeURIComponent(state.pdtk).split(',').filter(function(t) { return t.length > 0; });
+        if (pdTickers.length > 0) {
+            window._activePeerDistFilter = { tickers: pdTickers, label: decodeURIComponent(state.pdlbl) };
         }
     }
 

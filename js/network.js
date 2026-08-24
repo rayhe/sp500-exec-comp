@@ -55,6 +55,8 @@ function initNetwork(peerData) {
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
     var communityMode = false;  // when true, nodes colored by Louvain community
     var gerThreshold = 0; // min GER score for node visibility (0 = show all)
+    var searchFocusedNode = null; // node focused by search — gets pulsing ring + neighbor highlight
+    var searchFocusedTime = 0;   // timestamp when search focus was set (for pulse animation)
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1484,6 +1486,29 @@ function initNetwork(peerData) {
             ctx.fillText(d.ticker, d.x, d.y + r + 3);
         });
 
+        // === Search Focus Pulsing Ring ===
+        if (searchFocusedNode && hoveredNode === searchFocusedNode) {
+            var _sfn = searchFocusedNode;
+            var _sfr = getRadius(_sfn);
+            var elapsed = (performance.now() - searchFocusedTime) / 1000; // seconds
+            var pulsePhase = (elapsed % 1.5) / 1.5; // 0-1 over 1.5 seconds
+            var pulseRadius = _sfr + (4 + pulsePhase * 12) / scale;
+            var pulseAlpha = 0.7 * (1 - pulsePhase);
+            if (pulseAlpha > 0.01) {
+                ctx.beginPath();
+                ctx.arc(_sfn.x, _sfn.y, pulseRadius, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(0, 180, 216, ' + pulseAlpha + ')';
+                ctx.lineWidth = (2.5 - pulsePhase * 1.5) / scale;
+                ctx.stroke();
+            }
+            // Static inner ring
+            ctx.beginPath();
+            ctx.arc(_sfn.x, _sfn.y, _sfr + 3 / scale, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(0, 180, 216, 0.6)';
+            ctx.lineWidth = 2 / scale;
+            ctx.stroke();
+        }
+
         ctx.restore();
     }
 
@@ -2011,8 +2036,15 @@ function initNetwork(peerData) {
             simulation.alphaTarget(0);
         }
 
+        // If this was a click (not a drag) on empty space, clear search focus
+        if (!clickedNode && !wasDrag && searchFocusedNode) {
+            _stopPulseAnimation();
+            draw();
+        }
+
         // If this was a click (not a drag) on a node, navigate to company detail
         if (clickedNode && !wasDrag && window.findCompanyInTable) {
+            _stopPulseAnimation();
             hideTooltip();
             window.findCompanyInTable(clickedNode.ticker);
         }
@@ -2335,8 +2367,32 @@ function initNetwork(peerData) {
 
         // Set as hovered to highlight connections
         hoveredNode = node;
+        searchFocusedNode = node;
+        searchFocusedTime = performance.now();
         showTooltip(width / 2 + 12, height / 2 - 10, node);
         draw();
+        // Start pulse animation loop
+        _startPulseAnimation();
+    }
+
+    var _pulseAnimFrame = null;
+    function _startPulseAnimation() {
+        if (_pulseAnimFrame) cancelAnimationFrame(_pulseAnimFrame);
+        var startTime = searchFocusedTime;
+        function _pulseLoop() {
+            if (!searchFocusedNode || searchFocusedTime !== startTime) return;
+            draw();
+            _pulseAnimFrame = requestAnimationFrame(_pulseLoop);
+        }
+        _pulseAnimFrame = requestAnimationFrame(_pulseLoop);
+    }
+
+    function _stopPulseAnimation() {
+        searchFocusedNode = null;
+        if (_pulseAnimFrame) {
+            cancelAnimationFrame(_pulseAnimFrame);
+            _pulseAnimFrame = null;
+        }
     }
 
     // Expose global API for cross-section linking (table → network)
@@ -2371,6 +2427,7 @@ function initNetwork(peerData) {
                 searchResults.classList.remove('visible');
                 // Clear highlight
                 hoveredNode = null;
+                _stopPulseAnimation();
                 hideTooltip();
                 draw();
                 return;
@@ -2438,6 +2495,11 @@ function initNetwork(peerData) {
                 }
             } else if (e.key === 'Escape') {
                 searchResults.classList.remove('visible');
+                searchInput.value = '';
+                _stopPulseAnimation();
+                hoveredNode = null;
+                hideTooltip();
+                draw();
                 searchInput.blur();
             }
         });

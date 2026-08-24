@@ -83,6 +83,7 @@ function initCharts(companies, trends, compData) {
     drawVolGovCrossTab(companies);
     drawSopVolCrossTab(companies);
     drawSopTierComp(companies);
+    drawSectorCorrDeepDive(companies);
     setupChartResize();
     // Scatter log-scale toggles
     var logXCb = document.getElementById('scatter-log-x');
@@ -196,7 +197,7 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
-    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart', 'sop-tier-comp-chart'];
+    var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'sector-corr-deepdive-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart', 'sop-tier-comp-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = '';
@@ -235,6 +236,7 @@ function redrawAllCharts() {
     drawVolGovCrossTab(_chartData.companies);
     drawSopVolCrossTab(_chartData.companies);
     drawSopTierComp(_chartData.companies);
+    drawSectorCorrDeepDive(_chartData.companies);
 }
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
@@ -12710,4 +12712,231 @@ function drawSopTierComp(companies) {
         narrative.innerHTML = parts.join('');
         container.appendChild(narrative);
     }
+}
+
+/* === Sector Correlation Deep-Dive Heatmap === */
+function drawSectorCorrDeepDive(companies) {
+    var container = document.getElementById('sector-corr-deepdive-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var sectorNames = [
+        'Communication Services', 'Consumer Discretionary', 'Consumer Staples',
+        'Energy', 'Financials', 'Health Care', 'Industrials',
+        'Information Technology', 'Materials', 'Real Estate', 'Utilities'
+    ];
+
+    var metricPairs = [
+        { label: 'Comp vs Gov', xKey: 'comp', yKey: 'gov', scatterX: 'total_compensation', scatterY: '_govScore' },
+        { label: 'Comp vs Ratio', xKey: 'comp', yKey: 'ratio', scatterX: 'total_compensation', scatterY: 'pay_ratio' },
+        { label: 'Comp vs Tenure', xKey: 'comp', yKey: 'tenure', scatterX: 'total_compensation', scatterY: '_ceoTenureYears' },
+        { label: 'Comp vs Volatility', xKey: 'comp', yKey: 'vol', scatterX: 'total_compensation', scatterY: '_ceoVolatility' }
+    ];
+
+    function getMetricVal(c, key) {
+        if (key === 'comp') return c.total_compensation;
+        if (key === 'gov') return c._govScore;
+        if (key === 'ratio') return c.pay_ratio;
+        if (key === 'tenure') return c._ceoTenureYears;
+        if (key === 'vol') return c._ceoVolatility;
+        return null;
+    }
+
+    function pearsonR(xArr, yArr) {
+        var n = xArr.length;
+        if (n < 5) return { r: null, p: 1, n: n };
+        var sumX = 0, sumY = 0;
+        for (var i = 0; i < n; i++) { sumX += xArr[i]; sumY += yArr[i]; }
+        var mx = sumX / n, my = sumY / n;
+        var cov = 0, vx = 0, vy = 0;
+        for (var j = 0; j < n; j++) {
+            var dx = xArr[j] - mx, dy = yArr[j] - my;
+            cov += dx * dy; vx += dx * dx; vy += dy * dy;
+        }
+        var r = (vx > 0 && vy > 0) ? cov / Math.sqrt(vx * vy) : 0;
+        // t-test for significance
+        var t = n > 2 ? r * Math.sqrt((n - 2) / (1 - r * r + 1e-12)) : 0;
+        var df = n - 2;
+        // Approximate p-value using normal approximation for large df
+        var p = df > 0 ? Math.exp(-0.717 * Math.abs(t) - 0.416 * t * t / df) : 1;
+        return { r: r, p: p, n: n };
+    }
+
+    function computeForGroup(groupCompanies, pair) {
+        var xVals = [], yVals = [];
+        groupCompanies.forEach(function(c) {
+            var x = getMetricVal(c, pair.xKey);
+            var y = getMetricVal(c, pair.yKey);
+            if (x != null && y != null && isFinite(x) && isFinite(y)) {
+                xVals.push(x);
+                yVals.push(y);
+            }
+        });
+        return pearsonR(xVals, yVals);
+    }
+
+    // Compute correlations per sector
+    var sectorData = [];
+    var strongestCell = { r: 0, sector: '', pair: '' };
+    var weakestCell = { r: Infinity, sector: '', pair: '' };
+
+    sectorNames.forEach(function(sector) {
+        var sectorCompanies = companies.filter(function(c) { return c.sector === sector; });
+        var row = { sector: sector, count: sectorCompanies.length, cells: [] };
+        metricPairs.forEach(function(pair) {
+            var result = computeForGroup(sectorCompanies, pair);
+            row.cells.push(result);
+            if (result.r != null && Math.abs(result.r) > Math.abs(strongestCell.r)) {
+                strongestCell = { r: result.r, sector: sector, pair: pair.label };
+            }
+            if (result.r != null && result.p < 0.05 && Math.abs(result.r) < Math.abs(weakestCell.r)) {
+                weakestCell = { r: result.r, sector: sector, pair: pair.label };
+            }
+        });
+        sectorData.push(row);
+    });
+
+    // S&P 500-wide row
+    var sp500Row = { sector: 'S&P 500', count: companies.length, cells: [] };
+    metricPairs.forEach(function(pair) {
+        sp500Row.cells.push(computeForGroup(companies, pair));
+    });
+
+    // Build table
+    var table = document.createElement('div');
+    table.className = 'sector-corr-table';
+
+    // Header row
+    var headerRow = document.createElement('div');
+    headerRow.className = 'sector-corr-row sector-corr-header-row';
+    var cornerCell = document.createElement('div');
+    cornerCell.className = 'sector-corr-cell sector-corr-corner';
+    cornerCell.textContent = 'Sector';
+    headerRow.appendChild(cornerCell);
+
+    var nCell = document.createElement('div');
+    nCell.className = 'sector-corr-cell sector-corr-n-header';
+    nCell.textContent = 'N';
+    headerRow.appendChild(nCell);
+
+    metricPairs.forEach(function(pair) {
+        var hCell = document.createElement('div');
+        hCell.className = 'sector-corr-cell sector-corr-col-header';
+        hCell.textContent = pair.label;
+        hCell.title = pair.label + ' — Pearson correlation coefficient';
+        headerRow.appendChild(hCell);
+    });
+    table.appendChild(headerRow);
+
+    function rToColor(r, isDark) {
+        if (r == null) return isDark ? '#2a2a2a' : '#f0f0f0';
+        var absR = Math.min(Math.abs(r), 1);
+        var intensity = Math.round(absR * 180);
+        if (r > 0) {
+            // Red (positive correlation)
+            return isDark
+                ? 'rgba(' + (80 + intensity) + ', ' + Math.max(30, 80 - intensity * 0.3) + ', ' + Math.max(30, 80 - intensity * 0.3) + ', 0.85)'
+                : 'rgba(' + (255) + ', ' + (255 - intensity) + ', ' + (255 - intensity) + ', 0.8)';
+        } else {
+            // Blue (negative correlation)
+            return isDark
+                ? 'rgba(' + Math.max(30, 80 - intensity * 0.3) + ', ' + Math.max(30, 80 - intensity * 0.3) + ', ' + (80 + intensity) + ', 0.85)'
+                : 'rgba(' + (255 - intensity) + ', ' + (255 - intensity) + ', ' + (255) + ', 0.8)';
+        }
+    }
+
+    function makeDataRow(rowData, isSummary) {
+        var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        var row = document.createElement('div');
+        row.className = 'sector-corr-row' + (isSummary ? ' sector-corr-summary-row' : '');
+
+        var labelCell = document.createElement('div');
+        labelCell.className = 'sector-corr-cell sector-corr-row-header';
+        labelCell.textContent = rowData.sector;
+        row.appendChild(labelCell);
+
+        var countCell = document.createElement('div');
+        countCell.className = 'sector-corr-cell sector-corr-n-cell';
+        countCell.textContent = rowData.count;
+        row.appendChild(countCell);
+
+        rowData.cells.forEach(function(cell, ci) {
+            var d = document.createElement('div');
+            d.className = 'sector-corr-cell sector-corr-data-cell';
+            d.style.background = rToColor(cell.r, isDark);
+            if (cell.r != null) {
+                d.textContent = cell.r.toFixed(2);
+                d.style.color = isDark ? '#e0e0e0' : '#222';
+                var sig = cell.p < 0.001 ? '***' : cell.p < 0.01 ? '**' : cell.p < 0.05 ? '*' : '';
+                var tipParts = [rowData.sector + ': ' + metricPairs[ci].label, 'r = ' + cell.r.toFixed(3), cell.n + ' companies'];
+                if (sig) tipParts.push('p < ' + (cell.p < 0.001 ? '0.001' : cell.p < 0.01 ? '0.01' : '0.05') + ' ' + sig);
+                tipParts.push('Click to explore in scatter plot');
+                d.title = tipParts.join('\n');
+                d.style.cursor = 'pointer';
+                // Click handler: navigate to scatter with this sector and metric pair
+                (function(sector, pair) {
+                    d.addEventListener('click', function() {
+                        // Set scatter axes
+                        var xSel = document.getElementById('scatter-x-metric');
+                        var ySel = document.getElementById('scatter-y-metric');
+                        if (xSel) xSel.value = pair.scatterX;
+                        if (ySel) ySel.value = pair.scatterY;
+                        // Set sector filter if not the S&P 500 summary row
+                        if (sector !== 'S&P 500' && typeof setActiveSector === 'function') {
+                            setActiveSector(sector);
+                            document.querySelectorAll('.chip').forEach(function(chip) {
+                                chip.classList.remove('active');
+                                if (chip.textContent === sector) chip.classList.add('active');
+                            });
+                        }
+                        // Redraw scatter
+                        var scEl = document.getElementById('scatter-chart');
+                        if (scEl) scEl.innerHTML = '';
+                        if (typeof drawScatterChart === 'function') drawScatterChart(_chartData.companies);
+                        // Scroll to scatter
+                        var scPanel = document.getElementById('scatter-chart-panel');
+                        if (scPanel) {
+                            var hdr = document.querySelector('.sticky-header');
+                            var off = hdr ? hdr.offsetHeight : 0;
+                            var top = scPanel.getBoundingClientRect().top + window.scrollY - off - 12;
+                            window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                        }
+                        if (typeof announce === 'function') announce('Scatter plot: ' + pair.label + (sector !== 'S&P 500' ? ', filtered to ' + sector : ''));
+                    });
+                })(rowData.sector, metricPairs[ci]);
+            } else {
+                d.textContent = '\u2014';
+                d.title = 'Insufficient data (N < 5)';
+                d.style.color = isDark ? '#666' : '#999';
+            }
+            row.appendChild(d);
+        });
+        return row;
+    }
+
+    // Data rows (sorted by sector name)
+    sectorData.sort(function(a, b) { return a.sector < b.sector ? -1 : a.sector > b.sector ? 1 : 0; });
+    sectorData.forEach(function(sd) {
+        table.appendChild(makeDataRow(sd, false));
+    });
+
+    // Summary row
+    table.appendChild(makeDataRow(sp500Row, true));
+
+    container.appendChild(table);
+
+    // Color scale legend
+    var legend = document.createElement('div');
+    legend.className = 'sector-corr-legend';
+    legend.innerHTML = '<span class="sector-corr-legend-label">-1.0</span>' +
+        '<div class="sector-corr-legend-gradient"></div>' +
+        '<span class="sector-corr-legend-label">+1.0</span>' +
+        '<span class="sector-corr-legend-note">Blue = negative, Red = positive</span>';
+    container.appendChild(legend);
+
+    // Expose sector correlation data for insight card generation (app.js picks this up)
+    window._sectorCorrDeepDiveData = {
+        strongest: strongestCell,
+        weakest: weakestCell.r !== Infinity ? weakestCell : null
+    };
 }

@@ -10921,3 +10921,174 @@ body.light-mode .cross-sector-pair-select:focus {
         -webkit-overflow-scrolling: touch;
     }
 }
+
+/* === Peer Distribution Click-to-Filter Active State === */
+.peer-dist-active-bucket .peer-dist-bar {
+    outline: 2px solid var(--accent, #00b4d8);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+.peer-dist-col[data-peer-tickers]:hover {
+    transform: scaleY(1.08);
+    transition: transform 0.15s ease;
+}
+
+/* === Sector Correlation Deep-Dive === */
+.sector-corr-table {
+    display: grid;
+    grid-template-columns: 160px 48px repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+[data-theme="light"] .sector-corr-table {
+    background: rgba(0,0,0,0.06);
+}
+.sector-corr-row {
+    display: contents;
+}
+.sector-corr-cell {
+    padding: 10px 8px;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+.sector-corr-corner,
+.sector-corr-row-header {
+    justify-content: flex-start;
+    font-weight: 600;
+    background: rgba(255,255,255,0.03);
+    color: #e0e0e0;
+    padding-left: 14px;
+}
+[data-theme="light"] .sector-corr-corner,
+[data-theme="light"] .sector-corr-row-header {
+    background: rgba(0,0,0,0.02);
+    color: #333;
+}
+.sector-corr-col-header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(255,255,255,0.03);
+    color: #b0b0b0;
+}
+[data-theme="light"] .sector-corr-col-header {
+    background: rgba(0,0,0,0.02);
+    color: #666;
+}
+.sector-corr-n-header {
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(255,255,255,0.03);
+    color: #888;
+}
+[data-theme="light"] .sector-corr-n-header {
+    background: rgba(0,0,0,0.02);
+    color: #888;
+}
+.sector-corr-n-cell {
+    font-size: 0.78rem;
+    color: #999;
+    background: rgba(255,255,255,0.015);
+}
+[data-theme="light"] .sector-corr-n-cell {
+    background: rgba(0,0,0,0.01);
+    color: #777;
+}
+.sector-corr-data-cell {
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    border-radius: 0;
+    cursor: pointer;
+}
+.sector-corr-data-cell:hover {
+    filter: brightness(1.2);
+    outline: 2px solid var(--accent, #00b4d8);
+    outline-offset: -2px;
+    z-index: 1;
+}
+.sector-corr-summary-row .sector-corr-row-header {
+    font-weight: 700;
+    border-top: 2px solid rgba(255,255,255,0.15);
+}
+[data-theme="light"] .sector-corr-summary-row .sector-corr-row-header {
+    border-top: 2px solid rgba(0,0,0,0.12);
+}
+.sector-corr-summary-row .sector-corr-data-cell {
+    border-top: 2px solid rgba(255,255,255,0.15);
+    font-weight: 700;
+}
+[data-theme="light"] .sector-corr-summary-row .sector-corr-data-cell {
+    border-top: 2px solid rgba(0,0,0,0.12);
+}
+.sector-corr-summary-row .sector-corr-n-cell {
+    border-top: 2px solid rgba(255,255,255,0.15);
+}
+[data-theme="light"] .sector-corr-summary-row .sector-corr-n-cell {
+    border-top: 2px solid rgba(0,0,0,0.12);
+}
+.sector-corr-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 8px;
+}
+.sector-corr-legend-gradient {
+    width: 120px;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(to right, #1d4ed8, #93c5fd, #fff, #fca5a5, #dc2626);
+}
+[data-theme="light"] .sector-corr-legend-gradient {
+    background: linear-gradient(to right, #1d4ed8, #93c5fd, #f8f8f8, #fca5a5, #dc2626);
+}
+.sector-corr-legend-label {
+    font-weight: 600;
+    color: #bbb;
+}
+[data-theme="light"] .sector-corr-legend-label {
+    color: #555;
+}
+.sector-corr-legend-note {
+    color: #777;
+    font-style: italic;
+}
+
+/* Mobile responsive for sector correlation */
+@media (max-width: 600px) {
+    .sector-corr-table {
+        grid-template-columns: 100px 36px repeat(4, 1fr);
+        gap: 0;
+    }
+    .sector-corr-cell {
+        padding: 6px 4px;
+        font-size: 0.72rem;
+        min-height: 32px;
+    }
+    .sector-corr-corner,
+    .sector-corr-row-header {
+        padding-left: 8px;
+        font-size: 0.7rem;
+    }
+    .sector-corr-col-header {
+        font-size: 0.65rem;
+    }
+    .sector-corr-legend {
+        flex-wrap: wrap;
+    }
+    #sector-corr-deepdive-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
