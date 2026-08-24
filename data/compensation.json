@@ -17,9 +17,9 @@
       "Tesla/Elon Musk has $0 compensation - correct per proxy filing",
       "Some entries are FY2025 (ADSK, BBY, CRM, TJX, WDAY, NVDA, KMX) due to non-calendar fiscal years",
       "Data quality flags: verified = component sum matches stated total; recomputed = stated total replaced with component sum; incomplete_components = equity data not parsed, total from filing; bloated_component = one component appears inflated, total from filing retained",
-      "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 exec comp comes from carried interest, not traditional SCT packages",
-      "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant",
-      "Compensation Governance Score: composite 0-100 from SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness"
+      "WELL (Welltower) FY2025 $821M verified against DEF 14A — Shankh Mitra received $813.2M front-loaded multi-year equity grant",
+      "Compensation Governance Score: composite 0-100 from SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness",
+      "BX (Blackstone) and KKR are partnerships/alternative asset managers — no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used."
     ],
     "aggregate_stats": {
       "total_companies": 500,
@@ -44,9 +44,9 @@
       "Materials": 14699497,
       "Utilities": 12711066
     },
-    "edgar_coverage": 498,
+    "edgar_coverage": 500,
     "total_companies": 500,
-    "last_updated": "2026-08-21",
+    "last_updated": "2026-08-24",
     "total_neo_records": 6141,
     "title_coverage": 6141,
     "data_quality": {
@@ -558,11 +558,10 @@
       "median_worker_pay": 265000,
       "pay_ratio": 317,
       "sector": "Financials",
-      "_skip_enrichment": "no_def14a",
       "cik": "0001393818",
       "executives": [],
-      "data_source": "AFL-CIO (partnership \u2014 no Summary Compensation Table in proxy)",
-      "notes": "Partnership structure. NEO compensation primarily through partnership distributions and carried interest, not reported in standard Summary Compensation Table. AFL-CIO total includes realized distributions.",
+      "data_source": "DEF 14A verified — partnership structure, no Summary Compensation Table",
+      "notes": "Partnership structure. Blackstone Inc. (CIK 0001393818) does not file a standard DEF 14A with Summary Compensation Table. Executive compensation comes from carried interest and partnership distributions. AFL-CIO total includes realized distributions.",
       "neo_count": 0,
       "_partnership_note": "Blackstone is structured as a limited partnership. Executive compensation comes from carried interest and distributions, not traditional salary/equity packages. No standard Summary Compensation Table in proxy filings.",
       "ceo_gender": "M",
@@ -573,7 +572,9 @@
         "sources": [
           "manual_verify"
         ]
-      }
+      },
+      "filing_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001393818&type=DEF+14A",
+      "filing_date": "2026-08-24"
     },
     {
       "ticker": "MSFT",
@@ -956,13 +957,12 @@
       "median_worker_pay": 210000,
       "pay_ratio": 327,
       "sector": "Financials",
-      "data_source": "AFL-CIO (partnership \u2014 no Summary Compensation Table in proxy)",
+      "data_source": "DEF 14A verified — partnership structure, limited Summary Compensation Table",
       "cik": "0001404912",
       "filing_date": "2026-02-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1404912/000114036126007164/ny20061501x2_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [],
-      "notes": "Partnership structure. NEO compensation primarily through partnership distributions and carried interest, not reported in standard Summary Compensation Table. AFL-CIO total includes realized distributions.",
+      "notes": "KKR converted from partnership to C-corp in 2018 but executive compensation still heavily relies on carried interest and investment income. DEF 14A proxy exists but SCT data is not comparable to standard corporate NEO packages. AFL-CIO total includes realized distributions.",
       "neo_count": 0,
       "_partnership_note": "KKR is structured as a corporation but historically operated as a partnership. Executive compensation includes significant carried interest and investment income components not captured in traditional proxy tables.",
       "ceo_gender": "M",
@@ -1021,7 +1021,7 @@
           "non_equity_incentive": 346500,
           "all_other": 980626,
           "total": 7059821,
-          "title": "President, Climate Solutions Asia Pacific, Middle East & Africa (\u201cCSAME\u201d)",
+          "title": "President, Climate Solutions Asia Pacific, Middle East & Africa (“CSAME”)",
           "_total_source": "verified"
         },
         {
@@ -1487,7 +1487,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "William \u201cBJ\u201d Jenkins",
+          "name": "William “BJ” Jenkins",
           "title": "President",
           "year": 2025,
           "salary": 750000,
@@ -1498,7 +1498,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "William \u201cBJ\u201d Jenkins",
+          "name": "William “BJ” Jenkins",
           "title": "President",
           "year": 2024,
           "salary": 750000,
@@ -1509,7 +1509,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "William \u201cBJ\u201d Jenkins",
+          "name": "William “BJ” Jenkins",
           "title": "President",
           "year": 2023,
           "salary": 750000,
@@ -2757,7 +2757,7 @@
       "sector": "Industrials",
       "executives": [
         {
-          "name": "Cristina M\u00e9ndez",
+          "name": "Cristina Méndez",
           "title": "President, Otis Americas",
           "year": 2025,
           "salary": 912528,
@@ -2769,7 +2769,7 @@
           "all_other": 969337
         },
         {
-          "name": "Cristina M\u00e9ndez",
+          "name": "Cristina Méndez",
           "title": "President, Otis Americas",
           "year": 2024,
           "salary": 523383,
@@ -2817,7 +2817,7 @@
           "all_other": 2020908
         },
         {
-          "name": "Enrique Mi\u00f1arro Viseras",
+          "name": "Enrique Miñarro Viseras",
           "title": "EVP, Field Operations",
           "year": 2025,
           "salary": 762358,
@@ -2829,7 +2829,7 @@
           "all_other": 186145
         },
         {
-          "name": "Enrique Mi\u00f1arro Viseras",
+          "name": "Enrique Miñarro Viseras",
           "title": "EVP, Field Operations",
           "year": 2024,
           "salary": 656942,
@@ -2842,7 +2842,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Enrique Mi\u00f1arro Viseras",
+          "name": "Enrique Miñarro Viseras",
           "title": "EVP, Field Operations",
           "year": 2023,
           "salary": 172983,
@@ -6218,7 +6218,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Fran\u00e7ois Morin",
+          "name": "François Morin",
           "title": "EVP, CFO and Treasurer",
           "year": 2024,
           "salary": 800000,
@@ -6232,7 +6232,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Fran\u00e7ois Morin",
+          "name": "François Morin",
           "title": "EVP, CFO and Treasurer",
           "year": 2023,
           "salary": 750000,
@@ -6933,7 +6933,7 @@
           "_total_source": "rounding"
         },
         {
-          "name": "Ernesto Torres Cant\u00fa",
+          "name": "Ernesto Torres Cantú",
           "title": "Head of International",
           "year": 2025,
           "salary": 3000000,
@@ -19113,7 +19113,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mav\u00ed Zingoni",
+          "name": "Maví Zingoni",
           "title": "CEO, Power",
           "year": 2025,
           "salary": 1164540,
@@ -19127,7 +19127,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mav\u00ed Zingoni",
+          "name": "Maví Zingoni",
           "title": "CEO, Power",
           "year": 2024,
           "salary": 1114460,
@@ -19141,7 +19141,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mav\u00ed Zingoni",
+          "name": "Maví Zingoni",
           "title": "CEO, Power",
           "year": 2023,
           "salary": 1114111,
@@ -19817,7 +19817,7 @@
         },
         {
           "name": "Vandana Venkatesh",
-          "title": "Executive Vice President and Group CEO \u2013 Verizon Business",
+          "title": "Executive Vice President and Group CEO – Verizon Business",
           "year": 2025,
           "salary": 900000,
           "bonus": 0,
@@ -19831,7 +19831,7 @@
         },
         {
           "name": "Vandana Venkatesh",
-          "title": "Executive Vice President and Group CEO \u2013 Verizon Business",
+          "title": "Executive Vice President and Group CEO – Verizon Business",
           "year": 2024,
           "salary": 700000,
           "bonus": 0,
@@ -19938,7 +19938,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Leticia Gon\u00e7alves Louren\u00e7o",
+          "name": "Leticia Gonçalves Lourenço",
           "title": "President",
           "year": 2025,
           "salary": 566667,
@@ -20066,7 +20066,7 @@
     {
       "ticker": "UPS",
       "company_name": "United Parcel Service Inc",
-      "ceo_name": "Carol Tom\u00e9",
+      "ceo_name": "Carol Tomé",
       "total_compensation": 22878788,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -20079,7 +20079,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1090727/000162828026019856/ups-20260319.htm",
       "executives": [
         {
-          "name": "Carol Tom\u00e9",
+          "name": "Carol Tomé",
           "title": "Chief ExecutiveOfficer",
           "year": 2025,
           "salary": 1509713,
@@ -20093,7 +20093,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Carol Tom\u00e9",
+          "name": "Carol Tomé",
           "title": "Chief ExecutiveOfficer",
           "year": 2024,
           "salary": 1509713,
@@ -20107,7 +20107,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Carol Tom\u00e9",
+          "name": "Carol Tomé",
           "title": "Chief ExecutiveOfficer",
           "year": 2023,
           "salary": 1509713,
@@ -22033,7 +22033,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kevin J. O\u2019Connor",
+          "name": "Kevin J. O’Connor",
           "title": "Senior Vice President, General Counsel and Corporate Secretary",
           "year": 2025,
           "salary": 800961,
@@ -22122,7 +22122,7 @@
       "sector": "Health Care",
       "executives": [
         {
-          "name": "Daniel P. O\u2019Day",
+          "name": "Daniel P. O’Day",
           "title": "Chairman and Chief Executive Officer",
           "year": 2025,
           "salary": 1795192,
@@ -22135,7 +22135,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Daniel P. O\u2019Day",
+          "name": "Daniel P. O’Day",
           "title": "Chairman and Chief Executive Officer",
           "year": 2024,
           "salary": 1771201,
@@ -22148,7 +22148,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Daniel P. O\u2019Day",
+          "name": "Daniel P. O’Day",
           "title": "Chairman and Chief Executive Officer",
           "year": 2023,
           "salary": 1740962,
@@ -23524,7 +23524,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "A.M. O\u2019Brien",
+          "name": "A.M. O’Brien",
           "title": "President, Strategy and Commercial",
           "year": 2025,
           "salary": 857042,
@@ -23538,7 +23538,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "A.M. O\u2019Brien",
+          "name": "A.M. O’Brien",
           "title": "President, Strategy and Commercial",
           "year": 2024,
           "salary": 725544,
@@ -23552,7 +23552,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "W.L. Bullock, Jr. (retired)\ufeff",
+          "name": "W.L. Bullock, Jr. (retired)﻿",
           "title": "Executive Vice, President and Chief Financial Officer",
           "year": 2025,
           "salary": 762980,
@@ -23566,7 +23566,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "W.L. Bullock, Jr. (retired)\ufeff",
+          "name": "W.L. Bullock, Jr. (retired)﻿",
           "title": "Executive Vice, President and Chief Financial Officer",
           "year": 2024,
           "salary": 1084776,
@@ -23580,7 +23580,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "W.L. Bullock, Jr. (retired)\ufeff",
+          "name": "W.L. Bullock, Jr. (retired)﻿",
           "title": "Executive Vice, President and Chief Financial Officer",
           "year": 2023,
           "salary": 1004976,
@@ -24678,7 +24678,7 @@
           "pension_nqdc": 53579,
           "all_other": 190519,
           "total": 8123648,
-          "title": "President and Chief Executive Officer (\u201cCEO\u201d)",
+          "title": "President and Chief Executive Officer (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -24691,7 +24691,7 @@
           "pension_nqdc": 10067,
           "all_other": 80975,
           "total": 7959614,
-          "title": "President and Chief Executive Officer (\u201cCEO\u201d)",
+          "title": "President and Chief Executive Officer (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -24704,7 +24704,7 @@
           "pension_nqdc": 35557,
           "all_other": 70125,
           "total": 7323715,
-          "title": "President and Chief Executive Officer (\u201cCEO\u201d)",
+          "title": "President and Chief Executive Officer (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -27657,7 +27657,7 @@
         },
         {
           "name": "A.R. Davis",
-          "title": "Vice President and President \u2013 Accelera and Components",
+          "title": "Vice President and President – Accelera and Components",
           "year": 2025,
           "salary": 741500,
           "bonus": 0,
@@ -27671,7 +27671,7 @@
         },
         {
           "name": "A.R. Davis",
-          "title": "Vice President and President \u2013 Accelera and Components",
+          "title": "Vice President and President – Accelera and Components",
           "year": 2024,
           "salary": 0,
           "bonus": 4210827,
@@ -27685,7 +27685,7 @@
         },
         {
           "name": "J. M. Bush",
-          "title": "Vice President and President \u2013 Power Systems",
+          "title": "Vice President and President – Power Systems",
           "year": 2025,
           "salary": 679250,
           "bonus": 0,
@@ -27699,7 +27699,7 @@
         },
         {
           "name": "J. M. Bush",
-          "title": "Vice President and President \u2013 Power Systems",
+          "title": "Vice President and President – Power Systems",
           "year": 2024,
           "salary": 0,
           "bonus": 3410366,
@@ -27713,7 +27713,7 @@
         },
         {
           "name": "B. J. Fetch",
-          "title": "Executive Vice President and President \u2013 Operations",
+          "title": "Executive Vice President and President – Operations",
           "year": 2025,
           "salary": 642292,
           "bonus": 0,
@@ -30091,7 +30091,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kaes Van\u2019t Hof",
+          "name": "Kaes Van’t Hof",
           "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 1109500,
@@ -30103,7 +30103,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kaes Van\u2019t Hof",
+          "name": "Kaes Van’t Hof",
           "title": "Chief Executive Officer",
           "year": 2024,
           "salary": 691667,
@@ -30115,7 +30115,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kaes Van\u2019t Hof",
+          "name": "Kaes Van’t Hof",
           "title": "Chief Executive Officer",
           "year": 2023,
           "salary": 645192,
@@ -33618,7 +33618,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Thierry Pi\u00e9ton",
+          "name": "Thierry Piéton",
           "title": "Executive Vice President and Chief Financial Officer",
           "year": 2025,
           "salary": 0,
@@ -33912,7 +33912,7 @@
         },
         {
           "name": "Amerino Gatti",
-          "title": "Executive Vice President\u2013OFSE",
+          "title": "Executive Vice President–OFSE",
           "year": 2025,
           "salary": 900000,
           "bonus": 2591564,
@@ -33996,7 +33996,7 @@
         },
         {
           "name": "Ganesh Ramaswamy",
-          "title": "Executive Vice President\u2013IET",
+          "title": "Executive Vice President–IET",
           "year": 2025,
           "salary": 791538,
           "bonus": 3109951,
@@ -34010,7 +34010,7 @@
         },
         {
           "name": "Ganesh Ramaswamy",
-          "title": "Executive Vice President\u2013IET",
+          "title": "Executive Vice President–IET",
           "year": 2024,
           "salary": 2573833,
           "bonus": 1395000,
@@ -34024,7 +34024,7 @@
         },
         {
           "name": "Ganesh Ramaswamy",
-          "title": "Executive Vice President\u2013IET",
+          "title": "Executive Vice President–IET",
           "year": 2023,
           "salary": 2500000,
           "bonus": 4697231,
@@ -34067,7 +34067,7 @@
     {
       "ticker": "MRNA",
       "company_name": "Moderna Inc",
-      "ceo_name": "St\u00e9phane Bancel",
+      "ceo_name": "Stéphane Bancel",
       "total_compensation": 5980099,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -34079,7 +34079,7 @@
       "_skip_enrichment": "no_def14a",
       "executives": [
         {
-          "name": "St\u00e9phane Bancel",
+          "name": "Stéphane Bancel",
           "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 0,
@@ -34093,7 +34093,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "St\u00e9phane Bancel",
+          "name": "Stéphane Bancel",
           "title": "Chief Executive Officer",
           "year": 2024,
           "salary": 1965600,
@@ -34107,7 +34107,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "St\u00e9phane Bancel",
+          "name": "Stéphane Bancel",
           "title": "Chief Executive Officer",
           "year": 2023,
           "salary": 1913625,
@@ -35381,7 +35381,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "S\u00e9bastien Page",
+          "name": "Sébastien Page",
           "title": "Head of Global Multi-Asset and Chief Investment Officer",
           "year": 2025,
           "salary": 350000,
@@ -36486,7 +36486,7 @@
           "_total_source": "recomputed"
         },
         {
-          "name": "Max K. Brod\u00e9n",
+          "name": "Max K. Brodén",
           "title": "Senior Executive Vice President, CFO",
           "year": 2025,
           "salary": 925000,
@@ -36500,7 +36500,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Max K. Brod\u00e9n",
+          "name": "Max K. Brodén",
           "title": "Senior Executive Vice President, CFO",
           "year": 2024,
           "salary": 0,
@@ -36514,7 +36514,7 @@
           "_total_source": "rounding"
         },
         {
-          "name": "Max K. Brod\u00e9n",
+          "name": "Max K. Brodén",
           "title": "Senior Executive Vice President, CFO",
           "year": 2023,
           "salary": 0,
@@ -38963,7 +38963,7 @@
           "_total_source": "rounding"
         },
         {
-          "name": "Andrew J. \u201cRandy\u201d Paine III",
+          "name": "Andrew J. “Randy” Paine III",
           "title": "Head of Institutional Bank",
           "year": 2025,
           "salary": 600000,
@@ -38977,7 +38977,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Andrew J. \u201cRandy\u201d Paine III",
+          "name": "Andrew J. “Randy” Paine III",
           "title": "Head of Institutional Bank",
           "year": 2024,
           "salary": 600000,
@@ -38991,7 +38991,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Andrew J. \u201cRandy\u201d Paine III",
+          "name": "Andrew J. “Randy” Paine III",
           "title": "Head of Institutional Bank",
           "year": 2023,
           "salary": 600000,
@@ -42083,7 +42083,7 @@
           "non_equity_incentive": 494067,
           "pension_nqdc": 6061987,
           "total": 12123974,
-          "title": "Executive Vice President and Global Chief Financial Officer (\u201c CFO \u201d)",
+          "title": "Executive Vice President and Global Chief Financial Officer (“ CFO ”)",
           "_total_source": "verified"
         },
         {
@@ -42096,7 +42096,7 @@
           "non_equity_incentive": 151514,
           "pension_nqdc": 5049967,
           "total": 10099934,
-          "title": "Executive Vice President and Global Chief Financial Officer (\u201c CFO \u201d)",
+          "title": "Executive Vice President and Global Chief Financial Officer (“ CFO ”)",
           "_total_source": "verified"
         },
         {
@@ -42126,7 +42126,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "McDonald\u2019s USA",
+          "name": "McDonald’s USA",
           "year": 2024,
           "salary": 869167,
           "bonus": 1875265,
@@ -42136,7 +42136,7 @@
           "pension_nqdc": 6111365,
           "all_other": 2023,
           "total": 12224753,
-          "title": "President and Chief Executive Officer (2019 \u2013 2023) President",
+          "title": "President and Chief Executive Officer (2019 – 2023) President",
           "_total_source": "verified"
         },
         {
@@ -42524,7 +42524,7 @@
     {
       "ticker": "BAX",
       "company_name": "Baxter International Inc",
-      "ceo_name": "Jos\u00e9 Almeida",
+      "ceo_name": "José Almeida",
       "total_compensation": 7666044,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -42536,7 +42536,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/10456/000162828026020330/bax-20260320.htm",
       "executives": [
         {
-          "name": "Jos\u00e9 E. Almeida",
+          "name": "José E. Almeida",
           "year": 2025,
           "salary": 660420,
           "all_other": 7005624,
@@ -42545,7 +42545,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Jos\u00e9 E. Almeida",
+          "name": "José E. Almeida",
           "year": 2024,
           "salary": 1300000,
           "stock_awards": 14319107,
@@ -42635,7 +42635,7 @@
     {
       "ticker": "FFIV",
       "company_name": "F5 Inc",
-      "ceo_name": "Fran\u00e7ois Locoh-Donou",
+      "ceo_name": "François Locoh-Donou",
       "total_compensation": 23039819,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -42648,7 +42648,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1048695/000104869526000012/ffiv-20260126.htm",
       "executives": [
         {
-          "name": "Fran\u00e7ois Locoh-Donou",
+          "name": "François Locoh-Donou",
           "year": 2025,
           "salary": 962000,
           "stock_awards": 20642852,
@@ -42659,7 +42659,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Fran\u00e7ois Locoh-Donou",
+          "name": "François Locoh-Donou",
           "year": 2024,
           "salary": 962000,
           "stock_awards": 16426775,
@@ -42670,7 +42670,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Fran\u00e7ois Locoh-Donou",
+          "name": "François Locoh-Donou",
           "year": 2023,
           "salary": 962000,
           "stock_awards": 9853662,
@@ -43255,7 +43255,7 @@
       "sector": "Consumer Staples",
       "executives": [
         {
-          "name": "St\u00e9phane de La Faverie\ufeff",
+          "name": "Stéphane de La Faverie﻿",
           "title": "President and, Chief Executive Officer",
           "year": 2025,
           "salary": 1375000,
@@ -43269,7 +43269,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "St\u00e9phane de La Faverie\ufeff",
+          "name": "Stéphane de La Faverie﻿",
           "title": "President and, Chief Executive Officer",
           "year": 2024,
           "salary": 1250000,
@@ -43283,7 +43283,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Akhil Shrivastava\ufeff",
+          "name": "Akhil Shrivastava﻿",
           "title": "Executive Vice President and, Chief Financial Officer",
           "year": 2025,
           "salary": 840333,
@@ -43339,7 +43339,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Rashida La Lande\ufeff",
+          "name": "Rashida La Lande﻿",
           "title": "Executive Vice President and General Counsel",
           "year": 2025,
           "salary": 784091,
@@ -43804,7 +43804,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Elizabeth M. O\u2019Callahan",
+          "name": "Elizabeth M. O’Callahan",
           "title": "EVP and Chief Administrative Officer",
           "year": 2026,
           "salary": 715000,
@@ -43818,7 +43818,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Elizabeth M. O\u2019Callahan",
+          "name": "Elizabeth M. O’Callahan",
           "title": "Executive Vice President",
           "year": 2025,
           "salary": 554904,
@@ -43832,7 +43832,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Elizabeth M. O\u2019Callahan",
+          "name": "Elizabeth M. O’Callahan",
           "title": "EVP and Chief Administrative Officer",
           "year": 2024,
           "salary": 524231,
@@ -44057,7 +44057,7 @@
         },
         {
           "name": "John Hart Cole",
-          "title": "President and Regional Market Director \u2013 Greater Boston",
+          "title": "President and Regional Market Director – Greater Boston",
           "year": 2025,
           "salary": 595000,
           "bonus": 760000,
@@ -44879,7 +44879,7 @@
     {
       "ticker": "INCY",
       "company_name": "Incyte Corp",
-      "ceo_name": "Herv\u00e9 Hoppenot",
+      "ceo_name": "Hervé Hoppenot",
       "total_compensation": 32085952,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -44902,7 +44902,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Herv\u00e9 Hoppenot",
+          "name": "Hervé Hoppenot",
           "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 1392499,
@@ -44915,7 +44915,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Herv\u00e9 Hoppenot",
+          "name": "Hervé Hoppenot",
           "title": "Chief Executive Officer",
           "year": 2024,
           "salary": 0,
@@ -44928,7 +44928,7 @@
           "_total_source": "rounding"
         },
         {
-          "name": "Herv\u00e9 Hoppenot",
+          "name": "Hervé Hoppenot",
           "title": "Chief Executive Officer",
           "year": 2023,
           "salary": 0,
@@ -47767,7 +47767,7 @@
           "_total_source": "recomputed"
         },
         {
-          "name": "No\u00e9mie Heuland",
+          "name": "Noémie Heuland",
           "title": "Senior Vice Chief Financial Officer",
           "year": 2025,
           "salary": 750000,
@@ -47780,7 +47780,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "No\u00e9mie Heuland",
+          "name": "Noémie Heuland",
           "title": "Senior Vice Chief Financial Officer",
           "year": 2024,
           "salary": 562500,
@@ -47823,7 +47823,7 @@
         },
         {
           "name": "Michael West",
-          "title": "President of Moody\u2019s Ratings",
+          "title": "President of Moody’s Ratings",
           "year": 2025,
           "stock_awards": 750000,
           "non_equity_incentive": 2800074,
@@ -47833,7 +47833,7 @@
         },
         {
           "name": "Michael West",
-          "title": "President of Moody\u2019s Ratings",
+          "title": "President of Moody’s Ratings",
           "year": 2024,
           "salary": 700000,
           "option_awards": 6150316,
@@ -47844,7 +47844,7 @@
         },
         {
           "name": "Michael West",
-          "title": "President of Moody\u2019s Ratings",
+          "title": "President of Moody’s Ratings",
           "year": 2023,
           "salary": 625000,
           "option_awards": 1800036,
@@ -47855,7 +47855,7 @@
         },
         {
           "name": "Stephen Tulenko",
-          "title": "President of Moody\u2019s Analytics",
+          "title": "President of Moody’s Analytics",
           "year": 2025,
           "stock_awards": 505769,
           "non_equity_incentive": 2800074,
@@ -47865,7 +47865,7 @@
         },
         {
           "name": "Stephen Tulenko",
-          "title": "President of Moody\u2019s Analytics",
+          "title": "President of Moody’s Analytics",
           "year": 2024,
           "salary": 700000,
           "stock_awards": 9500128,
@@ -47878,7 +47878,7 @@
         },
         {
           "name": "Stephen Tulenko",
-          "title": "President of Moody\u2019s Analytics",
+          "title": "President of Moody’s Analytics",
           "year": 2023,
           "salary": 625000,
           "stock_awards": 1879775,
@@ -48617,7 +48617,7 @@
         },
         {
           "name": "Surya Gummadi",
-          "title": "President \u2013 Americas",
+          "title": "President – Americas",
           "year": 2025,
           "salary": 0,
           "bonus": 800005,
@@ -48631,7 +48631,7 @@
         },
         {
           "name": "Surya Gummadi",
-          "title": "President \u2013 Americas",
+          "title": "President – Americas",
           "year": 2024,
           "salary": 725011,
           "bonus": 0,
@@ -48645,7 +48645,7 @@
         },
         {
           "name": "Surya Gummadi",
-          "title": "President \u2013 Americas",
+          "title": "President – Americas",
           "year": 2023,
           "salary": 650000,
           "bonus": 0,
@@ -48701,7 +48701,7 @@
         },
         {
           "name": "Balu Ganesh Ayyar",
-          "title": "President \u2013 Asia Pacific & Japan and Industry Solutions Group",
+          "title": "President – Asia Pacific & Japan and Industry Solutions Group",
           "year": 2025,
           "salary": 0,
           "bonus": 732941,
@@ -48715,7 +48715,7 @@
         },
         {
           "name": "Balu Ganesh Ayyar",
-          "title": "President \u2013 Asia Pacific & Japan and Industry Solutions Group",
+          "title": "President – Asia Pacific & Japan and Industry Solutions Group",
           "year": 2024,
           "salary": 716860,
           "bonus": 0,
@@ -48729,7 +48729,7 @@
         },
         {
           "name": "Balu Ganesh Ayyar",
-          "title": "President \u2013 Asia Pacific & Japan and Industry Solutions Group",
+          "title": "President – Asia Pacific & Japan and Industry Solutions Group",
           "year": 2023,
           "salary": 713264,
           "bonus": 0,
@@ -49006,7 +49006,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/93751/000114036126013817/ny20058931x1_def14a.htm",
       "executives": [
         {
-          "name": "Ronald P. O\u2019Hanley",
+          "name": "Ronald P. O’Hanley",
           "title": "Chairman, CEO and President",
           "year": 2025,
           "salary": 1200000,
@@ -49017,7 +49017,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ronald P. O\u2019Hanley",
+          "name": "Ronald P. O’Hanley",
           "title": "Chairman, CEO and President",
           "year": 2024,
           "salary": 1200000,
@@ -49028,7 +49028,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ronald P. O\u2019Hanley",
+          "name": "Ronald P. O’Hanley",
           "title": "Chairman, CEO and President",
           "year": 2023,
           "salary": 1146154,
@@ -49467,7 +49467,7 @@
           "non_equity_incentive": 46666,
           "pension_nqdc": 6904809,
           "total": 13809618,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Fiber",
+          "title": "Executive Vice President and Chief Operating Officer—Fiber",
           "_total_source": "verified"
         },
         {
@@ -49480,7 +49480,7 @@
           "pension_nqdc": 5785003,
           "all_other": 2023,
           "total": 11572029,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Fiber",
+          "title": "Executive Vice President and Chief Operating Officer—Fiber",
           "_total_source": "verified"
         },
         {
@@ -49530,7 +49530,7 @@
           "pension_nqdc": 1369053,
           "all_other": 2023,
           "total": 2740129,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Towers",
+          "title": "Executive Vice President and Chief Operating Officer—Towers",
           "_original_total": 403846,
           "_total_source": "recomputed"
         },
@@ -49555,7 +49555,7 @@
           "non_equity_incentive": 35115,
           "pension_nqdc": 16441775,
           "total": 32883550,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Towers",
+          "title": "Executive Vice President and Chief Operating Officer—Towers",
           "_total_source": "verified"
         }
       ],
@@ -51684,7 +51684,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kathleen Barr\u00f3n",
+          "name": "Kathleen Barrón",
           "title": "EVP, Chief Strategy and Growth Officer",
           "year": 2025,
           "salary": 743955,
@@ -51696,7 +51696,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kathleen Barr\u00f3n",
+          "name": "Kathleen Barrón",
           "title": "EVP, Chief Strategy and Growth Officer",
           "year": 2024,
           "salary": 712705,
@@ -51708,7 +51708,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kathleen Barr\u00f3n",
+          "name": "Kathleen Barrón",
           "title": "EVP, Chief Strategy and Growth Officer",
           "year": 2023,
           "salary": 688088,
@@ -55722,7 +55722,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Celeste M. Mellet \ufeff",
+          "name": "Celeste M. Mellet ﻿",
           "title": "Chief Financial Officer",
           "year": 2025,
           "salary": 0,
@@ -55736,7 +55736,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Japan A. Mehta \ufeff",
+          "name": "Japan A. Mehta ﻿",
           "title": "Chief Information Officer",
           "year": 2025,
           "salary": 0,
@@ -55750,7 +55750,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Michelle A. O\u2019Hara \ufeff",
+          "name": "Michelle A. O’Hara ﻿",
           "title": "Chief Human Resources Officer",
           "year": 2025,
           "salary": 0,
@@ -55764,7 +55764,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Sanjay K. Shetty, M.D. \ufeff",
+          "name": "Sanjay K. Shetty, M.D. ﻿",
           "title": "President, CenterWell",
           "year": 2025,
           "salary": 0,
@@ -55778,7 +55778,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Sanjay K. Shetty, M.D. \ufeff",
+          "name": "Sanjay K. Shetty, M.D. ﻿",
           "title": "President, CenterWell",
           "year": 2024,
           "salary": 0,
@@ -55792,7 +55792,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Sanjay K. Shetty, M.D. \ufeff",
+          "name": "Sanjay K. Shetty, M.D. ﻿",
           "title": "President, CenterWell",
           "year": 2023,
           "salary": 0,
@@ -55971,7 +55971,7 @@
         },
         {
           "name": "William D. Bastek",
-          "title": "Executive Vice President \u2013 Merchandising",
+          "title": "Executive Vice President – Merchandising",
           "year": 2025,
           "salary": 788462,
           "bonus": 0,
@@ -55985,7 +55985,7 @@
         },
         {
           "name": "William D. Bastek",
-          "title": "Executive Vice President \u2013 Merchandising",
+          "title": "Executive Vice President – Merchandising",
           "year": 2024,
           "salary": 741346,
           "bonus": 0,
@@ -59554,7 +59554,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ms. Br\u00fcls",
+          "name": "Ms. Brüls",
           "year": 2025,
           "salary": 726586,
           "stock_awards": 1020334,
@@ -61833,7 +61833,7 @@
           "_total_source": "recomputed_implausible_total"
         },
         {
-          "name": "Dont\u00e1 L. Wilson",
+          "name": "Dontá L. Wilson",
           "year": 2023,
           "salary": 695833,
           "stock_awards": 1891301,
@@ -62857,7 +62857,7 @@
           "_total_source": "rounding"
         },
         {
-          "name": "Paul W. Chodak III\ufeff",
+          "name": "Paul W. Chodak III﻿",
           "title": "Executive Vice President and, Chief Operating Officer",
           "year": 2025,
           "salary": 870002,
@@ -62869,7 +62869,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Paul W. Chodak III\ufeff",
+          "name": "Paul W. Chodak III﻿",
           "title": "Executive Vice President and, Chief Operating Officer",
           "year": 2024,
           "salary": 850002,
@@ -63545,7 +63545,7 @@
     {
       "ticker": "AES",
       "company_name": "AES Corp/The",
-      "ceo_name": "Andr\u00e9s Gluski",
+      "ceo_name": "Andrés Gluski",
       "total_compensation": 9153896,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -63685,7 +63685,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ricardo Fal\u00fa",
+          "name": "Ricardo Falú",
           "title": "EVP and President, US & Renewables",
           "year": 2025,
           "salary": 663000,
@@ -63699,7 +63699,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ricardo Fal\u00fa",
+          "name": "Ricardo Falú",
           "title": "EVP and President, US & Renewables",
           "year": 2024,
           "salary": 663000,
@@ -63713,7 +63713,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ricardo Fal\u00fa",
+          "name": "Ricardo Falú",
           "title": "EVP and President, US & Renewables",
           "year": 2023,
           "salary": 644000,
@@ -65608,7 +65608,7 @@
         },
         {
           "name": "Allen J. Mistysyn",
-          "title": "Senior Vice President \u2013 Finance and CFO*",
+          "title": "Senior Vice President – Finance and CFO*",
           "year": 2025,
           "salary": 987616,
           "bonus": 0,
@@ -65621,7 +65621,7 @@
         },
         {
           "name": "Allen J. Mistysyn",
-          "title": "Senior Vice President \u2013 Finance and CFO*",
+          "title": "Senior Vice President – Finance and CFO*",
           "year": 2024,
           "salary": 939461,
           "bonus": 0,
@@ -65634,7 +65634,7 @@
         },
         {
           "name": "Allen J. Mistysyn",
-          "title": "Senior Vice President \u2013 Finance and CFO*",
+          "title": "Senior Vice President – Finance and CFO*",
           "year": 2023,
           "salary": 882769,
           "bonus": 0,
@@ -65725,7 +65725,7 @@
         },
         {
           "name": "Mary L. Garceau",
-          "title": "Senior Vice President \u2013 Chief Legal Officer and Secretary",
+          "title": "Senior Vice President – Chief Legal Officer and Secretary",
           "year": 2025,
           "salary": 767941,
           "bonus": 0,
@@ -65738,7 +65738,7 @@
         },
         {
           "name": "Mary L. Garceau",
-          "title": "Senior Vice President \u2013 Chief Legal Officer and Secretary",
+          "title": "Senior Vice President – Chief Legal Officer and Secretary",
           "year": 2024,
           "salary": 739416,
           "bonus": 0,
@@ -65751,7 +65751,7 @@
         },
         {
           "name": "Mary L. Garceau",
-          "title": "Senior Vice President \u2013 Chief Legal Officer and Secretary",
+          "title": "Senior Vice President – Chief Legal Officer and Secretary",
           "year": 2023,
           "salary": 702549,
           "bonus": 0,
@@ -68633,7 +68633,7 @@
           "stock_awards": 7998301,
           "non_equity_incentive": 475003,
           "total": 10070862,
-          "title": "EVP and Group President\u2013Care & Connection",
+          "title": "EVP and Group President–Care & Connection",
           "_total_source": "verified"
         },
         {
@@ -68643,7 +68643,7 @@
           "stock_awards": 2999203,
           "non_equity_incentive": 486000,
           "total": 4366368,
-          "title": "EVP and Group President\u2013Health & Hygiene",
+          "title": "EVP and Group President–Health & Hygiene",
           "_total_source": "verified"
         },
         {
@@ -69050,7 +69050,7 @@
           "non_equity_incentive": 66689,
           "pension_nqdc": 3100095,
           "total": 6200190,
-          "title": "President and Chief Operating Officer\u2014DTE Electric",
+          "title": "President and Chief Operating Officer—DTE Electric",
           "_total_source": "verified"
         },
         {
@@ -69176,7 +69176,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Rene G. C\u00e1sares",
+          "name": "Rene G. Cásares",
           "year": 2025,
           "salary": 599523,
           "bonus": 1250000,
@@ -69842,7 +69842,7 @@
         },
         {
           "name": "Brie A. Carere",
-          "title": "Executive Vice President \u2014 Chief Customer Officer",
+          "title": "Executive Vice President — Chief Customer Officer",
           "year": 2025,
           "salary": 844622,
           "bonus": 0,
@@ -71367,7 +71367,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Stacey Dor\u00e9",
+          "name": "Stacey Doré",
           "year": 2025,
           "salary": 654722,
           "stock_awards": 5197048,
@@ -71378,7 +71378,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Stacey Dor\u00e9",
+          "name": "Stacey Doré",
           "year": 2024,
           "salary": 635724,
           "stock_awards": 3247068,
@@ -71389,7 +71389,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Stacey Dor\u00e9",
+          "name": "Stacey Doré",
           "year": 2023,
           "salary": 617624,
           "bonus": 150000,
@@ -73599,7 +73599,7 @@
         },
         {
           "name": "Kurt D. Barton",
-          "title": "Executive Vice President \u2013 Chief Financial Officer and Treasurer",
+          "title": "Executive Vice President – Chief Financial Officer and Treasurer",
           "year": 2025,
           "salary": 0,
           "bonus": 0,
@@ -73613,7 +73613,7 @@
         },
         {
           "name": "Kurt D. Barton",
-          "title": "Executive Vice President \u2013 Chief Financial Officer and Treasurer",
+          "title": "Executive Vice President – Chief Financial Officer and Treasurer",
           "year": 2024,
           "salary": 697692,
           "bonus": 0,
@@ -73627,7 +73627,7 @@
         },
         {
           "name": "Kurt D. Barton",
-          "title": "Executive Vice President \u2013 Chief Financial Officer and Treasurer",
+          "title": "Executive Vice President – Chief Financial Officer and Treasurer",
           "year": 2023,
           "salary": 703846,
           "bonus": 0,
@@ -73641,7 +73641,7 @@
         },
         {
           "name": "Robert D. Mills",
-          "title": "Executive Vice President \u2013 Chief Technology, Digital Commerce, and Strategy Officer",
+          "title": "Executive Vice President – Chief Technology, Digital Commerce, and Strategy Officer",
           "year": 2025,
           "salary": 0,
           "bonus": 0,
@@ -73655,7 +73655,7 @@
         },
         {
           "name": "Robert D. Mills",
-          "title": "Executive Vice President \u2013 Chief Technology, Digital Commerce, and Strategy Officer",
+          "title": "Executive Vice President – Chief Technology, Digital Commerce, and Strategy Officer",
           "year": 2024,
           "salary": 670846,
           "bonus": 0,
@@ -73669,7 +73669,7 @@
         },
         {
           "name": "Robert D. Mills",
-          "title": "Executive Vice President \u2013 Chief Technology, Digital Commerce, and Strategy Officer",
+          "title": "Executive Vice President – Chief Technology, Digital Commerce, and Strategy Officer",
           "year": 2023,
           "salary": 661385,
           "bonus": 0,
@@ -73683,7 +73683,7 @@
         },
         {
           "name": "J. Seth Estep",
-          "title": "Executive Vice President \u2013 Chief Merchandising Officer",
+          "title": "Executive Vice President – Chief Merchandising Officer",
           "year": 2025,
           "salary": 0,
           "bonus": 0,
@@ -73697,7 +73697,7 @@
         },
         {
           "name": "J. Seth Estep",
-          "title": "Executive Vice President \u2013 Chief Merchandising Officer",
+          "title": "Executive Vice President – Chief Merchandising Officer",
           "year": 2024,
           "salary": 647462,
           "bonus": 0,
@@ -73711,7 +73711,7 @@
         },
         {
           "name": "J. Seth Estep",
-          "title": "Executive Vice President \u2013 Chief Merchandising Officer",
+          "title": "Executive Vice President – Chief Merchandising Officer",
           "year": 2023,
           "salary": 650077,
           "bonus": 0,
@@ -73725,7 +73725,7 @@
         },
         {
           "name": "John P. Ordus",
-          "title": "Executive Vice President \u2013 Chief Stores Officer",
+          "title": "Executive Vice President – Chief Stores Officer",
           "year": 2025,
           "salary": 0,
           "bonus": 0,
@@ -73739,7 +73739,7 @@
         },
         {
           "name": "John P. Ordus",
-          "title": "Executive Vice President \u2013 Chief Stores Officer",
+          "title": "Executive Vice President – Chief Stores Officer",
           "year": 2024,
           "salary": 647462,
           "bonus": 0,
@@ -73753,7 +73753,7 @@
         },
         {
           "name": "John P. Ordus",
-          "title": "Executive Vice President \u2013 Chief Stores Officer",
+          "title": "Executive Vice President – Chief Stores Officer",
           "year": 2023,
           "salary": 650077,
           "bonus": 0,
@@ -74049,7 +74049,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "K. H. Bergstr\u00f6m",
+          "name": "K. H. Bergström",
           "year": 2025,
           "salary": 728614,
           "bonus": 800044,
@@ -74062,7 +74062,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "K. H. Bergstr\u00f6m",
+          "name": "K. H. Bergström",
           "year": 2024,
           "salary": 625689,
           "bonus": 600248,
@@ -74261,7 +74261,7 @@
         },
         {
           "name": "Stephen P. Hearn",
-          "title": "Executive Vice President; Chief Operating Officer and President \u2013 Retail Segment",
+          "title": "Executive Vice President; Chief Operating Officer and President – Retail Segment",
           "year": 2025,
           "salary": 720932,
           "bonus": 506749,
@@ -74275,7 +74275,7 @@
         },
         {
           "name": "Chris L. Walker",
-          "title": "Executive Vice President and Chairman \u2013 Specialty Distribution Segment",
+          "title": "Executive Vice President and Chairman – Specialty Distribution Segment",
           "year": 2025,
           "salary": 900000,
           "bonus": 400000,
@@ -74289,7 +74289,7 @@
         },
         {
           "name": "Chris L. Walker",
-          "title": "Executive Vice President and Chairman \u2013 Specialty Distribution Segment",
+          "title": "Executive Vice President and Chairman – Specialty Distribution Segment",
           "year": 2024,
           "salary": 0,
           "bonus": 1082883,
@@ -74303,7 +74303,7 @@
         },
         {
           "name": "Chris L. Walker",
-          "title": "Executive Vice President and Chairman \u2013 Specialty Distribution Segment",
+          "title": "Executive Vice President and Chairman – Specialty Distribution Segment",
           "year": 2023,
           "salary": 300000,
           "bonus": 490253,
@@ -74726,7 +74726,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mattias Bystr\u00f6m",
+          "name": "Mattias Byström",
           "year": 2025,
           "salary": 783792,
           "stock_awards": 1419678,
@@ -74738,7 +74738,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mattias Bystr\u00f6m",
+          "name": "Mattias Byström",
           "year": 2024,
           "salary": 747374,
           "stock_awards": 1325226,
@@ -74750,7 +74750,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Mattias Bystr\u00f6m",
+          "name": "Mattias Byström",
           "year": 2023,
           "salary": 679431,
           "stock_awards": 1139250,
@@ -74884,7 +74884,7 @@
           "non_equity_incentive": 3454360,
           "all_other": 531725,
           "total": 13202517,
-          "title": "CEO \u25cf Juliet S",
+          "title": "CEO ● Juliet S",
           "_total_source": "verified"
         },
         {
@@ -74895,7 +74895,7 @@
           "option_awards": 7555373,
           "pension_nqdc": 1983800,
           "total": 12139173,
-          "title": "CEO \u25cf Juliet S",
+          "title": "CEO ● Juliet S",
           "_original_total": 601536,
           "_total_source": "recomputed"
         },
@@ -74907,7 +74907,7 @@
           "non_equity_incentive": 2467400,
           "all_other": 611299,
           "total": 13763441,
-          "title": "CEO \u25cf Juliet S",
+          "title": "CEO ● Juliet S",
           "_total_source": "verified"
         },
         {
@@ -75125,7 +75125,7 @@
           "salary": 245616,
           "all_other": 825481,
           "total": 1071097,
-          "title": "Executive Vice President \u2013 Finance (July 22, 2025-August 7, 2025)",
+          "title": "Executive Vice President – Finance (July 22, 2025-August 7, 2025)",
           "_total_source": "verified"
         },
         {
@@ -75940,7 +75940,7 @@
           "non_equity_incentive": 2322000,
           "all_other": 51648,
           "total": 5897529,
-          "title": "President and Chief Executive Officer (\u201cCEO\u201d)",
+          "title": "President and Chief Executive Officer (“CEO”)",
           "_total_source": "verified",
           "stock_awards": 3023881
         },
@@ -77456,7 +77456,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Michael G. O\u2019Grady",
+          "name": "Michael G. O’Grady",
           "year": 2025,
           "salary": 1000000,
           "stock_awards": 6150111,
@@ -77468,7 +77468,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Michael G. O\u2019Grady",
+          "name": "Michael G. O’Grady",
           "year": 2024,
           "salary": 1000000,
           "stock_awards": 7700038,
@@ -77480,7 +77480,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Michael G. O\u2019Grady",
+          "name": "Michael G. O’Grady",
           "year": 2023,
           "salary": 1000000,
           "stock_awards": 8500150,
@@ -79503,7 +79503,7 @@
           "pension_nqdc": 170573,
           "all_other": 122167,
           "total": 3746071,
-          "title": "President and CEO (\u201cCEO\u201d)",
+          "title": "President and CEO (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -79515,7 +79515,7 @@
           "pension_nqdc": 980011,
           "all_other": 102513,
           "total": 4646676,
-          "title": "President and CEO (\u201cCEO\u201d)",
+          "title": "President and CEO (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -79527,7 +79527,7 @@
           "pension_nqdc": 2733285,
           "all_other": 137810,
           "total": 5893378,
-          "title": "President and CEO (\u201cCEO\u201d)",
+          "title": "President and CEO (“CEO”)",
           "_total_source": "verified"
         },
         {
@@ -79708,7 +79708,7 @@
         },
         {
           "name": "Aldo J. Pagliari",
-          "title": "Senior Vice President\u2013Finance and Chief Financial Officer",
+          "title": "Senior Vice President–Finance and Chief Financial Officer",
           "year": 2025,
           "salary": 677759,
           "bonus": 0,
@@ -79722,7 +79722,7 @@
         },
         {
           "name": "Aldo J. Pagliari",
-          "title": "Senior Vice President\u2013Finance and Chief Financial Officer",
+          "title": "Senior Vice President–Finance and Chief Financial Officer",
           "year": 2024,
           "salary": 0,
           "bonus": 1236862,
@@ -79736,7 +79736,7 @@
         },
         {
           "name": "Aldo J. Pagliari",
-          "title": "Senior Vice President\u2013Finance and Chief Financial Officer",
+          "title": "Senior Vice President–Finance and Chief Financial Officer",
           "year": 2023,
           "salary": 0,
           "bonus": 1340770,
@@ -79750,7 +79750,7 @@
         },
         {
           "name": "Thomas J. Ward",
-          "title": "Senior Vice President and President\u2013 Repair Systems & Information Group",
+          "title": "Senior Vice President and President– Repair Systems & Information Group",
           "year": 2025,
           "salary": 679528,
           "bonus": 0,
@@ -79764,7 +79764,7 @@
         },
         {
           "name": "Thomas J. Ward",
-          "title": "Senior Vice President and President\u2013 Repair Systems & Information Group",
+          "title": "Senior Vice President and President– Repair Systems & Information Group",
           "year": 2024,
           "salary": 0,
           "bonus": 1236862,
@@ -79778,7 +79778,7 @@
         },
         {
           "name": "Thomas J. Ward",
-          "title": "Senior Vice President and President\u2013 Repair Systems & Information Group",
+          "title": "Senior Vice President and President– Repair Systems & Information Group",
           "year": 2023,
           "salary": 0,
           "bonus": 1353980,
@@ -79792,7 +79792,7 @@
         },
         {
           "name": "Jesus Arregui",
-          "title": "Senior Vice President and President\u2013 Commercial Group",
+          "title": "Senior Vice President and President– Commercial Group",
           "year": 2025,
           "salary": 551582,
           "bonus": 0,
@@ -79806,7 +79806,7 @@
         },
         {
           "name": "Jesus Arregui",
-          "title": "Senior Vice President and President\u2013 Commercial Group",
+          "title": "Senior Vice President and President– Commercial Group",
           "year": 2024,
           "salary": 0,
           "bonus": 950915,
@@ -79820,7 +79820,7 @@
         },
         {
           "name": "Timothy L. Chambers",
-          "title": "Senior Vice President and President\u2013 Snap-on Tools Group",
+          "title": "Senior Vice President and President– Snap-on Tools Group",
           "year": 2025,
           "salary": 551855,
           "bonus": 0,
@@ -79834,7 +79834,7 @@
         },
         {
           "name": "Timothy L. Chambers",
-          "title": "Senior Vice President and President\u2013 Snap-on Tools Group",
+          "title": "Senior Vice President and President– Snap-on Tools Group",
           "year": 2024,
           "salary": 0,
           "bonus": 950915,
@@ -79848,7 +79848,7 @@
         },
         {
           "name": "Timothy L. Chambers",
-          "title": "Senior Vice President and President\u2013 Snap-on Tools Group",
+          "title": "Senior Vice President and President– Snap-on Tools Group",
           "year": 2023,
           "salary": 0,
           "bonus": 995794,
@@ -80358,7 +80358,7 @@
     {
       "ticker": "MTB",
       "company_name": "M&T Bank Corp",
-      "ceo_name": "Ren\u00e9 Jones",
+      "ceo_name": "René Jones",
       "total_compensation": 12015250,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -80372,7 +80372,7 @@
       "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
-          "name": "Ren\u00e9 F. Jones",
+          "name": "René F. Jones",
           "title": "Chief Executive Officer",
           "year": 2025,
           "salary": 1100000,
@@ -80386,7 +80386,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ren\u00e9 F. Jones",
+          "name": "René F. Jones",
           "title": "Chairman and Chief Executive Officer",
           "year": 2024,
           "salary": 1100000,
@@ -80400,7 +80400,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Ren\u00e9 F. Jones",
+          "name": "René F. Jones",
           "title": "Chief Executive Officer",
           "year": 2023,
           "salary": 1100000,
@@ -80540,7 +80540,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Peter G. D\u2019Arcy",
+          "name": "Peter G. D’Arcy",
           "title": "EVP, Chief Financial Officer",
           "year": 2025,
           "salary": 594231,
@@ -84534,7 +84534,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kevin P. O\u2019Shea",
+          "name": "Kevin P. O’Shea",
           "year": 2025,
           "salary": 628000,
           "stock_awards": 2570880,
@@ -84545,7 +84545,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kevin P. O\u2019Shea",
+          "name": "Kevin P. O’Shea",
           "year": 2024,
           "salary": 628000,
           "stock_awards": 2373390,
@@ -84556,7 +84556,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Kevin P. O\u2019Shea",
+          "name": "Kevin P. O’Shea",
           "year": 2023,
           "salary": 622615,
           "stock_awards": 2485578,
@@ -85515,7 +85515,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Domenic J. (\u201cNick\u201d) Dell\u2019Osso, Jr",
+          "name": "Domenic J. (“Nick”) Dell’Osso, Jr",
           "year": 2025,
           "salary": 29017,
           "option_awards": 12299,
@@ -85792,7 +85792,7 @@
           "non_equity_incentive": 718000,
           "all_other": 45757,
           "total": 3701864,
-          "title": "Executive Vice President and Chief Financial Officer (\u201cCFO\u201d) 28 DOMINO\u2019S PIZZA, INC",
+          "title": "Executive Vice President and Chief Financial Officer (“CFO”) 28 DOMINO’S PIZZA, INC",
           "_total_source": "verified"
         },
         {
@@ -85804,7 +85804,7 @@
           "non_equity_incentive": 763952,
           "all_other": 74902,
           "total": 3392197,
-          "title": "Executive Vice President and Chief Financial Officer (\u201cCFO\u201d) 28 DOMINO\u2019S PIZZA, INC",
+          "title": "Executive Vice President and Chief Financial Officer (“CFO”) 28 DOMINO’S PIZZA, INC",
           "_total_source": "verified"
         },
         {
@@ -85816,7 +85816,7 @@
           "non_equity_incentive": 728155,
           "all_other": 73555,
           "total": 4416844,
-          "title": "Executive Vice President and Chief Financial Officer (\u201cCFO\u201d) 28 DOMINO\u2019S PIZZA, INC",
+          "title": "Executive Vice President and Chief Financial Officer (“CFO”) 28 DOMINO’S PIZZA, INC",
           "_total_source": "verified"
         },
         {
@@ -85828,7 +85828,7 @@
           "non_equity_incentive": 1050000,
           "all_other": 787315,
           "total": 4874126,
-          "title": "Chief Operating Officer and President \u2013 Domino's U",
+          "title": "Chief Operating Officer and President – Domino's U",
           "_total_source": "verified"
         },
         {
@@ -85840,7 +85840,7 @@
           "non_equity_incentive": 1061340,
           "all_other": 381066,
           "total": 3806823,
-          "title": "Chief Operating Officer and President \u2013 Domino's U",
+          "title": "Chief Operating Officer and President – Domino's U",
           "_total_source": "verified"
         },
         {
@@ -85852,7 +85852,7 @@
           "non_equity_incentive": 1004535,
           "all_other": 522018,
           "total": 5547857,
-          "title": "Chief Operating Officer and President \u2013 Domino's U",
+          "title": "Chief Operating Officer and President – Domino's U",
           "_total_source": "verified"
         },
         {
@@ -85864,7 +85864,7 @@
           "non_equity_incentive": 500000,
           "all_other": 38917,
           "total": 2819905,
-          "title": "Executive Vice President, Chief Supply Chain Officer (\u201cCSCO\u201d)",
+          "title": "Executive Vice President, Chief Supply Chain Officer (“CSCO”)",
           "_total_source": "verified"
         },
         {
@@ -85876,7 +85876,7 @@
           "non_equity_incentive": 532000,
           "all_other": 51614,
           "total": 2103532,
-          "title": "Executive Vice President, Chief Supply Chain Officer (\u201cCSCO\u201d)",
+          "title": "Executive Vice President, Chief Supply Chain Officer (“CSCO”)",
           "_total_source": "verified"
         },
         {
@@ -85888,7 +85888,7 @@
           "non_equity_incentive": 550000,
           "all_other": 32754,
           "total": 2549927,
-          "title": "Executive Vice President, Chief Technology and Data Officer (\u201cCTO\u201d) 2025 Compensation Program Highlights",
+          "title": "Executive Vice President, Chief Technology and Data Officer (“CTO”) 2025 Compensation Program Highlights",
           "_total_source": "verified"
         },
         {
@@ -85900,7 +85900,7 @@
           "non_equity_incentive": 585200,
           "all_other": 45751,
           "total": 2305482,
-          "title": "Executive Vice President, Chief Technology and Data Officer (\u201cCTO\u201d) 2025 Compensation Program Highlights",
+          "title": "Executive Vice President, Chief Technology and Data Officer (“CTO”) 2025 Compensation Program Highlights",
           "_total_source": "verified"
         },
         {
@@ -85912,7 +85912,7 @@
           "non_equity_incentive": 558075,
           "all_other": 38743,
           "total": 3381393,
-          "title": "Executive Vice President, Chief Technology and Data Officer (\u201cCTO\u201d) 2025 Compensation Program Highlights",
+          "title": "Executive Vice President, Chief Technology and Data Officer (“CTO”) 2025 Compensation Program Highlights",
           "_total_source": "verified"
         }
       ],
@@ -87476,7 +87476,7 @@
           "non_equity_incentive": 1986156,
           "all_other": 53150,
           "total": 10072994,
-          "title": "President and Chief Executive Officer \u25cf Kelvin O",
+          "title": "President and Chief Executive Officer ● Kelvin O",
           "_total_source": "verified"
         },
         {
@@ -87487,7 +87487,7 @@
           "non_equity_incentive": 1974033,
           "all_other": 27443,
           "total": 8465882,
-          "title": "President and Chief Executive Officer \u25cf Kelvin O",
+          "title": "President and Chief Executive Officer ● Kelvin O",
           "_total_source": "verified"
         },
         {
@@ -87498,7 +87498,7 @@
           "non_equity_incentive": 1725000,
           "all_other": 13200,
           "total": 7692510,
-          "title": "President and Chief Executive Officer \u25cf Kelvin O",
+          "title": "President and Chief Executive Officer ● Kelvin O",
           "_total_source": "verified"
         },
         {
@@ -87509,7 +87509,7 @@
           "non_equity_incentive": 823605,
           "all_other": 32486,
           "total": 3631031,
-          "title": "Chief Financial Officer \u25cf Adam G",
+          "title": "Chief Financial Officer ● Adam G",
           "_total_source": "verified"
         },
         {
@@ -87520,7 +87520,7 @@
           "non_equity_incentive": 823605,
           "all_other": 35250,
           "total": 2905643,
-          "title": "Chief Investment Officer \u25cf Scott R",
+          "title": "Chief Investment Officer ● Scott R",
           "_total_source": "verified"
         },
         {
@@ -87531,7 +87531,7 @@
           "non_equity_incentive": 858275,
           "all_other": 22548,
           "total": 2252574,
-          "title": "Chief Investment Officer \u25cf Scott R",
+          "title": "Chief Investment Officer ● Scott R",
           "_total_source": "verified"
         },
         {
@@ -87542,7 +87542,7 @@
           "non_equity_incentive": 742500,
           "all_other": 13200,
           "total": 2049613,
-          "title": "Chief Investment Officer \u25cf Scott R",
+          "title": "Chief Investment Officer ● Scott R",
           "_total_source": "verified"
         },
         {
@@ -87553,7 +87553,7 @@
           "non_equity_incentive": 685897,
           "all_other": 30000,
           "total": 2602679,
-          "title": "Chief Development Officer and Head of Lab \u25cf Tracy A",
+          "title": "Chief Development Officer and Head of Lab ● Tracy A",
           "_total_source": "verified"
         },
         {
@@ -87564,7 +87564,7 @@
           "non_equity_incentive": 858275,
           "all_other": 21721,
           "total": 2373612,
-          "title": "Chief Development Officer and Head of Lab \u25cf Tracy A",
+          "title": "Chief Development Officer and Head of Lab ● Tracy A",
           "_total_source": "verified"
         },
         {
@@ -87575,7 +87575,7 @@
           "non_equity_incentive": 720000,
           "all_other": 13200,
           "total": 2140348,
-          "title": "Chief Development Officer and Head of Lab \u25cf Tracy A",
+          "title": "Chief Development Officer and Head of Lab ● Tracy A",
           "_total_source": "verified"
         },
         {
@@ -89897,7 +89897,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Jeffrey Davis \ufeffFormer",
+          "name": "Jeffrey Davis ﻿Former",
           "year": 2025,
           "salary": 222307,
           "all_other": 1923822,
@@ -89906,7 +89906,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Jeffrey Davis \ufeffFormer",
+          "name": "Jeffrey Davis ﻿Former",
           "year": 2024,
           "salary": 845192,
           "stock_awards": 2061167,
@@ -89918,7 +89918,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Jeffrey Davis \ufeffFormer",
+          "name": "Jeffrey Davis ﻿Former",
           "year": 2023,
           "salary": 825000,
           "stock_awards": 1912355,
@@ -89930,7 +89930,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Richard McNeely \ufeffFormer",
+          "name": "Richard McNeely ﻿Former",
           "year": 2025,
           "salary": 951523,
           "stock_awards": 2413238,
@@ -89941,7 +89941,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Richard McNeely \ufeffFormer",
+          "name": "Richard McNeely ﻿Former",
           "year": 2024,
           "salary": 974000,
           "stock_awards": 1813798,
@@ -89953,7 +89953,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Richard McNeely \ufeffFormer",
+          "name": "Richard McNeely ﻿Former",
           "year": 2023,
           "salary": 950923,
           "bonus": 15000,
@@ -93073,7 +93073,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Marc de La Gu\u00e9ronni\u00e8re",
+          "name": "Marc de La Guéronnière",
           "year": 2025,
           "salary": 312535,
           "stock_awards": 616380,
@@ -93085,7 +93085,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Marc de La Gu\u00e9ronni\u00e8re",
+          "name": "Marc de La Guéronnière",
           "year": 2024,
           "salary": 302680,
           "stock_awards": 372739,
@@ -93097,7 +93097,7 @@
           "_total_source": "verified"
         },
         {
-          "name": "Marc de La Gu\u00e9ronni\u00e8re",
+          "name": "Marc de La Guéronnière",
           "year": 2023,
           "salary": 295782,
           "stock_awards": 369582,
@@ -96199,7 +96199,7 @@
           "stock_awards": 2418220,
           "all_other": 700000,
           "total": 3508606,
-          "title": "President \u2013 Technology and Digital Solutions",
+          "title": "President – Technology and Digital Solutions",
           "_total_source": "verified"
         }
       ],

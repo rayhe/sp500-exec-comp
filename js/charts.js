@@ -3769,6 +3769,9 @@ function drawScatterChart(companies) {
     // Apply any pending scatter highlight (cross-chart navigation)
     _applyScatterHighlight();
 
+    // Apply any pending sector pulse (from correlation anomaly click)
+    _applyScatterSectorPulse();
+
     // Cross-chart navigation strip: Scatter → GER (when GER axis is active)
     _renderScatterGERNav(pts, xMetricKey, yMetricKey);
 }
@@ -10475,6 +10478,69 @@ function _applyScatterHighlight() {
     }, 6000);
 }
 
+/* === Scatter Sector Pulse — highlight anomalous sector dots after correlation nav === */
+var _pendingScatterSectorPulse = null; // sector name to pulse after redraw
+
+window.setScatterSectorPulse = function(sectorName) {
+    _pendingScatterSectorPulse = sectorName;
+};
+
+/**
+ * After scatter renders, if a sector pulse is pending, draw pulsing rings
+ * around all dots from that sector and auto-fade them after 3s.
+ */
+function _applyScatterSectorPulse() {
+    var sector = _pendingScatterSectorPulse;
+    if (!sector) return;
+    _pendingScatterSectorPulse = null;
+
+    var container = document.getElementById('scatter-chart');
+    if (!container) return;
+    var svg = d3.select(container).select('svg');
+    if (svg.empty()) return;
+
+    var g = svg.select('g');
+    if (g.empty()) g = svg;
+
+    var sectorColor = typeof getSectorColor === 'function' ? getSectorColor(sector) : '#ffd166';
+    var pulseGroup = g.append('g').attr('class', 'scatter-sector-pulse-group');
+    var dotCount = 0;
+
+    svg.selectAll('.scatter-dot, .scatter-dot-sector, .scatter-dot-bg').each(function(d) {
+        if (d && d.sector === sector) {
+            var dot = d3.select(this);
+            var cx = parseFloat(dot.attr('cx'));
+            var cy = parseFloat(dot.attr('cy'));
+            var cr = parseFloat(dot.attr('r')) || 5;
+            if (isNaN(cx) || isNaN(cy)) return;
+            pulseGroup.append('circle')
+                .attr('cx', cx).attr('cy', cy)
+                .attr('r', cr + 6)
+                .attr('fill', 'none')
+                .attr('stroke', sectorColor)
+                .attr('stroke-width', 2)
+                .attr('opacity', 0)
+                .attr('class', 'scatter-sector-pulse-ring')
+                .transition().duration(400).delay(dotCount * 15)
+                .attr('opacity', 0.8)
+                .attr('r', cr + 10)
+                .transition().duration(600)
+                .attr('opacity', 0.5)
+                .attr('r', cr + 7);
+            dotCount++;
+        }
+    });
+
+    if (dotCount > 0) {
+        // Auto-fade after 3 seconds
+        setTimeout(function() {
+            pulseGroup.transition().duration(1000).style('opacity', 0).remove();
+        }, 3000);
+    } else {
+        pulseGroup.remove();
+    }
+}
+
 /* === Cross-Chart Navigation: Scatter → GER Chart === */
 
 /**
@@ -13054,7 +13120,7 @@ function drawSectorCorrDeepDive(companies) {
                 d.title = tipParts.join('\n');
                 d.style.cursor = 'pointer';
                 // Click handler: navigate to scatter with this sector and metric pair
-                (function(sector, pair) {
+                (function(sector, pair, hasAnomaly) {
                     d.addEventListener('click', function() {
                         // Set scatter axes
                         var xSel = document.getElementById('scatter-x-metric');
@@ -13068,6 +13134,10 @@ function drawSectorCorrDeepDive(companies) {
                                 chip.classList.remove('active');
                                 if (chip.textContent === sector) chip.classList.add('active');
                             });
+                        }
+                        // If this cell has an anomaly badge, pulse the sector dots after scatter redraws
+                        if (hasAnomaly && sector !== 'S&P 500' && typeof window.setScatterSectorPulse === 'function') {
+                            window.setScatterSectorPulse(sector);
                         }
                         // Redraw scatter
                         var scEl = document.getElementById('scatter-chart');
@@ -13083,7 +13153,7 @@ function drawSectorCorrDeepDive(companies) {
                         }
                         if (typeof announce === 'function') announce('Scatter plot: ' + pair.label + (sector !== 'S&P 500' ? ', filtered to ' + sector : ''));
                     });
-                })(rowData.sector, metricPairs[ci]);
+                })(rowData.sector, metricPairs[ci], !!anom);
             } else {
                 d.textContent = '\u2014';
                 d.title = 'Insufficient data (N < 5)';

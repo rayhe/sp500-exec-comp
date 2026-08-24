@@ -6896,6 +6896,70 @@ function setupDetailPanel(companies) {
             }
             html += '<span class="detail-header-pos">' + posHtml + '</span>';
         }
+
+        // CEO Pay Trajectory Sparkline — prominent multi-year trend in header
+        if (company._ceoTrend && company._ceoTrend.length >= 2) {
+            var _tPts = company._ceoTrend;
+            var _tW = 220, _tH = 44, _tPad = 24, _tPadR = 8, _tPadT = 8, _tPadB = 16;
+            var _tMinY = Math.min.apply(null, _tPts.map(function(p) { return p.total; }));
+            var _tMaxY = Math.max.apply(null, _tPts.map(function(p) { return p.total; }));
+            var _tMinX = _tPts[0].year;
+            var _tMaxX = _tPts[_tPts.length - 1].year;
+            var _tRangeY = _tMaxY - _tMinY || 1;
+            var _tRangeX = _tMaxX - _tMinX || 1;
+            var _tLastPt = _tPts[_tPts.length - 1];
+            var _tFirstPt = _tPts[0];
+            var _tTrendUp = _tLastPt.total >= _tFirstPt.total;
+            var _tColor = _tTrendUp ? '#10b981' : '#ef4444';
+            var _tAreaColor = _tTrendUp ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)';
+
+            // Build polyline points
+            var _tPolyPts = _tPts.map(function(p) {
+                var x = _tPad + (p.year - _tMinX) / _tRangeX * (_tW - _tPad - _tPadR);
+                var y = _tPadT + (1 - (p.total - _tMinY) / _tRangeY) * (_tH - _tPadT - _tPadB);
+                return x.toFixed(1) + ',' + y.toFixed(1);
+            });
+            // Area fill polygon (line + bottom edge)
+            var _tFirstX = (_tPad + (0) * (_tW - _tPad - _tPadR)).toFixed(1);
+            var _tLastX = (_tPad + (_tW - _tPad - _tPadR)).toFixed(1);
+            var _tBaseY = (_tH - _tPadB).toFixed(1);
+            var _tAreaPts = _tFirstX + ',' + _tBaseY + ' ' + _tPolyPts.join(' ') + ' ' + _tLastX + ',' + _tBaseY;
+
+            var _tSvg = '<svg class="detail-trajectory-sparkline" width="' + _tW + '" height="' + _tH + '" viewBox="0 0 ' + _tW + ' ' + _tH + '" aria-label="CEO pay trajectory">';
+            _tSvg += '<polygon points="' + _tAreaPts + '" fill="' + _tAreaColor + '"/>';
+            _tSvg += '<polyline points="' + _tPolyPts.join(' ') + '" fill="none" stroke="' + _tColor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+            // Data point dots
+            _tPts.forEach(function(p, i) {
+                var x = _tPad + (p.year - _tMinX) / _tRangeX * (_tW - _tPad - _tPadR);
+                var y = _tPadT + (1 - (p.total - _tMinY) / _tRangeY) * (_tH - _tPadT - _tPadB);
+                var r = (i === _tPts.length - 1) ? 3.5 : 2.5;
+                _tSvg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="' + _tColor + '" stroke="' + (i === _tPts.length - 1 ? '#fff' : 'none') + '" stroke-width="' + (i === _tPts.length - 1 ? 1.5 : 0) + '">';
+                _tSvg += '<title>FY' + p.year + ': ' + formatCurrency(p.total) + '</title>';
+                _tSvg += '</circle>';
+            });
+            // Year labels at bottom
+            _tPts.forEach(function(p) {
+                var x = _tPad + (p.year - _tMinX) / _tRangeX * (_tW - _tPad - _tPadR);
+                _tSvg += '<text x="' + x.toFixed(1) + '" y="' + (_tH - 2) + '" text-anchor="middle" fill="' + getThemeMutedColor() + '" font-size="8" font-family="inherit">\'' + String(p.year).slice(-2) + '</text>';
+            });
+            // Current value annotation on last point
+            var _tLastVal = formatCompact(_tLastPt.total);
+            var _tLastXCoord = _tPad + (_tLastPt.year - _tMinX) / _tRangeX * (_tW - _tPad - _tPadR);
+            var _tLastYCoord = _tPadT + (1 - (_tLastPt.total - _tMinY) / _tRangeY) * (_tH - _tPadT - _tPadB);
+            var _tLabelX = _tLastXCoord + 6;
+            var _tLabelY = _tLastYCoord + 3;
+            if (_tLabelY < 12) _tLabelY = _tLastYCoord + 12;
+            _tSvg += '<text x="' + _tLabelX.toFixed(1) + '" y="' + _tLabelY.toFixed(1) + '" fill="' + _tColor + '" font-size="9" font-weight="600" font-family="inherit">' + _tLastVal + '</text>';
+            // YoY change annotation
+            if (company._ceoYoY) {
+                var _tYoYPct = company._ceoYoY.pct;
+                var _tYoYStr = (_tYoYPct >= 0 ? '+' : '') + _tYoYPct.toFixed(0) + '%';
+                _tSvg += '<text x="' + (_tLabelX).toFixed(1) + '" y="' + (_tLabelY + 10).toFixed(1) + '" fill="' + _tColor + '" font-size="8" opacity="0.7" font-family="inherit">' + _tYoYStr + ' YoY</text>';
+            }
+            _tSvg += '</svg>';
+            html += '<div class="detail-trajectory-wrap" title="CEO total compensation trajectory across fiscal years">' + _tSvg + '</div>';
+        }
+
         html += '</div>';
         html += '<button class="detail-nav-btn detail-nav-next" title="Next company (→)" aria-label="Next company"' + (_hasNext ? '' : ' disabled') + '>›</button>';
         var _isCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;

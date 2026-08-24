@@ -11487,3 +11487,22 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .comm-tip-top-pay {
     color: #6b7280;
 }
+
+/* Detail Header — CEO Pay Trajectory Sparkline */
+.detail-trajectory-wrap {
+    margin-top: 4px;
+    line-height: 0;
+}
+.detail-trajectory-sparkline {
+    display: block;
+}
+@media (max-width: 768px) {
+    .detail-trajectory-wrap {
+        display: none;
+    }
+}
+
+/* Scatter Sector Pulse — anomaly navigation highlighting */
+.scatter-sector-pulse-ring {
+    pointer-events: none;
+}
