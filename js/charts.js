@@ -12845,12 +12845,26 @@ function drawSectorCorrDeepDive(companies) {
         headerRow.appendChild(hCell);
     });
 
-    // Sparkline column header
+    // Sparkline column header with inline color legend
     var sparkHeader = document.createElement('div');
     sparkHeader.className = 'sector-corr-cell sector-corr-spark-header';
     sparkHeader.setAttribute('role', 'columnheader');
-    sparkHeader.textContent = 'Profile';
-    sparkHeader.title = 'Correlation profile across all 4 metrics';
+    var sparkHeaderLabel = document.createElement('span');
+    sparkHeaderLabel.textContent = 'Profile';
+    sparkHeader.appendChild(sparkHeaderLabel);
+    // Compact 4-dot color legend so users can decode sparkline dots at a glance
+    var sparkLegend = document.createElement('div');
+    sparkLegend.className = 'sector-corr-spark-legend';
+    var sparkDotColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
+    var sparkDotLabels = ['Gov', 'Ratio', 'Ten', 'Vol'];
+    for (var sli = 0; sli < 4; sli++) {
+        var slItem = document.createElement('span');
+        slItem.className = 'sector-corr-spark-legend-item';
+        slItem.innerHTML = '<span class="sector-corr-spark-legend-dot" style="background:' + sparkDotColors[sli] + '"></span>' + sparkDotLabels[sli];
+        sparkLegend.appendChild(slItem);
+    }
+    sparkHeader.appendChild(sparkLegend);
+    sparkHeader.title = 'Correlation profile — dots positioned on -1 to +1 axis: Gov (indigo), Ratio (emerald), Tenure (amber), Vol (red)';
     headerRow.appendChild(sparkHeader);
 
     table.appendChild(headerRow);
