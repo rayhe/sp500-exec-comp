@@ -8554,6 +8554,25 @@ function drawGovPayScatter(companies) {
 /* --- Pay Anomaly Chart — companies whose CEO pay deviates most from sector+governance norm --- */
 var _anomalySectorFilter = null; // null = all sectors
 var _anomalyCompaniesRef = null; // stash for redraw
+var _anomalyHighlightTicker = null; // ticker to highlight after chart draws
+
+/* Navigate to pay anomaly chart with sector filter + company highlight.
+   Called from detail panel sparkline click (app.js). */
+window.navigateToPayAnomaly = function(sector, ticker) {
+    _anomalySectorFilter = sector || null;
+    _anomalyHighlightTicker = ticker || null;
+    _refreshAnomalyChips();
+    drawPayAnomalyChart(_anomalyCompaniesRef || (_chartData && _chartData.companies) || []);
+    // Scroll to pay anomaly panel
+    var panel = document.getElementById('pay-anomaly-panel');
+    if (panel) {
+        var navH = document.querySelector('.section-nav') ? document.querySelector('.section-nav').offsetHeight : 0;
+        var headerH = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+        var top = panel.getBoundingClientRect().top + window.scrollY - navH - headerH - 12;
+        window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+    }
+    if (typeof announce === 'function') announce('Pay anomalies' + (sector ? ' — ' + sector : '') + (ticker ? ', highlighting ' + ticker : ''));
+};
 
 function _buildAnomalySectorChips(companies) {
     var chipWrap = document.getElementById('anomaly-sector-chips');
@@ -8913,6 +8932,54 @@ function drawPayAnomalyChart(companies) {
             .ease(d3.easeCubicOut)
             .attr('width', barW);
 
+        // Highlight ring for navigateToPayAnomaly target
+        if (_anomalyHighlightTicker && d.ticker === _anomalyHighlightTicker) {
+            (function(bx, by2, bw, bh, bColor) {
+                var hlDelay = (_anomalySectorFilter ? 350 : 500) + i * (_anomalySectorFilter ? 12 : 20) + 100;
+                // Pulsing outline rect
+                var hlRect = g.append('rect')
+                    .attr('class', 'anomaly-highlight-ring')
+                    .attr('x', bx - 3).attr('y', by2 - 3)
+                    .attr('width', bw + 6).attr('height', bh + 6)
+                    .attr('fill', 'none')
+                    .attr('stroke', bColor)
+                    .attr('stroke-width', 2.5)
+                    .attr('rx', 5)
+                    .attr('opacity', 0)
+                    .style('pointer-events', 'none');
+                // Animate in after bar finishes
+                hlRect.transition().delay(hlDelay).duration(300)
+                    .attr('opacity', 1)
+                    .transition().duration(600).ease(d3.easeSinInOut)
+                    .attr('opacity', 0.4)
+                    .transition().duration(600).ease(d3.easeSinInOut)
+                    .attr('opacity', 1)
+                    .transition().duration(600).ease(d3.easeSinInOut)
+                    .attr('opacity', 0.4)
+                    .transition().duration(600).ease(d3.easeSinInOut)
+                    .attr('opacity', 0.8)
+                    .transition().duration(2000)
+                    .attr('opacity', 0)
+                    .remove();
+                // Arrow pointer to the left of the company label
+                g.append('text')
+                    .attr('x', -margin.left + 8)
+                    .attr('y', by2 + bh / 2)
+                    .attr('dy', '0.35em')
+                    .attr('fill', bColor)
+                    .attr('font-size', '14px')
+                    .attr('font-weight', '700')
+                    .attr('opacity', 0)
+                    .style('pointer-events', 'none')
+                    .transition().delay(hlDelay).duration(300)
+                    .attr('opacity', 1)
+                    .transition().delay(3000).duration(1000)
+                    .attr('opacity', 0)
+                    .remove()
+                    .text('\u25B6');
+            })(barX, by, barW, barH, barColor);
+        }
+
         // Company label
         g.append('text')
             .attr('x', -6)
@@ -8980,6 +9047,9 @@ function drawPayAnomalyChart(companies) {
             .attr('opacity', 0.6)
             .text('\u2934');
     });
+
+    // Clear highlight ticker after rendering
+    _anomalyHighlightTicker = null;
 
     // Axis label
     svg.append('text')

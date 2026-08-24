@@ -11493,6 +11493,38 @@ body.light-mode .cross-sector-pair-select:focus {
     margin-top: 4px;
     line-height: 0;
 }
+.detail-trajectory-clickable {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 4px;
+    transition: background 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.detail-trajectory-clickable:hover {
+    background: rgba(0, 180, 216, 0.1);
+    box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.3);
+}
+[data-theme="light"] .detail-trajectory-clickable:hover {
+    background: rgba(0, 119, 182, 0.08);
+    box-shadow: 0 0 0 1px rgba(0, 119, 182, 0.25);
+}
+.detail-trajectory-hint {
+    display: none;
+    position: absolute;
+    right: -2px;
+    bottom: -12px;
+    font-size: 8px;
+    color: #00b4d8;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+}
+[data-theme="light"] .detail-trajectory-hint {
+    color: #0077b6;
+}
+.detail-trajectory-clickable:hover .detail-trajectory-hint {
+    display: block;
+}
 .detail-trajectory-sparkline {
     display: block;
 }

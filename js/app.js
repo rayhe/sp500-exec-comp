@@ -6957,7 +6957,7 @@ function setupDetailPanel(companies) {
                 _tSvg += '<text x="' + (_tLabelX).toFixed(1) + '" y="' + (_tLabelY + 10).toFixed(1) + '" fill="' + _tColor + '" font-size="8" opacity="0.7" font-family="inherit">' + _tYoYStr + ' YoY</text>';
             }
             _tSvg += '</svg>';
-            html += '<div class="detail-trajectory-wrap" title="CEO total compensation trajectory across fiscal years">' + _tSvg + '</div>';
+            html += '<div class="detail-trajectory-wrap detail-trajectory-clickable" data-ticker="' + ticker + '" data-sector="' + (company.sector || '').replace(/"/g, '&quot;') + '" title="Click to view pay anomaly analysis for ' + (company.sector || 'this sector') + ' → ' + ticker + '">' + _tSvg + '<span class="detail-trajectory-hint">→ Pay Anomaly</span></div>';
         }
 
         html += '</div>';
@@ -8823,6 +8823,19 @@ function setupDetailPanel(companies) {
                 rows.forEach(function(r) { tbody.insertBefore(r, totalRow); });
             });
         });
+
+        // Wire up CEO trajectory sparkline click → navigate to pay anomaly chart
+        var trajWrap = detailRow.querySelector('.detail-trajectory-clickable');
+        if (trajWrap) {
+            trajWrap.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var tkr = trajWrap.getAttribute('data-ticker');
+                var sec = trajWrap.getAttribute('data-sector');
+                if (typeof window.navigateToPayAnomaly === 'function') {
+                    window.navigateToPayAnomaly(sec, tkr);
+                }
+            });
+        }
 
         // Wire up clickable detail peer tags — click to find in table, shift+click to show in network
         detailRow.querySelectorAll('.detail-peer-tag-link').forEach(function(tag) {
