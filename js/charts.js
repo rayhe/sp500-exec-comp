@@ -3775,15 +3775,20 @@ function drawScatterChart(companies) {
     // Apply community scatter highlighting (from network community legend click)
     if (window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0) {
         var commTickers = window._activeCommunityScatterTickers;
+        var commHighlighted = 0;
         svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector').each(function(d) {
             if (!d || !d.ticker) return;
             var el = d3.select(this);
             if (commTickers.has(d.ticker)) {
                 el.attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+                commHighlighted++;
             } else {
                 el.attr('opacity', 0.1);
             }
         });
+
+        // Floating community label on scatter
+        _renderScatterCommunityLabel(container, commTickers.size, commHighlighted);
     }
 
     // Cross-chart navigation strip: Scatter → GER (when GER axis is active)
@@ -10635,6 +10640,101 @@ function _applyScatterSectorPulse() {
     } else {
         pulseGroup.remove();
     }
+}
+
+/* === Scatter Community Floating Label === */
+
+/**
+ * Show a persistent floating label on the scatter chart when a network community
+ * filter is active. Displays community name, ticker count, top sectors, and a
+ * dismiss button to clear the filter from the scatter without scrolling back to
+ * the network graph.
+ */
+function _renderScatterCommunityLabel(container, totalTickers, visibleDots) {
+    // Remove any previous label
+    var existing = container.querySelector('.scatter-community-label');
+    if (existing) existing.parentNode.removeChild(existing);
+
+    var filter = window._activeCommunityFilter;
+    if (!filter) return;
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+
+    // Build top sectors from the community tickers
+    var sectorCounts = {};
+    if (window._chartData && window._chartData.companies) {
+        var commSet = window._activeCommunityScatterTickers;
+        window._chartData.companies.forEach(function(c) {
+            if (commSet && commSet.has(c.ticker) && c.sector) {
+                sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1;
+            }
+        });
+    }
+    var topSectors = Object.keys(sectorCounts).sort(function(a, b) {
+        return sectorCounts[b] - sectorCounts[a];
+    }).slice(0, 3);
+
+    var labelDiv = document.createElement('div');
+    labelDiv.className = 'scatter-community-label';
+
+    // Title row with dismiss button
+    var titleRow = document.createElement('div');
+    titleRow.className = 'scatter-community-label-title';
+    titleRow.innerHTML = '<span class="scatter-community-label-icon">\uD83D\uDD17</span> ' +
+        '<strong>' + filter.label + '</strong>';
+    labelDiv.appendChild(titleRow);
+
+    // Stats row
+    var statsRow = document.createElement('div');
+    statsRow.className = 'scatter-community-label-stats';
+    statsRow.textContent = totalTickers + ' companies' + (visibleDots < totalTickers ? ' (' + visibleDots + ' visible)' : '');
+    labelDiv.appendChild(statsRow);
+
+    // Top sectors row
+    if (topSectors.length > 0) {
+        var sectorsRow = document.createElement('div');
+        sectorsRow.className = 'scatter-community-label-sectors';
+        topSectors.forEach(function(s, i) {
+            var sectorColor = typeof getSectorColor === 'function' ? getSectorColor(s) : '#888';
+            var dot = document.createElement('span');
+            dot.className = 'scatter-community-label-sector-dot';
+            dot.style.background = sectorColor;
+            sectorsRow.appendChild(dot);
+            var txt = document.createTextNode(s.replace('Information Technology', 'Tech').replace('Consumer Discretionary', 'Cons. Disc.').replace('Consumer Staples', 'Cons. Staples').replace('Communication Services', 'Comm. Svcs').replace('Health Care', 'Healthcare'));
+            sectorsRow.appendChild(txt);
+            if (i < topSectors.length - 1) {
+                var sep = document.createTextNode(' \u00B7 ');
+                sectorsRow.appendChild(sep);
+            }
+        });
+        labelDiv.appendChild(sectorsRow);
+    }
+
+    // Dismiss button
+    var dismissBtn = document.createElement('button');
+    dismissBtn.className = 'scatter-community-label-dismiss';
+    dismissBtn.innerHTML = '\u00D7';
+    dismissBtn.title = 'Clear community filter';
+    dismissBtn.setAttribute('aria-label', 'Clear community filter');
+    dismissBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Clear community filter
+        window._activeCommunityFilter = null;
+        window._activeCommunityScatterTickers = null;
+        // Clear the active legend state in network
+        var legendItems = document.querySelectorAll('.community-legend-item');
+        legendItems.forEach(function(el) { el.classList.remove('community-legend-active'); });
+        // Redraw scatter
+        container.innerHTML = '';
+        if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+        // Re-render table without community filter
+        if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+        if (typeof announce === 'function') announce('Community filter cleared');
+    });
+    labelDiv.appendChild(dismissBtn);
+
+    container.style.position = 'relative';
+    container.appendChild(labelDiv);
 }
 
 /* === Cross-Chart Navigation: Scatter → GER Chart === */

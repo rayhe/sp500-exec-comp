@@ -11583,3 +11583,82 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #27272a;
     box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
+
+/* Scatter Community Floating Label */
+.scatter-community-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(24, 24, 27, 0.92);
+    color: #e4e4e7;
+    padding: 8px 32px 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: Inter, system-ui, sans-serif;
+    z-index: 20;
+    border-left: 3px solid #a78bfa;
+    max-width: 260px;
+    line-height: 1.5;
+    backdrop-filter: blur(6px);
+}
+.scatter-community-label-title {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+.scatter-community-label-icon {
+    font-size: 11px;
+}
+.scatter-community-label-stats {
+    color: #a1a1aa;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+.scatter-community-label-sectors {
+    color: #d4d4d8;
+    font-size: 10px;
+}
+.scatter-community-label-sector-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+.scatter-community-label-dismiss {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: none;
+    border: none;
+    color: #71717a;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+.scatter-community-label-dismiss:hover {
+    color: #e4e4e7;
+    background: rgba(255,255,255,0.1);
+}
+[data-theme="light"] .scatter-community-label {
+    background: rgba(255,255,255,0.95);
+    color: #27272a;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    border-left-color: #7c3aed;
+}
+[data-theme="light"] .scatter-community-label-stats {
+    color: #71717a;
+}
+[data-theme="light"] .scatter-community-label-sectors {
+    color: #3f3f46;
+}
+[data-theme="light"] .scatter-community-label-dismiss {
+    color: #a1a1aa;
+}
+[data-theme="light"] .scatter-community-label-dismiss:hover {
+    color: #27272a;
+    background: rgba(0,0,0,0.06);
+}
