@@ -7863,6 +7863,45 @@ function setupDetailPanel(companies) {
                 html += '</div>';
                 html += '<div class="peer-pay-sub ' + _vsPeerCls + '">' + _vsPeerSign + _vsPeerAbsStr + ' vs peer median (' + formatCurrency(_peerMedian) + ')</div>';
 
+                // Sector vs Peer Group overlap mini-chart
+                // Compute sector median for comparison
+                var _sectorPeers = companies.filter(function(c2) { return c2.sector === company.sector && c2.total_compensation > 0; });
+                var _sectorTotals = _sectorPeers.map(function(c2) { return c2.total_compensation; }).sort(function(a, b) { return a - b; });
+                var _sectorMedian = _sectorTotals.length > 0 ? _sectorTotals[Math.floor(_sectorTotals.length / 2)] : 0;
+                if (_sectorMedian > 0 && _peerMedian > 0) {
+                    var _benchMax = Math.max(company.total_compensation, _sectorMedian, _peerMedian) * 1.1;
+                    var _compPct = Math.min(100, (company.total_compensation / _benchMax) * 100);
+                    var _secPct = Math.min(100, (_sectorMedian / _benchMax) * 100);
+                    var _peerPctBar = Math.min(100, (_peerMedian / _benchMax) * 100);
+
+                    html += '<div class="sector-peer-overlap">';
+                    html += '<div class="sector-peer-overlap-label">Sector vs Peer Median</div>';
+                    html += '<div class="sector-peer-overlap-bars">';
+
+                    // Company bar
+                    html += '<div class="sector-peer-bar-row">';
+                    html += '<span class="sector-peer-bar-tag">CEO</span>';
+                    html += '<div class="sector-peer-bar-track"><div class="sector-peer-bar sector-peer-bar-company" style="width:' + _compPct.toFixed(1) + '%"></div></div>';
+                    html += '<span class="sector-peer-bar-val">' + formatCurrency(company.total_compensation) + '</span>';
+                    html += '</div>';
+
+                    // Sector median bar
+                    html += '<div class="sector-peer-bar-row">';
+                    html += '<span class="sector-peer-bar-tag">Sector</span>';
+                    html += '<div class="sector-peer-bar-track"><div class="sector-peer-bar sector-peer-bar-sector" style="width:' + _secPct.toFixed(1) + '%"></div></div>';
+                    html += '<span class="sector-peer-bar-val">' + formatCurrency(_sectorMedian) + '</span>';
+                    html += '</div>';
+
+                    // Peer group median bar
+                    html += '<div class="sector-peer-bar-row">';
+                    html += '<span class="sector-peer-bar-tag">Peers</span>';
+                    html += '<div class="sector-peer-bar-track"><div class="sector-peer-bar sector-peer-bar-peers" style="width:' + _peerPctBar.toFixed(1) + '%"></div></div>';
+                    html += '<span class="sector-peer-bar-val">' + formatCurrency(_peerMedian) + '</span>';
+                    html += '</div>';
+
+                    html += '</div></div>';
+                }
+
                 // Aspirational benchmarking annotation
                 if (company._aspDelta != null) {
                     var _aspLabel, _aspCls, _aspIcon;

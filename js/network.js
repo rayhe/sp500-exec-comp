@@ -57,6 +57,8 @@ function initNetwork(peerData) {
     var gerThreshold = 0; // min GER score for node visibility (0 = show all)
     var searchFocusedNode = null; // node focused by search — gets pulsing ring + neighbor highlight
     var searchFocusedTime = 0;   // timestamp when search focus was set (for pulse animation)
+    var _hoveredCommunityId = null; // community id hovered in legend — highlights community nodes on graph
+    var _hoveredCommunityTickers = null; // Set of tickers in hovered community
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1069,8 +1071,40 @@ function initNetwork(peerData) {
                 ctx.lineTo(t.x, t.y);
             });
             ctx.stroke();
+        } else if (_hoveredCommunityTickers && !hoveredNode && !activePath) {
+            // Community legend hover — dim edges not connecting community members, highlight intra-community
+            ctx.strokeStyle = edgeSectorDimColor;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (_hoveredCommunityTickers.has(src) || _hoveredCommunityTickers.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            // Highlighted edges within or touching the hovered community
+            var _commEdgeColor = _dark ? 'rgba(168,85,247,0.45)' : 'rgba(147,51,234,0.4)';
+            ctx.strokeStyle = _hiContrast ? 'rgba(168,85,247,0.65)' : _commEdgeColor;
+            ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (!_hoveredCommunityTickers.has(src) && !_hoveredCommunityTickers.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
         } else {
-            // Default — differentiate same-sector vs cross-sector edges
             var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
             var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
             var edgeCrossWidth = 0.4;
@@ -1186,6 +1220,13 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.18 : 0.1;
                 }
+            } else if (!belowGerThreshold && _hoveredCommunityTickers && !hoveredNode && !activePath) {
+                // Community legend hover — highlight community members, dim the rest
+                if (_hoveredCommunityTickers.has(d.ticker)) {
+                    alpha = 1;
+                } else {
+                    alpha = _hiContrast ? 0.15 : 0.08;
+                }
             }
 
             ctx.beginPath();
@@ -1199,6 +1240,10 @@ function initNetwork(peerData) {
                 ctx.stroke();
             } else if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
                 ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.7 : 0.5);
+                ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
+                ctx.stroke();
+            } else if (_hoveredCommunityTickers && _hoveredCommunityTickers.has(d.ticker) && !hoveredNode) {
+                ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.8 : 0.6);
                 ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
                 ctx.stroke();
             } else if (_hiContrast && alpha > 0.2) {
@@ -2909,6 +2954,23 @@ function initNetwork(peerData) {
                     }
                     if (typeof announce === 'function') announce('Filtered to ' + cs.tickers.length + ' companies in ' + cs.label);
                 }
+            });
+
+            // Hover handlers: highlight community nodes on the network graph
+            item.addEventListener('mouseenter', function() {
+                var cid = parseInt(item.dataset.community);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+                _hoveredCommunityId = cid;
+                _hoveredCommunityTickers = new Set(cs.tickers);
+                item.classList.add('community-legend-hover');
+                draw();
+            });
+            item.addEventListener('mouseleave', function() {
+                _hoveredCommunityId = null;
+                _hoveredCommunityTickers = null;
+                item.classList.remove('community-legend-hover');
+                draw();
             });
         });
     }

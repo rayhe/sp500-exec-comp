@@ -3609,6 +3609,76 @@ tbody tr:last-child td { border-bottom: none; }
 .peer-pay-sub.positive { color: var(--positive); }
 .peer-pay-sub.negative { color: var(--negative); }
 
+/* Sector vs Peer Group Overlap Mini-Chart */
+.sector-peer-overlap {
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.5rem 0.6rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .sector-peer-overlap {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+.sector-peer-overlap-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+}
+.sector-peer-overlap-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sector-peer-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sector-peer-bar-tag {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    min-width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.sector-peer-bar-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+[data-theme="light"] .sector-peer-bar-track {
+    background: rgba(0,0,0,0.04);
+}
+.sector-peer-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+.sector-peer-bar-company {
+    background: #00b4d8;
+}
+.sector-peer-bar-sector {
+    background: #a855f7;
+    opacity: 0.7;
+}
+.sector-peer-bar-peers {
+    background: #06d6a0;
+    opacity: 0.7;
+}
+.sector-peer-bar-val {
+    font-size: 0.62rem;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    min-width: 60px;
+    flex-shrink: 0;
+}
+
 /* Aspirational benchmarking badge */
 .asp-badge {
     display: inline-flex;
@@ -11180,6 +11250,30 @@ body.light-mode .cross-sector-pair-select:focus {
     r: 4.5;
 }
 
+/* === Sector Correlation Anomaly Badges === */
+.sector-corr-anomaly-badge {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    font-size: 0.55rem;
+    line-height: 1;
+    opacity: 0.8;
+    pointer-events: auto;
+    cursor: help;
+}
+.sector-corr-anomaly-badge.anomaly-high {
+    color: #ef4444;
+}
+.sector-corr-anomaly-badge.anomaly-low {
+    color: #3b82f6;
+}
+[data-theme="light"] .sector-corr-anomaly-badge.anomaly-high {
+    color: #dc2626;
+}
+[data-theme="light"] .sector-corr-anomaly-badge.anomaly-low {
+    color: #2563eb;
+}
+
 /* === Community Legend Click-to-Filter === */
 .community-legend-item[data-community] {
     transition: background 0.15s ease, box-shadow 0.15s ease;
@@ -11202,4 +11296,12 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 .community-legend-active .community-legend-label {
     font-weight: 600;
+}
+.community-legend-hover {
+    background: rgba(168, 85, 247, 0.12) !important;
+    box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.35);
+}
+[data-theme="light"] .community-legend-hover {
+    background: rgba(147, 51, 234, 0.1) !important;
+    box-shadow: inset 0 0 0 1px rgba(147, 51, 234, 0.3);
 }

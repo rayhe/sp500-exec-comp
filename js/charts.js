@@ -12802,6 +12802,39 @@ function drawSectorCorrDeepDive(companies) {
         sp500Row.cells.push(computeForGroup(companies, pair));
     });
 
+    // === Anomaly Detection ===
+    // For each metric pair, compute mean and stddev of sector r-values,
+    // then flag cells that deviate by more than 1.5 standard deviations
+    var _anomalyFlags = {}; // key: "sector|pairIdx" → { zScore, direction }
+    var _anomalyCount = 0;
+    metricPairs.forEach(function(pair, pi) {
+        var rVals = [];
+        sectorData.forEach(function(sd) {
+            if (sd.cells[pi].r != null) rVals.push(sd.cells[pi].r);
+        });
+        if (rVals.length < 4) return; // not enough sectors for meaningful stats
+        var mean = rVals.reduce(function(s, v) { return s + v; }, 0) / rVals.length;
+        var variance = rVals.reduce(function(s, v) { return s + (v - mean) * (v - mean); }, 0) / rVals.length;
+        var stdDev = Math.sqrt(variance);
+        if (stdDev < 0.01) return; // no meaningful spread
+
+        sectorData.forEach(function(sd) {
+            if (sd.cells[pi].r == null) return;
+            var z = (sd.cells[pi].r - mean) / stdDev;
+            if (Math.abs(z) >= 1.5) {
+                var key = sd.sector + '|' + pi;
+                _anomalyFlags[key] = {
+                    zScore: z,
+                    direction: z > 0 ? 'high' : 'low',
+                    sectorR: sd.cells[pi].r,
+                    meanR: mean,
+                    stdDev: stdDev
+                };
+                _anomalyCount++;
+            }
+        });
+    });
+
     // Build table
     var table = document.createElement('div');
     table.className = 'sector-corr-table';
@@ -13005,6 +13038,18 @@ function drawSectorCorrDeepDive(companies) {
                 var sig = cell.p < 0.001 ? '***' : cell.p < 0.01 ? '**' : cell.p < 0.05 ? '*' : '';
                 var tipParts = [rowData.sector + ': ' + metricPairs[ci].label, 'r = ' + cell.r.toFixed(3), cell.n + ' companies'];
                 if (sig) tipParts.push('p < ' + (cell.p < 0.001 ? '0.001' : cell.p < 0.01 ? '0.01' : '0.05') + ' ' + sig);
+                // Anomaly badge for outlier sector correlations
+                var anomKey = rowData.sector + '|' + ci;
+                var anom = _anomalyFlags[anomKey];
+                if (anom && !isSummary) {
+                    d.style.position = 'relative';
+                    var badge = document.createElement('span');
+                    badge.className = 'sector-corr-anomaly-badge' + (anom.direction === 'high' ? ' anomaly-high' : ' anomaly-low');
+                    badge.textContent = anom.direction === 'high' ? '\u25B2' : '\u25BC';
+                    badge.title = 'Outlier: z=' + anom.zScore.toFixed(2) + ' (' + (anom.direction === 'high' ? 'unusually strong' : 'unusually weak') + ' vs sector avg r=' + anom.meanR.toFixed(2) + ' \u00B1' + anom.stdDev.toFixed(2) + ')';
+                    d.appendChild(badge);
+                    tipParts.push('Anomaly: ' + (anom.direction === 'high' ? 'Unusually strong' : 'Unusually weak') + ' correlation (z=' + anom.zScore.toFixed(2) + ')');
+                }
                 tipParts.push('Click to explore in scatter plot');
                 d.title = tipParts.join('\n');
                 d.style.cursor = 'pointer';
@@ -13102,6 +13147,8 @@ function drawSectorCorrDeepDive(companies) {
     // Expose sector correlation data for insight card generation (app.js picks this up)
     window._sectorCorrDeepDiveData = {
         strongest: strongestCell,
-        weakest: weakestCell.r !== Infinity ? weakestCell : null
+        weakest: weakestCell.r !== Infinity ? weakestCell : null,
+        anomalyCount: _anomalyCount,
+        anomalyFlags: _anomalyFlags
     };
 }
