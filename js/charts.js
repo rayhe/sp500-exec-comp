@@ -692,22 +692,41 @@ function drawSectorChart(trends, companies) {
                     .attr('stroke', dark ? '#18181b' : '#fff')
                     .attr('stroke-width', 1);
 
-                // Tooltip on hover
+                // Tooltip on hover + click to navigate to pay anomaly chart
                 var pctChange = ((lastPt.median / pts[0].median) - 1) * 100;
                 var tipYears = pts.map(function(p) { return 'FY' + p.year + ': ' + fmtCurr(p.median); }).join('<br>');
+                var sectorForClick = d.sector; // capture for closure
                 sparkG.append('rect')
-                    .attr('width', sparkW).attr('height', sparkH)
+                    .attr('class', 'sector-sparkline-hit')
+                    .attr('width', sparkW + 8).attr('height', sparkH + 6)
+                    .attr('x', -4).attr('y', -3)
+                    .attr('rx', 4).attr('ry', 4)
                     .attr('fill', 'transparent')
-                    .style('cursor', 'default')
+                    .style('cursor', 'pointer')
                     .on('mouseover', function(event) {
+                        d3.select(this).attr('fill', dark ? 'rgba(0,180,216,0.12)' : 'rgba(0,119,182,0.08)')
+                            .attr('stroke', dark ? 'rgba(0,180,216,0.35)' : 'rgba(0,119,182,0.25)')
+                            .attr('stroke-width', 1);
+                        sparkG.attr('opacity', 1);
                         showChartTooltip(event,
                             '<strong>' + d.sector + ' Median CEO Pay Trend</strong><br>' +
                             tipYears + '<br>' +
                             '<span style="color:' + (trendUp ? '#10b981' : '#ef4444') + '">' +
-                            (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '% over ' + (pts.length - 1) + ' yr</span>');
+                            (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '% over ' + (pts.length - 1) + ' yr</span>' +
+                            '<br><span style="color:' + (dark ? '#a1a1aa' : '#6b7280') + ';font-size:10px">Click to explore ' + d.sector + ' pay anomalies \u2192</span>');
                     })
                     .on('mousemove', function(event) { positionChartTooltip(event); })
-                    .on('mouseout', function() { hideChartTooltip(); });
+                    .on('mouseout', function() {
+                        d3.select(this).attr('fill', 'transparent').attr('stroke', 'none');
+                        sparkG.attr('opacity', isDimmed ? 0.3 : 0.9);
+                        hideChartTooltip();
+                    })
+                    .on('click', function() {
+                        hideChartTooltip();
+                        if (typeof window.navigateToPayAnomaly === 'function') {
+                            window.navigateToPayAnomaly(sectorForClick);
+                        }
+                    });
             });
         }
     }
