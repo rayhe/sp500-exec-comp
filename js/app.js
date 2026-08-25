@@ -13924,6 +13924,7 @@ function setupDualSparklineTooltips() {
     window._compareSet = compareSet;
     window._toggleCompare = toggleCompare;
     window._updateCompareButtons = updateCompareButtons;
+    window._triggerComparisonRender = showComparison;
 
     // Restore comparison set from URL hash (after comparison system is initialized)
     (function restoreCompareFromHash() {

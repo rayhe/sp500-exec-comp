@@ -3621,6 +3621,7 @@ function drawScatterChart(companies) {
                 if (typeof window.findCompanyInTable === 'function') {
                     window.findCompanyInTable(d.ticker);
                 }
+                _drawScatterTrendTrail(d);
             });
 
         // Sector dots (foreground — rendered on top)
@@ -3656,6 +3657,7 @@ function drawScatterChart(companies) {
                 if (typeof window.findCompanyInTable === 'function') {
                     window.findCompanyInTable(d.ticker);
                 }
+                _drawScatterTrendTrail(d);
             });
     } else {
         // No sector overlay — standard rendering
@@ -3688,6 +3690,7 @@ function drawScatterChart(companies) {
                 if (typeof window.findCompanyInTable === 'function') {
                     window.findCompanyInTable(d.ticker);
                 }
+                _drawScatterTrendTrail(d);
             });
     }
 
@@ -3931,6 +3934,9 @@ function drawScatterChart(companies) {
 
     // Cross-chart navigation strip: Scatter → GER (when GER axis is active)
     _renderScatterGERNav(pts, xMetricKey, yMetricKey);
+
+    // Store scatter state for trend trail rendering
+    window._scatterState = { x: x, yScale: yScale, xMetricKey: xMetricKey, yMetricKey: yMetricKey, xMetric: xMetric, yMetric: yMetric, pts: pts, w: w, h: h };
 }
 
 function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity) {
@@ -9198,6 +9204,8 @@ function drawPayAnomalyChart(companies) {
                         });
                         // ARIA announcement
                         if (typeof announce === 'function') announce(nowCompared ? ticker + ' added to comparison' : ticker + ' removed from comparison');
+                        // Update floating "View comparison" link
+                        _updateAnomalyCompareLink();
                     }
                     hideChartTooltip();
                 });
@@ -9291,6 +9299,40 @@ function drawPayAnomalyChart(companies) {
 
     // Anomaly → Scatter navigation strip (shows top 3 overpaid as clickable buttons)
     _renderAnomalyScatterNav(displayData);
+}
+
+/**
+ * Show/hide a floating "View comparison →" link near the pay anomaly chart
+ * when ≥2 companies have been added to compare via the anomaly chart's + buttons.
+ */
+function _updateAnomalyCompareLink() {
+    var panel = document.getElementById('pay-anomaly-panel');
+    if (!panel) return;
+    var existing = panel.querySelector('.anomaly-compare-float');
+    var count = window._compareSet ? window._compareSet.length : 0;
+    if (count < 2) {
+        if (existing) existing.remove();
+        return;
+    }
+    if (!existing) {
+        existing = document.createElement('div');
+        existing.className = 'anomaly-compare-float';
+        panel.appendChild(existing);
+    }
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    existing.innerHTML = '<span class="acf-icon">⚖</span> View comparison <span class="acf-count">(' + count + ')</span> <span class="acf-arrow">→</span>';
+    existing.title = 'Scroll to comparison panel to see side-by-side analysis of ' + count + ' companies';
+    existing.onclick = function() {
+        // Trigger comparison render
+        if (typeof window._triggerComparisonRender === 'function') {
+            window._triggerComparisonRender();
+        }
+        // Scroll to comparison section
+        var section = document.getElementById('comparison-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
 }
 
 /**
@@ -10621,6 +10663,142 @@ function drawGERChart(companies) {
     _applyGERHighlight();
 }
 
+/* === Scatter Trend Trail — show company's multi-year pay trajectory on scatter === */
+var _trendTrailTimer = null;
+
+/**
+ * Draw a 3-year trend trail on the scatter plot when a company is clicked.
+ * Shows previous years' total compensation as ghost dots connected by a fading polyline,
+ * only when total_compensation is one of the active axes.
+ */
+function _drawScatterTrendTrail(company) {
+    // Clear any previous trail
+    var container = document.getElementById('scatter-chart');
+    if (!container) return;
+    var svg = d3.select(container).select('svg');
+    if (svg.empty()) return;
+    svg.selectAll('.scatter-trend-trail').remove();
+    if (_trendTrailTimer) { clearTimeout(_trendTrailTimer); _trendTrailTimer = null; }
+
+    // Only draw if company has trend data
+    if (!company._ceoTrend || company._ceoTrend.length < 2) return;
+
+    // Only draw if total_compensation is on one of the axes
+    var st = window._scatterState;
+    if (!st) return;
+    var isXComp = st.xMetricKey === 'total_compensation';
+    var isYComp = st.yMetricKey === 'total_compensation';
+    if (!isXComp && !isYComp) return;
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+    var g = svg.select('g');
+    if (g.empty()) g = svg;
+
+    var trailGroup = g.append('g').attr('class', 'scatter-trend-trail').attr('pointer-events', 'none');
+
+    // Current dot position
+    var curX = st.x(st.xMetric.get(company));
+    var curY = st.yScale(st.yMetric.get(company));
+    if (!isFinite(curX) || !isFinite(curY)) return;
+
+    // Build trail points from _ceoTrend (sorted ascending by year)
+    var trend = company._ceoTrend;
+    var latestYear = trend[trend.length - 1].year;
+    var trailPts = [];
+
+    trend.forEach(function(pt) {
+        var px, py;
+        if (isYComp) {
+            // Y axis is total comp — X stays same (we don't have historical X metric), Y changes
+            px = curX;
+            py = st.yScale(pt.total);
+        } else {
+            // X axis is total comp — Y stays same, X changes
+            px = st.x(pt.total);
+            py = curY;
+        }
+        if (isFinite(px) && isFinite(py)) {
+            trailPts.push({ x: px, y: py, year: pt.year, total: pt.total, isCurrent: pt.year === latestYear });
+        }
+    });
+
+    if (trailPts.length < 2) return;
+
+    // Draw connecting polyline with gradient opacity
+    var lineData = trailPts.map(function(p) { return p.x + ',' + p.y; }).join(' ');
+    trailGroup.append('polyline')
+        .attr('points', lineData)
+        .attr('fill', 'none')
+        .attr('stroke', dark ? 'rgba(239,71,111,0.5)' : 'rgba(239,71,111,0.4)')
+        .attr('stroke-width', 2)
+        .attr('stroke-dasharray', '6,3')
+        .attr('opacity', 0)
+        .transition().duration(400)
+        .attr('opacity', 1);
+
+    // Draw arrow marker at current year end
+    var lastPt = trailPts[trailPts.length - 1];
+    var prevPt = trailPts[trailPts.length - 2];
+    var dx = lastPt.x - prevPt.x;
+    var dy = lastPt.y - prevPt.y;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    if (len > 2) {
+        var ndx = dx / len, ndy = dy / len;
+        // Arrow head at current position
+        trailGroup.append('polygon')
+            .attr('points', function() {
+                var tx = lastPt.x, ty = lastPt.y;
+                var ax = tx - ndx * 8 + ndy * 4, ay = ty - ndy * 8 - ndx * 4;
+                var bx = tx - ndx * 8 - ndy * 4, by = ty - ndy * 8 + ndx * 4;
+                return tx + ',' + ty + ' ' + ax + ',' + ay + ' ' + bx + ',' + by;
+            })
+            .attr('fill', '#ef476f')
+            .attr('opacity', 0)
+            .transition().duration(400).delay(200)
+            .attr('opacity', 0.8);
+    }
+
+    // Draw year-labeled dots for non-current years
+    trailPts.forEach(function(pt, idx) {
+        var opacity = pt.isCurrent ? 0 : 0.3 + 0.4 * (idx / (trailPts.length - 1));
+        if (pt.isCurrent) return; // Don't draw on top of the actual dot
+
+        // Ghost dot
+        trailGroup.append('circle')
+            .attr('cx', pt.x)
+            .attr('cy', pt.y)
+            .attr('r', 5)
+            .attr('fill', '#ef476f')
+            .attr('stroke', dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)')
+            .attr('stroke-width', 1)
+            .attr('opacity', 0)
+            .transition().duration(300).delay(idx * 100)
+            .attr('opacity', opacity);
+
+        // Year label
+        var labelYOffset = isYComp ? -10 : 12;
+        var labelXOffset = isXComp ? 0 : 10;
+        trailGroup.append('text')
+            .attr('x', pt.x + labelXOffset)
+            .attr('y', pt.y + labelYOffset)
+            .attr('text-anchor', isXComp ? 'middle' : 'start')
+            .attr('fill', '#ef476f')
+            .attr('font-size', '10px')
+            .attr('font-weight', '600')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .attr('opacity', 0)
+            .transition().duration(300).delay(idx * 100)
+            .attr('opacity', opacity + 0.2)
+            .text("'" + String(pt.year).slice(-2) + ' ' + (typeof fmtCurr === 'function' ? fmtCurr(pt.total) : '$' + (pt.total / 1e6).toFixed(1) + 'M'));
+    });
+
+    // Auto-fade trail after 8 seconds
+    _trendTrailTimer = setTimeout(function() {
+        trailGroup.transition().duration(1200).style('opacity', 0).remove();
+        _trendTrailTimer = null;
+    }, 8000);
+}
+
 /* === Cross-Chart Navigation: Navigate to Scatter with Company Highlight === */
 
 // Pending highlight ticker — set before scatter redraws, consumed after dots render
@@ -10673,10 +10851,15 @@ window.navigateToScatter = function(ticker, presetX, presetY) {
 function _clearPersistentScatterHighlight() {
     _persistentScatterHighlight = null;
     if (_scatterHighlightTimer) { clearTimeout(_scatterHighlightTimer); _scatterHighlightTimer = null; }
+    // Also clear trend trail
+    if (_trendTrailTimer) { clearTimeout(_trendTrailTimer); _trendTrailTimer = null; }
     var container = document.getElementById('scatter-chart');
     if (container) {
         var svg = d3.select(container).select('svg');
-        if (!svg.empty()) svg.selectAll('.scatter-highlight-ring').remove();
+        if (!svg.empty()) {
+            svg.selectAll('.scatter-highlight-ring').remove();
+            svg.selectAll('.scatter-trend-trail').remove();
+        }
     }
 }
 // Expose for keyboard shortcut integration (app.js Escape handler)
