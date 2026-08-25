@@ -10718,7 +10718,12 @@ function _drawScatterTrendTrail(company) {
             py = curY;
         }
         if (isFinite(px) && isFinite(py)) {
-            trailPts.push({ x: px, y: py, year: pt.year, total: pt.total, isCurrent: pt.year === latestYear });
+            trailPts.push({
+                x: px, y: py, year: pt.year, total: pt.total, isCurrent: pt.year === latestYear,
+                name: pt.name || '', salary: pt.salary || 0, stock_awards: pt.stock_awards || 0,
+                option_awards: pt.option_awards || 0, bonus: pt.bonus || 0,
+                non_equity_incentive: pt.non_equity_incentive || 0, all_other: pt.all_other || 0
+            });
         }
     });
 
@@ -10758,12 +10763,14 @@ function _drawScatterTrendTrail(company) {
             .attr('opacity', 0.8);
     }
 
-    // Draw year-labeled dots for non-current years
+    // Draw year-labeled dots for non-current years (with hover tooltips)
+    var dotsGroup = g.append('g').attr('class', 'scatter-trend-trail scatter-trend-trail-dots');
+
     trailPts.forEach(function(pt, idx) {
         var opacity = pt.isCurrent ? 0 : 0.3 + 0.4 * (idx / (trailPts.length - 1));
         if (pt.isCurrent) return; // Don't draw on top of the actual dot
 
-        // Ghost dot
+        // Ghost dot (visual, pointer-events none)
         trailGroup.append('circle')
             .attr('cx', pt.x)
             .attr('cy', pt.y)
@@ -10774,6 +10781,70 @@ function _drawScatterTrendTrail(company) {
             .attr('opacity', 0)
             .transition().duration(300).delay(idx * 100)
             .attr('opacity', opacity);
+
+        // Interactive hover target (larger hit area)
+        dotsGroup.append('circle')
+            .attr('cx', pt.x)
+            .attr('cy', pt.y)
+            .attr('r', 10)
+            .attr('fill', 'transparent')
+            .attr('cursor', 'pointer')
+            .attr('pointer-events', 'all')
+            .on('mouseenter', function(event) {
+                // Enlarge the visual dot
+                trailGroup.selectAll('circle').filter(function() {
+                    return +d3.select(this).attr('cx') === pt.x && +d3.select(this).attr('cy') === pt.y;
+                }).transition().duration(150).attr('r', 7).attr('opacity', Math.min(opacity + 0.3, 1));
+
+                // Build detailed breakdown tooltip
+                var tipHtml = '<div class="tt-trail-header">FY' + pt.year + ' — ' + company.ticker + '</div>';
+                if (pt.name) tipHtml += '<div class="tt-trail-ceo">' + pt.name + '</div>';
+                tipHtml += '<div class="tt-trail-total">' + fmtCurr(pt.total) + ' total</div>';
+                var items = [];
+                if (pt.salary > 0) items.push({ label: 'Salary', val: pt.salary });
+                if (pt.stock_awards > 0) items.push({ label: 'Stock Awards', val: pt.stock_awards });
+                if (pt.option_awards > 0) items.push({ label: 'Option Awards', val: pt.option_awards });
+                if (pt.bonus > 0) items.push({ label: 'Bonus', val: pt.bonus });
+                if (pt.non_equity_incentive > 0) items.push({ label: 'Non-Equity Incentive', val: pt.non_equity_incentive });
+                if (pt.all_other > 0) items.push({ label: 'All Other', val: pt.all_other });
+                if (items.length > 0) {
+                    tipHtml += '<div class="tt-trail-breakdown">';
+                    items.forEach(function(item) {
+                        var pct = pt.total > 0 ? (item.val / pt.total * 100).toFixed(0) : 0;
+                        tipHtml += '<div class="tt-trail-row"><span class="tt-trail-lbl">' + item.label + '</span><span class="tt-trail-val">' + fmtCurr(item.val) + ' <span class="tt-trail-pct">(' + pct + '%)</span></span></div>';
+                    });
+                    tipHtml += '</div>';
+                }
+                // YoY change vs previous trend point
+                var prevIdx = trailPts.indexOf(pt) - 1;
+                if (prevIdx >= 0 && trailPts[prevIdx].total > 0) {
+                    var yoyChg = ((pt.total - trailPts[prevIdx].total) / trailPts[prevIdx].total * 100);
+                    var yoySign = yoyChg >= 0 ? '+' : '';
+                    var yoyClass = yoyChg >= 0 ? 'tt-trail-yoy-up' : 'tt-trail-yoy-down';
+                    tipHtml += '<div class="tt-trail-yoy ' + yoyClass + '">' + yoySign + yoyChg.toFixed(1) + '% vs FY' + trailPts[prevIdx].year + '</div>';
+                }
+                showChartTooltip(event, tipHtml);
+
+                // Pause auto-fade while hovering
+                if (_trendTrailTimer) { clearTimeout(_trendTrailTimer); _trendTrailTimer = null; }
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseleave', function() {
+                // Restore visual dot
+                trailGroup.selectAll('circle').filter(function() {
+                    return +d3.select(this).attr('cx') === pt.x && +d3.select(this).attr('cy') === pt.y;
+                }).transition().duration(150).attr('r', 5).attr('opacity', opacity);
+                hideChartTooltip();
+
+                // Restart auto-fade timer (5s from now)
+                if (!_trendTrailTimer) {
+                    _trendTrailTimer = setTimeout(function() {
+                        trailGroup.transition().duration(1200).style('opacity', 0).remove();
+                        dotsGroup.transition().duration(1200).style('opacity', 0).remove();
+                        _trendTrailTimer = null;
+                    }, 5000);
+                }
+            });
 
         // Year label
         var labelYOffset = isYComp ? -10 : 12;
@@ -10795,6 +10866,7 @@ function _drawScatterTrendTrail(company) {
     // Auto-fade trail after 8 seconds
     _trendTrailTimer = setTimeout(function() {
         trailGroup.transition().duration(1200).style('opacity', 0).remove();
+        dotsGroup.transition().duration(1200).style('opacity', 0).remove();
         _trendTrailTimer = null;
     }, 8000);
 }

@@ -159,7 +159,13 @@ function computeCeoTrend(companies) {
                 ceo = yrExecs.slice().sort(function(a, b) { return (b.total || 0) - (a.total || 0); })[0];
             }
             if (ceo && ceo.total > 0) {
-                trend.push({ year: yr, total: ceo.total });
+                trend.push({
+                    year: yr, total: ceo.total, name: ceo.name || '',
+                    salary: ceo.salary || 0, stock_awards: ceo.stock_awards || 0,
+                    option_awards: ceo.option_awards || 0, bonus: ceo.bonus || 0,
+                    non_equity_incentive: ceo.non_equity_incentive || 0,
+                    all_other: ceo.all_other || 0
+                });
             }
         });
 
