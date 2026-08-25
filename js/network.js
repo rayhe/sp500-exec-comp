@@ -1578,6 +1578,109 @@ function initNetwork(peerData) {
             ctx.fillText(d.ticker, d.x, d.y + r + 3);
         });
 
+        // === Path Node Pay Badges ===
+        // Show compact CEO compensation badge below each path node's ticker label
+        if (activePath && activePath.nodes.length >= 2 && !hoveredNode) {
+            var _badgeMinComp = Infinity, _badgeMaxComp = -Infinity;
+            activePath.nodes.forEach(function(ticker) {
+                var comp = _compLookup[ticker];
+                if (comp && comp.total > 0) {
+                    if (comp.total < _badgeMinComp) _badgeMinComp = comp.total;
+                    if (comp.total > _badgeMaxComp) _badgeMaxComp = comp.total;
+                }
+            });
+            var _badgeCompRange = _badgeMaxComp - _badgeMinComp;
+
+            activePath.nodes.forEach(function(ticker) {
+                var n = nodeMap[ticker];
+                if (!n) return;
+                var comp = _compLookup[ticker];
+                if (!comp || !comp.total || comp.total <= 0) return;
+
+                var r = getRadius(n);
+                var payText = _fmtComp(comp.total);
+                var badgeFontSize = Math.max(8, Math.min(11, 10 / scale));
+                ctx.font = '700 ' + badgeFontSize + 'px Inter, system-ui, sans-serif';
+                var textWidth = ctx.measureText(payText).width;
+                var padX = 5 / scale;
+                var padY = 2.5 / scale;
+                var badgeW = textWidth + padX * 2;
+                var badgeH = badgeFontSize + padY * 2;
+
+                // Position below ticker label (label is at y + r + 3, font ~11px)
+                var labelFontSize = Math.max(9, Math.min(12, 11 / scale));
+                var badgeX = n.x - badgeW / 2;
+                var badgeY = n.y + r + 3 + labelFontSize + 2 / scale;
+
+                // Compute badge background color using same gradient as path edges
+                var bgColor;
+                if (_badgeCompRange <= 0) {
+                    bgColor = 'rgba(168,85,247,0.9)'; // fallback purple
+                } else {
+                    var t = (comp.total - _badgeMinComp) / _badgeCompRange;
+                    var cr, cg, cb;
+                    if (t < 0.5) {
+                        var s = t * 2;
+                        cr = Math.round(6 + s * 244);
+                        cg = Math.round(214 - s * 35);
+                        cb = Math.round(160 - s * 100);
+                    } else {
+                        var s = (t - 0.5) * 2;
+                        cr = Math.round(250 - s * 11);
+                        cg = Math.round(179 - s * 111);
+                        cb = Math.round(60 + s * 51);
+                    }
+                    bgColor = 'rgba(' + cr + ',' + cg + ',' + cb + ',0.92)';
+                }
+
+                // Shadow for depth
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,0.35)';
+                ctx.shadowBlur = 3 / scale;
+                ctx.shadowOffsetY = 1 / scale;
+
+                // Draw rounded rectangle badge
+                var cornerR = 3 / scale;
+                ctx.beginPath();
+                ctx.moveTo(badgeX + cornerR, badgeY);
+                ctx.lineTo(badgeX + badgeW - cornerR, badgeY);
+                ctx.arcTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + cornerR, cornerR);
+                ctx.lineTo(badgeX + badgeW, badgeY + badgeH - cornerR);
+                ctx.arcTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - cornerR, badgeY + badgeH, cornerR);
+                ctx.lineTo(badgeX + cornerR, badgeY + badgeH);
+                ctx.arcTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - cornerR, cornerR);
+                ctx.lineTo(badgeX, badgeY + cornerR);
+                ctx.arcTo(badgeX, badgeY, badgeX + cornerR, badgeY, cornerR);
+                ctx.closePath();
+                ctx.fillStyle = bgColor;
+                ctx.fill();
+                ctx.restore();
+
+                // Thin border for crispness
+                ctx.beginPath();
+                ctx.moveTo(badgeX + cornerR, badgeY);
+                ctx.lineTo(badgeX + badgeW - cornerR, badgeY);
+                ctx.arcTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + cornerR, cornerR);
+                ctx.lineTo(badgeX + badgeW, badgeY + badgeH - cornerR);
+                ctx.arcTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - cornerR, badgeY + badgeH, cornerR);
+                ctx.lineTo(badgeX + cornerR, badgeY + badgeH);
+                ctx.arcTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - cornerR, cornerR);
+                ctx.lineTo(badgeX, badgeY + cornerR);
+                ctx.arcTo(badgeX, badgeY, badgeX + cornerR, badgeY, cornerR);
+                ctx.closePath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 0.5 / scale;
+                ctx.stroke();
+
+                // White text for contrast against colored badge
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '700 ' + badgeFontSize + 'px Inter, system-ui, sans-serif';
+                ctx.fillText(payText, n.x, badgeY + badgeH / 2);
+            });
+        }
+
         // === Search Focus Pulsing Ring ===
         if (searchFocusedNode && hoveredNode === searchFocusedNode) {
             var _sfn = searchFocusedNode;
