@@ -4473,7 +4473,7 @@ function initNetwork(peerData) {
             }
         }
 
-        // Export Path button — copies formatted path summary to clipboard
+        // Export + Show on Scatter buttons
         html += '<div class="pf-export-group">';
         html += '<button class="pf-export-btn" id="pf-export-btn" title="Copy path summary to clipboard">';
         html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
@@ -4482,6 +4482,17 @@ function initNetwork(peerData) {
         html += '<button class="pf-export-csv-btn" id="pf-export-csv-btn" title="Copy path as CSV to clipboard">';
         html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
         html += ' Export CSV';
+        html += '</button>';
+        // Show on Scatter button — scrolls to scatter chart with current axis context
+        var scXSel = document.getElementById('scatter-x-metric');
+        var scYSel = document.getElementById('scatter-y-metric');
+        var scXLabel = scXSel ? scXSel.options[scXSel.selectedIndex].text : '';
+        var scYLabel = scYSel ? scYSel.options[scYSel.selectedIndex].text : '';
+        var scAxisHint = (scXLabel && scYLabel) ? scXLabel + ' vs ' + scYLabel : '';
+        html += '<button class="pf-show-scatter-btn" id="pf-show-scatter-btn" title="View this path overlaid on the scatter plot' + (scAxisHint ? ' (' + scAxisHint + ')' : '') + '">';
+        html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="7.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><path d="M3 3v18h18"/></svg>';
+        html += ' Show on Scatter';
+        if (scAxisHint) html += '<span class="pf-scatter-axis-hint">' + scAxisHint + '</span>';
         html += '</button>';
         html += '</div>';
 
@@ -4664,6 +4675,38 @@ function initNetwork(peerData) {
                         csvBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export CSV';
                     }, 2000);
                 });
+            });
+        }
+
+        // "Show on Scatter" button handler — scrolls to scatter chart panel
+        var scatterBtn = pfResult.querySelector('#pf-show-scatter-btn');
+        if (scatterBtn) {
+            scatterBtn.addEventListener('click', function() {
+                // Ensure scatter path overlay is active
+                if (window._activePathFinderNodes && typeof window._redrawScatterForPathOverlay === 'function') {
+                    window._redrawScatterForPathOverlay();
+                }
+                // Scroll to scatter chart panel
+                var scPanel = document.getElementById('scatter-chart-panel');
+                if (scPanel) {
+                    var hdr = document.querySelector('.sticky-header, .section-nav');
+                    var off = hdr ? hdr.offsetHeight : 0;
+                    var top = scPanel.getBoundingClientRect().top + window.scrollY - off - 16;
+                    window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                }
+                // Update section nav highlight
+                var navLinks = document.querySelectorAll('.section-nav-link');
+                navLinks.forEach(function(link) {
+                    link.classList.toggle('active', link.getAttribute('data-section') === 'sector-chart-panel');
+                });
+                // ARIA announcement
+                var axisCtx = '';
+                var xSel = document.getElementById('scatter-x-metric');
+                var ySel = document.getElementById('scatter-y-metric');
+                if (xSel && ySel) {
+                    axisCtx = ' (' + xSel.options[xSel.selectedIndex].text + ' vs ' + ySel.options[ySel.selectedIndex].text + ')';
+                }
+                if (typeof announce === 'function') announce('Showing peer path on scatter plot' + axisCtx);
             });
         }
     }

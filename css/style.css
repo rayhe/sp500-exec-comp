@@ -12087,6 +12087,56 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #059669;
 }
 
+/* === Show on Scatter Button (path finder → scatter navigation) === */
+.pf-show-scatter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(6,214,160,0.1);
+    border: 1px solid rgba(6,214,160,0.25);
+    border-radius: 6px;
+    color: #06d6a0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s, box-shadow 0.2s;
+    text-align: center;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    flex: 1;
+}
+.pf-show-scatter-btn:hover {
+    background: rgba(6,214,160,0.2);
+    border-color: rgba(6,214,160,0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(6,214,160,0.15);
+}
+.pf-show-scatter-btn:active {
+    transform: translateY(0);
+}
+.pf-scatter-axis-hint {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.65;
+    margin-left: 2px;
+}
+[data-theme="light"] .pf-show-scatter-btn {
+    background: rgba(5,150,105,0.06);
+    border-color: rgba(5,150,105,0.18);
+    color: #059669;
+}
+[data-theme="light"] .pf-show-scatter-btn:hover {
+    background: rgba(5,150,105,0.12);
+    border-color: rgba(5,150,105,0.3);
+    box-shadow: 0 2px 8px rgba(5,150,105,0.1);
+}
+.pf-export-group .pf-show-scatter-btn {
+    flex: 1;
+    margin-top: 0;
+}
+
 /* === Scatter Plot Path Overlay Floating Label === */
 .scatter-path-label {
     position: absolute;
