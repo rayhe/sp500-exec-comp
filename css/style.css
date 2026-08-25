@@ -2155,6 +2155,54 @@ header h1 {
     border-color: rgba(6,214,160,0.35);
 }
 
+/* Export Path button */
+.pf-export-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 7px 14px;
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 6px;
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+.pf-export-btn:hover {
+    background: rgba(167,139,250,0.2);
+    border-color: rgba(167,139,250,0.45);
+    transform: translateY(-1px);
+}
+.pf-export-btn:active {
+    transform: translateY(0);
+}
+.pf-export-btn.pf-export-copied {
+    background: rgba(6,214,160,0.15);
+    border-color: rgba(6,214,160,0.4);
+    color: #06d6a0;
+}
+[data-theme="light"] .pf-export-btn {
+    background: rgba(109,40,217,0.06);
+    border-color: rgba(109,40,217,0.18);
+    color: #6d28d9;
+}
+[data-theme="light"] .pf-export-btn:hover {
+    background: rgba(109,40,217,0.12);
+    border-color: rgba(109,40,217,0.3);
+}
+[data-theme="light"] .pf-export-btn.pf-export-copied {
+    background: rgba(5,150,105,0.1);
+    border-color: rgba(5,150,105,0.3);
+    color: #059669;
+}
+
 /* Path edge gradient legend */
 .pf-gradient-legend {
     display: flex;

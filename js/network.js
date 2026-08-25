@@ -2382,7 +2382,7 @@ function initNetwork(peerData) {
             if (hitBadge !== _pathBadgeHovered) {
                 _pathBadgeHovered = hitBadge;
                 if (hitBadge) {
-                    canvas.style.cursor = 'help';
+                    canvas.style.cursor = 'pointer';
                     _showPathBadgeTooltip(event.clientX, event.clientY, hitBadge);
                 } else {
                     canvas.style.cursor = 'grab';
@@ -2419,6 +2419,12 @@ function initNetwork(peerData) {
             _stopPulseAnimation();
             hideTooltip();
             window.findCompanyInTable(clickedNode.ticker);
+        }
+
+        // If this was a click (not a drag) on a path badge, navigate to that company
+        if (!clickedNode && !wasDrag && _pathBadgeHovered && window.findCompanyInTable) {
+            hideTooltip();
+            window.findCompanyInTable(_pathBadgeHovered);
         }
 
         _mdNode = null;
@@ -4446,6 +4452,12 @@ function initNetwork(peerData) {
             }
         }
 
+        // Export Path button — copies formatted path summary to clipboard
+        html += '<button class="pf-export-btn" id="pf-export-btn" title="Copy path summary to clipboard">';
+        html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        html += ' Export Path';
+        html += '</button>';
+
         pfResult.innerHTML = html;
         pfResult.classList.add('visible');
 
@@ -4493,6 +4505,88 @@ function initNetwork(peerData) {
                 if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
                 // ARIA announcement
                 if (typeof announce === 'function') announce('Comparing ' + tickerList.length + ' path companies: ' + tickerList.join(', '));
+            });
+        }
+
+        // "Export Path" button handler — builds formatted text and copies to clipboard
+        var exportBtn = pfResult.querySelector('#pf-export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                if (!pathResult || !pathResult.nodes || pathResult.nodes.length < 2) return;
+                var pathTickers = pathResult.nodes;
+                var arrows = pathTickers.join(' \u2192 ');
+                var lines = [];
+                lines.push('S&P 500 Peer Path: ' + arrows);
+                lines.push('\u2500'.repeat(Math.min(60, arrows.length + 20)));
+                lines.push('');
+                pathTickers.forEach(function(ticker, idx) {
+                    var n = nodeMap[ticker];
+                    var comp = _compLookup[ticker];
+                    var name = n ? n.name : '';
+                    var sector = n ? n.sector : '';
+                    var ceo = (comp && comp.ceo) ? comp.ceo : '';
+                    var pay = (comp && comp.total > 0) ? _fmtComp(comp.total) : 'N/A';
+                    lines.push((idx + 1) + '. ' + ticker + (name ? ' \u2014 ' + name : ''));
+                    var details = [];
+                    if (ceo) details.push('CEO: ' + ceo);
+                    details.push('Total Pay: ' + pay);
+                    if (sector) details.push('Sector: ' + sector);
+                    lines.push('   ' + details.join(' | '));
+                    if (comp && comp._breakdown) {
+                        var bd = comp._breakdown;
+                        var parts = [];
+                        if (bd.salary > 0) parts.push('Salary ' + _fmtComp(bd.salary));
+                        if (bd.stock > 0) parts.push('Stock ' + _fmtComp(bd.stock));
+                        if (bd.options > 0) parts.push('Options ' + _fmtComp(bd.options));
+                        if (bd.bonus > 0) parts.push('Bonus ' + _fmtComp(bd.bonus));
+                        if (bd.incentive > 0) parts.push('Incentive ' + _fmtComp(bd.incentive));
+                        if (parts.length > 0) lines.push('   ' + parts.join(', '));
+                    }
+                    lines.push('');
+                });
+                // Summary stats
+                var hops = pathTickers.length - 1;
+                var sectorSet = new Set();
+                pathTickers.forEach(function(t) { var nd = nodeMap[t]; if (nd && nd.sector) sectorSet.add(nd.sector); });
+                var pathVals = [];
+                pathTickers.forEach(function(t) { var c = _compLookup[t]; if (c && c.total > 0) pathVals.push(c.total); });
+                lines.push('\u2500'.repeat(Math.min(60, arrows.length + 20)));
+                var summary = hops + ' hop' + (hops !== 1 ? 's' : '') + ' \u00b7 ' + sectorSet.size + ' sector' + (sectorSet.size !== 1 ? 's' : '');
+                if (pathVals.length >= 2) {
+                    var mn = Math.min.apply(null, pathVals);
+                    var mx = Math.max.apply(null, pathVals);
+                    summary += ' \u00b7 Pay range: ' + _fmtComp(mn) + '\u2013' + _fmtComp(mx);
+                    if (mn > 0) summary += ' \u00b7 ' + (mx / mn).toFixed(1) + '\u00d7 spread';
+                }
+                lines.push(summary);
+                lines.push('Source: SEC DEF 14A proxy statements | S&P 500 Executive Compensation Tracker');
+
+                var text = lines.join('\n');
+                navigator.clipboard.writeText(text).then(function() {
+                    exportBtn.classList.add('pf-export-copied');
+                    exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                    if (typeof announce === 'function') announce('Path summary copied to clipboard');
+                    setTimeout(function() {
+                        exportBtn.classList.remove('pf-export-copied');
+                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Path';
+                    }, 2000);
+                }).catch(function() {
+                    // Fallback: select text in a temporary textarea
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    exportBtn.classList.add('pf-export-copied');
+                    exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                    setTimeout(function() {
+                        exportBtn.classList.remove('pf-export-copied');
+                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Path';
+                    }, 2000);
+                });
             });
         }
     }
