@@ -11613,6 +11613,17 @@ body.light-mode .cross-sector-pair-select:focus {
     font-size: 10px;
     margin-bottom: 2px;
 }
+.scatter-community-label-pay {
+    color: #d4d4d8;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+.scatter-community-label-pay-label {
+    color: #a1a1aa;
+}
+.scatter-community-label-pay strong {
+    color: #00b4d8;
+}
 .scatter-community-label-sectors {
     color: #d4d4d8;
     font-size: 10px;
@@ -11651,6 +11662,15 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 [data-theme="light"] .scatter-community-label-stats {
     color: #71717a;
+}
+[data-theme="light"] .scatter-community-label-pay {
+    color: #3f3f46;
+}
+[data-theme="light"] .scatter-community-label-pay-label {
+    color: #71717a;
+}
+[data-theme="light"] .scatter-community-label-pay strong {
+    color: #0077b6;
 }
 [data-theme="light"] .scatter-community-label-sectors {
     color: #3f3f46;

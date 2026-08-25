@@ -593,6 +593,125 @@ function drawSectorChart(trends, companies) {
             return 1;
         });
 
+    // 3-year median CEO pay trend sparklines per sector
+    if (companies && companies.length > 0) {
+        // Build per-sector, per-year median CEO pay from _ceoTrend data
+        var sectorYearPay = {}; // { sector: { year: [values] } }
+        var allYears = new Set();
+        companies.forEach(function(c) {
+            if (!c._ceoTrend || !c.sector) return;
+            if (!sectorYearPay[c.sector]) sectorYearPay[c.sector] = {};
+            c._ceoTrend.forEach(function(pt) {
+                allYears.add(pt.year);
+                if (!sectorYearPay[c.sector][pt.year]) sectorYearPay[c.sector][pt.year] = [];
+                sectorYearPay[c.sector][pt.year].push(pt.total);
+            });
+        });
+        var sortedYears = Array.from(allYears).sort(function(a, b) { return a - b; });
+        // Only render if we have 2+ years
+        if (sortedYears.length >= 2) {
+            var sectorTrends = {}; // { sector: [{year, median}] }
+            Object.keys(sectorYearPay).forEach(function(sec) {
+                var pts = [];
+                sortedYears.forEach(function(yr) {
+                    var vals = sectorYearPay[sec][yr];
+                    if (vals && vals.length >= 3) {
+                        vals.sort(function(a, b) { return a - b; });
+                        var m = Math.floor(vals.length / 2);
+                        var med = vals.length % 2 === 0 ? (vals[m - 1] + vals[m]) / 2 : vals[m];
+                        pts.push({ year: yr, median: med });
+                    }
+                });
+                if (pts.length >= 2) sectorTrends[sec] = pts;
+            });
+
+            // Find global min/max for consistent y-scaling across sparklines
+            var globalMin = Infinity, globalMax = -Infinity;
+            Object.values(sectorTrends).forEach(function(pts) {
+                pts.forEach(function(p) {
+                    if (p.median < globalMin) globalMin = p.median;
+                    if (p.median > globalMax) globalMax = p.median;
+                });
+            });
+
+            var sparkW = 48, sparkH = 16;
+            data.forEach(function(d) {
+                var pts = sectorTrends[d.sector];
+                if (!pts || pts.length < 2) return;
+
+                var isDimmed = activeSector && d.sector !== activeSector;
+                var bandCenter = y(d.sector) + y.bandwidth() / 2;
+                var sparkX = x(d.median_pay) + 6;
+                // Offset past the bar label text
+                var labelLen = (fmtCurr(d.median_pay) + (d._dist ? ' (' + d._dist.count + ')' : '')).length;
+                sparkX += labelLen * 6 + 8;
+
+                var sparkG = svg.append('g')
+                    .attr('transform', 'translate(' + sparkX + ',' + (bandCenter - sparkH / 2) + ')')
+                    .attr('opacity', isDimmed ? 0.3 : 0.9);
+
+                // Compute local x/y scales for the sparkline
+                var sxScale = d3.scaleLinear()
+                    .domain([sortedYears[0], sortedYears[sortedYears.length - 1]])
+                    .range([2, sparkW - 2]);
+                var syScale = d3.scaleLinear()
+                    .domain([globalMin * 0.9, globalMax * 1.1])
+                    .range([sparkH - 2, 2]);
+
+                // Area fill
+                var areaPath = 'M' + sxScale(pts[0].year) + ',' + sparkH;
+                pts.forEach(function(p) {
+                    areaPath += ' L' + sxScale(p.year) + ',' + syScale(p.median);
+                });
+                areaPath += ' L' + sxScale(pts[pts.length - 1].year) + ',' + sparkH + ' Z';
+                var trendUp = pts[pts.length - 1].median >= pts[0].median;
+                sparkG.append('path')
+                    .attr('d', areaPath)
+                    .attr('fill', trendUp ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)')
+                    .attr('stroke', 'none');
+
+                // Line
+                var linePath = 'M' + sxScale(pts[0].year) + ',' + syScale(pts[0].median);
+                for (var pi = 1; pi < pts.length; pi++) {
+                    linePath += ' L' + sxScale(pts[pi].year) + ',' + syScale(pts[pi].median);
+                }
+                sparkG.append('path')
+                    .attr('d', linePath)
+                    .attr('fill', 'none')
+                    .attr('stroke', trendUp ? '#10b981' : '#ef4444')
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-linejoin', 'round');
+
+                // Terminal dot
+                var lastPt = pts[pts.length - 1];
+                sparkG.append('circle')
+                    .attr('cx', sxScale(lastPt.year))
+                    .attr('cy', syScale(lastPt.median))
+                    .attr('r', 2.5)
+                    .attr('fill', trendUp ? '#10b981' : '#ef4444')
+                    .attr('stroke', dark ? '#18181b' : '#fff')
+                    .attr('stroke-width', 1);
+
+                // Tooltip on hover
+                var pctChange = ((lastPt.median / pts[0].median) - 1) * 100;
+                var tipYears = pts.map(function(p) { return 'FY' + p.year + ': ' + fmtCurr(p.median); }).join('<br>');
+                sparkG.append('rect')
+                    .attr('width', sparkW).attr('height', sparkH)
+                    .attr('fill', 'transparent')
+                    .style('cursor', 'default')
+                    .on('mouseover', function(event) {
+                        showChartTooltip(event,
+                            '<strong>' + d.sector + ' Median CEO Pay Trend</strong><br>' +
+                            tipYears + '<br>' +
+                            '<span style="color:' + (trendUp ? '#10b981' : '#ef4444') + '">' +
+                            (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '% over ' + (pts.length - 1) + ' yr</span>');
+                    })
+                    .on('mousemove', function(event) { positionChartTooltip(event); })
+                    .on('mouseout', function() { hideChartTooltip(); });
+            });
+        }
+    }
+
     // Distribution legend below chart
     var legendG = svg.append('g')
         .attr('class', 'dist-legend')
@@ -9014,6 +9133,65 @@ function drawPayAnomalyChart(companies) {
             })
             .text(d.ticker + ' \u2014 ' + d.ceo.split(/\s+/).slice(-1)[0]);
 
+        // Compare button (+ / ✓) — add/remove from comparison panel
+        (function(ticker, by2, barH2) {
+            var isCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
+            var isFull = window._compareSet && window._compareSet.length >= 4 && !isCompared;
+            var cmpBtn = g.append('text')
+                .attr('class', 'anomaly-compare-btn')
+                .attr('x', -margin.left + 18)
+                .attr('y', by2 + barH2 / 2)
+                .attr('dy', '0.35em')
+                .attr('text-anchor', 'middle')
+                .attr('fill', isCompared ? '#06d6a0' : mutedColor)
+                .attr('font-size', '12px')
+                .attr('font-weight', '700')
+                .attr('opacity', isCompared ? 1 : 0.5)
+                .style('cursor', isFull ? 'not-allowed' : 'pointer')
+                .text(isCompared ? '\u2713' : '+');
+            if (!isFull) {
+                cmpBtn.on('mouseover', function() {
+                    d3.select(this).attr('opacity', 1).attr('fill', isCompared ? '#ef476f' : '#00b4d8');
+                    showChartTooltip(d3.event || event, isCompared ? 'Remove ' + ticker + ' from comparison' : 'Add ' + ticker + ' to comparison');
+                })
+                .on('mousemove', function() { positionChartTooltip(d3.event || event); })
+                .on('mouseout', function() {
+                    var nowCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
+                    d3.select(this).attr('opacity', nowCompared ? 1 : 0.5).attr('fill', nowCompared ? '#06d6a0' : mutedColor);
+                    hideChartTooltip();
+                })
+                .on('click', function() {
+                    if (typeof window._toggleCompare === 'function') {
+                        window._toggleCompare(ticker);
+                        var nowCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
+                        d3.select(this).text(nowCompared ? '\u2713' : '+')
+                            .attr('fill', nowCompared ? '#06d6a0' : mutedColor)
+                            .attr('opacity', nowCompared ? 1 : 0.5);
+                        // Update all other compare buttons for max-reached state
+                        g.selectAll('.anomaly-compare-btn').each(function() {
+                            var el = d3.select(this);
+                            var btnTicker = el.attr('data-ticker');
+                            if (btnTicker && btnTicker !== ticker) {
+                                var btnCompared = window._compareSet && window._compareSet.indexOf(btnTicker) >= 0;
+                                var btnFull = window._compareSet && window._compareSet.length >= 4 && !btnCompared;
+                                el.style('cursor', btnFull ? 'not-allowed' : 'pointer');
+                            }
+                        });
+                        // ARIA announcement
+                        if (typeof announce === 'function') announce(nowCompared ? ticker + ' added to comparison' : ticker + ' removed from comparison');
+                    }
+                    hideChartTooltip();
+                });
+            } else {
+                cmpBtn.on('mouseover', function() {
+                    showChartTooltip(d3.event || event, 'Max 4 companies in comparison');
+                })
+                .on('mousemove', function() { positionChartTooltip(d3.event || event); })
+                .on('mouseout', function() { hideChartTooltip(); });
+            }
+            cmpBtn.attr('data-ticker', ticker);
+        })(d.ticker, by, barH);
+
         // Deviation % label
         var labelX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
         var labelAnchor = d.pctDev >= 0 ? 'start' : 'end';
@@ -10662,17 +10840,28 @@ function _renderScatterCommunityLabel(container, totalTickers, visibleDots) {
 
     // Build top sectors from the community tickers
     var sectorCounts = {};
+    var commPayValues = [];
     if (window._chartData && window._chartData.companies) {
         var commSet = window._activeCommunityScatterTickers;
         window._chartData.companies.forEach(function(c) {
-            if (commSet && commSet.has(c.ticker) && c.sector) {
-                sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1;
+            if (commSet && commSet.has(c.ticker)) {
+                if (c.sector) sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1;
+                if (c.total_compensation > 0) commPayValues.push(c.total_compensation);
             }
         });
     }
     var topSectors = Object.keys(sectorCounts).sort(function(a, b) {
         return sectorCounts[b] - sectorCounts[a];
     }).slice(0, 3);
+    // Compute median CEO pay for the community
+    var commMedianPay = null;
+    if (commPayValues.length > 0) {
+        commPayValues.sort(function(a, b) { return a - b; });
+        var mid = Math.floor(commPayValues.length / 2);
+        commMedianPay = commPayValues.length % 2 === 0
+            ? (commPayValues[mid - 1] + commPayValues[mid]) / 2
+            : commPayValues[mid];
+    }
 
     var labelDiv = document.createElement('div');
     labelDiv.className = 'scatter-community-label';
@@ -10689,6 +10878,15 @@ function _renderScatterCommunityLabel(container, totalTickers, visibleDots) {
     statsRow.className = 'scatter-community-label-stats';
     statsRow.textContent = totalTickers + ' companies' + (visibleDots < totalTickers ? ' (' + visibleDots + ' visible)' : '');
     labelDiv.appendChild(statsRow);
+
+    // Median CEO pay row
+    if (commMedianPay != null) {
+        var payRow = document.createElement('div');
+        payRow.className = 'scatter-community-label-pay';
+        payRow.innerHTML = '<span class="scatter-community-label-pay-label">Median CEO Pay</span> <strong>' +
+            (typeof fmtCurr === 'function' ? fmtCurr(commMedianPay) : '$' + Math.round(commMedianPay / 1e6) + 'M') + '</strong>';
+        labelDiv.appendChild(payRow);
+    }
 
     // Top sectors row
     if (topSectors.length > 0) {
