@@ -8554,7 +8554,7 @@ function setupDetailPanel(companies) {
             function norm(v, min, max) { return max > min ? (v - min) / (max - min) : 0; }
 
             // Pre-compute feature ranges from all companies (only once, cache on window)
-            if (!window._compTwinRanges) {
+            if (!window._compTwinRanges || !window._compTwinRanges.govScore) {
                 var allComp = companies.filter(function(c) { return c.total_compensation > 0; });
                 var logComps = allComp.map(function(c) { return Math.log10(c.total_compensation + 1); });
                 var stockPcts = allComp.filter(function(c) { return c._ceoStockPct != null; }).map(function(c) { return c._ceoStockPct; });
@@ -8566,7 +8566,8 @@ function setupDetailPanel(companies) {
                     stockPct: { min: Math.min.apply(null, stockPcts), max: Math.max.apply(null, stockPcts) },
                     concPct: { min: Math.min.apply(null, concPcts), max: Math.max.apply(null, concPcts) },
                     logRatio: { min: Math.min.apply(null, ratios), max: Math.max.apply(null, ratios) },
-                    logWorker: { min: Math.min.apply(null, workerPays), max: Math.max.apply(null, workerPays) }
+                    logWorker: { min: Math.min.apply(null, workerPays), max: Math.max.apply(null, workerPays) },
+                    govScore: { min: 0, max: 100 }
                 };
             }
             var R = window._compTwinRanges;
@@ -8579,14 +8580,15 @@ function setupDetailPanel(companies) {
                     concPct: c._ceoConcPct != null ? norm(c._ceoConcPct, R.concPct.min, R.concPct.max) : null,
                     logRatio: c.pay_ratio > 0 ? norm(Math.log10(c.pay_ratio), R.logRatio.min, R.logRatio.max) : null,
                     logWorker: c.median_worker_pay > 0 ? norm(Math.log10(c.median_worker_pay), R.logWorker.min, R.logWorker.max) : null,
+                    govScore: c._govScore != null ? norm(c._govScore, R.govScore.min, R.govScore.max) : null,
                     sector: c.sector || ''
                 };
             }
 
             // Weighted Euclidean distance (lower = more similar); skip null dimensions
             function similarity(f1, f2) {
-                var weights = { logComp: 3, stockPct: 2, concPct: 1.5, logRatio: 1.5, logWorker: 1 };
-                var dims = ['logComp', 'stockPct', 'concPct', 'logRatio', 'logWorker'];
+                var weights = { logComp: 3, stockPct: 2, concPct: 1.5, logRatio: 1.5, logWorker: 1, govScore: 1.5 };
+                var dims = ['logComp', 'stockPct', 'concPct', 'logRatio', 'logWorker', 'govScore'];
                 var sumSq = 0, wTotal = 0;
                 dims.forEach(function(d) {
                     if (f1[d] != null && f2[d] != null) {
@@ -8608,7 +8610,8 @@ function setupDetailPanel(companies) {
                 { key: 'stockPct', label: 'Equity %', weight: 2 },
                 { key: 'concPct', label: 'Concentration', weight: 1.5 },
                 { key: 'logRatio', label: 'Pay Ratio', weight: 1.5 },
-                { key: 'logWorker', label: 'Worker Pay', weight: 1 }
+                { key: 'logWorker', label: 'Worker Pay', weight: 1 },
+                { key: 'govScore', label: 'Governance', weight: 1.5 }
             ];
             function dimBreakdown(f1, f2) {
                 var result = [];
@@ -8627,6 +8630,7 @@ function setupDetailPanel(companies) {
                 if (dim === 'concPct') { var v2 = c._ceoConcPct != null ? c._ceoConcPct : c.concPct; return v2 != null ? Math.round(v2) + '%' : '—'; }
                 if (dim === 'logRatio') { var r = c.pay_ratio || c.payRatio; return r ? r + ':1' : '—'; }
                 if (dim === 'logWorker') { var w = c.median_worker_pay || c.workerPay; return w ? formatCurrency(w) : '—'; }
+                if (dim === 'govScore') { var gs = c._govScore; return gs != null ? gs + '/100' : '—'; }
                 return '—';
             }
 
@@ -8637,7 +8641,7 @@ function setupDetailPanel(companies) {
                     if (c.ticker === ticker || c.total_compensation <= 0) return;
                     var cF = features(c);
                     var d = similarity(selfF, cF);
-                    if (d < Infinity) scored.push({ ticker: c.ticker, name: c.company_name, ceo: c.ceo_name, comp: c.total_compensation, sector: c.sector, dist: d, stockPct: c._ceoStockPct, concPct: c._ceoConcPct, payRatio: c.pay_ratio, workerPay: c.median_worker_pay, feat: cF });
+                    if (d < Infinity) scored.push({ ticker: c.ticker, name: c.company_name, ceo: c.ceo_name, comp: c.total_compensation, sector: c.sector, dist: d, stockPct: c._ceoStockPct, concPct: c._ceoConcPct, payRatio: c.pay_ratio, workerPay: c.median_worker_pay, _govScore: c._govScore, feat: cF });
                 });
                 scored.sort(function(a, b) { return a.dist - b.dist; });
                 var twins = scored.slice(0, 5);
@@ -8649,7 +8653,7 @@ function setupDetailPanel(companies) {
                     html += '<div class="comp-twins-section">';
                     html += '<div class="comp-twins-header">';
                     html += '<span class="comp-twins-title">Compensation Twins</span>';
-                    html += '<span class="comp-twins-sub">Most similar pay profiles — hover a card for dimension-by-dimension breakdown</span>';
+                    html += '<span class="comp-twins-sub">Most similar pay profiles across 6 dimensions (comp, equity, concentration, ratio, worker pay, governance)</span>';
                     html += '</div>';
                     html += '<div class="comp-twins-list">';
                     twins.forEach(function(tw) {
@@ -8671,6 +8675,7 @@ function setupDetailPanel(companies) {
                         if (tw.stockPct != null) html += '<span title="Stock awards % of total">Eq ' + Math.round(tw.stockPct) + '%</span>';
                         if (tw.concPct != null) html += '<span title="CEO concentration %">Conc ' + tw.concPct.toFixed(0) + '%</span>';
                         if (tw.payRatio != null) html += '<span title="CEO-to-worker pay ratio">Ratio ' + tw.payRatio + ':1</span>';
+                        if (tw._govScore != null) html += '<span title="Governance score">Gov ' + tw._govScore + '</span>';
                         html += '</div>';
                         // Dimension breakdown tooltip (shown on hover/focus)
                         html += '<div class="comp-twin-breakdown">';

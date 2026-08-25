@@ -4024,6 +4024,92 @@ function initNetwork(peerData) {
             html += '</div>';
         }
 
+        // --- Endpoint Pay Comparison Card ---
+        if (pathResult.nodes.length >= 2) {
+            var epA = pathResult.nodes[0];
+            var epB = pathResult.nodes[pathResult.nodes.length - 1];
+            var cA = _compLookup[epA];
+            var cB = _compLookup[epB];
+            if (cA && cB) {
+                // Gather full company objects for richer data
+                var fullA = null, fullB = null;
+                if (typeof compData !== 'undefined' && compData && compData.companies) {
+                    compData.companies.forEach(function(c) {
+                        if (c.ticker === epA) fullA = c;
+                        if (c.ticker === epB) fullB = c;
+                    });
+                }
+                html += '<div class="pf-endpoint-compare">';
+                html += '<div class="pf-epc-header">Endpoint Comparison</div>';
+                html += '<div class="pf-epc-grid">';
+                // Header row
+                html += '<div class="pf-epc-label"></div>';
+                html += '<div class="pf-epc-val pf-epc-col-header">' + epA + '</div>';
+                html += '<div class="pf-epc-val pf-epc-col-header">' + epB + '</div>';
+                html += '<div class="pf-epc-val pf-epc-col-header pf-epc-delta-hdr">\u0394</div>';
+
+                // Build rows with value extraction + delta computation
+                var rows = [];
+                // CEO Pay
+                var aTotal = (cA.total != null && cA.total > 0) ? cA.total : null;
+                var bTotal = (cB.total != null && cB.total > 0) ? cB.total : null;
+                rows.push({ label: 'CEO Pay', a: aTotal ? _fmtComp(aTotal) : '\u2014', b: bTotal ? _fmtComp(bTotal) : '\u2014',
+                    delta: (aTotal && bTotal) ? (((bTotal - aTotal) / aTotal) * 100) : null, fmt: 'pct' });
+
+                // Equity %
+                var aEq = fullA ? fullA._ceoStockPct : null;
+                var bEq = fullB ? fullB._ceoStockPct : null;
+                rows.push({ label: 'Equity %', a: aEq != null ? Math.round(aEq) + '%' : '\u2014', b: bEq != null ? Math.round(bEq) + '%' : '\u2014',
+                    delta: (aEq != null && bEq != null) ? (bEq - aEq) : null, fmt: 'pp' });
+
+                // CEO Concentration
+                var aConc = fullA ? fullA._ceoConcPct : null;
+                var bConc = fullB ? fullB._ceoConcPct : null;
+                rows.push({ label: 'Concentration', a: aConc != null ? aConc.toFixed(0) + '%' : '\u2014', b: bConc != null ? bConc.toFixed(0) + '%' : '\u2014',
+                    delta: (aConc != null && bConc != null) ? (bConc - aConc) : null, fmt: 'pp' });
+
+                // Pay Ratio
+                var aRatio = cA.ratio;
+                var bRatio = cB.ratio;
+                rows.push({ label: 'Pay Ratio', a: aRatio ? aRatio + ':1' : '\u2014', b: bRatio ? bRatio + ':1' : '\u2014',
+                    delta: (aRatio && bRatio) ? (((bRatio - aRatio) / aRatio) * 100) : null, fmt: 'pct' });
+
+                // Governance Score
+                var aGov = fullA ? fullA._govScore : null;
+                var bGov = fullB ? fullB._govScore : null;
+                rows.push({ label: 'Governance', a: aGov != null ? aGov + '/100' : '\u2014', b: bGov != null ? bGov + '/100' : '\u2014',
+                    delta: (aGov != null && bGov != null) ? (bGov - aGov) : null, fmt: 'abs' });
+
+                // Say-on-Pay
+                var aSop = fullA && fullA._sopApproval != null ? fullA._sopApproval : null;
+                var bSop = fullB && fullB._sopApproval != null ? fullB._sopApproval : null;
+                rows.push({ label: 'Say-on-Pay', a: aSop != null ? aSop.toFixed(1) + '%' : '\u2014', b: bSop != null ? bSop.toFixed(1) + '%' : '\u2014',
+                    delta: (aSop != null && bSop != null) ? (bSop - aSop) : null, fmt: 'pp' });
+
+                // Worker Pay
+                var aWorker = cA.worker;
+                var bWorker = cB.worker;
+                rows.push({ label: 'Worker Pay', a: aWorker ? _fmtComp(aWorker) : '\u2014', b: bWorker ? _fmtComp(bWorker) : '\u2014',
+                    delta: (aWorker && bWorker) ? (((bWorker - aWorker) / aWorker) * 100) : null, fmt: 'pct' });
+
+                rows.forEach(function(r) {
+                    html += '<div class="pf-epc-label">' + r.label + '</div>';
+                    html += '<div class="pf-epc-val">' + r.a + '</div>';
+                    html += '<div class="pf-epc-val">' + r.b + '</div>';
+                    if (r.delta != null) {
+                        var sign = r.delta >= 0 ? '+' : '';
+                        var cls = Math.abs(r.delta) < 3 ? 'pf-epc-flat' : (r.delta > 0 ? 'pf-epc-up' : 'pf-epc-down');
+                        var suffix = r.fmt === 'pct' ? '%' : (r.fmt === 'pp' ? 'pp' : '');
+                        html += '<div class="pf-epc-val pf-epc-delta ' + cls + '">' + sign + r.delta.toFixed(0) + suffix + '</div>';
+                    } else {
+                        html += '<div class="pf-epc-val pf-epc-delta">\u2014</div>';
+                    }
+                });
+                html += '</div>'; // pf-epc-grid
+                html += '</div>'; // pf-endpoint-compare
+            }
+        }
+
         pfResult.innerHTML = html;
         pfResult.classList.add('visible');
 

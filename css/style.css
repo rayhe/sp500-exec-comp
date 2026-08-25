@@ -2025,6 +2025,68 @@ header h1 {
 [data-theme="light"] .pcf-delta-flat { color: #d97706; }
 [data-theme="light"] .pcf-range { color: #1a1a2e; }
 
+/* === Path Finder Endpoint Comparison === */
+.pf-endpoint-compare {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(124,58,237,0.06);
+    border: 1px solid rgba(124,58,237,0.15);
+    border-radius: 8px;
+}
+.pf-epc-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a78bfa;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+}
+.pf-epc-grid {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr 60px;
+    gap: 2px 8px;
+    font-size: 0.65rem;
+    align-items: center;
+}
+.pf-epc-label {
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+.pf-epc-val {
+    font-family: var(--mono);
+    color: var(--text-primary);
+    text-align: right;
+}
+.pf-epc-col-header {
+    font-weight: 700;
+    color: #a78bfa;
+    font-size: 0.68rem;
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(124,58,237,0.15);
+    margin-bottom: 2px;
+}
+.pf-epc-delta-hdr {
+    text-align: right;
+}
+.pf-epc-delta {
+    font-weight: 600;
+}
+.pf-epc-up { color: #ef476f; }
+.pf-epc-down { color: #06d6a0; }
+.pf-epc-flat { color: #ffd166; }
+[data-theme="light"] .pf-endpoint-compare {
+    background: rgba(124,58,237,0.04);
+    border-color: rgba(124,58,237,0.12);
+}
+[data-theme="light"] .pf-epc-header { color: #7c3aed; }
+[data-theme="light"] .pf-epc-col-header { color: #7c3aed; }
+[data-theme="light"] .pf-epc-up { color: #dc2626; }
+[data-theme="light"] .pf-epc-down { color: #16a34a; }
+[data-theme="light"] .pf-epc-flat { color: #d97706; }
+@media (max-width: 600px) {
+    .pf-endpoint-compare { display: none; }
+}
+
 /* === Chart Tooltip === */
 .chart-tooltip {
     position: fixed;

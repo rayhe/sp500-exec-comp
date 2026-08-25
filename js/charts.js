@@ -8888,7 +8888,8 @@ function drawPayAnomalyChart(companies) {
                 pctDev: pctDev,
                 govScore: c._govScore,
                 govGrade: c._govGrade || '\u2014',
-                sectorMedian: sectorMedian
+                sectorMedian: sectorMedian,
+                trend: c._ceoTrend || null
             });
         });
     });
@@ -9236,6 +9237,82 @@ function drawPayAnomalyChart(companies) {
             .delay(i * (_anomalySectorFilter ? 12 : 20) + 300)
             .attr('opacity', 1)
             .text((d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '% (' + fmtCurr(d.actual) + ')');
+
+        // 3-year trend sparkline — tiny line chart in right margin showing CEO pay trajectory
+        if (d.trend && d.trend.length >= 2) {
+            (function(trendData, by2, barH2, barColor2) {
+                var spkW = 36, spkH = barH2 - 2;
+                var spkX = width + 10;
+                var spkY = by2 + 1;
+                var tMin = d3.min(trendData, function(p) { return p.total; });
+                var tMax = d3.max(trendData, function(p) { return p.total; });
+                var tRange = tMax - tMin || 1;
+                var yMin = trendData[0].year;
+                var yMax = trendData[trendData.length - 1].year;
+                var yRange = yMax - yMin || 1;
+                var lastPt = trendData[trendData.length - 1];
+                var firstPt = trendData[0];
+                var trendUp = lastPt.total >= firstPt.total;
+                var lineColor = trendUp ? '#06d6a0' : '#ef476f';
+
+                var pts = trendData.map(function(p) {
+                    var px = spkX + (p.year - yMin) / yRange * spkW;
+                    var py = spkY + spkH - (p.total - tMin) / tRange * spkH;
+                    return { x: px, y: py, year: p.year, total: p.total };
+                });
+
+                var polyStr = pts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+
+                // Area fill
+                var areaStr = pts[0].x.toFixed(1) + ',' + (spkY + spkH).toFixed(1) + ' ' + polyStr + ' ' + pts[pts.length - 1].x.toFixed(1) + ',' + (spkY + spkH).toFixed(1);
+                g.append('polygon')
+                    .attr('points', areaStr)
+                    .attr('fill', lineColor)
+                    .attr('opacity', 0.1)
+                    .style('pointer-events', 'none');
+
+                // Line
+                g.append('polyline')
+                    .attr('points', polyStr)
+                    .attr('fill', 'none')
+                    .attr('stroke', lineColor)
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-linecap', 'round')
+                    .attr('stroke-linejoin', 'round')
+                    .style('pointer-events', 'none');
+
+                // Endpoint dots
+                pts.forEach(function(p, pi) {
+                    g.append('circle')
+                        .attr('cx', p.x).attr('cy', p.y)
+                        .attr('r', pi === pts.length - 1 ? 2 : 1.2)
+                        .attr('fill', lineColor)
+                        .attr('stroke', pi === pts.length - 1 ? (dark ? '#18181b' : '#fff') : 'none')
+                        .attr('stroke-width', pi === pts.length - 1 ? 0.8 : 0)
+                        .style('pointer-events', 'none');
+                });
+
+                // Hover overlay for tooltip
+                g.append('rect')
+                    .attr('x', spkX - 2).attr('y', spkY - 2)
+                    .attr('width', spkW + 4).attr('height', spkH + 4)
+                    .attr('fill', 'transparent')
+                    .style('cursor', 'pointer')
+                    .on('mouseover', function(event) {
+                        var ttParts = trendData.map(function(p) {
+                            return 'FY' + p.year + ': ' + fmtCurr(p.total);
+                        });
+                        var yoyPct = ((lastPt.total - firstPt.total) / firstPt.total * 100);
+                        ttParts.push((trendUp ? '\u25B2' : '\u25BC') + ' ' + (yoyPct >= 0 ? '+' : '') + yoyPct.toFixed(0) + '% overall');
+                        showChartTooltip(event || d3.event, ttParts.join('<br>'));
+                    })
+                    .on('mousemove', function(event) { positionChartTooltip(event || d3.event); })
+                    .on('mouseout', function() { hideChartTooltip(); })
+                    .on('click', function() {
+                        if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
+                    });
+            })(d.trend, by, barH, barColor);
+        }
 
         // Scatter navigation icon (⤴) — navigate to configurable scatter with this company highlighted
         var navIconX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
