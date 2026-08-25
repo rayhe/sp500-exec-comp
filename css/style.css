@@ -2120,6 +2120,71 @@ header h1 {
     border-color: rgba(124,58,237,0.35);
 }
 
+/* Compare All Path Nodes button */
+.pf-epc-compare-all-btn {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 7px 14px;
+    background: rgba(6,214,160,0.1);
+    border: 1px solid rgba(6,214,160,0.25);
+    border-radius: 6px;
+    color: #06d6a0;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+.pf-epc-compare-all-btn:hover {
+    background: rgba(6,214,160,0.2);
+    border-color: rgba(6,214,160,0.45);
+    transform: translateY(-1px);
+}
+.pf-epc-compare-all-btn:active {
+    transform: translateY(0);
+}
+[data-theme="light"] .pf-epc-compare-all-btn {
+    background: rgba(6,214,160,0.08);
+    border-color: rgba(6,214,160,0.2);
+    color: #059669;
+}
+[data-theme="light"] .pf-epc-compare-all-btn:hover {
+    background: rgba(6,214,160,0.15);
+    border-color: rgba(6,214,160,0.35);
+}
+
+/* Path edge gradient legend */
+.pf-gradient-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+}
+.pf-gradient-bar {
+    width: 60px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #06d6a0, #fabd2f, #ef476f);
+}
+.pf-gradient-label {
+    font-size: 9px;
+    opacity: 0.6;
+}
+[data-theme="light"] .pf-gradient-legend {
+    color: rgba(0,0,0,0.5);
+}
+
+@media (max-width: 600px) {
+    .pf-epc-compare-all-btn,
+    .pf-gradient-legend {
+        display: none;
+    }
+}
+
 /* === Chart Tooltip === */
 .chart-tooltip {
     position: fixed;

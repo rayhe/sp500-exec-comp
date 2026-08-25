@@ -9281,7 +9281,7 @@ function drawPayAnomalyChart(companies) {
                     .attr('stroke-linejoin', 'round')
                     .style('pointer-events', 'none');
 
-                // Endpoint dots
+                // Endpoint dots + year labels
                 pts.forEach(function(p, pi) {
                     g.append('circle')
                         .attr('cx', p.x).attr('cy', p.y)
@@ -9290,6 +9290,17 @@ function drawPayAnomalyChart(companies) {
                         .attr('stroke', pi === pts.length - 1 ? (dark ? '#18181b' : '#fff') : 'none')
                         .attr('stroke-width', pi === pts.length - 1 ? 0.8 : 0)
                         .style('pointer-events', 'none');
+
+                    // Year label under each dot
+                    g.append('text')
+                        .attr('x', p.x)
+                        .attr('y', spkY + spkH + 7)
+                        .attr('text-anchor', 'middle')
+                        .attr('font-size', '6px')
+                        .attr('font-weight', '500')
+                        .attr('fill', dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)')
+                        .style('pointer-events', 'none')
+                        .text("'" + String(p.year).slice(-2));
                 });
 
                 // Hover overlay for tooltip

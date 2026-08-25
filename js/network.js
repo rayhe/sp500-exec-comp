@@ -1404,7 +1404,37 @@ function initNetwork(peerData) {
                 ctx.fillText(String(idx + 1), n.x + r * 0.7, n.y - r * 0.7);
             });
 
-            // Draw path edges — distinguish mutual vs one-directional
+            // Draw path edges — distinguish mutual vs one-directional, with compensation gradient
+            // Build compensation color scale for gradient edges
+            var _pathMinComp = Infinity, _pathMaxComp = -Infinity;
+            activePath.nodes.forEach(function(ticker) {
+                var comp = _compLookup[ticker];
+                if (comp && comp.total > 0) {
+                    if (comp.total < _pathMinComp) _pathMinComp = comp.total;
+                    if (comp.total > _pathMaxComp) _pathMaxComp = comp.total;
+                }
+            });
+            var _pathCompRange = _pathMaxComp - _pathMinComp;
+            function _pathCompColor(ticker, alpha) {
+                var comp = _compLookup[ticker];
+                if (!comp || !comp.total || comp.total <= 0 || _pathCompRange <= 0) return 'rgba(168,85,247,' + alpha + ')';
+                var t = (comp.total - _pathMinComp) / _pathCompRange; // 0=lowest, 1=highest
+                // Gradient: green (low pay) → yellow (mid) → red (high pay)
+                var r, g, b;
+                if (t < 0.5) {
+                    var s = t * 2;
+                    r = Math.round(6 + s * 244);    // 6 → 250
+                    g = Math.round(214 - s * 35);    // 214 → 179
+                    b = Math.round(160 - s * 100);   // 160 → 60
+                } else {
+                    var s = (t - 0.5) * 2;
+                    r = Math.round(250 - s * 11);    // 250 → 239
+                    g = Math.round(179 - s * 111);   // 179 → 68
+                    b = Math.round(60 + s * 51);     // 60 → 111
+                }
+                return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+            }
+
             activePath.edges.forEach(function(e) {
                 var s = nodeMap[e.source];
                 var t = nodeMap[e.target];
@@ -1415,9 +1445,15 @@ function initNetwork(peerData) {
                 var isMutual = adjSrc && adjSrc.in.indexOf(e.target) >= 0;
 
                 if (isMutual) {
-                    // Mutual edge: gold double-line with glow
+                    // Mutual edge: compensation gradient double-line with glow
+                    var srcColor = _pathCompColor(e.source, 0.85);
+                    var tgtColor = _pathCompColor(e.target, 0.85);
+                    var grad = ctx.createLinearGradient(s.x, s.y, t.x, t.y);
+                    grad.addColorStop(0, srcColor);
+                    grad.addColorStop(1, tgtColor);
+
                     ctx.save();
-                    ctx.shadowColor = 'rgba(255,209,102,0.4)';
+                    ctx.shadowColor = 'rgba(255,209,102,0.3)';
                     ctx.shadowBlur = 6 / scale;
 
                     // Compute perpendicular offset for double-line
@@ -1429,14 +1465,14 @@ function initNetwork(peerData) {
                     ctx.beginPath();
                     ctx.moveTo(s.x + px, s.y + py);
                     ctx.lineTo(t.x + px, t.y + py);
-                    ctx.strokeStyle = 'rgba(255,209,102,0.85)';
+                    ctx.strokeStyle = grad;
                     ctx.lineWidth = 2.5 / scale;
                     ctx.stroke();
 
                     ctx.beginPath();
                     ctx.moveTo(s.x - px, s.y - py);
                     ctx.lineTo(t.x - px, t.y - py);
-                    ctx.strokeStyle = 'rgba(255,209,102,0.85)';
+                    ctx.strokeStyle = grad;
                     ctx.lineWidth = 2.5 / scale;
                     ctx.stroke();
 
@@ -1457,7 +1493,7 @@ function initNetwork(peerData) {
                         ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
                         ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
                         ctx.closePath();
-                        ctx.fillStyle = 'rgba(255,209,102,0.9)';
+                        ctx.fillStyle = tgtColor;
                         ctx.fill();
 
                         // Arrow at source (reverse direction)
@@ -1469,19 +1505,26 @@ function initNetwork(peerData) {
                         ctx.lineTo(rtipX - aLen * Math.cos(rAngle - Math.PI / 6), rtipY - aLen * Math.sin(rAngle - Math.PI / 6));
                         ctx.lineTo(rtipX - aLen * Math.cos(rAngle + Math.PI / 6), rtipY - aLen * Math.sin(rAngle + Math.PI / 6));
                         ctx.closePath();
-                        ctx.fillStyle = 'rgba(255,209,102,0.9)';
+                        ctx.fillStyle = srcColor;
                         ctx.fill();
                     }
                 } else {
-                    // One-directional edge: purple (existing style)
+                    // One-directional edge: compensation gradient
+                    // Create gradient from source comp color to target comp color
+                    var srcColor = _pathCompColor(e.source, 0.8);
+                    var tgtColor = _pathCompColor(e.target, 0.8);
+                    var grad = ctx.createLinearGradient(s.x, s.y, t.x, t.y);
+                    grad.addColorStop(0, srcColor);
+                    grad.addColorStop(1, tgtColor);
+
                     ctx.beginPath();
                     ctx.moveTo(s.x, s.y);
                     ctx.lineTo(t.x, t.y);
-                    ctx.strokeStyle = 'rgba(168,85,247,0.7)';
+                    ctx.strokeStyle = grad;
                     ctx.lineWidth = 3 / scale;
                     ctx.stroke();
 
-                    // Arrowhead at target
+                    // Arrowhead at target — use target comp color
                     var dx = t.x - s.x, dy = t.y - s.y;
                     var dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist > 1) {
@@ -1495,7 +1538,7 @@ function initNetwork(peerData) {
                         ctx.lineTo(tipX - aLen * Math.cos(angle - Math.PI / 6), tipY - aLen * Math.sin(angle - Math.PI / 6));
                         ctx.lineTo(tipX - aLen * Math.cos(angle + Math.PI / 6), tipY - aLen * Math.sin(angle + Math.PI / 6));
                         ctx.closePath();
-                        ctx.fillStyle = 'rgba(168,85,247,0.8)';
+                        ctx.fillStyle = tgtColor;
                         ctx.fill();
                     }
                 }
@@ -4022,6 +4065,14 @@ function initNetwork(peerData) {
                 html += '<span class="pcf-spread">' + spread + '× spread</span>';
             }
             html += '</div>';
+
+            // Pay gradient legend — shows scale of edge colors on graph
+            html += '<div class="pf-gradient-legend">';
+            html += '<span class="pf-gradient-label">' + _fmtComp(minComp) + '</span>';
+            html += '<div class="pf-gradient-bar"></div>';
+            html += '<span class="pf-gradient-label">' + _fmtComp(maxComp) + '</span>';
+            html += '<span class="pf-gradient-label" style="margin-left:4px">Edge color = CEO pay</span>';
+            html += '</div>';
         }
 
         // --- Endpoint Pay Comparison Card ---
@@ -4107,6 +4158,10 @@ function initNetwork(peerData) {
                 });
                 html += '</div>'; // pf-epc-grid
                 html += '<button class="pf-epc-compare-btn" data-ep-a="' + epA + '" data-ep-b="' + epB + '" title="Open full side-by-side comparison of ' + epA + ' and ' + epB + '">\u2696 Compare in Detail \u2192</button>';
+                // "Compare all path nodes" button — only shown for 3-4 node paths
+                if (pathResult.nodes.length >= 3 && pathResult.nodes.length <= 4) {
+                    html += '<button class="pf-epc-compare-all-btn" data-path-tickers="' + pathResult.nodes.join(',') + '" title="Compare all ' + pathResult.nodes.length + ' companies in this path">\u{1F50D} Compare All ' + pathResult.nodes.length + ' Path Nodes \u2192</button>';
+                }
                 html += '</div>'; // pf-endpoint-compare
             }
         }
@@ -4138,6 +4193,26 @@ function initNetwork(peerData) {
                 if (window._triggerComparisonRender) window._triggerComparisonRender();
                 var section = document.getElementById('comparison-section');
                 if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
+            });
+        }
+
+        // "Compare All Path Nodes" button handler
+        var epcAllBtn = pfResult.querySelector('.pf-epc-compare-all-btn');
+        if (epcAllBtn) {
+            epcAllBtn.addEventListener('click', function() {
+                var tickers = epcAllBtn.getAttribute('data-path-tickers');
+                if (!tickers || !window._compareSet || !window._toggleCompare) return;
+                var tickerList = tickers.split(',');
+                // Clear existing comparison set
+                window._compareSet.length = 0;
+                // Add all path nodes
+                tickerList.forEach(function(t) { window._toggleCompare(t); });
+                // Trigger comparison render and scroll to it
+                if (window._triggerComparisonRender) window._triggerComparisonRender();
+                var section = document.getElementById('comparison-section');
+                if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
+                // ARIA announcement
+                if (typeof announce === 'function') announce('Comparing ' + tickerList.length + ' path companies: ' + tickerList.join(', '));
             });
         }
     }
