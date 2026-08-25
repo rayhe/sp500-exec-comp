@@ -4106,6 +4106,7 @@ function initNetwork(peerData) {
                     }
                 });
                 html += '</div>'; // pf-epc-grid
+                html += '<button class="pf-epc-compare-btn" data-ep-a="' + epA + '" data-ep-b="' + epB + '" title="Open full side-by-side comparison of ' + epA + ' and ' + epB + '">\u2696 Compare in Detail \u2192</button>';
                 html += '</div>'; // pf-endpoint-compare
             }
         }
@@ -4120,6 +4121,25 @@ function initNetwork(peerData) {
                 if (window.findCompanyInTable) window.findCompanyInTable(ticker);
             });
         });
+
+        // "Compare in Detail" button — bridges path finder to full comparison panel
+        var epcBtn = pfResult.querySelector('.pf-epc-compare-btn');
+        if (epcBtn) {
+            epcBtn.addEventListener('click', function() {
+                var a = epcBtn.getAttribute('data-ep-a');
+                var b = epcBtn.getAttribute('data-ep-b');
+                if (!a || !b || !window._compareSet || !window._toggleCompare) return;
+                // Clear existing comparison set
+                window._compareSet.length = 0;
+                // Add both endpoints
+                window._toggleCompare(a);
+                window._toggleCompare(b);
+                // Trigger comparison render and scroll to it
+                if (window._triggerComparisonRender) window._triggerComparisonRender();
+                var section = document.getElementById('comparison-section');
+                if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
+            });
+        }
     }
 
     function pfPrefill(ticker, slot) {
