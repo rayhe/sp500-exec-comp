@@ -2565,6 +2565,22 @@ function initNetwork(peerData) {
                 }
                 _lpTimer = null;
             }, _reducedMotion ? 100 : LP_DELAY);
+        } else if (_pathBadgeAreas.length > 0) {
+            // Touch on empty space — check for path badge tap
+            var pt = transform.invert([mx, my]);
+            var gx = pt[0], gy = pt[1];
+            var hitBadge = null;
+            for (var bi = 0; bi < _pathBadgeAreas.length; bi++) {
+                var ba = _pathBadgeAreas[bi];
+                if (gx >= ba.x && gx <= ba.x + ba.w && gy >= ba.y && gy <= ba.y + ba.h) {
+                    hitBadge = ba.ticker;
+                    break;
+                }
+            }
+            if (hitBadge && window.findCompanyInTable) {
+                window.findCompanyInTable(hitBadge);
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
         }
     }, { passive: true });
 
@@ -4213,6 +4229,11 @@ function initNetwork(peerData) {
         if (pfToInput) pfToInput.value = '';
         if (pfResult) pfResult.classList.remove('visible');
         pfUpdateGoState();
+        // Clear scatter path overlay
+        window._activePathFinderNodes = null;
+        if (typeof window._redrawScatterForPathOverlay === 'function') {
+            window._redrawScatterForPathOverlay();
+        }
         draw();
     }
 
@@ -4453,10 +4474,16 @@ function initNetwork(peerData) {
         }
 
         // Export Path button — copies formatted path summary to clipboard
+        html += '<div class="pf-export-group">';
         html += '<button class="pf-export-btn" id="pf-export-btn" title="Copy path summary to clipboard">';
         html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-        html += ' Export Path';
+        html += ' Export Text';
         html += '</button>';
+        html += '<button class="pf-export-csv-btn" id="pf-export-csv-btn" title="Copy path as CSV to clipboard">';
+        html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+        html += ' Export CSV';
+        html += '</button>';
+        html += '</div>';
 
         pfResult.innerHTML = html;
         pfResult.classList.add('visible');
@@ -4568,7 +4595,7 @@ function initNetwork(peerData) {
                     if (typeof announce === 'function') announce('Path summary copied to clipboard');
                     setTimeout(function() {
                         exportBtn.classList.remove('pf-export-copied');
-                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Path';
+                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Text';
                     }, 2000);
                 }).catch(function() {
                     // Fallback: select text in a temporary textarea
@@ -4584,7 +4611,57 @@ function initNetwork(peerData) {
                     exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
                     setTimeout(function() {
                         exportBtn.classList.remove('pf-export-copied');
-                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Path';
+                        exportBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Export Text';
+                    }, 2000);
+                });
+            });
+        }
+
+        // "Export CSV" button handler — builds CSV and copies to clipboard
+        var csvBtn = pfResult.querySelector('#pf-export-csv-btn');
+        if (csvBtn) {
+            csvBtn.addEventListener('click', function() {
+                if (!pathResult || !pathResult.nodes || pathResult.nodes.length < 2) return;
+                var pathTickers = pathResult.nodes;
+                var csvLines = [];
+                csvLines.push('Step,Ticker,Company,CEO,Sector,Total Pay,Salary,Stock Awards,Option Awards,Bonus,Incentive,Pension/NQDC,Other');
+                pathTickers.forEach(function(ticker, idx) {
+                    var n = nodeMap[ticker];
+                    var comp = _compLookup[ticker];
+                    var name = n ? (n.name || '').replace(/,/g, ';') : '';
+                    var sector = n ? (n.sector || '').replace(/,/g, ';') : '';
+                    var ceo = (comp && comp.ceo) ? comp.ceo.replace(/,/g, ';') : '';
+                    var pay = (comp && comp.total > 0) ? comp.total : '';
+                    var bd = (comp && comp._breakdown) ? comp._breakdown : {};
+                    csvLines.push([
+                        idx + 1, ticker, '"' + name + '"', '"' + ceo + '"', '"' + sector + '"',
+                        pay, bd.salary || '', bd.stock || '', bd.options || '',
+                        bd.bonus || '', bd.incentive || '', bd.pension || '', bd.other || ''
+                    ].join(','));
+                });
+                var csvText = csvLines.join('\n');
+                navigator.clipboard.writeText(csvText).then(function() {
+                    csvBtn.classList.add('pf-export-copied');
+                    csvBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                    if (typeof announce === 'function') announce('Path CSV copied to clipboard');
+                    setTimeout(function() {
+                        csvBtn.classList.remove('pf-export-copied');
+                        csvBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export CSV';
+                    }, 2000);
+                }).catch(function() {
+                    var ta = document.createElement('textarea');
+                    ta.value = csvText;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    csvBtn.classList.add('pf-export-copied');
+                    csvBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                    setTimeout(function() {
+                        csvBtn.classList.remove('pf-export-copied');
+                        csvBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export CSV';
                     }, 2000);
                 });
             });
@@ -4619,6 +4696,16 @@ function initNetwork(peerData) {
         if (!pfFromTicker || !pfToTicker || pfFromTicker === pfToTicker) return;
         var result = bfsShortestPath(pfFromTicker, pfToTicker);
         activePath = result;
+        // Expose active path to scatter plot for path overlay
+        if (result && result.nodes && result.nodes.length >= 2) {
+            window._activePathFinderNodes = result.nodes.slice();
+        } else {
+            window._activePathFinderNodes = null;
+        }
+        // Trigger scatter redraw for path overlay
+        if (typeof window._redrawScatterForPathOverlay === 'function') {
+            window._redrawScatterForPathOverlay();
+        }
         pfShowResult(result);
         if (result) pfZoomToPath(result);
         draw();

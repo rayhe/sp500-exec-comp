@@ -12028,3 +12028,119 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .tooltip .tt-bd-bar {
     background: linear-gradient(90deg, #059669, #0077b6);
 }
+
+
+/* === Export Button Group (Text + CSV side by side) === */
+.pf-export-group {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+.pf-export-group .pf-export-btn,
+.pf-export-group .pf-export-csv-btn {
+    flex: 1;
+    width: auto;
+    margin-top: 0;
+}
+.pf-export-csv-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(0,180,216,0.1);
+    border: 1px solid rgba(0,180,216,0.25);
+    border-radius: 6px;
+    color: #00b4d8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+.pf-export-csv-btn:hover {
+    background: rgba(0,180,216,0.2);
+    border-color: rgba(0,180,216,0.45);
+    transform: translateY(-1px);
+}
+.pf-export-csv-btn:active {
+    transform: translateY(0);
+}
+.pf-export-csv-btn.pf-export-copied {
+    background: rgba(6,214,160,0.15);
+    border-color: rgba(6,214,160,0.4);
+    color: #06d6a0;
+}
+[data-theme="light"] .pf-export-csv-btn {
+    background: rgba(0,119,182,0.06);
+    border-color: rgba(0,119,182,0.18);
+    color: #0077b6;
+}
+[data-theme="light"] .pf-export-csv-btn:hover {
+    background: rgba(0,119,182,0.12);
+    border-color: rgba(0,119,182,0.3);
+}
+[data-theme="light"] .pf-export-csv-btn.pf-export-copied {
+    background: rgba(5,150,105,0.1);
+    border-color: rgba(5,150,105,0.3);
+    color: #059669;
+}
+
+/* === Scatter Plot Path Overlay Floating Label === */
+.scatter-path-label {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(15,23,42,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-left: 3px solid #a78bfa;
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    z-index: 20;
+    max-width: 320px;
+    pointer-events: auto;
+}
+.scatter-path-label .spl-icon {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+.scatter-path-label .spl-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+.scatter-path-label .spl-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 12px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+.scatter-path-label .spl-dismiss:hover {
+    opacity: 1;
+    color: #ef476f;
+}
+[data-theme="light"] .scatter-path-label {
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(109,40,217,0.2);
+    border-left-color: #7c3aed;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+@media (max-width: 600px) {
+    .scatter-path-label { display: none; }
+    .pf-export-group { flex-direction: column; }
+}

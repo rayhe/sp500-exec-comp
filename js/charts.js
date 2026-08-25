@@ -3937,6 +3937,9 @@ function drawScatterChart(companies) {
 
     // Store scatter state for trend trail rendering
     window._scatterState = { x: x, yScale: yScale, xMetricKey: xMetricKey, yMetricKey: yMetricKey, xMetric: xMetric, yMetric: yMetric, pts: pts, w: w, h: h };
+
+    // Apply path finder overlay on scatter (draws gradient path connecting peer companies)
+    _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h);
 }
 
 function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brush, svg, hasSectorOverlay, defaultOpacity, sectorDotOpacity) {
@@ -14029,3 +14032,187 @@ function drawSectorCorrDeepDive(companies) {
         anomalyFlags: _anomalyFlags
     };
 }
+
+/* === Scatter Path Finder Overlay === */
+/* When the network path finder has an active path, draw it on the scatter plot too.
+   Uses compensation gradient coloring (green→yellow→red) matching the network graph edges. */
+function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
+    // Remove any previous overlay
+    svg.selectAll('.scatter-path-overlay').remove();
+    var container = document.getElementById('scatter-chart');
+    if (container) {
+        var prevLabel = container.querySelector('.scatter-path-label');
+        if (prevLabel) prevLabel.remove();
+    }
+
+    var pathNodes = window._activePathFinderNodes;
+    if (!pathNodes || pathNodes.length < 2) return;
+
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
+
+    // Build a ticker → point lookup from scatter dots
+    var ptMap = {};
+    pts.forEach(function(p) {
+        if (p && p.ticker) ptMap[p.ticker] = p;
+    });
+
+    // Filter path nodes to those visible on scatter
+    var visiblePath = [];
+    pathNodes.forEach(function(ticker) {
+        if (ptMap[ticker]) visiblePath.push({ ticker: ticker, pt: ptMap[ticker] });
+    });
+
+    if (visiblePath.length < 2) return;
+
+    // Get compensation values for gradient coloring
+    var compVals = [];
+    visiblePath.forEach(function(n) {
+        var c = n.pt;
+        var pay = c.total_compensation || 0;
+        compVals.push(pay);
+    });
+    var minPay = Math.min.apply(null, compVals);
+    var maxPay = Math.max.apply(null, compVals);
+    var payRange = maxPay - minPay;
+
+    function payColor(val) {
+        if (payRange === 0) return '#a78bfa'; // purple fallback
+        var t = (val - minPay) / payRange;
+        // green→yellow→red
+        var r, g, b;
+        if (t < 0.5) {
+            var s = t * 2;
+            r = Math.round(6 + (250 - 6) * s);
+            g = Math.round(214 + (189 - 214) * s);
+            b = Math.round(160 + (47 - 160) * s);
+        } else {
+            var s = (t - 0.5) * 2;
+            r = Math.round(250 + (239 - 250) * s);
+            g = Math.round(189 + (71 - 189) * s);
+            b = Math.round(47 + (111 - 47) * s);
+        }
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
+    var overlayG = svg.append('g').attr('class', 'scatter-path-overlay').attr('pointer-events', 'none');
+
+    // Draw gradient path segments
+    for (var i = 0; i < visiblePath.length - 1; i++) {
+        var a = visiblePath[i];
+        var b = visiblePath[i + 1];
+        var ax = x(xMetric.get(a.pt));
+        var ay = yScale(yMetric.get(a.pt));
+        var bx = x(xMetric.get(b.pt));
+        var by = yScale(yMetric.get(b.pt));
+
+        // Gradient ID unique per segment
+        var gradId = 'scatter-path-grad-' + i;
+        var defs = svg.select('defs');
+        if (defs.empty()) defs = svg.append('defs');
+        var grad = defs.append('linearGradient')
+            .attr('id', gradId)
+            .attr('x1', ax).attr('y1', ay)
+            .attr('x2', bx).attr('y2', by)
+            .attr('gradientUnits', 'userSpaceOnUse');
+        grad.append('stop').attr('offset', '0%').attr('stop-color', payColor(a.pt.total_compensation || 0));
+        grad.append('stop').attr('offset', '100%').attr('stop-color', payColor(b.pt.total_compensation || 0));
+
+        // Draw path line
+        overlayG.append('line')
+            .attr('x1', ax).attr('y1', ay)
+            .attr('x2', bx).attr('y2', by)
+            .attr('stroke', 'url(#' + gradId + ')')
+            .attr('stroke-width', 2.5)
+            .attr('stroke-dasharray', '6,3')
+            .attr('opacity', 0.85);
+
+        // Arrowhead at midpoint showing direction
+        var mx = (ax + bx) / 2;
+        var my = (ay + by) / 2;
+        var angle = Math.atan2(by - ay, bx - ax);
+        var arrowSize = 6;
+        var ax1 = mx - arrowSize * Math.cos(angle - Math.PI / 6);
+        var ay1 = my - arrowSize * Math.sin(angle - Math.PI / 6);
+        var ax2 = mx - arrowSize * Math.cos(angle + Math.PI / 6);
+        var ay2 = my - arrowSize * Math.sin(angle + Math.PI / 6);
+        overlayG.append('polygon')
+            .attr('points', mx + ',' + my + ' ' + ax1 + ',' + ay1 + ' ' + ax2 + ',' + ay2)
+            .attr('fill', payColor(((a.pt.total_compensation || 0) + (b.pt.total_compensation || 0)) / 2))
+            .attr('opacity', 0.9);
+    }
+
+    // Draw step number badges at each path node position
+    visiblePath.forEach(function(n, idx) {
+        var cx = x(xMetric.get(n.pt));
+        var cy = yScale(yMetric.get(n.pt));
+        var color = payColor(n.pt.total_compensation || 0);
+
+        // Highlight ring around the dot
+        overlayG.append('circle')
+            .attr('cx', cx).attr('cy', cy)
+            .attr('r', 10)
+            .attr('fill', 'none')
+            .attr('stroke', color)
+            .attr('stroke-width', 2)
+            .attr('opacity', 0.8);
+
+        // Step number badge (small circle with number)
+        overlayG.append('circle')
+            .attr('cx', cx + 8).attr('cy', cy - 8)
+            .attr('r', 7)
+            .attr('fill', dark ? 'rgba(15,23,42,0.9)' : 'rgba(255,255,255,0.95)')
+            .attr('stroke', color)
+            .attr('stroke-width', 1.5);
+
+        overlayG.append('text')
+            .attr('x', cx + 8).attr('y', cy - 4.5)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '8px')
+            .attr('font-weight', '700')
+            .attr('font-family', 'Inter, system-ui, sans-serif')
+            .attr('fill', color)
+            .text(idx + 1);
+    });
+
+    // Floating label on scatter
+    if (container) {
+        var label = document.createElement('div');
+        label.className = 'scatter-path-label';
+        var pathStr = pathNodes.join(' → ');
+        label.innerHTML = '<span class="spl-icon">🔗</span><span class="spl-text">Peer Path: ' + pathStr + '</span><button class="spl-dismiss" title="Clear path overlay">✕</button>';
+        container.appendChild(label);
+        var dismissBtn = label.querySelector('.spl-dismiss');
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', function() {
+                window._activePathFinderNodes = null;
+                svg.selectAll('.scatter-path-overlay').remove();
+                label.remove();
+                // Restore dot opacity
+                svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector').attr('opacity', function(d) {
+                    return d3.select(this).classed('scatter-dot-sector') ? 0.25 : 0.7;
+                });
+            });
+        }
+
+        // Dim non-path dots for focus
+        var pathSet = new Set(pathNodes);
+        svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector').each(function(d) {
+            if (!d || !d.ticker) return;
+            var el = d3.select(this);
+            if (!pathSet.has(d.ticker)) {
+                el.attr('opacity', 0.12);
+            } else {
+                el.attr('opacity', 1).attr('stroke', '#fff').attr('stroke-width', 1.5);
+            }
+        });
+    }
+}
+
+// Expose redraw hook for network.js to trigger scatter path overlay updates
+window._redrawScatterForPathOverlay = function() {
+    var el = document.getElementById('scatter-chart');
+    if (el && typeof drawScatterChart === 'function' && window._chartData) {
+        el.innerHTML = '';
+        drawScatterChart(window._chartData.companies);
+    }
+};
