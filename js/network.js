@@ -59,6 +59,8 @@ function initNetwork(peerData) {
     var searchFocusedTime = 0;   // timestamp when search focus was set (for pulse animation)
     var _hoveredCommunityId = null; // community id hovered in legend — highlights community nodes on graph
     var _hoveredCommunityTickers = null; // Set of tickers in hovered community
+    var _pathBadgeAreas = []; // [{ticker, x, y, w, h} ...] for path badge hover detection
+    var _pathBadgeHovered = null; // ticker of currently hovered path badge
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1580,6 +1582,7 @@ function initNetwork(peerData) {
 
         // === Path Node Pay Badges ===
         // Show compact CEO compensation badge below each path node's ticker label
+        _pathBadgeAreas = []; // clear for this frame
         if (activePath && activePath.nodes.length >= 2 && !hoveredNode) {
             var _badgeMinComp = Infinity, _badgeMaxComp = -Infinity;
             activePath.nodes.forEach(function(ticker) {
@@ -1678,6 +1681,9 @@ function initNetwork(peerData) {
                 ctx.textBaseline = 'middle';
                 ctx.font = '700 ' + badgeFontSize + 'px Inter, system-ui, sans-serif';
                 ctx.fillText(payText, n.x, badgeY + badgeH / 2);
+
+                // Store badge hit area (in graph coordinates) for hover detection
+                _pathBadgeAreas.push({ ticker: ticker, x: badgeX, y: badgeY, w: badgeW, h: badgeH });
             });
         }
 
@@ -1705,6 +1711,70 @@ function initNetwork(peerData) {
         }
 
         ctx.restore();
+
+        // === Canvas Path Pay Gradient Legend Overlay ===
+        // Render a compact gradient legend in bottom-left corner of canvas when path is active
+        if (activePath && activePath.nodes.length >= 2) {
+            var _lgMinComp = Infinity, _lgMaxComp = -Infinity;
+            activePath.nodes.forEach(function(ticker) {
+                var comp = _compLookup[ticker];
+                if (comp && comp.total > 0) {
+                    if (comp.total < _lgMinComp) _lgMinComp = comp.total;
+                    if (comp.total > _lgMaxComp) _lgMaxComp = comp.total;
+                }
+            });
+            if (_lgMaxComp > _lgMinComp) {
+                var lgX = 12, lgY = height - 42;
+                var lgW = 140, lgH = 32;
+                var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+                // Background with rounded corners
+                ctx.save();
+                ctx.beginPath();
+                var lgR = 6;
+                ctx.moveTo(lgX + lgR, lgY);
+                ctx.lineTo(lgX + lgW - lgR, lgY);
+                ctx.arcTo(lgX + lgW, lgY, lgX + lgW, lgY + lgR, lgR);
+                ctx.lineTo(lgX + lgW, lgY + lgH - lgR);
+                ctx.arcTo(lgX + lgW, lgY + lgH, lgX + lgW - lgR, lgY + lgH, lgR);
+                ctx.lineTo(lgX + lgR, lgY + lgH);
+                ctx.arcTo(lgX, lgY + lgH, lgX, lgY + lgH - lgR, lgR);
+                ctx.lineTo(lgX, lgY + lgR);
+                ctx.arcTo(lgX, lgY, lgX + lgR, lgY, lgR);
+                ctx.closePath();
+                ctx.fillStyle = isDark ? 'rgba(15,23,42,0.85)' : 'rgba(255,255,255,0.9)';
+                ctx.fill();
+                ctx.strokeStyle = isDark ? 'rgba(148,163,184,0.2)' : 'rgba(0,0,0,0.1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Gradient bar
+                var barX = lgX + 8, barY = lgY + 6;
+                var barW = lgW - 16, barH = 6;
+                var grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+                grad.addColorStop(0, '#06d6a0');
+                grad.addColorStop(0.5, '#fabd2f');
+                grad.addColorStop(1, '#ef476f');
+                ctx.beginPath();
+                ctx.roundRect(barX, barY, barW, barH, 3);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Min/max labels
+                ctx.font = '500 9px Inter, system-ui, sans-serif';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = isDark ? 'rgba(226,232,240,0.75)' : 'rgba(30,41,59,0.7)';
+                ctx.textAlign = 'left';
+                ctx.fillText(_fmtComp(_lgMinComp), barX, barY + barH + 3);
+                ctx.textAlign = 'right';
+                ctx.fillText(_fmtComp(_lgMaxComp), barX + barW, barY + barH + 3);
+                // Center label
+                ctx.textAlign = 'center';
+                ctx.font = '400 8px Inter, system-ui, sans-serif';
+                ctx.fillStyle = isDark ? 'rgba(148,163,184,0.6)' : 'rgba(100,116,139,0.6)';
+                ctx.fillText('CEO Pay', barX + barW / 2, barY + barH + 3);
+                ctx.restore();
+            }
+        }
     }
 
     function hexToRGBA(hex, alpha) {
@@ -1719,6 +1789,25 @@ function initNetwork(peerData) {
     function _buildCompLookup() {
         if (typeof compData !== 'undefined' && compData && compData.companies) {
             compData.companies.forEach(function(c) {
+                // Find CEO executive record for compensation breakdown
+                var ceoBreakdown = null;
+                if (c.executives && c.executives.length > 0) {
+                    var ceoExec = c.executives.find(function(e) {
+                        return e.title && /chief executive|ceo/i.test(e.title);
+                    });
+                    if (!ceoExec) ceoExec = c.executives[0]; // fallback to first NEO
+                    if (ceoExec) {
+                        ceoBreakdown = {
+                            salary: ceoExec.salary || 0,
+                            bonus: ceoExec.bonus || 0,
+                            stock: ceoExec.stock_awards || 0,
+                            options: ceoExec.option_awards || 0,
+                            incentive: ceoExec.non_equity_incentive || 0,
+                            pension: ceoExec.pension_nqdc || 0,
+                            other: ceoExec.all_other || 0
+                        };
+                    }
+                }
                 _compLookup[c.ticker] = {
                     ceo: c.ceo_name || null,
                     total: c.total_compensation || null,
@@ -1727,7 +1816,8 @@ function initNetwork(peerData) {
                     sector: c.sector || null,
                     _gerScore: c._gerScore != null ? c._gerScore : null,
                     _gerRisk: c._gerRisk || null,
-                    _gerComponents: c._gerComponents || null
+                    _gerComponents: c._gerComponents || null,
+                    _breakdown: ceoBreakdown
                 };
             });
         }
@@ -2127,6 +2217,63 @@ function initNetwork(peerData) {
         tooltip.classList.remove('visible');
     }
 
+    // Path badge tooltip — shows CEO name + full compensation breakdown
+    function _showPathBadgeTooltip(mx, my, ticker) {
+        var comp = _compLookup[ticker];
+        if (!comp) return;
+        var n = nodeMap[ticker];
+        var html = '<div class="tt-title">' + ticker + (n ? ' — ' + n.name : '') + '</div>';
+        html += '<div class="tt-comp-section">';
+        if (comp.ceo) {
+            html += '<div class="tt-comp-ceo" style="margin-bottom:4px;font-weight:600">' + comp.ceo + '</div>';
+        }
+        html += '<div class="tt-row"><span class="tt-label">Total CEO Pay</span><span class="tt-value tt-comp-value">' + _fmtComp(comp.total) + '</span></div>';
+        // Breakdown
+        if (comp._breakdown) {
+            var bd = comp._breakdown;
+            var tot = comp.total || 1;
+            var rows = [];
+            if (bd.salary > 0) rows.push({ label: 'Salary', val: bd.salary });
+            if (bd.bonus > 0) rows.push({ label: 'Bonus', val: bd.bonus });
+            if (bd.stock > 0) rows.push({ label: 'Stock Awards', val: bd.stock });
+            if (bd.options > 0) rows.push({ label: 'Option Awards', val: bd.options });
+            if (bd.incentive > 0) rows.push({ label: 'Non-Equity Incentive', val: bd.incentive });
+            if (bd.pension > 0) rows.push({ label: 'Pension/NQDC', val: bd.pension });
+            if (bd.other > 0) rows.push({ label: 'All Other', val: bd.other });
+            if (rows.length > 0) {
+                html += '<div class="tt-badge-breakdown">';
+                rows.forEach(function(r) {
+                    var pct = (r.val / tot * 100).toFixed(0);
+                    var barW = Math.max(2, Math.min(100, r.val / tot * 100));
+                    html += '<div class="tt-bd-row">';
+                    html += '<span class="tt-bd-label">' + r.label + '</span>';
+                    html += '<span class="tt-bd-bar-wrap"><span class="tt-bd-bar" style="width:' + barW + '%"></span></span>';
+                    html += '<span class="tt-bd-val">' + _fmtComp(r.val) + ' <span class="tt-bd-pct">(' + pct + '%)</span></span>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+        }
+        // Peer rank context on path
+        if (activePath && activePath.nodes.length >= 2) {
+            var pathComps = [];
+            activePath.nodes.forEach(function(t) {
+                var c = _compLookup[t];
+                if (c && c.total > 0) pathComps.push({ ticker: t, total: c.total });
+            });
+            pathComps.sort(function(a, b) { return b.total - a.total; });
+            var rank = pathComps.findIndex(function(p) { return p.ticker === ticker; }) + 1;
+            if (rank > 0) {
+                html += '<div class="tt-row" style="margin-top:4px"><span class="tt-label">Path rank</span><span class="tt-value">#' + rank + ' of ' + pathComps.length + '</span></div>';
+            }
+        }
+        html += '</div>';
+        tooltip.innerHTML = html;
+        tooltip.classList.add('visible');
+        tooltip.style.left = (mx + 12) + 'px';
+        tooltip.style.top = (my - 10) + 'px';
+    }
+
     // Force simulation — tuned for 500+ nodes
     var edges = getFilteredEdges();
     var links = edges.map(function(e) {
@@ -2207,6 +2354,7 @@ function initNetwork(peerData) {
         var found = findNode(mx, my);
         if (found !== hoveredNode) {
             hoveredNode = found;
+            _pathBadgeHovered = null; // clear badge hover when node changes
             canvas.style.cursor = found ? 'pointer' : 'grab';
             if (found) {
                 showTooltip(event.clientX, event.clientY, found);
@@ -2217,6 +2365,35 @@ function initNetwork(peerData) {
         } else if (found) {
             tooltip.style.left = (event.clientX + 12) + 'px';
             tooltip.style.top = (event.clientY - 10) + 'px';
+        }
+
+        // Path badge hover detection — show rich tooltip on badge hover
+        if (!found && !dragNode && _pathBadgeAreas.length > 0) {
+            var pt = transform.invert([mx, my]);
+            var gx = pt[0], gy = pt[1];
+            var hitBadge = null;
+            for (var bi = 0; bi < _pathBadgeAreas.length; bi++) {
+                var ba = _pathBadgeAreas[bi];
+                if (gx >= ba.x && gx <= ba.x + ba.w && gy >= ba.y && gy <= ba.y + ba.h) {
+                    hitBadge = ba.ticker;
+                    break;
+                }
+            }
+            if (hitBadge !== _pathBadgeHovered) {
+                _pathBadgeHovered = hitBadge;
+                if (hitBadge) {
+                    canvas.style.cursor = 'help';
+                    _showPathBadgeTooltip(event.clientX, event.clientY, hitBadge);
+                } else {
+                    canvas.style.cursor = 'grab';
+                    hideTooltip();
+                }
+            } else if (hitBadge) {
+                tooltip.style.left = (event.clientX + 12) + 'px';
+                tooltip.style.top = (event.clientY - 10) + 'px';
+            }
+        } else if (_pathBadgeHovered && found) {
+            _pathBadgeHovered = null;
         }
     });
 

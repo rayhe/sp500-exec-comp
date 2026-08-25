@@ -11925,3 +11925,58 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #27272a;
     background: rgba(0,0,0,0.06);
 }
+
+/* Path Badge Breakdown Tooltip */
+.tooltip .tt-badge-breakdown {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(148,163,184,0.15);
+}
+.tooltip .tt-bd-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+.tooltip .tt-bd-label {
+    flex: 0 0 110px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tooltip .tt-bd-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(148,163,184,0.1);
+    border-radius: 2px;
+    min-width: 30px;
+}
+.tooltip .tt-bd-bar {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #06d6a0, #00b4d8);
+    min-width: 2px;
+}
+.tooltip .tt-bd-val {
+    flex: 0 0 auto;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+.tooltip .tt-bd-pct {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 10px;
+}
+[data-theme="light"] .tooltip .tt-badge-breakdown {
+    border-top-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .tooltip .tt-bd-bar-wrap {
+    background: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .tooltip .tt-bd-bar {
+    background: linear-gradient(90deg, #059669, #0077b6);
+}
