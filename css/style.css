@@ -11973,6 +11973,11 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: #a78bfa;
     color: #c4b5fd;
 }
+.cf-normalize-btn.cf-norm-col {
+    background: rgba(0,180,216,0.18);
+    border-color: #00b4d8;
+    color: #67e8f9;
+}
 [data-theme="light"] .cf-normalize-btn {
     border-color: rgba(124,58,237,0.2);
     background: rgba(124,58,237,0.06);
@@ -11986,6 +11991,11 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(124,58,237,0.15);
     border-color: #7c3aed;
     color: #6d28d9;
+}
+[data-theme="light"] .cf-normalize-btn.cf-norm-col {
+    background: rgba(0,119,182,0.12);
+    border-color: #0077b6;
+    color: #0077b6;
 }
 
 /* Flow matrix cell hover tooltip */

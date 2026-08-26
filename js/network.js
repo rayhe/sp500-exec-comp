@@ -3531,7 +3531,7 @@ function initNetwork(peerData) {
     var _cmSortAsc = false;
     var _communityFlowEl = null;
     var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
-    var _cfNormalized = false; // flow matrix normalize toggle state
+    var _cfNormMode = 'raw'; // flow matrix normalize toggle: 'raw' | 'row' | 'col'
     var _cfCellEdgeDetails = null; // NxN array of {ticker: outCount} maps for tooltip
 
     function _median(arr) {
@@ -3863,6 +3863,12 @@ function initNetwork(peerData) {
             rowTotals.push(rt);
         }
 
+        // Pre-compute column totals for col-normalize mode
+        var colTotals = new Array(N).fill(0);
+        for (var ci2 = 0; ci2 < N; ci2++) {
+            for (var cj2 = 0; cj2 < N; cj2++) colTotals[cj2] += flowMatrix[ci2][cj2];
+        }
+
         var maxOff = 0, maxDiag = 0;
         for (var i = 0; i < N; i++) {
             for (var j = 0; j < N; j++) {
@@ -3876,8 +3882,11 @@ function initNetwork(peerData) {
         _communityFlowEl.className = 'community-flow-panel';
 
         var html = '<div class="cf-header-row"><div class="cf-header">Peer Flow Between Communities</div>';
-        html += '<button class="cf-normalize-btn' + (_cfNormalized ? ' cf-norm-active' : '') + '" title="Toggle between raw edge counts and % of row total">' + (_cfNormalized ? '% Row' : '# Raw') + '</button></div>';
-        html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + (_cfNormalized ? 'Values = % of row\u2019s outbound edges.' : 'Diagonal = intra-community.') + ' Hover for top contributors.</div>';
+        var normLabel = _cfNormMode === 'row' ? '% Row' : _cfNormMode === 'col' ? '% Col' : '# Raw';
+        var normActiveClass = _cfNormMode !== 'raw' ? (' cf-norm-active' + (_cfNormMode === 'col' ? ' cf-norm-col' : '')) : '';
+        html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts → row % → column %">' + normLabel + '</button></div>';
+        var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound edges.' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound edges.' : 'Diagonal = intra-community.';
+        html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + descText + ' Hover for top contributors.</div>';
         html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
 
         html += '<div class="cf-row cf-head-row">';
@@ -3889,7 +3898,6 @@ function initNetwork(peerData) {
         html += '<div class="cf-row-total-label">Total</div>';
         html += '</div>';
 
-        var colTotals = new Array(N).fill(0);
         comms.forEach(function(csRow, i) {
             var shortLabel = csRow.label.length > 8 ? csRow.label.substring(0, 7) + '\u2026' : csRow.label;
             html += '<div class="cf-row">';
@@ -3899,13 +3907,15 @@ function initNetwork(peerData) {
             comms.forEach(function(csCol, j) {
                 var val = flowMatrix[i][j];
                 rowTotal += val;
-                colTotals[j] += val;
                 var isDiag = (i === j);
 
                 var displayVal = '';
                 if (val > 0) {
-                    if (_cfNormalized && rowTotals[i] > 0) {
+                    if (_cfNormMode === 'row' && rowTotals[i] > 0) {
                         var pct = (val / rowTotals[i]) * 100;
+                        displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
+                    } else if (_cfNormMode === 'col' && colTotals[j] > 0) {
+                        var pct = (val / colTotals[j]) * 100;
                         displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
                     } else {
                         displayVal = val + '';
@@ -3939,7 +3949,8 @@ function initNetwork(peerData) {
                     + displayVal + '</div>';
             });
 
-            html += '<div class="cf-cell cf-total">' + (_cfNormalized ? '100' : rowTotal) + '</div>';
+            var rowTotalDisplay = _cfNormMode === 'row' ? '100' : rowTotal;
+            html += '<div class="cf-cell cf-total">' + rowTotalDisplay + '</div>';
             html += '</div>';
         });
 
@@ -3948,9 +3959,9 @@ function initNetwork(peerData) {
         var grandTotal = 0;
         colTotals.forEach(function(ct) {
             grandTotal += ct;
-            html += '<div class="cf-cell cf-total">' + ct + '</div>';
+            html += '<div class="cf-cell cf-total">' + (_cfNormMode === 'col' ? '100' : ct) + '</div>';
         });
-        html += '<div class="cf-cell cf-total cf-grand-total">' + grandTotal + '</div>';
+        html += '<div class="cf-cell cf-total cf-grand-total">' + (_cfNormMode !== 'raw' ? '\u2014' : grandTotal) + '</div>';
         html += '</div>';
 
         html += '</div>';
@@ -3972,11 +3983,11 @@ function initNetwork(peerData) {
             document.body.appendChild(flowTip);
         }
 
-        // Wire normalize toggle
+        // Wire normalize toggle (cycles: raw → row → col → raw)
         var normBtn = _communityFlowEl.querySelector('.cf-normalize-btn');
         if (normBtn) {
             normBtn.addEventListener('click', function() {
-                _cfNormalized = !_cfNormalized;
+                _cfNormMode = _cfNormMode === 'raw' ? 'row' : _cfNormMode === 'row' ? 'col' : 'raw';
                 _renderCommunityFlowMatrix();
             });
         }
@@ -4012,8 +4023,10 @@ function initNetwork(peerData) {
 
                     var tipHtml = '<div class="cf-tip-header">' + fromLabel + (isDiag ? ' (intra)' : ' \u2192 ' + toLabel) + '</div>';
                     tipHtml += '<div class="cf-tip-count">' + rawVal + ' edge' + (rawVal !== 1 ? 's' : '');
-                    if (_cfNormalized && rowTotals[ci] > 0) {
+                    if (_cfNormMode === 'row' && rowTotals[ci] > 0) {
                         tipHtml += ' (' + ((rawVal / rowTotals[ci]) * 100).toFixed(1) + '% of row)';
+                    } else if (_cfNormMode === 'col' && colTotals[cj] > 0) {
+                        tipHtml += ' (' + ((rawVal / colTotals[cj]) * 100).toFixed(1) + '% of col)';
                     }
                     tipHtml += '</div>';
                     tipHtml += '<div class="cf-tip-label">Top contributors:</div>';
