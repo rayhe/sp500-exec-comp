@@ -1481,6 +1481,7 @@ function sortTableByKey(key, dir) {
     window._activeAspDeltaTier = null; // null=off, { min, max, tag, label }
     window._activeTenureQuartile = null; // null=off, { min, max, label, tag }
     window._activePeerDistFilter = null; // null=off, { tickers: [...], label: "..." }
+    window._activeQuartileFilter = null; // null=off, { tickers: [...], label: "...", communityId: n }
     window._activeCommunityFilter = null; // null=off, { tickers: [...], label: "...", id: n }
 
     // Reset role chips
@@ -2324,6 +2325,12 @@ function populateInsights(comp, trends, sectorFilter) {
             // Clear community legend active state
             document.querySelectorAll('.community-legend-active').forEach(function(el) {
                 el.classList.remove('community-legend-active');
+            });
+        }
+        if (window._activeQuartileFilter) {
+            window._activeQuartileFilter = null;
+            document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
+                el.classList.remove('cm-bp-zone-clicked');
             });
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
@@ -5659,6 +5666,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Tenure: ' + window._activeVolTenureBracket.label); }
     if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
     if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
+    if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -6142,6 +6150,14 @@ function renderTable(companies, options) {
         var _cfTickers = window._activeCommunityFilter.tickers;
         filtered = filtered.filter(function(c) {
             return _cfTickers.indexOf(c.ticker) >= 0;
+        });
+    }
+
+    // Quartile filter: filter to companies in a box plot quartile zone
+    if (window._activeQuartileFilter) {
+        var _qfTickers = window._activeQuartileFilter.tickers;
+        filtered = filtered.filter(function(c) {
+            return _qfTickers.indexOf(c.ticker) >= 0;
         });
     }
 

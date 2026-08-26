@@ -1927,8 +1927,19 @@ function initNetwork(peerData) {
                     _gerComponents: c._gerComponents || null,
                     _govScore: c._govScore != null ? c._govScore : null,
                     _sopApproval: c._sopApproval != null ? c._sopApproval : null,
-                    _breakdown: ceoBreakdown
+                    _breakdown: ceoBreakdown,
+                    _ceoPayByYear: null // populated below
                 };
+                // Build multi-year CEO pay map for trend sparklines
+                if (c.executives && c.executives.length > 0) {
+                    var _cpby = {};
+                    c.executives.forEach(function(e) {
+                        if (e.title && /chief executive|ceo/i.test(e.title) && e.year && e.total > 0) {
+                            if (!_cpby[e.year] || e.total > _cpby[e.year]) _cpby[e.year] = e.total;
+                        }
+                    });
+                    if (Object.keys(_cpby).length > 0) _compLookup[c.ticker]._ceoPayByYear = _cpby;
+                }
             });
         }
     }
@@ -3639,6 +3650,33 @@ function initNetwork(peerData) {
             }
             var topSectorPct = cs.size > 0 ? (topSectorCount / cs.size * 100) : 0;
 
+            // Compute multi-year CEO pay trend per community (median CEO pay per year)
+            var _yearPayMap = {}; // year -> [payValues]
+            cs.tickers.forEach(function(t) {
+                var c = _compLookup[t];
+                if (!c || !c._ceoPayByYear) return;
+                for (var yr in c._ceoPayByYear) {
+                    if (!_yearPayMap[yr]) _yearPayMap[yr] = [];
+                    _yearPayMap[yr].push(c._ceoPayByYear[yr]);
+                }
+            });
+            // Build sorted trend array: [{year, medianPay, count}]
+            var _trendYears = Object.keys(_yearPayMap).map(Number).sort();
+            var _trendData = [];
+            _trendYears.forEach(function(yr) {
+                var vals = _yearPayMap[yr];
+                if (vals.length >= 3) { // only include years with enough data
+                    _trendData.push({ year: yr, median: _median(vals), count: vals.length });
+                }
+            });
+            // Compute 3-year delta (most recent vs oldest in trend)
+            var _trendDelta = null;
+            if (_trendData.length >= 2) {
+                var oldest = _trendData[0].median;
+                var newest = _trendData[_trendData.length - 1].median;
+                if (oldest > 0) _trendDelta = ((newest - oldest) / oldest * 100);
+            }
+
             rows.push({
                 id: cs.id,
                 label: cs.label,
@@ -3653,7 +3691,9 @@ function initNetwork(peerData) {
                 topSector: topSector,
                 topSectorPct: topSectorPct,
                 topSectorColor: SECTOR_COLORS[topSector] || '#94a3b8',
-                tickers: cs.tickers
+                tickers: cs.tickers,
+                trend: _trendData,
+                trendDelta: _trendDelta
             });
         }
 
@@ -3669,6 +3709,7 @@ function initNetwork(peerData) {
                 case 'medianGer': va = a.medianGer || 0; vb = b.medianGer || 0; break;
                 case 'density': va = a.density; vb = b.density; break;
                 case 'payDist': va = a.payDist ? (a.payDist.q3 - a.payDist.q1) : 0; vb = b.payDist ? (b.payDist.q3 - b.payDist.q1) : 0; break;
+                case 'trend': va = a.trendDelta != null ? a.trendDelta : -9999; vb = b.trendDelta != null ? b.trendDelta : -9999; break;
                 default: va = a.medianPay || 0; vb = b.medianPay || 0;
             }
             return _cmSortAsc ? va - vb : vb - va;
@@ -3682,6 +3723,7 @@ function initNetwork(peerData) {
             { key: 'label', label: 'Community', align: 'left' },
             { key: 'size', label: '#', align: 'right' },
             { key: 'medianPay', label: 'Med Pay', align: 'right' },
+            { key: 'trend', label: 'Trend', align: 'left' },
             { key: 'payDist', label: 'Spread', align: 'left' },
             { key: 'medianGov', label: 'Gov', align: 'right' },
             { key: 'medianSop', label: 'SoP%', align: 'right' },
@@ -3724,6 +3766,38 @@ function initNetwork(peerData) {
                 html += '<span class="cm-pay-val">' + _fmtComp(r.medianPay) + '</span>';
             } else {
                 html += '<span class="cm-pay-val">—</span>';
+            }
+            html += '</div>';
+            // 3-year CEO pay trend sparkline
+            html += '<div class="cm-cell cm-trend-cell">';
+            if (r.trend && r.trend.length >= 2) {
+                var tMin = Infinity, tMax = 0;
+                r.trend.forEach(function(t) { if (t.median < tMin) tMin = t.median; if (t.median > tMax) tMax = t.median; });
+                var tRange = tMax - tMin || 1;
+                var deltaSign = r.trendDelta >= 0 ? '+' : '';
+                var deltaColor = r.trendDelta >= 10 ? '#ef4444' : r.trendDelta >= 0 ? '#fbbf24' : '#34d399';
+                var tTip = r.trend.map(function(t) { return t.year + ': ' + _fmtComp(t.median) + ' (' + t.count + ' cos)'; }).join(' → ');
+                html += '<div class="cm-sparkline" title="' + tTip + '">';
+                // SVG sparkline (48x16)
+                html += '<svg width="48" height="16" viewBox="0 0 48 16">';
+                var pts = [];
+                r.trend.forEach(function(t, idx) {
+                    var x = r.trend.length > 1 ? (idx / (r.trend.length - 1)) * 44 + 2 : 24;
+                    var y = 14 - ((t.median - tMin) / tRange) * 12;
+                    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+                });
+                // Line
+                html += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + r.color + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+                // Dots at endpoints
+                var firstPt = pts[0].split(','), lastPt = pts[pts.length - 1].split(',');
+                html += '<circle cx="' + firstPt[0] + '" cy="' + firstPt[1] + '" r="1.5" fill="' + r.color + '"/>';
+                html += '<circle cx="' + lastPt[0] + '" cy="' + lastPt[1] + '" r="2" fill="' + deltaColor + '"/>';
+                html += '</svg>';
+                // Delta badge
+                html += '<span class="cm-trend-delta" style="color:' + deltaColor + '">' + deltaSign + Math.round(r.trendDelta) + '%</span>';
+                html += '</div>';
+            } else {
+                html += '—';
             }
             html += '</div>';
             // Pay distribution box plot
@@ -3939,6 +4013,63 @@ function initNetwork(peerData) {
                 zone.classList.remove('cm-bp-zone-active');
                 draw();
             });
+            zone.addEventListener('click', function(ev) {
+                ev.stopPropagation(); // Don't trigger row click
+                var cid = parseInt(zone.dataset.bpCid);
+                var lo = parseFloat(zone.dataset.bpLo);
+                var hi = parseFloat(zone.dataset.bpHi);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                // Collect tickers in this quartile range
+                var tickers = [];
+                cs.tickers.forEach(function(t) {
+                    var c = _compLookup[t];
+                    if (c && c.total != null && c.total >= lo && c.total <= hi) {
+                        tickers.push(t);
+                    }
+                });
+
+                // Toggle: if same quartile already filtered, clear it
+                var wasActive = window._activeQuartileFilter &&
+                    window._activeQuartileFilter.communityId === cid &&
+                    window._activeQuartileFilter._lo === lo &&
+                    window._activeQuartileFilter._hi === hi;
+
+                // Clear all clicked states
+                _communityMetricsEl.querySelectorAll('.cm-bp-zone-clicked').forEach(function(z) {
+                    z.classList.remove('cm-bp-zone-clicked');
+                });
+
+                if (wasActive) {
+                    window._activeQuartileFilter = null;
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    var scEl = document.getElementById('scatter-chart');
+                    if (scEl) scEl.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                    if (typeof announce === 'function') announce('Quartile filter cleared');
+                } else {
+                    // Build label
+                    var zLabel = zone.title.split(':')[0] || 'Quartile';
+                    var filterLabel = cs.label + ' ' + zLabel + ' (' + tickers.length + ')';
+                    window._activeQuartileFilter = { tickers: tickers, label: filterLabel, communityId: cid, _lo: lo, _hi: hi };
+                    zone.classList.add('cm-bp-zone-clicked');
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    var scEl2 = document.getElementById('scatter-chart');
+                    if (scEl2) scEl2.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                    if (typeof announce === 'function') announce('Filtered to ' + tickers.length + ' companies in ' + cs.label + ' ' + zLabel);
+                    // Scroll to table
+                    var tableSection = document.getElementById('compensation-table-section');
+                    if (tableSection) {
+                        var hdr = document.querySelector('.sticky-header, header');
+                        var off = hdr ? hdr.offsetHeight : 0;
+                        var top = tableSection.getBoundingClientRect().top + window.scrollY - off - 12;
+                        window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                    }
+                }
+            });
         });
 
         // Wire path-finder bridge buttons (two-click: select from → select to → execute)
@@ -3968,6 +4099,62 @@ function initNetwork(peerData) {
                     }
                     inst.textContent = 'Click ⇄ on another community to find the peer path from ' + cs.label;
                     if (typeof announce === 'function') announce('Path source: ' + cs.label + '. Click another community to set destination.');
+
+                    // Pre-compute estimated hops from source community to all others
+                    // Find source community's most-connected node
+                    var srcTickerSet = new Set(cs.tickers);
+                    var srcBestTicker = null, srcBestDeg = -1;
+                    cs.tickers.forEach(function(tk) {
+                        var adj = adjacency[tk];
+                        if (!adj) return;
+                        var deg = adj.out.length + adj.in.length;
+                        if (deg > srcBestDeg) { srcBestDeg = deg; srcBestTicker = tk; }
+                    });
+                    if (srcBestTicker) {
+                        // BFS from srcBestTicker to find distance to first node in each other community
+                        var _hopVisited = new Set();
+                        var _hopQueue = [{ ticker: srcBestTicker, depth: 0 }];
+                        _hopVisited.add(srcBestTicker);
+                        var _hopResults = {}; // communityId → hops
+                        var _maxHopDepth = 8;
+                        while (_hopQueue.length > 0) {
+                            var _hq = _hopQueue.shift();
+                            if (_hq.depth > _maxHopDepth) break;
+                            // Check which community this node belongs to
+                            for (var _hi = 0; _hi < communityStats.length; _hi++) {
+                                var _hcs = communityStats[_hi];
+                                if (_hcs.id !== cid && !_hopResults[_hcs.id] && _hcs.tickers.indexOf(_hq.ticker) >= 0) {
+                                    _hopResults[_hcs.id] = _hq.depth;
+                                }
+                            }
+                            var _hadj = adjacency[_hq.ticker];
+                            if (!_hadj) continue;
+                            var _hNeighbors = _hadj.out.concat(_hadj.in);
+                            for (var _hni = 0; _hni < _hNeighbors.length; _hni++) {
+                                if (!_hopVisited.has(_hNeighbors[_hni])) {
+                                    _hopVisited.add(_hNeighbors[_hni]);
+                                    _hopQueue.push({ ticker: _hNeighbors[_hni], depth: _hq.depth + 1 });
+                                }
+                            }
+                        }
+                        // Update other ⇄ buttons with hop badges
+                        _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
+                            var bCid = parseInt(b.dataset.cmPathCid);
+                            if (bCid === cid) return; // Skip source
+                            var hops = _hopResults[bCid];
+                            // Remove old badge
+                            var oldBadge = b.querySelector('.cm-hop-badge');
+                            if (oldBadge) oldBadge.remove();
+                            if (hops != null) {
+                                var badge = document.createElement('span');
+                                badge.className = 'cm-hop-badge';
+                                badge.textContent = '~' + hops;
+                                badge.title = 'Estimated ' + hops + ' hop' + (hops !== 1 ? 's' : '');
+                                b.appendChild(badge);
+                                b.title = '⇄ ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' estimated';
+                            }
+                        });
+                    }
                 } else {
                     // Second click on different community — execute path finder
                     var fromCs = communityStats.find(function(s) { return s.id === _cmPathFrom; });
@@ -4012,6 +4199,9 @@ function initNetwork(peerData) {
                         b.classList.remove('cm-path-from');
                         b.textContent = '⇄';
                         b.title = 'Find path to another community';
+                        // Remove hop badges
+                        var hb = b.querySelector('.cm-hop-badge');
+                        if (hb) hb.remove();
                     });
                     var inst2 = _communityMetricsEl.querySelector('.cm-path-instruction');
                     if (inst2) inst2.remove();
@@ -4035,6 +4225,14 @@ function initNetwork(peerData) {
         _cmPathFrom = null;
         _hoveredQuartileTickers = null;
         _hoveredQuartileColor = null;
+        // Clear quartile filter when community mode is toggled off
+        if (window._activeQuartileFilter) {
+            window._activeQuartileFilter = null;
+            if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+            var scEl = document.getElementById('scatter-chart');
+            if (scEl) scEl.innerHTML = '';
+            if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+        }
         _removeCommunityFlowMatrix();
     }
 

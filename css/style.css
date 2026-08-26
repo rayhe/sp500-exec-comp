@@ -11806,6 +11806,26 @@ body.light-mode .cross-sector-pair-select:focus {
 [data-theme="light"] .cm-sector-tag {
     background: rgba(0,0,0,0.02);
 }
+/* 3-year trend sparkline */
+.cm-trend-cell {
+    min-width: 85px;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+}
+.cm-sparkline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.cm-sparkline svg {
+    flex-shrink: 0;
+}
+.cm-trend-delta {
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1;
+}
 /* Box plot for pay distribution */
 .cm-dist-cell {
     min-width: 80px;
@@ -11871,6 +11891,15 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(109, 40, 217, 0.15);
     box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.3);
 }
+.cm-bp-zone.cm-bp-zone-clicked {
+    background: rgba(167, 139, 250, 0.4);
+    box-shadow: inset 0 0 0 1.5px rgba(167, 139, 250, 0.7);
+    cursor: pointer;
+}
+[data-theme="light"] .cm-bp-zone.cm-bp-zone-clicked {
+    background: rgba(109, 40, 217, 0.25);
+    box-shadow: inset 0 0 0 1.5px rgba(109, 40, 217, 0.5);
+}
 /* Path finder bridge button in community name cell */
 .cm-name-cell {
     display: table-cell;
@@ -11921,6 +11950,19 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: #7c3aed;
     color: #6d28d9;
     box-shadow: 0 0 4px rgba(124,58,237,0.2);
+}
+.cm-hop-badge {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-left: 2px;
+    line-height: 1;
+    opacity: 0.85;
+    vertical-align: baseline;
+}
+[data-theme="light"] .cm-hop-badge {
+    color: #64748b;
 }
 .cm-path-instruction {
     font-size: 0.62rem;
