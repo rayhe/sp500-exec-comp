@@ -10914,6 +10914,7 @@ function _drawScatterTrendTrail(company) {
                     var yoyClass = yoyChg >= 0 ? 'tt-trail-yoy-up' : 'tt-trail-yoy-down';
                     tipHtml += '<div class="tt-trail-yoy ' + yoyClass + '">' + yoySign + yoyChg.toFixed(1) + '% vs FY' + trailPts[prevIdx].year + '</div>';
                 }
+                tipHtml += '<div class="tt-trail-click-hint">Click to view details →</div>';
                 showChartTooltip(event, tipHtml);
 
                 // Pause auto-fade while hovering
@@ -10934,6 +10935,13 @@ function _drawScatterTrendTrail(company) {
                         dotsGroup.transition().duration(1200).style('opacity', 0).remove();
                         _trendTrailTimer = null;
                     }, 5000);
+                }
+            })
+            .on('click', function() {
+                // Navigate to company detail panel in table
+                hideChartTooltip();
+                if (typeof window.findCompanyInTable === 'function') {
+                    window.findCompanyInTable(company.ticker);
                 }
             });
 
