@@ -1106,9 +1106,55 @@ function initNetwork(peerData) {
                 ctx.lineTo(t.x, t.y);
             });
             ctx.stroke();
+        } else if (_hoveredFlowCell && communityMode && !hoveredNode && !activePath) {
+            // Flow matrix cell hover — highlight edges between the two selected communities
+            var _flowFromSet = new Set();
+            var _flowToSet = new Set();
+            var _flowFromCs = communityStats.find(function(cs) { return cs.id === _hoveredFlowCell.from; });
+            var _flowToCs = communityStats.find(function(cs) { return cs.id === _hoveredFlowCell.to; });
+            if (_flowFromCs) _flowFromCs.tickers.forEach(function(t) { _flowFromSet.add(t); });
+            if (_flowToCs) _flowToCs.tickers.forEach(function(t) { _flowToSet.add(t); });
+            var _flowIsDiag = _hoveredFlowCell.from === _hoveredFlowCell.to;
+
+            // Dim all non-matching edges
+            ctx.strokeStyle = edgeSectorDimColor;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                // Check if this edge matches the flow cell
+                var matches = _flowIsDiag
+                    ? (_flowFromSet.has(src) && _flowFromSet.has(tgt))
+                    : (_flowFromSet.has(src) && _flowToSet.has(tgt));
+                if (matches) return; // skip — will draw highlighted below
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            // Highlighted edges matching the flow cell
+            ctx.strokeStyle = _hiContrast ? 'rgba(255,180,0,0.8)' : (_dark ? 'rgba(255,180,0,0.55)' : 'rgba(220,140,0,0.5)');
+            ctx.lineWidth = (_hiContrast ? 1.8 : 1.2) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                var matches = _flowIsDiag
+                    ? (_flowFromSet.has(src) && _flowFromSet.has(tgt))
+                    : (_flowFromSet.has(src) && _flowToSet.has(tgt));
+                if (!matches) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
         } else {
-            var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
-            var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
 
@@ -1229,6 +1275,15 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.15 : 0.08;
                 }
+            } else if (!belowGerThreshold && _hoveredFlowCell && communityMode && !hoveredNode && !activePath) {
+                // Flow matrix cell hover — highlight nodes in source and target communities
+                var _inFrom = communityOf[d.ticker] === _hoveredFlowCell.from;
+                var _inTo = communityOf[d.ticker] === _hoveredFlowCell.to;
+                if (_inFrom || _inTo) {
+                    alpha = 1;
+                } else {
+                    alpha = _hiContrast ? 0.12 : 0.06;
+                }
             }
 
             ctx.beginPath();
@@ -1248,6 +1303,14 @@ function initNetwork(peerData) {
                 ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.8 : 0.6);
                 ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
                 ctx.stroke();
+            } else if (_hoveredFlowCell && communityMode && !hoveredNode) {
+                var _ffInFrom = communityOf[d.ticker] === _hoveredFlowCell.from;
+                var _ffInTo = communityOf[d.ticker] === _hoveredFlowCell.to;
+                if (_ffInFrom || _ffInTo) {
+                    ctx.strokeStyle = _ffInFrom ? 'rgba(255,180,0,0.7)' : 'rgba(255,220,100,0.5)';
+                    ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
+                    ctx.stroke();
+                }
             } else if (_hiContrast && alpha > 0.2) {
                 // High-contrast: add subtle outline to all visible nodes for separation
                 ctx.strokeStyle = _dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)';
@@ -3215,6 +3278,7 @@ function initNetwork(peerData) {
             }
             if (communityMode) {
                 _renderCommunityMetrics();
+                _renderCommunityFlowMatrix();
             } else {
                 _removeCommunityMetrics();
             }
@@ -3465,6 +3529,8 @@ function initNetwork(peerData) {
     var _communityMetricsEl = null;
     var _cmSortCol = 'medianPay';
     var _cmSortAsc = false;
+    var _communityFlowEl = null;
+    var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
 
     function _median(arr) {
         if (!arr || arr.length === 0) return null;
@@ -3645,6 +3711,7 @@ function initNetwork(peerData) {
                 if (_cmSortCol === col) { _cmSortAsc = !_cmSortAsc; }
                 else { _cmSortCol = col; _cmSortAsc = col === 'label'; }
                 _renderCommunityMetrics();
+                _renderCommunityFlowMatrix();
             });
             th.addEventListener('keydown', function(ev) {
                 if (ev.key === 'Enter' || ev.key === ' ') {
@@ -3653,6 +3720,7 @@ function initNetwork(peerData) {
                     if (_cmSortCol === col) { _cmSortAsc = !_cmSortAsc; }
                     else { _cmSortCol = col; _cmSortAsc = col === 'label'; }
                     _renderCommunityMetrics();
+                    _renderCommunityFlowMatrix();
                 }
             });
         });
@@ -3738,6 +3806,241 @@ function initNetwork(peerData) {
             _communityMetricsEl.parentNode.removeChild(_communityMetricsEl);
         }
         _communityMetricsEl = null;
+        _removeCommunityFlowMatrix();
+    }
+
+    // === Community Edge Flow Matrix ===
+    // Shows a compact NxN heatmap of directed peer edges between communities.
+    // Answers "which clusters benchmark against which?"
+    function _renderCommunityFlowMatrix() {
+        _removeCommunityFlowMatrix();
+        if (!communityMode || !communityStats || communityStats.length < 2) return;
+
+        var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+        var maxShow = Math.min(communityStats.length, 10); // cap at 10 for readability
+        var comms = communityStats.slice(0, maxShow);
+
+        // Map community id → index and ticker set
+        var commIdx = {};
+        var commTickerSets = [];
+        comms.forEach(function(cs, i) {
+            commIdx[cs.id] = i;
+            commTickerSets.push(new Set(cs.tickers));
+        });
+
+        // Build NxN flow matrix (directed: row=source, col=target)
+        var N = comms.length;
+        var flowMatrix = [];
+        for (var i = 0; i < N; i++) {
+            flowMatrix.push(new Array(N).fill(0));
+        }
+
+        // Count edges
+        allEdges.forEach(function(e) {
+            var sNode = nodeMap[e.source];
+            var tNode = nodeMap[e.target];
+            if (!sNode || !tNode) return;
+            var sCid = communityOf[e.source];
+            var tCid = communityOf[e.target];
+            var si = commIdx[sCid];
+            var ti = commIdx[tCid];
+            if (si != null && ti != null) {
+                flowMatrix[si][ti]++;
+            }
+        });
+
+        // Find max value for color scaling (exclude diagonal for cross-community emphasis)
+        var maxOff = 0, maxDiag = 0;
+        for (var i = 0; i < N; i++) {
+            for (var j = 0; j < N; j++) {
+                if (i === j) { if (flowMatrix[i][j] > maxDiag) maxDiag = flowMatrix[i][j]; }
+                else { if (flowMatrix[i][j] > maxOff) maxOff = flowMatrix[i][j]; }
+            }
+        }
+        var maxVal = Math.max(maxOff, 1);
+
+        // Build HTML
+        _communityFlowEl = document.createElement('div');
+        _communityFlowEl.className = 'community-flow-panel';
+
+        var html = '<div class="cf-header">Peer Flow Between Communities</div>';
+        html += '<div class="cf-desc">Directed edges: row selects column as peer. Diagonal = intra-community.</div>';
+        html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
+
+        // Header row with column labels
+        html += '<div class="cf-row cf-head-row">';
+        html += '<div class="cf-corner"></div>';
+        comms.forEach(function(cs, j) {
+            var shortLabel = cs.label.length > 8 ? cs.label.substring(0, 7) + '\u2026' : cs.label;
+            html += '<div class="cf-col-label" title="' + cs.label + ' (' + cs.size + ' companies)" style="color:' + cs.color + '">' + shortLabel + '</div>';
+        });
+        html += '<div class="cf-row-total-label">Total</div>';
+        html += '</div>';
+
+        // Data rows
+        var colTotals = new Array(N).fill(0);
+        comms.forEach(function(csRow, i) {
+            var shortLabel = csRow.label.length > 8 ? csRow.label.substring(0, 7) + '\u2026' : csRow.label;
+            html += '<div class="cf-row">';
+            html += '<div class="cf-row-label" title="' + csRow.label + ' (' + csRow.size + ' companies)" style="color:' + csRow.color + '">' + shortLabel + '</div>';
+
+            var rowTotal = 0;
+            comms.forEach(function(csCol, j) {
+                var val = flowMatrix[i][j];
+                rowTotal += val;
+                colTotals[j] += val;
+                var isDiag = (i === j);
+
+                // Color intensity
+                var alpha = 0;
+                if (val > 0) {
+                    if (isDiag) {
+                        alpha = maxDiag > 0 ? Math.max(0.15, val / maxDiag * 0.85) : 0.15;
+                    } else {
+                        alpha = Math.max(0.1, val / maxVal * 0.9);
+                    }
+                }
+
+                // Color: diagonal = community color, off-diagonal = gradient from source to target
+                var bgColor;
+                if (val === 0) {
+                    bgColor = dark ? 'rgba(30,30,40,0.5)' : 'rgba(240,240,245,0.5)';
+                } else if (isDiag) {
+                    bgColor = _hexToRgba(csRow.color, alpha);
+                } else {
+                    // Blend source and target colors
+                    bgColor = _hexToRgba(_blendHex(csRow.color, csCol.color), alpha);
+                }
+
+                var textColor = val === 0 ? (dark ? '#4a4a5a' : '#b0b0b8') : (alpha > 0.5 ? '#fff' : (dark ? '#e4e4e7' : '#1a1a2e'));
+
+                html += '<div class="cf-cell' + (isDiag ? ' cf-diag' : '') + '" '
+                    + 'data-cf-from="' + csRow.id + '" data-cf-to="' + csCol.id + '" '
+                    + 'title="' + csRow.label + ' → ' + csCol.label + ': ' + val + ' edge' + (val !== 1 ? 's' : '') + (isDiag ? ' (intra-community)' : '') + '" '
+                    + 'style="background:' + bgColor + ';color:' + textColor + '">'
+                    + (val > 0 ? val : '') + '</div>';
+            });
+
+            // Row total
+            html += '<div class="cf-cell cf-total">' + rowTotal + '</div>';
+            html += '</div>';
+        });
+
+        // Column totals row
+        html += '<div class="cf-row cf-totals-row">';
+        html += '<div class="cf-row-label cf-total-label">Total</div>';
+        var grandTotal = 0;
+        colTotals.forEach(function(ct) {
+            grandTotal += ct;
+            html += '<div class="cf-cell cf-total">' + ct + '</div>';
+        });
+        html += '<div class="cf-cell cf-total cf-grand-total">' + grandTotal + '</div>';
+        html += '</div>';
+
+        html += '</div>';
+
+        _communityFlowEl.innerHTML = html;
+
+        // Insert after community metrics panel (or after legend if no metrics)
+        var anchor = _communityMetricsEl || (communityLegendEl ? communityLegendEl : null);
+        if (anchor && anchor.parentNode) {
+            anchor.parentNode.insertBefore(_communityFlowEl, anchor.nextSibling);
+        }
+
+        // Wire hover/click on cells
+        _communityFlowEl.querySelectorAll('.cf-cell[data-cf-from]').forEach(function(cell) {
+            cell.style.cursor = 'pointer';
+
+            cell.addEventListener('mouseenter', function() {
+                var fromId = parseInt(cell.dataset.cfFrom);
+                var toId = parseInt(cell.dataset.cfTo);
+                _hoveredFlowCell = { from: fromId, to: toId };
+                // Highlight cell
+                cell.classList.add('cf-hover');
+                draw();
+            });
+
+            cell.addEventListener('mouseleave', function() {
+                _hoveredFlowCell = null;
+                cell.classList.remove('cf-hover');
+                draw();
+            });
+
+            cell.addEventListener('click', function() {
+                var fromId = parseInt(cell.dataset.cfFrom);
+                var toId = parseInt(cell.dataset.cfTo);
+                // Find source and target community tickers for path finder
+                var fromCs = communityStats.find(function(cs) { return cs.id === fromId; });
+                var toCs = communityStats.find(function(cs) { return cs.id === toId; });
+                if (!fromCs || !toCs) return;
+                // If same community (diagonal), filter to that community
+                if (fromId === toId) {
+                    window._activeCommunityFilter = { tickers: fromCs.tickers, label: fromCs.label, id: fromId };
+                    window._activeCommunityScatterTickers = new Set(fromCs.tickers);
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    var scEl = document.getElementById('scatter-chart');
+                    if (scEl) scEl.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                    if (typeof announce === 'function') announce('Filtered to ' + fromCs.tickers.length + ' companies in ' + fromCs.label);
+                } else {
+                    // Open path finder pre-filled with most connected nodes between communities
+                    // Find the node in fromCs with the most edges to toCs, and vice versa
+                    var fromTickers = new Set(fromCs.tickers);
+                    var toTickers = new Set(toCs.tickers);
+                    var bestFrom = null, bestFromCount = 0;
+                    var bestTo = null, bestToCount = 0;
+                    fromCs.tickers.forEach(function(t) {
+                        var adj2 = adjacency[t];
+                        if (!adj2) return;
+                        var ct = 0;
+                        adj2.out.forEach(function(o) { if (toTickers.has(o)) ct++; });
+                        if (ct > bestFromCount) { bestFromCount = ct; bestFrom = t; }
+                    });
+                    toCs.tickers.forEach(function(t) {
+                        var adj2 = adjacency[t];
+                        if (!adj2) return;
+                        var ct = 0;
+                        adj2.in.forEach(function(o) { if (fromTickers.has(o)) ct++; });
+                        if (ct > bestToCount) { bestToCount = ct; bestTo = t; }
+                    });
+                    if (bestFrom && bestTo && typeof window.findNetworkPath === 'function') {
+                        window.findNetworkPath(bestFrom, bestTo);
+                        if (typeof announce === 'function') announce('Finding path from ' + fromCs.label + ' (' + bestFrom + ') to ' + toCs.label + ' (' + bestTo + ')');
+                    }
+                }
+            });
+        });
+    }
+
+    // Helper: hex color to rgba string
+    function _hexToRgba(hex, alpha) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        var r = parseInt(hex.substring(0, 2), 16);
+        var g = parseInt(hex.substring(2, 4), 16);
+        var b = parseInt(hex.substring(4, 6), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
+    }
+
+    // Helper: blend two hex colors 50/50
+    function _blendHex(hex1, hex2) {
+        hex1 = hex1.replace('#', '');
+        hex2 = hex2.replace('#', '');
+        if (hex1.length === 3) hex1 = hex1[0]+hex1[0]+hex1[1]+hex1[1]+hex1[2]+hex1[2];
+        if (hex2.length === 3) hex2 = hex2[0]+hex2[0]+hex2[1]+hex2[1]+hex2[2]+hex2[2];
+        var r = Math.round((parseInt(hex1.substring(0, 2), 16) + parseInt(hex2.substring(0, 2), 16)) / 2);
+        var g = Math.round((parseInt(hex1.substring(2, 4), 16) + parseInt(hex2.substring(2, 4), 16)) / 2);
+        var b = Math.round((parseInt(hex1.substring(4, 6), 16) + parseInt(hex2.substring(4, 6), 16)) / 2);
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function _removeCommunityFlowMatrix() {
+        if (_communityFlowEl && _communityFlowEl.parentNode) {
+            _communityFlowEl.parentNode.removeChild(_communityFlowEl);
+        }
+        _communityFlowEl = null;
+        _hoveredFlowCell = null;
     }
 
     function _truncName(name, maxLen) {

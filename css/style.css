@@ -11814,6 +11814,130 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 @media (max-width: 600px) {
     .community-metrics-panel { display: none; }
+    .community-flow-panel { display: none; }
+}
+
+/* === Community Edge Flow Matrix === */
+.community-flow-panel {
+    margin-top: 8px;
+    padding: 8px 10px 10px;
+    background: var(--bg-elevated, #1a1a2e);
+    border: 1px solid var(--border, rgba(255,255,255,0.08));
+    border-radius: 8px;
+    overflow-x: auto;
+}
+.cf-header {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary, #a1a1aa);
+    margin-bottom: 2px;
+    letter-spacing: 0.02em;
+}
+.cf-desc {
+    font-size: 0.6rem;
+    color: var(--text-muted, #6b7280);
+    margin-bottom: 6px;
+}
+.cf-matrix {
+    display: inline-grid;
+    gap: 1px;
+    font-size: 0.62rem;
+    font-variant-numeric: tabular-nums;
+}
+.cf-row {
+    display: contents;
+}
+.cf-head-row {
+    display: contents;
+}
+.cf-corner {
+    width: 64px;
+    min-width: 64px;
+}
+.cf-col-label {
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-weight: 600;
+    font-size: 0.58rem;
+    padding: 2px 1px 4px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 56px;
+    line-height: 1.1;
+}
+.cf-row-label {
+    font-weight: 600;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+}
+.cf-row-total-label {
+    font-weight: 600;
+    font-size: 0.58rem;
+    color: var(--text-muted, #6b7280);
+    padding: 2px 4px;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    text-align: left;
+}
+.cf-total-label {
+    font-size: 0.58rem;
+    color: var(--text-muted, #6b7280) !important;
+}
+.cf-cell {
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    user-select: none;
+}
+.cf-cell[data-cf-from] {
+    cursor: pointer;
+}
+.cf-cell.cf-diag {
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .cf-cell.cf-diag {
+    border-color: rgba(0,0,0,0.08);
+}
+.cf-cell.cf-hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 8px rgba(255,180,0,0.5);
+    z-index: 2;
+    position: relative;
+}
+.cf-cell.cf-total {
+    font-weight: 600;
+    color: var(--text-muted, #6b7280);
+    background: transparent !important;
+    font-size: 0.58rem;
+}
+.cf-cell.cf-grand-total {
+    color: var(--text-secondary, #a1a1aa);
+    font-weight: 700;
+}
+.cf-totals-row .cf-cell {
+    border-top: 1px solid var(--border, rgba(255,255,255,0.08));
+    padding-top: 2px;
+}
+[data-theme="light"] .cf-totals-row .cf-cell {
+    border-top-color: rgba(0,0,0,0.06);
 }
 
 /* Community hover floating tooltip */
