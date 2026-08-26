@@ -3533,12 +3533,25 @@ function initNetwork(peerData) {
     var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
     var _cfNormMode = 'raw'; // flow matrix normalize toggle: 'raw' | 'row' | 'col'
     var _cfCellEdgeDetails = null; // NxN array of {ticker: outCount} maps for tooltip
+    var _cmPathFrom = null; // community id selected as path-finder "from" endpoint
 
     function _median(arr) {
         if (!arr || arr.length === 0) return null;
         var s = arr.slice().sort(function(a, b) { return a - b; });
         var m = Math.floor(s.length / 2);
         return s.length % 2 === 0 ? (s[m - 1] + s[m]) / 2 : s[m];
+    }
+
+    function _quartiles(arr) {
+        if (!arr || arr.length === 0) return null;
+        var s = arr.slice().sort(function(a, b) { return a - b; });
+        var n = s.length;
+        function q(p) {
+            var idx = (n - 1) * p;
+            var lo = Math.floor(idx), hi = Math.ceil(idx), frac = idx - lo;
+            return lo === hi ? s[lo] : s[lo] * (1 - frac) + s[hi] * frac;
+        }
+        return { min: s[0], q1: q(0.25), median: q(0.5), q3: q(0.75), max: s[n - 1] };
     }
 
     function _renderCommunityMetrics() {
@@ -3587,6 +3600,7 @@ function initNetwork(peerData) {
                 color: cs.color,
                 size: cs.size,
                 medianPay: _median(payVals),
+                payDist: _quartiles(payVals),
                 medianGov: _median(govVals),
                 medianSop: _median(sopVals),
                 medianGer: _median(gerVals),
@@ -3609,6 +3623,7 @@ function initNetwork(peerData) {
                 case 'medianSop': va = a.medianSop || 0; vb = b.medianSop || 0; break;
                 case 'medianGer': va = a.medianGer || 0; vb = b.medianGer || 0; break;
                 case 'density': va = a.density; vb = b.density; break;
+                case 'payDist': va = a.payDist ? (a.payDist.q3 - a.payDist.q1) : 0; vb = b.payDist ? (b.payDist.q3 - b.payDist.q1) : 0; break;
                 default: va = a.medianPay || 0; vb = b.medianPay || 0;
             }
             return _cmSortAsc ? va - vb : vb - va;
@@ -3622,6 +3637,7 @@ function initNetwork(peerData) {
             { key: 'label', label: 'Community', align: 'left' },
             { key: 'size', label: '#', align: 'right' },
             { key: 'medianPay', label: 'Med Pay', align: 'right' },
+            { key: 'payDist', label: 'Spread', align: 'left' },
             { key: 'medianGov', label: 'Gov', align: 'right' },
             { key: 'medianSop', label: 'SoP%', align: 'right' },
             { key: 'medianGer', label: 'GER', align: 'right' },
@@ -3641,12 +3657,17 @@ function initNetwork(peerData) {
         var maxPay = 0;
         rows.forEach(function(r) { if (r.medianPay && r.medianPay > maxPay) maxPay = r.medianPay; });
 
+        // Find global max pay for box plot scale
+        var globalMaxPay = 0;
+        rows.forEach(function(r) { if (r.payDist && r.payDist.max > globalMaxPay) globalMaxPay = r.payDist.max; });
+
         rows.forEach(function(r, ri) {
             html += '<div class="cm-row cm-data" data-cm-community="' + r.id + '" data-cm-idx="' + ri + '">';
-            // Community name cell with color dot
+            // Community name cell with color dot + path button
             html += '<div class="cm-cell cm-name-cell">';
             html += '<span class="cm-dot" style="background:' + r.color + '"></span>';
             html += '<span class="cm-label">' + r.label + '</span>';
+            html += '<button class="cm-path-btn" data-cm-path-cid="' + r.id + '" title="Find path to another community" aria-label="Find path from ' + r.label + '">⇄</button>';
             html += '</div>';
             // Size
             html += '<div class="cm-cell cm-right">' + r.size + '</div>';
@@ -3658,6 +3679,28 @@ function initNetwork(peerData) {
                 html += '<span class="cm-pay-val">' + _fmtComp(r.medianPay) + '</span>';
             } else {
                 html += '<span class="cm-pay-val">—</span>';
+            }
+            html += '</div>';
+            // Pay distribution box plot
+            html += '<div class="cm-cell cm-dist-cell">';
+            if (r.payDist && globalMaxPay > 0) {
+                var d = r.payDist;
+                var scale = function(v) { return (v / globalMaxPay * 100).toFixed(1); };
+                var whiskerL = scale(d.min), boxL = scale(d.q1), medL = scale(d.median), boxR = scale(d.q3), whiskerR = scale(d.max);
+                var iqr = _fmtComp(d.q3 - d.q1);
+                html += '<div class="cm-boxplot" title="Min ' + _fmtComp(d.min) + ' · Q1 ' + _fmtComp(d.q1) + ' · Med ' + _fmtComp(d.median) + ' · Q3 ' + _fmtComp(d.q3) + ' · Max ' + _fmtComp(d.max) + ' · IQR ' + iqr + '">';
+                // Whisker line (min to max)
+                html += '<div class="cm-bp-whisker" style="left:' + whiskerL + '%;width:' + (whiskerR - whiskerL) + '%"></div>';
+                // Min/max caps
+                html += '<div class="cm-bp-cap" style="left:' + whiskerL + '%"></div>';
+                html += '<div class="cm-bp-cap" style="left:' + whiskerR + '%"></div>';
+                // IQR box (Q1 to Q3)
+                html += '<div class="cm-bp-box" style="left:' + boxL + '%;width:' + (boxR - boxL) + '%;background:' + r.color + '"></div>';
+                // Median line
+                html += '<div class="cm-bp-median" style="left:' + medL + '%"></div>';
+                html += '</div>';
+            } else {
+                html += '—';
             }
             html += '</div>';
             // Governance
@@ -3800,6 +3843,90 @@ function initNetwork(peerData) {
                 draw();
             });
         });
+
+        // Wire path-finder bridge buttons (two-click: select from → select to → execute)
+        _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(ev) {
+                ev.stopPropagation(); // Don't trigger row click (filter)
+                var cid = parseInt(btn.dataset.cmPathCid);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                if (_cmPathFrom === null || _cmPathFrom === cid) {
+                    // First click — set this as "from" community
+                    _cmPathFrom = cid;
+                    // Highlight this button, clear others
+                    _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
+                        b.classList.remove('cm-path-from');
+                    });
+                    btn.classList.add('cm-path-from');
+                    btn.textContent = '⇤';
+                    btn.title = 'Source selected — click another community\'s ⇄ to find path';
+                    // Show instruction
+                    var inst = _communityMetricsEl.querySelector('.cm-path-instruction');
+                    if (!inst) {
+                        inst = document.createElement('div');
+                        inst.className = 'cm-path-instruction';
+                        _communityMetricsEl.appendChild(inst);
+                    }
+                    inst.textContent = 'Click ⇄ on another community to find the peer path from ' + cs.label;
+                    if (typeof announce === 'function') announce('Path source: ' + cs.label + '. Click another community to set destination.');
+                } else {
+                    // Second click on different community — execute path finder
+                    var fromCs = communityStats.find(function(s) { return s.id === _cmPathFrom; });
+                    var toCs = cs;
+                    if (!fromCs || !toCs) return;
+
+                    // Find most-connected node in fromCs to toCs, and vice versa
+                    var fromTickerSet = new Set(fromCs.tickers);
+                    var toTickerSet = new Set(toCs.tickers);
+                    var fromScores = {}, toScores = {};
+                    allEdges.forEach(function(e) {
+                        if (fromTickerSet.has(e.source) && toTickerSet.has(e.target)) {
+                            fromScores[e.source] = (fromScores[e.source] || 0) + 1;
+                            toScores[e.target] = (toScores[e.target] || 0) + 1;
+                        }
+                        if (fromTickerSet.has(e.target) && toTickerSet.has(e.source)) {
+                            fromScores[e.target] = (fromScores[e.target] || 0) + 1;
+                            toScores[e.source] = (toScores[e.source] || 0) + 1;
+                        }
+                    });
+
+                    var bestFrom = null, bestFromScore = -1;
+                    for (var t in fromScores) { if (fromScores[t] > bestFromScore) { bestFromScore = fromScores[t]; bestFrom = t; } }
+                    var bestTo = null, bestToScore = -1;
+                    for (var t2 in toScores) { if (toScores[t2] > bestToScore) { bestToScore = toScores[t2]; bestTo = t2; } }
+
+                    // Fallback to highest-paid in each community if no cross-edges
+                    if (!bestFrom) {
+                        var fromPay = fromCs.tickers.map(function(tk) { return { t: tk, p: _compLookup[tk] ? _compLookup[tk].total || 0 : 0 }; });
+                        fromPay.sort(function(a, b) { return b.p - a.p; });
+                        bestFrom = fromPay[0] ? fromPay[0].t : fromCs.tickers[0];
+                    }
+                    if (!bestTo) {
+                        var toPay = toCs.tickers.map(function(tk) { return { t: tk, p: _compLookup[tk] ? _compLookup[tk].total || 0 : 0 }; });
+                        toPay.sort(function(a, b) { return b.p - a.p; });
+                        bestTo = toPay[0] ? toPay[0].t : toCs.tickers[0];
+                    }
+
+                    // Clear path-from state
+                    _cmPathFrom = null;
+                    _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
+                        b.classList.remove('cm-path-from');
+                        b.textContent = '⇄';
+                        b.title = 'Find path to another community';
+                    });
+                    var inst2 = _communityMetricsEl.querySelector('.cm-path-instruction');
+                    if (inst2) inst2.remove();
+
+                    // Launch path finder
+                    if (bestFrom && bestTo && typeof window.findNetworkPath === 'function') {
+                        window.findNetworkPath(bestFrom, bestTo);
+                        if (typeof announce === 'function') announce('Finding path from ' + fromCs.label + ' (' + bestFrom + ') to ' + toCs.label + ' (' + bestTo + ')');
+                    }
+                }
+            });
+        });
     }
 
     // Cleanup community metrics when mode is toggled off
@@ -3808,6 +3935,7 @@ function initNetwork(peerData) {
             _communityMetricsEl.parentNode.removeChild(_communityMetricsEl);
         }
         _communityMetricsEl = null;
+        _cmPathFrom = null;
         _removeCommunityFlowMatrix();
     }
 
