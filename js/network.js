@@ -1817,6 +1817,8 @@ function initNetwork(peerData) {
                     _gerScore: c._gerScore != null ? c._gerScore : null,
                     _gerRisk: c._gerRisk || null,
                     _gerComponents: c._gerComponents || null,
+                    _govScore: c._govScore != null ? c._govScore : null,
+                    _sopApproval: c._sopApproval != null ? c._sopApproval : null,
                     _breakdown: ceoBreakdown
                 };
             });
@@ -3211,6 +3213,11 @@ function initNetwork(peerData) {
                 communityLegendEl.style.display = communityMode ? 'block' : 'none';
                 if (communityMode) _populateCommunityLegend();
             }
+            if (communityMode) {
+                _renderCommunityMetrics();
+            } else {
+                _removeCommunityMetrics();
+            }
             draw();
             var annMsg = communityMode
                 ? 'Community detection enabled — ' + communityStats.length + ' clusters detected (modularity ' + communityModularity.toFixed(2) + ')'
@@ -3226,6 +3233,7 @@ function initNetwork(peerData) {
             communityMode = false;
             if (communityToggle) communityToggle.classList.remove('active');
             if (communityLegendEl) communityLegendEl.style.display = 'none';
+            _removeCommunityMetrics();
         }
     }
 
@@ -3450,6 +3458,286 @@ function initNetwork(peerData) {
         if (_communityTooltipEl) {
             _communityTooltipEl.style.display = 'none';
         }
+    }
+
+    // === Community Aggregate Metrics Panel ===
+    // Compact sortable table showing per-community compensation stats when community mode is active.
+    var _communityMetricsEl = null;
+    var _cmSortCol = 'medianPay';
+    var _cmSortAsc = false;
+
+    function _median(arr) {
+        if (!arr || arr.length === 0) return null;
+        var s = arr.slice().sort(function(a, b) { return a - b; });
+        var m = Math.floor(s.length / 2);
+        return s.length % 2 === 0 ? (s[m - 1] + s[m]) / 2 : s[m];
+    }
+
+    function _renderCommunityMetrics() {
+        // Remove old panel
+        if (_communityMetricsEl && _communityMetricsEl.parentNode) {
+            _communityMetricsEl.parentNode.removeChild(_communityMetricsEl);
+        }
+        if (!communityMode || !communityStats || communityStats.length === 0) return;
+
+        var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+
+        // Compute aggregate stats for each community
+        var rows = [];
+        var maxShow = Math.min(communityStats.length, 12);
+        for (var i = 0; i < maxShow; i++) {
+            var cs = communityStats[i];
+            var payVals = [], gerVals = [], govVals = [], sopVals = [];
+            var sectorCounts = {};
+            var intraEdges = 0;
+            var tickerSet = new Set(cs.tickers);
+            cs.tickers.forEach(function(t) {
+                var c = _compLookup[t];
+                if (!c) return;
+                if (c.total != null && c.total > 0) payVals.push(c.total);
+                if (c._gerScore != null) gerVals.push(c._gerScore);
+                if (c._govScore != null) govVals.push(c._govScore);
+                if (c._sopApproval != null) sopVals.push(c._sopApproval);
+                if (c.sector) sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1;
+            });
+            allEdges.forEach(function(e) {
+                if (tickerSet.has(e.source) && tickerSet.has(e.target)) intraEdges++;
+            });
+            var maxEdges = cs.size * (cs.size - 1);
+            var density = maxEdges > 0 ? (intraEdges / maxEdges * 100) : 0;
+
+            // Find dominant sector
+            var topSector = null, topSectorCount = 0;
+            for (var sec in sectorCounts) {
+                if (sectorCounts[sec] > topSectorCount) { topSectorCount = sectorCounts[sec]; topSector = sec; }
+            }
+            var topSectorPct = cs.size > 0 ? (topSectorCount / cs.size * 100) : 0;
+
+            rows.push({
+                id: cs.id,
+                label: cs.label,
+                color: cs.color,
+                size: cs.size,
+                medianPay: _median(payVals),
+                medianGov: _median(govVals),
+                medianSop: _median(sopVals),
+                medianGer: _median(gerVals),
+                density: density,
+                topSector: topSector,
+                topSectorPct: topSectorPct,
+                topSectorColor: SECTOR_COLORS[topSector] || '#94a3b8',
+                tickers: cs.tickers
+            });
+        }
+
+        // Sort rows
+        rows.sort(function(a, b) {
+            var va, vb;
+            switch (_cmSortCol) {
+                case 'label': va = a.label; vb = b.label; return _cmSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                case 'size': va = a.size; vb = b.size; break;
+                case 'medianPay': va = a.medianPay || 0; vb = b.medianPay || 0; break;
+                case 'medianGov': va = a.medianGov || 0; vb = b.medianGov || 0; break;
+                case 'medianSop': va = a.medianSop || 0; vb = b.medianSop || 0; break;
+                case 'medianGer': va = a.medianGer || 0; vb = b.medianGer || 0; break;
+                case 'density': va = a.density; vb = b.density; break;
+                default: va = a.medianPay || 0; vb = b.medianPay || 0;
+            }
+            return _cmSortAsc ? va - vb : vb - va;
+        });
+
+        // Build table
+        _communityMetricsEl = document.createElement('div');
+        _communityMetricsEl.className = 'community-metrics-panel';
+
+        var cols = [
+            { key: 'label', label: 'Community', align: 'left' },
+            { key: 'size', label: '#', align: 'right' },
+            { key: 'medianPay', label: 'Med Pay', align: 'right' },
+            { key: 'medianGov', label: 'Gov', align: 'right' },
+            { key: 'medianSop', label: 'SoP%', align: 'right' },
+            { key: 'medianGer', label: 'GER', align: 'right' },
+            { key: 'density', label: 'Density', align: 'right' }
+        ];
+
+        var html = '<div class="cm-header">Community Compensation Comparison</div>';
+        html += '<div class="cm-table"><div class="cm-row cm-head">';
+        cols.forEach(function(col) {
+            var isSorted = _cmSortCol === col.key;
+            var arrow = isSorted ? (_cmSortAsc ? ' ▲' : ' ▼') : '';
+            html += '<div class="cm-cell cm-th' + (col.align === 'right' ? ' cm-right' : '') + (isSorted ? ' cm-sorted' : '') + '" data-cm-sort="' + col.key + '" role="columnheader" tabindex="0" title="Sort by ' + col.label + '">' + col.label + arrow + '</div>';
+        });
+        html += '</div>';
+
+        // Find max medianPay for bar scaling
+        var maxPay = 0;
+        rows.forEach(function(r) { if (r.medianPay && r.medianPay > maxPay) maxPay = r.medianPay; });
+
+        rows.forEach(function(r, ri) {
+            html += '<div class="cm-row cm-data" data-cm-community="' + r.id + '" data-cm-idx="' + ri + '">';
+            // Community name cell with color dot
+            html += '<div class="cm-cell cm-name-cell">';
+            html += '<span class="cm-dot" style="background:' + r.color + '"></span>';
+            html += '<span class="cm-label">' + r.label + '</span>';
+            html += '</div>';
+            // Size
+            html += '<div class="cm-cell cm-right">' + r.size + '</div>';
+            // Median pay with inline bar
+            html += '<div class="cm-cell cm-right cm-pay-cell">';
+            if (r.medianPay != null) {
+                var barW = maxPay > 0 ? (r.medianPay / maxPay * 100) : 0;
+                html += '<div class="cm-pay-bar" style="width:' + barW.toFixed(1) + '%;background:' + r.color + '"></div>';
+                html += '<span class="cm-pay-val">' + _fmtComp(r.medianPay) + '</span>';
+            } else {
+                html += '<span class="cm-pay-val">—</span>';
+            }
+            html += '</div>';
+            // Governance
+            html += '<div class="cm-cell cm-right">';
+            if (r.medianGov != null) {
+                var govColor = r.medianGov >= 65 ? '#34d399' : r.medianGov >= 50 ? '#fbbf24' : '#ef4444';
+                html += '<span style="color:' + govColor + '">' + Math.round(r.medianGov) + '</span>';
+            } else { html += '—'; }
+            html += '</div>';
+            // SoP%
+            html += '<div class="cm-cell cm-right">';
+            if (r.medianSop != null) {
+                var sopColor = r.medianSop >= 85 ? '#34d399' : r.medianSop >= 70 ? '#fbbf24' : '#ef4444';
+                html += '<span style="color:' + sopColor + '">' + r.medianSop.toFixed(1) + '%</span>';
+            } else { html += '—'; }
+            html += '</div>';
+            // GER
+            html += '<div class="cm-cell cm-right">';
+            if (r.medianGer != null) {
+                var gerColor = r.medianGer >= 50 ? '#ef4444' : r.medianGer >= 30 ? '#fbbf24' : '#34d399';
+                html += '<span style="color:' + gerColor + '">' + Math.round(r.medianGer) + '</span>';
+            } else { html += '—'; }
+            html += '</div>';
+            // Density
+            html += '<div class="cm-cell cm-right">' + r.density.toFixed(1) + '%</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // Top sector breakdown row (compact)
+        html += '<div class="cm-sector-row">';
+        rows.forEach(function(r) {
+            html += '<span class="cm-sector-tag" title="' + r.topSector + ' (' + r.topSectorPct.toFixed(0) + '%)">';
+            html += '<span class="cm-dot" style="background:' + r.topSectorColor + ';width:5px;height:5px"></span>';
+            html += r.topSector ? r.topSector.replace('Information Technology', 'IT').replace('Communication Services', 'Comm').replace('Consumer Discretionary', 'Cons Disc').replace('Consumer Staples', 'Cons Stap').replace('Health Care', 'Health').replace('Real Estate', 'Real Est') : '—';
+            html += ' ' + r.topSectorPct.toFixed(0) + '%';
+            html += '</span>';
+        });
+        html += '</div>';
+
+        _communityMetricsEl.innerHTML = html;
+
+        // Insert after community legend
+        if (communityLegendEl && communityLegendEl.parentNode) {
+            communityLegendEl.parentNode.insertBefore(_communityMetricsEl, communityLegendEl.nextSibling);
+        }
+
+        // Wire sort handlers
+        _communityMetricsEl.querySelectorAll('.cm-th').forEach(function(th) {
+            th.style.cursor = 'pointer';
+            th.addEventListener('click', function() {
+                var col = th.dataset.cmSort;
+                if (_cmSortCol === col) { _cmSortAsc = !_cmSortAsc; }
+                else { _cmSortCol = col; _cmSortAsc = col === 'label'; }
+                _renderCommunityMetrics();
+            });
+            th.addEventListener('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    var col = th.dataset.cmSort;
+                    if (_cmSortCol === col) { _cmSortAsc = !_cmSortAsc; }
+                    else { _cmSortCol = col; _cmSortAsc = col === 'label'; }
+                    _renderCommunityMetrics();
+                }
+            });
+        });
+
+        // Wire row click handlers — filter table to that community (same as legend click)
+        _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(row) {
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', function() {
+                var cid = parseInt(row.dataset.cmCommunity);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                // Check if this community is already active
+                var wasActive = window._activeCommunityFilter && window._activeCommunityFilter.id === cid;
+                // Clear all legend active states
+                if (communityLegendEl) {
+                    communityLegendEl.querySelectorAll('.community-legend-item').forEach(function(el) {
+                        el.classList.remove('community-legend-active');
+                    });
+                }
+
+                if (wasActive) {
+                    window._activeCommunityFilter = null;
+                    window._activeCommunityScatterTickers = null;
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    var scEl = document.getElementById('scatter-chart');
+                    if (scEl) scEl.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                    if (typeof announce === 'function') announce('Community filter cleared');
+                    // Update row highlight
+                    _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(r) { r.classList.remove('cm-active'); });
+                } else {
+                    // Set filter
+                    window._activeCommunityFilter = { tickers: cs.tickers, label: cs.label, id: cid };
+                    window._activeCommunityScatterTickers = new Set(cs.tickers);
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                    var scEl2 = document.getElementById('scatter-chart');
+                    if (scEl2) scEl2.innerHTML = '';
+                    if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                    // Also activate the matching legend item
+                    if (communityLegendEl) {
+                        var legendItem = communityLegendEl.querySelector('.community-legend-item[data-community="' + cid + '"]');
+                        if (legendItem) legendItem.classList.add('community-legend-active');
+                    }
+                    if (typeof announce === 'function') announce('Filtered to ' + cs.tickers.length + ' companies in ' + cs.label);
+                    // Update row highlight
+                    _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(r) { r.classList.remove('cm-active'); });
+                    row.classList.add('cm-active');
+                    // Scroll to table
+                    var tableSection = document.getElementById('compensation-table-section');
+                    if (tableSection) {
+                        var hdr = document.querySelector('.sticky-header, header');
+                        var off = hdr ? hdr.offsetHeight : 0;
+                        var top = tableSection.getBoundingClientRect().top + window.scrollY - off - 12;
+                        window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
+                    }
+                }
+            });
+
+            // Hover: highlight community on graph
+            row.addEventListener('mouseenter', function() {
+                var cid = parseInt(row.dataset.cmCommunity);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+                _hoveredCommunityId = cid;
+                _hoveredCommunityTickers = new Set(cs.tickers);
+                row.classList.add('cm-hover');
+                draw();
+            });
+            row.addEventListener('mouseleave', function() {
+                _hoveredCommunityId = null;
+                _hoveredCommunityTickers = null;
+                row.classList.remove('cm-hover');
+                draw();
+            });
+        });
+    }
+
+    // Cleanup community metrics when mode is toggled off
+    function _removeCommunityMetrics() {
+        if (_communityMetricsEl && _communityMetricsEl.parentNode) {
+            _communityMetricsEl.parentNode.removeChild(_communityMetricsEl);
+        }
+        _communityMetricsEl = null;
     }
 
     function _truncName(name, maxLen) {
