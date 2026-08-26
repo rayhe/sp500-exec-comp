@@ -63,6 +63,8 @@ function initNetwork(peerData) {
     var _pathBadgeHovered = null; // ticker of currently hovered path badge
     var _hoveredQuartileTickers = null; // Set of tickers in hovered box plot quartile zone
     var _hoveredQuartileColor = null; // community color for quartile highlight ring
+    var _hoveredTrendTickers = null; // Map of ticker → 'up'|'down'|'stable' for trend sparkline hover
+    var _hoveredTrendCommunityColor = null; // community color for trend sparkline hover
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1188,6 +1190,39 @@ function initNetwork(peerData) {
                 ctx.lineTo(t.x, t.y);
             });
             ctx.stroke();
+        } else if (_hoveredTrendTickers && _hoveredTrendTickers.size > 0 && !hoveredNode && !activePath) {
+            // Trend sparkline hover — dim non-community edges, highlight community member edges colored by direction
+            var _trendTickerSet = new Set(_hoveredTrendTickers.keys());
+            ctx.strokeStyle = edgeSectorDimColor;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (_trendTickerSet.has(src) || _trendTickerSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+            // Highlighted edges connecting community members
+            var _tcColor = _hoveredTrendCommunityColor || '#a78bfa';
+            ctx.strokeStyle = _hiContrast ? hexToRGBA(_tcColor, 0.55) : hexToRGBA(_tcColor, 0.35);
+            ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (!_trendTickerSet.has(src) && !_trendTickerSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
         } else {
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
@@ -1325,6 +1360,13 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.12 : 0.06;
                 }
+            } else if (!belowGerThreshold && _hoveredTrendTickers && _hoveredTrendTickers.size > 0 && !hoveredNode && !activePath) {
+                // Trend sparkline hover — highlight community members, dim rest
+                if (_hoveredTrendTickers.has(d.ticker)) {
+                    alpha = 1;
+                } else {
+                    alpha = _hiContrast ? 0.12 : 0.06;
+                }
             }
 
             ctx.beginPath();
@@ -1355,6 +1397,13 @@ function initNetwork(peerData) {
             } else if (_hoveredQuartileTickers && _hoveredQuartileTickers.has(d.ticker) && !hoveredNode) {
                 ctx.strokeStyle = hexToRGBA(_hoveredQuartileColor || color, _hiContrast ? 0.85 : 0.7);
                 ctx.lineWidth = (_hiContrast ? 2 : 1.5) / scale;
+                ctx.stroke();
+            } else if (_hoveredTrendTickers && _hoveredTrendTickers.has(d.ticker) && !hoveredNode) {
+                // Direction-coded stroke: green=decrease, red=increase, amber=stable
+                var _tDir = _hoveredTrendTickers.get(d.ticker);
+                var _tStroke = _tDir === 'up' ? '#ef4444' : _tDir === 'down' ? '#34d399' : '#fbbf24';
+                ctx.strokeStyle = hexToRGBA(_tStroke, _hiContrast ? 0.9 : 0.8);
+                ctx.lineWidth = (_hiContrast ? 2.5 : 2) / scale;
                 ctx.stroke();
             } else if (_hiContrast && alpha > 0.2) {
                 // High-contrast: add subtle outline to all visible nodes for separation
@@ -4072,6 +4121,53 @@ function initNetwork(peerData) {
             });
         });
 
+        // Wire trend sparkline hover → highlight community companies on graph by YoY pay change direction
+        _communityMetricsEl.querySelectorAll('.cm-sparkline').forEach(function(spark) {
+            spark.addEventListener('mouseenter', function(ev) {
+                ev.stopPropagation(); // Don't trigger row hover
+                var row = spark.closest('.cm-data');
+                if (!row) return;
+                var cid = parseInt(row.dataset.cmCommunity);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+                // Get the two most recent years of CEO pay data for each company
+                var tMap = new Map();
+                var upCount = 0, downCount = 0, stableCount = 0;
+                cs.tickers.forEach(function(t) {
+                    var c = _compLookup[t];
+                    if (!c || !c._ceoPayByYear) return;
+                    var years = Object.keys(c._ceoPayByYear).map(Number).sort();
+                    if (years.length < 2) {
+                        tMap.set(t, 'stable');
+                        stableCount++;
+                        return;
+                    }
+                    var prev = c._ceoPayByYear[years[years.length - 2]];
+                    var curr = c._ceoPayByYear[years[years.length - 1]];
+                    if (!prev || prev === 0) { tMap.set(t, 'stable'); stableCount++; return; }
+                    var pctChange = ((curr - prev) / prev) * 100;
+                    if (pctChange > 5) { tMap.set(t, 'up'); upCount++; }
+                    else if (pctChange < -5) { tMap.set(t, 'down'); downCount++; }
+                    else { tMap.set(t, 'stable'); stableCount++; }
+                });
+                // Include companies without multi-year data as stable (dimmed less)
+                cs.tickers.forEach(function(t) {
+                    if (!tMap.has(t) && _compLookup[t]) { tMap.set(t, 'stable'); stableCount++; }
+                });
+                _hoveredTrendTickers = tMap;
+                _hoveredTrendCommunityColor = cs.color;
+                spark.classList.add('cm-sparkline-active');
+                draw();
+                if (typeof announce === 'function') announce(cs.label + ' trend: ' + upCount + ' up, ' + downCount + ' down, ' + stableCount + ' stable — highlighted on graph');
+            });
+            spark.addEventListener('mouseleave', function() {
+                _hoveredTrendTickers = null;
+                _hoveredTrendCommunityColor = null;
+                spark.classList.remove('cm-sparkline-active');
+                draw();
+            });
+        });
+
         // Wire path-finder bridge buttons (two-click: select from → select to → execute)
         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(btn) {
             btn.addEventListener('click', function(ev) {
@@ -4225,6 +4321,8 @@ function initNetwork(peerData) {
         _cmPathFrom = null;
         _hoveredQuartileTickers = null;
         _hoveredQuartileColor = null;
+        _hoveredTrendTickers = null;
+        _hoveredTrendCommunityColor = null;
         // Clear quartile filter when community mode is toggled off
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;

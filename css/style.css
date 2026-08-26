@@ -11826,6 +11826,19 @@ body.light-mode .cross-sector-pair-select:focus {
     white-space: nowrap;
     line-height: 1;
 }
+/* Sparkline hover — interactive cursor + highlight */
+.cm-sparkline {
+    cursor: crosshair;
+    border-radius: 4px;
+    padding: 1px 2px;
+    transition: background 0.15s;
+}
+.cm-sparkline:hover, .cm-sparkline-active {
+    background: rgba(167,139,250,0.12);
+}
+[data-theme="light"] .cm-sparkline:hover, [data-theme="light"] .cm-sparkline-active {
+    background: rgba(124,58,237,0.08);
+}
 /* Box plot for pay distribution */
 .cm-dist-cell {
     min-width: 80px;
