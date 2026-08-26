@@ -5846,6 +5846,19 @@ footer li::before {
     border-color: var(--positive);
     color: var(--positive);
 }
+.comparison-path-btn {
+    border-color: rgba(0,180,216,0.3);
+    color: #00b4d8;
+}
+.comparison-path-btn:hover {
+    border-color: #00b4d8;
+    color: #00b4d8;
+    background: rgba(0,180,216,0.08);
+    box-shadow: 0 0 8px rgba(0,180,216,0.15);
+    transform: translateY(-1px);
+}
+[data-theme="light"] .comparison-path-btn { border-color: rgba(0,119,182,0.25); color: #0077b6; }
+[data-theme="light"] .comparison-path-btn:hover { border-color: #0077b6; color: #0077b6; background: rgba(0,119,182,0.06); }
 
 /* Comparison grid */
 .comparison-grid {

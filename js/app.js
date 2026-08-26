@@ -13601,6 +13601,15 @@ function setupDualSparklineTooltips() {
         // === Peer Overlap Analysis ===
         renderPeerOverlap(selected, grid);
 
+        // Update "Find Path" button tooltip with current endpoint tickers
+        var pathBtn = document.getElementById('comparison-path-btn');
+        if (pathBtn && compareSet.length >= 2) {
+            var pfFrom = compareSet[0];
+            var pfTo = compareSet[compareSet.length - 1];
+            pathBtn.title = 'Find peer network path: ' + pfFrom + ' → ' + pfTo;
+            pathBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="12" r="3"/><path d="M8 12h8"/></svg> ' + pfFrom + ' → ' + pfTo;
+        }
+
         grid.innerHTML = '';
         selected.forEach(function(c) {
             var card = document.createElement('div');
@@ -13779,6 +13788,18 @@ function setupDualSparklineTooltips() {
     // Wire up tray buttons
     document.getElementById('compare-go-btn').addEventListener('click', showComparison);
     document.getElementById('compare-clear-btn').addEventListener('click', clearCompare);
+
+    // "Find Path" button — bridges comparison panel to network path finder
+    document.getElementById('comparison-path-btn').addEventListener('click', function() {
+        if (compareSet.length < 2) return;
+        var fromTicker = compareSet[0];
+        var toTicker = compareSet[compareSet.length - 1]; // first and last — natural bookends
+        if (typeof window.findNetworkPath === 'function') {
+            window.findNetworkPath(fromTicker, toTicker);
+            announce('Finding peer network path from ' + fromTicker + ' to ' + toTicker);
+        }
+    });
+
     document.getElementById('comparison-close-btn').addEventListener('click', function() {
         document.getElementById('comparison-section').classList.remove('visible');
         var chartEl = document.getElementById('comparison-chart');
