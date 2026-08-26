@@ -4276,7 +4276,15 @@ function initNetwork(peerData) {
             return;
         }
         var hops = pathResult.nodes.length - 1;
-        var html = '<div class="path-result-header">' + hops + '-hop path found</div>';
+        // Build scatter axis context for header
+        var scXSel = document.getElementById('scatter-x-metric');
+        var scYSel = document.getElementById('scatter-y-metric');
+        var scXLabel = scXSel ? scXSel.options[scXSel.selectedIndex].text : '';
+        var scYLabel = scYSel ? scYSel.options[scYSel.selectedIndex].text : '';
+        var axisCtx = (scXLabel && scYLabel) ? scXLabel + ' vs ' + scYLabel : '';
+        var html = '<div class="path-result-header">' + hops + '-hop path found';
+        if (axisCtx) html += '<span class="pf-header-axis-ctx" title="Current scatter plot axes">📊 ' + axisCtx + '</span>';
+        html += '</div>';
         html += '<div class="path-result-chain">';
 
         // Collect compensation values for path analysis

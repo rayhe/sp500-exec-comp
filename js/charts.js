@@ -14141,28 +14141,38 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
             .attr('opacity', 0.9);
     }
 
-    // Draw step number badges at each path node position
+    // Draw step number badges at each path node position with staggered animation
+    var animBaseDelay = 120; // ms per segment
+    var badgeFadeDelay = 80; // ms extra after segment draws
     visiblePath.forEach(function(n, idx) {
         var cx = x(xMetric.get(n.pt));
         var cy = yScale(yMetric.get(n.pt));
         var color = payColor(n.pt.total_compensation || 0);
+        var nodeDelay = idx * animBaseDelay;
 
-        // Highlight ring around the dot
+        // Highlight ring around the dot — animate pulse on appear
         overlayG.append('circle')
             .attr('cx', cx).attr('cy', cy)
-            .attr('r', 10)
+            .attr('r', 4)
             .attr('fill', 'none')
             .attr('stroke', color)
             .attr('stroke-width', 2)
+            .attr('opacity', 0)
+            .transition().delay(nodeDelay).duration(300)
+            .attr('r', 10)
             .attr('opacity', 0.8);
 
-        // Step number badge (small circle with number)
+        // Step number badge (small circle with number) — fade in after segment
+        var badgeDelay = nodeDelay + badgeFadeDelay;
         overlayG.append('circle')
             .attr('cx', cx + 8).attr('cy', cy - 8)
             .attr('r', 7)
             .attr('fill', dark ? 'rgba(15,23,42,0.9)' : 'rgba(255,255,255,0.95)')
             .attr('stroke', color)
-            .attr('stroke-width', 1.5);
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0)
+            .transition().delay(badgeDelay).duration(200)
+            .attr('opacity', 1);
 
         overlayG.append('text')
             .attr('x', cx + 8).attr('y', cy - 4.5)
@@ -14171,8 +14181,88 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
             .attr('font-weight', '700')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .attr('fill', color)
-            .text(idx + 1);
+            .attr('opacity', 0)
+            .transition().delay(badgeDelay).duration(200)
+            .attr('opacity', 1);
+
+        // Interactive hover area for tooltip — transparent circle over badge
+        overlayG.append('circle')
+            .attr('cx', cx + 8).attr('cy', cy - 8)
+            .attr('r', 12)
+            .attr('fill', 'transparent')
+            .attr('stroke', 'none')
+            .attr('pointer-events', 'all')
+            .style('cursor', 'pointer')
+            .datum({ pt: n.pt, ticker: n.ticker, idx: idx })
+            .on('mouseover', function(event, d) {
+                var pt = d.pt;
+                var html = '<div class="ct-title">' + pt.ticker + ' — ' + (pt.company_name || '') + '</div>';
+                html += '<div class="ct-row"><span class="ct-label">CEO</span><span class="ct-val">' + (pt.ceo_name || '—') + '</span></div>';
+                html += '<div class="ct-row"><span class="ct-label">Total Pay</span><span class="ct-val">' + fmtCurr(pt.total_compensation || 0) + '</span></div>';
+                html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (pt.sector || '—') + '</span></div>';
+                // Show compensation breakdown from executives data
+                if (pt.executives && pt.executives.length > 0) {
+                    var ceo = null;
+                    for (var ei = 0; ei < pt.executives.length; ei++) {
+                        if (pt.executives[ei].title && /chief executive|ceo/i.test(pt.executives[ei].title)) {
+                            ceo = pt.executives[ei]; break;
+                        }
+                    }
+                    if (!ceo) ceo = pt.executives[0];
+                    var total = pt.total_compensation || ceo.total || 1;
+                    var parts = [
+                        { label: 'Salary', val: ceo.salary || 0 },
+                        { label: 'Stock', val: ceo.stock_awards || 0 },
+                        { label: 'Options', val: ceo.option_awards || 0 },
+                        { label: 'Bonus', val: ceo.bonus || 0 },
+                        { label: 'Incentive', val: ceo.non_equity_incentive || 0 },
+                        { label: 'Pension', val: ceo.pension_nqdc || 0 },
+                        { label: 'Other', val: ceo.all_other || 0 }
+                    ];
+                    var hasBreakdown = parts.some(function(p) { return p.val > 0; });
+                    if (hasBreakdown) {
+                        html += '<div class="ct-sub" style="margin-top:6px">';
+                        parts.forEach(function(p) {
+                            if (p.val > 0) {
+                                var pct = (p.val / total * 100).toFixed(1);
+                                html += '<div class="ct-row"><span class="ct-label">' + p.label + '</span><span class="ct-val">' + fmtCurr(p.val) + ' (' + pct + '%)</span></div>';
+                            }
+                        });
+                        html += '</div>';
+                    }
+                }
+                html += '<div class="ct-row" style="margin-top:4px;font-size:0.7rem;opacity:0.6"><span class="ct-label">Step ' + (d.idx + 1) + ' of ' + visiblePath.length + '</span><span class="ct-val">Click for detail</span></div>';
+                showChartTooltip(event, html);
+            })
+            .on('mousemove', function(event) { positionChartTooltip(event); })
+            .on('mouseout', function() { hideChartTooltip(); })
+            .on('click', function(event, d) {
+                if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.pt.ticker);
+            });
     });
+
+    // Animate path segments sequentially — staggered stroke draw
+    for (var ai = 0; ai < visiblePath.length - 1; ai++) {
+        (function(segIdx) {
+            var lines = overlayG.selectAll('line').nodes();
+            var arrows = overlayG.selectAll('polygon').nodes();
+            if (lines[segIdx]) {
+                var lineEl = d3.select(lines[segIdx]);
+                var lineLen = 400; // approximate
+                lineEl.attr('stroke-dasharray', lineLen)
+                    .attr('stroke-dashoffset', lineLen)
+                    .attr('opacity', 0.85)
+                    .transition().delay(segIdx * animBaseDelay).duration(250).ease(d3.easeLinear)
+                    .attr('stroke-dashoffset', 0);
+            }
+            if (arrows[segIdx]) {
+                d3.select(arrows[segIdx])
+                    .attr('opacity', 0)
+                    .transition().delay(segIdx * animBaseDelay + 150).duration(150)
+                    .attr('opacity', 0.9);
+            }
+        })(ai);
+    }
 
     // Floating label on scatter
     if (container) {
