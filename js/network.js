@@ -61,6 +61,8 @@ function initNetwork(peerData) {
     var _hoveredCommunityTickers = null; // Set of tickers in hovered community
     var _pathBadgeAreas = []; // [{ticker, x, y, w, h} ...] for path badge hover detection
     var _pathBadgeHovered = null; // ticker of currently hovered path badge
+    var _hoveredQuartileTickers = null; // Set of tickers in hovered box plot quartile zone
+    var _hoveredQuartileColor = null; // community color for quartile highlight ring
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1154,6 +1156,38 @@ function initNetwork(peerData) {
                 ctx.lineTo(t.x, t.y);
             });
             ctx.stroke();
+        } else if (_hoveredQuartileTickers && _hoveredQuartileTickers.size > 0 && !hoveredNode && !activePath) {
+            // Box plot quartile hover — dim non-quartile edges, highlight edges connecting quartile members
+            ctx.strokeStyle = edgeSectorDimColor;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (_hoveredQuartileTickers.has(src) || _hoveredQuartileTickers.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            var _qEdgeColor = _hoveredQuartileColor || '#a78bfa';
+            ctx.strokeStyle = _hiContrast ? hexToRGBA(_qEdgeColor, 0.65) : hexToRGBA(_qEdgeColor, 0.45);
+            ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (!_hoveredQuartileTickers.has(src) && !_hoveredQuartileTickers.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
         } else {
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
@@ -1284,6 +1318,13 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.12 : 0.06;
                 }
+            } else if (!belowGerThreshold && _hoveredQuartileTickers && _hoveredQuartileTickers.size > 0 && !hoveredNode && !activePath) {
+                // Box plot quartile hover — highlight quartile members, dim rest
+                if (_hoveredQuartileTickers.has(d.ticker)) {
+                    alpha = 1;
+                } else {
+                    alpha = _hiContrast ? 0.12 : 0.06;
+                }
             }
 
             ctx.beginPath();
@@ -1311,6 +1352,10 @@ function initNetwork(peerData) {
                     ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
                     ctx.stroke();
                 }
+            } else if (_hoveredQuartileTickers && _hoveredQuartileTickers.has(d.ticker) && !hoveredNode) {
+                ctx.strokeStyle = hexToRGBA(_hoveredQuartileColor || color, _hiContrast ? 0.85 : 0.7);
+                ctx.lineWidth = (_hiContrast ? 2 : 1.5) / scale;
+                ctx.stroke();
             } else if (_hiContrast && alpha > 0.2) {
                 // High-contrast: add subtle outline to all visible nodes for separation
                 ctx.strokeStyle = _dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)';
@@ -3698,6 +3743,25 @@ function initNetwork(peerData) {
                 html += '<div class="cm-bp-box" style="left:' + boxL + '%;width:' + (boxR - boxL) + '%;background:' + r.color + '"></div>';
                 // Median line
                 html += '<div class="cm-bp-median" style="left:' + medL + '%"></div>';
+                // Quartile hover zones (transparent overlays for interactive graph highlighting)
+                var _qZones = [
+                    { label: 'Bottom 25%', lo: d.min, hi: d.q1 },
+                    { label: '25th\u201350th', lo: d.q1, hi: d.median },
+                    { label: '50th\u201375th', lo: d.median, hi: d.q3 },
+                    { label: 'Top 25%', lo: d.q3, hi: d.max }
+                ];
+                _qZones.forEach(function(z) {
+                    var zLeft = z.lo / globalMaxPay * 100;
+                    var zRight = z.hi / globalMaxPay * 100;
+                    var zW = Math.max(zRight - zLeft, 1.5);
+                    // Count companies in this quartile
+                    var zCount = 0;
+                    r.tickers.forEach(function(t) {
+                        var c = _compLookup[t];
+                        if (c && c.total != null && c.total >= z.lo && c.total <= z.hi) zCount++;
+                    });
+                    html += '<div class="cm-bp-zone" data-bp-cid="' + r.id + '" data-bp-lo="' + z.lo + '" data-bp-hi="' + z.hi + '" data-bp-color="' + r.color + '" title="' + z.label + ': ' + _fmtComp(z.lo) + ' \u2013 ' + _fmtComp(z.hi) + ' \u00b7 ' + zCount + ' companies" style="left:' + zLeft.toFixed(1) + '%;width:' + zW.toFixed(1) + '%"></div>';
+                });
                 html += '</div>';
             } else {
                 html += '—';
@@ -3844,6 +3908,39 @@ function initNetwork(peerData) {
             });
         });
 
+        // Wire box plot quartile hover zones — highlight matching companies on network graph
+        _communityMetricsEl.querySelectorAll('.cm-bp-zone').forEach(function(zone) {
+            zone.addEventListener('mouseenter', function(ev) {
+                ev.stopPropagation(); // Don't trigger row hover
+                var cid = parseInt(zone.dataset.bpCid);
+                var lo = parseFloat(zone.dataset.bpLo);
+                var hi = parseFloat(zone.dataset.bpHi);
+                var zColor = zone.dataset.bpColor;
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                var tickers = new Set();
+                cs.tickers.forEach(function(t) {
+                    var c = _compLookup[t];
+                    if (c && c.total != null && c.total >= lo && c.total <= hi) {
+                        tickers.add(t);
+                    }
+                });
+
+                _hoveredQuartileTickers = tickers;
+                _hoveredQuartileColor = zColor;
+                zone.classList.add('cm-bp-zone-active');
+                draw();
+                if (typeof announce === 'function') announce(tickers.size + ' companies in pay range ' + _fmtComp(lo) + ' to ' + _fmtComp(hi) + ' highlighted on graph');
+            });
+            zone.addEventListener('mouseleave', function() {
+                _hoveredQuartileTickers = null;
+                _hoveredQuartileColor = null;
+                zone.classList.remove('cm-bp-zone-active');
+                draw();
+            });
+        });
+
         // Wire path-finder bridge buttons (two-click: select from → select to → execute)
         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(btn) {
             btn.addEventListener('click', function(ev) {
@@ -3936,6 +4033,8 @@ function initNetwork(peerData) {
         }
         _communityMetricsEl = null;
         _cmPathFrom = null;
+        _hoveredQuartileTickers = null;
+        _hoveredQuartileColor = null;
         _removeCommunityFlowMatrix();
     }
 
