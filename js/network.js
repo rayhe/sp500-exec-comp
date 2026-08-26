@@ -3531,6 +3531,8 @@ function initNetwork(peerData) {
     var _cmSortAsc = false;
     var _communityFlowEl = null;
     var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
+    var _cfNormalized = false; // flow matrix normalize toggle state
+    var _cfCellEdgeDetails = null; // NxN array of {ticker: outCount} maps for tooltip
 
     function _median(arr) {
         if (!arr || arr.length === 0) return null;
@@ -3817,10 +3819,9 @@ function initNetwork(peerData) {
         if (!communityMode || !communityStats || communityStats.length < 2) return;
 
         var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-        var maxShow = Math.min(communityStats.length, 10); // cap at 10 for readability
+        var maxShow = Math.min(communityStats.length, 10);
         var comms = communityStats.slice(0, maxShow);
 
-        // Map community id → index and ticker set
         var commIdx = {};
         var commTickerSets = [];
         comms.forEach(function(cs, i) {
@@ -3828,14 +3829,17 @@ function initNetwork(peerData) {
             commTickerSets.push(new Set(cs.tickers));
         });
 
-        // Build NxN flow matrix (directed: row=source, col=target)
+        // Build NxN flow matrix + per-cell edge detail (which source tickers contribute)
         var N = comms.length;
         var flowMatrix = [];
+        _cfCellEdgeDetails = [];
         for (var i = 0; i < N; i++) {
             flowMatrix.push(new Array(N).fill(0));
+            var detailRow = [];
+            for (var j = 0; j < N; j++) detailRow.push({});
+            _cfCellEdgeDetails.push(detailRow);
         }
 
-        // Count edges
         allEdges.forEach(function(e) {
             var sNode = nodeMap[e.source];
             var tNode = nodeMap[e.target];
@@ -3846,10 +3850,19 @@ function initNetwork(peerData) {
             var ti = commIdx[tCid];
             if (si != null && ti != null) {
                 flowMatrix[si][ti]++;
+                var detail = _cfCellEdgeDetails[si][ti];
+                detail[e.source] = (detail[e.source] || 0) + 1;
             }
         });
 
-        // Find max value for color scaling (exclude diagonal for cross-community emphasis)
+        // Row totals for normalize mode
+        var rowTotals = [];
+        for (var i = 0; i < N; i++) {
+            var rt = 0;
+            for (var j = 0; j < N; j++) rt += flowMatrix[i][j];
+            rowTotals.push(rt);
+        }
+
         var maxOff = 0, maxDiag = 0;
         for (var i = 0; i < N; i++) {
             for (var j = 0; j < N; j++) {
@@ -3859,15 +3872,14 @@ function initNetwork(peerData) {
         }
         var maxVal = Math.max(maxOff, 1);
 
-        // Build HTML
         _communityFlowEl = document.createElement('div');
         _communityFlowEl.className = 'community-flow-panel';
 
-        var html = '<div class="cf-header">Peer Flow Between Communities</div>';
-        html += '<div class="cf-desc">Directed edges: row selects column as peer. Diagonal = intra-community.</div>';
+        var html = '<div class="cf-header-row"><div class="cf-header">Peer Flow Between Communities</div>';
+        html += '<button class="cf-normalize-btn' + (_cfNormalized ? ' cf-norm-active' : '') + '" title="Toggle between raw edge counts and % of row total">' + (_cfNormalized ? '% Row' : '# Raw') + '</button></div>';
+        html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + (_cfNormalized ? 'Values = % of row\u2019s outbound edges.' : 'Diagonal = intra-community.') + ' Hover for top contributors.</div>';
         html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
 
-        // Header row with column labels
         html += '<div class="cf-row cf-head-row">';
         html += '<div class="cf-corner"></div>';
         comms.forEach(function(cs, j) {
@@ -3877,7 +3889,6 @@ function initNetwork(peerData) {
         html += '<div class="cf-row-total-label">Total</div>';
         html += '</div>';
 
-        // Data rows
         var colTotals = new Array(N).fill(0);
         comms.forEach(function(csRow, i) {
             var shortLabel = csRow.label.length > 8 ? csRow.label.substring(0, 7) + '\u2026' : csRow.label;
@@ -3891,7 +3902,16 @@ function initNetwork(peerData) {
                 colTotals[j] += val;
                 var isDiag = (i === j);
 
-                // Color intensity
+                var displayVal = '';
+                if (val > 0) {
+                    if (_cfNormalized && rowTotals[i] > 0) {
+                        var pct = (val / rowTotals[i]) * 100;
+                        displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
+                    } else {
+                        displayVal = val + '';
+                    }
+                }
+
                 var alpha = 0;
                 if (val > 0) {
                     if (isDiag) {
@@ -3901,14 +3921,12 @@ function initNetwork(peerData) {
                     }
                 }
 
-                // Color: diagonal = community color, off-diagonal = gradient from source to target
                 var bgColor;
                 if (val === 0) {
                     bgColor = dark ? 'rgba(30,30,40,0.5)' : 'rgba(240,240,245,0.5)';
                 } else if (isDiag) {
                     bgColor = _hexToRgba(csRow.color, alpha);
                 } else {
-                    // Blend source and target colors
                     bgColor = _hexToRgba(_blendHex(csRow.color, csCol.color), alpha);
                 }
 
@@ -3916,17 +3934,15 @@ function initNetwork(peerData) {
 
                 html += '<div class="cf-cell' + (isDiag ? ' cf-diag' : '') + '" '
                     + 'data-cf-from="' + csRow.id + '" data-cf-to="' + csCol.id + '" '
-                    + 'title="' + csRow.label + ' → ' + csCol.label + ': ' + val + ' edge' + (val !== 1 ? 's' : '') + (isDiag ? ' (intra-community)' : '') + '" '
+                    + 'data-cf-i="' + i + '" data-cf-j="' + j + '" '
                     + 'style="background:' + bgColor + ';color:' + textColor + '">'
-                    + (val > 0 ? val : '') + '</div>';
+                    + displayVal + '</div>';
             });
 
-            // Row total
-            html += '<div class="cf-cell cf-total">' + rowTotal + '</div>';
+            html += '<div class="cf-cell cf-total">' + (_cfNormalized ? '100' : rowTotal) + '</div>';
             html += '</div>';
         });
 
-        // Column totals row
         html += '<div class="cf-row cf-totals-row">';
         html += '<div class="cf-row-label cf-total-label">Total</div>';
         var grandTotal = 0;
@@ -3941,39 +3957,104 @@ function initNetwork(peerData) {
 
         _communityFlowEl.innerHTML = html;
 
-        // Insert after community metrics panel (or after legend if no metrics)
         var anchor = _communityMetricsEl || (communityLegendEl ? communityLegendEl : null);
         if (anchor && anchor.parentNode) {
             anchor.parentNode.insertBefore(_communityFlowEl, anchor.nextSibling);
+        }
+
+        // Create/reuse flow tooltip element
+        var flowTip = document.getElementById('cf-flow-tooltip');
+        if (!flowTip) {
+            flowTip = document.createElement('div');
+            flowTip.id = 'cf-flow-tooltip';
+            flowTip.className = 'cf-flow-tooltip';
+            flowTip.setAttribute('role', 'tooltip');
+            document.body.appendChild(flowTip);
+        }
+
+        // Wire normalize toggle
+        var normBtn = _communityFlowEl.querySelector('.cf-normalize-btn');
+        if (normBtn) {
+            normBtn.addEventListener('click', function() {
+                _cfNormalized = !_cfNormalized;
+                _renderCommunityFlowMatrix();
+            });
         }
 
         // Wire hover/click on cells
         _communityFlowEl.querySelectorAll('.cf-cell[data-cf-from]').forEach(function(cell) {
             cell.style.cursor = 'pointer';
 
-            cell.addEventListener('mouseenter', function() {
+            cell.addEventListener('mouseenter', function(ev) {
                 var fromId = parseInt(cell.dataset.cfFrom);
                 var toId = parseInt(cell.dataset.cfTo);
+                var ci = parseInt(cell.dataset.cfI);
+                var cj = parseInt(cell.dataset.cfJ);
                 _hoveredFlowCell = { from: fromId, to: toId };
-                // Highlight cell
                 cell.classList.add('cf-hover');
+
+                // Build rich tooltip with top 3 contributing companies
+                var detail = _cfCellEdgeDetails && _cfCellEdgeDetails[ci] ? _cfCellEdgeDetails[ci][cj] : null;
+                if (detail && Object.keys(detail).length > 0) {
+                    var fromCs = comms.find(function(cs) { return cs.id === fromId; });
+                    var toCs = comms.find(function(cs) { return cs.id === toId; });
+                    var fromLabel = fromCs ? fromCs.label : '?';
+                    var toLabel = toCs ? toCs.label : '?';
+                    var isDiag = fromId === toId;
+                    var rawVal = flowMatrix[ci][cj];
+
+                    var contribs = Object.keys(detail).map(function(tk) {
+                        return { ticker: tk, count: detail[tk], name: (nodeMap[tk] && nodeMap[tk].name) || tk };
+                    }).sort(function(a, b) { return b.count - a.count; });
+
+                    var top3 = contribs.slice(0, 3);
+                    var remaining = contribs.length - 3;
+
+                    var tipHtml = '<div class="cf-tip-header">' + fromLabel + (isDiag ? ' (intra)' : ' \u2192 ' + toLabel) + '</div>';
+                    tipHtml += '<div class="cf-tip-count">' + rawVal + ' edge' + (rawVal !== 1 ? 's' : '');
+                    if (_cfNormalized && rowTotals[ci] > 0) {
+                        tipHtml += ' (' + ((rawVal / rowTotals[ci]) * 100).toFixed(1) + '% of row)';
+                    }
+                    tipHtml += '</div>';
+                    tipHtml += '<div class="cf-tip-label">Top contributors:</div>';
+                    top3.forEach(function(c, idx) {
+                        var barW = Math.max(8, Math.round((c.count / top3[0].count) * 100));
+                        tipHtml += '<div class="cf-tip-row">'
+                            + '<span class="cf-tip-rank">' + (idx + 1) + '.</span>'
+                            + '<span class="cf-tip-ticker">' + c.ticker + '</span>'
+                            + '<span class="cf-tip-bar-wrap"><span class="cf-tip-bar" style="width:' + barW + '%"></span></span>'
+                            + '<span class="cf-tip-val">' + c.count + '</span>'
+                            + '</div>';
+                    });
+                    if (remaining > 0) {
+                        tipHtml += '<div class="cf-tip-more">+' + remaining + ' more</div>';
+                    }
+                    flowTip.innerHTML = tipHtml;
+                    flowTip.style.display = 'block';
+                    _positionFlowTip(flowTip, ev);
+                }
+
                 draw();
+            });
+
+            cell.addEventListener('mousemove', function(ev) {
+                if (flowTip.style.display === 'block') _positionFlowTip(flowTip, ev);
             });
 
             cell.addEventListener('mouseleave', function() {
                 _hoveredFlowCell = null;
                 cell.classList.remove('cf-hover');
+                flowTip.style.display = 'none';
                 draw();
             });
 
             cell.addEventListener('click', function() {
+                flowTip.style.display = 'none';
                 var fromId = parseInt(cell.dataset.cfFrom);
                 var toId = parseInt(cell.dataset.cfTo);
-                // Find source and target community tickers for path finder
                 var fromCs = communityStats.find(function(cs) { return cs.id === fromId; });
                 var toCs = communityStats.find(function(cs) { return cs.id === toId; });
                 if (!fromCs || !toCs) return;
-                // If same community (diagonal), filter to that community
                 if (fromId === toId) {
                     window._activeCommunityFilter = { tickers: fromCs.tickers, label: fromCs.label, id: fromId };
                     window._activeCommunityScatterTickers = new Set(fromCs.tickers);
@@ -3984,8 +4065,6 @@ function initNetwork(peerData) {
                     if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     if (typeof announce === 'function') announce('Filtered to ' + fromCs.tickers.length + ' companies in ' + fromCs.label);
                 } else {
-                    // Open path finder pre-filled with most connected nodes between communities
-                    // Find the node in fromCs with the most edges to toCs, and vice versa
                     var fromTickers = new Set(fromCs.tickers);
                     var toTickers = new Set(toCs.tickers);
                     var bestFrom = null, bestFromCount = 0;
@@ -4011,6 +4090,19 @@ function initNetwork(peerData) {
                 }
             });
         });
+    }
+
+    // Position flow tooltip near cursor
+    function _positionFlowTip(el, ev) {
+        var x = ev.clientX + 12;
+        var y = ev.clientY - 10;
+        var w = el.offsetWidth || 180;
+        var h = el.offsetHeight || 100;
+        if (x + w > window.innerWidth - 8) x = ev.clientX - w - 12;
+        if (y + h > window.innerHeight - 8) y = window.innerHeight - h - 8;
+        if (y < 4) y = 4;
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
     }
 
     // Helper: hex color to rgba string
@@ -4041,6 +4133,9 @@ function initNetwork(peerData) {
         }
         _communityFlowEl = null;
         _hoveredFlowCell = null;
+        _cfCellEdgeDetails = null;
+        var flowTip = document.getElementById('cf-flow-tooltip');
+        if (flowTip) flowTip.style.display = 'none';
     }
 
     function _truncName(name, maxLen) {
