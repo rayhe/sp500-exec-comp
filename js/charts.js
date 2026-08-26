@@ -14185,6 +14185,65 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
             .transition().delay(badgeDelay).duration(200)
             .attr('opacity', 1);
 
+        // Mini-bar: inline component breakdown next to step badge (salary/stock/options proportional bar)
+        var _mbComp = n.pt.executives ? (function() {
+            var ceo = null;
+            for (var _mi = 0; _mi < n.pt.executives.length; _mi++) {
+                if (n.pt.executives[_mi].title && /chief executive|ceo/i.test(n.pt.executives[_mi].title)) { ceo = n.pt.executives[_mi]; break; }
+            }
+            if (!ceo && n.pt.executives.length > 0) ceo = n.pt.executives[0];
+            return ceo;
+        })() : null;
+        if (_mbComp) {
+            var _mbParts = [
+                { val: _mbComp.salary || 0, col: '#60a5fa' },       // salary — blue
+                { val: _mbComp.stock_awards || 0, col: '#34d399' }, // stock — green
+                { val: _mbComp.option_awards || 0, col: '#fbbf24' }, // options — amber
+                { val: (_mbComp.bonus || 0) + (_mbComp.non_equity_incentive || 0), col: '#f97316' }, // bonus+incentive — orange
+                { val: (_mbComp.pension_nqdc || 0) + (_mbComp.all_other || 0), col: '#a78bfa' }  // pension+other — purple
+            ];
+            var _mbTotal = 0;
+            _mbParts.forEach(function(p) { _mbTotal += p.val; });
+            if (_mbTotal > 0) {
+                var _mbW = 28, _mbH = 4, _mbX = cx + 8 - _mbW / 2, _mbY = cy + 2;
+                // Background pill
+                overlayG.append('rect')
+                    .attr('x', _mbX - 0.5).attr('y', _mbY - 0.5)
+                    .attr('width', _mbW + 1).attr('height', _mbH + 1)
+                    .attr('rx', 2).attr('ry', 2)
+                    .attr('fill', dark ? 'rgba(15,23,42,0.7)' : 'rgba(255,255,255,0.8)')
+                    .attr('stroke', dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')
+                    .attr('stroke-width', 0.5)
+                    .attr('opacity', 0)
+                    .transition().delay(badgeDelay + 50).duration(200)
+                    .attr('opacity', 1);
+                // Stacked segments
+                var _mbOff = 0;
+                _mbParts.forEach(function(p) {
+                    if (p.val <= 0) return;
+                    var segW = (p.val / _mbTotal) * _mbW;
+                    overlayG.append('rect')
+                        .attr('x', _mbX + _mbOff).attr('y', _mbY)
+                        .attr('width', Math.max(segW, 0.5)).attr('height', _mbH)
+                        .attr('rx', _mbOff === 0 ? 1.5 : 0).attr('ry', _mbOff === 0 ? 1.5 : 0)
+                        .attr('fill', p.col)
+                        .attr('opacity', 0)
+                        .transition().delay(badgeDelay + 50).duration(200)
+                        .attr('opacity', 0.9);
+                    _mbOff += segW;
+                });
+                // Round right end of last segment
+                if (_mbOff > 0) {
+                    overlayG.append('rect')
+                        .attr('x', _mbX + _mbW - 1.5).attr('y', _mbY)
+                        .attr('width', 1.5).attr('height', _mbH)
+                        .attr('rx', 1.5).attr('ry', 1.5)
+                        .attr('fill', 'transparent')
+                        .attr('opacity', 0);
+                }
+            }
+        }
+
         // Interactive hover area for tooltip — transparent circle over badge
         overlayG.append('circle')
             .attr('cx', cx + 8).attr('cy', cy - 8)

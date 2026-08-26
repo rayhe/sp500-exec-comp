@@ -4390,6 +4390,103 @@ function initNetwork(peerData) {
             html += '</div>';
         }
 
+        // --- Community-Scoped Path Statistics ---
+        if (pathResult.nodes.length >= 2 && communityOf) {
+            var pathCommIds = [];
+            var pathCommSet = new Set();
+            pathResult.nodes.forEach(function(t) {
+                var cid = communityOf[t];
+                pathCommIds.push(cid);
+                if (cid != null) pathCommSet.add(cid);
+            });
+            var crossCount = 0;
+            for (var ci = 1; ci < pathCommIds.length; ci++) {
+                if (pathCommIds[ci] != null && pathCommIds[ci - 1] != null && pathCommIds[ci] !== pathCommIds[ci - 1]) crossCount++;
+            }
+            // Get community labels
+            var _commLabel = {};
+            if (communityStats && communityStats.length > 0) {
+                communityStats.forEach(function(cs) { _commLabel[cs.id] = cs.label || ('Cluster ' + cs.id); });
+            }
+            var startComm = pathCommIds[0];
+            var endComm = pathCommIds[pathCommIds.length - 1];
+            var startLabel = _commLabel[startComm] || ('Cluster ' + startComm);
+            var endLabel = _commLabel[endComm] || ('Cluster ' + endComm);
+
+            html += '<div class="pf-community-stats">';
+            html += '<span class="pf-cs-icon">🏘</span>';
+            if (startComm === endComm) {
+                html += '<span class="pf-cs-text pf-cs-same">Same community: <strong>' + startLabel + '</strong></span>';
+            } else {
+                html += '<span class="pf-cs-text">' + startLabel + ' → ' + endLabel + '</span>';
+                html += '<span class="pf-cs-sep">·</span>';
+                html += '<span class="pf-cs-cross">' + crossCount + ' boundary crossing' + (crossCount !== 1 ? 's' : '') + '</span>';
+            }
+            html += '<span class="pf-cs-sep">·</span>';
+            html += '<span class="pf-cs-communities">' + pathCommSet.size + ' communit' + (pathCommSet.size !== 1 ? 'ies' : 'y') + '</span>';
+
+            // Compute average intra-community vs inter-community path length from sampled BFS
+            // Use cached value to avoid repeated BFS (expensive for large graphs)
+            if (!window._communityPathLenCache) {
+                var _sampleSize = 80; // sample pairs
+                var _intraLens = [], _interLens = [];
+                var _allTickers = Object.keys(communityOf);
+                for (var _si = 0; _si < _sampleSize && _allTickers.length >= 2; _si++) {
+                    var _ia = Math.floor(Math.random() * _allTickers.length);
+                    var _ib = Math.floor(Math.random() * _allTickers.length);
+                    if (_ia === _ib) continue;
+                    var _ta = _allTickers[_ia], _tb = _allTickers[_ib];
+                    var _sameComm = communityOf[_ta] === communityOf[_tb];
+                    // Quick BFS
+                    var _vis = new Set([_ta]), _queue = [_ta], _par = {}, _found = false;
+                    _par[_ta] = null;
+                    var _maxDepth = 8, _depth = 0;
+                    bfs_loop:
+                    while (_queue.length > 0 && _depth < _maxDepth) {
+                        var _nextQ = [];
+                        _depth++;
+                        for (var _qi = 0; _qi < _queue.length; _qi++) {
+                            var _cur = _queue[_qi];
+                            var _adj = adjacency[_cur];
+                            if (!_adj) continue;
+                            var _neighbors = _adj.out.concat(_adj.in);
+                            for (var _ni = 0; _ni < _neighbors.length; _ni++) {
+                                var _nb = _neighbors[_ni];
+                                if (!_vis.has(_nb)) {
+                                    _vis.add(_nb);
+                                    _par[_nb] = _cur;
+                                    if (_nb === _tb) { _found = true; break bfs_loop; }
+                                    _nextQ.push(_nb);
+                                }
+                            }
+                        }
+                        _queue = _nextQ;
+                    }
+                    if (_found) {
+                        // Count hops
+                        var _hops = 0, _c = _tb;
+                        while (_c !== _ta) { _hops++; _c = _par[_c]; }
+                        if (_sameComm) _intraLens.push(_hops);
+                        else _interLens.push(_hops);
+                    }
+                }
+                var _avgIntra = _intraLens.length > 0 ? (_intraLens.reduce(function(a, b) { return a + b; }, 0) / _intraLens.length) : null;
+                var _avgInter = _interLens.length > 0 ? (_interLens.reduce(function(a, b) { return a + b; }, 0) / _interLens.length) : null;
+                window._communityPathLenCache = { intra: _avgIntra, inter: _avgInter, intraN: _intraLens.length, interN: _interLens.length };
+            }
+            var _cpl = window._communityPathLenCache;
+            if (_cpl.intra != null || _cpl.inter != null) {
+                html += '<span class="pf-cs-sep">·</span>';
+                html += '<span class="pf-cs-avg" title="Average shortest path length within communities vs between communities (sampled ' + (_cpl.intraN + _cpl.interN) + ' pairs)">';
+                if (_cpl.intra != null) html += 'Avg intra: ' + _cpl.intra.toFixed(1) + ' hops';
+                if (_cpl.intra != null && _cpl.inter != null) html += ', ';
+                if (_cpl.inter != null) html += 'inter: ' + _cpl.inter.toFixed(1) + ' hops';
+                html += '</span>';
+            }
+
+            html += '</div>';
+        }
+
         // --- Endpoint Pay Comparison Card ---
         if (pathResult.nodes.length >= 2) {
             var epA = pathResult.nodes[0];

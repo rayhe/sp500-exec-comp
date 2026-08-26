@@ -2239,9 +2239,44 @@ header h1 {
     color: rgba(0,0,0,0.5);
 }
 
+/* Community-scoped path statistics */
+.pf-community-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.55);
+    margin-top: 6px;
+    padding: 5px 8px;
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.15);
+    border-radius: 6px;
+}
+.pf-cs-icon { font-size: 0.8rem; }
+.pf-cs-text { color: rgba(255,255,255,0.7); }
+.pf-cs-text strong { color: #c4b5fd; font-weight: 600; }
+.pf-cs-same strong { color: #34d399; }
+.pf-cs-sep { opacity: 0.35; }
+.pf-cs-cross { color: #fbbf24; font-weight: 500; }
+.pf-cs-communities { color: rgba(255,255,255,0.5); }
+.pf-cs-avg { color: rgba(255,255,255,0.45); font-style: italic; }
+[data-theme="light"] .pf-community-stats {
+    color: rgba(0,0,0,0.5);
+    background: rgba(124,58,237,0.04);
+    border-color: rgba(124,58,237,0.12);
+}
+[data-theme="light"] .pf-cs-text { color: rgba(0,0,0,0.65); }
+[data-theme="light"] .pf-cs-text strong { color: #7c3aed; }
+[data-theme="light"] .pf-cs-same strong { color: #059669; }
+[data-theme="light"] .pf-cs-cross { color: #d97706; }
+[data-theme="light"] .pf-cs-communities { color: rgba(0,0,0,0.45); }
+[data-theme="light"] .pf-cs-avg { color: rgba(0,0,0,0.4); }
+
 @media (max-width: 600px) {
     .pf-epc-compare-all-btn,
-    .pf-gradient-legend {
+    .pf-gradient-legend,
+    .pf-community-stats {
         display: none;
     }
 }
