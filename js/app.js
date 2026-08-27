@@ -8678,6 +8678,81 @@ function setupDetailPanel(companies) {
             html += '<span class="cb-own-size">(' + myStat.size + ' companies)</span>';
             html += '</div>';
 
+            // Community Position Indicator — where does this company rank within its community?
+            (function() {
+                // Gather community members with their metrics
+                var memberTickers = myStat.tickers || [];
+                if (memberTickers.length < 2) return; // Need at least 2 to rank
+
+                var members = [];
+                memberTickers.forEach(function(t) {
+                    var mc = null;
+                    for (var ci = 0; ci < companies.length; ci++) {
+                        if (companies[ci].ticker === t) { mc = companies[ci]; break; }
+                    }
+                    if (mc) {
+                        members.push({
+                            ticker: t,
+                            pay: mc.total_compensation || 0,
+                            gov: mc._govScore,
+                            ger: mc._gerScore
+                        });
+                    }
+                });
+                if (members.length < 2) return;
+
+                // Compute ranks for each metric (1 = highest pay, 1 = highest gov, 1 = highest GER)
+                function computeRank(arr, key, desc) {
+                    var sorted = arr.filter(function(m) { return m[key] != null && m[key] > 0; })
+                        .sort(function(a, b) { return desc ? b[key] - a[key] : a[key] - b[key]; });
+                    var rank = -1;
+                    for (var i = 0; i < sorted.length; i++) {
+                        if (sorted[i].ticker === ticker) { rank = i + 1; break; }
+                    }
+                    return { rank: rank, total: sorted.length };
+                }
+
+                var payRank = computeRank(members, 'pay', true);  // highest pay = rank 1
+                var govRank = computeRank(members, 'gov', true);  // highest gov = rank 1
+                var gerRank = computeRank(members, 'ger', true);  // highest GER = rank 1
+
+                // Only show if we have at least pay rank
+                if (payRank.rank < 0) return;
+
+                html += '<div class="cb-position">';
+
+                // Helper to build a single rank bar
+                function rankBar(label, rank, total, color, inverted) {
+                    if (rank < 0 || total < 2) return '';
+                    var pct = ((rank - 1) / (total - 1)) * 100; // 0% = rank 1, 100% = last
+                    // Color coding: for pay, top = warm/red; for gov, top = green; for GER, top = red
+                    var dotColor;
+                    if (inverted) {
+                        // Lower rank (top) is bad (e.g., GER) → red for rank 1, green for last
+                        dotColor = pct > 66 ? '#34d399' : pct > 33 ? '#fbbf24' : '#ef4444';
+                    } else {
+                        // Lower rank (top) is contextual → purple accent
+                        dotColor = color;
+                    }
+                    var r = '';
+                    r += '<div class="cb-pos-row" title="' + label + ': #' + rank + ' of ' + total + ' in community">';
+                    r += '<span class="cb-pos-label">' + label + '</span>';
+                    r += '<div class="cb-pos-bar-wrap">';
+                    r += '<div class="cb-pos-bar" style="background:' + color + '"></div>';
+                    r += '<div class="cb-pos-dot" style="left:' + pct.toFixed(1) + '%;background:' + dotColor + '"></div>';
+                    r += '</div>';
+                    r += '<span class="cb-pos-rank">#' + rank + '<span class="cb-pos-of">/' + total + '</span></span>';
+                    r += '</div>';
+                    return r;
+                }
+
+                html += rankBar('CEO Pay', payRank.rank, payRank.total, myStat.color, false);
+                if (govRank.rank > 0) html += rankBar('Gov', govRank.rank, govRank.total, '#06d6a0', false);
+                if (gerRank.rank > 0) html += rankBar('GER Risk', gerRank.rank, gerRank.total, '#ef4444', true);
+
+                html += '</div>';
+            })();
+
             // Summary stats
             html += '<div class="cb-stats">';
             html += '<span class="cb-stat">Intra-community: ' + (intraOut + intraIn) + ' edges (' + intraOut + ' out, ' + intraIn + ' in)</span>';

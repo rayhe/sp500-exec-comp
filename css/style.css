@@ -9353,6 +9353,87 @@ footer li::before {
     color: #6b7280;
     font-size: 0.66rem;
 }
+/* Community Position Indicator — rank within community */
+.cb-position {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 6px 0 8px 0;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    border: 0.5px solid rgba(255,255,255,0.06);
+}
+.cb-pos-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.62rem;
+}
+.cb-pos-label {
+    color: #a1a1aa;
+    font-weight: 500;
+    min-width: 48px;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+}
+.cb-pos-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    position: relative;
+    min-width: 60px;
+}
+.cb-pos-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    opacity: 0.12;
+}
+.cb-pos-dot {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    z-index: 1;
+    transition: left 0.3s ease;
+}
+.cb-pos-rank {
+    color: #d4d4d8;
+    font-weight: 600;
+    font-size: 0.62rem;
+    min-width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+}
+.cb-pos-of {
+    color: #6b7280;
+    font-weight: 400;
+    font-size: 0.56rem;
+}
+/* Light theme — community position */
+[data-theme="light"] .cb-position {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .cb-pos-label { color: #6b7280; }
+[data-theme="light"] .cb-pos-bar-wrap { background: rgba(0,0,0,0.06); }
+[data-theme="light"] .cb-pos-bar { opacity: 0.1; }
+[data-theme="light"] .cb-pos-dot {
+    border-color: rgba(0,0,0,0.25);
+    box-shadow: 0 0 4px rgba(0,0,0,0.15);
+}
+[data-theme="light"] .cb-pos-rank { color: #374151; }
+[data-theme="light"] .cb-pos-of { color: #9ca3af; }
 .cb-stats {
     display: flex;
     flex-wrap: wrap;
