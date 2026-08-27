@@ -12018,16 +12018,50 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 .cm-hop-badge {
     display: inline-block;
-    font-size: 8px;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-left: 2px;
+    font-size: 7.5px;
+    font-weight: 700;
+    margin-left: 3px;
     line-height: 1;
-    opacity: 0.85;
     vertical-align: baseline;
+    padding: 1px 3px;
+    border-radius: 3px;
+    letter-spacing: 0.2px;
+}
+/* Close: ≤2 hops — green */
+.cm-hop-close {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.12);
+    border: 0.5px solid rgba(52, 211, 153, 0.25);
+}
+[data-theme="light"] .cm-hop-close {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.2);
+}
+/* Moderate: 3-4 hops — amber */
+.cm-hop-mid {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+    border: 0.5px solid rgba(251, 191, 36, 0.25);
+}
+[data-theme="light"] .cm-hop-mid {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.2);
+}
+/* Distant: ≥5 hops — red */
+.cm-hop-far {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    border: 0.5px solid rgba(239, 68, 68, 0.25);
+}
+[data-theme="light"] .cm-hop-far {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.2);
 }
 [data-theme="light"] .cm-hop-badge {
-    color: #64748b;
+    /* base overrides handled by distance classes above */
 }
 .cm-path-instruction {
     font-size: 0.62rem;

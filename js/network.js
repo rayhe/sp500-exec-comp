@@ -4342,11 +4342,13 @@ function initNetwork(peerData) {
                             if (oldBadge) oldBadge.remove();
                             if (hops != null) {
                                 var badge = document.createElement('span');
-                                badge.className = 'cm-hop-badge';
+                                var hopClass = hops <= 2 ? 'cm-hop-close' : hops <= 4 ? 'cm-hop-mid' : 'cm-hop-far';
+                                badge.className = 'cm-hop-badge ' + hopClass;
                                 badge.textContent = '~' + hops;
-                                badge.title = 'Estimated ' + hops + ' hop' + (hops !== 1 ? 's' : '');
+                                var hopLabel = hops <= 2 ? 'close' : hops <= 4 ? 'moderate' : 'distant';
+                                badge.title = 'Estimated ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' (' + hopLabel + ')';
                                 b.appendChild(badge);
-                                b.title = '⇄ ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' estimated';
+                                b.title = '⇄ ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' estimated (' + hopLabel + ')';
                             }
                         });
                     }
