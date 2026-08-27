@@ -69,6 +69,7 @@ function initNetwork(peerData) {
     var _lockedTrendCommunityColor = null;
     var _lockedTrendCommunityId = null;
     var _lockedTrendSparkEl = null; // The DOM element of the locked sparkline
+    var _simEdgeDetails = null; // communityId → [{ticker, count, name}] for similarity tooltip
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -4365,6 +4366,7 @@ function initNetwork(peerData) {
                         // Update other ⇄ buttons with hop badges + similarity heat
                         // First compute cross-edge counts for similarity scoring
                         var _simScores = {}; // communityId → crossEdgeCount
+                        _simEdgeDetails = {}; // communityId → [{ticker, count, name}] sorted desc
                         var _srcTickerSetSim = new Set(cs.tickers);
                         var _maxSim = 0;
                         for (var _si = 0; _si < communityStats.length; _si++) {
@@ -4372,10 +4374,14 @@ function initNetwork(peerData) {
                             if (_scs.id === cid) continue;
                             var _sTargetSet = new Set(_scs.tickers);
                             var _crossCount = 0;
+                            var _bridgeCounts = {}; // ticker → count (source-side companies)
                             allEdges.forEach(function(e) {
-                                if ((_srcTickerSetSim.has(e.source) && _sTargetSet.has(e.target)) ||
-                                    (_srcTickerSetSim.has(e.target) && _sTargetSet.has(e.source))) {
+                                if (_srcTickerSetSim.has(e.source) && _sTargetSet.has(e.target)) {
                                     _crossCount++;
+                                    _bridgeCounts[e.source] = (_bridgeCounts[e.source] || 0) + 1;
+                                } else if (_srcTickerSetSim.has(e.target) && _sTargetSet.has(e.source)) {
+                                    _crossCount++;
+                                    _bridgeCounts[e.target] = (_bridgeCounts[e.target] || 0) + 1;
                                 }
                             });
                             // Normalize by geometric mean of community sizes to avoid size bias
@@ -4383,6 +4389,10 @@ function initNetwork(peerData) {
                             var _simVal = _geoMean > 0 ? _crossCount / _geoMean : 0;
                             _simScores[_scs.id] = { raw: _crossCount, normalized: _simVal };
                             if (_simVal > _maxSim) _maxSim = _simVal;
+                            // Store per-ticker bridge details for tooltip
+                            _simEdgeDetails[_scs.id] = Object.keys(_bridgeCounts).map(function(tk) {
+                                return { ticker: tk, count: _bridgeCounts[tk], name: (nodeMap[tk] && nodeMap[tk].name) || tk };
+                            }).sort(function(a, b) { return b.count - a.count; });
                         }
                         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
                             var bCid = parseInt(b.dataset.cmPathCid);
@@ -4419,6 +4429,62 @@ function initNetwork(peerData) {
                                 b.style.background = '';
                                 b.style.borderColor = '';
                             }
+                            // Remove old sim hover handlers if any
+                            if (b._simEnter) { b.removeEventListener('mouseenter', b._simEnter); b._simEnter = null; }
+                            if (b._simMove) { b.removeEventListener('mousemove', b._simMove); b._simMove = null; }
+                            if (b._simLeave) { b.removeEventListener('mouseleave', b._simLeave); b._simLeave = null; }
+                        });
+                        // Wire similarity hover tooltips on heated path buttons
+                        var simTip = document.getElementById('cm-sim-tooltip');
+                        if (!simTip) {
+                            simTip = document.createElement('div');
+                            simTip.id = 'cm-sim-tooltip';
+                            simTip.className = 'cm-sim-tooltip';
+                            simTip.setAttribute('role', 'tooltip');
+                            document.body.appendChild(simTip);
+                        }
+                        var _srcLabel = cs.label;
+                        _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
+                            var bCid = parseInt(b.dataset.cmPathCid);
+                            if (bCid === cid) return;
+                            var detail = _simEdgeDetails ? _simEdgeDetails[bCid] : null;
+                            var sim = _simScores[bCid];
+                            if (!detail || detail.length === 0 || !sim) return;
+                            var destCs = communityStats.find(function(s2) { return s2.id === bCid; });
+                            var destLabel = destCs ? destCs.label : '?';
+                            b._simEnter = function(ev) {
+                                var top3 = detail.slice(0, 3);
+                                var remaining = detail.length - 3;
+                                var intensity = _maxSim > 0 ? (sim.normalized / _maxSim) : 0;
+                                var simLabel = intensity >= 0.7 ? 'Strong' : intensity >= 0.3 ? 'Moderate' : 'Weak';
+                                var tipHtml = '<div class="cf-tip-header">' + _srcLabel + ' \u2192 ' + destLabel + '</div>';
+                                tipHtml += '<div class="cf-tip-count">' + sim.raw + ' cross-edge' + (sim.raw !== 1 ? 's' : '') + ' \u00b7 ' + simLabel + '</div>';
+                                tipHtml += '<div class="cf-tip-label">Bridge companies:</div>';
+                                top3.forEach(function(c, idx) {
+                                    var barW = Math.max(8, Math.round((c.count / top3[0].count) * 100));
+                                    tipHtml += '<div class="cf-tip-row">'
+                                        + '<span class="cf-tip-rank">' + (idx + 1) + '.</span>'
+                                        + '<span class="cf-tip-ticker">' + c.ticker + '</span>'
+                                        + '<span class="cf-tip-bar-wrap"><span class="cf-tip-bar" style="width:' + barW + '%"></span></span>'
+                                        + '<span class="cf-tip-val">' + c.count + '</span>'
+                                        + '</div>';
+                                });
+                                if (remaining > 0) {
+                                    tipHtml += '<div class="cf-tip-more">+' + remaining + ' more</div>';
+                                }
+                                simTip.innerHTML = tipHtml;
+                                simTip.style.display = 'block';
+                                _positionFlowTip(simTip, ev);
+                            };
+                            b._simMove = function(ev) {
+                                if (simTip.style.display === 'block') _positionFlowTip(simTip, ev);
+                            };
+                            b._simLeave = function() {
+                                simTip.style.display = 'none';
+                            };
+                            b.addEventListener('mouseenter', b._simEnter);
+                            b.addEventListener('mousemove', b._simMove);
+                            b.addEventListener('mouseleave', b._simLeave);
                         });
                     }
                 } else {
@@ -4472,7 +4538,14 @@ function initNetwork(peerData) {
                         // Clear similarity heat
                         b.style.background = '';
                         b.style.borderColor = '';
+                        // Remove sim hover handlers
+                        if (b._simEnter) { b.removeEventListener('mouseenter', b._simEnter); b._simEnter = null; }
+                        if (b._simMove) { b.removeEventListener('mousemove', b._simMove); b._simMove = null; }
+                        if (b._simLeave) { b.removeEventListener('mouseleave', b._simLeave); b._simLeave = null; }
                     });
+                    _simEdgeDetails = null;
+                    var _simTipClean = document.getElementById('cm-sim-tooltip');
+                    if (_simTipClean) _simTipClean.style.display = 'none';
                     var inst2 = _communityMetricsEl.querySelector('.cm-path-instruction');
                     if (inst2) inst2.remove();
 
@@ -4503,6 +4576,9 @@ function initNetwork(peerData) {
         if (_lockedTrendSparkEl) { _lockedTrendSparkEl.classList.remove('cm-sparkline-locked'); _lockedTrendSparkEl = null; }
         var _oldTipClean = document.querySelector('.cm-trend-tooltip');
         if (_oldTipClean) _oldTipClean.remove();
+        _simEdgeDetails = null;
+        var _simTipRemove = document.getElementById('cm-sim-tooltip');
+        if (_simTipRemove) _simTipRemove.style.display = 'none';
         // Clear quartile filter when community mode is toggled off
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;

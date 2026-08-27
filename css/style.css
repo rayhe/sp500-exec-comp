@@ -12377,6 +12377,31 @@ body.light-mode .cross-sector-pair-select:focus {
     font-style: italic;
 }
 
+/* Community similarity bridge tooltip (reuses cf-tip-* internals) */
+.cm-sim-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 10001;
+    min-width: 160px;
+    max-width: 220px;
+    padding: 8px 10px;
+    background: rgba(18, 18, 32, 0.96);
+    border: 1px solid rgba(168,85,247,0.35);
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 0.62rem;
+    color: #e4e4e7;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+[data-theme="light"] .cm-sim-tooltip {
+    background: rgba(255,255,255,0.97);
+    border-color: rgba(124,58,237,0.2);
+    color: #1a1a2e;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
 /* Community hover floating tooltip */
 .community-hover-tooltip {
     display: none;
