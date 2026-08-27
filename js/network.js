@@ -3807,7 +3807,7 @@ function initNetwork(peerData) {
             { key: 'density', label: 'Density', align: 'right' }
         ];
 
-        var html = '<div class="cm-header">Community Compensation Comparison</div>';
+        var html = '<div class="cm-header">Community Compensation Comparison <button class="cm-export-btn" title="Export community comparison as CSV" aria-label="Export CSV">⬇ CSV</button></div>';
         html += '<div class="cm-table"><div class="cm-row cm-head">';
         cols.forEach(function(col) {
             var isSorted = _cmSortCol === col.key;
@@ -3983,6 +3983,37 @@ function initNetwork(peerData) {
                 }
             });
         });
+
+        // Wire CSV export button
+        var _csvBtn = _communityMetricsEl.querySelector('.cm-export-btn');
+        if (_csvBtn) {
+            _csvBtn.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                var csvHeader = 'Community,Companies,Median CEO Pay ($),Gov Score,SoP Approval (%),GER,Density (%),3yr Trend (%),Top Sector,Top Sector (%)';
+                var csvRows = [csvHeader];
+                rows.forEach(function(r) {
+                    var medPay = r.medianPay != null ? Math.round(r.medianPay) : '';
+                    var gov = r.medianGov != null ? r.medianGov.toFixed(1) : '';
+                    var sop = r.medianSop != null ? r.medianSop.toFixed(1) : '';
+                    var ger = r.medianGer != null ? r.medianGer.toFixed(2) : '';
+                    var dens = r.density != null ? r.density.toFixed(1) : '';
+                    var trend = r.trendDelta != null ? r.trendDelta.toFixed(1) : '';
+                    var topSec = (r.topSector || '').replace(/,/g, ';');
+                    var topSecPct = r.topSectorPct != null ? r.topSectorPct.toFixed(1) : '';
+                    csvRows.push('"' + r.label.replace(/"/g, '""') + '",' + r.size + ',' + medPay + ',' + gov + ',' + sop + ',' + ger + ',' + dens + ',' + trend + ',' + topSec + ',' + topSecPct);
+                });
+                var csvStr = csvRows.join('\n');
+                var blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'sp500-community-comparison.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
 
         // Wire row click handlers — filter table to that community (same as legend click)
         _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(row) {
@@ -4375,13 +4406,16 @@ function initNetwork(peerData) {
                             var _sTargetSet = new Set(_scs.tickers);
                             var _crossCount = 0;
                             var _bridgeCounts = {}; // ticker → count (source-side companies)
+                            var _destBridgeCounts = {}; // ticker → count (destination-side companies)
                             allEdges.forEach(function(e) {
                                 if (_srcTickerSetSim.has(e.source) && _sTargetSet.has(e.target)) {
                                     _crossCount++;
                                     _bridgeCounts[e.source] = (_bridgeCounts[e.source] || 0) + 1;
+                                    _destBridgeCounts[e.target] = (_destBridgeCounts[e.target] || 0) + 1;
                                 } else if (_srcTickerSetSim.has(e.target) && _sTargetSet.has(e.source)) {
                                     _crossCount++;
                                     _bridgeCounts[e.target] = (_bridgeCounts[e.target] || 0) + 1;
+                                    _destBridgeCounts[e.source] = (_destBridgeCounts[e.source] || 0) + 1;
                                 }
                             });
                             // Normalize by geometric mean of community sizes to avoid size bias
@@ -4389,10 +4423,15 @@ function initNetwork(peerData) {
                             var _simVal = _geoMean > 0 ? _crossCount / _geoMean : 0;
                             _simScores[_scs.id] = { raw: _crossCount, normalized: _simVal };
                             if (_simVal > _maxSim) _maxSim = _simVal;
-                            // Store per-ticker bridge details for tooltip
-                            _simEdgeDetails[_scs.id] = Object.keys(_bridgeCounts).map(function(tk) {
-                                return { ticker: tk, count: _bridgeCounts[tk], name: (nodeMap[tk] && nodeMap[tk].name) || tk };
-                            }).sort(function(a, b) { return b.count - a.count; });
+                            // Store per-ticker bridge details for tooltip (source + destination sides)
+                            _simEdgeDetails[_scs.id] = {
+                                src: Object.keys(_bridgeCounts).map(function(tk) {
+                                    return { ticker: tk, count: _bridgeCounts[tk], name: (nodeMap[tk] && nodeMap[tk].name) || tk };
+                                }).sort(function(a, b) { return b.count - a.count; }),
+                                dest: Object.keys(_destBridgeCounts).map(function(tk) {
+                                    return { ticker: tk, count: _destBridgeCounts[tk], name: (nodeMap[tk] && nodeMap[tk].name) || tk };
+                                }).sort(function(a, b) { return b.count - a.count; })
+                            };
                         }
                         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
                             var bCid = parseInt(b.dataset.cmPathCid);
@@ -4449,28 +4488,52 @@ function initNetwork(peerData) {
                             if (bCid === cid) return;
                             var detail = _simEdgeDetails ? _simEdgeDetails[bCid] : null;
                             var sim = _simScores[bCid];
-                            if (!detail || detail.length === 0 || !sim) return;
+                            if (!detail || (!detail.src && !detail.dest) || !sim) return;
+                            var srcBridges = detail.src || [];
+                            var destBridges = detail.dest || [];
+                            if (srcBridges.length === 0 && destBridges.length === 0) return;
                             var destCs = communityStats.find(function(s2) { return s2.id === bCid; });
                             var destLabel = destCs ? destCs.label : '?';
                             b._simEnter = function(ev) {
-                                var top3 = detail.slice(0, 3);
-                                var remaining = detail.length - 3;
                                 var intensity = _maxSim > 0 ? (sim.normalized / _maxSim) : 0;
                                 var simLabel = intensity >= 0.7 ? 'Strong' : intensity >= 0.3 ? 'Moderate' : 'Weak';
-                                var tipHtml = '<div class="cf-tip-header">' + _srcLabel + ' \u2192 ' + destLabel + '</div>';
+                                var tipHtml = '<div class="cf-tip-header">' + _srcLabel + ' \u2194 ' + destLabel + '</div>';
                                 tipHtml += '<div class="cf-tip-count">' + sim.raw + ' cross-edge' + (sim.raw !== 1 ? 's' : '') + ' \u00b7 ' + simLabel + '</div>';
-                                tipHtml += '<div class="cf-tip-label">Bridge companies:</div>';
-                                top3.forEach(function(c, idx) {
-                                    var barW = Math.max(8, Math.round((c.count / top3[0].count) * 100));
-                                    tipHtml += '<div class="cf-tip-row">'
-                                        + '<span class="cf-tip-rank">' + (idx + 1) + '.</span>'
-                                        + '<span class="cf-tip-ticker">' + c.ticker + '</span>'
-                                        + '<span class="cf-tip-bar-wrap"><span class="cf-tip-bar" style="width:' + barW + '%"></span></span>'
-                                        + '<span class="cf-tip-val">' + c.count + '</span>'
-                                        + '</div>';
-                                });
-                                if (remaining > 0) {
-                                    tipHtml += '<div class="cf-tip-more">+' + remaining + ' more</div>';
+                                // Source-side bridges
+                                var srcTop3 = srcBridges.slice(0, 3);
+                                if (srcTop3.length > 0) {
+                                    tipHtml += '<div class="cf-tip-label">' + _srcLabel + ' bridges:</div>';
+                                    srcTop3.forEach(function(c, idx) {
+                                        var barW = Math.max(8, Math.round((c.count / srcTop3[0].count) * 100));
+                                        tipHtml += '<div class="cf-tip-row">'
+                                            + '<span class="cf-tip-rank">' + (idx + 1) + '.</span>'
+                                            + '<span class="cf-tip-ticker">' + c.ticker + '</span>'
+                                            + '<span class="cf-tip-bar-wrap"><span class="cf-tip-bar" style="width:' + barW + '%"></span></span>'
+                                            + '<span class="cf-tip-val">' + c.count + '</span>'
+                                            + '</div>';
+                                    });
+                                    var srcRemaining = srcBridges.length - 3;
+                                    if (srcRemaining > 0) {
+                                        tipHtml += '<div class="cf-tip-more">+' + srcRemaining + ' more</div>';
+                                    }
+                                }
+                                // Destination-side bridges
+                                var destTop3 = destBridges.slice(0, 3);
+                                if (destTop3.length > 0) {
+                                    tipHtml += '<div class="cf-tip-label cf-tip-dest-label">' + destLabel + ' bridges:</div>';
+                                    destTop3.forEach(function(c, idx) {
+                                        var barW = Math.max(8, Math.round((c.count / destTop3[0].count) * 100));
+                                        tipHtml += '<div class="cf-tip-row">'
+                                            + '<span class="cf-tip-rank">' + (idx + 1) + '.</span>'
+                                            + '<span class="cf-tip-ticker">' + c.ticker + '</span>'
+                                            + '<span class="cf-tip-bar-wrap"><span class="cf-tip-bar" style="width:' + barW + '%"></span></span>'
+                                            + '<span class="cf-tip-val">' + c.count + '</span>'
+                                            + '</div>';
+                                    });
+                                    var destRemaining = destBridges.length - 3;
+                                    if (destRemaining > 0) {
+                                        tipHtml += '<div class="cf-tip-more">+' + destRemaining + ' more</div>';
+                                    }
                                 }
                                 simTip.innerHTML = tipHtml;
                                 simTip.style.display = 'block';

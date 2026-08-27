@@ -11713,6 +11713,35 @@ body.light-mode .cross-sector-pair-select:focus {
     color: var(--text-secondary, #a1a1aa);
     margin-bottom: 6px;
     letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cm-export-btn {
+    font-size: 0.56rem;
+    padding: 2px 7px;
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 4px;
+    background: rgba(168,85,247,0.08);
+    color: #a78bfa;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin-left: auto;
+}
+.cm-export-btn:hover {
+    background: rgba(168,85,247,0.18);
+    border-color: rgba(168,85,247,0.5);
+}
+[data-theme="light"] .cm-export-btn {
+    background: rgba(124,58,237,0.06);
+    border-color: rgba(124,58,237,0.2);
+    color: #7c3aed;
+}
+[data-theme="light"] .cm-export-btn:hover {
+    background: rgba(124,58,237,0.14);
+    border-color: rgba(124,58,237,0.35);
 }
 .cm-table {
     display: table;
@@ -12382,8 +12411,8 @@ body.light-mode .cross-sector-pair-select:focus {
     display: none;
     position: fixed;
     z-index: 10001;
-    min-width: 160px;
-    max-width: 220px;
+    min-width: 170px;
+    max-width: 240px;
     padding: 8px 10px;
     background: rgba(18, 18, 32, 0.96);
     border: 1px solid rgba(168,85,247,0.35);
@@ -12394,6 +12423,14 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #e4e4e7;
     pointer-events: none;
     box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.cf-tip-dest-label {
+    margin-top: 5px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(168,85,247,0.18);
+}
+[data-theme="light"] .cf-tip-dest-label {
+    border-top-color: rgba(124,58,237,0.12);
 }
 [data-theme="light"] .cm-sim-tooltip {
     background: rgba(255,255,255,0.97);
