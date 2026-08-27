@@ -46,7 +46,7 @@
     },
     "edgar_coverage": 500,
     "total_companies": 500,
-    "last_updated": "2026-08-24",
+    "last_updated": "2026-08-27",
     "total_neo_records": 6141,
     "title_coverage": 6141,
     "data_quality": {
@@ -89,7 +89,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 163
+    "board_independence_coverage": 272
   },
   "companies": [
     {
@@ -1442,6 +1442,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 100.0
       }
     },
     {
@@ -3155,6 +3162,13 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -6922,6 +6936,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 6,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 75.0
       }
     },
     {
@@ -11148,6 +11169,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -16250,6 +16278,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 20,
+        "independent_directors": 19,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 95.0
       }
     },
     {
@@ -18142,6 +18177,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 15,
+        "independent_directors": 11,
+        "independence_pct": 73,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -18589,6 +18631,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 16,
+        "independent_directors": 15,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 93.8
       }
     },
     {
@@ -18826,6 +18875,13 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 22,
+        "independent_directors": 20,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -19481,9 +19537,9 @@
         ]
       },
       "board_independence": {
-        "total_directors": null,
-        "independent_directors": null,
-        "independence_pct": 92.0,
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
         "chair_independent": false,
         "lead_independent_director": true
       }
@@ -19742,6 +19798,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 9,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 100.0
       }
     },
     {
@@ -20951,6 +21014,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -28035,6 +28105,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 80.0
       }
     },
     {
@@ -29116,6 +29193,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 7,
+        "independent_directors": 5,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 71.4
       }
     },
     {
@@ -30929,6 +31013,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 3,
+        "total_directors": 4,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 75.0
       }
     },
     {
@@ -32617,6 +32708,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 9,
+        "independence_pct": 80,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -33641,6 +33739,11 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-06-22",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000041/met-20260616.htm"
+      },
+      "board_independence": {
+        "independent_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -34299,6 +34402,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 80.0
       }
     },
     {
@@ -36616,6 +36726,11 @@
         "sources": [
           "experience"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 5,
+        "lead_independent_director": false,
+        "chair_independent": false
       }
     },
     {
@@ -36868,6 +36983,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 92.3
       }
     },
     {
@@ -37643,6 +37765,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 90.0
       }
     },
     {
@@ -38368,6 +38497,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-04-17",
         "source_url": "https://www.sec.gov/Archives/edgar/data/97476/000009747626000094/txn-20260416.htm"
+      },
+      "board_independence": {
+        "total_directors": 14,
+        "independent_directors": 13,
+        "lead_independent_director": false,
+        "chair_independent": false,
+        "independence_pct": 92.9
       }
     },
     {
@@ -39918,6 +40054,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 13,
+        "total_directors": 13,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 100.0
       }
     },
     {
@@ -42891,6 +43034,11 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 4,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
@@ -44342,6 +44490,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 14,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 64.3
       }
     },
     {
@@ -45514,6 +45669,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 8,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 87.5
       }
     },
     {
@@ -46780,6 +46942,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 12,
+        "total_directors": 13,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 92.3
       }
     },
     {
@@ -47558,6 +47727,11 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 16,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -48270,6 +48444,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 63.6
       }
     },
     {
@@ -49478,6 +49659,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 5,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 41.7
       }
     },
     {
@@ -51703,6 +51891,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 6,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 75.0
       }
     },
     {
@@ -52154,6 +52349,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 81.8
       }
     },
     {
@@ -53380,6 +53582,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 81.8
       }
     },
     {
@@ -58228,6 +58437,11 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 23,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -58423,6 +58637,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -59630,6 +59851,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2024-05-01",
         "source_url": "https://www.sec.gov/Archives/edgar/data/55067/000005506724000025/k-20240426.htm"
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -60069,6 +60297,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 12,
+        "total_directors": 13,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 92.3
       }
     },
     {
@@ -60991,6 +61226,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 19,
+        "independent_directors": 17,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 89.5
       }
     },
     {
@@ -61162,6 +61404,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": false,
+        "lead_independent_director": false
       }
     },
     {
@@ -63784,6 +64033,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": false,
+        "independence_pct": 91.7
       }
     },
     {
@@ -64132,6 +64388,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -64293,6 +64556,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 75.0
       }
     },
     {
@@ -64514,6 +64784,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 81.8
       }
     },
     {
@@ -64724,6 +65001,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 11,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 54.5
       }
     },
     {
@@ -65132,6 +65416,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 19,
+        "independent_directors": 16,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 84.2
       }
     },
     {
@@ -66757,6 +67048,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
+        "lead_independent_director": false
       }
     },
     {
@@ -68121,6 +68419,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -69277,6 +69582,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -69748,6 +70060,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -69921,6 +70240,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -70131,6 +70457,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 66.7
       }
     },
     {
@@ -71325,6 +71658,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -72519,6 +72859,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -72705,6 +73052,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 11,
+        "lead_independent_director": false,
+        "chair_independent": false,
+        "independence_pct": 100.0
       }
     },
     {
@@ -73982,6 +74336,11 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -74781,6 +75140,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-08",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1022671/000110465926057616/tm2613966d1_8k.htm"
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 7,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 85.7
       }
     },
     {
@@ -75884,6 +76250,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 72.7
       }
     },
     {
@@ -77287,6 +77660,11 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -78057,6 +78435,11 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -78478,6 +78861,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -78693,6 +79083,13 @@
         "confidence": "verified",
         "source": "manual",
         "start_month": 11
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 13,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 84.6
       }
     },
     {
@@ -79296,6 +79693,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -79499,7 +79903,8 @@
         "sources": [
           "prose"
         ]
-      }
+      },
+      "board_independence": null
     },
     {
       "ticker": "PNR",
@@ -79830,6 +80235,13 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -80488,6 +80900,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 88.9
       }
     },
     {
@@ -81361,6 +81780,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-13",
         "source_url": "https://www.sec.gov/Archives/edgar/data/811156/000110465926060230/tm2614313d1_8k.htm"
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 91,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -81609,6 +82035,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-08-17",
         "source_url": "https://www.sec.gov/Archives/edgar/data/91419/000009141926000076/sjm-20260812.htm"
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 90.9
       }
     },
     {
@@ -83147,6 +83580,13 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 7,
+        "independent_directors": 6,
+        "independence_pct": 86,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -83345,7 +83785,8 @@
         "sources": [
           "prose"
         ]
-      }
+      },
+      "board_independence": null
     },
     {
       "ticker": "AEE",
@@ -83597,6 +84038,11 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 14,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -84683,6 +85129,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -85299,6 +85752,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -86354,6 +86814,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -86517,6 +86984,13 @@
         "confidence": "high",
         "source": "manual",
         "start_month": 1
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -86727,6 +87201,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -88312,6 +88793,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -88463,6 +88951,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -88944,6 +89439,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 6,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 66.7
       }
     },
     {
@@ -89846,6 +90348,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.9
       }
     },
     {
@@ -90002,6 +90511,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 81.8
       }
     },
     {
@@ -90398,6 +90914,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 88.9
       }
     },
     {
@@ -90810,6 +91333,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 9,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 88.9
       }
     },
     {
@@ -92258,6 +92788,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 91.7
       }
     },
     {
@@ -92728,6 +93265,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 77.8
       }
     },
     {
@@ -93336,6 +93880,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-09-26",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1679273/000167927325000066/lw-20250925.htm"
+      },
+      "board_independence": {
+        "total_directors": 22,
+        "independent_directors": 21,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 95.5
       }
     },
     {

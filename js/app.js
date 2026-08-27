@@ -8687,6 +8687,9 @@ function setupDetailPanel(companies) {
 
             // Bridge bars (up to 6) — expandable to show specific peer tickers
             if (bridges.length > 0) {
+                // Build ticker→CEO pay lookup for proportional bars in bridge tags
+                var _cbPayLookup = {};
+                companies.forEach(function(c) { if (c.total_compensation > 0) _cbPayLookup[c.ticker] = c.total_compensation; });
                 var maxBridge = bridges[0].total;
                 var showBridges = bridges.slice(0, 6);
                 html += '<div class="cb-bridges">';
@@ -8706,6 +8709,12 @@ function setupDetailPanel(companies) {
                     html += '</div>';
                     // Expandable detail showing specific peer tickers
                     if (hasTickers) {
+                        // Find max pay among all bridge tickers for this community
+                        var _cbMaxPay = 0;
+                        b.outTickers.concat(b.inTickers).forEach(function(t) {
+                            if (_cbPayLookup[t] && _cbPayLookup[t] > _cbMaxPay) _cbMaxPay = _cbPayLookup[t];
+                        });
+
                         html += '<div class="cb-bridge-detail">';
                         if (b.outTickers.length > 0) {
                             html += '<div class="cb-detail-group">';
@@ -8716,7 +8725,13 @@ function setupDetailPanel(companies) {
                                 for (var ci = 0; ci < companies.length; ci++) {
                                     if (companies[ci].ticker === t) { tName = companies[ci].company_name; break; }
                                 }
-                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + ' — click to view, shift+click for network">' + t + '</span>';
+                                var tPay = _cbPayLookup[t] || 0;
+                                var barW = _cbMaxPay > 0 ? Math.max(4, Math.round(tPay / _cbMaxPay * 100)) : 0;
+                                var payFmt = tPay >= 1e6 ? '$' + (tPay / 1e6).toFixed(1) + 'M' : (tPay > 0 ? '$' + Math.round(tPay / 1e3) + 'K' : '');
+                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + (payFmt ? ' — CEO: ' + payFmt : '') + ' — click to view, shift+click for network">'
+                                    + t
+                                    + (barW > 0 ? '<span class="cb-tag-bar" style="width:' + barW + '%;background:' + b.color + '"></span>' : '')
+                                    + '</span>';
                             });
                             html += '</div></div>';
                         }
@@ -8729,7 +8744,13 @@ function setupDetailPanel(companies) {
                                 for (var ci = 0; ci < companies.length; ci++) {
                                     if (companies[ci].ticker === t) { tName = companies[ci].company_name; break; }
                                 }
-                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + ' — click to view, shift+click for network">' + t + '</span>';
+                                var tPay = _cbPayLookup[t] || 0;
+                                var barW = _cbMaxPay > 0 ? Math.max(4, Math.round(tPay / _cbMaxPay * 100)) : 0;
+                                var payFmt = tPay >= 1e6 ? '$' + (tPay / 1e6).toFixed(1) + 'M' : (tPay > 0 ? '$' + Math.round(tPay / 1e3) + 'K' : '');
+                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + (payFmt ? ' — CEO: ' + payFmt : '') + ' — click to view, shift+click for network">'
+                                    + t
+                                    + (barW > 0 ? '<span class="cb-tag-bar" style="width:' + barW + '%;background:' + b.color + '"></span>' : '')
+                                    + '</span>';
                             });
                             html += '</div></div>';
                         }

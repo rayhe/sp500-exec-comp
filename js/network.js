@@ -3664,6 +3664,7 @@ function initNetwork(peerData) {
     var _communityFlowEl = null;
     var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
     var _cfNormMode = 'raw'; // flow matrix normalize toggle: 'raw' | 'row' | 'col' | 'diff'
+    var _cfTransposed = false; // flow matrix transpose: swap row/column perspectives
     var _cfCellEdgeDetails = null; // NxN array of {ticker: outCount} maps for tooltip
     var _cmPathFrom = null; // community id selected as path-finder "from" endpoint
 
@@ -4708,6 +4709,23 @@ function initNetwork(peerData) {
             }
         });
 
+        // Apply transpose if active — swap rows and columns
+        if (_cfTransposed) {
+            var tFlow = [], tDetail = [];
+            for (var ti2 = 0; ti2 < N; ti2++) {
+                tFlow.push(new Array(N).fill(0));
+                var dr = [];
+                for (var tj2 = 0; tj2 < N; tj2++) {
+                    tFlow[ti2][tj2] = flowMatrix[tj2][ti2];
+                    // For transposed edge details, swap source perspective: use target tickers
+                    dr.push(_cfCellEdgeDetails[tj2][ti2]);
+                }
+                tDetail.push(dr);
+            }
+            flowMatrix = tFlow;
+            _cfCellEdgeDetails = tDetail;
+        }
+
         // Row totals for normalize mode
         var rowTotals = [];
         for (var i = 0; i < N; i++) {
@@ -4737,8 +4755,10 @@ function initNetwork(peerData) {
         var html = '<div class="cf-header-row"><div class="cf-header">Peer Flow Between Communities</div>';
         var normLabel = _cfNormMode === 'row' ? '% Row' : _cfNormMode === 'col' ? '% Col' : _cfNormMode === 'diff' ? '\u00b1 Diff' : '# Raw';
         var normActiveClass = _cfNormMode !== 'raw' ? (' cf-norm-active' + (_cfNormMode === 'col' ? ' cf-norm-col' : '') + (_cfNormMode === 'diff' ? ' cf-norm-diff' : '')) : '';
-        html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts \u2192 row % \u2192 column % \u2192 net diff">' + normLabel + '</button></div>';
+        html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts \u2192 row % \u2192 column % \u2192 net diff">' + normLabel + '</button>';
+        html += '<button class="cf-transpose-btn' + (_cfTransposed ? ' cf-transpose-active' : '') + '" title="Transpose: swap row/column perspectives">\u21c4</button></div>';
         var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound edges.' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound edges.' : _cfNormMode === 'diff' ? 'Values = row% \u2212 col%: positive = net exporter, negative = net importer. Totals show net edge balance.' : 'Diagonal = intra-community.';
+        if (_cfTransposed) descText = 'Transposed: rows = selected-by (inbound). ' + descText;
         html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + descText + ' Hover for top contributors.</div>';
         html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
 
@@ -4885,6 +4905,17 @@ function initNetwork(peerData) {
             normBtn.addEventListener('click', function() {
                 _cfNormMode = _cfNormMode === 'raw' ? 'row' : _cfNormMode === 'row' ? 'col' : _cfNormMode === 'col' ? 'diff' : 'raw';
                 _renderCommunityFlowMatrix();
+            });
+        }
+
+        // Wire transpose toggle
+        var transposeBtn = _communityFlowEl.querySelector('.cf-transpose-btn');
+        if (transposeBtn) {
+            transposeBtn.addEventListener('click', function() {
+                _cfTransposed = !_cfTransposed;
+                _renderCommunityFlowMatrix();
+                var announcer = document.getElementById('aria-live-announcer');
+                if (announcer) announcer.textContent = _cfTransposed ? 'Flow matrix transposed: rows show inbound selections' : 'Flow matrix restored: rows show outbound selections';
             });
         }
 
