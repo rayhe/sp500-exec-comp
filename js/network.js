@@ -3663,7 +3663,7 @@ function initNetwork(peerData) {
     var _cmSortAsc = false;
     var _communityFlowEl = null;
     var _hoveredFlowCell = null; // {from: communityId, to: communityId} for edge highlight on canvas
-    var _cfNormMode = 'raw'; // flow matrix normalize toggle: 'raw' | 'row' | 'col'
+    var _cfNormMode = 'raw'; // flow matrix normalize toggle: 'raw' | 'row' | 'col' | 'diff'
     var _cfCellEdgeDetails = null; // NxN array of {ticker: outCount} maps for tooltip
     var _cmPathFrom = null; // community id selected as path-finder "from" endpoint
 
@@ -3989,7 +3989,7 @@ function initNetwork(peerData) {
         if (_csvBtn) {
             _csvBtn.addEventListener('click', function(ev) {
                 ev.stopPropagation();
-                var csvHeader = 'Community,Companies,Median CEO Pay ($),Gov Score,SoP Approval (%),GER,Density (%),3yr Trend (%),Top Sector,Top Sector (%)';
+                var csvHeader = 'Community,Companies,Median CEO Pay ($),Gov Score,SoP Approval (%),GER,Density (%),3yr Trend (%),Top Sector,Top Sector (%),Top 5 Companies (by CEO Pay)';
                 var csvRows = [csvHeader];
                 rows.forEach(function(r) {
                     var medPay = r.medianPay != null ? Math.round(r.medianPay) : '';
@@ -4000,7 +4000,16 @@ function initNetwork(peerData) {
                     var trend = r.trendDelta != null ? r.trendDelta.toFixed(1) : '';
                     var topSec = (r.topSector || '').replace(/,/g, ';');
                     var topSecPct = r.topSectorPct != null ? r.topSectorPct.toFixed(1) : '';
-                    csvRows.push('"' + r.label.replace(/"/g, '""') + '",' + r.size + ',' + medPay + ',' + gov + ',' + sop + ',' + ger + ',' + dens + ',' + trend + ',' + topSec + ',' + topSecPct);
+                    // Top 5 companies by CEO pay in this community
+                    var top5 = '';
+                    if (r.tickers && _compLookup) {
+                        var sorted = r.tickers.map(function(tk) {
+                            var cl = _compLookup[tk];
+                            return { ticker: tk, pay: cl ? (cl.totalComp || 0) : 0 };
+                        }).sort(function(a, b) { return b.pay - a.pay; }).slice(0, 5);
+                        top5 = sorted.map(function(s) { return s.ticker; }).join('; ');
+                    }
+                    csvRows.push('"' + r.label.replace(/"/g, '""') + '",' + r.size + ',' + medPay + ',' + gov + ',' + sop + ',' + ger + ',' + dens + ',' + trend + ',' + topSec + ',' + topSecPct + ',"' + top5 + '"');
                 });
                 var csvStr = csvRows.join('\n');
                 var blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8' });
@@ -4729,7 +4738,7 @@ function initNetwork(peerData) {
         var normLabel = _cfNormMode === 'row' ? '% Row' : _cfNormMode === 'col' ? '% Col' : '# Raw';
         var normActiveClass = _cfNormMode !== 'raw' ? (' cf-norm-active' + (_cfNormMode === 'col' ? ' cf-norm-col' : '')) : '';
         html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts → row % → column %">' + normLabel + '</button></div>';
-        var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound edges.' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound edges.' : 'Diagonal = intra-community.';
+        var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound edges.' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound edges.' : _cfNormMode === 'diff' ? 'Values = row% \u2212 col%: positive = net exporter, negative = net importer.' : 'Diagonal = intra-community.';
         html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + descText + ' Hover for top contributors.</div>';
         html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
 
@@ -4754,8 +4763,16 @@ function initNetwork(peerData) {
                 var isDiag = (i === j);
 
                 var displayVal = '';
+                var diffVal = 0; // for diff mode coloring
                 if (val > 0) {
-                    if (_cfNormMode === 'row' && rowTotals[i] > 0) {
+                    if (_cfNormMode === 'diff' && !isDiag) {
+                        var rowPct = rowTotals[i] > 0 ? (val / rowTotals[i]) * 100 : 0;
+                        var colPct = colTotals[j] > 0 ? (val / colTotals[j]) * 100 : 0;
+                        diffVal = rowPct - colPct;
+                        displayVal = (diffVal >= 0 ? '+' : '') + (Math.abs(diffVal) >= 10 ? Math.round(diffVal) + '' : diffVal.toFixed(1));
+                    } else if (_cfNormMode === 'diff' && isDiag) {
+                        displayVal = '\u2014'; // em dash for diagonal in diff mode
+                    } else if (_cfNormMode === 'row' && rowTotals[i] > 0) {
                         var pct = (val / rowTotals[i]) * 100;
                         displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
                     } else if (_cfNormMode === 'col' && colTotals[j] > 0) {
@@ -4776,7 +4793,18 @@ function initNetwork(peerData) {
                 }
 
                 var bgColor;
-                if (val === 0) {
+                if (_cfNormMode === 'diff' && !isDiag && val > 0) {
+                    // Diff mode: green for positive (net exporter), red for negative (net importer)
+                    var absD = Math.min(Math.abs(diffVal), 50);
+                    var diffAlpha = Math.max(0.08, absD / 50 * 0.65);
+                    if (diffVal > 0.5) {
+                        bgColor = 'rgba(52,211,153,' + diffAlpha + ')'; // green
+                    } else if (diffVal < -0.5) {
+                        bgColor = 'rgba(239,68,68,' + diffAlpha + ')'; // red
+                    } else {
+                        bgColor = dark ? 'rgba(60,60,70,0.3)' : 'rgba(200,200,210,0.3)'; // neutral
+                    }
+                } else if (val === 0) {
                     bgColor = dark ? 'rgba(30,30,40,0.5)' : 'rgba(240,240,245,0.5)';
                 } else if (isDiag) {
                     bgColor = _hexToRgba(csRow.color, alpha);
@@ -4784,7 +4812,13 @@ function initNetwork(peerData) {
                     bgColor = _hexToRgba(_blendHex(csRow.color, csCol.color), alpha);
                 }
 
-                var textColor = val === 0 ? (dark ? '#4a4a5a' : '#b0b0b8') : (alpha > 0.5 ? '#fff' : (dark ? '#e4e4e7' : '#1a1a2e'));
+                var textColor;
+                if (_cfNormMode === 'diff' && !isDiag && val > 0) {
+                    var absD2 = Math.min(Math.abs(diffVal), 50);
+                    textColor = absD2 > 30 ? '#fff' : (dark ? '#e4e4e7' : '#1a1a2e');
+                } else {
+                    textColor = val === 0 ? (dark ? '#4a4a5a' : '#b0b0b8') : (alpha > 0.5 ? '#fff' : (dark ? '#e4e4e7' : '#1a1a2e'));
+                }
 
                 html += '<div class="cf-cell' + (isDiag ? ' cf-diag' : '') + '" '
                     + 'data-cf-from="' + csRow.id + '" data-cf-to="' + csCol.id + '" '
@@ -4793,7 +4827,7 @@ function initNetwork(peerData) {
                     + displayVal + '</div>';
             });
 
-            var rowTotalDisplay = _cfNormMode === 'row' ? '100' : rowTotal;
+            var rowTotalDisplay = _cfNormMode === 'row' ? '100' : _cfNormMode === 'diff' ? '\u2014' : rowTotal;
             html += '<div class="cf-cell cf-total">' + rowTotalDisplay + '</div>';
             html += '</div>';
         });
@@ -4803,7 +4837,7 @@ function initNetwork(peerData) {
         var grandTotal = 0;
         colTotals.forEach(function(ct) {
             grandTotal += ct;
-            html += '<div class="cf-cell cf-total">' + (_cfNormMode === 'col' ? '100' : ct) + '</div>';
+            html += '<div class="cf-cell cf-total">' + (_cfNormMode === 'col' ? '100' : _cfNormMode === 'diff' ? '\u2014' : ct) + '</div>';
         });
         html += '<div class="cf-cell cf-total cf-grand-total">' + (_cfNormMode !== 'raw' ? '\u2014' : grandTotal) + '</div>';
         html += '</div>';
@@ -4831,7 +4865,7 @@ function initNetwork(peerData) {
         var normBtn = _communityFlowEl.querySelector('.cf-normalize-btn');
         if (normBtn) {
             normBtn.addEventListener('click', function() {
-                _cfNormMode = _cfNormMode === 'raw' ? 'row' : _cfNormMode === 'row' ? 'col' : 'raw';
+                _cfNormMode = _cfNormMode === 'raw' ? 'row' : _cfNormMode === 'row' ? 'col' : _cfNormMode === 'col' ? 'diff' : 'raw';
                 _renderCommunityFlowMatrix();
             });
         }
@@ -4867,7 +4901,12 @@ function initNetwork(peerData) {
 
                     var tipHtml = '<div class="cf-tip-header">' + fromLabel + (isDiag ? ' (intra)' : ' \u2192 ' + toLabel) + '</div>';
                     tipHtml += '<div class="cf-tip-count">' + rawVal + ' edge' + (rawVal !== 1 ? 's' : '');
-                    if (_cfNormMode === 'row' && rowTotals[ci] > 0) {
+                    if (_cfNormMode === 'diff' && !isDiag && rowTotals[ci] > 0 && colTotals[cj] > 0) {
+                        var rowPct = ((rawVal / rowTotals[ci]) * 100);
+                        var colPct = ((rawVal / colTotals[cj]) * 100);
+                        var diff = rowPct - colPct;
+                        tipHtml += ' (row ' + rowPct.toFixed(1) + '% \u2212 col ' + colPct.toFixed(1) + '% = ' + (diff >= 0 ? '+' : '') + diff.toFixed(1) + ')';
+                    } else if (_cfNormMode === 'row' && rowTotals[ci] > 0) {
                         tipHtml += ' (' + ((rawVal / rowTotals[ci]) * 100).toFixed(1) + '% of row)';
                     } else if (_cfNormMode === 'col' && colTotals[cj] > 0) {
                         tipHtml += ' (' + ((rawVal / colTotals[cj]) * 100).toFixed(1) + '% of col)';
