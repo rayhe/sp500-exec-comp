@@ -2421,6 +2421,11 @@ header h1 {
     font-weight: 600;
     letter-spacing: 0.01em;
 }
+[data-theme="light"] #quartile-filter-chip {
+    color: #7c3aed !important;
+    background: rgba(124,58,237,0.1) !important;
+    border-color: rgba(124,58,237,0.35) !important;
+}
 
 /* Compensation distribution summary — inline mini histogram */
 .comp-dist-histogram {
@@ -11989,6 +11994,10 @@ body.light-mode .cross-sector-pair-select:focus {
 }
 .cm-row.cm-data:hover .cm-path-btn,
 .cm-path-btn.cm-path-from {
+    display: inline-block;
+}
+/* Show all path buttons when a source is selected (for similarity heat comparison) */
+.cm-path-selecting .cm-path-btn {
     display: inline-block;
 }
 .cm-path-btn:hover {

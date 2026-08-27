@@ -1499,6 +1499,8 @@ function sortTableByKey(key, dir) {
     if (concChip) concChip.remove();
     var tenureChip = document.getElementById('tenure-filter-chip');
     if (tenureChip) tenureChip.remove();
+    var quartileChip = document.getElementById('quartile-filter-chip');
+    if (quartileChip) quartileChip.remove();
 
     // Clear search input
     var searchInput = document.getElementById('table-search');
@@ -2329,6 +2331,8 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;
+            var _qfcReset = document.getElementById('quartile-filter-chip');
+            if (_qfcReset) _qfcReset.remove();
             document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
                 el.classList.remove('cm-bp-zone-clicked');
             });

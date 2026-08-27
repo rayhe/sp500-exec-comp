@@ -4118,6 +4118,9 @@ function initNetwork(peerData) {
 
                 if (wasActive) {
                     window._activeQuartileFilter = null;
+                    // Remove quartile filter chip
+                    var _qfc = document.getElementById('quartile-filter-chip');
+                    if (_qfc) _qfc.remove();
                     if (typeof renderTable === 'function') renderTable(window._chartData.companies);
                     var scEl = document.getElementById('scatter-chart');
                     if (scEl) scEl.innerHTML = '';
@@ -4130,6 +4133,31 @@ function initNetwork(peerData) {
                     window._activeQuartileFilter = { tickers: tickers, label: filterLabel, communityId: cid, _lo: lo, _hi: hi };
                     zone.classList.add('cm-bp-zone-clicked');
                     if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    // Add dismissible quartile filter chip to table controls
+                    var _oldQfc = document.getElementById('quartile-filter-chip');
+                    if (_oldQfc) _oldQfc.remove();
+                    var _qfChip = document.createElement('button');
+                    _qfChip.className = 'chip active combined-filter-chip';
+                    _qfChip.id = 'quartile-filter-chip';
+                    _qfChip.style.background = 'rgba(167,139,250,0.15)';
+                    _qfChip.style.borderColor = 'rgba(167,139,250,0.5)';
+                    _qfChip.style.color = '#a78bfa';
+                    _qfChip.innerHTML = filterLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+                    _qfChip.title = 'Click to clear quartile filter';
+                    _qfChip.addEventListener('click', function() {
+                        window._activeQuartileFilter = null;
+                        _qfChip.remove();
+                        _communityMetricsEl.querySelectorAll('.cm-bp-zone-clicked').forEach(function(z2) {
+                            z2.classList.remove('cm-bp-zone-clicked');
+                        });
+                        if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                        var _scR = document.getElementById('scatter-chart');
+                        if (_scR) _scR.innerHTML = '';
+                        if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                        if (typeof announce === 'function') announce('Quartile filter cleared');
+                    });
+                    var _qfControls = document.querySelector('.table-controls');
+                    if (_qfControls) _qfControls.appendChild(_qfChip);
                     if (typeof renderTable === 'function') renderTable(window._chartData.companies);
                     var scEl2 = document.getElementById('scatter-chart');
                     if (scEl2) scEl2.innerHTML = '';
@@ -4283,6 +4311,8 @@ function initNetwork(peerData) {
                         b.classList.remove('cm-path-from');
                     });
                     btn.classList.add('cm-path-from');
+                    // Show all path buttons for similarity heat comparison
+                    _communityMetricsEl.classList.add('cm-path-selecting');
                     btn.textContent = '⇤';
                     btn.title = 'Source selected — click another community\'s ⇄ to find path';
                     // Show instruction
@@ -4332,7 +4362,28 @@ function initNetwork(peerData) {
                                 }
                             }
                         }
-                        // Update other ⇄ buttons with hop badges
+                        // Update other ⇄ buttons with hop badges + similarity heat
+                        // First compute cross-edge counts for similarity scoring
+                        var _simScores = {}; // communityId → crossEdgeCount
+                        var _srcTickerSetSim = new Set(cs.tickers);
+                        var _maxSim = 0;
+                        for (var _si = 0; _si < communityStats.length; _si++) {
+                            var _scs = communityStats[_si];
+                            if (_scs.id === cid) continue;
+                            var _sTargetSet = new Set(_scs.tickers);
+                            var _crossCount = 0;
+                            allEdges.forEach(function(e) {
+                                if ((_srcTickerSetSim.has(e.source) && _sTargetSet.has(e.target)) ||
+                                    (_srcTickerSetSim.has(e.target) && _sTargetSet.has(e.source))) {
+                                    _crossCount++;
+                                }
+                            });
+                            // Normalize by geometric mean of community sizes to avoid size bias
+                            var _geoMean = Math.sqrt(cs.tickers.length * _scs.tickers.length);
+                            var _simVal = _geoMean > 0 ? _crossCount / _geoMean : 0;
+                            _simScores[_scs.id] = { raw: _crossCount, normalized: _simVal };
+                            if (_simVal > _maxSim) _maxSim = _simVal;
+                        }
                         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
                             var bCid = parseInt(b.dataset.cmPathCid);
                             if (bCid === cid) return; // Skip source
@@ -4349,6 +4400,24 @@ function initNetwork(peerData) {
                                 badge.title = 'Estimated ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' (' + hopLabel + ')';
                                 b.appendChild(badge);
                                 b.title = '⇄ ' + hops + ' hop' + (hops !== 1 ? 's' : '') + ' estimated (' + hopLabel + ')';
+                            }
+                            // Apply similarity heat intensity as background
+                            var _sim = _simScores[bCid];
+                            if (_sim && _maxSim > 0) {
+                                var _intensity = _sim.normalized / _maxSim; // 0-1
+                                var _simLabel = _intensity >= 0.7 ? 'strong' : _intensity >= 0.3 ? 'moderate' : 'weak';
+                                // Use community color from the destination community for the heat
+                                var _destCs = communityStats.find(function(s2) { return s2.id === bCid; });
+                                var _heatColor = _destCs ? _destCs.color : '#a78bfa';
+                                var _heatAlpha = 0.06 + _intensity * 0.22; // 0.06 to 0.28
+                                b.style.background = _hexToRgba(_heatColor, _heatAlpha);
+                                b.style.borderColor = _hexToRgba(_heatColor, 0.15 + _intensity * 0.35);
+                                // Update title with similarity info
+                                var _existTitle = b.title || '';
+                                b.title = _existTitle + ' · Similarity: ' + _simLabel + ' (' + _sim.raw + ' cross-edges)';
+                            } else {
+                                b.style.background = '';
+                                b.style.borderColor = '';
                             }
                         });
                     }
@@ -4392,6 +4461,7 @@ function initNetwork(peerData) {
 
                     // Clear path-from state
                     _cmPathFrom = null;
+                    _communityMetricsEl.classList.remove('cm-path-selecting');
                     _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(b) {
                         b.classList.remove('cm-path-from');
                         b.textContent = '⇄';
@@ -4399,6 +4469,9 @@ function initNetwork(peerData) {
                         // Remove hop badges
                         var hb = b.querySelector('.cm-hop-badge');
                         if (hb) hb.remove();
+                        // Clear similarity heat
+                        b.style.background = '';
+                        b.style.borderColor = '';
                     });
                     var inst2 = _communityMetricsEl.querySelector('.cm-path-instruction');
                     if (inst2) inst2.remove();
@@ -4433,6 +4506,8 @@ function initNetwork(peerData) {
         // Clear quartile filter when community mode is toggled off
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;
+            var _qfcClean = document.getElementById('quartile-filter-chip');
+            if (_qfcClean) _qfcClean.remove();
             if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
             var scEl = document.getElementById('scatter-chart');
             if (scEl) scEl.innerHTML = '';
