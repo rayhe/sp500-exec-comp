@@ -9299,6 +9299,152 @@ footer li::before {
 }
 
 
+/* === Community Bridge Role (detail panel — cross-community connectivity) === */
+.community-bridge-section {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.15);
+    border-radius: 10px;
+}
+.cb-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.cb-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #e4e4e7;
+    letter-spacing: 0.3px;
+}
+.cb-role-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+.cb-role-super { background: rgba(239,68,68,0.18); color: #f87171; border: 0.5px solid rgba(239,68,68,0.35); }
+.cb-role-bridge { background: rgba(251,191,36,0.15); color: #fbbf24; border: 0.5px solid rgba(251,191,36,0.3); }
+.cb-role-connector { background: rgba(52,211,153,0.15); color: #34d399; border: 0.5px solid rgba(52,211,153,0.3); }
+.cb-role-peripheral { background: rgba(148,163,184,0.12); color: #94a3b8; border: 0.5px solid rgba(148,163,184,0.25); }
+.cb-role-intra { background: rgba(100,116,139,0.1); color: #64748b; border: 0.5px solid rgba(100,116,139,0.2); }
+.cb-own {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.72rem;
+}
+.cb-own-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.cb-own-label {
+    font-weight: 600;
+    color: #e4e4e7;
+}
+.cb-own-size {
+    color: #6b7280;
+    font-size: 0.66rem;
+}
+.cb-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-bottom: 10px;
+    font-size: 0.65rem;
+    color: #a1a1aa;
+}
+.cb-stat-sep {
+    color: #4b5563;
+}
+.cb-bridges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.cb-bridge-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.66rem;
+}
+.cb-bridge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.cb-bridge-label {
+    width: 120px;
+    flex-shrink: 0;
+    color: #d4d4d8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cb-bridge-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 40px;
+}
+.cb-bridge-bar {
+    height: 100%;
+    border-radius: 3px;
+    opacity: 0.65;
+    transition: width 0.3s ease;
+}
+.cb-bridge-count {
+    min-width: 18px;
+    text-align: right;
+    font-weight: 600;
+    color: #e4e4e7;
+    font-size: 0.64rem;
+}
+.cb-bridge-dir {
+    color: #6b7280;
+    font-size: 0.58rem;
+    min-width: 42px;
+    text-align: right;
+}
+.cb-bridge-more {
+    font-size: 0.62rem;
+    color: #6b7280;
+    margin-top: 2px;
+    padding-left: 12px;
+}
+
+/* Light theme */
+[data-theme="light"] .community-bridge-section {
+    background: rgba(124,58,237,0.04);
+    border-color: rgba(124,58,237,0.12);
+}
+[data-theme="light"] .cb-title { color: #1a1a2e; }
+[data-theme="light"] .cb-role-super { background: rgba(239,68,68,0.1); color: #dc2626; border-color: rgba(239,68,68,0.25); }
+[data-theme="light"] .cb-role-bridge { background: rgba(217,119,6,0.1); color: #d97706; border-color: rgba(217,119,6,0.2); }
+[data-theme="light"] .cb-role-connector { background: rgba(5,150,105,0.1); color: #059669; border-color: rgba(5,150,105,0.2); }
+[data-theme="light"] .cb-role-peripheral { background: rgba(100,116,139,0.08); color: #64748b; border-color: rgba(100,116,139,0.15); }
+[data-theme="light"] .cb-role-intra { background: rgba(100,116,139,0.06); color: #94a3b8; border-color: rgba(100,116,139,0.1); }
+[data-theme="light"] .cb-own-label { color: #1a1a2e; }
+[data-theme="light"] .cb-own-size { color: #6b7280; }
+[data-theme="light"] .cb-stats { color: #4b5563; }
+[data-theme="light"] .cb-stat-sep { color: #d1d5db; }
+[data-theme="light"] .cb-bridge-label { color: #374151; }
+[data-theme="light"] .cb-bridge-bar-wrap { background: rgba(0,0,0,0.06); }
+[data-theme="light"] .cb-bridge-bar { opacity: 0.55; }
+[data-theme="light"] .cb-bridge-count { color: #1a1a2e; }
+[data-theme="light"] .cb-bridge-dir { color: #9ca3af; }
+[data-theme="light"] .cb-bridge-more { color: #9ca3af; }
+
 /* === Compensation Twins (detail panel — similar pay profiles) === */
 .comp-twins-section {
     margin-top: 16px;

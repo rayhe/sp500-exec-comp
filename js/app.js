@@ -8591,6 +8591,118 @@ function setupDetailPanel(companies) {
             html += '</div>';
         }
 
+        // --- Community Bridge Role: which communities does this company connect? ---
+        (function() {
+            var cOf = window._communityOf;
+            var cStats = window._communityStats;
+            if (!cOf || !cStats || cOf[ticker] == null) return;
+
+            var myCid = cOf[ticker];
+            var myStat = cStats.find(function(s) { return s.id === myCid; });
+            if (!myStat) return;
+
+            // Count cross-community edges (both directions) grouped by target community
+            var crossOut = {}; // communityId → count of outbound edges to that community
+            var crossIn = {};  // communityId → count of inbound edges from that community
+            if (peerInfo) {
+                peerInfo.selects.forEach(function(t) {
+                    var tc = cOf[t];
+                    if (tc != null && tc !== myCid) {
+                        crossOut[tc] = (crossOut[tc] || 0) + 1;
+                    }
+                });
+                peerInfo.selectedBy.forEach(function(t) {
+                    var tc = cOf[t];
+                    if (tc != null && tc !== myCid) {
+                        crossIn[tc] = (crossIn[tc] || 0) + 1;
+                    }
+                });
+            }
+
+            // Merge into combined cross-community edge list
+            var allCrossIds = {};
+            Object.keys(crossOut).forEach(function(k) { allCrossIds[k] = true; });
+            Object.keys(crossIn).forEach(function(k) { allCrossIds[k] = true; });
+            var bridges = Object.keys(allCrossIds).map(function(cid) {
+                cid = parseInt(cid, 10);
+                var stat = cStats.find(function(s) { return s.id === cid; });
+                return {
+                    communityId: cid,
+                    label: stat ? stat.label : ('Cluster ' + cid),
+                    color: stat ? stat.color : '#888',
+                    outEdges: crossOut[cid] || 0,
+                    inEdges: crossIn[cid] || 0,
+                    total: (crossOut[cid] || 0) + (crossIn[cid] || 0)
+                };
+            }).sort(function(a, b) { return b.total - a.total; });
+
+            // Count intra-community edges
+            var intraOut = peerInfo ? peerInfo.selects.filter(function(t) { return cOf[t] === myCid; }).length : 0;
+            var intraIn = peerInfo ? peerInfo.selectedBy.filter(function(t) { return cOf[t] === myCid; }).length : 0;
+            var totalEdges = (peerInfo ? peerInfo.selects.length + peerInfo.selectedBy.length : 0);
+            var crossTotal = bridges.reduce(function(s, b) { return s + b.total; }, 0);
+            var crossPct = totalEdges > 0 ? (crossTotal / totalEdges * 100) : 0;
+
+            // Bridge role classification
+            var roleLabel, roleCls;
+            if (bridges.length >= 4 && crossPct >= 50) {
+                roleLabel = 'Super Bridge'; roleCls = 'cb-role-super';
+            } else if (bridges.length >= 3 && crossPct >= 40) {
+                roleLabel = 'Bridge Node'; roleCls = 'cb-role-bridge';
+            } else if (bridges.length >= 2 && crossPct >= 25) {
+                roleLabel = 'Connector'; roleCls = 'cb-role-connector';
+            } else if (bridges.length >= 1) {
+                roleLabel = 'Peripheral Bridge'; roleCls = 'cb-role-peripheral';
+            } else {
+                roleLabel = 'Intra-Community'; roleCls = 'cb-role-intra';
+            }
+
+            html += '<div class="community-bridge-section">';
+            html += '<div class="cb-header">';
+            html += '<span class="cb-title">Community Bridge Role</span>';
+            html += '<span class="cb-role-badge ' + roleCls + '">' + roleLabel + '</span>';
+            html += '</div>';
+
+            // Own community
+            html += '<div class="cb-own">';
+            html += '<span class="cb-own-dot" style="background:' + myStat.color + '"></span>';
+            html += '<span class="cb-own-label">' + myStat.label + '</span>';
+            html += '<span class="cb-own-size">(' + myStat.size + ' companies)</span>';
+            html += '</div>';
+
+            // Summary stats
+            html += '<div class="cb-stats">';
+            html += '<span class="cb-stat">Intra-community: ' + (intraOut + intraIn) + ' edges (' + intraOut + ' out, ' + intraIn + ' in)</span>';
+            html += '<span class="cb-stat-sep">&middot;</span>';
+            html += '<span class="cb-stat">Cross-community: ' + crossTotal + ' edges to ' + bridges.length + ' cluster' + (bridges.length !== 1 ? 's' : '') + ' (' + crossPct.toFixed(0) + '% of total)</span>';
+            html += '</div>';
+
+            // Bridge bars (up to 6)
+            if (bridges.length > 0) {
+                var maxBridge = bridges[0].total;
+                var showBridges = bridges.slice(0, 6);
+                html += '<div class="cb-bridges">';
+                showBridges.forEach(function(b) {
+                    var pct = maxBridge > 0 ? (b.total / maxBridge * 100) : 0;
+                    html += '<div class="cb-bridge-row" title="' + b.outEdges + ' outbound + ' + b.inEdges + ' inbound edges to ' + b.label + '">';
+                    html += '<span class="cb-bridge-dot" style="background:' + b.color + '"></span>';
+                    html += '<span class="cb-bridge-label">' + b.label + '</span>';
+                    html += '<div class="cb-bridge-bar-wrap">';
+                    html += '<div class="cb-bridge-bar" style="width:' + pct.toFixed(1) + '%;background:' + b.color + '"></div>';
+                    html += '</div>';
+                    html += '<span class="cb-bridge-count">' + b.total + '</span>';
+                    html += '<span class="cb-bridge-dir">' + b.outEdges + '→ ' + b.inEdges + '←</span>';
+                    html += '</div>';
+                });
+                if (bridges.length > 6) {
+                    html += '<div class="cb-bridge-more">+' + (bridges.length - 6) + ' more communities</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '</div>';
+        })();
+
         // --- Compensation Twins: most similar companies by multi-dimensional pay profile ---
         (function() {
             // Normalize a value to 0-1 given min/max range
