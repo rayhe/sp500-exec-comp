@@ -65,6 +65,10 @@ function initNetwork(peerData) {
     var _hoveredQuartileColor = null; // community color for quartile highlight ring
     var _hoveredTrendTickers = null; // Map of ticker → 'up'|'down'|'stable' for trend sparkline hover
     var _hoveredTrendCommunityColor = null; // community color for trend sparkline hover
+    var _lockedTrendTickers = null; // Map of ticker → direction when sparkline is click-locked
+    var _lockedTrendCommunityColor = null;
+    var _lockedTrendCommunityId = null;
+    var _lockedTrendSparkEl = null; // The DOM element of the locked sparkline
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
@@ -1190,9 +1194,10 @@ function initNetwork(peerData) {
                 ctx.lineTo(t.x, t.y);
             });
             ctx.stroke();
-        } else if (_hoveredTrendTickers && _hoveredTrendTickers.size > 0 && !hoveredNode && !activePath) {
-            // Trend sparkline hover — dim non-community edges, highlight community member edges colored by direction
-            var _trendTickerSet = new Set(_hoveredTrendTickers.keys());
+        } else if ((_lockedTrendTickers || _hoveredTrendTickers) && (_lockedTrendTickers || _hoveredTrendTickers).size > 0 && !hoveredNode && !activePath) {
+            // Trend sparkline hover/lock — dim non-community edges, highlight community member edges colored by direction
+            var _activeTrend = _lockedTrendTickers || _hoveredTrendTickers;
+            var _trendTickerSet = new Set(_activeTrend.keys());
             ctx.strokeStyle = edgeSectorDimColor;
             ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
             ctx.beginPath();
@@ -1208,7 +1213,7 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
             // Highlighted edges connecting community members
-            var _tcColor = _hoveredTrendCommunityColor || '#a78bfa';
+            var _tcColor = (_lockedTrendCommunityColor || _hoveredTrendCommunityColor) || '#a78bfa';
             ctx.strokeStyle = _hiContrast ? hexToRGBA(_tcColor, 0.55) : hexToRGBA(_tcColor, 0.35);
             ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
             ctx.beginPath();
@@ -1360,9 +1365,10 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.12 : 0.06;
                 }
-            } else if (!belowGerThreshold && _hoveredTrendTickers && _hoveredTrendTickers.size > 0 && !hoveredNode && !activePath) {
-                // Trend sparkline hover — highlight community members, dim rest
-                if (_hoveredTrendTickers.has(d.ticker)) {
+            } else if (!belowGerThreshold && (_lockedTrendTickers || _hoveredTrendTickers) && (_lockedTrendTickers || _hoveredTrendTickers).size > 0 && !hoveredNode && !activePath) {
+                // Trend sparkline hover/lock — highlight community members, dim rest
+                var _atNd = _lockedTrendTickers || _hoveredTrendTickers;
+                if (_atNd.has(d.ticker)) {
                     alpha = 1;
                 } else {
                     alpha = _hiContrast ? 0.12 : 0.06;
@@ -1398,9 +1404,10 @@ function initNetwork(peerData) {
                 ctx.strokeStyle = hexToRGBA(_hoveredQuartileColor || color, _hiContrast ? 0.85 : 0.7);
                 ctx.lineWidth = (_hiContrast ? 2 : 1.5) / scale;
                 ctx.stroke();
-            } else if (_hoveredTrendTickers && _hoveredTrendTickers.has(d.ticker) && !hoveredNode) {
+            } else if ((_lockedTrendTickers || _hoveredTrendTickers) && (_lockedTrendTickers || _hoveredTrendTickers).has(d.ticker) && !hoveredNode) {
                 // Direction-coded stroke: green=decrease, red=increase, amber=stable
-                var _tDir = _hoveredTrendTickers.get(d.ticker);
+                var _atStr = _lockedTrendTickers || _hoveredTrendTickers;
+                var _tDir = _atStr.get(d.ticker);
                 var _tStroke = _tDir === 'up' ? '#ef4444' : _tDir === 'down' ? '#34d399' : '#fbbf24';
                 ctx.strokeStyle = hexToRGBA(_tStroke, _hiContrast ? 0.9 : 0.8);
                 ctx.lineWidth = (_hiContrast ? 2.5 : 2) / scale;
@@ -1993,6 +2000,25 @@ function initNetwork(peerData) {
         }
     }
     _buildCompLookup();
+
+    // Helper: compute top N pay movers from a trend ticker map
+    function _getTopMovers(tMap, n) {
+        n = n || 3;
+        var entries = [];
+        tMap.forEach(function(dir, ticker) {
+            var c = _compLookup[ticker];
+            if (!c || !c._ceoPayByYear) return;
+            var years = Object.keys(c._ceoPayByYear).map(Number).sort();
+            if (years.length < 2) return;
+            var prev = c._ceoPayByYear[years[years.length - 2]];
+            var curr = c._ceoPayByYear[years[years.length - 1]];
+            if (!prev || prev === 0) return;
+            var pctChange = ((curr - prev) / prev) * 100;
+            entries.push({ ticker: ticker, name: c.company_name || ticker, pct: pctChange, dir: dir, curr: curr });
+        });
+        entries.sort(function(a, b) { return Math.abs(b.pct) - Math.abs(a.pct); });
+        return entries.slice(0, n);
+    }
 
     function _fmtComp(val) {
         if (val == null) return '—';
@@ -4121,16 +4147,10 @@ function initNetwork(peerData) {
             });
         });
 
-        // Wire trend sparkline hover → highlight community companies on graph by YoY pay change direction
+        // Wire trend sparkline hover/click → highlight community companies on graph by YoY pay change direction
         _communityMetricsEl.querySelectorAll('.cm-sparkline').forEach(function(spark) {
-            spark.addEventListener('mouseenter', function(ev) {
-                ev.stopPropagation(); // Don't trigger row hover
-                var row = spark.closest('.cm-data');
-                if (!row) return;
-                var cid = parseInt(row.dataset.cmCommunity);
-                var cs = communityStats.find(function(s) { return s.id === cid; });
-                if (!cs) return;
-                // Get the two most recent years of CEO pay data for each company
+            // Compute trend data for a community
+            function _computeTrendMap(cs) {
                 var tMap = new Map();
                 var upCount = 0, downCount = 0, stableCount = 0;
                 cs.tickers.forEach(function(t) {
@@ -4150,21 +4170,100 @@ function initNetwork(peerData) {
                     else if (pctChange < -5) { tMap.set(t, 'down'); downCount++; }
                     else { tMap.set(t, 'stable'); stableCount++; }
                 });
-                // Include companies without multi-year data as stable (dimmed less)
                 cs.tickers.forEach(function(t) {
                     if (!tMap.has(t) && _compLookup[t]) { tMap.set(t, 'stable'); stableCount++; }
                 });
-                _hoveredTrendTickers = tMap;
+                return { map: tMap, up: upCount, down: downCount, stable: stableCount };
+            }
+
+            spark.addEventListener('mouseenter', function(ev) {
+                ev.stopPropagation();
+                if (_lockedTrendTickers) return; // Skip hover when locked
+                var row = spark.closest('.cm-data');
+                if (!row) return;
+                var cid = parseInt(row.dataset.cmCommunity);
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+                var td = _computeTrendMap(cs);
+                _hoveredTrendTickers = td.map;
                 _hoveredTrendCommunityColor = cs.color;
                 spark.classList.add('cm-sparkline-active');
                 draw();
-                if (typeof announce === 'function') announce(cs.label + ' trend: ' + upCount + ' up, ' + downCount + ' down, ' + stableCount + ' stable — highlighted on graph');
+                if (typeof announce === 'function') announce(cs.label + ' trend: ' + td.up + ' up, ' + td.down + ' down, ' + td.stable + ' stable — highlighted on graph');
             });
             spark.addEventListener('mouseleave', function() {
+                if (_lockedTrendTickers) return; // Skip when locked
                 _hoveredTrendTickers = null;
                 _hoveredTrendCommunityColor = null;
                 spark.classList.remove('cm-sparkline-active');
                 draw();
+            });
+            // Click to lock/unlock with top 3 movers tooltip
+            spark.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                var row = spark.closest('.cm-data');
+                if (!row) return;
+                var cid = parseInt(row.dataset.cmCommunity);
+
+                // Toggle: click again to unlock
+                if (_lockedTrendCommunityId === cid) {
+                    _lockedTrendTickers = null;
+                    _lockedTrendCommunityColor = null;
+                    _lockedTrendCommunityId = null;
+                    if (_lockedTrendSparkEl) _lockedTrendSparkEl.classList.remove('cm-sparkline-locked');
+                    _lockedTrendSparkEl = null;
+                    // Remove existing tooltip
+                    var oldTip = _communityMetricsEl.querySelector('.cm-trend-tooltip');
+                    if (oldTip) oldTip.remove();
+                    _hoveredTrendTickers = null;
+                    _hoveredTrendCommunityColor = null;
+                    spark.classList.remove('cm-sparkline-active');
+                    draw();
+                    if (typeof announce === 'function') announce('Trend highlight unlocked');
+                    return;
+                }
+
+                var cs = communityStats.find(function(s) { return s.id === cid; });
+                if (!cs) return;
+
+                // Clear any previous lock
+                if (_lockedTrendSparkEl) _lockedTrendSparkEl.classList.remove('cm-sparkline-locked');
+                var oldTip2 = _communityMetricsEl.querySelector('.cm-trend-tooltip');
+                if (oldTip2) oldTip2.remove();
+
+                var td = _computeTrendMap(cs);
+                _lockedTrendTickers = td.map;
+                _lockedTrendCommunityColor = cs.color;
+                _lockedTrendCommunityId = cid;
+                _lockedTrendSparkEl = spark;
+                spark.classList.add('cm-sparkline-locked');
+                spark.classList.add('cm-sparkline-active');
+                draw();
+
+                // Build top 3 movers tooltip
+                var movers = _getTopMovers(td.map, 3);
+                if (movers.length > 0) {
+                    var tipHtml = '<div class="cm-trend-tooltip">';
+                    tipHtml += '<div class="cm-trend-tooltip-title">Top movers</div>';
+                    movers.forEach(function(mv) {
+                        var arrow = mv.pct > 0 ? '↑' : mv.pct < 0 ? '↓' : '→';
+                        var cls = mv.pct > 5 ? 'up' : mv.pct < -5 ? 'down' : 'stable';
+                        var pctStr = (mv.pct > 0 ? '+' : '') + mv.pct.toFixed(1) + '%';
+                        tipHtml += '<div class="cm-trend-mover cm-trend-' + cls + '">';
+                        tipHtml += '<span class="cm-trend-arrow">' + arrow + '</span> ';
+                        tipHtml += '<span class="cm-trend-ticker">' + mv.ticker + '</span> ';
+                        tipHtml += '<span class="cm-trend-pct">' + pctStr + '</span>';
+                        tipHtml += '</div>';
+                    });
+                    tipHtml += '</div>';
+                    // Insert tooltip after the sparkline
+                    spark.insertAdjacentHTML('afterend', tipHtml);
+                }
+
+                if (typeof announce === 'function') {
+                    var moverNames = movers.map(function(m) { return m.ticker + ' ' + (m.pct > 0 ? '+' : '') + m.pct.toFixed(0) + '%'; }).join(', ');
+                    announce(cs.label + ' trend locked. Top movers: ' + (moverNames || 'none'));
+                }
             });
         });
 
@@ -4323,6 +4422,12 @@ function initNetwork(peerData) {
         _hoveredQuartileColor = null;
         _hoveredTrendTickers = null;
         _hoveredTrendCommunityColor = null;
+        _lockedTrendTickers = null;
+        _lockedTrendCommunityColor = null;
+        _lockedTrendCommunityId = null;
+        if (_lockedTrendSparkEl) { _lockedTrendSparkEl.classList.remove('cm-sparkline-locked'); _lockedTrendSparkEl = null; }
+        var _oldTipClean = document.querySelector('.cm-trend-tooltip');
+        if (_oldTipClean) _oldTipClean.remove();
         // Clear quartile filter when community mode is toggled off
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;

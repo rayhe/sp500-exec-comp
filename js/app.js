@@ -7559,6 +7559,29 @@ function setupDetailPanel(companies) {
             }
         }
 
+        // Board Independence stat
+        if (company.board_independence) {
+            var bi = company.board_independence;
+            var biPct = bi.independence_pct;
+            if (biPct != null) {
+                var biCls = biPct >= 90 ? 'positive' : biPct >= 75 ? '' : 'negative';
+                var biTip = 'Percentage of board directors who are independent, as disclosed in the company\'s DEF 14A proxy statement';
+                var biSub = '';
+                if (bi.independent_directors != null && bi.total_directors != null) {
+                    biSub = bi.independent_directors + ' of ' + bi.total_directors + ' directors independent';
+                } else {
+                    biSub = biPct.toFixed(1) + '% independent (counts not disclosed)';
+                }
+                if (bi.chair_independent === true) {
+                    biSub += ' \u00b7 Independent chair';
+                } else if (bi.chair_independent === false) {
+                    biSub += ' \u00b7 Non-independent chair';
+                    if (bi.lead_independent_director === true) biSub += ' (lead independent director)';
+                }
+                html += '<div class="detail-stat"><div class="detail-stat-label" title="' + biTip + '">Board Independence</div><div class="detail-stat-value ' + biCls + '">' + biPct.toFixed(1) + '%</div>' + distBar(biPct, '0%', '100%') + '<div class="detail-stat-sub">' + biSub + '</div></div>';
+            }
+        }
+
         // Multi-Year CEO Pay Composition Evolution — 100%-stacked bars showing how pay mix shifted across fiscal years
         if (company.executives && company.executives.length > 0) {
             var _ceYears = [];

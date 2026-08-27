@@ -11836,9 +11836,61 @@ body.light-mode .cross-sector-pair-select:focus {
 .cm-sparkline:hover, .cm-sparkline-active {
     background: rgba(167,139,250,0.12);
 }
+.cm-sparkline-locked {
+    background: rgba(167,139,250,0.22) !important;
+    outline: 1px solid rgba(167,139,250,0.4);
+    cursor: pointer;
+}
 [data-theme="light"] .cm-sparkline:hover, [data-theme="light"] .cm-sparkline-active {
     background: rgba(124,58,237,0.08);
 }
+[data-theme="light"] .cm-sparkline-locked {
+    background: rgba(124,58,237,0.15) !important;
+    outline: 1px solid rgba(124,58,237,0.3);
+}
+/* Trend movers tooltip */
+.cm-trend-tooltip {
+    position: absolute;
+    z-index: 20;
+    background: rgba(30,30,40,0.95);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: #e5e5e5;
+    white-space: nowrap;
+    margin-top: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+[data-theme="light"] .cm-trend-tooltip {
+    background: rgba(255,255,255,0.97);
+    border-color: rgba(124,58,237,0.2);
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.cm-trend-tooltip-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a78bfa;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+.cm-trend-mover {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 0;
+}
+.cm-trend-arrow { font-size: 12px; }
+.cm-trend-ticker { font-weight: 600; }
+.cm-trend-pct { font-size: 10px; opacity: 0.8; }
+.cm-trend-up .cm-trend-arrow { color: #ef4444; }
+.cm-trend-up .cm-trend-pct { color: #ef4444; }
+.cm-trend-down .cm-trend-arrow { color: #34d399; }
+.cm-trend-down .cm-trend-pct { color: #34d399; }
+.cm-trend-stable .cm-trend-arrow { color: #fbbf24; }
+.cm-trend-stable .cm-trend-pct { color: #fbbf24; }
 /* Box plot for pay distribution */
 .cm-dist-cell {
     min-width: 80px;
