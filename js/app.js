@@ -8604,17 +8604,23 @@ function setupDetailPanel(companies) {
             // Count cross-community edges (both directions) grouped by target community
             var crossOut = {}; // communityId → count of outbound edges to that community
             var crossIn = {};  // communityId → count of inbound edges from that community
+            var crossOutTickers = {}; // communityId → [tickers] (companies this ticker benchmarks in that community)
+            var crossInTickers = {};  // communityId → [tickers] (companies in that community that benchmark this ticker)
             if (peerInfo) {
                 peerInfo.selects.forEach(function(t) {
                     var tc = cOf[t];
                     if (tc != null && tc !== myCid) {
                         crossOut[tc] = (crossOut[tc] || 0) + 1;
+                        if (!crossOutTickers[tc]) crossOutTickers[tc] = [];
+                        crossOutTickers[tc].push(t);
                     }
                 });
                 peerInfo.selectedBy.forEach(function(t) {
                     var tc = cOf[t];
                     if (tc != null && tc !== myCid) {
                         crossIn[tc] = (crossIn[tc] || 0) + 1;
+                        if (!crossInTickers[tc]) crossInTickers[tc] = [];
+                        crossInTickers[tc].push(t);
                     }
                 });
             }
@@ -8632,7 +8638,9 @@ function setupDetailPanel(companies) {
                     color: stat ? stat.color : '#888',
                     outEdges: crossOut[cid] || 0,
                     inEdges: crossIn[cid] || 0,
-                    total: (crossOut[cid] || 0) + (crossIn[cid] || 0)
+                    total: (crossOut[cid] || 0) + (crossIn[cid] || 0),
+                    outTickers: crossOutTickers[cid] || [],
+                    inTickers: crossInTickers[cid] || []
                 };
             }).sort(function(a, b) { return b.total - a.total; });
 
@@ -8677,14 +8685,17 @@ function setupDetailPanel(companies) {
             html += '<span class="cb-stat">Cross-community: ' + crossTotal + ' edges to ' + bridges.length + ' cluster' + (bridges.length !== 1 ? 's' : '') + ' (' + crossPct.toFixed(0) + '% of total)</span>';
             html += '</div>';
 
-            // Bridge bars (up to 6)
+            // Bridge bars (up to 6) — expandable to show specific peer tickers
             if (bridges.length > 0) {
                 var maxBridge = bridges[0].total;
                 var showBridges = bridges.slice(0, 6);
                 html += '<div class="cb-bridges">';
-                showBridges.forEach(function(b) {
+                showBridges.forEach(function(b, bi) {
                     var pct = maxBridge > 0 ? (b.total / maxBridge * 100) : 0;
-                    html += '<div class="cb-bridge-row" title="' + b.outEdges + ' outbound + ' + b.inEdges + ' inbound edges to ' + b.label + '">';
+                    var hasTickers = b.outTickers.length > 0 || b.inTickers.length > 0;
+                    html += '<div class="cb-bridge-wrap" data-cb-idx="' + bi + '">';
+                    html += '<div class="cb-bridge-row' + (hasTickers ? ' cb-bridge-expandable' : '') + '" title="' + b.outEdges + ' outbound + ' + b.inEdges + ' inbound edges to ' + b.label + (hasTickers ? ' — click to see companies' : '') + '">';
+                    if (hasTickers) html += '<span class="cb-bridge-chevron">›</span>';
                     html += '<span class="cb-bridge-dot" style="background:' + b.color + '"></span>';
                     html += '<span class="cb-bridge-label">' + b.label + '</span>';
                     html += '<div class="cb-bridge-bar-wrap">';
@@ -8692,6 +8703,38 @@ function setupDetailPanel(companies) {
                     html += '</div>';
                     html += '<span class="cb-bridge-count">' + b.total + '</span>';
                     html += '<span class="cb-bridge-dir">' + b.outEdges + '→ ' + b.inEdges + '←</span>';
+                    html += '</div>';
+                    // Expandable detail showing specific peer tickers
+                    if (hasTickers) {
+                        html += '<div class="cb-bridge-detail">';
+                        if (b.outTickers.length > 0) {
+                            html += '<div class="cb-detail-group">';
+                            html += '<span class="cb-detail-label">Benchmarks →</span>';
+                            html += '<div class="cb-detail-tags">';
+                            b.outTickers.forEach(function(t) {
+                                var tName = '';
+                                for (var ci = 0; ci < companies.length; ci++) {
+                                    if (companies[ci].ticker === t) { tName = companies[ci].company_name; break; }
+                                }
+                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + ' — click to view, shift+click for network">' + t + '</span>';
+                            });
+                            html += '</div></div>';
+                        }
+                        if (b.inTickers.length > 0) {
+                            html += '<div class="cb-detail-group">';
+                            html += '<span class="cb-detail-label">Selected by ←</span>';
+                            html += '<div class="cb-detail-tags">';
+                            b.inTickers.forEach(function(t) {
+                                var tName = '';
+                                for (var ci = 0; ci < companies.length; ci++) {
+                                    if (companies[ci].ticker === t) { tName = companies[ci].company_name; break; }
+                                }
+                                html += '<span class="cb-detail-tag" data-ticker="' + t + '" tabindex="0" role="button" title="' + (tName || t) + ' — click to view, shift+click for network">' + t + '</span>';
+                            });
+                            html += '</div></div>';
+                        }
+                        html += '</div>';
+                    }
                     html += '</div>';
                 });
                 if (bridges.length > 6) {
@@ -9071,6 +9114,62 @@ function setupDetailPanel(companies) {
                 e.stopPropagation();
                 var rpTicker = el.getAttribute('data-ticker');
                 if (rpTicker && window.findCompanyInTable) window.findCompanyInTable(rpTicker);
+            });
+        });
+
+        // Wire up expandable community bridge rows — click to show/hide specific peer tickers
+        detailRow.querySelectorAll('.cb-bridge-expandable').forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var wrap = row.closest('.cb-bridge-wrap');
+                if (!wrap) return;
+                var detail = wrap.querySelector('.cb-bridge-detail');
+                if (!detail) return;
+                var isOpen = wrap.classList.contains('cb-bridge-open');
+                // Close any other open bridge rows first
+                var allWraps = detailRow.querySelectorAll('.cb-bridge-wrap.cb-bridge-open');
+                allWraps.forEach(function(w) {
+                    if (w !== wrap) {
+                        w.classList.remove('cb-bridge-open');
+                        var d = w.querySelector('.cb-bridge-detail');
+                        if (d) d.style.maxHeight = '0';
+                    }
+                });
+                if (isOpen) {
+                    wrap.classList.remove('cb-bridge-open');
+                    detail.style.maxHeight = '0';
+                } else {
+                    wrap.classList.add('cb-bridge-open');
+                    detail.style.maxHeight = detail.scrollHeight + 'px';
+                    announce('Showing ' + (detail.querySelectorAll('.cb-detail-tag').length) + ' peer companies in this bridge');
+                }
+            });
+        });
+
+        // Wire up bridge detail ticker tag clicks — click to find in table, shift+click for network
+        detailRow.querySelectorAll('.cb-detail-tag[data-ticker]').forEach(function(tag) {
+            tag.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var t = tag.getAttribute('data-ticker');
+                if (!t) return;
+                if (e.shiftKey) {
+                    if (window.focusNetworkNode) window.focusNetworkNode(t);
+                } else {
+                    if (window.findCompanyInTable) window.findCompanyInTable(t);
+                }
+            });
+            tag.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var t = tag.getAttribute('data-ticker');
+                    if (!t) return;
+                    if (e.shiftKey) {
+                        if (window.focusNetworkNode) window.focusNetworkNode(t);
+                    } else {
+                        if (window.findCompanyInTable) window.findCompanyInTable(t);
+                    }
+                }
             });
         });
 

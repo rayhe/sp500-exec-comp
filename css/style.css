@@ -9445,6 +9445,110 @@ footer li::before {
 [data-theme="light"] .cb-bridge-dir { color: #9ca3af; }
 [data-theme="light"] .cb-bridge-more { color: #9ca3af; }
 
+/* Expandable bridge row wrapper */
+.cb-bridge-wrap {
+    display: flex;
+    flex-direction: column;
+}
+.cb-bridge-expandable {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: background 0.15s;
+}
+.cb-bridge-expandable:hover {
+    background: rgba(167,139,250,0.08);
+}
+.cb-bridge-chevron {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: #6b7280;
+    width: 10px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    transform: rotate(0deg);
+}
+.cb-bridge-open .cb-bridge-chevron {
+    transform: rotate(90deg);
+    color: #a78bfa;
+}
+.cb-bridge-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    margin-left: 16px;
+    padding-left: 10px;
+    border-left: 1.5px solid rgba(167,139,250,0.2);
+}
+.cb-bridge-open .cb-bridge-detail {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+.cb-detail-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 4px;
+    margin-bottom: 4px;
+}
+.cb-detail-group:last-child {
+    margin-bottom: 0;
+}
+.cb-detail-label {
+    font-size: 0.6rem;
+    color: #a1a1aa;
+    font-weight: 600;
+    min-width: 78px;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+}
+.cb-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+.cb-detail-tag {
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: #d4d4d8;
+    background: rgba(167,139,250,0.1);
+    border: 0.5px solid rgba(167,139,250,0.25);
+    padding: 1px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    letter-spacing: 0.3px;
+}
+.cb-detail-tag:hover {
+    background: rgba(167,139,250,0.22);
+    border-color: rgba(167,139,250,0.5);
+    color: #e4e4e7;
+}
+.cb-detail-tag:focus-visible {
+    outline: 1.5px solid #a78bfa;
+    outline-offset: 1px;
+}
+
+/* Light theme — expandable bridge */
+[data-theme="light"] .cb-bridge-expandable:hover {
+    background: rgba(124,58,237,0.06);
+}
+[data-theme="light"] .cb-bridge-chevron { color: #9ca3af; }
+[data-theme="light"] .cb-bridge-open .cb-bridge-chevron { color: #7c3aed; }
+[data-theme="light"] .cb-bridge-detail { border-left-color: rgba(124,58,237,0.15); }
+[data-theme="light"] .cb-detail-label { color: #6b7280; }
+[data-theme="light"] .cb-detail-tag {
+    color: #374151;
+    background: rgba(124,58,237,0.07);
+    border-color: rgba(124,58,237,0.18);
+}
+[data-theme="light"] .cb-detail-tag:hover {
+    background: rgba(124,58,237,0.14);
+    border-color: rgba(124,58,237,0.35);
+    color: #1a1a2e;
+}
+
 /* === Compensation Twins (detail panel — similar pay profiles) === */
 .comp-twins-section {
     margin-top: 16px;
