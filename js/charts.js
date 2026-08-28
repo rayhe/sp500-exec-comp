@@ -3022,7 +3022,8 @@ function drawScatterChart(companies) {
         if (hasSectorOverlay) {
             scatterDesc.textContent = sectorName + ' companies highlighted against the S&P 500. Sector median crosshairs shown in color. Dot size = CEO pay.';
         } else if (_scatterCommunityMode) {
-            scatterDesc.textContent = 'Each dot is an S&P 500 company. X = ' + xMetric.label + ', Y = ' + yMetric.label + '. Dot size = CEO pay. Colored by Louvain peer community.';
+            var _commDescExtra = (window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0 && window._activeCommunityFilter) ? ' Community median crosshairs shown.' : '';
+            scatterDesc.textContent = 'Each dot is an S&P 500 company. X = ' + xMetric.label + ', Y = ' + yMetric.label + '. Dot size = CEO pay. Colored by Louvain peer community.' + _commDescExtra;
         } else {
             scatterDesc.textContent = 'Each dot is an S&P 500 company. X = ' + xMetric.label + ', Y = ' + yMetric.label + '. Dot size = CEO pay. Hover for details, click to view in table. Colored by sector.';
         }
@@ -3201,14 +3202,76 @@ function drawScatterChart(companies) {
         }
     }
 
+    // Community median crosshairs (when a community filter is active from legend click)
+    var _commCrosshairMedX = null, _commCrosshairMedY = null, _commCrosshairColor = null;
+    if (window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0 && window._activeCommunityFilter) {
+        var _commFilter = window._activeCommunityFilter;
+        // Get community color from communityStats
+        _commCrosshairColor = '#a78bfa'; // fallback purple
+        if (window._communityStats) {
+            var _commStat = window._communityStats.find(function(cs) { return cs.id === _commFilter.id; });
+            if (_commStat) _commCrosshairColor = _commStat.color;
+        }
+        // Compute community medians for current X and Y metrics
+        var _commPts = pts.filter(function(d) { return window._activeCommunityScatterTickers.has(d.ticker); });
+        _commCrosshairMedX = d3.median(_commPts, function(d) { return xMetric.get(d); });
+        _commCrosshairMedY = d3.median(_commPts, function(d) { return yMetric.get(d); });
+
+        var _commXInRange = _commCrosshairMedX != null && isFinite(x(_commCrosshairMedX));
+        var _commYInRange = _commCrosshairMedY != null && isFinite(yScale(_commCrosshairMedY));
+        var _shortCommLabel = _commFilter.label.length > 15 ? _commFilter.label.substring(0, 14) + '\u2026' : _commFilter.label;
+
+        if (_commXInRange) {
+            svg.append('line')
+                .attr('x1', x(_commCrosshairMedX)).attr('x2', x(_commCrosshairMedX))
+                .attr('y1', 0).attr('y2', h)
+                .attr('stroke', _commCrosshairColor).attr('stroke-width', 1.5)
+                .attr('stroke-dasharray', '8,4').attr('opacity', 0.75);
+            svg.append('text')
+                .attr('x', x(_commCrosshairMedX) + 4).attr('y', hasSectorOverlay ? 36 : 12)
+                .attr('fill', _commCrosshairColor).attr('font-size', '10px').attr('font-weight', '600')
+                .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                .text(_shortCommLabel + ' ' + xMetric.fmt(_commCrosshairMedX));
+        }
+
+        if (_commYInRange) {
+            svg.append('line')
+                .attr('x1', 0).attr('x2', w)
+                .attr('y1', yScale(_commCrosshairMedY)).attr('y2', yScale(_commCrosshairMedY))
+                .attr('stroke', _commCrosshairColor).attr('stroke-width', 1.5)
+                .attr('stroke-dasharray', '8,4').attr('opacity', 0.75);
+            svg.append('text')
+                .attr('x', w - 4).attr('y', yScale(_commCrosshairMedY) + (hasSectorOverlay ? 26 : 14))
+                .attr('text-anchor', 'end')
+                .attr('fill', _commCrosshairColor).attr('font-size', '10px').attr('font-weight', '600')
+                .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                .text(_shortCommLabel + ' ' + yMetric.fmt(_commCrosshairMedY));
+        }
+
+        // Crosshair intersection marker
+        if (_commXInRange && _commYInRange) {
+            svg.append('circle')
+                .attr('cx', x(_commCrosshairMedX)).attr('cy', yScale(_commCrosshairMedY))
+                .attr('r', 5)
+                .attr('fill', 'none').attr('stroke', _commCrosshairColor).attr('stroke-width', 2)
+                .attr('opacity', 0.85);
+            svg.append('circle')
+                .attr('cx', x(_commCrosshairMedX)).attr('cy', yScale(_commCrosshairMedY))
+                .attr('r', 2)
+                .attr('fill', _commCrosshairColor).attr('opacity', 0.85);
+        }
+    }
+
     // Quadrant statistics — count and percentage of companies in each quadrant
     // relative to the median crosshairs, for ALL axis combinations
     if (medXInRange && medYInRange) {
-        var qDataSet = hasSectorOverlay ? sectorPts : pts;
+        // Use community filter tickers for quadrant dataset when community filter is active
+        var _hasCommFilter = _commCrosshairMedX != null && _commCrosshairMedY != null;
+        var qDataSet = hasSectorOverlay ? sectorPts : (_hasCommFilter ? pts.filter(function(d) { return window._activeCommunityScatterTickers.has(d.ticker); }) : pts);
         var qTotal = qDataSet.length;
 
-        // Count companies in each quadrant (relative to median)
-        var qRef = hasSectorOverlay ? { x: secMedX, y: secMedY } : { x: medX, y: medY };
+        // Count companies in each quadrant (relative to the most specific median reference)
+        var qRef = hasSectorOverlay ? { x: secMedX, y: secMedY } : (_hasCommFilter ? { x: _commCrosshairMedX, y: _commCrosshairMedY } : { x: medX, y: medY });
         var qTL = 0, qTR = 0, qBL = 0, qBR = 0; // Top-left, Top-right, Bottom-left, Bottom-right
         qDataSet.forEach(function(c) {
             var xv = xMetric.get(c);
@@ -3228,9 +3291,9 @@ function drawScatterChart(companies) {
 
         // Position quadrant count labels in each corner with count and percentage
         var qMutedColor = typeof getThemeMutedColor === 'function' ? getThemeMutedColor() : '#6b7280';
-        var qLabelColor = hasSectorOverlay ? sectorColor : qMutedColor;
-        var qCountOpacity = hasSectorOverlay ? 0.55 : 0.45;
-        var qLabelOpacity = hasSectorOverlay ? 0.35 : 0.3;
+        var qLabelColor = hasSectorOverlay ? sectorColor : (_hasCommFilter && _commCrosshairColor ? _commCrosshairColor : qMutedColor);
+        var qCountOpacity = (hasSectorOverlay || _hasCommFilter) ? 0.55 : 0.45;
+        var qLabelOpacity = (hasSectorOverlay || _hasCommFilter) ? 0.35 : 0.3;
 
         var quadrants = [
             { count: qTL, pct: qPct(qTL), label: 'Low ' + xShort + ', High ' + yShort, x: 8, y: 14, countY: 26, anchor: 'start' },
