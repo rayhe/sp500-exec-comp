@@ -9377,6 +9377,26 @@ footer li::before {
     gap: 6px;
     font-size: 0.62rem;
 }
+.cb-pos-row-clickable {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.cb-pos-row-clickable:hover {
+    background: rgba(139,92,246,0.08);
+    box-shadow: inset 0 0 0 0.5px rgba(139,92,246,0.25);
+}
+.cb-pos-row-clickable:focus-visible {
+    outline: 1.5px solid rgba(139,92,246,0.6);
+    outline-offset: 1px;
+    background: rgba(139,92,246,0.10);
+}
+.cb-pos-row-clicked {
+    background: rgba(139,92,246,0.15) !important;
+    box-shadow: inset 0 0 0 0.5px rgba(139,92,246,0.5) !important;
+}
 .cb-pos-label {
     color: #a1a1aa;
     font-weight: 500;

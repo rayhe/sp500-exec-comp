@@ -1483,6 +1483,7 @@ function sortTableByKey(key, dir) {
     window._activePeerDistFilter = null; // null=off, { tickers: [...], label: "..." }
     window._activeQuartileFilter = null; // null=off, { tickers: [...], label: "...", communityId: n }
     window._activeCommunityFilter = null; // null=off, { tickers: [...], label: "...", id: n }
+    window._activePositionFilter = null; // null=off, { tickers: [...], label: "...", communityId, metric }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -2335,6 +2336,14 @@ function populateInsights(comp, trends, sectorFilter) {
             if (_qfcReset) _qfcReset.remove();
             document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
                 el.classList.remove('cm-bp-zone-clicked');
+            });
+        }
+        if (window._activePositionFilter) {
+            window._activePositionFilter = null;
+            var _pfcReset = document.getElementById('position-filter-chip');
+            if (_pfcReset) _pfcReset.remove();
+            document.querySelectorAll('.cb-pos-row-clicked').forEach(function(el) {
+                el.classList.remove('cb-pos-row-clicked');
             });
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
@@ -5671,6 +5680,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
     if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
     if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
+    if (window._activePositionFilter) { filterDims++; filterParts.push(window._activePositionFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -6162,6 +6172,14 @@ function renderTable(companies, options) {
         var _qfTickers = window._activeQuartileFilter.tickers;
         filtered = filtered.filter(function(c) {
             return _qfTickers.indexOf(c.ticker) >= 0;
+        });
+    }
+
+    // Position filter: filter to companies above/below a community rank position
+    if (window._activePositionFilter) {
+        var _pfTickers = window._activePositionFilter.tickers;
+        filtered = filtered.filter(function(c) {
+            return _pfTickers.indexOf(c.ticker) >= 0;
         });
     }
 
@@ -8702,27 +8720,32 @@ function setupDetailPanel(companies) {
                 if (members.length < 2) return;
 
                 // Compute ranks for each metric (1 = highest pay, 1 = highest gov, 1 = highest GER)
-                function computeRank(arr, key, desc) {
+                function computeRank(arr, key, desc, outSorted) {
                     var sorted = arr.filter(function(m) { return m[key] != null && m[key] > 0; })
                         .sort(function(a, b) { return desc ? b[key] - a[key] : a[key] - b[key]; });
+                    if (outSorted) outSorted.list = sorted;
                     var rank = -1;
                     for (var i = 0; i < sorted.length; i++) {
                         if (sorted[i].ticker === ticker) { rank = i + 1; break; }
                     }
-                    return { rank: rank, total: sorted.length };
+                    return { rank: rank, total: sorted.length, sorted: sorted };
                 }
 
-                var payRank = computeRank(members, 'pay', true);  // highest pay = rank 1
-                var govRank = computeRank(members, 'gov', true);  // highest gov = rank 1
-                var gerRank = computeRank(members, 'ger', true);  // highest GER = rank 1
+                var paySortedHolder = {};
+                var govSortedHolder = {};
+                var gerSortedHolder = {};
+
+                var payRank = computeRank(members, 'pay', true, paySortedHolder);  // highest pay = rank 1
+                var govRank = computeRank(members, 'gov', true, govSortedHolder);  // highest gov = rank 1
+                var gerRank = computeRank(members, 'ger', true, gerSortedHolder);  // highest GER = rank 1
 
                 // Only show if we have at least pay rank
                 if (payRank.rank < 0) return;
 
                 html += '<div class="cb-position">';
 
-                // Helper to build a single rank bar
-                function rankBar(label, rank, total, color, inverted) {
+                // Helper to build a single rank bar — now clickable to filter
+                function rankBar(label, metricKey, rank, total, color, inverted, sortedList) {
                     if (rank < 0 || total < 2) return '';
                     var pct = ((rank - 1) / (total - 1)) * 100; // 0% = rank 1, 100% = last
                     // Color coding: for pay, top = warm/red; for gov, top = green; for GER, top = red
@@ -8734,8 +8757,27 @@ function setupDetailPanel(companies) {
                         // Lower rank (top) is contextual → purple accent
                         dotColor = color;
                     }
+                    // Build above-tickers list (companies ranked better than current)
+                    var aboveTickers = [];
+                    var belowTickers = [];
+                    if (sortedList && sortedList.length) {
+                        for (var si = 0; si < sortedList.length; si++) {
+                            if (si < rank - 1) aboveTickers.push(sortedList[si].ticker);
+                            else if (si > rank - 1) belowTickers.push(sortedList[si].ticker);
+                        }
+                    }
+                    var aboveStr = aboveTickers.join(',');
+                    var belowStr = belowTickers.join(',');
+                    var communityLabel = (myStat.label || ('Cluster ' + myStat.id)).replace(/"/g, '&quot;');
+                    var isActivePos = window._activePositionFilter && window._activePositionFilter.communityId === myStat.id && window._activePositionFilter.metric === metricKey && window._activePositionFilter.rank === rank;
                     var r = '';
-                    r += '<div class="cb-pos-row" title="' + label + ': #' + rank + ' of ' + total + ' in community">';
+                    r += '<div class="cb-pos-row cb-pos-row-clickable' + (isActivePos ? ' cb-pos-row-clicked' : '') + '"';
+                    r += ' data-metric="' + metricKey + '" data-rank="' + rank + '" data-total="' + total + '"';
+                    r += ' data-community-id="' + myStat.id + '" data-community-label="' + communityLabel + '"';
+                    r += ' data-above="' + aboveStr + '" data-below="' + belowStr + '"';
+                    r += ' tabindex="0" role="button"';
+                    r += ' title="' + label + ': #' + rank + ' of ' + total + ' in ' + communityLabel + ' — click to filter to ' + aboveTickers.length + ' above, shift+click for ' + belowTickers.length + ' below"';
+                    r += '>';
                     r += '<span class="cb-pos-label">' + label + '</span>';
                     r += '<div class="cb-pos-bar-wrap">';
                     r += '<div class="cb-pos-bar" style="background:' + color + '"></div>';
@@ -8746,9 +8788,9 @@ function setupDetailPanel(companies) {
                     return r;
                 }
 
-                html += rankBar('CEO Pay', payRank.rank, payRank.total, myStat.color, false);
-                if (govRank.rank > 0) html += rankBar('Gov', govRank.rank, govRank.total, '#06d6a0', false);
-                if (gerRank.rank > 0) html += rankBar('GER Risk', gerRank.rank, gerRank.total, '#ef4444', true);
+                html += rankBar('CEO Pay', 'pay', payRank.rank, payRank.total, myStat.color, false, paySortedHolder.list);
+                if (govRank.rank > 0) html += rankBar('Gov', 'gov', govRank.rank, govRank.total, '#06d6a0', false, govSortedHolder.list);
+                if (gerRank.rank > 0) html += rankBar('GER Risk', 'ger', gerRank.rank, gerRank.total, '#ef4444', true, gerSortedHolder.list);
 
                 html += '</div>';
             })();
@@ -9265,6 +9307,129 @@ function setupDetailPanel(companies) {
                     } else {
                         if (window.findCompanyInTable) window.findCompanyInTable(t);
                     }
+                }
+            });
+        });
+
+        // Wire up community position indicator clicks — filter to above/below ranked peers
+        detailRow.querySelectorAll('.cb-pos-row-clickable').forEach(function(posRow) {
+            function handlePosFilter(e) {
+                e.stopPropagation();
+                var metric = posRow.getAttribute('data-metric');
+                var rank = parseInt(posRow.getAttribute('data-rank'), 10);
+                var communityId = parseInt(posRow.getAttribute('data-community-id'), 10);
+                var communityLabel = posRow.getAttribute('data-community-label') || ('Cluster ' + communityId);
+                var aboveStr = posRow.getAttribute('data-above') || '';
+                var belowStr = posRow.getAttribute('data-below') || '';
+                var isShift = e.shiftKey;
+                var tickersStr = isShift ? belowStr : aboveStr;
+                var direction = isShift ? 'below' : 'above';
+
+                // If same filter already active, clear it
+                var wasActive = window._activePositionFilter &&
+                    window._activePositionFilter.communityId === communityId &&
+                    window._activePositionFilter.metric === metric &&
+                    window._activePositionFilter.rank === rank &&
+                    window._activePositionFilter.direction === direction;
+
+                // Clear existing position filter UI
+                var existingChip = document.getElementById('position-filter-chip');
+                if (existingChip) existingChip.remove();
+                detailRow.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
+
+                if (wasActive) {
+                    window._activePositionFilter = null;
+                    if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    announce('Cleared position filter');
+                    return;
+                }
+
+                if (!tickersStr) {
+                    // No peers in that direction — still show empty filter with message
+                    var emptyTickers = [];
+                    var emptyLabel = communityLabel + ' ' + metric + ' #' + rank + ' — no ' + direction;
+                    window._activePositionFilter = { tickers: emptyTickers, label: emptyLabel, communityId: communityId, metric: metric, rank: rank, direction: direction };
+                    // Add chip even for empty so user can clear
+                    var _emptyChip = document.createElement('button');
+                    _emptyChip.className = 'chip active combined-filter-chip';
+                    _emptyChip.id = 'position-filter-chip';
+                    _emptyChip.style.background = 'rgba(139,92,246,0.15)';
+                    _emptyChip.style.borderColor = 'rgba(139,92,246,0.5)';
+                    _emptyChip.textContent = '✕ ' + emptyLabel + ' (0)';
+                    _emptyChip.title = 'Click to clear position filter';
+                    _emptyChip.addEventListener('click', function() {
+                        window._activePositionFilter = null;
+                        _emptyChip.remove();
+                        detailRow.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
+                        if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+                        if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                    });
+                    var tableControls = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
+                    if (tableControls) tableControls.appendChild(_emptyChip);
+                    else {
+                        var _alt = document.getElementById('comp-table-wrapper');
+                        if (_alt) _alt.parentNode.insertBefore(_emptyChip, _alt);
+                    }
+                    if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+                    announce(emptyLabel + ' — no companies in that direction');
+                    return;
+                }
+
+                var tickers = tickersStr.split(',').filter(function(t) { return t; });
+                var metricLabelMap = { pay: 'CEO Pay', gov: 'Gov', ger: 'GER Risk' };
+                var metricShort = metricLabelMap[metric] || metric;
+                var dirLabel = direction === 'above' ? 'above' : 'below';
+                var filterLabel = communityLabel + ' ' + metricShort + ' ' + dirLabel + ' #' + rank + ' (' + tickers.length + ')';
+
+                window._activePositionFilter = {
+                    tickers: tickers,
+                    label: filterLabel,
+                    communityId: communityId,
+                    metric: metric,
+                    rank: rank,
+                    direction: direction
+                };
+
+                posRow.classList.add('cb-pos-row-clicked');
+                if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+
+                // Add dismissible position filter chip to table controls
+                var _oldPfc = document.getElementById('position-filter-chip');
+                if (_oldPfc) _oldPfc.remove();
+                var _pfChip = document.createElement('button');
+                _pfChip.className = 'chip active combined-filter-chip';
+                _pfChip.id = 'position-filter-chip';
+                _pfChip.style.background = 'rgba(139,92,246,0.15)';
+                _pfChip.style.borderColor = 'rgba(139,92,246,0.5)';
+                _pfChip.textContent = '✕ ' + filterLabel;
+                _pfChip.title = 'Click to clear position filter';
+                _pfChip.addEventListener('click', function() {
+                    window._activePositionFilter = null;
+                    _pfChip.remove();
+                    detailRow.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
+                    if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+                });
+
+                var tc = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
+                if (tc) tc.appendChild(_pfChip);
+                else {
+                    var _alt2 = document.getElementById('comp-table-wrapper');
+                    if (_alt2) _alt2.parentNode.insertBefore(_pfChip, _alt2);
+                }
+
+                if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+                // Scroll to table to show filtered results
+                if (typeof scrollToTable === 'function') scrollToTable();
+                announce(filterLabel + ' — filtered to ' + tickers.length + ' companies');
+            }
+
+            posRow.addEventListener('click', handlePosFilter);
+            posRow.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handlePosFilter(e);
                 }
             });
         });

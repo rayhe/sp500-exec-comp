@@ -4674,6 +4674,13 @@ function initNetwork(peerData) {
             if (scEl) scEl.innerHTML = '';
             if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
         }
+        // Clear position filter when community mode is toggled off
+        if (window._activePositionFilter) {
+            window._activePositionFilter = null;
+            var _pfcClean = document.getElementById('position-filter-chip');
+            if (_pfcClean) _pfcClean.remove();
+            if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
+        }
         _removeCommunityFlowMatrix();
     }
 
