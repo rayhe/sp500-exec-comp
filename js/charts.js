@@ -385,6 +385,7 @@ window.highlightSectorBar = function(sectorName) {
 
 /* --- Sector Bar Chart with Distribution Box Plot --- */
 function drawSectorChart(trends, companies) {
+    var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var container = document.getElementById('sector-chart');
     var data = trends.median_pay_by_sector_sp500_fy2024 && trends.median_pay_by_sector_sp500_fy2024.data
         ? trends.median_pay_by_sector_sp500_fy2024.data.filter(function(d) { return d.median_pay; })
