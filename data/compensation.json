@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage. Board independence data for 198/500 companies (173 with full ind+total). Data quality: corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage. Board independence data for 198/500 companies (173 with full ind+total). Data quality: corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years).",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -102,16 +102,13 @@
     "edgar_coverage": 498,
     "total_companies": 500,
     "last_updated": "2026-08-28",
-    "total_neo_records": 6141,
+    "total_neo_records": 6150,
     "title_coverage": 6141,
     "data_quality": {
-      "total_exec_records": 6141,
-      "verified": 5500,
-      "recomputed_totals": 566,
-      "bloated_component": 11,
-      "incomplete_components": 2,
-      "minor_gaps": 48,
-      "verified_pct": 89.6
+      "verified": 5542,
+      "recomputed": 528,
+      "incomplete_components": 0,
+      "bloated_component": 80
     },
     "median_ceo_pay": 16051141,
     "mean_ceo_pay": 21485412.458917834,
@@ -16826,19 +16823,21 @@
           "non_equity_incentive": 1717560,
           "all_other": 91275,
           "total": 30091165,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "President and Chief Executive Officer, Board Director",
+          "_total_source": "verified",
+          "option_awards": 0
         },
         {
           "name": "Andrew Anagnost",
           "year": 2025,
           "salary": 1047969,
-          "bonus": 1047969,
-          "non_equity_incentive": 22484499,
-          "all_other": 1516320,
-          "total": 144058,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "bloated_component"
+          "non_equity_incentive": 1516320,
+          "all_other": 144058,
+          "total": 25192846,
+          "title": "President and Chief Executive Officer, Board Director",
+          "_total_source": "verified",
+          "stock_awards": 22484499,
+          "option_awards": 0
         },
         {
           "name": "Andrew Anagnost",
@@ -16848,8 +16847,9 @@
           "non_equity_incentive": 1511640,
           "all_other": 153256,
           "total": 20649951,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "President and Chief Executive Officer, Board Director",
+          "_total_source": "verified",
+          "option_awards": 0
         },
         {
           "name": "Janesh Moorjani",
@@ -16859,8 +16859,9 @@
           "non_equity_incentive": 644085,
           "all_other": 28193,
           "total": 6939046,
-          "title": "EVP, Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "option_awards": 0
         },
         {
           "name": "Steven M. Blum",
@@ -16870,32 +16871,35 @@
           "non_equity_incentive": 693630,
           "all_other": 92900,
           "total": 10633545,
-          "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Operating Officer",
+          "_total_source": "verified",
+          "option_awards": 0
         },
         {
           "name": "Steven M. Blum",
           "year": 2025,
           "salary": 705364,
-          "bonus": 705364,
-          "non_equity_incentive": 7885185,
-          "all_other": 612360,
-          "total": 9908273,
-          "title": "Executive Vice President and Chief Financial Officer",
+          "non_equity_incentive": 612360,
+          "all_other": 125297,
+          "total": 9328206,
+          "title": "Executive Vice President and Chief Operating Officer",
           "_original_total": 125297,
-          "_total_source": "recomputed"
+          "_total_source": "verified",
+          "stock_awards": 7885185,
+          "option_awards": 0
         },
         {
           "name": "Steven M. Blum",
           "year": 2024,
           "salary": 704005,
-          "bonus": 704005,
-          "non_equity_incentive": 6223689,
-          "all_other": 542640,
-          "total": 8174339,
-          "title": "Executive Vice President and Chief Financial Officer",
+          "non_equity_incentive": 542640,
+          "all_other": 156411,
+          "total": 7626745,
+          "title": "Executive Vice President and Chief Operating Officer",
           "_original_total": 156411,
-          "_total_source": "recomputed"
+          "_total_source": "verified",
+          "stock_awards": 6223689,
+          "option_awards": 0
         },
         {
           "name": "Ruth Ann Keene",
@@ -16905,20 +16909,22 @@
           "non_equity_incentive": 525702,
           "all_other": 69061,
           "total": 5788822,
-          "title": "Executive Vice President and Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Chief Legal Officer",
+          "_total_source": "verified",
+          "option_awards": 0
         },
         {
           "name": "Ruth Ann Keene",
           "year": 2025,
           "salary": 544197,
-          "bonus": 544197,
-          "non_equity_incentive": 4063489,
-          "all_other": 446148,
-          "total": 5598031,
-          "title": "Executive Vice President and Chief Operating Officer",
+          "non_equity_incentive": 446148,
+          "all_other": 103116,
+          "total": 5156950,
+          "title": "Executive Vice President, Chief Legal Officer",
           "_original_total": 103116,
-          "_total_source": "recomputed"
+          "_total_source": "verified",
+          "stock_awards": 4063489,
+          "option_awards": 0
         },
         {
           "name": "Corporate Affairs",
@@ -16965,6 +16971,19 @@
           "title": "Chief Legal Officer and Corporate Secretary",
           "_original_total": 81024,
           "_total_source": "recomputed_implausible_total"
+        },
+        {
+          "name": "Janesh Moorjani",
+          "year": 2025,
+          "salary": 64895,
+          "stock_awards": 10218083,
+          "option_awards": 0,
+          "non_equity_incentive": 71662,
+          "all_other": 1783,
+          "total": 10856423,
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 500000
         }
       ],
       "filing_date": "2026-05-06",
@@ -53773,8 +53792,8 @@
     {
       "ticker": "SWK",
       "company_name": "Stanley Black & Decker Inc",
-      "ceo_name": "Christopher J. Nelson",
-      "total_compensation": 7212785,
+      "ceo_name": "Donald Allan, Jr.",
+      "total_compensation": 14485454,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 76984,
@@ -53787,163 +53806,223 @@
           "title": "President and CEO",
           "year": 2025,
           "salary": 997462,
-          "bonus": 0,
           "stock_awards": 3964699,
           "option_awards": 1321569,
           "non_equity_incentive": 929055,
-          "total": 7212785,
-          "_total_source": "verified"
+          "total": 7656246,
+          "_total_source": "verified",
+          "all_other": 443461
         },
         {
           "name": "Christopher J. Nelson",
           "title": "President and CEO",
           "year": 2024,
           "salary": 850000,
-          "bonus": 0,
           "stock_awards": 2850054,
           "option_awards": 950006,
           "non_equity_incentive": 1592220,
-          "total": 6242280,
-          "_total_source": "verified"
+          "total": 6713903,
+          "_total_source": "verified",
+          "all_other": 471623
         },
         {
           "name": "Christopher J. Nelson",
           "title": "President and CEO",
           "year": 2023,
           "salary": 467500,
-          "bonus": 0,
           "stock_awards": 8199989,
           "option_awards": 900009,
           "non_equity_incentive": 1351500,
-          "total": 10918998,
-          "_total_source": "verified"
+          "total": 11003818,
+          "_total_source": "verified",
+          "all_other": 84820
         },
         {
           "name": "Donald Allan, Jr.",
-          "title": "Executive President and CEO",
+          "title": "Executive Chair; Former President and CEO",
           "year": 2025,
           "salary": 1315929,
-          "bonus": 0,
           "stock_awards": 8250027,
           "option_awards": 2749993,
           "non_equity_incentive": 1469498,
-          "total": 13785447,
-          "_total_source": "verified"
+          "total": 14485454,
+          "_total_source": "verified",
+          "all_other": 700007
         },
         {
           "name": "Donald Allan, Jr.",
-          "title": "Executive President and CEO",
+          "title": "Executive Chair; Former President and CEO",
           "year": 2024,
           "salary": 1350000,
-          "bonus": 0,
           "stock_awards": 7781214,
           "option_awards": 2593756,
           "non_equity_incentive": 3632580,
-          "total": 15357550,
-          "_total_source": "verified"
+          "total": 16000281,
+          "_total_source": "verified",
+          "all_other": 642731
         },
         {
           "name": "Donald Allan, Jr.",
-          "title": "Executive President and CEO",
+          "title": "Executive Chair; Former President and CEO",
           "year": 2023,
           "salary": 1250000,
-          "bonus": 0,
           "stock_awards": 6937461,
           "option_awards": 2312491,
           "non_equity_incentive": 3071250,
-          "total": 13571202,
-          "_total_source": "verified"
+          "total": 13877644,
+          "_total_source": "verified",
+          "all_other": 306442
         },
         {
           "name": "Patrick D. Hallinan",
           "title": "Executive Vice President, Chief Financial Officer & Chief Administrative Officer",
           "year": 2025,
           "salary": 837663,
-          "bonus": 0,
           "stock_awards": 2737448,
           "option_awards": 912499,
           "non_equity_incentive": 578400,
-          "total": 5066010,
-          "_total_source": "verified"
+          "total": 5411591,
+          "_total_source": "verified",
+          "all_other": 345581
         },
         {
           "name": "Patrick D. Hallinan",
           "title": "Executive Vice President, Chief Financial Officer & Chief Administrative Officer",
           "year": 2024,
           "salary": 800000,
-          "bonus": 0,
           "stock_awards": 2868669,
           "option_awards": 956243,
           "non_equity_incentive": 1388800,
-          "total": 6013712,
-          "_total_source": "verified"
+          "total": 6452958,
+          "_total_source": "verified",
+          "all_other": 439246
         },
         {
           "name": "Patrick D. Hallinan",
           "title": "Executive Vice President, Chief Financial Officer & Chief Administrative Officer",
           "year": 2023,
           "salary": 585641,
-          "bonus": 350000,
           "stock_awards": 5387467,
           "option_awards": 912506,
           "non_equity_incentive": 1310400,
-          "total": 8546014,
-          "_total_source": "verified"
+          "total": 8707170,
+          "_total_source": "verified",
+          "all_other": 161156
         },
         {
           "name": "William D. Beck",
           "title": "President, Tools & Outdoor",
           "year": 2025,
           "salary": 736997,
-          "bonus": 0,
           "stock_awards": 1199945,
           "option_awards": 399996,
           "non_equity_incentive": 385144,
-          "total": 2722082,
-          "_total_source": "verified"
+          "total": 2830339,
+          "_total_source": "verified",
+          "all_other": 108257
         },
         {
           "name": "Agustin Lopez Diaz",
           "title": "Senior Vice President, Chief Supply Chain Officer",
           "year": 2025,
           "salary": 41073,
-          "bonus": 0,
           "stock_awards": 4499814,
           "option_awards": 0,
           "non_equity_incentive": 38409,
-          "total": 109315,
-          "_total_source": "bloated_component"
+          "total": 4688611,
+          "_total_source": "verified",
+          "all_other": 109315
         },
         {
           "name": "Deborah K. Wintner",
           "title": "Senior Vice President and Chief Human Resources Officer",
           "year": 2025,
           "salary": 619751,
-          "bonus": 0,
           "stock_awards": 825055,
           "option_awards": 274994,
           "non_equity_incentive": 368730,
-          "total": 2088530,
+          "total": 2380800,
+          "_total_source": "verified",
+          "all_other": 292270
+        },
+        {
+          "name": "Tamer K. Abuaita",
+          "title": "Former Global Chief Supply Chain Officer and President, Industrial",
+          "year": 2025,
+          "salary": 500000,
+          "stock_awards": 1687530,
+          "option_awards": 562509,
+          "non_equity_incentive": 180750,
+          "total": 3096849,
+          "_total_source": "verified",
+          "all_other": 166060
+        },
+        {
+          "name": "Tamer K. Abuaita",
+          "year": 2024,
+          "salary": 695000,
+          "stock_awards": 1275019,
+          "option_awards": 425008,
+          "non_equity_incentive": 1141637,
+          "all_other": 108720,
+          "total": 3645384,
+          "title": "Former Global Chief Supply Chain Officer and President, Industrial",
           "_total_source": "verified"
         },
         {
           "name": "Tamer K. Abuaita",
-          "title": "Chief Supply Chain Officer and, President, Industrial",
+          "year": 2023,
+          "salary": 602500,
+          "stock_awards": 2071058,
+          "option_awards": 456011,
+          "non_equity_incentive": 856265,
+          "all_other": 76245,
+          "total": 4062079,
+          "title": "Former Global Chief Supply Chain Officer and President, Industrial",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Janet M. Link",
           "year": 2025,
-          "salary": 500000,
-          "bonus": 0,
+          "salary": 703000,
           "stock_awards": 1687530,
           "option_awards": 562509,
-          "non_equity_incentive": 180750,
-          "total": 2930789,
+          "non_equity_incentive": 0,
+          "all_other": 325224,
+          "total": 3278263,
+          "title": "Former Senior Vice President, General Counsel and Secretary",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Janet M. Link",
+          "year": 2024,
+          "salary": 732500,
+          "stock_awards": 1574945,
+          "option_awards": 524998,
+          "non_equity_incentive": 1080877,
+          "all_other": 157332,
+          "total": 4070652,
+          "title": "Former Senior Vice President, General Counsel and Secretary",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Janet M. Link",
+          "year": 2023,
+          "salary": 701667,
+          "stock_awards": 1350014,
+          "option_awards": 450011,
+          "non_equity_incentive": 872235,
+          "all_other": 97299,
+          "total": 3471226,
+          "title": "Former Senior Vice President, General Counsel and Secretary",
           "_total_source": "verified"
         }
       ],
       "cik": "93556",
       "filing_date": "2026-03-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/93556/000114036126008170/ny20055502x771_def14a.htm",
-      "total_neo_compensation": 33914958,
-      "neo_count": 7,
+      "total_neo_compensation": 43828153,
+      "neo_count": 8,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -64981,7 +65060,7 @@
       "ticker": "AMT",
       "company_name": "American Tower Corp",
       "ceo_name": "Steven O. Vondran",
-      "total_compensation": 12528748,
+      "total_compensation": 14854505,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 85726,
@@ -64997,14 +65076,12 @@
           "name": "Steven O. Vondran",
           "title": "President and CEO",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 1000000,
+          "salary": 1000000,
+          "stock_awards": 11528748,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 11528748,
-          "total": 12528748,
+          "non_equity_incentive": 2280000,
+          "all_other": 45757,
+          "total": 14854505,
           "_total_source": "verified"
         },
         {
@@ -65012,41 +65089,35 @@
           "title": "President and CEO",
           "year": 2024,
           "salary": 961268,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 10063667,
           "option_awards": 0,
-          "non_equity_incentive": 10063667,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 2360000,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 2360000,
+          "all_other": 42009,
+          "total": 13426944,
+          "_total_source": "verified"
         },
         {
           "name": "Steven O. Vondran",
           "title": "President and CEO",
           "year": 2023,
           "salary": 640341,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 5000180,
           "option_awards": 0,
-          "non_equity_incentive": 5000180,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 1224652,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 1224652,
+          "all_other": 33457,
+          "total": 6898630,
+          "_total_source": "verified"
         },
         {
           "name": "Rodney M. Smith",
           "title": "Executive Vice President, Chief Financial Officer and Treasurer",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 660000,
+          "salary": 660000,
+          "stock_awards": 4685375,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 4685375,
-          "total": 5345375,
+          "non_equity_incentive": 940500,
+          "all_other": 46786,
+          "total": 6332661,
           "_total_source": "verified"
         },
         {
@@ -65054,41 +65125,35 @@
           "title": "Executive Vice President, Chief Financial Officer and Treasurer",
           "year": 2024,
           "salary": 660000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 4524775,
           "option_awards": 0,
-          "non_equity_incentive": 4524775,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 973500,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 973500,
+          "all_other": 40628,
+          "total": 6198903,
+          "_total_source": "verified"
         },
         {
           "name": "Rodney M. Smith",
           "title": "Executive Vice President, Chief Financial Officer and Treasurer",
           "year": 2023,
           "salary": 640000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 4350245,
           "option_awards": 0,
-          "non_equity_incentive": 4350245,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 1224000,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 1224000,
+          "all_other": 39378,
+          "total": 6253623,
+          "_total_source": "verified"
         },
         {
           "name": "Olivier Puech",
           "title": "Executive Vice President and President, International",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 640341,
+          "salary": 640341,
+          "stock_awards": 4685375,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 4685375,
-          "total": 5325716,
+          "non_equity_incentive": 912486,
+          "all_other": 256200,
+          "total": 6494402,
           "_total_source": "verified"
         },
         {
@@ -65096,69 +65161,59 @@
           "title": "Executive Vice President and President, International",
           "year": 2024,
           "salary": 640341,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 5027412,
           "option_awards": 0,
-          "non_equity_incentive": 5027412,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 944503,
-          "_total_source": "bloated_component"
+          "non_equity_incentive": 944503,
+          "all_other": 34948,
+          "total": 6647204,
+          "_total_source": "verified"
         },
         {
           "name": "Olivier Puech",
           "title": "Executive Vice President and President, International",
           "year": 2023,
           "salary": 640341,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 5000180,
           "option_awards": 0,
-          "non_equity_incentive": 5000180,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 1224652,
-          "_total_source": "component_mismatch"
-        },
-        {
-          "name": "Ruth T. Dowling",
-          "title": "Chief Administrative Officer, General Counsel and Secretary",
-          "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 620000,
-          "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 3332110,
-          "total": 3952110,
+          "non_equity_incentive": 1224652,
+          "all_other": 34300,
+          "total": 6899473,
           "_total_source": "verified"
         },
         {
           "name": "Ruth T. Dowling",
-          "title": "Chief Administrative Officer, General Counsel and Secretary",
+          "title": "Executive Vice President, Chief Administrative Officer, General Counsel and Secretary",
+          "year": 2025,
+          "salary": 620000,
+          "stock_awards": 3332110,
+          "option_awards": 0,
+          "non_equity_incentive": 883500,
+          "all_other": 44466,
+          "total": 4880076,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Ruth T. Dowling",
+          "title": "Executive Vice President, Chief Administrative Officer, General Counsel and Secretary",
           "year": 2024,
           "salary": 620000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 3016653,
           "option_awards": 0,
-          "non_equity_incentive": 3016653,
-          "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 914500,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 914500,
+          "all_other": 33628,
+          "total": 4584781,
+          "_total_source": "verified"
         },
         {
           "name": "Eugene M. Noel",
           "title": "Executive Vice President and Chief Operating Officer",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 628269,
+          "salary": 628269,
+          "stock_awards": 3123559,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 3123559,
-          "total": 3751828,
+          "non_equity_incentive": 897750,
+          "all_other": 55250,
+          "total": 4704828,
           "_total_source": "verified"
         }
       ],
@@ -65168,7 +65223,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 30903777,
+      "total_neo_compensation": 37266472,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.99,
@@ -66070,7 +66125,7 @@
       "ticker": "OKE",
       "company_name": "ONEOK Inc",
       "ceo_name": "Pierce H. Norton II",
-      "total_compensation": 1578000,
+      "total_compensation": 12003335,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 158449,
@@ -66087,11 +66142,9 @@
           "title": "President and Chief Executive Officer",
           "year": 2025,
           "salary": 1000000,
-          "bonus": 0,
           "stock_awards": 8771279,
           "option_awards": 0,
           "non_equity_incentive": 1578000,
-          "pension_nqdc": 0,
           "all_other": 654056,
           "total": 12003335,
           "_total_source": "verified"
@@ -66101,13 +66154,11 @@
           "title": "President and Chief Executive Officer",
           "year": 2024,
           "salary": 925000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 9081124,
           "option_awards": 0,
-          "non_equity_incentive": 9081124,
-          "pension_nqdc": 0,
-          "all_other": 2800700,
-          "total": 12806824,
+          "non_equity_incentive": 2800700,
+          "all_other": 430509,
+          "total": 13237333,
           "_total_source": "verified"
         },
         {
@@ -66115,13 +66166,11 @@
           "title": "President and Chief Executive Officer",
           "year": 2023,
           "salary": 835000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 6274485,
           "option_awards": 0,
-          "non_equity_incentive": 6274485,
-          "pension_nqdc": 0,
-          "all_other": 2101100,
-          "total": 9210585,
+          "non_equity_incentive": 2101100,
+          "all_other": 336989,
+          "total": 9547574,
           "_total_source": "verified"
         },
         {
@@ -66170,42 +66219,38 @@
           "name": "Randy N Lentz",
           "title": "Executive Vice President and Chief Operating Officer",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 625000,
+          "salary": 625000,
+          "stock_awards": 4480556,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 4480556,
-          "all_other": 0,
-          "total": 759400,
-          "_total_source": "bloated_component"
+          "non_equity_incentive": 759400,
+          "all_other": 250588,
+          "total": 6115544,
+          "_total_source": "verified"
         },
         {
           "name": "Sheridan C. Swords",
           "title": "Executive Vice President and Chief Commercial Officer",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 625000,
+          "salary": 625000,
+          "stock_awards": 3430537,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 3430537,
-          "all_other": 0,
-          "total": 723300,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 723300,
+          "pension_nqdc": 974441,
+          "all_other": 112644,
+          "total": 5865922,
+          "_total_source": "verified"
         },
         {
           "name": "Sheridan C. Swords",
           "title": "Executive Vice President and Chief Commercial Officer",
           "year": 2024,
           "salary": 525000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 2045043,
           "option_awards": 0,
-          "non_equity_incentive": 2045043,
-          "pension_nqdc": 0,
-          "all_other": 1052500,
-          "total": 3622543,
+          "non_equity_incentive": 1052500,
+          "pension_nqdc": 336265,
+          "all_other": 89080,
+          "total": 4047888,
           "_total_source": "verified"
         },
         {
@@ -66213,51 +66258,82 @@
           "title": "Executive Vice President and Chief Commercial Officer",
           "year": 2023,
           "salary": 500000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 1756885,
           "option_awards": 0,
-          "non_equity_incentive": 1756885,
-          "pension_nqdc": 0,
-          "all_other": 855500,
-          "total": 3112385,
+          "non_equity_incentive": 855500,
+          "pension_nqdc": 661416,
+          "all_other": 71844,
+          "total": 3845645,
           "_total_source": "verified"
         },
         {
           "name": "Lyndon C. Taylor",
           "title": "Executive Vice President, Chief Legal Officer and Assistant Secretary",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 700000,
+          "salary": 700000,
+          "stock_awards": 4656809,
           "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 4656809,
-          "all_other": 0,
-          "total": 972000,
-          "_total_source": "component_mismatch"
+          "non_equity_incentive": 972000,
+          "all_other": 571012,
+          "total": 6899821,
+          "_total_source": "verified"
         },
         {
           "name": "Lyndon C. Taylor",
           "title": "Executive Vice President, Chief Legal Officer and Assistant Secretary",
           "year": 2024,
           "salary": 600000,
-          "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 2101875,
           "option_awards": 0,
-          "non_equity_incentive": 2101875,
-          "pension_nqdc": 0,
-          "all_other": 1307400,
-          "total": 4009275,
+          "non_equity_incentive": 1307400,
+          "all_other": 158665,
+          "total": 4167940,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Walter S. Hulse, III",
+          "year": 2025,
+          "salary": 750000,
+          "stock_awards": 6009216,
+          "option_awards": 0,
+          "non_equity_incentive": 1183500,
+          "all_other": 349729,
+          "total": 8292445,
+          "title": "Chief Financial Officer, Treasurer and Executive Vice President, Corporate Development and Investor Relations",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Walter S. Hulse, III",
+          "year": 2024,
+          "salary": 650000,
+          "stock_awards": 3690593,
+          "option_awards": 0,
+          "non_equity_incentive": 1640000,
+          "all_other": 278685,
+          "total": 6259278,
+          "title": "Chief Financial Officer, Treasurer and Executive Vice President, Corporate Development and Investor Relations",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Walter S. Hulse, III",
+          "year": 2023,
+          "salary": 600000,
+          "stock_awards": 2760803,
+          "option_awards": 0,
+          "non_equity_incentive": 1372500,
+          "all_other": 190814,
+          "total": 4924117,
+          "title": "Chief Financial Officer, Treasurer and Executive Vice President, Corporate Development and Investor Relations",
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22750480,
+      "total_neo_compensation": 47469512,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -76922,8 +76998,9 @@
           "non_equity_incentive": 2317613,
           "all_other": 19165,
           "total": 12759187,
-          "title": "Chair",
-          "_total_source": "minor_gap"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "stock_awards": 8023668
         },
         {
           "name": "Mark J. Parrell",
@@ -76933,8 +77010,9 @@
           "non_equity_incentive": 2697705,
           "all_other": 18232,
           "total": 11359954,
-          "title": "Chair",
-          "_total_source": "minor_gap"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "stock_awards": 7101749
         },
         {
           "name": "Mark J. Parrell",
@@ -76944,17 +77022,21 @@
           "non_equity_incentive": 2312145,
           "all_other": 15438,
           "total": 11361059,
-          "title": "Chair",
-          "_total_source": "minor_gap"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "stock_awards": 6654190
         },
         {
           "name": "Bret D. McLeod",
           "year": 2025,
           "salary": 245616,
-          "all_other": 825481,
-          "total": 1071097,
-          "title": "Executive Vice President \u2013 Finance (July 22, 2025-August 7, 2025)",
-          "_total_source": "verified"
+          "all_other": 2822,
+          "total": 2323863,
+          "title": "Executive Vice President & Chief Financial Officer",
+          "_total_source": "verified",
+          "stock_awards": 1249944,
+          "option_awards": 0,
+          "non_equity_incentive": 825481
         },
         {
           "name": "Robert A. Garechana",
@@ -76964,8 +77046,9 @@
           "non_equity_incentive": 1102219,
           "all_other": 21486,
           "total": 4748384,
-          "title": "Executive Vice President and Chief Financial Officer (January 1, 2025-August 7, 2025)",
-          "_total_source": "minor_gap"
+          "title": "Executive Vice President & Chief Investment Officer",
+          "_total_source": "verified",
+          "stock_awards": 2640380
         },
         {
           "name": "Robert A. Garechana",
@@ -76974,9 +77057,10 @@
           "option_awards": 334187,
           "non_equity_incentive": 1134630,
           "all_other": 12987,
-          "total": 2081804,
-          "title": "Executive Vice President and Chief Financial Officer (January 1, 2025-August 7, 2025)",
-          "_total_source": "minor_gap"
+          "total": 4194209,
+          "title": "Executive Vice President & Chief Investment Officer",
+          "_total_source": "verified",
+          "stock_awards": 2112405
         },
         {
           "name": "Robert A. Garechana",
@@ -76986,8 +77070,9 @@
           "non_equity_incentive": 1055250,
           "all_other": 15145,
           "total": 4130355,
-          "title": "Executive Vice President and Chief Financial Officer (January 1, 2025-August 7, 2025)",
-          "_total_source": "minor_gap"
+          "title": "Executive Vice President & Chief Investment Officer",
+          "_total_source": "verified",
+          "stock_awards": 2122444
         },
         {
           "name": "Michael L. Manelis",
@@ -76996,9 +77081,10 @@
           "non_equity_incentive": 1165084,
           "all_other": 22656,
           "total": 5296826,
-          "title": "Executive Vice President and Chief Operating Officer Mr",
+          "title": "Executive Vice President & Chief Operating Officer",
           "_total_source": "verified",
-          "stock_awards": 3434086
+          "stock_awards": 3434086,
+          "option_awards": 0
         },
         {
           "name": "Michael L. Manelis",
@@ -77007,9 +77093,10 @@
           "option_awards": 370464,
           "non_equity_incentive": 1309968,
           "all_other": 21107,
-          "total": 2361539,
-          "title": "Executive Vice President and Chief Operating Officer Mr",
-          "_total_source": "minor_gap"
+          "total": 4792732,
+          "title": "Executive Vice President & Chief Operating Officer",
+          "_total_source": "verified",
+          "stock_awards": 2431193
         },
         {
           "name": "Michael L. Manelis",
@@ -77019,8 +77106,9 @@
           "non_equity_incentive": 1111275,
           "all_other": 16491,
           "total": 4570246,
-          "title": "Executive Vice President and Chief Operating Officer Mr",
-          "_total_source": "rounding"
+          "title": "Executive Vice President & Chief Operating Officer",
+          "_total_source": "verified",
+          "stock_awards": 2051218
         },
         {
           "name": "Alexander Brackenridge",
@@ -77029,9 +77117,10 @@
           "non_equity_incentive": 1149094,
           "all_other": 11947,
           "total": 4669428,
-          "title": "Executive Vice President and Chief Investment Officer (January 1, 2025-August 7, 2025)",
+          "title": "Executive Vice President - Investments",
           "_total_source": "verified",
-          "stock_awards": 2883387
+          "stock_awards": 2883387,
+          "option_awards": 0
         },
         {
           "name": "Alexander Brackenridge",
@@ -77040,8 +77129,10 @@
           "non_equity_incentive": 1190880,
           "all_other": 12987,
           "total": 4164991,
-          "title": "Executive Vice President and Chief Investment Officer (January 1, 2025-August 7, 2025)",
-          "_total_source": "incomplete_components"
+          "title": "Executive Vice President - Investments",
+          "_total_source": "verified",
+          "stock_awards": 2361124,
+          "option_awards": 0
         },
         {
           "name": "Alexander Brackenridge",
@@ -77050,8 +77141,10 @@
           "non_equity_incentive": 987750,
           "all_other": 9900,
           "total": 4057618,
-          "title": "Executive Vice President and Chief Investment Officer (January 1, 2025-August 7, 2025)",
-          "_total_source": "incomplete_components"
+          "title": "Executive Vice President - Investments",
+          "_total_source": "verified",
+          "stock_awards": 2459968,
+          "option_awards": 0
         },
         {
           "name": "Scott J. Fenster",
@@ -77060,9 +77153,10 @@
           "non_equity_incentive": 759462,
           "all_other": 18935,
           "total": 2870663,
-          "title": "Executive Vice President and General Counsel Mr",
+          "title": "Executive Vice President & General Counsel",
           "_total_source": "verified",
-          "stock_awards": 1542266
+          "stock_awards": 1542266,
+          "option_awards": 0
         },
         {
           "name": "Scott J. Fenster",
@@ -77072,8 +77166,9 @@
           "non_equity_incentive": 794241,
           "all_other": 17844,
           "total": 2641332,
-          "title": "Executive Vice President and General Counsel Mr",
-          "_total_source": "rounding"
+          "title": "Executive Vice President & General Counsel",
+          "_total_source": "verified",
+          "stock_awards": 1115943
         },
         {
           "name": "Scott J. Fenster",
@@ -77083,8 +77178,9 @@
           "non_equity_incentive": 722925,
           "all_other": 14670,
           "total": 2601332,
-          "title": "Executive Vice President and General Counsel Mr",
-          "_total_source": "rounding"
+          "title": "Executive Vice President & General Counsel",
+          "_total_source": "verified",
+          "stock_awards": 1141820
         }
       ],
       "neo_count": 6,
@@ -77093,7 +77189,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 31415585,
+      "total_neo_compensation": 32668351,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
