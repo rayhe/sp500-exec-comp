@@ -24,40 +24,94 @@
     "aggregate_stats": {
       "total_companies": 500,
       "companies_with_pay_ratio": 496,
-      "median_ceo_pay": 16087233,
-      "mean_ceo_pay": 21607699,
+      "median_ceo_pay": 16051141,
+      "mean_ceo_pay": 21381506,
       "max_ceo_pay": 821090355,
       "min_ceo_pay": 40001,
       "median_worker_pay": 81899,
       "median_pay_ratio": 196
     },
     "sector_medians": {
-      "Industrials": 13809406,
-      "Consumer Discretionary": 16430740,
-      "Financials": 18755222,
-      "Information Technology": 20307392,
-      "Communication Services": 30529835,
-      "Real Estate": 12528748,
-      "Energy": 17576636,
-      "Health Care": 18210597,
-      "Consumer Staples": 15654209,
-      "Materials": 14699497,
-      "Utilities": 12711066
+      "Industrials": {
+        "median_ceo_pay": 13675126,
+        "count": 70,
+        "min": 40001,
+        "max": 70547718
+      },
+      "Consumer Discretionary": {
+        "median_ceo_pay": 16310933,
+        "count": 58,
+        "min": 242122,
+        "max": 36340876
+      },
+      "Financials": {
+        "median_ceo_pay": 18551129,
+        "count": 66,
+        "min": 913367,
+        "max": 118891684
+      },
+      "Information Technology": {
+        "median_ceo_pay": 22157635,
+        "count": 81,
+        "min": 141704,
+        "max": 247579143
+      },
+      "Communication Services": {
+        "median_ceo_pay": 27827869,
+        "count": 20,
+        "min": 403019,
+        "max": 165009366
+      },
+      "Real Estate": {
+        "median_ceo_pay": 12528748,
+        "count": 29,
+        "min": 1771181,
+        "max": 821090355
+      },
+      "Energy": {
+        "median_ceo_pay": 17471111,
+        "count": 22,
+        "min": 1578000,
+        "max": 42727650
+      },
+      "Health Care": {
+        "median_ceo_pay": 17454255,
+        "count": 61,
+        "min": 2559152,
+        "max": 60938062
+      },
+      "Consumer Staples": {
+        "median_ceo_pay": 15487307,
+        "count": 34,
+        "min": 5380494,
+        "max": 49122360
+      },
+      "Materials": {
+        "median_ceo_pay": 14699497,
+        "count": 27,
+        "min": 822720,
+        "max": 29770044
+      },
+      "Utilities": {
+        "median_ceo_pay": 12684812,
+        "count": 31,
+        "min": 4668828,
+        "max": 36601524
+      }
     },
-    "edgar_coverage": 500,
+    "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-27",
+    "last_updated": "2026-08-28",
     "total_neo_records": 6141,
     "title_coverage": 6141,
     "data_quality": {
       "total_exec_records": 6141,
-      "verified": 5395,
-      "recomputed_totals": 156,
-      "bloated_component": 25,
-      "incomplete_components": 67,
-      "filing_only": 16,
-      "minor_gaps": 49,
-      "companies_affected": 131
+      "verified": 5475,
+      "recomputed_totals": 227,
+      "bloated_component": 20,
+      "incomplete_components": 2,
+      "minor_gaps": 398,
+      "verified_pct": 89.2
     },
     "median_ceo_pay": 16087233,
     "mean_ceo_pay": 21702292,
@@ -257,9 +311,9 @@
       "total_neo_compensation": 4239206,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -282,7 +336,7 @@
     {
       "ticker": "SBUX",
       "company_name": "Starbucks Corp",
-      "ceo_name": "Brian Niccol",
+      "ceo_name": "Brady Brewer",
       "total_compensation": 16430740,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -371,7 +425,7 @@
       "cik": "0000829224",
       "filing_date": "2026-01-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/829224/000121390026007780/ea0270973-01.htm",
-      "total_neo_compensation": 73394618,
+      "total_neo_compensation": 46978371,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -405,7 +459,7 @@
     {
       "ticker": "GE",
       "company_name": "General Electric Co",
-      "ceo_name": "Lawrence Culp",
+      "ceo_name": "Russell Stokes",
       "total_compensation": 13323242,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -1007,7 +1061,7 @@
     {
       "ticker": "CARR",
       "company_name": "Carrier Global Corp",
-      "ceo_name": "David Gitlin",
+      "ceo_name": "Michael L. Gierges",
       "total_compensation": 7059821,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -1807,9 +1861,9 @@
       "neo_count": 7,
       "proxy_fiscal_year": 2026,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "say_on_pay": {
         "approval_pct": 76.85,
@@ -2061,7 +2115,7 @@
     {
       "ticker": "WBD",
       "company_name": "Warner Bros Discovery Inc",
-      "ceo_name": "David Zaslav",
+      "ceo_name": "David M. Zaslav",
       "total_compensation": 165009366,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -2259,9 +2313,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -2467,7 +2521,7 @@
     {
       "ticker": "BKNG",
       "company_name": "Booking Holdings Inc",
-      "ceo_name": "Glenn Fogel",
+      "ceo_name": "Glenn D. Fogel",
       "total_compensation": 35418102,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -2606,9 +2660,9 @@
       "total_neo_compensation": 65140876,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -2837,7 +2891,7 @@
     {
       "ticker": "OTIS",
       "company_name": "Otis Worldwide Corp",
-      "ceo_name": "Judy Marks",
+      "ceo_name": "Cristina M\u00e9ndez",
       "total_compensation": 6134771,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -3017,7 +3071,7 @@
     {
       "ticker": "DIS",
       "company_name": "Walt Disney Co/The",
-      "ceo_name": "Robert Iger",
+      "ceo_name": "Robert A. Iger",
       "total_compensation": 41114015,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -3174,7 +3228,7 @@
     {
       "ticker": "SOLV",
       "company_name": "Solventum Corp",
-      "ceo_name": "Bryan Hanson",
+      "ceo_name": "Bryan C. Hanson",
       "total_compensation": 20139981,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -3300,8 +3354,8 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2024,
-        2025
+        2025,
+        2024
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -3324,7 +3378,7 @@
     {
       "ticker": "UBER",
       "company_name": "Uber Technologies Inc",
-      "ceo_name": "Dara Khosrowshahi",
+      "ceo_name": "Andrew Macdonald",
       "total_compensation": 25559523,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -3473,7 +3527,7 @@
     {
       "ticker": "CSCO",
       "company_name": "Cisco Systems Inc",
-      "ceo_name": "Charles Robbins",
+      "ceo_name": "Charles H. Robbins",
       "total_compensation": 52838751,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -3644,9 +3698,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -3678,7 +3732,7 @@
       "ticker": "JPM",
       "company_name": "JPMorgan Chase & Co",
       "ceo_name": "James Dimon",
-      "total_compensation": 37683462,
+      "total_compensation": 40632724,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 108218,
@@ -3889,13 +3943,13 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 130693566,
+      "total_neo_compensation": 138826290,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 92.35,
@@ -3924,7 +3978,7 @@
     {
       "ticker": "NOW",
       "company_name": "ServiceNow Inc",
-      "ceo_name": "William McDermott",
+      "ceo_name": "William R. McDermott",
       "total_compensation": 51550957,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -4038,8 +4092,8 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2024,
-        2025
+        2025,
+        2024
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -4070,7 +4124,7 @@
     {
       "ticker": "CSGP",
       "company_name": "CoStar Group Inc",
-      "ceo_name": "Andrew Florance",
+      "ceo_name": "Andrew C. Florance",
       "total_compensation": 36431936,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -4282,9 +4336,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -4313,7 +4367,7 @@
     {
       "ticker": "AXP",
       "company_name": "American Express Co",
-      "ceo_name": "S.J. Squeri",
+      "ceo_name": "H.M. Grosfield",
       "total_compensation": 26155290,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -4383,7 +4437,6 @@
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
-        2024,
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -4575,7 +4628,7 @@
     {
       "ticker": "INTU",
       "company_name": "Intuit Inc",
-      "ceo_name": "Sasan Goodarzi",
+      "ceo_name": "Sasan K. Goodarzi",
       "total_compensation": 36835552,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -4942,9 +4995,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -5355,7 +5408,7 @@
     {
       "ticker": "CMCSA",
       "company_name": "Comcast Corp",
-      "ceo_name": "Brian Roberts",
+      "ceo_name": "Brian L. Roberts",
       "total_compensation": 35148413,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -5841,9 +5894,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 86.75,
@@ -6130,7 +6183,7 @@
         2023,
         2022
       ],
-      "total_neo_compensation": 53272113,
+      "total_neo_compensation": 60685268,
       "proxy_fiscal_year": 2024,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -6356,7 +6409,7 @@
     {
       "ticker": "ACGL",
       "company_name": "Arch Capital Group Ltd",
-      "ceo_name": "Nicolas Papadopoulo",
+      "ceo_name": "Maamoun Rajeh",
       "total_compensation": 16585726,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -6937,9 +6990,9 @@
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -7154,9 +7207,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 60.39,
@@ -7182,7 +7235,7 @@
     {
       "ticker": "AMD",
       "company_name": "Advanced Micro Devices Inc",
-      "ceo_name": "Lisa Su",
+      "ceo_name": "Lisa T. Su",
       "total_compensation": 55161779,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -7380,9 +7433,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -7413,7 +7466,7 @@
     {
       "ticker": "MSI",
       "company_name": "Motorola Solutions Inc",
-      "ceo_name": "Gregory Brown",
+      "ceo_name": "Gregory Q. Brown",
       "total_compensation": 34453481,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -7640,9 +7693,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -7672,7 +7725,7 @@
     {
       "ticker": "COF",
       "company_name": "Capital One Financial Corp",
-      "ceo_name": "Richard Fairbank",
+      "ceo_name": "Richard D. Fairbank",
       "total_compensation": 64971137,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -7856,9 +7909,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -7889,7 +7942,7 @@
     {
       "ticker": "BLK",
       "company_name": "Blackrock Inc",
-      "ceo_name": "Laurence Fink",
+      "ceo_name": "Laurence D. Fink",
       "total_compensation": 37749569,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -8044,7 +8097,7 @@
     {
       "ticker": "TMO",
       "company_name": "Thermo Fisher Scientific Inc",
-      "ceo_name": "Marc Casper",
+      "ceo_name": "Marc N. Casper",
       "total_compensation": 7951377,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -8252,13 +8305,13 @@
       "cik": "0000097745",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/97745/000119312526144585/d66426ddef14a.htm",
-      "total_neo_compensation": 16524240,
+      "total_neo_compensation": 24121715,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -8274,7 +8327,7 @@
     {
       "ticker": "WFC",
       "company_name": "Wells Fargo & Co",
-      "ceo_name": "Charles Scharf",
+      "ceo_name": "Charles W. Scharf",
       "total_compensation": 94522642,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -8430,9 +8483,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -8462,7 +8515,7 @@
     {
       "ticker": "CB",
       "company_name": "Chubb Ltd",
-      "ceo_name": "Evan Greenberg",
+      "ceo_name": "Evan G. Greenberg",
       "total_compensation": 33180582,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -8687,7 +8740,7 @@
     {
       "ticker": "LRCX",
       "company_name": "Lam Research Corp",
-      "ceo_name": "Timothy Archer",
+      "ceo_name": "Timothy M. Archer",
       "total_compensation": 28298161,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -8886,9 +8939,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 91.29,
@@ -9158,9 +9211,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 94.86,
@@ -9189,7 +9242,7 @@
       "ticker": "MU",
       "company_name": "Micron Technology Inc",
       "ceo_name": "Sanjay Mehrotra",
-      "total_compensation": 30060126,
+      "total_compensation": 30940146,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 64042,
@@ -9382,13 +9435,13 @@
       "cik": "0000723125",
       "filing_date": "2025-11-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000038/mu-20251125.htm",
-      "total_neo_compensation": 70277487,
+      "total_neo_compensation": 75857604,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -9412,7 +9465,7 @@
     {
       "ticker": "TMUS",
       "company_name": "T-Mobile US Inc",
-      "ceo_name": "Michael Sievert",
+      "ceo_name": "Ulf Ewaldsson",
       "total_compensation": 44622892,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -9679,7 +9732,7 @@
     {
       "ticker": "GM",
       "company_name": "General Motors Co",
-      "ceo_name": "Mary Barra",
+      "ceo_name": "Mary T. Barra",
       "total_compensation": 29895868,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -9864,9 +9917,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "F",
       "ceo_tenure": {
@@ -9896,7 +9949,7 @@
     {
       "ticker": "LLY",
       "company_name": "Eli Lilly & Co",
-      "ceo_name": "David Ricks",
+      "ceo_name": "David A. Ricks",
       "total_compensation": 36698337,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -10079,7 +10132,7 @@
     {
       "ticker": "NKE",
       "company_name": "NIKE Inc",
-      "ceo_name": "John Donahoe II",
+      "ceo_name": "Elliott Hill",
       "total_compensation": 36340876,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -10221,9 +10274,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -10253,7 +10306,7 @@
     {
       "ticker": "PEP",
       "company_name": "PepsiCo Inc",
-      "ceo_name": "Ramon Laguarta",
+      "ceo_name": "Ramon L. Laguarta",
       "total_compensation": 23903545,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -10480,9 +10533,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -10511,7 +10564,7 @@
     {
       "ticker": "BAC",
       "company_name": "Bank of America Corp",
-      "ceo_name": "Brian Moynihan",
+      "ceo_name": "Brian T. Moynihan",
       "total_compensation": 33711521,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -10738,9 +10791,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 95.29,
@@ -10770,7 +10823,7 @@
     {
       "ticker": "TT",
       "company_name": "Trane Technologies PLC",
-      "ceo_name": "Regnery",
+      "ceo_name": "D. S. Regnery",
       "total_compensation": 27262157,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -10927,9 +10980,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 88.38,
@@ -11216,7 +11269,7 @@
     {
       "ticker": "AMP",
       "company_name": "Ameriprise Financial Inc",
-      "ceo_name": "James Cracchiolo",
+      "ceo_name": "James M Cracchiolo",
       "total_compensation": 30828468,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -11388,7 +11441,7 @@
     {
       "ticker": "SMCI",
       "company_name": "Super Micro Computer Inc",
-      "ceo_name": "Charles Liang",
+      "ceo_name": "David Weigand",
       "total_compensation": 1961333,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -11544,9 +11597,9 @@
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -11569,7 +11622,7 @@
     {
       "ticker": "CPAY",
       "company_name": "Corpay Inc",
-      "ceo_name": "Ronald Clarke",
+      "ceo_name": "Ronald F. Clarke",
       "total_compensation": 3406867,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -11809,9 +11862,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -12089,7 +12142,7 @@
     {
       "ticker": "HLT",
       "company_name": "Hilton Worldwide Holdings Inc",
-      "ceo_name": "Christopher Nassetta",
+      "ceo_name": "Christopher J. Nassetta",
       "total_compensation": 27674400,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -12288,9 +12341,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 92.61,
@@ -12319,7 +12372,7 @@
     {
       "ticker": "DE",
       "company_name": "Deere & Co",
-      "ceo_name": "John May",
+      "ceo_name": "John C. May",
       "total_compensation": 27925424,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -12535,7 +12588,7 @@
     {
       "ticker": "AMAT",
       "company_name": "Applied Materials Inc",
-      "ceo_name": "Gary Dickerson",
+      "ceo_name": "Gary E. Dickerson",
       "total_compensation": 29649352,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -12990,9 +13043,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -13023,8 +13076,8 @@
     {
       "ticker": "INTC",
       "company_name": "Intel Corp",
-      "ceo_name": "Patrick Gelsinger",
-      "total_compensation": 12626000,
+      "ceo_name": "Patrick P. Gelsinger",
+      "total_compensation": 27429900,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 96100,
@@ -13585,9 +13638,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -13618,7 +13671,7 @@
     {
       "ticker": "ALGN",
       "company_name": "Align Technology Inc",
-      "ceo_name": "Joseph Hogan",
+      "ceo_name": "Joseph M. Hogan",
       "total_compensation": 19193988,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -13779,9 +13832,9 @@
           "salary": 1,
           "bonus": 0,
           "stock_awards": 0,
-          "all_other": 251259034,
+          "all_other": 25125903,
           "total": 25125904,
-          "_total_source": "bloated_component"
+          "_total_source": "verified"
         },
         {
           "name": "Mark Zuckerberg",
@@ -13790,9 +13843,9 @@
           "salary": 1,
           "bonus": 0,
           "stock_awards": 0,
-          "all_other": 272198734,
+          "all_other": 27219873,
           "total": 27219874,
-          "_total_source": "bloated_component"
+          "_total_source": "verified"
         },
         {
           "name": "Mark Zuckerberg",
@@ -13801,9 +13854,9 @@
           "salary": 1,
           "bonus": 0,
           "stock_awards": 0,
-          "all_other": 243999674,
+          "all_other": 24399967,
           "total": 24399968,
-          "_total_source": "bloated_component"
+          "_total_source": "verified"
         },
         {
           "name": "Susan Li",
@@ -13812,7 +13865,7 @@
           "salary": 989423,
           "bonus": 2275673,
           "stock_awards": 16711548,
-          "all_other": 859685,
+          "all_other": 85968,
           "total": 20062612,
           "_total_source": "verified"
         },
@@ -13823,7 +13876,7 @@
           "salary": 946731,
           "bonus": 877826,
           "stock_awards": 21671642,
-          "all_other": 1242895,
+          "all_other": 124289,
           "total": 23620488,
           "_total_source": "verified"
         },
@@ -13834,7 +13887,7 @@
           "salary": 871154,
           "bonus": 980049,
           "stock_awards": 21493046,
-          "all_other": 1119585,
+          "all_other": 111958,
           "total": 23456207,
           "_total_source": "verified"
         },
@@ -13845,7 +13898,7 @@
           "salary": 999039,
           "bonus": 2297789,
           "stock_awards": 18382820,
-          "all_other": 117506,
+          "all_other": 11750,
           "total": 21691398,
           "_total_source": "verified"
         },
@@ -13856,7 +13909,7 @@
           "salary": 996289,
           "bonus": 923799,
           "stock_awards": 21671642,
-          "all_other": 175896,
+          "all_other": 17589,
           "total": 23609319,
           "_total_source": "verified"
         },
@@ -13867,7 +13920,7 @@
           "salary": 936346,
           "bonus": 1053392,
           "stock_awards": 21493046,
-          "all_other": 241756,
+          "all_other": 24175,
           "total": 23506959,
           "_total_source": "verified"
         },
@@ -13880,30 +13933,29 @@
           "stock_awards": 18382820,
           "all_other": 2159503,
           "total": 24520549,
-          "_original_total": 24520549,
-          "_total_source": "recomputed"
+          "_total_source": "verified"
         },
         {
           "name": "Javier Olivan",
           "title": "Chief Operating Officer",
           "year": 2024,
-          "salary": 10829797,
-          "bonus": 10152937,
+          "salary": 1082979,
+          "bonus": 1015293,
           "stock_awards": 21671642,
-          "all_other": 191923278,
+          "all_other": 1919232,
           "total": 25689146,
-          "_total_source": "bloated_component"
+          "_total_source": "verified"
         },
         {
           "name": "Javier Olivan",
           "title": "Chief Operating Officer",
           "year": 2023,
-          "salary": 11042347,
-          "bonus": 12385687,
+          "salary": 1104234,
+          "bonus": 1238568,
           "stock_awards": 21493046,
-          "all_other": 182291678,
+          "all_other": 1822916,
           "total": 25658764,
-          "_total_source": "bloated_component"
+          "_total_source": "verified"
         },
         {
           "name": "Andrew Bosworth",
@@ -13912,9 +13964,9 @@
           "salary": 998570,
           "bonus": 2297789,
           "stock_awards": 18382820,
-          "all_other": 2759439,
+          "all_other": 275943,
           "total": 21955122,
-          "_total_source": "rounding"
+          "_total_source": "verified"
         },
         {
           "name": "Andrew Bosworth",
@@ -13923,7 +13975,7 @@
           "salary": 985385,
           "bonus": 923799,
           "stock_awards": 21671642,
-          "all_other": 140009,
+          "all_other": 14000,
           "total": 23594826,
           "_total_source": "verified"
         },
@@ -13934,7 +13986,7 @@
           "salary": 936346,
           "bonus": 1053392,
           "stock_awards": 21493046,
-          "all_other": 112509,
+          "all_other": 11250,
           "total": 23494034,
           "_total_source": "verified"
         }
@@ -13942,7 +13994,7 @@
       "cik": "0001326801",
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026025532/meta-20260416.htm",
-      "total_neo_compensation": 362950508,
+      "total_neo_compensation": 113355585,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -13972,7 +14024,7 @@
     {
       "ticker": "DAL",
       "company_name": "Delta Air Lines Inc",
-      "ceo_name": "Edward Bastian",
+      "ceo_name": "Edward H. Bastian",
       "total_compensation": 19222401,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -14198,9 +14250,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -14230,7 +14282,7 @@
     {
       "ticker": "MO",
       "company_name": "Altria Group Inc",
-      "ceo_name": "William Gifford",
+      "ceo_name": "William F. Gifford, Jr.",
       "total_compensation": 49122360,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -14461,7 +14513,7 @@
     {
       "ticker": "ALL",
       "company_name": "Allstate Corp",
-      "ceo_name": "Thomas Wilson",
+      "ceo_name": "Thomas J. Wilson",
       "total_compensation": 22920898,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -14904,9 +14956,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 80.11,
@@ -14932,7 +14984,7 @@
     {
       "ticker": "T",
       "company_name": "AT&T Inc",
-      "ceo_name": "John Stankey",
+      "ceo_name": "J. Mcelfresh",
       "total_compensation": 15941739,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -15116,9 +15168,9 @@
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -15147,7 +15199,7 @@
     {
       "ticker": "SCHW",
       "company_name": "Charles Schwab Corp",
-      "ceo_name": "Walter Bettinger II",
+      "ceo_name": "Richard A. Wurster",
       "total_compensation": 18755222,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -15364,7 +15416,7 @@
     {
       "ticker": "UNH",
       "company_name": "UnitedHealth Group Inc",
-      "ceo_name": "Andrew Witty",
+      "ceo_name": "Stephen Hemsley",
       "total_compensation": 60938062,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -15568,7 +15620,7 @@
     {
       "ticker": "AON",
       "company_name": "Aon PLC",
-      "ceo_name": "Gregory Case",
+      "ceo_name": "Gregory C. Case",
       "total_compensation": 73742639,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -15736,7 +15788,7 @@
     {
       "ticker": "WDAY",
       "company_name": "Workday Inc",
-      "ceo_name": "Carl Eschenbach",
+      "ceo_name": "Aneel Bhusri",
       "total_compensation": 19231325,
       "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
@@ -15905,7 +15957,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 92623965,
+      "total_neo_compensation": 165510256,
       "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
@@ -15933,7 +15985,7 @@
     {
       "ticker": "V",
       "company_name": "Visa Inc",
-      "ceo_name": "Ryan Mclnerney",
+      "ceo_name": "Ryan McInerney",
       "total_compensation": 31560660,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -16099,7 +16151,7 @@
     {
       "ticker": "QCOM",
       "company_name": "QUALCOMM Inc",
-      "ceo_name": "Cristiano Amon",
+      "ceo_name": "Cristiano R. Amon",
       "total_compensation": 29701097,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -16732,9 +16784,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -16953,7 +17005,7 @@
     {
       "ticker": "DHI",
       "company_name": "DR Horton Inc",
-      "ceo_name": "Paul Romanowski",
+      "ceo_name": "Paul J. Romanowski",
       "total_compensation": 25128033,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -17148,7 +17200,7 @@
     {
       "ticker": "IBM",
       "company_name": "International Business Machines Corp",
-      "ceo_name": "Krishna",
+      "ceo_name": "A. Krishna",
       "total_compensation": 38844898,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -17592,9 +17644,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -17809,9 +17861,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "F",
       "ceo_tenure": {
@@ -18033,9 +18085,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 95.76,
@@ -18063,7 +18115,7 @@
     {
       "ticker": "F",
       "company_name": "Ford Motor Co",
-      "ceo_name": "James Farley",
+      "ceo_name": "William Clay Ford Jr",
       "total_compensation": 20276466,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -18224,7 +18276,7 @@
       "ticker": "PLD",
       "company_name": "Prologis Inc",
       "ceo_name": "Hamid Moghadam",
-      "total_compensation": 24851777,
+      "total_compensation": 24999873,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 123745,
@@ -18419,7 +18471,7 @@
     {
       "ticker": "YUM",
       "company_name": "Yum! Brands Inc",
-      "ceo_name": "David Gibbs",
+      "ceo_name": "David W Gibbs",
       "total_compensation": 20861526,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -18677,7 +18729,7 @@
     {
       "ticker": "PFE",
       "company_name": "Pfizer Inc",
-      "ceo_name": "Albert Bourla",
+      "ceo_name": "A. Bourla",
       "total_compensation": 27585301,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -18890,9 +18942,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 87.97,
@@ -19123,7 +19175,7 @@
     {
       "ticker": "AMGN",
       "company_name": "Amgen Inc",
-      "ceo_name": "Robert Bradway",
+      "ceo_name": "Robert A. Bradway",
       "total_compensation": 24693120,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -19353,7 +19405,7 @@
     {
       "ticker": "NOC",
       "company_name": "Northrop Grumman Corp",
-      "ceo_name": "Kathy Warden",
+      "ceo_name": "Kathy J. Warden",
       "total_compensation": 25357443,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -19552,9 +19604,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "F",
       "say_on_pay": {
@@ -19821,9 +19873,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -19846,7 +19898,7 @@
     {
       "ticker": "JNJ",
       "company_name": "Johnson & Johnson",
-      "ceo_name": "Joaquin Duato",
+      "ceo_name": "J. Duato",
       "total_compensation": 32758111,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -20058,9 +20110,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -20090,7 +20142,7 @@
     {
       "ticker": "BIIB",
       "company_name": "Biogen Inc",
-      "ceo_name": "Christopher Viehbacher",
+      "ceo_name": "Christopher A. Viehbacher",
       "total_compensation": 23646004,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -20333,7 +20385,7 @@
     {
       "ticker": "VZ",
       "company_name": "Verizon Communications Inc",
-      "ceo_name": "Hans Vestberg",
+      "ceo_name": "Daniel Schulman",
       "total_compensation": 34311016,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -20506,7 +20558,7 @@
     {
       "ticker": "IFF",
       "company_name": "International Flavors & Fragrances Inc",
-      "ceo_name": "Erik Fyrwald",
+      "ceo_name": "Michael DeVeau",
       "total_compensation": 3708475,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -21062,7 +21114,7 @@
     {
       "ticker": "SPGI",
       "company_name": "S&P Global Inc",
-      "ceo_name": "Douglas Peterson",
+      "ceo_name": "Martina Cheung",
       "total_compensation": 12831062,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -21285,7 +21337,7 @@
     {
       "ticker": "CME",
       "company_name": "CME Group Inc",
-      "ceo_name": "Terrence Duffy",
+      "ceo_name": "Terrence A. Duffy",
       "total_compensation": 23394854,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -21493,8 +21545,8 @@
     {
       "ticker": "SO",
       "company_name": "Southern Co",
-      "ceo_name": "Christopher Womack",
-      "total_compensation": 28223562,
+      "ceo_name": "Kimberly S. Greene",
+      "total_compensation": 7212073,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 155611,
@@ -21696,7 +21748,7 @@
     {
       "ticker": "FOX",
       "company_name": "Fox Corp",
-      "ceo_name": "Lachlan K.  Murdoch",
+      "ceo_name": "John P Nallen",
       "total_compensation": 15284962,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -21849,7 +21901,7 @@
     {
       "ticker": "HCA",
       "company_name": "HCA Healthcare Inc",
-      "ceo_name": "Samuel Hazen",
+      "ceo_name": "Samuel N. Hazen",
       "total_compensation": 26456606,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -22255,7 +22307,7 @@
     {
       "ticker": "FI",
       "company_name": "Fiserv Inc",
-      "ceo_name": "Frank Bisignano",
+      "ceo_name": "Michael P. Lyons",
       "total_compensation": 70341992,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -22481,7 +22533,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 159996851,
+      "total_neo_compensation": 173934691,
       "neo_count": 9,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -22516,7 +22568,7 @@
     {
       "ticker": "LMT",
       "company_name": "Lockheed Martin Corp",
-      "ceo_name": "James Taiclet",
+      "ceo_name": "James D. Taiclet",
       "total_compensation": 23453308,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -22746,7 +22798,7 @@
     {
       "ticker": "GILD",
       "company_name": "Gilead Sciences Inc",
-      "ceo_name": "Daniel O'Day",
+      "ceo_name": "Daniel P. O\u2019Day",
       "total_compensation": 28437198,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -22964,7 +23016,7 @@
       "ticker": "ROP",
       "company_name": "Roper Technologies Inc",
       "ceo_name": "Neil Hunn",
-      "total_compensation": 52411530,
+      "total_compensation": 26205765,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 95181,
@@ -23099,7 +23151,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 91387898,
+      "total_neo_compensation": 45693949,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -23715,7 +23767,7 @@
     {
       "ticker": "CI",
       "company_name": "Cigna Group/The",
-      "ceo_name": "David Cordani",
+      "ceo_name": "David M. Cordani",
       "total_compensation": 22866134,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -23917,7 +23969,7 @@
     {
       "ticker": "MRK",
       "company_name": "Merck & Co Inc",
-      "ceo_name": "Robert Davis",
+      "ceo_name": "Robert M. Davis",
       "total_compensation": 20797845,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -24405,7 +24457,7 @@
     {
       "ticker": "RJF",
       "company_name": "Raymond James Financial Inc",
-      "ceo_name": "Paul Reilly",
+      "ceo_name": "Paul M. Shoukry",
       "total_compensation": 17277875,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -24622,7 +24674,7 @@
     {
       "ticker": "TRV",
       "company_name": "Travelers Cos Inc",
-      "ceo_name": "Alan Schnitzer",
+      "ceo_name": "Alan D. Schnitzer",
       "total_compensation": 26968756,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -24879,7 +24931,7 @@
     {
       "ticker": "PG",
       "company_name": "Procter & Gamble Co",
-      "ceo_name": "Jon Moeller",
+      "ceo_name": "Jon R. Moeller",
       "total_compensation": 21909816,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -25328,7 +25380,7 @@
     {
       "ticker": "MMC",
       "company_name": "Marsh & McLennan Cos Inc",
-      "ceo_name": "John Doyle",
+      "ceo_name": "John Q. Doyle",
       "total_compensation": 25051051,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -25551,7 +25603,7 @@
     {
       "ticker": "ABT",
       "company_name": "Abbott Laboratories",
-      "ceo_name": "Robert Ford",
+      "ceo_name": "Robert B. Ford",
       "total_compensation": 23173052,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -26068,7 +26120,7 @@
     {
       "ticker": "PSX",
       "company_name": "Phillips 66",
-      "ceo_name": "Mark Lashier",
+      "ceo_name": "Kevin Mitchell",
       "total_compensation": 9062904,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -26200,7 +26252,7 @@
     {
       "ticker": "ETN",
       "company_name": "Eaton Corp PLC",
-      "ceo_name": "Craig Arnold",
+      "ceo_name": "P. Ruiz",
       "total_compensation": 7923677,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -26634,7 +26686,7 @@
     {
       "ticker": "VLO",
       "company_name": "Valero Energy Corp",
-      "ceo_name": "Lane Riggs",
+      "ceo_name": "Gary K Simmons",
       "total_compensation": 25373744,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -26808,7 +26860,7 @@
     {
       "ticker": "HWM",
       "company_name": "Howmet Aerospace Inc",
-      "ceo_name": "John Plant",
+      "ceo_name": "John C Plant",
       "total_compensation": 70547718,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -27079,7 +27131,7 @@
     {
       "ticker": "PNC",
       "company_name": "PNC Financial Services Group Inc/The",
-      "ceo_name": "William Demchak",
+      "ceo_name": "William S. Demchak",
       "total_compensation": 17500184,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -27314,7 +27366,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 46636648,
+      "total_neo_compensation": 54224919,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -27344,7 +27396,7 @@
     {
       "ticker": "MDLZ",
       "company_name": "Mondelez International Inc",
-      "ceo_name": "Van de Put Dirk",
+      "ceo_name": "Van de Put, Dirk",
       "total_compensation": 24516114,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -27547,7 +27599,7 @@
     {
       "ticker": "DHR",
       "company_name": "Danaher Corp",
-      "ceo_name": "Rainer Blair",
+      "ceo_name": "Rainer M. Blair",
       "total_compensation": 23795280,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -27743,7 +27795,7 @@
     {
       "ticker": "SYK",
       "company_name": "Stryker Corp",
-      "ceo_name": "Kevin Lobo",
+      "ceo_name": "Kevin A. Lobo",
       "total_compensation": 20767847,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -27964,7 +28016,7 @@
     {
       "ticker": "MOH",
       "company_name": "Molina Healthcare Inc",
-      "ceo_name": "Joseph Zubretsky",
+      "ceo_name": "Joseph M. Zubretsky",
       "total_compensation": 18340783,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -28173,7 +28225,7 @@
     {
       "ticker": "MAR",
       "company_name": "Marriott International Inc",
-      "ceo_name": "Anthony Capuano",
+      "ceo_name": "Anthony G Capuano",
       "total_compensation": 22970926,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -28333,7 +28385,7 @@
     {
       "ticker": "CMI",
       "company_name": "Cummins Inc",
-      "ceo_name": "Jennifer Rumsey",
+      "ceo_name": "J. W. Rumsey",
       "total_compensation": 19905532,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -28535,7 +28587,7 @@
     {
       "ticker": "LVS",
       "company_name": "Las Vegas Sands Corp",
-      "ceo_name": "Robert Goldstein",
+      "ceo_name": "Patrick Dumont",
       "total_compensation": 14949971,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -28713,7 +28765,7 @@
     {
       "ticker": "DVA",
       "company_name": "DaVita Inc",
-      "ceo_name": "Javier Rodriguez",
+      "ceo_name": "Javier J Rodriguez",
       "total_compensation": 18210597,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -28864,7 +28916,7 @@
     {
       "ticker": "GLW",
       "company_name": "Corning Inc",
-      "ceo_name": "Wendell Weeks",
+      "ceo_name": "Wendell P Weeks",
       "total_compensation": 25756121,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -29094,7 +29146,7 @@
     {
       "ticker": "OMC",
       "company_name": "Omnicom Group Inc",
-      "ceo_name": "John Wren",
+      "ceo_name": "Daryl D Simm",
       "total_compensation": 10016644,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -29261,7 +29313,7 @@
     {
       "ticker": "NEE",
       "company_name": "NextEra Energy Inc",
-      "ceo_name": "John Ketchum",
+      "ceo_name": "John W. Ketchum",
       "total_compensation": 24192607,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -29367,7 +29419,7 @@
     {
       "ticker": "ADM",
       "company_name": "Archer-Daniels-Midland Co",
-      "ceo_name": "LUCIANO Board",
+      "ceo_name": "J. R. Luciano",
       "total_compensation": 17700055,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -29452,9 +29504,7 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/7084/000119312526126218/d911479ddef14a.htm",
       "neo_count": 5,
       "available_years": [
-        2025,
-        2024,
-        2023
+        2025
       ],
       "total_neo_compensation": 34225225,
       "proxy_fiscal_year": 2025,
@@ -29480,7 +29530,7 @@
     {
       "ticker": "CBRE",
       "company_name": "CBRE Group Inc",
-      "ceo_name": "Robert Sulentic",
+      "ceo_name": "Robert E Sulentic",
       "total_compensation": 24325039,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -29829,7 +29879,7 @@
     {
       "ticker": "NDAQ",
       "company_name": "Nasdaq Inc",
-      "ceo_name": "Adena Friedman",
+      "ceo_name": "Adena T Friedman",
       "total_compensation": 25014550,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -30045,7 +30095,7 @@
     {
       "ticker": "SRE",
       "company_name": "Sempra",
-      "ceo_name": "Jeffrey Martin",
+      "ceo_name": "Justin C Bird",
       "total_compensation": 6755296,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -30155,7 +30205,7 @@
     {
       "ticker": "TDG",
       "company_name": "TransDigm Group Inc",
-      "ceo_name": "Kevin Stein",
+      "ceo_name": "Joel B Reiss",
       "total_compensation": 39496212,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -30316,7 +30366,8 @@
       "available_years": [
         2025,
         2024,
-        2023
+        2023,
+        2022
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -30345,7 +30396,7 @@
     {
       "ticker": "BSX",
       "company_name": "Boston Scientific Corp",
-      "ceo_name": "Michael Mahoney",
+      "ceo_name": "Michael F Mahoney",
       "total_compensation": 23532050,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -30581,7 +30632,7 @@
     {
       "ticker": "HPE",
       "company_name": "Hewlett Packard Enterprise Co",
-      "ceo_name": "Antonio Neri",
+      "ceo_name": "Antonio F Neri",
       "total_compensation": 23482721,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -30891,7 +30942,7 @@
     {
       "ticker": "FANG",
       "company_name": "Diamondback Energy Inc",
-      "ceo_name": "Travis Stice",
+      "ceo_name": "Travis D Stice",
       "total_compensation": 20502775,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -31088,7 +31139,7 @@
     {
       "ticker": "DUK",
       "company_name": "Duke Energy Corp",
-      "ceo_name": "Lynn Good",
+      "ceo_name": "Harry K. Sideris",
       "total_compensation": 5278712,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -31255,7 +31306,7 @@
     {
       "ticker": "FIS",
       "company_name": "Fidelity National Information Services Inc",
-      "ceo_name": "Stephanie Ferris",
+      "ceo_name": "Stephanie L Ferris",
       "total_compensation": 22928412,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -31438,7 +31489,7 @@
     {
       "ticker": "MMM",
       "company_name": "3M Co",
-      "ceo_name": "William Brown",
+      "ceo_name": "William M Brown",
       "total_compensation": 21005009,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -31640,8 +31691,8 @@
     {
       "ticker": "WAB",
       "company_name": "Westinghouse Air Brake Technologies Corp",
-      "ceo_name": "Rafael Santana",
-      "total_compensation": 12142116,
+      "ceo_name": "John Olin",
+      "total_compensation": 6072070,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 48337,
@@ -31761,7 +31812,7 @@
       "cik": "0000943452",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/943452/000162828026022197/wab-20260330.htm",
-      "total_neo_compensation": 39604146,
+      "total_neo_compensation": 33534100,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -32033,7 +32084,7 @@
     {
       "ticker": "IP",
       "company_name": "International Paper Co",
-      "ceo_name": "Andrew Silvernail",
+      "ceo_name": "Andrew K Silvernail",
       "total_compensation": 14838324,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -32632,7 +32683,7 @@
     {
       "ticker": "CNC",
       "company_name": "Centene Corp",
-      "ceo_name": "Sarah London",
+      "ceo_name": "Sarah M. London",
       "total_compensation": 20602148,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -33025,7 +33076,7 @@
     {
       "ticker": "TGT",
       "company_name": "Target Corp",
-      "ceo_name": "Brian Cornell",
+      "ceo_name": "Michael J Fiddelke",
       "total_compensation": 9598071,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -33455,7 +33506,7 @@
     {
       "ticker": "NWSA",
       "company_name": "News Corp",
-      "ceo_name": "Robert Thomson",
+      "ceo_name": "Robert J Thomson",
       "total_compensation": 20623729,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -33652,7 +33703,7 @@
     {
       "ticker": "MET",
       "company_name": "MetLife Inc",
-      "ceo_name": "Michel Khalaf",
+      "ceo_name": "Michel A Khalaf",
       "total_compensation": 22364273,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -33816,8 +33867,8 @@
     {
       "ticker": "PM",
       "company_name": "Philip Morris International Inc",
-      "ceo_name": "Jacek Olczak",
-      "total_compensation": 6621252,
+      "ceo_name": "Massimo Andolina",
+      "total_compensation": 7882782,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 47109,
@@ -34103,7 +34154,7 @@
     {
       "ticker": "LOW",
       "company_name": "Lowe's Cos Inc",
-      "ceo_name": "Marvin Ellison",
+      "ceo_name": "Marvin R. Ellison",
       "total_compensation": 21581889,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -34267,7 +34318,7 @@
     {
       "ticker": "EMR",
       "company_name": "Emerson Electric Co",
-      "ceo_name": "Karsanbhai",
+      "ceo_name": "S. L. Karsanbhai",
       "total_compensation": 21240262,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -34449,9 +34500,9 @@
       "neo_count": 5,
       "total_neo_compensation": 43914846,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -34481,7 +34532,7 @@
     {
       "ticker": "MDT",
       "company_name": "Medtronic PLC",
-      "ceo_name": "Geoffrey Martha",
+      "ceo_name": "Geoffrey S. Martha",
       "total_compensation": 12625000,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -35201,7 +35252,7 @@
     {
       "ticker": "TXT",
       "company_name": "Textron Inc",
-      "ceo_name": "Scott Donnelly",
+      "ceo_name": "Scott C. Donnelly",
       "total_compensation": 19643978,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -35405,7 +35456,7 @@
     {
       "ticker": "ICE",
       "company_name": "Intercontinental Exchange Inc",
-      "ceo_name": "Jeffrey Sprecher",
+      "ceo_name": "Jeffrey C. Sprecher",
       "total_compensation": 22133386,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -35596,9 +35647,9 @@
       "neo_count": 5,
       "total_neo_compensation": 48480333,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -35628,7 +35679,7 @@
     {
       "ticker": "RCL",
       "company_name": "Royal Caribbean Cruises Ltd",
-      "ceo_name": "Jason Liberty",
+      "ceo_name": "Jason T. Liberty",
       "total_compensation": 23978813,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -35842,8 +35893,8 @@
     {
       "ticker": "GEHC",
       "company_name": "GE HealthCare Technologies Inc",
-      "ceo_name": "Peter Arduini",
-      "total_compensation": 5358303,
+      "ceo_name": "Taha Kass-Hout",
+      "total_compensation": 6005829,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 73078,
@@ -36205,9 +36256,9 @@
       "neo_count": 4,
       "total_neo_compensation": 47286680,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -36387,9 +36438,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "def14a_manual",
       "ceo_gender": "M",
@@ -36419,7 +36470,7 @@
     {
       "ticker": "HPQ",
       "company_name": "HP Inc",
-      "ceo_name": "Enrique Lores",
+      "ceo_name": "Enrique J. Lores",
       "total_compensation": 23103812,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -36808,7 +36859,7 @@
     {
       "ticker": "USB",
       "company_name": "US Bancorp",
-      "ceo_name": "Andrew Cecere",
+      "ceo_name": "Gunjan Kedia",
       "total_compensation": 16674515,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -37067,7 +37118,7 @@
     {
       "ticker": "LH",
       "company_name": "Labcorp Holdings Inc",
-      "ceo_name": "Adam Schechter",
+      "ceo_name": "Adam H. Schechter",
       "total_compensation": 4816677,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -37416,7 +37467,7 @@
     {
       "ticker": "AFL",
       "company_name": "Aflac Inc",
-      "ceo_name": "Daniel Amos",
+      "ceo_name": "Daniel P. Amos",
       "total_compensation": 25033687,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -37662,7 +37713,7 @@
     {
       "ticker": "DOV",
       "company_name": "Dover Corp",
-      "ceo_name": "Richard Tobin",
+      "ceo_name": "Richard J. Tobin",
       "total_compensation": 14143252,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -38547,9 +38598,9 @@
       ],
       "neo_count": 5,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "def14a_manual",
       "total_neo_compensation": 52997956,
@@ -38581,7 +38632,7 @@
     {
       "ticker": "NUE",
       "company_name": "Nucor Corp",
-      "ceo_name": "Leon Topalian",
+      "ceo_name": "Leon J. Topalian",
       "total_compensation": 14945471,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -38839,7 +38890,7 @@
     {
       "ticker": "MCK",
       "company_name": "McKesson Corp",
-      "ceo_name": "Brian Tyler",
+      "ceo_name": "Brian S. Tyler",
       "total_compensation": 24213044,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -39062,8 +39113,8 @@
     {
       "ticker": "TRMB",
       "company_name": "Trimble Inc",
-      "ceo_name": "Robert Painter",
-      "total_compensation": 8907324,
+      "ceo_name": "Phillip Sawarynski",
+      "total_compensation": 4453662,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 84344,
@@ -39173,7 +39224,7 @@
         2025,
         2024
       ],
-      "total_neo_compensation": 32270018,
+      "total_neo_compensation": 16135009,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -39196,7 +39247,7 @@
     {
       "ticker": "BMY",
       "company_name": "Bristol-Myers Squibb Co",
-      "ceo_name": "Christopher Boerner",
+      "ceo_name": "Cristian Massacesi",
       "total_compensation": 20145900,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -39519,7 +39570,7 @@
     {
       "ticker": "APTV",
       "company_name": "Aptiv PLC",
-      "ceo_name": "Kevin Clark",
+      "ceo_name": "Varun Laroyia",
       "total_compensation": 7132692,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -39673,9 +39724,9 @@
       "neo_count": 5,
       "total_neo_compensation": 53943165,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -39698,7 +39749,7 @@
     {
       "ticker": "PH",
       "company_name": "Parker-Hannifin Corp",
-      "ceo_name": "Jennifer Parmentier",
+      "ceo_name": "Jennifer A. Parmentier",
       "total_compensation": 19317705,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -39915,7 +39966,7 @@
     {
       "ticker": "KEY",
       "company_name": "KeyCorp",
-      "ceo_name": "Christopher Gorman",
+      "ceo_name": "Christopher M. Gorman",
       "total_compensation": 11522025,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -40457,7 +40508,7 @@
     {
       "ticker": "ABBV",
       "company_name": "AbbVie Inc",
-      "ceo_name": "Robert Michael",
+      "ceo_name": "Scott T. Reents",
       "total_compensation": 12353002,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -40660,7 +40711,7 @@
     {
       "ticker": "COR",
       "company_name": "Cencora Inc",
-      "ceo_name": "Steven Collis",
+      "ceo_name": "Robert P. Mauch",
       "total_compensation": 18256227,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -40873,7 +40924,7 @@
     {
       "ticker": "PHM",
       "company_name": "PulteGroup Inc",
-      "ceo_name": "Ryan Marshall",
+      "ceo_name": "Ryan R. Marshall",
       "total_compensation": 15393266,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -41068,9 +41119,9 @@
       "neo_count": 6,
       "total_neo_compensation": 33812245,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -41099,7 +41150,7 @@
     {
       "ticker": "BA",
       "company_name": "Boeing Co/The",
-      "ceo_name": "Robert Ortberg",
+      "ceo_name": "Robert K. Ortberg",
       "total_compensation": 23581389,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -41330,7 +41381,7 @@
     {
       "ticker": "CZR",
       "company_name": "Caesars Entertainment Inc",
-      "ceo_name": "Thomas Reeg",
+      "ceo_name": "Thomas R. Reeg",
       "total_compensation": 17199029,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -41536,7 +41587,7 @@
     {
       "ticker": "IRM",
       "company_name": "Iron Mountain Inc",
-      "ceo_name": "William Meaney",
+      "ceo_name": "William L. Meaney",
       "total_compensation": 17047480,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -41773,7 +41824,7 @@
     {
       "ticker": "IT",
       "company_name": "Gartner Inc",
-      "ceo_name": "Eugene Hall",
+      "ceo_name": "Eugene A. Hall",
       "total_compensation": 19226580,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -41977,7 +42028,7 @@
     {
       "ticker": "HAL",
       "company_name": "Halliburton Co",
-      "ceo_name": "Jeffrey Miller",
+      "ceo_name": "Jeffrey A. Miller",
       "total_compensation": 16525407,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -42191,7 +42242,7 @@
     {
       "ticker": "FTV",
       "company_name": "Fortive Corp",
-      "ceo_name": "James Lico",
+      "ceo_name": "Olumide O. Soroye",
       "total_compensation": 14405012,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -42972,7 +43023,7 @@
     {
       "ticker": "ISRG",
       "company_name": "Intuitive Surgical Inc",
-      "ceo_name": "Gary Guthart",
+      "ceo_name": "David J. Rosa",
       "total_compensation": 20997480,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -43139,8 +43190,8 @@
     {
       "ticker": "MCD",
       "company_name": "McDonald's Corp",
-      "ceo_name": "Christopher Kempczinski",
-      "total_compensation": 41149050,
+      "ceo_name": "Chris Kempczinski",
+      "total_compensation": 20574525,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 17492,
@@ -43284,7 +43335,7 @@
       "cik": "0000063908",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/63908/000119312526145548/mcd-20260407.htm",
-      "total_neo_compensation": 91862516,
+      "total_neo_compensation": 45931258,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -43480,9 +43531,9 @@
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A",
       "ceo_gender": "M",
@@ -43505,7 +43556,7 @@
     {
       "ticker": "SWKS",
       "company_name": "Skyworks Solutions Inc",
-      "ceo_name": "Liam Griffin",
+      "ceo_name": "Philip G. Brace",
       "total_compensation": 24536606,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -43666,7 +43717,7 @@
     {
       "ticker": "BAX",
       "company_name": "Baxter International Inc",
-      "ceo_name": "Jos\u00e9 Almeida",
+      "ceo_name": "Jos\u00e9 E. Almeida",
       "total_compensation": 7666044,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -43760,8 +43811,8 @@
       "total_neo_compensation": 26361099,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
-        2024,
-        2025
+        2025,
+        2024
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -43945,9 +43996,9 @@
       "neo_count": 6,
       "total_neo_compensation": 49698900,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -44181,7 +44232,9 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4447/000119312525073397/d763357ddef14a.htm",
       "neo_count": 5,
       "available_years": [
-        2025
+        2024,
+        2023,
+        2022
       ],
       "total_neo_compensation": 49009842,
       "proxy_fiscal_year": 2024,
@@ -44198,7 +44251,7 @@
     {
       "ticker": "RTX",
       "company_name": "RTX Corp",
-      "ceo_name": "Christopher Calio",
+      "ceo_name": "Christopher T. Calio",
       "total_compensation": 24846826,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -44370,9 +44423,9 @@
       "total_neo_compensation": 54703270,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -44402,7 +44455,7 @@
     {
       "ticker": "EL",
       "company_name": "Estee Lauder Cos Inc",
-      "ceo_name": "Fabrizio Freda",
+      "ceo_name": "St\u00e9phane de La Faverie\ufeff",
       "total_compensation": 9613508,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -44572,9 +44625,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A",
       "say_on_pay": {
@@ -44604,7 +44657,7 @@
     {
       "ticker": "CVS",
       "company_name": "CVS Health Corp",
-      "ceo_name": "David Joyner",
+      "ceo_name": "J. David Joyner",
       "total_compensation": 21214084,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -44803,9 +44856,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -45051,8 +45104,8 @@
     {
       "ticker": "ARE",
       "company_name": "Alexandria Real Estate Equities Inc",
-      "ceo_name": "Joel Marcus",
-      "total_compensation": 8844053,
+      "ceo_name": "Joel S. Marcus",
+      "total_compensation": 11375455,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 193000,
@@ -45289,7 +45342,7 @@
     {
       "ticker": "MLM",
       "company_name": "Martin Marietta Materials Inc",
-      "ceo_name": "Howard Nye",
+      "ceo_name": "C. Howard Nye",
       "total_compensation": 14264065,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -45417,9 +45470,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 98.16,
@@ -45448,7 +45501,7 @@
     {
       "ticker": "MNST",
       "company_name": "Monster Beverage Corp",
-      "ceo_name": "Rodney Sacks",
+      "ceo_name": "Rodney C. Sacks",
       "total_compensation": 20991964,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -45539,7 +45592,7 @@
       "available_years": [
         2025
       ],
-      "total_neo_compensation": 39635833,
+      "total_neo_compensation": 36640330,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -45562,7 +45615,7 @@
     {
       "ticker": "WDC",
       "company_name": "Western Digital Corp",
-      "ceo_name": "David Goeckeler",
+      "ceo_name": "Irving Tan",
       "total_compensation": 11507815,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -45759,9 +45812,9 @@
       "neo_count": 9,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -45790,7 +45843,7 @@
     {
       "ticker": "UNP",
       "company_name": "Union Pacific Corp",
-      "ceo_name": "James Vena",
+      "ceo_name": "V. James Vena",
       "total_compensation": 6000003,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -46046,9 +46099,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 94.89,
@@ -46070,7 +46123,7 @@
     {
       "ticker": "INCY",
       "company_name": "Incyte Corp",
-      "ceo_name": "Herv\u00e9 Hoppenot",
+      "ceo_name": "William J. Meury",
       "total_compensation": 32085952,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -46282,9 +46335,9 @@
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 83.86,
@@ -46449,9 +46502,9 @@
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 96.71,
@@ -46480,7 +46533,7 @@
     {
       "ticker": "WRB",
       "company_name": "W R Berkley Corp",
-      "ceo_name": "Robert Berkley",
+      "ceo_name": "William R. Berkley",
       "total_compensation": 17049206,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -46765,8 +46818,8 @@
     {
       "ticker": "CAH",
       "company_name": "Cardinal Health Inc",
-      "ceo_name": "Jason Hollar",
-      "total_compensation": 9490088,
+      "ceo_name": "Stephen M. Mason",
+      "total_compensation": 4745044,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 56119,
@@ -46851,7 +46904,7 @@
       "cik": "721371",
       "filing_date": "2025-09-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/721371/000072137125000114/cah-20250916.htm",
-      "total_neo_compensation": 80728966,
+      "total_neo_compensation": 40364483,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -46878,7 +46931,7 @@
     {
       "ticker": "BDX",
       "company_name": "Becton Dickinson & Co",
-      "ceo_name": "Thomas Polen",
+      "ceo_name": "Thomas E. Polen",
       "total_compensation": 17129140,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -47039,9 +47092,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -47256,9 +47309,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 95.21,
@@ -47280,7 +47333,7 @@
     {
       "ticker": "BEN",
       "company_name": "Franklin Resources Inc",
-      "ceo_name": "Jennifer Johnson",
+      "ceo_name": "Jennifer M. Johnson",
       "total_compensation": 16844816,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -47463,9 +47516,9 @@
       "neo_count": 5,
       "total_neo_compensation": 49136200,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
@@ -47494,8 +47547,8 @@
     {
       "ticker": "ZTS",
       "company_name": "Zoetis Inc",
-      "ceo_name": "Kristin Peck",
-      "total_compensation": 19046509,
+      "ceo_name": "Kristin C. Peck",
+      "total_compensation": 38093018,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 79134,
@@ -47668,13 +47721,13 @@
       "cik": "1555280",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1555280/000155528026000015/zts-20260406.htm",
-      "total_neo_compensation": 35109800,
+      "total_neo_compensation": 70219600,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 85.57,
@@ -47703,7 +47756,7 @@
     {
       "ticker": "GPN",
       "company_name": "Global Payments Inc",
-      "ceo_name": "Cameron Bready",
+      "ceo_name": "Cameron M. Bready",
       "total_compensation": 20307392,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -47848,8 +47901,8 @@
     {
       "ticker": "APH",
       "company_name": "Amphenol Corp",
-      "ceo_name": "R.A. Norwitt",
-      "total_compensation": 281384,
+      "ceo_name": "L. Walter",
+      "total_compensation": 141704,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 17712,
@@ -47941,7 +47994,7 @@
       "cik": "820313",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926040688/tm261344-1_def14a.htm",
-      "total_neo_compensation": 1010870,
+      "total_neo_compensation": 508471,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -47968,7 +48021,7 @@
     {
       "ticker": "KMX",
       "company_name": "CarMax Inc",
-      "ceo_name": "William Nash",
+      "ceo_name": "David W. McCreight",
       "total_compensation": 4208674,
       "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
@@ -48167,9 +48220,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2026,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -48184,7 +48237,7 @@
     {
       "ticker": "WM",
       "company_name": "Waste Management Inc",
-      "ceo_name": "James Fish",
+      "ceo_name": "James C. Fish, Jr",
       "total_compensation": 19048786,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -48298,7 +48351,7 @@
     {
       "ticker": "DVN",
       "company_name": "Devon Energy Corp",
-      "ceo_name": "Richard Muncrief",
+      "ceo_name": "Clay M. Gaspar",
       "total_compensation": 12566384,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -48543,9 +48596,9 @@
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -48768,9 +48821,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -48798,8 +48851,8 @@
     {
       "ticker": "ROST",
       "company_name": "Ross Stores Inc",
-      "ceo_name": "Barbara Rentler",
-      "total_compensation": 47467296,
+      "ceo_name": "James G. Conroy",
+      "total_compensation": 17406705,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 9602,
@@ -48941,13 +48994,13 @@
       "cik": "745732",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/745732/000074573226000013/rost-20260406.htm",
-      "total_neo_compensation": 30950657,
+      "total_neo_compensation": 53505920,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 92.55,
@@ -49147,9 +49200,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 96.6,
@@ -49178,7 +49231,7 @@
     {
       "ticker": "TEL",
       "company_name": "TE Connectivity PLC",
-      "ceo_name": "Terrence Curtin",
+      "ceo_name": "Heath A. Mitts",
       "total_compensation": 6831364,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -49751,9 +49804,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -49782,7 +49835,7 @@
     {
       "ticker": "CTSH",
       "company_name": "Cognizant Technology Solutions Corp",
-      "ceo_name": "Ravi  Kumar",
+      "ceo_name": "Ravi Kumar",
       "total_compensation": 17124498,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -50239,9 +50292,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 97.35,
@@ -50263,7 +50316,7 @@
     {
       "ticker": "STT",
       "company_name": "State Street Corp",
-      "ceo_name": "Ronald O'Hanley",
+      "ceo_name": "Ronald P. O\u2019Hanley",
       "total_compensation": 19529070,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -50437,9 +50490,9 @@
       "neo_count": 7,
       "total_neo_compensation": 66817133,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -50648,9 +50701,9 @@
       "neo_count": 6,
       "total_neo_compensation": 65804182,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
@@ -50680,8 +50733,8 @@
     {
       "ticker": "CCI",
       "company_name": "Crown Castle Inc",
-      "ceo_name": "Steven Moskowitz",
-      "total_compensation": 36436908,
+      "ceo_name": "Steven J. Moskowitz (j)",
+      "total_compensation": 18218454,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 160310,
@@ -50849,7 +50902,7 @@
         2025,
         2024
       ],
-      "total_neo_compensation": 143525636,
+      "total_neo_compensation": 71762818,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -51060,7 +51113,7 @@
     {
       "ticker": "ROK",
       "company_name": "Rockwell Automation Inc",
-      "ceo_name": "Blake Moret",
+      "ceo_name": "Blake D. Moret",
       "total_compensation": 15401707,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -51245,9 +51298,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -51276,7 +51329,7 @@
     {
       "ticker": "HST",
       "company_name": "Host Hotels & Resorts Inc",
-      "ceo_name": "James Risoleo",
+      "ceo_name": "James F. Risoleo",
       "total_compensation": 14835223,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -51576,7 +51629,7 @@
     {
       "ticker": "KMB",
       "company_name": "Kimberly-Clark Corp",
-      "ceo_name": "Michael Hsu",
+      "ceo_name": "Michael D. Hsu",
       "total_compensation": 15320405,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -52021,7 +52074,7 @@
     {
       "ticker": "ECL",
       "company_name": "Ecolab Inc",
-      "ceo_name": "Christophe Beck",
+      "ceo_name": "Scott D. Kirkland",
       "total_compensation": 5192833,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -52479,7 +52532,7 @@
     {
       "ticker": "WMB",
       "company_name": "Williams Cos Inc",
-      "ceo_name": "Alan Armstrong",
+      "ceo_name": "Chad J. Zamarin",
       "total_compensation": 17365586,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -52728,7 +52781,7 @@
     {
       "ticker": "DLR",
       "company_name": "Digital Realty Trust Inc",
-      "ceo_name": "Andrew Power",
+      "ceo_name": "Andrew P. Power",
       "total_compensation": 21071498,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -52833,9 +52886,9 @@
       "neo_count": 3,
       "total_neo_compensation": 30767982,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -53062,6 +53115,7 @@
       "total_neo_compensation": 42246717,
       "available_years": [
         2025,
+        2024,
         2023
       ],
       "proxy_fiscal_year": 2025,
@@ -53085,7 +53139,7 @@
     {
       "ticker": "EOG",
       "company_name": "EOG Resources Inc",
-      "ceo_name": "Ezra Yacob",
+      "ceo_name": "Ezra Y. Yacob",
       "total_compensation": 17576636,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -53458,9 +53512,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2026,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "say_on_pay": {
         "approval_pct": 88.86,
@@ -53489,7 +53543,7 @@
     {
       "ticker": "GIS",
       "company_name": "General Mills Inc",
-      "ceo_name": "Jeffrey Harmening",
+      "ceo_name": "Jeffrey L. Harmening",
       "total_compensation": 12492830,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -53687,9 +53741,9 @@
       "neo_count": 5,
       "total_neo_compensation": 28547057,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -53719,7 +53773,7 @@
     {
       "ticker": "SWK",
       "company_name": "Stanley Black & Decker Inc",
-      "ceo_name": "Donald Allan",
+      "ceo_name": "Christopher J. Nelson",
       "total_compensation": 7212785,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -53892,9 +53946,9 @@
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -53916,7 +53970,7 @@
     {
       "ticker": "EMN",
       "company_name": "Eastman Chemical Co",
-      "ceo_name": "Mark Costa",
+      "ceo_name": "Brad A. Lich",
       "total_compensation": 6097092,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -54072,9 +54126,9 @@
       "neo_count": 4,
       "total_neo_compensation": 20243070,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -54257,7 +54311,7 @@
     {
       "ticker": "APD",
       "company_name": "Air Products and Chemicals Inc",
-      "ceo_name": "Seifi Ghasemi",
+      "ceo_name": "Eduardo Menezes",
       "total_compensation": 11809287,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -54481,7 +54535,7 @@
     {
       "ticker": "ADP",
       "company_name": "Automatic Data Processing Inc",
-      "ceo_name": "Maria Black",
+      "ceo_name": "Don McGuire",
       "total_compensation": 7238955,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -54693,9 +54747,9 @@
       "neo_count": 6,
       "total_neo_compensation": 49170432,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -54718,7 +54772,7 @@
     {
       "ticker": "DXCM",
       "company_name": "Dexcom Inc",
-      "ceo_name": "Kevin Sayer",
+      "ceo_name": "Jacob Leach",
       "total_compensation": 7985960,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -54915,9 +54969,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 88.31,
@@ -54939,7 +54993,7 @@
     {
       "ticker": "PCG",
       "company_name": "PG&E Corp",
-      "ceo_name": "Patricia Poppe",
+      "ceo_name": "Patricia K. Poppe",
       "total_compensation": 19812481,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -55345,7 +55399,7 @@
     {
       "ticker": "MGM",
       "company_name": "MGM Resorts International",
-      "ceo_name": "William Hornbuckle",
+      "ceo_name": "William J. Hornbuckle",
       "total_compensation": 25329156,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -55538,9 +55592,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -55567,7 +55621,7 @@
     {
       "ticker": "HOLX",
       "company_name": "Hologic Inc",
-      "ceo_name": "Stephen MacMillan",
+      "ceo_name": "Karleen M. Oberton",
       "total_compensation": 4090438,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -55778,8 +55832,8 @@
     {
       "ticker": "MTCH",
       "company_name": "Match Group Inc",
-      "ceo_name": "Bernard Kim",
-      "total_compensation": 94028506,
+      "ceo_name": "Spencer Rascoff",
+      "total_compensation": 47014253,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 150655,
@@ -55918,7 +55972,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 159505040,
+      "total_neo_compensation": 79752520,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -55947,7 +56001,7 @@
     {
       "ticker": "MSCI",
       "company_name": "MSCI Inc",
-      "ceo_name": "Henry Fernandez",
+      "ceo_name": "Henry A. Fernandez",
       "total_compensation": 33320590,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -56179,7 +56233,7 @@
     {
       "ticker": "DD",
       "company_name": "DuPont de Nemours Inc",
-      "ceo_name": "Edward Breen",
+      "ceo_name": "Lori D. Koch",
       "total_compensation": 16134250,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -56343,7 +56397,7 @@
     {
       "ticker": "PKG",
       "company_name": "Packaging Corp of America",
-      "ceo_name": "Mark Kowlzan",
+      "ceo_name": "Mark W. Kowlzan",
       "total_compensation": 16992255,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -56590,7 +56644,7 @@
     {
       "ticker": "KR",
       "company_name": "Kroger Co",
-      "ceo_name": "Rodney McMullen",
+      "ceo_name": "Ronald L. Sargent Interim",
       "total_compensation": 28075507,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -56800,13 +56854,13 @@
       "cik": "56873",
       "filing_date": "2026-05-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm",
-      "total_neo_compensation": 60422838,
+      "total_neo_compensation": 78899884,
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 88.91,
@@ -56835,7 +56889,7 @@
     {
       "ticker": "PWR",
       "company_name": "Quanta Services Inc",
-      "ceo_name": "Earl (Duke) Austin",
+      "ceo_name": "Jayshree Desai",
       "total_compensation": 14087660,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -56959,7 +57013,7 @@
     {
       "ticker": "SYY",
       "company_name": "Sysco Corp",
-      "ceo_name": "Kevin Hourican",
+      "ceo_name": "Kevin P. Hourican",
       "total_compensation": 16228599,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -57088,9 +57142,9 @@
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -57112,7 +57166,7 @@
     {
       "ticker": "HUM",
       "company_name": "Humana Inc",
-      "ceo_name": "James Rechtin",
+      "ceo_name": "Celeste M. Mellet \ufeff",
       "total_compensation": 6000000,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -57238,7 +57292,7 @@
     {
       "ticker": "HD",
       "company_name": "Home Depot Inc",
-      "ceo_name": "Edward Decker",
+      "ceo_name": "Edward P. Decker",
       "total_compensation": 16191127,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -57409,9 +57463,9 @@
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -57440,7 +57494,7 @@
     {
       "ticker": "TRGP",
       "company_name": "Targa Resources Corp",
-      "ceo_name": "Matthew Meloy",
+      "ceo_name": "Matthew J. Meloy",
       "total_compensation": 21470708,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -57545,9 +57599,9 @@
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -57741,9 +57795,9 @@
       "neo_count": 5,
       "total_neo_compensation": 37560897,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -57773,7 +57827,7 @@
     {
       "ticker": "COO",
       "company_name": "Cooper Cos Inc",
-      "ceo_name": "Albert White",
+      "ceo_name": "Albert G. White III",
       "total_compensation": 16051141,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -57985,9 +58039,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 89.86,
@@ -58015,7 +58069,7 @@
     {
       "ticker": "JCI",
       "company_name": "Johnson Controls International plc",
-      "ceo_name": "George Oliver",
+      "ceo_name": "Joakim Weidemanis",
       "total_compensation": 19963827,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -58421,7 +58475,7 @@
     {
       "ticker": "CSX",
       "company_name": "CSX Corp",
-      "ceo_name": "Joseph Hinrichs",
+      "ceo_name": "Stephen F. Angel",
       "total_compensation": 11711612,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -58743,9 +58797,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 92.12,
@@ -58774,7 +58828,7 @@
     {
       "ticker": "AKAM",
       "company_name": "Akamai Technologies Inc",
-      "ceo_name": "Dr. Leighton",
+      "ceo_name": "Dr. F. Thomson Leighton",
       "total_compensation": 15954172,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -59005,7 +59059,7 @@
     {
       "ticker": "UHS",
       "company_name": "Universal Health Services Inc",
-      "ceo_name": "Marc Miller",
+      "ceo_name": "Marc D. Miller",
       "total_compensation": 16148937,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -59174,7 +59228,7 @@
     {
       "ticker": "STZ",
       "company_name": "Constellation Brands Inc",
-      "ceo_name": "William Newlands",
+      "ceo_name": "William A. Newlands",
       "total_compensation": 14209126,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -59354,9 +59408,9 @@
       "neo_count": 5,
       "total_neo_compensation": 30234629,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
@@ -59519,9 +59573,9 @@
       "neo_count": 5,
       "total_neo_compensation": 40542719,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -59551,7 +59605,7 @@
     {
       "ticker": "ED",
       "company_name": "Consolidated Edison Inc",
-      "ceo_name": "Timothy Cawley",
+      "ceo_name": "Timothy P. Cawley",
       "total_compensation": 34031218,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -59730,9 +59784,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 92.53,
@@ -59988,7 +60042,7 @@
     {
       "ticker": "EFX",
       "company_name": "Equifax Inc",
-      "ceo_name": "Mark Begor",
+      "ceo_name": "Mark W. Begor",
       "total_compensation": 23420134,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -60201,9 +60255,9 @@
       "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 84.32,
@@ -60232,7 +60286,7 @@
     {
       "ticker": "VTRS",
       "company_name": "Viatris Inc",
-      "ceo_name": "Scott Smith",
+      "ceo_name": "Scott A. Smith",
       "total_compensation": 15273331,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -60403,9 +60457,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 96.92,
@@ -60434,7 +60488,7 @@
     {
       "ticker": "CTRA",
       "company_name": "Coterra Energy Inc",
-      "ceo_name": "Thomas Jorden",
+      "ceo_name": "Thomas E. Jorden",
       "total_compensation": 14748960,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -60592,9 +60646,7 @@
       "available_years": [
         2024,
         2023,
-        2022,
-        2021,
-        2020
+        2022
       ],
       "total_neo_compensation": 33896096,
       "proxy_fiscal_year": 2024,
@@ -60618,7 +60670,7 @@
     {
       "ticker": "EXC",
       "company_name": "Exelon Corp",
-      "ceo_name": "Calvin Butler",
+      "ceo_name": "Calvin G. Butler Jr",
       "total_compensation": 15601905,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -60774,9 +60826,9 @@
       "neo_count": 5,
       "total_neo_compensation": 31045044,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -60799,7 +60851,7 @@
     {
       "ticker": "AME",
       "company_name": "AMETEK Inc",
-      "ceo_name": "David Zapico",
+      "ceo_name": "Dalip M. Puri",
       "total_compensation": 4117996,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -60970,7 +61022,7 @@
     {
       "ticker": "EW",
       "company_name": "Edwards Lifesciences Corp",
-      "ceo_name": "Mr. Zovighian",
+      "ceo_name": "Bernard Zovighian",
       "total_compensation": 17454255,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -61107,9 +61159,9 @@
       "neo_count": 6,
       "total_neo_compensation": 41010362,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -61132,7 +61184,7 @@
     {
       "ticker": "HII",
       "company_name": "Huntington Ingalls Industries Inc",
-      "ceo_name": "Christopher Kastner",
+      "ceo_name": "Christopher D. Kastner",
       "total_compensation": 13809406,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -61506,13 +61558,13 @@
       "cik": "1397187",
       "filing_date": "2025-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1397187/000139718725000017/lulu-20250429.htm",
-      "total_neo_compensation": 28894710,
+      "total_neo_compensation": 33301949,
       "neo_count": 4,
       "proxy_fiscal_year": 2024,
       "available_years": [
-        2022,
+        2024,
         2023,
-        2024
+        2022
       ],
       "say_on_pay": {
         "approval_pct": 63.21,
@@ -61541,7 +61593,7 @@
     {
       "ticker": "CTVA",
       "company_name": "Corteva Inc",
-      "ceo_name": "Charles Magro",
+      "ceo_name": "Charles V. Magro",
       "total_compensation": 17499399,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -61628,9 +61680,9 @@
       "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 95.25,
@@ -61659,7 +61711,7 @@
     {
       "ticker": "VTR",
       "company_name": "Ventas Inc",
-      "ceo_name": "Debra Cafaro",
+      "ceo_name": "Debra A. Cafaro",
       "total_compensation": 17501073,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -61822,7 +61874,7 @@
     {
       "ticker": "DGX",
       "company_name": "Quest Diagnostics Inc",
-      "ceo_name": "James Davis",
+      "ceo_name": "James E. Davis",
       "total_compensation": 15498479,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -62018,9 +62070,9 @@
       "neo_count": 5,
       "total_neo_compensation": 28631982,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -62050,7 +62102,7 @@
     {
       "ticker": "MPC",
       "company_name": "Marathon Petroleum Corp",
-      "ceo_name": "Maryann Mannen",
+      "ceo_name": "Maryann T. Mannen",
       "total_compensation": 19016261,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -62247,9 +62299,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 97.45,
@@ -62277,7 +62329,7 @@
     {
       "ticker": "ALB",
       "company_name": "Albemarle Corp",
-      "ceo_name": "Kent Masters",
+      "ceo_name": "J. Kent Masters, Jr",
       "total_compensation": 15513654,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -62509,7 +62561,7 @@
     {
       "ticker": "DECK",
       "company_name": "Deckers Outdoor Corp",
-      "ceo_name": "Dave Powers",
+      "ceo_name": "Stefano Caroti",
       "total_compensation": 11904992,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -62670,9 +62722,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "say_on_pay": {
         "approval_pct": 93.96,
@@ -62694,7 +62746,7 @@
     {
       "ticker": "BR",
       "company_name": "Broadridge Financial Solutions Inc",
-      "ceo_name": "Timothy Gokey",
+      "ceo_name": "Timothy C. Gokey",
       "total_compensation": 17188658,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -62858,9 +62910,9 @@
       "neo_count": 5,
       "total_neo_compensation": 31882546,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -63114,7 +63166,7 @@
     {
       "ticker": "VRSN",
       "company_name": "VeriSign Inc",
-      "ceo_name": "James Bidzos",
+      "ceo_name": "D. James Bidzos",
       "total_compensation": 15536674,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -63229,9 +63281,9 @@
       "neo_count": 3,
       "total_neo_compensation": 26070698,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -63261,7 +63313,7 @@
     {
       "ticker": "TFC",
       "company_name": "Truist Financial Corp",
-      "ceo_name": "William Rogers",
+      "ceo_name": "William H. Rogers, Jr",
       "total_compensation": 14313770,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -63482,7 +63534,7 @@
     {
       "ticker": "EIX",
       "company_name": "Edison International",
-      "ceo_name": "Pedro Pizarro",
+      "ceo_name": "Pedro J. Pizarro",
       "total_compensation": 12711066,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -63667,7 +63719,7 @@
     {
       "ticker": "AIZ",
       "company_name": "Assurant Inc",
-      "ceo_name": "Keith Demmings",
+      "ceo_name": "Keith W. Demmings",
       "total_compensation": 15221983,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -63922,9 +63974,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 97.18,
@@ -63953,7 +64005,7 @@
     {
       "ticker": "ATO",
       "company_name": "Atmos Energy Corp",
-      "ceo_name": "Kevin Akers",
+      "ceo_name": "J. Kevin Akers",
       "total_compensation": 9953274,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -64177,7 +64229,7 @@
     {
       "ticker": "STX",
       "company_name": "Seagate Technology Holdings PLC",
-      "ceo_name": "William Mosley",
+      "ceo_name": "William D. Mosley",
       "total_compensation": 17176927,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -64322,9 +64374,9 @@
       "neo_count": 5,
       "total_neo_compensation": 39363731,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -64347,7 +64399,7 @@
     {
       "ticker": "ES",
       "company_name": "Eversource Energy",
-      "ceo_name": "Joseph Nolan",
+      "ceo_name": "Joseph R. Nolan, Jr",
       "total_compensation": 13505146,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -64508,9 +64560,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -64532,7 +64584,7 @@
     {
       "ticker": "CRL",
       "company_name": "Charles River Laboratories International Inc",
-      "ceo_name": "James Foster",
+      "ceo_name": "James C. Foster",
       "total_compensation": 12739212,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -64928,7 +64980,7 @@
     {
       "ticker": "AMT",
       "company_name": "American Tower Corp",
-      "ceo_name": "Steven Vondran",
+      "ceo_name": "Steven O. Vondran",
       "total_compensation": 12528748,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -65145,7 +65197,7 @@
     {
       "ticker": "AES",
       "company_name": "AES Corp/The",
-      "ceo_name": "Andr\u00e9s Gluski",
+      "ceo_name": "Stephen Coughlin",
       "total_compensation": 9153896,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -65356,7 +65408,7 @@
     {
       "ticker": "PODD",
       "company_name": "Insulet Corp",
-      "ceo_name": "James Hollingshead",
+      "ceo_name": "Ashley McEvoy",
       "total_compensation": 18858968,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -65529,9 +65581,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 91.98,
@@ -65560,7 +65612,7 @@
     {
       "ticker": "FCX",
       "company_name": "Freeport-McMoRan Inc",
-      "ceo_name": "Kathleen Quirk",
+      "ceo_name": "Kathleen L. Quirk",
       "total_compensation": 14808126,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -65686,7 +65738,7 @@
     {
       "ticker": "WBA",
       "company_name": "Walgreens Boots Alliance Inc",
-      "ceo_name": "Timothy Wentworth",
+      "ceo_name": "Stefano Pessina",
       "total_compensation": 7868914,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -66017,7 +66069,7 @@
     {
       "ticker": "OKE",
       "company_name": "ONEOK Inc",
-      "ceo_name": "Pierce Norton II",
+      "ceo_name": "Pierce H. Norton II",
       "total_compensation": 1578000,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -66227,7 +66279,7 @@
     {
       "ticker": "BF-A",
       "company_name": "Brown-Forman Corp",
-      "ceo_name": "Lawson Whiting",
+      "ceo_name": "Lawson E. Whiting",
       "total_compensation": 25304882,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -66415,7 +66467,7 @@
     {
       "ticker": "KVUE",
       "company_name": "Kenvue Inc",
-      "ceo_name": "Thibaut Mongon",
+      "ceo_name": "Kirk Perry",
       "total_compensation": 7494081,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -66558,9 +66610,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 95.44,
@@ -66949,7 +67001,7 @@
     {
       "ticker": "IDXX",
       "company_name": "IDEXX Laboratories Inc",
-      "ceo_name": "Jonathan Mazelsky",
+      "ceo_name": "Jonathan J. Mazelsky",
       "total_compensation": 14580122,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -67161,9 +67213,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 94.22,
@@ -67192,7 +67244,7 @@
     {
       "ticker": "SHW",
       "company_name": "Sherwin-Williams Co",
-      "ceo_name": "Heidi Petz",
+      "ceo_name": "Heidi G. Petz",
       "total_compensation": 14914317,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -67404,9 +67456,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "say_on_pay": {
@@ -67919,7 +67971,7 @@
     {
       "ticker": "WY",
       "company_name": "Weyerhaeuser Co",
-      "ceo_name": "Devin Stockfish",
+      "ceo_name": "David M. Wold",
       "total_compensation": 4233336,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -68331,7 +68383,7 @@
     {
       "ticker": "D",
       "company_name": "Dominion Energy Inc",
-      "ceo_name": "Robert Blue",
+      "ceo_name": "Robert M. Blue",
       "total_compensation": 10597330,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -68570,7 +68622,7 @@
     {
       "ticker": "VMC",
       "company_name": "Vulcan Materials Co",
-      "ceo_name": "Thomas Hill",
+      "ceo_name": "J. Thomas Hill",
       "total_compensation": 14699497,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -68828,7 +68880,7 @@
     {
       "ticker": "ETR",
       "company_name": "Entergy Corp",
-      "ceo_name": "Andrew Marsh",
+      "ceo_name": "Kimberly A. Fontan",
       "total_compensation": 4668828,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -68963,9 +69015,9 @@
       "neo_count": 4,
       "total_neo_compensation": 16250207,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -68988,7 +69040,7 @@
     {
       "ticker": "BXP",
       "company_name": "BXP Inc",
-      "ceo_name": "Owen Thomas",
+      "ceo_name": "Douglas T. Linde",
       "total_compensation": 16198309,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -69309,7 +69361,7 @@
     {
       "ticker": "VICI",
       "company_name": "VICI Properties Inc",
-      "ceo_name": "Edward Pitoniak",
+      "ceo_name": "Edward B. Pitoniak",
       "total_compensation": 14007585,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -69701,9 +69753,9 @@
       "neo_count": 5,
       "total_neo_compensation": 27956873,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -69918,9 +69970,9 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1043604/000110465925035489/tm2431514-1_def14a.htm",
       "neo_count": 5,
       "available_years": [
-        2022,
+        2024,
         2023,
-        2024
+        2022
       ],
       "total_neo_compensation": 29538293,
       "proxy_fiscal_year": 2024,
@@ -69945,7 +69997,7 @@
     {
       "ticker": "EXR",
       "company_name": "Extra Space Storage Inc",
-      "ceo_name": "Joseph Margolis",
+      "ceo_name": "Joseph D. Margolis",
       "total_compensation": 14186887,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -70359,9 +70411,9 @@
       "neo_count": 6,
       "total_neo_compensation": 39401765,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
@@ -70510,7 +70562,7 @@
     {
       "ticker": "ODFL",
       "company_name": "Old Dominion Freight Line Inc",
-      "ceo_name": "Kevin Freeman",
+      "ceo_name": "Kevin M. Freeman",
       "total_compensation": 11615896,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -70609,7 +70661,7 @@
       "ticker": "DTE",
       "company_name": "DTE Energy Co",
       "ceo_name": "Gerardo Norcia",
-      "total_compensation": 28315898,
+      "total_compensation": 14158961,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 145282,
@@ -70776,7 +70828,7 @@
         2025,
         2023
       ],
-      "total_neo_compensation": 69093898,
+      "total_neo_compensation": 34552009,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -70807,7 +70859,7 @@
     {
       "ticker": "ULTA",
       "company_name": "Ulta Beauty Inc",
-      "ceo_name": "David Kimbell",
+      "ceo_name": "Kecia L. Steelman",
       "total_compensation": 15403663,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -71218,9 +71270,9 @@
       "neo_count": 5,
       "total_neo_compensation": 29401181,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -71236,7 +71288,7 @@
     {
       "ticker": "LDOS",
       "company_name": "Leidos Holdings Inc",
-      "ceo_name": "Thomas Bell",
+      "ceo_name": "Thomas A. Bell",
       "total_compensation": 14736385,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -71585,7 +71637,7 @@
     {
       "ticker": "PEG",
       "company_name": "Public Service Enterprise Group Inc",
-      "ceo_name": "Ralph LaRossa",
+      "ceo_name": "Ralph A. LaRossa",
       "total_compensation": 13866735,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -71816,7 +71868,7 @@
     {
       "ticker": "KEYS",
       "company_name": "Keysight Technologies Inc",
-      "ceo_name": "Satish Dhanasekaran",
+      "ceo_name": "Satish C. Dhanasekaran",
       "total_compensation": 18020109,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -71997,9 +72049,9 @@
       "neo_count": 6,
       "total_neo_compensation": 53237476,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -72029,8 +72081,8 @@
     {
       "ticker": "BALL",
       "company_name": "Ball Corp",
-      "ceo_name": "Daniel Fisher",
-      "total_compensation": 429918,
+      "ceo_name": "Ronald J. Lewis",
+      "total_compensation": 822720,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 79128,
@@ -72261,7 +72313,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 6420735,
+      "total_neo_compensation": 7096693,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -72283,7 +72335,7 @@
     {
       "ticker": "CF",
       "company_name": "CF Industries Holdings Inc",
-      "ceo_name": "Anthony Will",
+      "ceo_name": "W. Anthony Will",
       "total_compensation": 13711938,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -72465,9 +72517,9 @@
       "neo_count": 5,
       "total_neo_compensation": 34064327,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -72490,7 +72542,7 @@
     {
       "ticker": "CPB",
       "company_name": "The Campbell's Company",
-      "ceo_name": "Mark Clouse",
+      "ceo_name": "Mick J. Beekhuizen",
       "total_compensation": 5380494,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -72786,7 +72838,7 @@
     {
       "ticker": "CHD",
       "company_name": "Church & Dwight Co Inc",
-      "ceo_name": "Matthew Farrell",
+      "ceo_name": "Richard A. Dierker",
       "total_compensation": 9799678,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -73017,7 +73069,7 @@
     {
       "ticker": "VST",
       "company_name": "Vistra Corp",
-      "ceo_name": "James Burke",
+      "ceo_name": "James A. Burke",
       "total_compensation": 15989188,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -73210,7 +73262,7 @@
     {
       "ticker": "COST",
       "company_name": "Costco Wholesale Corp",
-      "ceo_name": "Ron Vachris",
+      "ceo_name": "Ron M. Vachris",
       "total_compensation": 13932597,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -73388,7 +73440,7 @@
       "cik": "0000909832",
       "filing_date": "2025-12-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000159/cost-20251204.htm",
-      "total_neo_compensation": 45184750,
+      "total_neo_compensation": 41513848,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -73416,7 +73468,7 @@
     {
       "ticker": "PCAR",
       "company_name": "PACCAR Inc",
-      "ceo_name": "Preston Feight",
+      "ceo_name": "R. P. Feight",
       "total_compensation": 12618865,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -73668,7 +73720,7 @@
     {
       "ticker": "J",
       "company_name": "Jacobs Solutions Inc",
-      "ceo_name": "Robert Pragada",
+      "ceo_name": "Robert V. Pragada",
       "total_compensation": 14038363,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -73878,7 +73930,7 @@
     {
       "ticker": "PAYC",
       "company_name": "Paycom Software Inc",
-      "ceo_name": "Chris Thomas",
+      "ceo_name": "Chad Richison",
       "total_compensation": 3118606,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -74038,7 +74090,7 @@
     {
       "ticker": "VRSK",
       "company_name": "Verisk Analytics Inc",
-      "ceo_name": "Lee Shavel",
+      "ceo_name": "Lee M. Shavel",
       "total_compensation": 13540847,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -74462,9 +74514,9 @@
       "neo_count": 5,
       "total_neo_compensation": 28881894,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -74492,7 +74544,7 @@
     {
       "ticker": "FE",
       "company_name": "FirstEnergy Corp",
-      "ceo_name": "Brian Tierney",
+      "ceo_name": "K. Jon Taylor",
       "total_compensation": 4793811,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -74677,7 +74729,7 @@
     {
       "ticker": "RVTY",
       "company_name": "Revvity Inc",
-      "ceo_name": "Prahlad Singh",
+      "ceo_name": "Prahlad R. Singh",
       "total_compensation": 2559152,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -75093,7 +75145,7 @@
     {
       "ticker": "STLD",
       "company_name": "Steel Dynamics Inc",
-      "ceo_name": "Mark Millett",
+      "ceo_name": "Mark D. Millett",
       "total_compensation": 12059908,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -75298,7 +75350,7 @@
     {
       "ticker": "TSCO",
       "company_name": "Tractor Supply Co",
-      "ceo_name": "Harry Lawton",
+      "ceo_name": "Harry A. Lawton III",
       "total_compensation": 2311740,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -75550,7 +75602,7 @@
     {
       "ticker": "TER",
       "company_name": "Teradyne Inc",
-      "ceo_name": "Gregory Smith",
+      "ceo_name": "Gregory S. Smith",
       "total_compensation": 14107588,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -75684,7 +75736,7 @@
     {
       "ticker": "PPG",
       "company_name": "PPG Industries Inc",
-      "ceo_name": "Knavish",
+      "ceo_name": "Timothy M. Knavish",
       "total_compensation": 29770044,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -75889,7 +75941,7 @@
     {
       "ticker": "BRO",
       "company_name": "Brown & Brown Inc",
-      "ceo_name": "Powell Brown",
+      "ceo_name": "J. Powell Brown",
       "total_compensation": 8641088,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -76113,7 +76165,7 @@
     {
       "ticker": "HSIC",
       "company_name": "Henry Schein Inc",
-      "ceo_name": "Stanley Bergman",
+      "ceo_name": "Stanley M. Bergman",
       "total_compensation": 5026957,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -76213,7 +76265,7 @@
     {
       "ticker": "KMI",
       "company_name": "Kinder Morgan Inc",
-      "ceo_name": "Kimberly Dang",
+      "ceo_name": "Kimberly A. Dang",
       "total_compensation": 12331566,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -76415,7 +76467,7 @@
     {
       "ticker": "VLTO",
       "company_name": "Veralto Corp",
-      "ceo_name": "Jennifer Honeycutt",
+      "ceo_name": "Jennifer L. Honeycutt",
       "total_compensation": 14803238,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -76615,9 +76667,9 @@
       "neo_count": 5,
       "total_neo_compensation": 30554387,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
@@ -76641,8 +76693,8 @@
     {
       "ticker": "APA",
       "company_name": "APA Corp",
-      "ceo_name": "John Christmann",
-      "total_compensation": 13202517,
+      "ceo_name": "Stephen J. Riney",
+      "total_compensation": 7905055,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 208313,
@@ -76849,7 +76901,7 @@
     {
       "ticker": "EQR",
       "company_name": "Residential",
-      "ceo_name": "Mark Parrell",
+      "ceo_name": "Mark J. Parrell",
       "total_compensation": 12759187,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -77064,7 +77116,7 @@
     {
       "ticker": "PPL",
       "company_name": "PPL Corp",
-      "ceo_name": "Vincent Sorgi",
+      "ceo_name": "Joseph P. Bergstein, Jr",
       "total_compensation": 4864120,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -77274,7 +77326,7 @@
       "ticker": "TAP",
       "company_name": "Molson Coors Beverage Co",
       "ceo_name": "Gavin D.K. Hattersley",
-      "total_compensation": 4134901,
+      "total_compensation": 11137547,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 100197,
@@ -77491,7 +77543,7 @@
     {
       "ticker": "EQT",
       "company_name": "EQT Corp",
-      "ceo_name": "Toby Rice",
+      "ceo_name": "Toby Z. Rice",
       "total_compensation": 16087233,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -77659,8 +77711,8 @@
     {
       "ticker": "IVZ",
       "company_name": "Invesco Ltd",
-      "ceo_name": "Andrew Schlossberg",
-      "total_compensation": 11832119,
+      "ceo_name": "Andrew R. Schlossberg",
+      "total_compensation": 16299849,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 117537,
@@ -77802,7 +77854,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 48477656,
+      "total_neo_compensation": 45180561,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -78019,7 +78071,7 @@
     {
       "ticker": "PNW",
       "company_name": "Pinnacle West Capital Corp",
-      "ceo_name": "Jeffrey Guldner",
+      "ceo_name": "Theodore N. Geisler",
       "total_compensation": 8414652,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -78327,7 +78379,7 @@
     {
       "ticker": "INVH",
       "company_name": "Invitation Homes Inc",
-      "ceo_name": "Dallas Tanner",
+      "ceo_name": "Dallas B. Tanner (",
       "total_compensation": 14096335,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -78598,7 +78650,7 @@
     {
       "ticker": "JKHY",
       "company_name": "Jack Henry & Associates Inc",
-      "ceo_name": "David Foss",
+      "ceo_name": "David B. Foss",
       "total_compensation": 3474604,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -78756,9 +78808,9 @@
       "neo_count": 5,
       "total_neo_compensation": 17318780,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -78781,7 +78833,7 @@
     {
       "ticker": "WEC",
       "company_name": "WEC Energy Group Inc",
-      "ceo_name": "Scott Lauber",
+      "ceo_name": "Scott J. Lauber",
       "total_compensation": 12188492,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -79216,9 +79268,9 @@
       ],
       "neo_count": 5,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "total_neo_compensation": 32337304,
       "proxy_fiscal_year": 2025,
@@ -79248,7 +79300,7 @@
     {
       "ticker": "NTRS",
       "company_name": "Northern Trust Corp",
-      "ceo_name": "Michael O'Grady",
+      "ceo_name": "David W. Fox, Jr",
       "total_compensation": 3451073,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -79433,7 +79485,7 @@
     {
       "ticker": "KIM",
       "company_name": "Kimco Realty Corp",
-      "ceo_name": "Conor Flynn",
+      "ceo_name": "Conor C. Flynn",
       "total_compensation": 11581750,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -79602,9 +79654,9 @@
       "neo_count": 5,
       "total_neo_compensation": 23748458,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -79858,7 +79910,7 @@
     {
       "ticker": "MKC",
       "company_name": "McCormick & Co Inc",
-      "ceo_name": "Brendan Foley",
+      "ceo_name": "Brendan M. Foley",
       "total_compensation": 10831581,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -80062,7 +80114,7 @@
     {
       "ticker": "PNR",
       "company_name": "Pentair PLC",
-      "ceo_name": "John Stauch",
+      "ceo_name": "John L. Stauch",
       "total_compensation": 11374255,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -80376,9 +80428,9 @@
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -80400,7 +80452,7 @@
     {
       "ticker": "MAS",
       "company_name": "Masco Corp",
-      "ceo_name": "Keith Allman",
+      "ceo_name": "Jonathon J. Nudi",
       "total_compensation": 6641952,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -80875,7 +80927,7 @@
     {
       "ticker": "XYL",
       "company_name": "Xylem Inc/NY",
-      "ceo_name": "Matthew Pine",
+      "ceo_name": "Matthew F. Pine",
       "total_compensation": 12192978,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -81065,7 +81117,7 @@
     {
       "ticker": "LUV",
       "company_name": "Southwest Airlines Co",
-      "ceo_name": "Robert Jordan",
+      "ceo_name": "Robert E. Jordan",
       "total_compensation": 16587882,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -81282,7 +81334,7 @@
     {
       "ticker": "RF",
       "company_name": "Regions Financial Corp",
-      "ceo_name": "John Turner",
+      "ceo_name": "John M. Turner, Jr",
       "total_compensation": 10037428,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -81486,7 +81538,7 @@
     {
       "ticker": "SNA",
       "company_name": "Snap-on Inc",
-      "ceo_name": "Nicholas Pinchuk",
+      "ceo_name": "Nicholas T. Pinchuk",
       "total_compensation": 10138217,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -81724,7 +81776,7 @@
     {
       "ticker": "CMS",
       "company_name": "CMS Energy Corp",
-      "ceo_name": "Garrick Rochow",
+      "ceo_name": "Garrick J. Rochow",
       "total_compensation": 10534039,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -81919,9 +81971,9 @@
       "neo_count": 6,
       "total_neo_compensation": 24009191,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -82207,7 +82259,7 @@
     {
       "ticker": "MTB",
       "company_name": "M&T Bank Corp",
-      "ceo_name": "Ren\u00e9 Jones",
+      "ceo_name": "Ren\u00e9 F. Jones",
       "total_compensation": 12015250,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -82432,7 +82484,7 @@
     {
       "ticker": "UDR",
       "company_name": "UDR Inc",
-      "ceo_name": "Thomas Toomey",
+      "ceo_name": "David D. Bragg",
       "total_compensation": 4115051,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -82590,7 +82642,7 @@
     {
       "ticker": "FITB",
       "company_name": "Fifth Third Bancorp",
-      "ceo_name": "Timothy Spence",
+      "ceo_name": "Timothy N. Spence",
       "total_compensation": 11052366,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -82863,7 +82915,7 @@
     {
       "ticker": "CDW",
       "company_name": "CDW Corp",
-      "ceo_name": "Christine Leahy",
+      "ceo_name": "Christine A. Leahy",
       "total_compensation": 15009507,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -83001,9 +83053,9 @@
       "neo_count": 5,
       "total_neo_compensation": 36027499,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -83033,7 +83085,7 @@
     {
       "ticker": "HBANP",
       "company_name": "Huntington Bancshares Inc/OH",
-      "ceo_name": "Stephen Steinour",
+      "ceo_name": "Stephen D. Steinour",
       "total_compensation": 12124358,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -83358,7 +83410,7 @@
     {
       "ticker": "MOS",
       "company_name": "Mosaic Co/The",
-      "ceo_name": "Bruce Bodine",
+      "ceo_name": "Luciano Siani Pires",
       "total_compensation": 3849396,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -83528,7 +83580,7 @@
     {
       "ticker": "MCHP",
       "company_name": "Microchip Technology Inc",
-      "ceo_name": "Ganesh Moorthy",
+      "ceo_name": "Steve Sanghi",
       "total_compensation": 40501951,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -83752,7 +83804,7 @@
     {
       "ticker": "AVY",
       "company_name": "Avery Dennison Corp",
-      "ceo_name": "Deon Stander",
+      "ceo_name": "Deon M. Stander",
       "total_compensation": 9538375,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -83923,9 +83975,9 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/8818/000119312526102965/d47885ddef14a.htm",
       "neo_count": 6,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "total_neo_compensation": 20919847,
       "proxy_fiscal_year": 2025,
@@ -83951,7 +84003,7 @@
     {
       "ticker": "AEE",
       "company_name": "Ameren Corp",
-      "ceo_name": "Martin Lyons",
+      "ceo_name": "Martin J. Lyons",
       "total_compensation": 14056510,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -84460,8 +84512,8 @@
     {
       "ticker": "STE",
       "company_name": "STERIS PLC",
-      "ceo_name": "Daniel Carestio",
-      "total_compensation": 23019069,
+      "ceo_name": "Daniel A. Carestio",
+      "total_compensation": 11510547,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 68040,
@@ -84629,7 +84681,7 @@
         2026,
         2024
       ],
-      "total_neo_compensation": 48829211,
+      "total_neo_compensation": 24419668,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -84651,7 +84703,7 @@
     {
       "ticker": "PSA",
       "company_name": "Public Storage",
-      "ceo_name": "Joseph Russell",
+      "ceo_name": "Joseph D. Russell, Jr",
       "total_compensation": 9909777,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -84835,7 +84887,7 @@
     {
       "ticker": "IEX",
       "company_name": "IDEX Corp",
-      "ceo_name": "Eric Ashleman",
+      "ceo_name": "Eric D. Ashleman",
       "total_compensation": 9112893,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -85041,9 +85093,9 @@
       "neo_count": 6,
       "total_neo_compensation": 16919582,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -85066,7 +85118,7 @@
     {
       "ticker": "HUBB",
       "company_name": "Hubbell Inc",
-      "ceo_name": "Gerben Bakker",
+      "ceo_name": "Gerben W. Bakker",
       "total_compensation": 10346752,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -85269,9 +85321,9 @@
       "neo_count": 5,
       "total_neo_compensation": 21667629,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -85525,8 +85577,8 @@
     {
       "ticker": "FRT",
       "company_name": "Federal Realty Investment Trust",
-      "ceo_name": "Donald Wood",
-      "total_compensation": 9240530,
+      "ceo_name": "Donald C. Wood",
+      "total_compensation": 9929146,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 137925,
@@ -85671,7 +85723,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 10685210,
+      "total_neo_compensation": 15707431,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -85693,7 +85745,7 @@
     {
       "ticker": "CNP",
       "company_name": "CenterPoint Energy Inc",
-      "ceo_name": "Jason Wells",
+      "ceo_name": "Jason P. Wells",
       "total_compensation": 12092341,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -85924,7 +85976,7 @@
     {
       "ticker": "ERIE",
       "company_name": "Erie Indemnity Co",
-      "ceo_name": "Timothy NeCastro",
+      "ceo_name": "Timothy G. NeCastro",
       "total_compensation": 5395618,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -86134,7 +86186,7 @@
     {
       "ticker": "AZO",
       "company_name": "AutoZone Inc",
-      "ceo_name": "Philip Daniele",
+      "ceo_name": "Jamere Jackson",
       "total_compensation": 6892406,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -86367,7 +86419,7 @@
     {
       "ticker": "AVB",
       "company_name": "AvalonBay Communities Inc",
-      "ceo_name": "Benjamin Schall",
+      "ceo_name": "Kevin P. O\u2019Shea",
       "total_compensation": 4236350,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -86559,7 +86611,7 @@
     {
       "ticker": "EPAM",
       "company_name": "EPAM Systems Inc",
-      "ceo_name": "Arkadiy Dobkin",
+      "ceo_name": "Balazs Fejes",
       "total_compensation": 5244588,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -86758,9 +86810,9 @@
       "neo_count": 6,
       "total_neo_compensation": 25827036,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -86986,7 +87038,7 @@
     {
       "ticker": "KHC",
       "company_name": "Kraft Heinz Co",
-      "ceo_name": "Carlos Abrams-Rivera U.S. Zone",
+      "ceo_name": "Carlos Abrams-Rivera",
       "total_compensation": 10748810,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -87125,9 +87177,9 @@
       "neo_count": 5,
       "total_neo_compensation": 30917656,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -87156,7 +87208,7 @@
     {
       "ticker": "NSC",
       "company_name": "Norfolk Southern Corp",
-      "ceo_name": "Mark George",
+      "ceo_name": "Mark R. George",
       "total_compensation": 16245050,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -87373,7 +87425,7 @@
     {
       "ticker": "EXE",
       "company_name": "Expand Energy Corp",
-      "ceo_name": "Domenic Dell'Osso",
+      "ceo_name": "Mohit Singh",
       "total_compensation": 4864564,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -87639,7 +87691,7 @@
     {
       "ticker": "DPZ",
       "company_name": "Domino's Pizza Inc",
-      "ceo_name": "Russell Weiner",
+      "ceo_name": "Russell J. Weiner",
       "total_compensation": 10696081,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -87823,9 +87875,9 @@
       "neo_count": 5,
       "total_neo_compensation": 24641903,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -87848,7 +87900,7 @@
     {
       "ticker": "TYL",
       "company_name": "Tyler Technologies Inc",
-      "ceo_name": "Lynn Moore",
+      "ceo_name": "H. Lynn Moore",
       "total_compensation": 8858370,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -88072,7 +88124,7 @@
     {
       "ticker": "SBAC",
       "company_name": "SBA Communications Corp",
-      "ceo_name": "Brendan Cavanagh",
+      "ceo_name": "Brendan T. Cavanagh",
       "total_compensation": 11358715,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -88296,7 +88348,7 @@
     {
       "ticker": "CTAS",
       "company_name": "Cintas Corp",
-      "ceo_name": "Todd Schneider",
+      "ceo_name": "Todd M. Schneider",
       "total_compensation": 9249676,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -88501,7 +88553,7 @@
     {
       "ticker": "CINF",
       "company_name": "Cincinnati Financial Corp",
-      "ceo_name": "Stephen Spray",
+      "ceo_name": "Stephen M. Spray",
       "total_compensation": 5943492,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -88746,7 +88798,7 @@
     {
       "ticker": "CHRW",
       "company_name": "CH Robinson Worldwide Inc",
-      "ceo_name": "David Bozeman",
+      "ceo_name": "David P. Bozeman",
       "total_compensation": 11045949,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -88965,7 +89017,7 @@
     {
       "ticker": "AWK",
       "company_name": "American Water Works Co Inc",
-      "ceo_name": "Susan Hardwick",
+      "ceo_name": "Cheryl Norton",
       "total_compensation": 12684812,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -89376,7 +89428,7 @@
     {
       "ticker": "DOC",
       "company_name": "Healthpeak Properties Inc",
-      "ceo_name": "Scott Brinker",
+      "ceo_name": "Scott M. Brinker",
       "total_compensation": 10072994,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -89611,7 +89663,7 @@
     {
       "ticker": "GL",
       "company_name": "Globe Life Inc",
-      "ceo_name": "Matthew Darden",
+      "ceo_name": "Frank M. Svoboda",
       "total_compensation": 9453935,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -89757,7 +89809,7 @@
     {
       "ticker": "ALLE",
       "company_name": "Allegion plc",
-      "ceo_name": "John Stone",
+      "ceo_name": "John H. Stone",
       "total_compensation": 9155073,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -89963,7 +90015,7 @@
     {
       "ticker": "JBHT",
       "company_name": "JB Hunt Transport Services Inc",
-      "ceo_name": "John Roberts",
+      "ceo_name": "Shelley Simpson",
       "total_compensation": 9004371,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -90145,9 +90197,9 @@
       "neo_count": 6,
       "total_neo_compensation": 30364243,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -90163,8 +90215,8 @@
     {
       "ticker": "MAA",
       "company_name": "Mid-America Apartment Communities Inc",
-      "ceo_name": "Eric Bolton",
-      "total_compensation": 10906960,
+      "ceo_name": "A. Bradley Hill",
+      "total_compensation": 5453480,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 59237,
@@ -90287,7 +90339,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 27997632,
+      "total_neo_compensation": 13998816,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.15,
@@ -90309,7 +90361,7 @@
     {
       "ticker": "WST",
       "company_name": "West Pharmaceutical Services Inc",
-      "ceo_name": "Eric Green",
+      "ceo_name": "Robert W. McMahon",
       "total_compensation": 11804963,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -90520,7 +90572,7 @@
     {
       "ticker": "GPC",
       "company_name": "Genuine Parts Co",
-      "ceo_name": "Paul Donahue",
+      "ceo_name": "William P. Stengel",
       "total_compensation": 12863479,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -90651,9 +90703,9 @@
       "neo_count": 5,
       "total_neo_compensation": 31827562,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -90683,7 +90735,7 @@
     {
       "ticker": "ROL",
       "company_name": "Rollins Inc",
-      "ceo_name": "Jerry Gahlhoff",
+      "ceo_name": "Jerry E. Gahlhoff, Jr",
       "total_compensation": 4510095,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -90883,7 +90935,7 @@
     {
       "ticker": "ESS",
       "company_name": "Essex Property Trust Inc",
-      "ceo_name": "Angela Kleiman",
+      "ceo_name": "Angela L. Kleiman",
       "total_compensation": 10096804,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91086,7 +91138,7 @@
     {
       "ticker": "HRL",
       "company_name": "Hormel Foods Corp",
-      "ceo_name": "James Snee",
+      "ceo_name": "Jeffrey M. Ettinger",
       "total_compensation": 6428699,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91282,7 +91334,7 @@
     {
       "ticker": "EXPD",
       "company_name": "Expeditors International of Washington Inc",
-      "ceo_name": "Jeffrey Musser",
+      "ceo_name": "Daniel R. Wall",
       "total_compensation": 9643863,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91473,9 +91525,9 @@
       "neo_count": 7,
       "total_neo_compensation": 28166555,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -91505,7 +91557,7 @@
     {
       "ticker": "EG",
       "company_name": "Everest Group Ltd",
-      "ceo_name": "Juan Andrade",
+      "ceo_name": "Mark Kociancic",
       "total_compensation": 6075980,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91630,7 +91682,7 @@
     {
       "ticker": "AOS",
       "company_name": "A O Smith Corp",
-      "ceo_name": "Kevin Wheeler",
+      "ceo_name": "Stephen M. Shafer",
       "total_compensation": 4960450,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91788,7 +91840,7 @@
     {
       "ticker": "DLTR",
       "company_name": "Dollar Tree Inc",
-      "ceo_name": "Michael Creedon",
+      "ceo_name": "Michael C. Creedon, Jr",
       "total_compensation": 14775215,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -91946,9 +91998,9 @@
       "neo_count": 6,
       "total_neo_compensation": 37767638,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -91972,7 +92024,7 @@
     {
       "ticker": "FDS",
       "company_name": "FactSet Research Systems Inc",
-      "ceo_name": "Philip Snow",
+      "ceo_name": "F. Philip Snow",
       "total_compensation": 4525162,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -92168,7 +92220,7 @@
     {
       "ticker": "PAYX",
       "company_name": "Paychex Inc",
-      "ceo_name": "John Gibson",
+      "ceo_name": "John B. Gibson",
       "total_compensation": 1749999,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -92586,9 +92638,9 @@
       "neo_count": 7,
       "total_neo_compensation": 33220283,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -92779,7 +92831,7 @@
     {
       "ticker": "EVRG",
       "company_name": "Evergy Inc",
-      "ceo_name": "David Campbell",
+      "ceo_name": "Mr. David A. Campbell",
       "total_compensation": 9537018,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -92935,9 +92987,9 @@
       "neo_count": 5,
       "total_neo_compensation": 20396061,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -92960,7 +93012,7 @@
     {
       "ticker": "GRMN",
       "company_name": "Garmin Ltd",
-      "ceo_name": "Clifton Pemble",
+      "ceo_name": "Clifton A. Pemble",
       "total_compensation": 1400358,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -93437,7 +93489,7 @@
     {
       "ticker": "CPT",
       "company_name": "Camden Property Trust",
-      "ceo_name": "Richard Campo",
+      "ceo_name": "Alexander J. Jessett",
       "total_compensation": 3657144,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -93647,7 +93699,7 @@
     {
       "ticker": "L",
       "company_name": "Loews Corp",
-      "ceo_name": "James Tisch",
+      "ceo_name": "Benjamin J. Tisch",
       "total_compensation": 8753165,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -93806,9 +93858,9 @@
       "neo_count": 5,
       "total_neo_compensation": 36980096,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -93831,7 +93883,7 @@
     {
       "ticker": "LW",
       "company_name": "Lamb Weston Holdings Inc",
-      "ceo_name": "Thomas Werner",
+      "ceo_name": "Michael J. Smith",
       "total_compensation": 15914493,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -94489,9 +94541,9 @@
       "neo_count": 5,
       "total_neo_compensation": 22082828,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
@@ -94752,7 +94804,7 @@
     {
       "ticker": "REGN",
       "company_name": "Regeneron Pharmaceuticals Inc",
-      "ceo_name": "Leonard Schleifer",
+      "ceo_name": "Leonard S. Schleifer, M.D., Ph.D. Board co-Chair",
       "total_compensation": 7280549,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -94937,9 +94989,9 @@
       "neo_count": 6,
       "total_neo_compensation": 45931734,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -95134,9 +95186,9 @@
       "neo_count": 5,
       "total_neo_compensation": 14237786,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -95404,7 +95456,7 @@
     {
       "ticker": "ORCL",
       "company_name": "Oracle Corp",
-      "ceo_name": "Safra Catz",
+      "ceo_name": "Jeffrey O. Henley",
       "total_compensation": 9458491,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -95555,7 +95607,7 @@
     {
       "ticker": "PFG",
       "company_name": "Principal Financial Group Inc",
-      "ceo_name": "Deanna Strable-Soethout",
+      "ceo_name": "Deanna D. Strable-Soethout",
       "total_compensation": 13827887,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -95781,9 +95833,9 @@
       "neo_count": 6,
       "total_neo_compensation": 46205455,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
@@ -95806,7 +95858,7 @@
     {
       "ticker": "FSLR",
       "company_name": "First Solar Inc",
-      "ceo_name": "Mark Widmar",
+      "ceo_name": "Mark R. Widmar",
       "total_compensation": 8138605,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -95987,9 +96039,9 @@
       "neo_count": 5,
       "total_neo_compensation": 18455809,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -96005,7 +96057,7 @@
     {
       "ticker": "MKTX",
       "company_name": "MarketAxess Holdings Inc",
-      "ceo_name": "Christopher Concannon",
+      "ceo_name": "Christopher R. Concannon",
       "total_compensation": 7101027,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -96243,7 +96295,7 @@
     {
       "ticker": "CHTR",
       "company_name": "Charter Communications Inc",
-      "ceo_name": "Christopher Winfrey",
+      "ceo_name": "Christopher L. Winfrey",
       "total_compensation": 6466193,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -96419,9 +96471,9 @@
       "neo_count": 5,
       "total_neo_compensation": 24041652,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -96444,7 +96496,7 @@
     {
       "ticker": "NRG",
       "company_name": "NRG Energy Inc",
-      "ceo_name": "Lawrence Coben Interim",
+      "ceo_name": "Lawrence S. Coben",
       "total_compensation": 16895839,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -96668,7 +96720,7 @@
     {
       "ticker": "POOL",
       "company_name": "Pool Corp",
-      "ceo_name": "Peter Arvan",
+      "ceo_name": "Peter D. Arvan",
       "total_compensation": 6514002,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -97042,7 +97094,7 @@
     {
       "ticker": "MHK",
       "company_name": "Mohawk Industries Inc",
-      "ceo_name": "Jeffrey Lorberbaum",
+      "ceo_name": "Paul F. De Cock",
       "total_compensation": 5392489,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -97637,7 +97689,7 @@
     {
       "ticker": "TDY",
       "company_name": "Teledyne Technologies Inc",
-      "ceo_name": "Edwin Roks",
+      "ceo_name": "George C. Bobb III",
       "total_compensation": 4255049,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -97847,9 +97899,9 @@
       ],
       "neo_count": 6,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "total_neo_compensation": 24908208,
       "proxy_fiscal_year": 2025,
@@ -97873,7 +97925,7 @@
     {
       "ticker": "CBOE",
       "company_name": "Cboe Global Markets Inc",
-      "ceo_name": "Fredric Tomczyk",
+      "ceo_name": "Craig S. Donohue",
       "total_compensation": 18347037,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -98107,9 +98159,9 @@
       "neo_count": 8,
       "total_neo_compensation": 53927242,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
@@ -98132,7 +98184,7 @@
     {
       "ticker": "BLDR",
       "company_name": "Builders FirstSource Inc",
-      "ceo_name": "Peter Jackson",
+      "ceo_name": "Peter M. Jackson",
       "total_compensation": 8122824,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -98234,7 +98286,7 @@
     {
       "ticker": "DELL",
       "company_name": "Dell Technologies Inc",
-      "ceo_name": "Michael Dell",
+      "ceo_name": "David Kennedy",
       "total_compensation": 522667,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -98536,7 +98588,7 @@
     {
       "ticker": "AVGO",
       "company_name": "Broadcom Inc",
-      "ceo_name": "Hock Tan",
+      "ceo_name": "Hock E. Tan",
       "total_compensation": 2634542,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -98664,7 +98716,7 @@
     {
       "ticker": "NVR",
       "company_name": "NVR Inc",
-      "ceo_name": "Eugene Bredow",
+      "ceo_name": "Paul C. Saville",
       "total_compensation": 518175,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -98867,7 +98919,7 @@
     {
       "ticker": "DG",
       "company_name": "Dollar General Corp",
-      "ceo_name": "Todd Vasos",
+      "ceo_name": "Todd J. Vasos",
       "total_compensation": 8163197,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -99217,7 +99269,7 @@
     {
       "ticker": "FAST",
       "company_name": "Fastenal Co",
-      "ceo_name": "Daniel Florness",
+      "ceo_name": "Daniel L. Florness",
       "total_compensation": 4180387,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -99511,7 +99563,7 @@
     {
       "ticker": "AMZN",
       "company_name": "Amazon.com Inc",
-      "ceo_name": "Andrew Jassy",
+      "ceo_name": "Andrew R. Jassy",
       "total_compensation": 2069861,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -99533,19 +99585,19 @@
           "name": "Andrew R. Jassy",
           "title": "Chief Executive Officer",
           "year": 2024,
-          "stock_awards": 1231889,
-          "all_other": 1596889,
+          "all_other": 1231889,
           "total": 1596889,
-          "_total_source": "rounding"
+          "_total_source": "verified",
+          "salary": 365000
         },
         {
           "name": "Andrew R. Jassy",
           "title": "Chief Executive Officer",
           "year": 2023,
-          "stock_awards": 992764,
-          "all_other": 1357764,
+          "all_other": 992764,
           "total": 1357764,
-          "_total_source": "rounding"
+          "_total_source": "verified",
+          "salary": 365000
         },
         {
           "name": "Jeffrey P. Bezos",
@@ -99560,19 +99612,19 @@
           "name": "Jeffrey P. Bezos",
           "title": "Founder and Executive Chair",
           "year": 2024,
-          "stock_awards": 1600000,
-          "all_other": 1681840,
-          "total": 3281840,
-          "_total_source": "rounding"
+          "all_other": 1600000,
+          "total": 1681840,
+          "_total_source": "verified",
+          "salary": 81840
         },
         {
           "name": "Jeffrey P. Bezos",
           "title": "Founder and Executive Chair",
           "year": 2023,
-          "stock_awards": 1600000,
-          "all_other": 1681840,
-          "total": 3281840,
-          "_total_source": "rounding"
+          "all_other": 1600000,
+          "total": 1681840,
+          "_total_source": "verified",
+          "salary": 81840
         },
         {
           "name": "Brian T. Olsavsky",
@@ -99587,20 +99639,20 @@
           "name": "Brian T. Olsavsky",
           "title": "Chief Financial Officer",
           "year": 2024,
-          "salary": 25345706,
-          "stock_awards": 6900,
-          "all_other": 25717606,
-          "total": 51070212,
-          "_total_source": "rounding"
+          "salary": 365000,
+          "stock_awards": 25345706,
+          "all_other": 6900,
+          "total": 25717606,
+          "_total_source": "verified"
         },
         {
           "name": "Brian T. Olsavsky",
           "title": "Chief Financial Officer",
           "year": 2023,
-          "stock_awards": 6600,
-          "all_other": 371600,
+          "all_other": 6600,
           "total": 371600,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "salary": 365000
         },
         {
           "name": "Matthew S. Garman",
@@ -99615,11 +99667,11 @@
           "name": "Matthew S. Garman",
           "title": "CEO Amazon Web Services",
           "year": 2024,
-          "salary": 32796343,
-          "stock_awards": 25525,
-          "all_other": 33180619,
-          "total": 66002487,
-          "_total_source": "rounding"
+          "salary": 358750,
+          "stock_awards": 32796343,
+          "all_other": 25525,
+          "total": 33180619,
+          "_total_source": "verified"
         },
         {
           "name": "Douglas J. Herrington",
@@ -99634,20 +99686,20 @@
           "name": "Douglas J. Herrington",
           "title": "CEO Worldwide Amazon Stores",
           "year": 2024,
-          "salary": 33807522,
-          "stock_awards": 21435,
-          "all_other": 34193958,
-          "total": 68022915,
-          "_total_source": "rounding"
+          "salary": 365000,
+          "stock_awards": 33807522,
+          "all_other": 21435,
+          "total": 34193958,
+          "_total_source": "verified"
         },
         {
           "name": "Douglas J. Herrington",
           "title": "CEO Worldwide Amazon Stores",
           "year": 2023,
-          "stock_awards": 29231,
-          "all_other": 394231,
+          "all_other": 29231,
           "total": 394231,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "salary": 365000
         },
         {
           "name": "David A. Zapolsky",
@@ -99662,20 +99714,20 @@
           "name": "David A. Zapolsky",
           "title": "SVP, Chief Global Affairs & Legal Officer",
           "year": 2024,
-          "salary": 25345706,
-          "stock_awards": 6900,
-          "all_other": 25717606,
-          "total": 51070212,
-          "_total_source": "rounding"
+          "salary": 365000,
+          "stock_awards": 25345706,
+          "all_other": 6900,
+          "total": 25717606,
+          "_total_source": "verified"
         },
         {
           "name": "David A. Zapolsky",
           "title": "SVP, Chief Global Affairs & Legal Officer",
           "year": 2023,
-          "stock_awards": 6600,
-          "all_other": 371600,
+          "all_other": 6600,
           "total": 371600,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "salary": 365000
         }
       ],
       "cik": "1018724",
@@ -99685,9 +99737,9 @@
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2023,
+        2025,
         2024,
-        2025
+        2023
       ],
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -99697,7 +99749,8 @@
         "sources": [
           "manual_verify"
         ]
-      }
+      },
+      "notes": "Amazon grants stock awards every 2-3 years with no annual equity in off years. 2025 and 2023 show cash-only compensation for most NEOs; 2024 includes large multi-year RSU grants."
     },
     {
       "ticker": "APO",
@@ -99912,8 +99965,8 @@
     {
       "ticker": "BRK-B",
       "company_name": "Berkshire Hathaway Inc",
-      "ceo_name": "Warren Buffett",
-      "total_compensation": 22000000,
+      "ceo_name": "Gregory E. Abel",
+      "total_compensation": 22017500,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 82106,
@@ -100086,7 +100139,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 48312500,
+      "total_neo_compensation": 48365000,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 99.21,
@@ -100493,9 +100546,9 @@
       "neo_count": 4,
       "total_neo_compensation": 19691424,
       "available_years": [
-        2024,
+        2026,
         2025,
-        2026
+        2024
       ],
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
@@ -100789,9 +100842,9 @@
       "neo_count": 3,
       "proxy_fiscal_year": 2024,
       "available_years": [
-        2022,
+        2024,
         2023,
-        2024
+        2022
       ],
       "ceo_gender": "M",
       "say_on_pay": {
