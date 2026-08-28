@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage. Board independence data for 198/500 companies (173 with full ind+total). Data quality: corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years).",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage. Board independence data for 282/500 companies (295 with independent count, 282 with full independent/total). Data quality: corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years).",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -114,13 +114,6 @@
     "mean_ceo_pay": 21485412.458917834,
     "max_ceo_pay": 821090355,
     "min_ceo_pay": 40001,
-    "quality": {
-      "verified": 5487,
-      "recomputed": 614,
-      "incomplete_components": 2,
-      "bloated": 19,
-      "filing": 16
-    },
     "say_on_pay_coverage": 416,
     "say_on_pay_stats": {
       "count": 416,
