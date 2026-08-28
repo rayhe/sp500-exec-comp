@@ -3259,6 +3259,55 @@ function drawScatterChart(companies) {
                 .attr('cx', x(_commCrosshairMedX)).attr('cy', yScale(_commCrosshairMedY))
                 .attr('r', 2)
                 .attr('fill', _commCrosshairColor).attr('opacity', 0.85);
+
+            // Delta annotation: distance from community median to S&P 500 median
+            if (medX != null && medY != null && medX !== 0 && medY !== 0) {
+                var _deltaX = ((_commCrosshairMedX - medX) / Math.abs(medX)) * 100;
+                var _deltaY = ((_commCrosshairMedY - medY) / Math.abs(medY)) * 100;
+                var _dxSign = _deltaX >= 0 ? '+' : '';
+                var _dySign = _deltaY >= 0 ? '+' : '';
+                var _xShort = xMetric.label.length > 12 ? xMetric.label.substring(0, 11) + '\u2026' : xMetric.label;
+                var _yShort = yMetric.label.length > 12 ? yMetric.label.substring(0, 11) + '\u2026' : yMetric.label;
+                var _dxStr = _xShort + ': ' + _dxSign + _deltaX.toFixed(0) + '%';
+                var _dyStr = _yShort + ': ' + _dySign + _deltaY.toFixed(0) + '%';
+                // Color code: green for higher, red for lower (contextually — for pay, higher = more; for governance, higher = better)
+                var _dxColor = _deltaX >= 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#ef4444' : '#dc2626');
+                var _dyColor = _deltaY >= 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#ef4444' : '#dc2626');
+
+                // Position delta text near intersection, offset to bottom-right
+                var _badgeX = x(_commCrosshairMedX);
+                var _badgeY = yScale(_commCrosshairMedY);
+                var _dxBadgeX = Math.min(_badgeX + 10, w - 120);
+                var _dxBadgeY = _badgeY + 18;
+                var _dyBadgeY = _badgeY + 30;
+
+                // If too close to bottom, flip above
+                if (_dxBadgeY > h - 10) { _dxBadgeY = _badgeY - 24; _dyBadgeY = _badgeY - 12; }
+
+                // Background rect for readability
+                var _bgX = _dxBadgeX - 3;
+                var _bgY = Math.min(_dxBadgeY, _dyBadgeY) - 10;
+                var _bgW = Math.max(_dxStr.length, _dyStr.length) * 5.5 + 12;
+                var _bgH = 28;
+                svg.append('rect')
+                    .attr('x', _bgX).attr('y', _bgY)
+                    .attr('width', _bgW).attr('height', _bgH)
+                    .attr('rx', 4).attr('ry', 4)
+                    .attr('fill', dark ? 'rgba(15,15,25,0.8)' : 'rgba(255,255,255,0.85)')
+                    .attr('stroke', _commCrosshairColor).attr('stroke-width', 0.5)
+                    .attr('opacity', 0.9);
+
+                svg.append('text')
+                    .attr('x', _dxBadgeX).attr('y', _dxBadgeY)
+                    .attr('fill', _dxColor).attr('font-size', '8.5px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                    .text(_dxStr);
+                svg.append('text')
+                    .attr('x', _dxBadgeX).attr('y', _dyBadgeY)
+                    .attr('fill', _dyColor).attr('font-size', '8.5px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                    .text(_dyStr);
+            }
         }
     }
 
