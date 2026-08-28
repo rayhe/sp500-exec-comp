@@ -3408,6 +3408,13 @@ function initNetwork(peerData) {
                 communityLegendEl.style.display = communityMode ? 'block' : 'none';
                 if (communityMode) _populateCommunityLegend();
             }
+            // Show/hide scatter community color toggle
+            var scCommToggle = document.getElementById('scatter-community-toggle-label');
+            if (scCommToggle) scCommToggle.style.display = communityMode ? '' : 'none';
+            if (!communityMode) {
+                var scCommCb = document.getElementById('scatter-color-community');
+                if (scCommCb && scCommCb.checked) { scCommCb.checked = false; if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies); }
+            }
             if (communityMode) {
                 _renderCommunityMetrics();
                 _renderCommunityFlowMatrix();
@@ -3430,6 +3437,11 @@ function initNetwork(peerData) {
             if (communityToggle) communityToggle.classList.remove('active');
             if (communityLegendEl) communityLegendEl.style.display = 'none';
             _removeCommunityMetrics();
+            // Hide scatter community color toggle and uncheck
+            var scCommToggle = document.getElementById('scatter-community-toggle-label');
+            if (scCommToggle) scCommToggle.style.display = 'none';
+            var scCommCb = document.getElementById('scatter-color-community');
+            if (scCommCb && scCommCb.checked) { scCommCb.checked = false; if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies); }
         }
     }
 
@@ -4840,11 +4852,22 @@ function initNetwork(peerData) {
                     textColor = val === 0 ? (dark ? '#4a4a5a' : '#b0b0b8') : (alpha > 0.5 ? '#fff' : (dark ? '#e4e4e7' : '#1a1a2e'));
                 }
 
+                // Directional asymmetry arrow for non-diagonal off-diagonal cells in raw/row/col modes
+                var asymArrow = '';
+                if (!isDiag && val > 0 && _cfNormMode !== 'diff') {
+                    var reverseVal = flowMatrix[j][i];
+                    if (val > reverseVal && (val - reverseVal) > 1) {
+                        asymArrow = '<span class="cf-asym-arrow cf-asym-out" title="Net exporter: ' + val + ' out vs ' + reverseVal + ' in">\u2191</span>';
+                    } else if (reverseVal > val && (reverseVal - val) > 1) {
+                        asymArrow = '<span class="cf-asym-arrow cf-asym-in" title="Net importer: ' + reverseVal + ' in vs ' + val + ' out">\u2193</span>';
+                    }
+                }
+
                 html += '<div class="cf-cell' + (isDiag ? ' cf-diag' : '') + '" '
                     + 'data-cf-from="' + csRow.id + '" data-cf-to="' + csCol.id + '" '
                     + 'data-cf-i="' + i + '" data-cf-j="' + j + '" '
                     + 'style="background:' + bgColor + ';color:' + textColor + '">'
-                    + displayVal + '</div>';
+                    + displayVal + asymArrow + '</div>';
             });
 
             var rowTotalDisplay, _rtStyle = '';

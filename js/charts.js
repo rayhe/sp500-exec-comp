@@ -94,6 +94,9 @@ function initCharts(companies, trends, compData) {
     // Scatter trend line toggle
     var trendCb = document.getElementById('scatter-trend-line');
     if (trendCb) trendCb.addEventListener('change', _redrawScatter);
+    // Scatter community color toggle
+    var commCb = document.getElementById('scatter-color-community');
+    if (commCb) commCb.addEventListener('change', _redrawScatter);
     // Scatter axis metric selectors
     var xMetricSel = document.getElementById('scatter-x-metric');
     var yMetricSel = document.getElementById('scatter-y-metric');
@@ -3012,11 +3015,14 @@ function drawScatterChart(companies) {
     if (scatterTitle) {
         var titleText = xMetric.shortLabel + ' vs. ' + yMetric.shortLabel;
         if (hasSectorOverlay) titleText = sectorName + ' — ' + titleText;
+        else if (_scatterCommunityMode) titleText += ' (by Community)';
         scatterTitle.textContent = titleText;
     }
     if (scatterDesc) {
         if (hasSectorOverlay) {
             scatterDesc.textContent = sectorName + ' companies highlighted against the S&P 500. Sector median crosshairs shown in color. Dot size = CEO pay.';
+        } else if (_scatterCommunityMode) {
+            scatterDesc.textContent = 'Each dot is an S&P 500 company. X = ' + xMetric.label + ', Y = ' + yMetric.label + '. Dot size = CEO pay. Colored by Louvain peer community.';
         } else {
             scatterDesc.textContent = 'Each dot is an S&P 500 company. X = ' + xMetric.label + ', Y = ' + yMetric.label + '. Dot size = CEO pay. Hover for details, click to view in table. Colored by sector.';
         }
@@ -3557,6 +3563,20 @@ function drawScatterChart(companies) {
         }
     }
 
+    // Community color mode — detect early so buildTooltip and dot rendering can use it
+    var _scatterCommunityMode = false;
+    var _scatterCommLookup = null; // ticker → {color, label}
+    var _commColorCb = document.getElementById('scatter-color-community');
+    if (_commColorCb && _commColorCb.checked && window._communityOf && window._communityStats) {
+        _scatterCommunityMode = true;
+        _scatterCommLookup = {};
+        window._communityStats.forEach(function(cs) {
+            cs.tickers.forEach(function(t) {
+                _scatterCommLookup[t] = { color: cs.color, label: cs.label };
+            });
+        });
+    }
+
     // Build tooltip HTML helper for a company
     function buildTooltip(d, includeVsSector) {
         var html = '<div class="ct-title">' + d.ticker + ' — ' + (d.company_name || '') + '</div>' +
@@ -3570,6 +3590,10 @@ function drawScatterChart(companies) {
         // Show sector if not in sector overlay mode
         if (!includeVsSector) {
             html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
+        }
+        // Show community if in community color mode
+        if (_scatterCommunityMode && _scatterCommLookup && _scatterCommLookup[d.ticker]) {
+            html += '<div class="ct-row"><span class="ct-label">Community</span><span class="ct-val" style="color:' + _scatterCommLookup[d.ticker].color + '">' + _scatterCommLookup[d.ticker].label + '</span></div>';
         }
         // Show vs sector median for X metric in sector mode
         if (includeVsSector && secMedX != null && secMedX !== 0) {
@@ -3668,9 +3692,15 @@ function drawScatterChart(companies) {
             .attr('cx', dotX)
             .attr('cy', dotY)
             .attr('r', function(d) { return r(d.total_compensation || 0); })
-            .attr('fill', function(d) { return SECTOR_COLORS[d.sector] || '#94a3b8'; })
+            .attr('fill', function(d) {
+                if (_scatterCommunityMode && _scatterCommLookup[d.ticker]) {
+                    return _scatterCommLookup[d.ticker].color;
+                }
+                return SECTOR_COLORS[d.sector] || '#94a3b8';
+            })
             .attr('opacity', 0.7)
-            .attr('stroke', 'none')
+            .attr('stroke', _scatterCommunityMode ? (dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)') : 'none')
+            .attr('stroke-width', _scatterCommunityMode ? 0.5 : 0)
             .style('cursor', 'pointer')
             .on('mouseover', function(event, d) {
                 d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5)
@@ -3717,6 +3747,42 @@ function drawScatterChart(companies) {
         .attr('font-weight', hasSectorOverlay ? '600' : '500')
         .attr('pointer-events', 'none')
         .text(function(d) { return d.ticker; });
+
+    // Community color legend — compact inline strip when community mode is active
+    if (_scatterCommunityMode && window._communityStats) {
+        var commLegendGroup = svg.append('g')
+            .attr('class', 'scatter-comm-legend')
+            .attr('transform', 'translate(8,' + (h + 52) + ')');
+        var legX = 0;
+        var maxLegWidth = w - 16;
+        var commsSorted = window._communityStats.slice().sort(function(a, b) { return b.size - a.size; });
+        var maxShow = Math.min(commsSorted.length, 10);
+        for (var li = 0; li < maxShow; li++) {
+            var cs = commsSorted[li];
+            var shortName = cs.label.length > 12 ? cs.label.substring(0, 11) + '\u2026' : cs.label;
+            var itemText = shortName + ' (' + cs.size + ')';
+            var itemWidth = itemText.length * 5.5 + 16;
+            if (legX + itemWidth > maxLegWidth && li > 0) break;
+            commLegendGroup.append('circle')
+                .attr('cx', legX + 5).attr('cy', -3)
+                .attr('r', 4)
+                .attr('fill', cs.color).attr('opacity', 0.85);
+            commLegendGroup.append('text')
+                .attr('x', legX + 12).attr('y', 0)
+                .attr('fill', dark ? '#a1a1aa' : '#6b7280')
+                .attr('font-size', '9px').attr('font-weight', '500')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(itemText);
+            legX += itemWidth;
+        }
+        if (maxShow < commsSorted.length) {
+            commLegendGroup.append('text')
+                .attr('x', legX + 4).attr('y', 0)
+                .attr('fill', dark ? '#71717a' : '#9ca3af')
+                .attr('font-size', '8px').attr('font-weight', '400')
+                .text('+' + (commsSorted.length - maxShow) + ' more');
+        }
+    }
 
     // Stats annotation (bottom-right corner)
     var statsGroup = svg.append('g')
