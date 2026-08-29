@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,158/6,158). Board independence data for 288/500 companies (301 with independent count, 288 with full independent/total). Data quality: 5,562 verified, 577 recomputed (includes rounding/minor_gap), 19 incomplete, 0 bloated. Corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years). Added board independence for TMO, CB, KO, IQV, INTC, GDDY (6 new, total 288/500). Corrected 4 bloated_component records (FE 2023 Tierney 185k\u219223.8M, TSCO 2025 Lawton 2.3M\u219228.3M, CHRW 2023 Bozeman 940k\u219221.5M, DELL 2026 Kennedy 522k\u21926.18M) \u2014 total field had been truncated to salary/bonus column, recomputed as sum of components. Corrected ELV FY2025 full SCT (5 NEOs) via primary-source DEF 14A 2026-03-27 \u2014 fixed column-shift that stored stock awards in pension_nqdc and bonus in salary, understating CEO total as 4.19M vs true 22.58M; verified all 5 NEOs, updated company total_neo_compensation to 51.4M. Corrected BALL FY2025 full SCT (7 NEOs) via primary-source DEF 14A 2026-03-17 \u2014 fixed column-shift that understated CEO total 822,720\u21924,218,225 and corrupted company total_neo_compensation 7.09M\u219229.49M; verified all 7 NEOs, updated Materials sector median.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,158/6,158). Board independence data for 288/500 companies (301 with independent count, 288 with full independent/total). Data quality: 5,569 verified, 570 recomputed (includes rounding/minor_gap), 19 incomplete, 0 bloated. Corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years). Added board independence for TMO, CB, KO, IQV, INTC, GDDY (6 new, total 288/500). Corrected 4 bloated_component records (FE 2023 Tierney 185k\u219223.8M, TSCO 2025 Lawton 2.3M\u219228.3M, CHRW 2023 Bozeman 940k\u219221.5M, DELL 2026 Kennedy 522k\u21926.18M) \u2014 total field had been truncated to salary/bonus column, recomputed as sum of components. Corrected ELV FY2025 full SCT (5 NEOs) via primary-source DEF 14A 2026-03-27 \u2014 fixed column-shift that stored stock awards in pension_nqdc and bonus in salary, understating CEO total as 4.19M vs true 22.58M; verified all 5 NEOs, updated company total_neo_compensation to 51.4M. Corrected BALL FY2025 full SCT (7 NEOs) via primary-source DEF 14A 2026-03-17 \u2014 fixed column-shift that understated CEO total 822,720\u21924,218,225 and corrupted company total_neo_compensation 7.09M\u219229.49M; verified all 7 NEOs, updated Materials sector median.",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -101,7 +101,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T06:32:44.097190+00:00",
+    "last_updated": "2026-08-29T06:37:00+00:00",
     "total_neo_records": 6158,
     "title_coverage": 6158,
     "data_quality": {
@@ -72198,8 +72198,8 @@
       "total_compensation": 4218225,
       "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
-      "median_worker_pay": 79128,
-      "pay_ratio": 156,
+      "median_worker_pay": 91248,
+      "pay_ratio": 46,
       "sector": "Materials",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "cik": "0000009389",
@@ -72440,7 +72440,8 @@
         "sources": [
           "prose"
         ]
-      }
+      },
+      "_skip_enrichment": "parser_incompatible"
     },
     {
       "ticker": "CF",
@@ -101077,5 +101078,5 @@
       }
     }
   ],
-  "last_updated": "2026-08-29T06:32:44.097190+00:00"
+  "last_updated": "2026-08-29T06:37:00+00:00"
 }
