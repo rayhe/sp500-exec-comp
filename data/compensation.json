@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,164/6,164). Board independence data for 288/500 companies (301 with independent count, 288 with full independent/total). Data quality: 5,607 verified, 538 recomputed (includes rounding/minor_gap), 0 incomplete, 0 bloated, 0 component_mismatch. Corrected CPB FY2025-2023 full SCT (18 NEO records, column-shift), RVTY FY2025-2023 full SCT (15 records, column-shift), PAYX FY2025-2023 full SCT (11 records, column-shift), TPL FY2024-2022 full SCT (9 records, column-shift), TECH FY2025-2023 full SCT (14 records, column-shift) via primary-source DEF 14A verification. Corrected RMD FY2025-2024 Farrell + CTSH FY2025-2024 Kim primary-source SCT. BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,164/6,164). Board independence data for 293/500 companies (305 with independent count, 293 with full independent/total). Data quality: 5610 verified, 538 recomputed (includes rounding/minor_gap), 0 incomplete, 0 bloated, 0 component_mismatch. Corrected CPB FY2025-2023 full SCT (18 NEO records, column-shift), RVTY FY2025-2023 full SCT (15 records, column-shift), PAYX FY2025-2023 full SCT (11 records, column-shift), TPL FY2024-2022 full SCT (9 records, column-shift), TECH FY2025-2023 full SCT (14 records, column-shift) via primary-source DEF 14A verification. Corrected RMD FY2025-2024 Farrell + CTSH FY2025-2024 Kim primary-source SCT. BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures.",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -24,91 +24,102 @@
     "aggregate_stats": {
       "total_companies": 500,
       "companies_with_pay_ratio": 496,
-      "median_ceo_pay": 16092334,
+      "median_ceo_pay": 16089783.5,
       "mean_ceo_pay": 21701942.01,
       "max_ceo_pay": 821090355,
       "min_ceo_pay": 0,
-      "median_worker_pay": 81899,
-      "median_pay_ratio": 196
+      "median_worker_pay": 81953.0,
+      "median_pay_ratio": 196.5
     },
     "sector_medians": {
       "Industrials": {
         "count": 70,
         "median_ceo_pay": 13923884.5,
         "min": 40001,
-        "max": 70547718
+        "max": 70547718,
+        "mean": 15209239.228571428
       },
       "Consumer Discretionary": {
-        "count": 58,
-        "median_ceo_pay": 16893455.5,
-        "min": 242122,
-        "max": 36340876
+        "count": 59,
+        "median_ceo_pay": 16587882,
+        "min": 0,
+        "max": 36340876,
+        "mean": 16692190.152542373
       },
       "Financials": {
         "count": 66,
         "median_ceo_pay": 17936510.0,
         "min": 100000,
-        "max": 118891684
+        "max": 118891684,
+        "mean": 26586833.575757574
       },
       "Information Technology": {
         "count": 81,
         "median_ceo_pay": 22157635,
         "min": 141704,
-        "max": 247579143
+        "max": 247579143,
+        "mean": 27677238.962962963
       },
       "Communication Services": {
         "count": 20,
         "median_ceo_pay": 27827869.5,
         "min": 403019,
-        "max": 165009366
+        "max": 165009366,
+        "mean": 34309585.0
       },
       "Real Estate": {
         "count": 29,
         "median_ceo_pay": 12759187,
-        "min": 1771181,
-        "max": 821090355
+        "min": 3657144,
+        "max": 821090355,
+        "mean": 40749290.72413793
       },
       "Energy": {
         "count": 22,
         "median_ceo_pay": 17471111.0,
         "min": 4864564,
-        "max": 42727650
+        "max": 42727650,
+        "mean": 18492965.818181816
       },
       "Health Care": {
         "count": 61,
         "median_ceo_pay": 18256227,
-        "min": 2559152,
-        "max": 79923350
+        "min": 4090438,
+        "max": 79923350,
+        "mean": 19324450.04918033
       },
       "Consumer Staples": {
         "count": 34,
         "median_ceo_pay": 15487307.0,
-        "min": 5380494,
-        "max": 49122360
+        "min": 6428699,
+        "max": 49122360,
+        "mean": 17285883.67647059
       },
       "Materials": {
         "count": 27,
         "median_ceo_pay": 14699497,
         "min": 3708475,
-        "max": 29770044
+        "max": 29770044,
+        "mean": 12894703.925925925
       },
       "Utilities": {
         "count": 31,
         "median_ceo_pay": 12684812,
         "min": 4668828,
-        "max": 36601524
+        "max": 36601524,
+        "mean": 13402025.322580645
       }
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T16:30:00Z",
-    "total_neo_records": 6165,
-    "title_coverage": "6165/6165",
+    "last_updated": "2026-08-29T18:30:17Z",
+    "total_neo_records": 6164,
+    "title_coverage": "6164/6164",
     "data_quality": {
-      "verified": 5580,
-      "recomputed": 508,
-      "incomplete_components": 19,
-      "bloated_component": 61
+      "verified": 5610,
+      "recomputed": 538,
+      "incomplete_components": 0,
+      "bloated_component": 0
     },
     "median_ceo_pay": 16089783.5,
     "mean_ceo_pay": 21644318.394,
@@ -133,17 +144,17 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 291,
+    "board_independence_coverage": 293,
     "data_quality_detailed": {
-      "verified": 5580,
-      "recomputed": 148,
-      "rounding": 288,
+      "verified": 5610,
+      "recomputed": 145,
+      "rounding": 286,
       "computed": 31,
       "minor_gap": 41,
-      "recomputed_implausible_total": 40,
-      "component_mismatch": 18,
+      "recomputed_implausible_total": 35,
+      "component_mismatch": 0,
       "filing_only": 16,
-      "unknown": 3
+      "unknown": 0
     },
     "companies_with_executives": 498
   },
