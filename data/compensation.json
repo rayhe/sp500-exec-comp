@@ -133,7 +133,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 288,
+    "board_independence_coverage": 290,
     "data_quality_detailed": {
       "verified": 5562,
       "recomputed": 150,
@@ -33117,6 +33117,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -75677,6 +75684,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
