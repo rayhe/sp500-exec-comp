@@ -101,14 +101,14 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T06:37:00+00:00",
-    "total_neo_records": 6158,
-    "title_coverage": 6158,
+    "last_updated": "2026-08-29T09:04:59Z",
+    "total_neo_records": 6165,
+    "title_coverage": "6165/6165",
     "data_quality": {
-      "verified": 5569,
-      "recomputed": 570,
+      "verified": 5577,
+      "recomputed": 508,
       "incomplete_components": 19,
-      "bloated_component": 0
+      "bloated_component": 61
     },
     "median_ceo_pay": 16092334,
     "mean_ceo_pay": 21628160.56713427,
@@ -135,8 +135,8 @@
     "governance_coverage": 496,
     "board_independence_coverage": 290,
     "data_quality_detailed": {
-      "verified": 5569,
-      "recomputed": 149,
+      "verified": 5577,
+      "recomputed": 148,
       "rounding": 288,
       "computed": 31,
       "minor_gap": 41,
@@ -144,7 +144,8 @@
       "component_mismatch": 21,
       "filing_only": 16,
       "unknown": 3
-    }
+    },
+    "companies_with_executives": 498
   },
   "companies": [
     {
@@ -337,40 +338,83 @@
     {
       "ticker": "SBUX",
       "company_name": "Starbucks Corp",
-      "ceo_name": "Brady Brewer",
-      "total_compensation": 16430740,
-      "fiscal_year": 2024,
-      "source": "AFL-CIO Paywatch 2025",
-      "median_worker_pay": 14674,
-      "pay_ratio": 6666,
+      "ceo_name": "Brian Niccol",
+      "total_compensation": 30992773,
+      "fiscal_year": 2025,
+      "source": "SEC DEF 14A 2026-01-26",
+      "median_worker_pay": 17279,
+      "pay_ratio": 1794,
       "sector": "Consumer Discretionary",
       "executives": [
+        {
+          "name": "Brian Niccol",
+          "year": 2025,
+          "salary": 1599998,
+          "bonus": 5000000,
+          "stock_awards": 19881585,
+          "option_awards": 0,
+          "non_equity_incentive": 1971000,
+          "all_other": 2540190,
+          "total": 30992773,
+          "title": "Chairman and Chief Executive Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
+        {
+          "name": "Brian Niccol",
+          "year": 2024,
+          "salary": 61538,
+          "bonus": 5000000,
+          "stock_awards": 90291772,
+          "option_awards": 0,
+          "non_equity_incentive": 30295,
+          "all_other": 418071,
+          "total": 95801676,
+          "title": "Chairman and Chief Executive Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
         {
           "name": "Cathy Smith",
           "year": 2025,
           "salary": 462498,
           "bonus": 2500000,
           "stock_awards": 12459305,
-          "option_awards": 328697,
-          "non_equity_incentive": 15523,
-          "pension_nqdc": 15766023,
+          "option_awards": 0,
+          "non_equity_incentive": 328697,
+          "all_other": 15523,
           "total": 15766023,
-          "title": "EVP, Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Chief Financial Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         },
         {
           "name": "Brady Brewer",
           "year": 2025,
-          "salary": 2024,
-          "bonus": 775008,
-          "stock_awards": 767218,
-          "non_equity_incentive": 9647346,
-          "pension_nqdc": 4814831,
-          "all_other": 424313,
-          "total": 16430740,
-          "title": "Chief Executive Officer",
-          "_original_total": 242833,
-          "_total_source": "recomputed"
+          "salary": 775008,
+          "bonus": 0,
+          "stock_awards": 9647346,
+          "option_awards": 0,
+          "non_equity_incentive": 424313,
+          "all_other": 101144,
+          "total": 10947811,
+          "title": "Chief Executive Officer, Starbucks International",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
+        {
+          "name": "Brady Brewer",
+          "year": 2024,
+          "salary": 767218,
+          "bonus": 0,
+          "stock_awards": 4814831,
+          "option_awards": 0,
+          "non_equity_incentive": 242833,
+          "all_other": 116245,
+          "total": 5941127,
+          "title": "Chief Executive Officer, Starbucks International",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         },
         {
           "name": "Mike Grams",
@@ -378,61 +422,126 @@
           "salary": 457692,
           "bonus": 500000,
           "stock_awards": 7286612,
-          "option_awards": 307442,
-          "non_equity_incentive": 114878,
-          "pension_nqdc": 8666624,
+          "option_awards": 0,
+          "non_equity_incentive": 307442,
+          "all_other": 114878,
           "total": 8666624,
-          "title": "Executive Vice President",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Chief Operating Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         },
         {
           "name": "Sara Kelly",
           "year": 2025,
-          "salary": 2024,
-          "bonus": 2023,
-          "stock_awards": 664424,
-          "option_awards": 631827,
-          "non_equity_incentive": 537211,
-          "total": 1837509,
-          "title": "Executive Vice President",
-          "_total_source": "verified"
+          "salary": 664424,
+          "bonus": 0,
+          "stock_awards": 8255917,
+          "option_awards": 0,
+          "non_equity_incentive": 364298,
+          "all_other": 123167,
+          "total": 9407806,
+          "title": "Executive Vice President, Chief Partner Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
+        {
+          "name": "Sara Kelly",
+          "year": 2024,
+          "salary": 631827,
+          "bonus": 0,
+          "stock_awards": 2757442,
+          "option_awards": 0,
+          "non_equity_incentive": 244292,
+          "all_other": 70993,
+          "total": 3562568,
+          "title": "Executive Vice President, Chief Partner Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0,
+          "_note": "SEC total 3,562,568 does not equal sum of components 3,704,554 diff 141,986 \u2013 preserving filing verbatim"
+        },
+        {
+          "name": "Sara Kelly",
+          "year": 2023,
+          "salary": 537211,
+          "bonus": 0,
+          "stock_awards": 1605272,
+          "option_awards": 0,
+          "non_equity_incentive": 616082,
+          "all_other": 25447,
+          "total": 2784012,
+          "title": "Executive Vice President, Chief Partner Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         },
         {
           "name": "Rachel Ruggeri",
           "year": 2025,
-          "salary": 2024,
-          "bonus": 2023,
-          "stock_awards": 494312,
-          "option_awards": 913335,
-          "non_equity_incentive": 882182,
-          "total": 2293876,
-          "title": "EVP, Chief Financial Officer (Former)",
-          "_total_source": "verified"
+          "salary": 494312,
+          "bonus": 0,
+          "stock_awards": 4366852,
+          "option_awards": 0,
+          "non_equity_incentive": 0,
+          "all_other": 1921552,
+          "total": 6782716,
+          "title": "Former Executive Vice President, Chief Financial Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
+        {
+          "name": "Rachel Ruggeri",
+          "year": 2024,
+          "salary": 913335,
+          "bonus": 0,
+          "stock_awards": 5385429,
+          "option_awards": 0,
+          "non_equity_incentive": 311738,
+          "all_other": 16506,
+          "total": 6627008,
+          "title": "Former Executive Vice President, Chief Financial Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
+        },
+        {
+          "name": "Rachel Ruggeri",
+          "year": 2023,
+          "salary": 882182,
+          "bonus": 0,
+          "stock_awards": 4584049,
+          "option_awards": 0,
+          "non_equity_incentive": 1267364,
+          "all_other": 16545,
+          "total": 6750140,
+          "title": "Executive Vice President, Chief Financial Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         },
         {
           "name": "Val Bauduin",
           "year": 2025,
           "salary": 524992,
+          "bonus": 0,
           "stock_awards": 1263902,
-          "option_awards": 165309,
-          "non_equity_incentive": 29397,
-          "pension_nqdc": 1983600,
-          "all_other": -1,
-          "total": 1983599,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "option_awards": 0,
+          "non_equity_incentive": 165309,
+          "all_other": 29397,
+          "total": 1983600,
+          "title": "Interim Chief Financial Officer",
+          "_total_source": "verified",
+          "pension_nqdc": 0
         }
       ],
       "cik": "0000829224",
       "filing_date": "2026-01-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/829224/000121390026007780/ea0270973-01.htm",
-      "total_neo_compensation": 46978371,
-      "neo_count": 6,
+      "total_neo_compensation": 84547353,
+      "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
-        2025
+        2025,
+        2024,
+        2023
       ],
-      "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
+      "data_source": "SEC DEF 14A 2026-01-26 verified",
       "say_on_pay": {
         "approval_pct": 88.64,
         "votes_for": 774932476,
@@ -1062,7 +1171,7 @@
     {
       "ticker": "CARR",
       "company_name": "Carrier Global Corp",
-      "ceo_name": "Michael L. Gierges",
+      "ceo_name": "David Gitlin",
       "total_compensation": 7059821,
       "fiscal_year": 2024,
       "source": "AFL-CIO Paywatch 2025",
@@ -1158,7 +1267,8 @@
         "sources": [
           "prose"
         ]
-      }
+      },
+      "notes": "CEO corrected to David Gitlin per Carrier press releases 2025; compensation table missing Gitlin \u2013 requires primary DEF 14A read"
     },
     {
       "ticker": "NFLX",
@@ -101078,5 +101188,5 @@
       }
     }
   ],
-  "last_updated": "2026-08-29T06:37:00+00:00"
+  "last_updated": "2026-08-29T09:04:59Z"
 }

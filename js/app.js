@@ -7920,6 +7920,18 @@ function setupDetailPanel(companies) {
                         var _wfGap = 6;
                         var _wfLabelW = 75;
                         var _wfValueW = 85;
+                        // Detect CEO transition early — needed for height calc below
+                        var _wfName1 = (_wfCeo1.name || '').trim();
+                        var _wfName2 = (_wfCeo2.name || '').trim();
+                        function _wfNormName(n) {
+                            return n.toLowerCase()
+                                .replace(/\b(jr|sr|iii|iv|ii|mr|ms|dr|phd|former)\b\.?/g, '')
+                                .replace(/[.,'\"()]/g, '')
+                                .replace(/\b[a-z]\b/g, '')
+                                .replace(/\s+/g, ' ').trim();
+                        }
+                        var _wfIsCeoTransition = _wfName1 && _wfName2 && _wfNormName(_wfName1) !== _wfNormName(_wfName2);
+
                         var _wfRowCount = _wfDeltas.length + 2; // start + deltas + end
                         // Add extra height for start/end rows if CEO transition (two-line labels)
                         var _wfTransitionExtra = _wfIsCeoTransition ? 24 : 0;
@@ -7950,18 +7962,6 @@ function setupDetailPanel(companies) {
                         var _wfChangeCls = _wfNetChange >= 0 ? 'positive' : 'negative';
                         var _wfChangeSign = _wfNetChange >= 0 ? '+' : '\u2212';
                         var _wfPctStr = Math.abs(_wfPctChange) >= 100 ? Math.round(Math.abs(_wfPctChange)) + '%' : Math.abs(_wfPctChange).toFixed(1) + '%';
-
-                        // Detect CEO transition: compare names between the two years
-                        var _wfName1 = (_wfCeo1.name || '').trim();
-                        var _wfName2 = (_wfCeo2.name || '').trim();
-                        function _wfNormName(n) {
-                            return n.toLowerCase()
-                                .replace(/\b(jr|sr|iii|iv|ii|mr|ms|dr|phd|former)\b\.?/g, '')
-                                .replace(/[.,'\"()]/g, '')
-                                .replace(/\b[a-z]\b/g, '')
-                                .replace(/\s+/g, ' ').trim();
-                        }
-                        var _wfIsCeoTransition = _wfName1 && _wfName2 && _wfNormName(_wfName1) !== _wfNormName(_wfName2);
 
                         // Short first name + last name for compact display
                         function _wfShortName(n) {
