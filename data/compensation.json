@@ -112,14 +112,15 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T18:30:17Z",
+    "last_updated": "2026-08-29T20:58:48Z",
     "total_neo_records": 6164,
     "title_coverage": "6164/6164",
     "data_quality": {
       "verified": 5610,
       "recomputed": 538,
       "incomplete_components": 0,
-      "bloated_component": 0
+      "bloated_component": 0,
+      "component_mismatch": 0
     },
     "median_ceo_pay": 16089783.5,
     "mean_ceo_pay": 21644318.394,
@@ -144,7 +145,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 293,
+    "board_independence_coverage": 291,
     "data_quality_detailed": {
       "verified": 5610,
       "recomputed": 145,
@@ -152,11 +153,10 @@
       "computed": 31,
       "minor_gap": 41,
       "recomputed_implausible_total": 35,
-      "component_mismatch": 0,
-      "filing_only": 16,
-      "unknown": 0
+      "filing_only": 16
     },
-    "companies_with_executives": 498
+    "companies_with_executives": 498,
+    "board_independence_any": 305
   },
   "companies": [
     {
@@ -1459,7 +1459,6 @@
       "pay_ratio": 785,
       "sector": "Real Estate",
       "cik": "0001063761",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "David Simon",
@@ -2822,7 +2821,6 @@
       "median_worker_pay": 190266,
       "pay_ratio": 232,
       "sector": "Energy",
-      "_skip_enrichment": "no_def14a",
       "cik": "0000034088",
       "executives": [
         {
@@ -4767,7 +4765,6 @@
       "cik": "0000896878",
       "filing_date": "2025-11-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687825000057/intu-20251126.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Sasan K. Goodarzi",
@@ -5545,7 +5542,6 @@
       "pay_ratio": 380,
       "sector": "Communication Services",
       "cik": "0001166691",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "Brian L. Roberts",
@@ -6062,7 +6058,6 @@
       "pay_ratio": 298,
       "sector": "Information Technology",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0001013462",
       "executives": [
         {
@@ -17382,7 +17377,6 @@
       "pay_ratio": 518,
       "sector": "Information Technology",
       "cik": "0000051143",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "A. Krishna",
@@ -25115,7 +25109,6 @@
       "cik": "0000080424",
       "filing_date": "2025-08-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/80424/000119312525191749/d875382ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jon R. Moeller",
@@ -26434,7 +26427,6 @@
       "pay_ratio": 563,
       "sector": "Industrials",
       "cik": "0001551182",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "P. Ruiz",
@@ -27316,7 +27308,6 @@
       "cik": "0000713676",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "William S. Demchak",
@@ -28567,7 +28558,6 @@
       "pay_ratio": 328,
       "sector": "Industrials",
       "cik": "0000026172",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "J. W. Rumsey",
@@ -29495,7 +29485,6 @@
       "pay_ratio": 147,
       "sector": "Utilities",
       "cik": "0000753308",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "John W. Ketchum",
@@ -29601,7 +29590,6 @@
       "pay_ratio": 268,
       "sector": "Consumer Staples",
       "cik": "0000007084",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "J. R. Luciano",
@@ -31323,7 +31311,6 @@
       "cik": "0001326160",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1326160/000110465926032443/tm261356-4_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Harry K. Sideris",
@@ -33020,7 +33007,6 @@
       "pay_ratio": 370,
       "sector": "Health Care",
       "cik": "0001156039",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "Gail Boudreaux",
@@ -34724,7 +34710,6 @@
       "cik": "0001613103",
       "filing_date": "2025-08-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1613103/000161310325000151/mdt-20250825.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Geoffrey S. Martha",
@@ -34961,7 +34946,6 @@
       "sector": "Energy",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "cik": "0001701605",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "Lorenzo Simonelli",
@@ -35232,7 +35216,6 @@
       "sector": "Health Care",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "cik": "0001682852",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "St\u00e9phane Bancel",
@@ -36211,7 +36194,6 @@
       "pay_ratio": 151,
       "sector": "Communication Services",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0000813828",
       "executives": [
         {
@@ -36797,7 +36779,6 @@
       "cik": "0000874766",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/874766/000087476626000025/hig-20260409.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Christopher Swift",
@@ -37054,7 +37035,6 @@
       "cik": "0000036104",
       "filing_date": "2026-03-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/36104/000110465926025844/tm261379-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Gunjan Kedia",
@@ -37313,7 +37293,6 @@
       "cik": "0000920148",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/920148/000119312526150752/lh-20260410.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Adam H. Schechter",
@@ -37662,7 +37641,6 @@
       "cik": "0000004977",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4977/000162828026019621/afl-20260319.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Daniel P. Amos",
@@ -38093,7 +38071,6 @@
       "sector": "Consumer Discretionary",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "cik": "0001058090",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "Scott Boatwright",
@@ -38354,7 +38331,6 @@
       "cik": "0001751788",
       "filing_date": "2026-02-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1751788/000119312526082583/dow-20260227.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jim Fitterling",
@@ -38827,7 +38803,6 @@
       "cik": "0000073309",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/73309/000119312526127739/d21430ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Leon J. Topalian",
@@ -39305,7 +39280,6 @@
       "pay_ratio": 224,
       "sector": "Information Technology",
       "cik": "0000864749",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Phillip Sawarynski",
@@ -40388,7 +40362,6 @@
       "pay_ratio": 274,
       "sector": "Information Technology",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0001725057",
       "executives": [
         {
@@ -44220,7 +44193,6 @@
       "pay_ratio": 73,
       "sector": "Energy",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0000004447",
       "executives": [
         {
@@ -45082,7 +45054,6 @@
       "cik": "0001002047",
       "filing_date": "2026-07-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1002047/000119312526321210/ntap-20260727.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "George Kurian",
@@ -45299,7 +45270,6 @@
       "cik": "0001035443",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1035443/000103544326000031/are-20260331.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Joel S. Marcus",
@@ -45695,7 +45665,6 @@
       "cik": "0000865752",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/865752/000110465926035990/tm261427d1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Rodney C. Sacks",
@@ -46728,7 +46697,6 @@
       "cik": "0000011544",
       "filing_date": "2026-04-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/11544/000119312526170583/d82252ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "W. Robert Berkley, Jr",
@@ -47951,7 +47919,6 @@
       "cik": "0001123360",
       "filing_date": "2026-03-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1123360/000110465926029453/tm261348-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Cameron M. Bready",
@@ -48431,7 +48398,6 @@
       "cik": "0000823768",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/823768/000110465926037381/tm261369-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "James C. Fish, Jr",
@@ -49426,7 +49392,6 @@
       "cik": "0001385157",
       "filing_date": "2026-01-15",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926003934/tel-20260311xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Heath A. Mitts",
@@ -49589,7 +49554,6 @@
       "cik": "0000046080",
       "filing_date": "2026-04-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/46080/000119312526160426/d36474ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Chris Cocks",
@@ -50030,7 +49994,6 @@
       "cik": "0001058290",
       "filing_date": "2026-04-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1058290/000130817926000290/ctsh014861-def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Ravi Kumar",
@@ -51116,7 +51079,6 @@
       "median_worker_pay": 75251,
       "pay_ratio": 218,
       "sector": "Communication Services",
-      "_skip_enrichment": "no_cik",
       "cik": "0000051644",
       "executives": [
         {
@@ -51524,7 +51486,6 @@
       "cik": "0001070750",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1070750/000107075026000062/hst-20260407.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Richard E. Marriott",
@@ -51824,7 +51785,6 @@
       "cik": "0000055785",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/55785/000162828026020404/kmb-20260323.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Michael D. Hsu",
@@ -52038,7 +51998,6 @@
       "cik": "0000857005",
       "filing_date": "2025-12-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/857005/000110465925124170/tm2526581-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Neil Barua",
@@ -52269,7 +52228,6 @@
       "cik": "0000031462",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/31462/000110465926032777/tm2530816-3_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Christophe Beck",
@@ -52468,7 +52426,6 @@
       "cik": "0000080661",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/80661/000008066126000099/pgr-20260318.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Susan Patricia Griffith",
@@ -54406,7 +54363,6 @@
       "cik": "0001174922",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1174922/000119312526124077/d26334ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Craig S. Billings",
@@ -54566,7 +54522,6 @@
       "cik": "0000002969",
       "filing_date": "2025-12-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2969/000130817925000643/apd-20251210.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Eduardo Menezes",
@@ -55248,7 +55203,6 @@
       "cik": "0001004980",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1004980/000100498026000020/pcg-20260409.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Patricia K. Poppe",
@@ -55873,7 +55827,6 @@
       "pay_ratio": 172,
       "sector": "Health Care",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0000859737",
       "executives": [
         {
@@ -56256,7 +56209,6 @@
       "cik": "0001408198",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1408198/000140819826000023/msci-20260310.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Henry A. Fernandez",
@@ -56652,7 +56604,6 @@
       "cik": "0000075677",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/75677/000119312526127602/d176963ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark W. Kowlzan",
@@ -57421,7 +57372,6 @@
       "cik": "0000049071",
       "filing_date": "2026-03-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/49071/000110465926024393/tm2518709-2_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Celeste M. Mellet \ufeff",
@@ -58324,7 +58274,6 @@
       "cik": "0000833444",
       "filing_date": "2026-01-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/833444/000110465926004565/tm2524665-5_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Joakim Weidemanis",
@@ -58554,7 +58503,6 @@
       "cik": "0000849399",
       "filing_date": "2026-07-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Vincent Pilette",
@@ -58730,7 +58678,6 @@
       "cik": "0000277948",
       "filing_date": "2026-03-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stephen F. Angel",
@@ -59083,7 +59030,6 @@
       "cik": "0001086222",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1086222/000108622226000042/akam-20260330.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Dr. F. Thomson Leighton",
@@ -60065,7 +60011,6 @@
       "median_worker_pay": 43976,
       "pay_ratio": 338,
       "sector": "Consumer Staples",
-      "_skip_enrichment": "no_cik",
       "cik": "0000055067",
       "executives": [
         {
@@ -60740,7 +60685,6 @@
       "pay_ratio": 87,
       "sector": "Energy",
       "data_source": "sec_edgar_def14a",
-      "_skip_enrichment": "parser_incompatible",
       "cik": "0000858470",
       "executives": [
         {
@@ -61439,7 +61383,6 @@
       "cik": "0001501585",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1501585/000150158526000014/hii-20260320.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Christopher D. Kastner",
@@ -63197,7 +63140,6 @@
       "cik": "0000943819",
       "filing_date": "2025-10-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/943819/000094381925000079/rmd-20251001.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Michael Farrell",
@@ -63789,7 +63731,6 @@
       "cik": "0000827052",
       "filing_date": "2026-03-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/827052/000110465926027655/eix-20260423xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Pedro J. Pizarro",
@@ -64260,7 +64201,6 @@
       "cik": "0000731802",
       "filing_date": "2025-12-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/731802/000073180225000076/ato-20251218.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "J. Kevin Akers",
@@ -64839,7 +64779,6 @@
       "cik": "0001100682",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1100682/000110465926037367/tm261421-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "James C. Foster",
@@ -65007,7 +64946,6 @@
       "cik": "0000877212",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/877212/000110465926039488/zbra-20260519xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "William Burns",
@@ -65235,7 +65173,6 @@
       "cik": "0001053507",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1053507/000105350726000088/amt-20260406.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Steven O. Vondran",
@@ -65428,7 +65365,6 @@
       "cik": "0000874761",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/874761/000087476126000070/aes-20260320.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stephen Coughlin",
@@ -65843,7 +65779,6 @@
       "cik": "0000831259",
       "filing_date": "2026-04-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/831259/000119312526173666/d30227ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Kathleen L. Quirk",
@@ -65966,7 +65901,6 @@
       "pay_ratio": 410,
       "sector": "Consumer Staples",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0001618921",
       "executives": [
         {
@@ -66120,7 +66054,6 @@
       "median_worker_pay": 126212,
       "pay_ratio": 105,
       "sector": "Utilities",
-      "_skip_enrichment": "no_cik",
       "cik": "0000004904",
       "executives": [
         {
@@ -66300,7 +66233,6 @@
       "cik": "0001039684",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1039684/000103968426000010/oke-20260331.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Pierce H. Norton II",
@@ -66531,7 +66463,6 @@
       "cik": "0000014693",
       "filing_date": "2026-06-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/14693/000119312526275853/d39207ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Lawson E. Whiting",
@@ -67740,7 +67671,6 @@
       "cik": "0001060391",
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1060391/000119312526121796/d896469ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jon Vander Ark",
@@ -67999,7 +67929,6 @@
       "cik": "0001164727",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1164727/000110465926035211/nem-20260512xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Tom Palmer",
@@ -68397,7 +68326,6 @@
       "cik": "0000072903",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/72903/000007290326000063/xel-20260406.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Bob Frenzel",
@@ -68635,7 +68563,6 @@
       "cik": "0000715957",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Robert M. Blue",
@@ -68874,7 +68801,6 @@
       "cik": "0001396009",
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1396009/000162828026020812/vmc-20260324.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "J. Thomas Hill",
@@ -69289,7 +69215,6 @@
       "pay_ratio": 92,
       "sector": "Real Estate",
       "cik": "0001037540",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Owen D. Thomas",
@@ -69474,7 +69399,6 @@
       "cik": "0001513761",
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1513761/000110465926052146/tm261503-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Harry Sommer",
@@ -69613,7 +69537,6 @@
       "cik": "0001705696",
       "filing_date": "2026-03-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1705696/000110465926028592/tm261334-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Edward B. Pitoniak",
@@ -70034,7 +69957,6 @@
       "pay_ratio": 101,
       "sector": "Information Technology",
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "_skip_enrichment": "no_cik",
       "cik": "0001043604",
       "executives": [
         {
@@ -70249,7 +70171,6 @@
       "cik": "0001289490",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1289490/000128949026000027/exr-20260330.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Joseph D. Margolis",
@@ -70695,7 +70616,6 @@
       "cik": "0001463101",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1463101/000146310126000026/enph-20260401.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Badrinarayanan Kothandaraman",
@@ -70814,7 +70734,6 @@
       "cik": "0000878927",
       "filing_date": "2026-04-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000006/odfl-20260417.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Kevin M. Freeman",
@@ -70911,7 +70830,6 @@
       "cik": "0000936340",
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/936340/000093634026000062/dte-20260312.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Gerardo Norcia",
@@ -71111,7 +71029,6 @@
       "cik": "0001403568",
       "filing_date": "2026-04-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1403568/000110465926046308/tmb-20260609xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Kecia L. Steelman",
@@ -71540,7 +71457,6 @@
       "cik": "0001336920",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1336920/000133692026000138/ldos-20260319.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Thomas A. Bell",
@@ -71728,7 +71644,6 @@
       "cik": "0001048911",
       "filing_date": "2025-08-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1048911/000110465925079800/tm2512613-2_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Rajesh Subramaniam",
@@ -71889,7 +71804,6 @@
       "cik": "0000788784",
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/788784/000119312526104270/peg-20260310.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Ralph A. LaRossa",
@@ -72568,8 +72482,7 @@
         "sources": [
           "prose"
         ]
-      },
-      "_skip_enrichment": "parser_incompatible"
+      }
     },
     {
       "ticker": "CF",
@@ -72792,7 +72705,6 @@
       "cik": "0000016732",
       "filing_date": "2025-10-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/16732/000130817925000618/cpb-20251007.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mick J. Beekhuizen",
@@ -73087,7 +72999,6 @@
       "cik": "0000313927",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/313927/000119312526115994/chd-20260319.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Richard A. Dierker",
@@ -73318,7 +73229,6 @@
       "cik": "0001692819",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1692819/000162828026019029/vistra-20260318.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "James A. Burke",
@@ -73717,7 +73627,6 @@
       "cik": "0000075362",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/75362/000119312526113876/pcar-20260318.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "R. P. Feight",
@@ -73969,7 +73878,6 @@
       "cik": "0000052988",
       "filing_date": "2025-12-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/52988/000119312525325103/d76905ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Robert V. Pragada",
@@ -74339,7 +74247,6 @@
       "cik": "0001442145",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1442145/000119312526141398/d23242ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Lee M. Shavel",
@@ -74793,7 +74700,6 @@
       "cik": "0001031296",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1031296/000119312526138029/fe-20260401.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Brian X. Tierney",
@@ -74981,7 +74887,6 @@
       "cik": "0000031791",
       "filing_date": "2026-03-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/31791/000119312526107266/d21831ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Prahlad R. Singh",
@@ -75397,7 +75302,6 @@
       "cik": "0001022671",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1022671/000110465926035826/stld-20260506xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark D. Millett",
@@ -75602,7 +75506,6 @@
       "cik": "0000916365",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/916365/000119312526126620/d16327ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Harry A. Lawton III",
@@ -75829,7 +75732,6 @@
       "pay_ratio": 101,
       "sector": "Information Technology",
       "cik": "0000097210",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Gregory S. Smith",
@@ -75963,7 +75865,6 @@
       "pay_ratio": 191,
       "sector": "Materials",
       "cik": "0000079879",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Timothy M. Knavish",
@@ -76171,7 +76072,6 @@
       "cik": "0000079282",
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/79282/000119312526122172/d30704ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "J. Powell Brown",
@@ -76395,7 +76295,6 @@
       "cik": "0001000228",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1000228/000119312526146317/d904292ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stanley M. Bergman",
@@ -76920,7 +76819,6 @@
       "pay_ratio": 55,
       "sector": "Energy",
       "cik": "0001841666",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John J. Christmann IV",
@@ -77131,7 +77029,6 @@
       "cik": "0000906107",
       "filing_date": "2026-04-14",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/906107/000119312526155007/eqr-20260410.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark J. Parrell",
@@ -77363,7 +77260,6 @@
       "pay_ratio": 68,
       "sector": "Utilities",
       "cik": "0000922224",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Vincent Sorgi",
@@ -77575,7 +77471,6 @@
       "cik": "0000024545",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/24545/000110465926034154/tap-20260506xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Rahul Goyal",
@@ -77793,7 +77688,6 @@
       "cik": "0000033213",
       "filing_date": "2026-02-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/33213/000110465926020027/tm261383-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Toby Z. Rice",
@@ -77958,7 +77852,6 @@
       "pay_ratio": 96,
       "sector": "Financials",
       "cik": "0000914208",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Andrew R. Schlossberg",
@@ -78125,7 +78018,6 @@
       "cik": "0001000697",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1000697/000119312526149657/d71187ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Udit Batra",
@@ -78321,7 +78213,6 @@
       "cik": "0000764622",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/764622/000162828026023516/pnw-20260403.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Theodore N. Geisler",
@@ -78629,7 +78520,6 @@
       "cik": "0001687229",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1687229/000119312526126310/d96989ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Dallas B. Tanner (",
@@ -79083,7 +78973,6 @@
       "cik": "0000783325",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/783325/000078332526000035/wec-20260324.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Scott J. Lauber",
@@ -79328,7 +79217,6 @@
       "cik": "0000049826",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/49826/000119312526127599/itw-20260325.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Christopher A. O'Herlihy",
@@ -79550,7 +79438,6 @@
       "cik": "0000073124",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/73124/000007312426000022/ntrs-20260311.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Michael G. O\u2019Grady",
@@ -79929,7 +79816,6 @@
       "cik": "0000277135",
       "filing_date": "2026-03-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/277135/000110465926025575/tm261342-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "D.G. Macpherson",
@@ -80160,7 +80046,6 @@
       "cik": "0000063754",
       "filing_date": "2026-02-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/63754/000006375426000140/mkc-20260217.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Brendan M. Foley",
@@ -80361,7 +80246,6 @@
       "pay_ratio": 171,
       "sector": "Industrials",
       "cik": "0000077360",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John L. Stauch",
@@ -80702,7 +80586,6 @@
       "cik": "0000062996",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/62996/000119312526151241/d44594ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jonathon J. Nudi",
@@ -80969,7 +80852,6 @@
       "cik": "0000759944",
       "filing_date": "2026-03-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/759944/000075994426000064/cfg-20260309.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Bruce Van Saun",
@@ -81177,7 +81059,6 @@
       "cik": "0001524472",
       "filing_date": "2026-03-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1524472/000110465926036678/xyl-20260514xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Matthew F. Pine",
@@ -81367,7 +81248,6 @@
       "cik": "0000092380",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/92380/000119312526127237/d121727ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Robert E. Jordan",
@@ -81584,7 +81464,6 @@
       "cik": "0001281761",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1281761/000128176126000027/rf-20260323.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John M. Turner, Jr",
@@ -81788,7 +81667,6 @@
       "cik": "0000091440",
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/91440/000009144026000101/sna-20260311.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Nicholas T. Pinchuk",
@@ -82254,7 +82132,6 @@
       "cik": "0000091419",
       "filing_date": "2026-06-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/91419/000119312526283858/d227901ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark Smucker",
@@ -82509,7 +82386,6 @@
       "cik": "0000036270",
       "filing_date": "2026-03-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/36270/000119312526099298/d74790ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Ren\u00e9 F. Jones",
@@ -82734,7 +82610,6 @@
       "cik": "0000074208",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/74208/000007420826000037/udr-20260521xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Thomas W. Toomey",
@@ -82892,7 +82767,6 @@
       "cik": "0000035527",
       "filing_date": "2026-03-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/35527/000119312526098679/d47600ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Timothy N. Spence",
@@ -83332,7 +83206,6 @@
       "pay_ratio": 136,
       "sector": "Financials",
       "cik": "0000049196",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stephen D. Steinour",
@@ -83450,7 +83323,6 @@
       "cik": "0001069202",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1069202/000106920226000046/lii-20260406.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Alok Maskara",
@@ -83657,7 +83529,6 @@
       "pay_ratio": 229,
       "sector": "Materials",
       "cik": "0001285785",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Bruce M. Bodine",
@@ -83830,7 +83701,6 @@
       "cik": "0000827054",
       "filing_date": "2026-07-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/827054/000082705426000026/mchp-20260701.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Steve Sanghi",
@@ -84051,7 +83921,6 @@
       "pay_ratio": 575,
       "sector": "Materials",
       "cik": "0000008818",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Deon M. Stander",
@@ -84253,7 +84122,6 @@
       "cik": "0001002910",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1002910/000110465926037756/tm261401-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Martin J. Lyons",
@@ -84510,7 +84378,6 @@
       "cik": "0000910606",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/910606/000119312526122880/d939595ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Martin E. Stein",
@@ -84762,7 +84629,6 @@
       "cik": "0001757898",
       "filing_date": "2026-06-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1757898/000119312526267599/d142920ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Daniel A. Carestio",
@@ -84953,7 +84819,6 @@
       "cik": "0001393311",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1393311/000119312526128991/psa-20260325.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Joseph D. Russell, Jr",
@@ -85603,7 +85468,6 @@
       "cik": "0001474735",
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1474735/000110465926051499/tm261388-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Aaron Jagdfeld",
@@ -85827,7 +85691,6 @@
       "cik": "0000034903",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/34903/000119312526127642/d33770ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Donald C. Wood",
@@ -85995,7 +85858,6 @@
       "cik": "0001130310",
       "filing_date": "2026-03-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1130310/000110465926023457/tm261341-3_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jason P. Wells",
@@ -86224,7 +86086,6 @@
       "sector": "Financials",
       "data_source": "SEC EDGAR DEF 14C + AFL-CIO",
       "cik": "0000922621",
-      "_skip_enrichment": "no_def14a",
       "executives": [
         {
           "name": "Timothy G. NeCastro",
@@ -86436,7 +86297,6 @@
       "cik": "0000866787",
       "filing_date": "2025-10-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/866787/000110465925103210/azo-20251217xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "William C. Rhodes, III",
@@ -86669,7 +86529,6 @@
       "cik": "0000915912",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/915912/000110465926039943/avb-20250520xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Benjamin W. Schall",
@@ -87082,7 +86941,6 @@
       "pay_ratio": 120,
       "sector": "Health Care",
       "cik": "0001090872",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Padraig McDonnell",
@@ -87458,7 +87316,6 @@
       "cik": "0000702165",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/702165/000119312526127620/nsc-20260327.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark R. George",
@@ -87675,7 +87532,6 @@
       "cik": "0000895126",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Chris Lacy",
@@ -87766,7 +87622,6 @@
       "cik": "0001596532",
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1596532/000119312526158942/d66465ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jayshree Ullal",
@@ -88150,7 +88005,6 @@
       "cik": "0000860731",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/860731/000086073126000022/tyl-20260323.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John S. Marr",
@@ -88374,7 +88228,6 @@
       "cik": "0001034054",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1034054/000119312526149656/d98181ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Brendan T. Cavanagh",
@@ -88595,7 +88448,6 @@
       "pay_ratio": 154,
       "sector": "Industrials",
       "cik": "0000723254",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Todd M. Schneider",
@@ -88803,7 +88655,6 @@
       "cik": "0000020286",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/20286/000002028626000015/cinf-20260316.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stephen M. Spray",
@@ -89048,7 +88899,6 @@
       "cik": "0001043277",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1043277/000104327726000011/chrw-20260323.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "David P. Bozeman",
@@ -89256,7 +89106,6 @@
       "cik": "0001410636",
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1410636/000119312526120668/d21438ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "M. Susan Hardwick",
@@ -89414,7 +89263,6 @@
       "cik": "0000072331",
       "filing_date": "2026-01-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/72331/000119312526014662/d895414ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Sundaram Nagarajan",
@@ -89664,7 +89512,6 @@
       "pay_ratio": 66,
       "sector": "Real Estate",
       "cik": "0000765880",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Scott M. Brinker",
@@ -89899,7 +89746,6 @@
       "pay_ratio": 155,
       "sector": "Financials",
       "cik": "0000320335",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Frank M. Svoboda",
@@ -90048,7 +89894,6 @@
       "cik": "0001579241",
       "filing_date": "2026-04-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1579241/000110465926044597/alle-20260604xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John H. Stone",
@@ -90454,7 +90299,6 @@
       "cik": "0000912595",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/912595/000114036126013212/ny20062832x1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "H. Eric Bolton Jr.",
@@ -90597,7 +90441,6 @@
       "pay_ratio": 137,
       "sector": "Health Care",
       "cik": "0000105770",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Eric M. Green",
@@ -90971,7 +90814,6 @@
       "pay_ratio": 132,
       "sector": "Industrials",
       "cik": "0000084839",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Gary W. Rollins",
@@ -91174,7 +91016,6 @@
       "cik": "0000920522",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/920522/000092052226000011/ess-20260327.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Angela L. Kleiman",
@@ -91377,7 +91218,6 @@
       "cik": "0000048465",
       "filing_date": "2025-12-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/48465/000004846525000074/hrl-20251216.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jeffrey M. Ettinger",
@@ -91793,7 +91633,6 @@
       "pay_ratio": 45,
       "sector": "Financials",
       "cik": "0001095073",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Juan C. Andrade",
@@ -91921,7 +91760,6 @@
       "cik": "0000091142",
       "filing_date": "2026-03-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/91142/000119312526089938/d79196ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Stephen M. Shafer",
@@ -92263,7 +92101,6 @@
       "cik": "0001013237",
       "filing_date": "2025-10-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1013237/000162828025046442/fds-20251027.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "F. Philip Snow",
@@ -92459,7 +92296,6 @@
       "cik": "0000723531",
       "filing_date": "2025-08-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/723531/000119312525191789/d946290ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "John B. Gibson",
@@ -92888,7 +92724,6 @@
       "cik": "0001811074",
       "filing_date": "2025-09-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1811074/000110465925093848/tm2523293-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Tyler Glover",
@@ -93237,7 +93072,6 @@
       "cik": "0001121788",
       "filing_date": "2026-04-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1121788/000130817926000318/grmn015328-def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Clifton A. Pemble",
@@ -93462,7 +93296,6 @@
       "cik": "0001679788",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1679788/000167978826000045/coin-20260424.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Brian Armstrong",
@@ -93714,7 +93547,6 @@
       "cik": "0000906345",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/906345/000162828026021581/cpt-20260325.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Richard J. Campo",
@@ -94108,7 +93940,6 @@
       "cik": "0001679273",
       "filing_date": "2026-07-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1679273/000167927326000036/lw-20260730.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Michael J. Smith",
@@ -94329,7 +94160,6 @@
       "cik": "0001418135",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1418135/000119312526177266/d201572ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Timothy Cofer",
@@ -94784,7 +94614,6 @@
       "cik": "0000842023",
       "filing_date": "2025-09-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/842023/000130817925000599/tech014339-def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Kim Kelderman",
@@ -95429,7 +95258,6 @@
       "cik": "0001633917",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1633917/000119312526145721/d59508ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Alex Chriss",
@@ -96275,7 +96103,6 @@
       "cik": "0001278021",
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1278021/000119312526191601/mktx-20260429.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Christopher R. Concannon",
@@ -96714,7 +96541,6 @@
       "cik": "0001013871",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1013871/000110465926030844/tm261406-2_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Lawrence S. Coben",
@@ -96935,7 +96761,6 @@
       "pay_ratio": 99,
       "sector": "Consumer Discretionary",
       "cik": "0000945841",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Peter D. Arvan",
@@ -97095,7 +96920,6 @@
       "cik": "0000898293",
       "filing_date": "2025-12-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/898293/000119312525316927/d946966ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Mark T. Mondello",
@@ -97312,7 +97136,6 @@
       "cik": "0000851968",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926039491/tm261333-4_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jeffrey S. Lorberbaum",
@@ -97479,7 +97302,6 @@
       "cik": "0001321655",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000019/pltr-20260423.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Alexander Karp",
@@ -97728,7 +97550,6 @@
       "pay_ratio": 101,
       "sector": "Consumer Discretionary",
       "cik": "0001065696",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Justin Jude",
@@ -97907,7 +97728,6 @@
       "cik": "0001094285",
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1094285/000119312526104187/d70991ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "George C. Bobb III",
@@ -98399,7 +98219,6 @@
       "pay_ratio": 53,
       "sector": "Consumer Discretionary",
       "cik": "0001316835",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Peter M. Jackson",
@@ -98504,7 +98323,6 @@
       "cik": "0001571996",
       "filing_date": "2026-05-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312526226734/d132444ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Michael S. Dell",
@@ -98741,7 +98559,6 @@
       "cik": "0000898173",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/898173/000089817326000014/orly-20251231xdef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Greg Henslee",
@@ -99047,7 +98864,6 @@
       "cik": "0000906163",
       "filing_date": "2026-03-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000029/nvr-20260316.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Paul C. Saville",
@@ -99250,7 +99066,6 @@
       "cik": "0000029534",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/29534/000110465926040394/tm261322-1_def14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Todd J. Vasos",
@@ -99537,7 +99352,6 @@
       "cik": "0000900075",
       "filing_date": "2025-10-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Jeffrey Liaw",
@@ -99546,9 +99360,7 @@
           "non_equity_incentive": 1093400,
           "pension_nqdc": 79292,
           "all_other": 2072692,
-          "total": 4145384,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "total": 4145384
         },
         {
           "name": "Leah C. Stearns",
@@ -99557,9 +99369,7 @@
           "non_equity_incentive": 464000,
           "pension_nqdc": 11714,
           "all_other": 1056305,
-          "total": 2112610,
-          "title": "Senior Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "total": 2112610
         }
       ],
       "neo_count": 2,
@@ -99600,7 +99410,6 @@
       "cik": "0000815556",
       "filing_date": "2026-02-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/815556/000081555626000017/fast-20260225.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Daniel L. Florness",
@@ -100086,7 +99895,6 @@
       "cik": "0001858681",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1858681/000119312526177321/d948913ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Marc Rowan",
@@ -100296,7 +100104,6 @@
       "cik": "0001067983",
       "filing_date": "2026-03-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526106253/d882687ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Warren E. Buffett",
@@ -100499,7 +100306,6 @@
       "cik": "0001792789",
       "filing_date": "2026-04-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1792789/000179278926000018/dash-20260420.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Tony Xu",
@@ -100902,7 +100708,6 @@
       "cik": "0001559720",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1559720/000119312526175062/d936646ddef14a.htm",
-      "_skip_enrichment": "parser_incompatible",
       "executives": [
         {
           "name": "Brian Chesky",
