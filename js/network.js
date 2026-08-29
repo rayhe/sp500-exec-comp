@@ -4747,16 +4747,25 @@ function initNetwork(peerData) {
 
         // Row totals for normalize mode
         var rowTotals = [];
+        var rowTotalsCross = []; // cross-community only (excludes diagonal) — true peer flow denominator
         for (var i = 0; i < N; i++) {
-            var rt = 0;
-            for (var j = 0; j < N; j++) rt += flowMatrix[i][j];
+            var rt = 0, rtc = 0;
+            for (var j = 0; j < N; j++) {
+                rt += flowMatrix[i][j];
+                if (i !== j) rtc += flowMatrix[i][j];
+            }
             rowTotals.push(rt);
+            rowTotalsCross.push(rtc);
         }
 
         // Pre-compute column totals for col-normalize mode
         var colTotals = new Array(N).fill(0);
+        var colTotalsCross = new Array(N).fill(0);
         for (var ci2 = 0; ci2 < N; ci2++) {
-            for (var cj2 = 0; cj2 < N; cj2++) colTotals[cj2] += flowMatrix[ci2][cj2];
+            for (var cj2 = 0; cj2 < N; cj2++) {
+                colTotals[cj2] += flowMatrix[ci2][cj2];
+                if (ci2 !== cj2) colTotalsCross[cj2] += flowMatrix[ci2][cj2];
+            }
         }
 
         var maxOff = 0, maxDiag = 0;
@@ -4774,9 +4783,9 @@ function initNetwork(peerData) {
         var html = '<div class="cf-header-row"><div class="cf-header">Peer Flow Between Communities</div>';
         var normLabel = _cfNormMode === 'row' ? '% Row' : _cfNormMode === 'col' ? '% Col' : _cfNormMode === 'diff' ? '\u00b1 Diff' : '# Raw';
         var normActiveClass = _cfNormMode !== 'raw' ? (' cf-norm-active' + (_cfNormMode === 'col' ? ' cf-norm-col' : '') + (_cfNormMode === 'diff' ? ' cf-norm-diff' : '')) : '';
-        html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts \u2192 row % \u2192 column % \u2192 net diff">' + normLabel + '</button>';
+        html += '<button class="cf-normalize-btn' + normActiveClass + '" title="Cycle: raw counts \u2192 row % (cross-community) \u2192 column % (cross-community) \u2192 net diff">' + normLabel + '</button>';
         html += '<button class="cf-transpose-btn' + (_cfTransposed ? ' cf-transpose-active' : '') + '" title="Transpose: swap row/column perspectives">\u21c4</button></div>';
-        var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound edges.' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound edges.' : _cfNormMode === 'diff' ? 'Values = row% \u2212 col%: positive = net exporter, negative = net importer. Totals show net edge balance.' : 'Diagonal = intra-community.';
+        var descText = _cfNormMode === 'row' ? 'Values = % of row\u2019s outbound cross-community edges (excl. intra).' : _cfNormMode === 'col' ? 'Values = % of column\u2019s inbound cross-community edges (excl. intra).' : _cfNormMode === 'diff' ? 'Values = row% \u2212 col% (cross-community): positive = net exporter, negative = net importer. Totals show net edge balance.' : 'Diagonal = intra-community.';
         if (_cfTransposed) descText = 'Transposed: rows = selected-by (inbound). ' + descText;
         html += '<div class="cf-desc">Directed edges: row selects column as peer. ' + descText + ' Hover for top contributors.</div>';
         html += '<div class="cf-matrix" style="grid-template-columns: 64px repeat(' + N + ', 28px) 36px;">';
@@ -4805,18 +4814,26 @@ function initNetwork(peerData) {
                 var diffVal = 0; // for diff mode coloring
                 if (val > 0) {
                     if (_cfNormMode === 'diff' && !isDiag) {
-                        var rowPct = rowTotals[i] > 0 ? (val / rowTotals[i]) * 100 : 0;
-                        var colPct = colTotals[j] > 0 ? (val / colTotals[j]) * 100 : 0;
+                        var rowPct = rowTotalsCross[i] > 0 ? (val / rowTotalsCross[i]) * 100 : 0;
+                        var colPct = colTotalsCross[j] > 0 ? (val / colTotalsCross[j]) * 100 : 0;
                         diffVal = rowPct - colPct;
                         displayVal = (diffVal >= 0 ? '+' : '') + (Math.abs(diffVal) >= 10 ? Math.round(diffVal) + '' : diffVal.toFixed(1));
                     } else if (_cfNormMode === 'diff' && isDiag) {
                         displayVal = '\u2014'; // em dash for diagonal in diff mode
-                    } else if (_cfNormMode === 'row' && rowTotals[i] > 0) {
-                        var pct = (val / rowTotals[i]) * 100;
-                        displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
-                    } else if (_cfNormMode === 'col' && colTotals[j] > 0) {
-                        var pct = (val / colTotals[j]) * 100;
-                        displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
+                    } else if (_cfNormMode === 'row') {
+                        if (isDiag) {
+                            displayVal = '\u2014';
+                        } else {
+                            var pct = rowTotalsCross[i] > 0 ? (val / rowTotalsCross[i]) * 100 : 0;
+                            displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
+                        }
+                    } else if (_cfNormMode === 'col') {
+                        if (isDiag) {
+                            displayVal = '\u2014';
+                        } else {
+                            var pct = colTotalsCross[j] > 0 ? (val / colTotalsCross[j]) * 100 : 0;
+                            displayVal = pct >= 10 ? Math.round(pct) + '' : pct.toFixed(1);
+                        }
                     } else {
                         displayVal = val + '';
                     }
@@ -4878,13 +4895,13 @@ function initNetwork(peerData) {
             });
 
             var rowTotalDisplay, _rtStyle = '';
-            if (_cfNormMode === 'row') { rowTotalDisplay = '100'; }
+            if (_cfNormMode === 'row') { rowTotalDisplay = rowTotalsCross[i] > 0 ? '100' : '—'; }
             else if (_cfNormMode === 'diff') {
-                var _nb = rowTotals[i] - colTotals[i];
+                var _nb = rowTotalsCross[i] - colTotalsCross[i];
                 rowTotalDisplay = (_nb > 0 ? '+' : '') + _nb;
-                if (_nb > 0) _rtStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net exporter: ' + _nb + ' more outbound than inbound cross-edges"';
-                else if (_nb < 0) _rtStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net importer: ' + Math.abs(_nb) + ' more inbound than outbound cross-edges"';
-                else _rtStyle = ' title="Balanced: equal outbound and inbound cross-edges"';
+                if (_nb > 0) _rtStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net exporter: ' + _nb + ' more outbound than inbound cross-edges (excl. intra)"';
+                else if (_nb < 0) _rtStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net importer: ' + Math.abs(_nb) + ' more inbound than outbound cross-edges (excl. intra)"';
+                else _rtStyle = ' title="Balanced: equal outbound and inbound cross-edges (excl. intra)"';
             } else { rowTotalDisplay = rowTotal; }
             html += '<div class="cf-cell cf-total"' + _rtStyle + '>' + rowTotalDisplay + '</div>';
             html += '</div>';
@@ -4893,21 +4910,24 @@ function initNetwork(peerData) {
         html += '<div class="cf-row cf-totals-row">';
         html += '<div class="cf-row-label cf-total-label">' + (_cfNormMode === 'diff' ? 'Net' : 'Total') + '</div>';
         var grandTotal = 0;
+        var grandTotalCross = 0;
+        colTotals.forEach(function(ct, _ci) { grandTotal += ct; });
+        colTotalsCross.forEach(function(ct) { grandTotalCross += ct; });
         colTotals.forEach(function(ct, _ci) {
-            grandTotal += ct;
             if (_cfNormMode === 'diff') {
-                var _cnb = ct - rowTotals[_ci];
+                var _cnb = colTotalsCross[_ci] - rowTotalsCross[_ci];
                 var _ctDisp = (_cnb > 0 ? '+' : '') + _cnb;
                 var _ctStyle = '';
-                if (_cnb > 0) _ctStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net target: ' + _cnb + ' more inbound than outbound cross-edges"';
-                else if (_cnb < 0) _ctStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net source: ' + Math.abs(_cnb) + ' more outbound than inbound cross-edges"';
-                else _ctStyle = ' title="Balanced: equal inbound and outbound cross-edges"';
+                if (_cnb > 0) _ctStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net target: ' + _cnb + ' more inbound than outbound cross-edges (excl. intra)"';
+                else if (_cnb < 0) _ctStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net source: ' + Math.abs(_cnb) + ' more outbound than inbound cross-edges (excl. intra)"';
+                else _ctStyle = ' title="Balanced: equal inbound and outbound cross-edges (excl. intra)"';
                 html += '<div class="cf-cell cf-total"' + _ctStyle + '>' + _ctDisp + '</div>';
             } else {
-                html += '<div class="cf-cell cf-total">' + (_cfNormMode === 'col' ? '100' : ct) + '</div>';
+                var isCrossTotal = _cfNormMode === 'col';
+                html += '<div class="cf-cell cf-total">' + (isCrossTotal ? (colTotalsCross[_ci] > 0 ? '100' : '—') : ct) + '</div>';
             }
         });
-        html += '<div class="cf-cell cf-total cf-grand-total" title="' + (_cfNormMode === 'diff' ? 'Net balance sums to zero across all communities' : '') + '">' + (_cfNormMode === 'diff' ? '0' : _cfNormMode !== 'raw' ? '\u2014' : grandTotal) + '</div>';
+        html += '<div class="cf-cell cf-total cf-grand-total" title="' + (_cfNormMode === 'diff' ? 'Net balance sums to zero across all communities (excl. intra)' : '') + '">' + (_cfNormMode === 'diff' ? '0' : _cfNormMode === 'col' ? '—' : _cfNormMode === 'row' ? '—' : grandTotal) + '</div>';
         html += '</div>';
 
         html += '</div>';
@@ -4980,15 +5000,15 @@ function initNetwork(peerData) {
 
                     var tipHtml = '<div class="cf-tip-header">' + fromLabel + (isDiag ? ' (intra)' : ' \u2192 ' + toLabel) + '</div>';
                     tipHtml += '<div class="cf-tip-count">' + rawVal + ' edge' + (rawVal !== 1 ? 's' : '');
-                    if (_cfNormMode === 'diff' && !isDiag && rowTotals[ci] > 0 && colTotals[cj] > 0) {
-                        var rowPct = ((rawVal / rowTotals[ci]) * 100);
-                        var colPct = ((rawVal / colTotals[cj]) * 100);
+                    if (_cfNormMode === 'diff' && !isDiag && rowTotalsCross[ci] > 0 && colTotalsCross[cj] > 0) {
+                        var rowPct = ((rawVal / rowTotalsCross[ci]) * 100);
+                        var colPct = ((rawVal / colTotalsCross[cj]) * 100);
                         var diff = rowPct - colPct;
-                        tipHtml += ' (row ' + rowPct.toFixed(1) + '% \u2212 col ' + colPct.toFixed(1) + '% = ' + (diff >= 0 ? '+' : '') + diff.toFixed(1) + ')';
-                    } else if (_cfNormMode === 'row' && rowTotals[ci] > 0) {
-                        tipHtml += ' (' + ((rawVal / rowTotals[ci]) * 100).toFixed(1) + '% of row)';
-                    } else if (_cfNormMode === 'col' && colTotals[cj] > 0) {
-                        tipHtml += ' (' + ((rawVal / colTotals[cj]) * 100).toFixed(1) + '% of col)';
+                        tipHtml += ' (row ' + rowPct.toFixed(1) + '% \u2212 col ' + colPct.toFixed(1) + '% = ' + (diff >= 0 ? '+' : '') + diff.toFixed(1) + ' cross-%)';
+                    } else if (_cfNormMode === 'row' && !isDiag && rowTotalsCross[ci] > 0) {
+                        tipHtml += ' (' + ((rawVal / rowTotalsCross[ci]) * 100).toFixed(1) + '% of cross-row, ' + ((rawVal / rowTotals[ci]) * 100).toFixed(1) + '% of all)';
+                    } else if (_cfNormMode === 'col' && !isDiag && colTotalsCross[cj] > 0) {
+                        tipHtml += ' (' + ((rawVal / colTotalsCross[cj]) * 100).toFixed(1) + '% of cross-col, ' + ((rawVal / colTotals[cj]) * 100).toFixed(1) + '% of all)';
                     }
                     tipHtml += '</div>';
                     tipHtml += '<div class="cf-tip-label">Top contributors:</div>';
