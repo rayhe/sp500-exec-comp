@@ -7,7 +7,7 @@
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-08-28",
+    "data_collected": "2026-08-29",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -101,7 +101,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T09:04:59Z",
+    "last_updated": "2026-08-29T13:15:00Z",
     "total_neo_records": 6165,
     "title_coverage": "6165/6165",
     "data_quality": {
@@ -133,7 +133,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 290,
+    "board_independence_coverage": 291,
     "data_quality_detailed": {
       "verified": 5577,
       "recomputed": 148,
@@ -4734,6 +4734,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 10,
+        "independence_pct": 80.0,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
