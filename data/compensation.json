@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,158/6,158). Board independence data for 288/500 companies (301 with independent count, 288 with full independent/total). Data quality: 5,569 verified, 570 recomputed (includes rounding/minor_gap), 19 incomplete, 0 bloated. Corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years). Added board independence for TMO, CB, KO, IQV, INTC, GDDY (6 new, total 288/500). Corrected 4 bloated_component records (FE 2023 Tierney 185k\u219223.8M, TSCO 2025 Lawton 2.3M\u219228.3M, CHRW 2023 Bozeman 940k\u219221.5M, DELL 2026 Kennedy 522k\u21926.18M) \u2014 total field had been truncated to salary/bonus column, recomputed as sum of components. Corrected ELV FY2025 full SCT (5 NEOs) via primary-source DEF 14A 2026-03-27 \u2014 fixed column-shift that stored stock awards in pension_nqdc and bonus in salary, understating CEO total as 4.19M vs true 22.58M; verified all 5 NEOs, updated company total_neo_compensation to 51.4M. Corrected BALL FY2025 full SCT (7 NEOs) via primary-source DEF 14A 2026-03-17 \u2014 fixed column-shift that understated CEO total 822,720\u21924,218,225 and corrupted company total_neo_compensation 7.09M\u219229.49M; verified all 7 NEOs, updated Materials sector median.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. 100% title coverage (6,158/6,158). Board independence data for 288/500 companies (301 with independent count, 288 with full independent/total). Data quality: 5,569 verified, 570 recomputed (includes rounding/minor_gap), 19 incomplete, 0 bloated. Corrected META FY2025 Javier Olivan compensation via primary-source DEF 14A verification. Fixed 190 records with systematic doubling/halving parsing errors. Fixed CI and GM board independence (were committee-level counts, corrected to full board). BX and KKR have empty executives \u2014 alt-asset managers with non-standard compensation structures. Corrected TMO FY2025 Marc Casper compensation via primary-source DEF 14A verification \u2014 fixed column-misalignment that inflated non-equity incentive to 65.7M and understated total to 7.95M; verified all 14 NEO records, updated pay ratio to 1120:1 and median worker pay to 71,333. Fixed ADSK FY2025 Andrew Anagnost column-misalignment (was 144k total, corrected to 25.19M with 22.48M stock), AMT FY2024-2025 Olivier Puech/Smith/Vondran SCT (12 NEO records, was 944k bloated), OKE Randy Lentz 2025 (was 759k, corrected to 6.11M) + Swords/Taylor full SCT (6 NEOs), SWK Lopez Diaz 2025 (was 109k, corrected to 4.68M) + Hallinan/Beck/Wintner full team (8 NEOs), EQR Parrell/Garechana/Manelis/Brackenridge/Fenster full SCT (6 NEOs, 3 years). Added board independence for TMO, CB, KO,  ... Corrected RMD FY2025-2024 Michael Farrell (2 NEO records) via primary-source DEF 14A 2025-10-01 \u2014 fixed column-shift that stored salary in stock, stock in non-equity, total as option. Corrected CTSH FY2025-2024 John Kim (2 NEO records) via primary-source DEF 14A 2026-03-? \u2014 fixed shift that stored salary in bonus, stock in all_other, total as non-equity. Component_mismatch 21\u219218, verified 5577\u21925580.",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -24,29 +24,29 @@
     "aggregate_stats": {
       "total_companies": 500,
       "companies_with_pay_ratio": 496,
-      "median_ceo_pay": 16092334,
-      "mean_ceo_pay": 21591695.256,
+      "median_ceo_pay": 16089783.5,
+      "mean_ceo_pay": 21644318.394,
       "max_ceo_pay": 821090355,
-      "min_ceo_pay": 40001,
+      "min_ceo_pay": 0,
       "median_worker_pay": 81899,
       "median_pay_ratio": 196
     },
     "sector_medians": {
       "Industrials": {
         "count": 70,
-        "median_ceo_pay": 13923884,
+        "median_ceo_pay": 13923884.5,
         "min": 40001,
         "max": 70547718
       },
       "Consumer Discretionary": {
         "count": 58,
-        "median_ceo_pay": 16509311,
+        "median_ceo_pay": 16893455.5,
         "min": 242122,
         "max": 36340876
       },
       "Financials": {
         "count": 66,
-        "median_ceo_pay": 17936510,
+        "median_ceo_pay": 17936510.0,
         "min": 100000,
         "max": 118891684
       },
@@ -58,7 +58,7 @@
       },
       "Communication Services": {
         "count": 20,
-        "median_ceo_pay": 27827869,
+        "median_ceo_pay": 27827869.5,
         "min": 403019,
         "max": 165009366
       },
@@ -70,7 +70,7 @@
       },
       "Energy": {
         "count": 22,
-        "median_ceo_pay": 17471111,
+        "median_ceo_pay": 17471111.0,
         "min": 4864564,
         "max": 42727650
       },
@@ -82,7 +82,7 @@
       },
       "Consumer Staples": {
         "count": 34,
-        "median_ceo_pay": 15487307,
+        "median_ceo_pay": 15487307.0,
         "min": 5380494,
         "max": 49122360
       },
@@ -101,19 +101,19 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-29T13:15:00Z",
+    "last_updated": "2026-08-29T14:29:45.780191+00:00",
     "total_neo_records": 6165,
     "title_coverage": "6165/6165",
     "data_quality": {
-      "verified": 5577,
+      "verified": 5580,
       "recomputed": 508,
       "incomplete_components": 19,
       "bloated_component": 61
     },
-    "median_ceo_pay": 16092334,
-    "mean_ceo_pay": 21628160.56713427,
+    "median_ceo_pay": 16089783.5,
+    "mean_ceo_pay": 21644318.394,
     "max_ceo_pay": 821090355,
-    "min_ceo_pay": 40001,
+    "min_ceo_pay": 0,
     "say_on_pay_coverage": 416,
     "say_on_pay_stats": {
       "count": 416,
@@ -135,13 +135,13 @@
     "governance_coverage": 496,
     "board_independence_coverage": 291,
     "data_quality_detailed": {
-      "verified": 5577,
+      "verified": 5580,
       "recomputed": 148,
       "rounding": 288,
       "computed": 31,
       "minor_gap": 41,
       "recomputed_implausible_total": 40,
-      "component_mismatch": 21,
+      "component_mismatch": 18,
       "filing_only": 16,
       "unknown": 3
     },
@@ -50151,14 +50151,14 @@
           "name": "John Kim",
           "title": "Chief Legal Officer, Chief Administrative Officer and Corporate Secretary",
           "year": 2025,
-          "salary": 0,
-          "bonus": 800000,
-          "stock_awards": 0,
+          "salary": 800000,
+          "bonus": 0,
+          "stock_awards": 3431385,
           "option_awards": 0,
-          "non_equity_incentive": 0,
+          "non_equity_incentive": 1352000,
           "pension_nqdc": 0,
-          "all_other": 3431385,
-          "total": 4231385,
+          "all_other": 13950,
+          "total": 5597335,
           "_total_source": "verified"
         },
         {
@@ -50167,13 +50167,13 @@
           "year": 2024,
           "salary": 800000,
           "bonus": 0,
-          "stock_awards": 0,
+          "stock_awards": 3862541,
           "option_awards": 0,
-          "non_equity_incentive": 3862541,
+          "non_equity_incentive": 858640,
           "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 858640,
-          "_total_source": "component_mismatch"
+          "all_other": 18236,
+          "total": 5539417,
+          "_total_source": "verified"
         },
         {
           "name": "John Kim",
@@ -50238,7 +50238,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 34164732,
+      "total_neo_compensation": 35530682,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.2,
@@ -63176,8 +63176,8 @@
       "ticker": "RMD",
       "company_name": "ResMed Inc",
       "ceo_name": "Michael Farrell",
-      "total_compensation": 2925007,
-      "fiscal_year": 2024,
+      "total_compensation": 14674543,
+      "fiscal_year": 2025,
       "source": "AFL-CIO Paywatch 2025",
       "median_worker_pay": 79096,
       "pay_ratio": 179,
@@ -63192,29 +63192,29 @@
           "name": "Michael Farrell",
           "title": "Chief executive officer",
           "year": 2025,
-          "salary": 0,
+          "salary": 1214150,
           "bonus": 0,
-          "stock_awards": 1214150,
-          "option_awards": 0,
-          "non_equity_incentive": 8775059,
+          "stock_awards": 8775059,
+          "option_awards": 2925007,
+          "non_equity_incentive": 1646743,
           "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 2925007,
-          "_total_source": "component_mismatch"
+          "all_other": 113584,
+          "total": 14674543,
+          "_total_source": "verified"
         },
         {
           "name": "Michael Farrell",
           "title": "Chief executive officer",
           "year": 2024,
-          "salary": 0,
+          "salary": 1168987,
           "bonus": 0,
-          "stock_awards": 1168987,
-          "option_awards": 0,
-          "non_equity_incentive": 8400057,
+          "stock_awards": 8400057,
+          "option_awards": 2800025,
+          "non_equity_incentive": 1613032,
           "pension_nqdc": 0,
-          "all_other": 0,
-          "total": 2800025,
-          "_total_source": "component_mismatch"
+          "all_other": 138728,
+          "total": 14120829,
+          "_total_source": "verified"
         },
         {
           "name": "Michael Farrell",
@@ -63377,7 +63377,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 14261568,
+      "total_neo_compensation": 26011104,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -101195,5 +101195,5 @@
       }
     }
   ],
-  "last_updated": "2026-08-29T09:04:59Z"
+  "last_updated": "2026-08-29T14:29:45.780191+00:00"
 }
