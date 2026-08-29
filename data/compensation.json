@@ -107,7 +107,7 @@
     "data_quality": {
       "verified": 5557,
       "recomputed": 582,
-      "incomplete_components": 16,
+      "incomplete_components": 19,
       "bloated_component": 0
     },
     "median_ceo_pay": 16051141,
