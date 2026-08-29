@@ -3261,52 +3261,82 @@ function drawScatterChart(companies) {
                 .attr('r', 2)
                 .attr('fill', _commCrosshairColor).attr('opacity', 0.85);
 
-            // Delta annotation: distance from community median to S&P 500 median
+            // Delta annotation: distance from community median to S&P 500 median — semantic coloring
             if (medX != null && medY != null && medX !== 0 && medY !== 0) {
                 var _deltaX = ((_commCrosshairMedX - medX) / Math.abs(medX)) * 100;
                 var _deltaY = ((_commCrosshairMedY - medY) / Math.abs(medY)) * 100;
-                var _dxSign = _deltaX >= 0 ? '+' : '';
-                var _dySign = _deltaY >= 0 ? '+' : '';
-                var _xShort = xMetric.label.length > 12 ? xMetric.label.substring(0, 11) + '\u2026' : xMetric.label;
-                var _yShort = yMetric.label.length > 12 ? yMetric.label.substring(0, 11) + '\u2026' : yMetric.label;
-                var _dxStr = _xShort + ': ' + _dxSign + _deltaX.toFixed(0) + '%';
-                var _dyStr = _yShort + ': ' + _dySign + _deltaY.toFixed(0) + '%';
-                // Color code: green for higher, red for lower (contextually — for pay, higher = more; for governance, higher = better)
-                var _dxColor = _deltaX >= 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#ef4444' : '#dc2626');
-                var _dyColor = _deltaY >= 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#ef4444' : '#dc2626');
+                // Metrics where lower is better — invert green/red semantics
+                var _lowerIsBetter = {
+                    'pay_ratio': true,
+                    '_ceoConcPct': true,
+                    '_ceoCfoPremium': true,
+                    '_gerScore': true,
+                    '_ceoVolatility': true
+                };
+                function _semanticColor(delta, metricKey) {
+                    var isLowerBetter = !!_lowerIsBetter[metricKey];
+                    var isGood = isLowerBetter ? (delta < 0) : (delta > 0);
+                    // Neutral metrics (total_comp, stock %, PageRank, tenure, YoY) — use muted purple/blue instead of green/red
+                    var neutralKeys = { 'total_compensation': true, '_ceoStockPctSort': true, '_pageRankScore': true, '_ceoTenureYears': true, '_ceoYoYPct': true, 'median_worker_pay': false };
+                    var isNeutral = metricKey === 'total_compensation' || metricKey === '_ceoStockPctSort' || metricKey === '_pageRankScore' || metricKey === '_ceoTenureYears' || metricKey === '_ceoYoYPct';
+                    if (isNeutral) {
+                        return isGood ? (dark ? '#a78bfa' : '#7c3aed') : (dark ? '#94a3b8' : '#6b7280');
+                    }
+                    return isGood ? (dark ? '#34d399' : '#059669') : (dark ? '#ef4444' : '#dc2626');
+                }
+                var _xShort = xMetric.shortLabel.replace('CEO Total ', '').replace('Median ', '').substring(0, 14);
+                var _yShort = yMetric.shortLabel.replace('CEO Total ', '').replace('Median ', '').substring(0, 14);
+                var _fmtDelta = function(d) {
+                    var abs = Math.abs(d);
+                    var dir = d >= 0 ? 'above' : 'below';
+                    return abs.toFixed(0) + '% ' + dir;
+                };
+                var _dxStr = _xShort + ': ' + _fmtDelta(_deltaX) + ' S&P';
+                var _dyStr = _yShort + ': ' + _fmtDelta(_deltaY) + ' S&P';
+                var _dxColor = _semanticColor(_deltaX, xMetricKey);
+                var _dyColor = _semanticColor(_deltaY, yMetricKey);
 
                 // Position delta text near intersection, offset to bottom-right
                 var _badgeX = x(_commCrosshairMedX);
                 var _badgeY = yScale(_commCrosshairMedY);
-                var _dxBadgeX = Math.min(_badgeX + 10, w - 120);
+                var _dxBadgeX = Math.min(_badgeX + 10, w - 140);
                 var _dxBadgeY = _badgeY + 18;
                 var _dyBadgeY = _badgeY + 30;
 
                 // If too close to bottom, flip above
                 if (_dxBadgeY > h - 10) { _dxBadgeY = _badgeY - 24; _dyBadgeY = _badgeY - 12; }
 
-                // Background rect for readability
-                var _bgX = _dxBadgeX - 3;
-                var _bgY = Math.min(_dxBadgeY, _dyBadgeY) - 10;
-                var _bgW = Math.max(_dxStr.length, _dyStr.length) * 5.5 + 12;
-                var _bgH = 28;
+                // Background rect for readability — auto-width based on longer string
+                var _bgX = _dxBadgeX - 4;
+                var _bgY = Math.min(_dxBadgeY, _dyBadgeY) - 11;
+                var _bgW = Math.max(_dxStr.length, _dyStr.length) * 5.8 + 16;
+                var _bgH = 32;
+                // Clamp width to chart bounds
+                if (_bgX + _bgW > w) { _bgW = w - _bgX - 4; }
+
                 svg.append('rect')
                     .attr('x', _bgX).attr('y', _bgY)
                     .attr('width', _bgW).attr('height', _bgH)
-                    .attr('rx', 4).attr('ry', 4)
-                    .attr('fill', dark ? 'rgba(15,15,25,0.8)' : 'rgba(255,255,255,0.85)')
-                    .attr('stroke', _commCrosshairColor).attr('stroke-width', 0.5)
-                    .attr('opacity', 0.9);
+                    .attr('rx', 6).attr('ry', 6)
+                    .attr('fill', dark ? 'rgba(15,15,25,0.88)' : 'rgba(255,255,255,0.92)')
+                    .attr('stroke', _commCrosshairColor).attr('stroke-width', 0.6)
+                    .attr('opacity', 0.95);
+
+                // Small community dot indicator in badge header
+                svg.append('circle')
+                    .attr('cx', _dxBadgeX + 3).attr('cy', _bgY + 4)
+                    .attr('r', 2.5)
+                    .attr('fill', _commCrosshairColor).attr('opacity', 0.9);
 
                 svg.append('text')
                     .attr('x', _dxBadgeX).attr('y', _dxBadgeY)
-                    .attr('fill', _dxColor).attr('font-size', '8.5px').attr('font-weight', '700')
-                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                    .attr('fill', _dxColor).attr('font-size', '9px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
                     .text(_dxStr);
                 svg.append('text')
                     .attr('x', _dxBadgeX).attr('y', _dyBadgeY)
-                    .attr('fill', _dyColor).attr('font-size', '8.5px').attr('font-weight', '700')
-                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.9)
+                    .attr('fill', _dyColor).attr('font-size', '9px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
                     .text(_dyStr);
             }
         }
