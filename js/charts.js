@@ -3453,14 +3453,15 @@ function drawScatterChart(companies) {
         // Dominant quadrant narrative pill — identifies the most populated quadrant
         var maxQ = quadrants.reduce(function(best, q) { return q.count > best.count ? q : best; }, quadrants[0]);
         if (maxQ.pct >= 30 && qTotal >= 10) {
-            var domLabel = maxQ.pct + '% of ' + (hasSectorOverlay ? sectorName : 'S&P 500') +
+            var _commLabelForDom = (window._activeCommunityFilter && window._activeCommunityFilter.label) ? window._activeCommunityFilter.label : 'Community';
+            var domLabel = maxQ.pct + '% of ' + (hasSectorOverlay ? sectorName : (_hasCommFilter ? _commLabelForDom : 'S&P 500')) +
                 ' companies have ' + maxQ.label.toLowerCase();
             var domG = svg.append('g').attr('class', 'scatter-quadrant-dominant');
 
             var domTextNode = domG.append('text')
                 .attr('x', w / 2).attr('y', h + 58)
                 .attr('text-anchor', 'middle')
-                .attr('fill', hasSectorOverlay ? sectorColor : '#00b4d8')
+                .attr('fill', hasSectorOverlay ? sectorColor : (_hasCommFilter && _commCrosshairColor ? _commCrosshairColor : '#00b4d8'))
                 .attr('font-size', '10px')
                 .attr('font-weight', '500')
                 .attr('font-family', 'Inter, system-ui, sans-serif')
@@ -3479,6 +3480,14 @@ function drawScatterChart(companies) {
                     var sr = parseInt(cMatch[1], 16), sg = parseInt(cMatch[2], 16), sb = parseInt(cMatch[3], 16);
                     pillFill = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.06' : '0.05') + ')';
                     pillStroke = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.15' : '0.12') + ')';
+                }
+            } else if (_hasCommFilter && _commCrosshairColor) {
+                var ccMatch = _commCrosshairColor.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+                if (ccMatch) {
+                    var cHex = ccMatch[1].length === 3 ? ccMatch[1][0]+ccMatch[1][0]+ccMatch[1][1]+ccMatch[1][1]+ccMatch[1][2]+ccMatch[1][2] : ccMatch[1];
+                    var cr = parseInt(cHex.substring(0,2),16), cg = parseInt(cHex.substring(2,4),16), cb = parseInt(cHex.substring(4,6),16);
+                    pillFill = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.06' : '0.05') + ')';
+                    pillStroke = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.15' : '0.12') + ')';
                 }
             }
             domG.insert('rect', 'text')
