@@ -1984,6 +1984,7 @@ function initNetwork(peerData) {
                     _gerComponents: c._gerComponents || null,
                     _govScore: c._govScore != null ? c._govScore : null,
                     _sopApproval: c._sopApproval != null ? c._sopApproval : null,
+                    _boardIndependence: (c.board_independence && c.board_independence.independence_pct != null) ? c.board_independence.independence_pct : null,
                     _breakdown: ceoBreakdown,
                     _ceoPayByYear: null // populated below
                 };
@@ -3713,7 +3714,7 @@ function initNetwork(peerData) {
         var maxShow = Math.min(communityStats.length, 12);
         for (var i = 0; i < maxShow; i++) {
             var cs = communityStats[i];
-            var payVals = [], gerVals = [], govVals = [], sopVals = [];
+            var payVals = [], gerVals = [], govVals = [], sopVals = [], boardVals = [];
             var sectorCounts = {};
             var intraEdges = 0;
             var tickerSet = new Set(cs.tickers);
@@ -3724,6 +3725,7 @@ function initNetwork(peerData) {
                 if (c._gerScore != null) gerVals.push(c._gerScore);
                 if (c._govScore != null) govVals.push(c._govScore);
                 if (c._sopApproval != null) sopVals.push(c._sopApproval);
+                if (c._boardIndependence != null) boardVals.push(c._boardIndependence);
                 if (c.sector) sectorCounts[c.sector] = (sectorCounts[c.sector] || 0) + 1;
             });
             allEdges.forEach(function(e) {
@@ -3776,6 +3778,8 @@ function initNetwork(peerData) {
                 medianGov: _median(govVals),
                 medianSop: _median(sopVals),
                 medianGer: _median(gerVals),
+                medianBoard: _median(boardVals),
+                boardCount: boardVals.length,
                 density: density,
                 topSector: topSector,
                 topSectorPct: topSectorPct,
@@ -3796,6 +3800,7 @@ function initNetwork(peerData) {
                 case 'medianGov': va = a.medianGov || 0; vb = b.medianGov || 0; break;
                 case 'medianSop': va = a.medianSop || 0; vb = b.medianSop || 0; break;
                 case 'medianGer': va = a.medianGer || 0; vb = b.medianGer || 0; break;
+                case 'medianBoard': va = a.medianBoard || 0; vb = b.medianBoard || 0; break;
                 case 'density': va = a.density; vb = b.density; break;
                 case 'payDist': va = a.payDist ? (a.payDist.q3 - a.payDist.q1) : 0; vb = b.payDist ? (b.payDist.q3 - b.payDist.q1) : 0; break;
                 case 'trend': va = a.trendDelta != null ? a.trendDelta : -9999; vb = b.trendDelta != null ? b.trendDelta : -9999; break;
@@ -3815,6 +3820,7 @@ function initNetwork(peerData) {
             { key: 'trend', label: 'Trend', align: 'left' },
             { key: 'payDist', label: 'Spread', align: 'left' },
             { key: 'medianGov', label: 'Gov', align: 'right' },
+            { key: 'medianBoard', label: 'Board%', align: 'right' },
             { key: 'medianSop', label: 'SoP%', align: 'right' },
             { key: 'medianGer', label: 'GER', align: 'right' },
             { key: 'density', label: 'Density', align: 'right' }
@@ -3937,6 +3943,14 @@ function initNetwork(peerData) {
                 html += '<span style="color:' + govColor + '">' + Math.round(r.medianGov) + '</span>';
             } else { html += '—'; }
             html += '</div>';
+            // Board Independence
+            html += '<div class="cm-cell cm-right">';
+            if (r.medianBoard != null) {
+                var boardColor = r.medianBoard >= 85 ? '#34d399' : r.medianBoard >= 70 ? '#fbbf24' : '#ef4444';
+                var boardTip = (r.boardCount || 0) + '/' + r.size + ' with board data';
+                html += '<span style="color:' + boardColor + '" title="' + boardTip + '">' + r.medianBoard.toFixed(1) + '%</span>';
+            } else { html += '<span title="No board independence data for this community">—</span>'; }
+            html += '</div>';
             // SoP%
             html += '<div class="cm-cell cm-right">';
             if (r.medianSop != null) {
@@ -4002,11 +4016,12 @@ function initNetwork(peerData) {
         if (_csvBtn) {
             _csvBtn.addEventListener('click', function(ev) {
                 ev.stopPropagation();
-                var csvHeader = 'Community,Companies,Median CEO Pay ($),Gov Score,SoP Approval (%),GER,Density (%),3yr Trend (%),Top Sector,Top Sector (%),Top 5 Companies (by CEO Pay)';
+                var csvHeader = 'Community,Companies,Median CEO Pay ($),Gov Score,Board Independence (%),SoP Approval (%),GER,Density (%),3yr Trend (%),Top Sector,Top Sector (%),Top 5 Companies (by CEO Pay)';
                 var csvRows = [csvHeader];
                 rows.forEach(function(r) {
                     var medPay = r.medianPay != null ? Math.round(r.medianPay) : '';
                     var gov = r.medianGov != null ? r.medianGov.toFixed(1) : '';
+                    var board = r.medianBoard != null ? r.medianBoard.toFixed(1) : '';
                     var sop = r.medianSop != null ? r.medianSop.toFixed(1) : '';
                     var ger = r.medianGer != null ? r.medianGer.toFixed(2) : '';
                     var dens = r.density != null ? r.density.toFixed(1) : '';
@@ -4018,11 +4033,11 @@ function initNetwork(peerData) {
                     if (r.tickers && _compLookup) {
                         var sorted = r.tickers.map(function(tk) {
                             var cl = _compLookup[tk];
-                            return { ticker: tk, pay: cl ? (cl.totalComp || 0) : 0 };
+                            return { ticker: tk, pay: cl ? (cl.total || 0) : 0 };
                         }).sort(function(a, b) { return b.pay - a.pay; }).slice(0, 5);
                         top5 = sorted.map(function(s) { return s.ticker; }).join('; ');
                     }
-                    csvRows.push('"' + r.label.replace(/"/g, '""') + '",' + r.size + ',' + medPay + ',' + gov + ',' + sop + ',' + ger + ',' + dens + ',' + trend + ',' + topSec + ',' + topSecPct + ',"' + top5 + '"');
+                    csvRows.push('"' + r.label.replace(/"/g, '""') + '",' + r.size + ',' + medPay + ',' + gov + ',' + board + ',' + sop + ',' + ger + ',' + dens + ',' + trend + ',' + topSec + ',' + topSecPct + ',"' + top5 + '"');
                 });
                 var csvStr = csvRows.join('\n');
                 var blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8' });

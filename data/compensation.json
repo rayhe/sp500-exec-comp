@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 500,
     "total_companies": 500,
-    "last_updated": "2026-08-30T13:03:20Z",
+    "last_updated": "2026-08-30T07:30:00Z",
     "total_neo_records": 6164,
     "title_coverage": "6164/6164",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 305,
+    "board_independence_coverage": 302,
     "data_quality_detailed": {
       "verified": 5610,
       "recomputed": 145,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 305,
+    "board_independence_any": 316,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5
   },
@@ -12026,6 +12026,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -32849,6 +32856,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-06-11",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000039/nxpi-20260610.htm"
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 90,
+        "lead_independent_director": false,
+        "chair_independent": false
       }
     },
     {
@@ -35421,6 +35435,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 88.9
       }
     },
     {
@@ -48393,6 +48414,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 81.8
       }
     },
     {
@@ -54739,6 +54767,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -68557,6 +68592,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 92,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
@@ -69740,6 +69782,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 7,
+        "independent_directors": 6,
+        "independence_pct": 86,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -76289,6 +76338,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 86,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
@@ -78514,6 +78570,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -99889,7 +99952,14 @@
           "manual_verify"
         ]
       },
-      "notes": "Amazon grants stock awards every 2-3 years with no annual equity in off years. 2025 and 2023 show cash-only compensation for most NEOs; 2024 includes large multi-year RSU grants."
+      "notes": "Amazon grants stock awards every 2-3 years with no annual equity in off years. 2025 and 2023 show cash-only compensation for most NEOs; 2024 includes large multi-year RSU grants.",
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 100.0
+      }
     },
     {
       "ticker": "APO",
