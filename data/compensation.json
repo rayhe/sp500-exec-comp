@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. Primary fiscal year 2024 aligned \u2014 top-level CEO pay reflects FY2024 for consistency. 6164 NEO records, 100% title coverage.",
+    "description": "Executive compensation data for S&P 500 companies. 498 companies enriched with full NEO data from SEC EDGAR DEF 14A proxy filings. Primary fiscal year 2024 aligned \u2014 top-level CEO pay reflects FY2024 for consistency. 6164 NEO records, 100% title coverage. Team totals aligned to FY2024 to match CEO primary fiscal year (fixes prior mismatch where FY2025 NEO sum < FY2024 CEO for AXON/SBUX/SOLV/etc).",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -24,10 +24,10 @@
     "aggregate_stats": {
       "total_companies": 500,
       "companies_with_pay_ratio": 496,
-      "median_ceo_pay": 17175695,
-      "mean_ceo_pay": 19744179.174348697,
+      "median_ceo_pay": 17136407.5,
+      "mean_ceo_pay": 19704690.816,
       "max_ceo_pay": 164525721,
-      "min_ceo_pay": 100000,
+      "min_ceo_pay": 0,
       "median_worker_pay": 81953.0,
       "median_pay_ratio": 196.5
     },
@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-30T00:59:25Z",
+    "last_updated": "2026-08-30T02:31:10Z",
     "total_neo_records": 6164,
     "title_coverage": "6164/6164",
     "data_quality": {
@@ -122,10 +122,10 @@
       "bloated_component": 0,
       "component_mismatch": 0
     },
-    "median_ceo_pay": 17175695,
-    "mean_ceo_pay": 19744179.174348697,
+    "median_ceo_pay": 17136407.5,
+    "mean_ceo_pay": 19704690.816,
     "max_ceo_pay": 164525721,
-    "min_ceo_pay": 100000,
+    "min_ceo_pay": 0,
     "say_on_pay_coverage": 416,
     "say_on_pay_stats": {
       "count": 416,
@@ -323,7 +323,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 4239206,
+      "total_neo_compensation": 410262483,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
         2025,
@@ -546,8 +546,8 @@
       "cik": "0000829224",
       "filing_date": "2026-01-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/829224/000121390026007780/ea0270973-01.htm",
-      "total_neo_compensation": 84547353,
-      "neo_count": 7,
+      "total_neo_compensation": 111932379,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -707,8 +707,8 @@
       "cik": "0000040545",
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/40545/000004054526000018/ge-20260312.htm",
-      "total_neo_compensation": 37788595,
-      "neo_count": 4,
+      "total_neo_compensation": 27465829,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -1116,8 +1116,8 @@
       "cik": "0000320193",
       "filing_date": "2026-01-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000130817926000008/aapl014016-def14a.htm",
-      "total_neo_compensation": 193356600,
-      "neo_count": 6,
+      "total_neo_compensation": 156147573,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -1595,13 +1595,13 @@
       ],
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1063761/000110465926038320/spg-20260513xdef14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 29996381,
+      "total_neo_compensation": 93165995,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -1808,7 +1808,7 @@
       "cik": "0001327567",
       "filing_date": "2025-11-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1327567/000130817925000624/panw-20251107.htm",
-      "total_neo_compensation": 193902254,
+      "total_neo_compensation": 123332044,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -1980,8 +1980,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 148077687,
-      "neo_count": 7,
+      "total_neo_compensation": 77734346,
+      "neo_count": 1,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -2210,8 +2210,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 118641953,
-      "neo_count": 5,
+      "total_neo_compensation": 101929397,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -2432,8 +2432,8 @@
       "cik": "0001437107",
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1437107/000143710726000046/wbd-20260429.htm",
-      "total_neo_compensation": 250733005,
-      "neo_count": 5,
+      "total_neo_compensation": 206518260,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -2611,8 +2611,8 @@
       "cik": "0001045810",
       "filing_date": "2026-05-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000036/nvda-20260512.htm",
-      "total_neo_compensation": 94033099,
-      "neo_count": 5,
+      "total_neo_compensation": 58493559,
+      "neo_count": 3,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -2780,7 +2780,7 @@
         }
       ],
       "neo_count": 4,
-      "total_neo_compensation": 65140876,
+      "total_neo_compensation": 86787676,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
         2025,
@@ -2977,13 +2977,13 @@
       ],
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/34088/000119312526147614/d16317ddef14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 102809474,
+      "total_neo_compensation": 114061305,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -3171,8 +3171,8 @@
       "cik": "0001781335",
       "filing_date": "2026-04-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1781335/000114036126015389/ny20061782x1_def14a.htm",
-      "total_neo_compensation": 23349000,
-      "neo_count": 5,
+      "total_neo_compensation": 20914510,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -3472,8 +3472,8 @@
       "cik": "0001964738",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1964738/000196473826000017/solv-20260327.htm",
-      "total_neo_compensation": 45514465,
-      "neo_count": 6,
+      "total_neo_compensation": 96045943,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -3615,8 +3615,8 @@
       "cik": "0001543151",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1543151/000130817926000125/uber014597-def14a.htm",
-      "total_neo_compensation": 61814597,
-      "neo_count": 4,
+      "total_neo_compensation": 29665853,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -3816,8 +3816,8 @@
       "cik": "0000858877",
       "filing_date": "2025-10-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/858877/000085887725000150/csco-20251027.htm",
-      "total_neo_compensation": 159677560,
-      "neo_count": 6,
+      "total_neo_compensation": 56898146,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -4065,7 +4065,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 138826290,
+      "total_neo_compensation": 135217996,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -4210,8 +4210,8 @@
       "cik": "0001373715",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1373715/000137371526000039/now-20260406.htm",
-      "total_neo_compensation": 144605540,
-      "neo_count": 6,
+      "total_neo_compensation": 64349822,
+      "neo_count": 1,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -4454,7 +4454,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 68722830,
+      "total_neo_compensation": 69969299,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -4721,8 +4721,8 @@
       "cik": "0001101239",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1101239/000110123926000073/eqix-20260401.htm",
-      "total_neo_compensation": 54660441,
-      "neo_count": 5,
+      "total_neo_compensation": 61711483,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -4923,13 +4923,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 101531685,
+      "total_neo_compensation": 167543168,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -5119,8 +5119,8 @@
       "cik": "0000814547",
       "filing_date": "2026-01-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/814547/000119312526024403/d27709ddef14a.htm",
-      "total_neo_compensation": 72157751,
-      "neo_count": 6,
+      "total_neo_compensation": 22188453,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -5299,7 +5299,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 299214889,
+      "total_neo_compensation": 116312106,
       "neo_count": 4,
       "proxy_fiscal_year": 2026,
       "available_years": [
@@ -5500,7 +5500,7 @@
       "cik": "0000100517",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/100517/000110465926040467/tmb-20260519xdef14a.htm",
-      "total_neo_compensation": 80082374,
+      "total_neo_compensation": 89973199,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -5764,7 +5764,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 143371244,
+      "total_neo_compensation": 96855210,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -6017,7 +6017,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 45707586,
+      "total_neo_compensation": 46081386,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -6507,8 +6507,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 63736465,
-      "neo_count": 5,
+      "total_neo_compensation": 61810549,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -6659,8 +6659,8 @@
       "cik": "0000947484",
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/947484/000094748426000038/acgl-20260324.htm",
-      "total_neo_compensation": 44338223,
-      "neo_count": 4,
+      "total_neo_compensation": 39920398,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -6902,7 +6902,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 302602224,
+      "total_neo_compensation": 115053470,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -7112,7 +7112,7 @@
       "cik": "0001097864",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000010/on-20260401.htm",
-      "total_neo_compensation": 35542810,
+      "total_neo_compensation": 116676583,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -7329,8 +7329,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 202273134,
-      "neo_count": 5,
+      "total_neo_compensation": 187067103,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -7555,8 +7555,8 @@
       "cik": "0000002488",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm",
-      "total_neo_compensation": 117694333,
-      "neo_count": 5,
+      "total_neo_compensation": 59375574,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -7815,7 +7815,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 61485955,
+      "total_neo_compensation": 100930595,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -8031,8 +8031,8 @@
       "cik": "0000927628",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/927628/000119312526124131/d701179ddef14a.htm",
-      "total_neo_compensation": 113200790,
-      "neo_count": 5,
+      "total_neo_compensation": 52982210,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -8194,13 +8194,13 @@
       ],
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2012383/000130817926000262/ny-20260410.htm",
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 92702301,
+      "total_neo_compensation": 64504883,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -8431,7 +8431,7 @@
       "cik": "0000097745",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/97745/000119312526144585/d66426ddef14a.htm",
-      "total_neo_compensation": 110267824,
+      "total_neo_compensation": 74185298,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -8612,8 +8612,8 @@
       "cik": "0000072971",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297126000200/wfc-20260318.htm",
-      "total_neo_compensation": 216835018,
-      "neo_count": 5,
+      "total_neo_compensation": 141240710,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -8840,7 +8840,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 70534511,
+      "total_neo_compensation": 66094956,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -9071,8 +9071,8 @@
           "_total_source": "minor_gap"
         }
       ],
-      "total_neo_compensation": 61806544,
-      "neo_count": 5,
+      "total_neo_compensation": 52597476,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -9343,8 +9343,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 88282031,
-      "neo_count": 6,
+      "total_neo_compensation": 72261486,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -9571,7 +9571,7 @@
       "cik": "0000723125",
       "filing_date": "2025-11-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000038/mu-20251125.htm",
-      "total_neo_compensation": 75857604,
+      "total_neo_compensation": 73225211,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -10049,8 +10049,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 113121893,
-      "neo_count": 5,
+      "total_neo_compensation": 70876468,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -10237,8 +10237,8 @@
       "cik": "0000059478",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/59478/000005947826000029/lly-20260317.htm",
-      "total_neo_compensation": 80399843,
-      "neo_count": 5,
+      "total_neo_compensation": 39669871,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -10406,8 +10406,8 @@
       "cik": "0000320187",
       "filing_date": "2026-07-15",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/320187/000032018726000089/nke-20260715.htm",
-      "total_neo_compensation": 87006439,
-      "neo_count": 5,
+      "total_neo_compensation": 10390510,
+      "neo_count": 1,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -10665,8 +10665,8 @@
           "_total_source": "rounding"
         }
       ],
-      "total_neo_compensation": 58625278,
-      "neo_count": 6,
+      "total_neo_compensation": 48773926,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -10923,7 +10923,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 114507843,
+      "total_neo_compensation": 94650620,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -11112,8 +11112,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 49076655,
-      "neo_count": 5,
+      "total_neo_compensation": 40381987,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -11369,13 +11369,13 @@
       ],
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1137774/000110465926035162/tm2524217-6_def14a.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 88935186,
+      "total_neo_compensation": 73862510,
       "proxy_fiscal_year": 2025,
       "data_source": "sec_edgar_def14a",
       "ceo_gender": "M",
@@ -11542,8 +11542,8 @@
       "cik": "0000820027",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
-      "total_neo_compensation": 60671934,
-      "neo_count": 5,
+      "total_neo_compensation": 65026850,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -11729,8 +11729,8 @@
       "cik": "0001375365",
       "filing_date": "2026-03-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000008/smci-20260303.htm",
-      "total_neo_compensation": 5170364,
-      "neo_count": 3,
+      "total_neo_compensation": 44316491,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -11994,8 +11994,8 @@
       "cik": "0001175454",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1175454/000117545426000022/cpay-20260410.htm",
-      "total_neo_compensation": 28518092,
-      "neo_count": 6,
+      "total_neo_compensation": 44151531,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -12245,7 +12245,7 @@
       "cik": "0000021344",
       "filing_date": "2026-03-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/21344/000110465926028215/ko-20260429xdef14a.htm",
-      "total_neo_compensation": 69305793,
+      "total_neo_compensation": 63619814,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -12476,8 +12476,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 55070484,
-      "neo_count": 5,
+      "total_neo_compensation": 47870788,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -12692,8 +12692,8 @@
       "cik": "0000315189",
       "filing_date": "2026-01-14",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/315189/000110465926003618/de-20260225xdef14a.htm",
-      "total_neo_compensation": 58113558,
-      "neo_count": 5,
+      "total_neo_compensation": 50423193,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -12935,7 +12935,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 60019694,
+      "total_neo_compensation": 55820408,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -13178,7 +13178,7 @@
       "cik": "0000719955",
       "filing_date": "2026-05-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/719955/000071995526000109/wsm-20260506.htm",
-      "total_neo_compensation": 54268079,
+      "total_neo_compensation": 49045062,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -13509,7 +13509,7 @@
       "cik": "0000104169",
       "filing_date": "2026-04-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/104169/000119312526173673/wmt-20260423.htm",
-      "total_neo_compensation": 73165064,
+      "total_neo_compensation": 70318212,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -13780,8 +13780,8 @@
       "cik": "0000883241",
       "filing_date": "2026-02-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/883241/000088324126000007/snps-20260219.htm",
-      "total_neo_compensation": 43794847,
-      "neo_count": 6,
+      "total_neo_compensation": 55055344,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -13928,13 +13928,13 @@
       ],
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1097149/000109714926000023/algn-20260407.htm",
-      "neo_count": 4,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32152045,
+      "total_neo_compensation": 4799215,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -14140,7 +14140,7 @@
       "cik": "0001326801",
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026025532/meta-20260416.htm",
-      "total_neo_compensation": 113355585,
+      "total_neo_compensation": 123733653,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -14392,7 +14392,7 @@
       "cik": "0000027904",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/27904/000130817926000345/dal014970-def14a.htm",
-      "total_neo_compensation": 50336695,
+      "total_neo_compensation": 63183185,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -14624,8 +14624,8 @@
       "cik": "0000764180",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/764180/000110465926038900/tmb-20260514xdef14a.htm",
-      "total_neo_compensation": 110334710,
-      "neo_count": 5,
+      "total_neo_compensation": 88380652,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -14867,8 +14867,8 @@
       "cik": "0000899051",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/0000899051/000089905126000063/all-20260410.htm",
-      "total_neo_compensation": 55488619,
-      "neo_count": 6,
+      "total_neo_compensation": 51958065,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -15098,8 +15098,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 63606728,
-      "neo_count": 5,
+      "total_neo_compensation": 50021368,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -15313,7 +15313,7 @@
       "cik": "0000732717",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/732717/000119312526119888/d919223ddef14a.htm",
-      "total_neo_compensation": 50867257,
+      "total_neo_compensation": 54624898,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -15529,7 +15529,7 @@
       "cik": "0000316709",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/316709/000119312526142826/d930509ddef14a.htm",
-      "total_neo_compensation": 47944660,
+      "total_neo_compensation": 59982576,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -15734,8 +15734,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 180512762,
-      "neo_count": 7,
+      "total_neo_compensation": 51943693,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -15904,13 +15904,13 @@
       ],
       "filing_date": "2026-04-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/315293/000119312526187428/aon-20260428.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 104441530,
+      "total_neo_compensation": 45160069,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -16106,8 +16106,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 165510256,
-      "neo_count": 5,
+      "total_neo_compensation": 97407121,
+      "neo_count": 4,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -16489,8 +16489,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 82117248,
-      "neo_count": 6,
+      "total_neo_compensation": 67115560,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -16692,7 +16692,7 @@
       "cik": "0000712515",
       "filing_date": "2025-06-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/712515/000130817925000556/ea014143-def14a.htm",
-      "total_neo_compensation": 67558500,
+      "total_neo_compensation": 58098330,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -16929,8 +16929,8 @@
       "cik": "0000018230",
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/18230/000130817926000358/cat014496-def14a.htm",
-      "total_neo_compensation": 69495214,
-      "neo_count": 6,
+      "total_neo_compensation": 61640710,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -17140,13 +17140,13 @@
       ],
       "filing_date": "2026-05-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/769397/000076939726000030/adsk-20260429.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 59163435,
+      "total_neo_compensation": 36471215,
       "proxy_fiscal_year": 2026,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -17342,7 +17342,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 80192583,
+      "total_neo_compensation": 81868986,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -17552,13 +17552,13 @@
       ],
       "filing_date": "2026-03-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 107663053,
+      "total_neo_compensation": 65076369,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -17810,8 +17810,8 @@
       "cik": "0001324424",
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1324424/000132442426000022/expe-20260429.htm",
-      "total_neo_compensation": 44368204,
-      "neo_count": 6,
+      "total_neo_compensation": 53080870,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -18027,8 +18027,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 60001642,
-      "neo_count": 5,
+      "total_neo_compensation": 47908564,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -18251,8 +18251,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 132527595,
-      "neo_count": 5,
+      "total_neo_compensation": 86698367,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -18409,7 +18409,7 @@
       "cik": "0000037996",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/37996/000155278126000164/e26003_f-def14a.htm",
-      "total_neo_compensation": 40413646,
+      "total_neo_compensation": 41848831,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -18604,8 +18604,8 @@
       "cik": "0001045609",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1045609/000119312526115132/d36709ddef14a.htm",
-      "total_neo_compensation": 67574953,
-      "neo_count": 6,
+      "total_neo_compensation": 71093615,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -18864,8 +18864,8 @@
       "cik": "0001041061",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1041061/000119312526142078/yum-20260402.htm",
-      "total_neo_compensation": 64309997,
-      "neo_count": 6,
+      "total_neo_compensation": 43215173,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -19108,7 +19108,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 65797025,
+      "total_neo_compensation": 55735638,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -19309,8 +19309,8 @@
       "cik": "0000005272",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/0000005272/000000527226000039/aig-20260331.htm",
-      "total_neo_compensation": 61370288,
-      "neo_count": 5,
+      "total_neo_compensation": 44135655,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -19540,7 +19540,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 58757653,
+      "total_neo_compensation": 63750009,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -19770,7 +19770,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 48002494,
+      "total_neo_compensation": 44809666,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -20039,8 +20039,8 @@
       "cik": "0001996810",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1996810/000199681026000049/gev-20260402.htm",
-      "total_neo_compensation": 55402744,
-      "neo_count": 6,
+      "total_neo_compensation": 57756685,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -20276,7 +20276,7 @@
       "cik": "0000200406",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000063/jnj-20260309.htm",
-      "total_neo_compensation": 82744443,
+      "total_neo_compensation": 69277341,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -20520,8 +20520,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 53002847,
-      "neo_count": 6,
+      "total_neo_compensation": 49627250,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -20693,8 +20693,8 @@
       "cik": "0000732712",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/732712/000130817926000210/vz014688_def14a.htm",
-      "total_neo_compensation": 88924854,
-      "neo_count": 4,
+      "total_neo_compensation": 41845212,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -20846,8 +20846,8 @@
       "cik": "0000051253",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/51253/000114036126009960/ny20055514x1_def14a.htm",
-      "total_neo_compensation": 21871404,
-      "neo_count": 5,
+      "total_neo_compensation": 6866826,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -21085,7 +21085,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 52773828,
+      "total_neo_compensation": 46543532,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -21248,8 +21248,8 @@
       "cik": "0000023217",
       "filing_date": "2025-08-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/23217/000002321725000054/cag-20250917xdef14a.htm",
-      "total_neo_compensation": 26466070,
-      "neo_count": 4,
+      "total_neo_compensation": 33868677,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -21478,8 +21478,8 @@
       "cik": "0000064040",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/64040/000110465926037380/tm261443-1_def14a.htm",
-      "total_neo_compensation": 54327129,
-      "neo_count": 7,
+      "total_neo_compensation": 27140065,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -21688,7 +21688,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 38294420,
+      "total_neo_compensation": 37648701,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -21884,8 +21884,8 @@
           "_total_source": "rounding"
         }
       ],
-      "total_neo_compensation": 62275107,
-      "neo_count": 6,
+      "total_neo_compensation": 39843521,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -22042,7 +22042,7 @@
       "cik": "0001754301",
       "filing_date": "2025-09-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1754301/000162828025042772/fox-20250925.htm",
-      "total_neo_compensation": 35971230,
+      "total_neo_compensation": 29384133,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -22226,8 +22226,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 59219035,
-      "neo_count": 5,
+      "total_neo_compensation": 25959713,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -22442,7 +22442,7 @@
       "cik": "0000040533",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/40533/000130817926000168/gd014595-def14a.htm",
-      "total_neo_compensation": 60644696,
+      "total_neo_compensation": 53196693,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -22703,8 +22703,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 173934691,
-      "neo_count": 9,
+      "total_neo_compensation": 48176599,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -22933,8 +22933,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 60458427,
-      "neo_count": 6,
+      "total_neo_compensation": 48059041,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -23149,8 +23149,8 @@
       "cik": "0000882095",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/882095/000130817926000106/gild014721-def14a.htm",
-      "total_neo_compensation": 65431004,
-      "neo_count": 5,
+      "total_neo_compensation": 46480094,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -23321,7 +23321,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 45693949,
+      "total_neo_compensation": 39660610,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -23473,8 +23473,8 @@
       "cik": "0000815097",
       "filing_date": "2026-02-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/815097/000110465926021074/tm2529359-1_def14a.htm",
-      "total_neo_compensation": 32115928,
-      "neo_count": 4,
+      "total_neo_compensation": 43953467,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -23701,7 +23701,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 63153273,
+      "total_neo_compensation": 50421852,
       "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
@@ -23905,8 +23905,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 138303100,
-      "neo_count": 6,
+      "total_neo_compensation": 57561244,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24104,8 +24104,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 47585912,
-      "neo_count": 5,
+      "total_neo_compensation": 49556784,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24334,8 +24334,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 48473797,
-      "neo_count": 5,
+      "total_neo_compensation": 46943337,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24593,8 +24593,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 58421233,
-      "neo_count": 6,
+      "total_neo_compensation": 54341984,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24816,8 +24816,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 62490306,
-      "neo_count": 6,
+      "total_neo_compensation": 48255073,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -25067,7 +25067,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 59666801,
+      "total_neo_compensation": 51777592,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -25514,7 +25514,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 55176699,
+      "total_neo_compensation": 52635537,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -25743,7 +25743,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 53871711,
+      "total_neo_compensation": 52992036,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -26003,8 +26003,8 @@
           "_total_source": "recomputed"
         }
       ],
-      "total_neo_compensation": 87108343,
-      "neo_count": 6,
+      "total_neo_compensation": 58149365,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -26253,8 +26253,8 @@
       "cik": "0000100493",
       "filing_date": "2025-12-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/100493/000010049325000114/tsn-20251217.htm",
-      "total_neo_compensation": 84665107,
-      "neo_count": 7,
+      "total_neo_compensation": 56002745,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -26392,7 +26392,7 @@
       "cik": "0001534701",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1534701/000153470126000010/psx-20260401.htm",
-      "total_neo_compensation": 22991340,
+      "total_neo_compensation": 24172096,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -26657,13 +26657,13 @@
       ],
       "filing_date": "2026-03-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1551182/000119312526105117/etn-20260312.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 45640584,
+      "total_neo_compensation": 93900150,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -26818,8 +26818,8 @@
       "cik": "0000006281",
       "filing_date": "2026-01-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/6281/000000628126000010/adi-20260122.htm",
-      "total_neo_compensation": 54273076,
-      "neo_count": 5,
+      "total_neo_compensation": 45751132,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -26993,7 +26993,7 @@
       "cik": "0001035002",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1035002/000162828026019806/vlo-20260318.htm",
-      "total_neo_compensation": 63761466,
+      "total_neo_compensation": 41332828,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -27264,8 +27264,8 @@
       "cik": "0000004281",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4281/000110465926039940/tm261330-1_def14a.htm",
-      "total_neo_compensation": 85107056,
-      "neo_count": 6,
+      "total_neo_compensation": 41687337,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -27527,13 +27527,13 @@
           "_total_source": "rounding"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 54224919,
+      "total_neo_compensation": 27169189,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -27730,8 +27730,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 53399229,
-      "neo_count": 5,
+      "total_neo_compensation": 35164686,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -27933,8 +27933,8 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 60557697,
-      "neo_count": 5,
+      "total_neo_compensation": 37073977,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -28364,7 +28364,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 38586536,
+      "total_neo_compensation": 43652926,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -28531,7 +28531,7 @@
       "cik": "0001048286",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1048286/000114036126011590/ny20062722x771_def14a.htm",
-      "total_neo_compensation": 34798264,
+      "total_neo_compensation": 33403755,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -28718,13 +28718,13 @@
       ],
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/26172/000110465926039158/tm261336-2_def14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 44200953,
+      "total_neo_compensation": 86466238,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -28908,7 +28908,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 59556232,
+      "total_neo_compensation": 49701489,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -29048,7 +29048,7 @@
       "cik": "0000927066",
       "filing_date": "2026-04-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/927066/000092706626000053/dva-20260422.htm",
-      "total_neo_compensation": 26302674,
+      "total_neo_compensation": 30494001,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -29277,7 +29277,7 @@
       "cik": "0000024741",
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/24741/000120677426000148/glw4500541-def14a.htm",
-      "total_neo_compensation": 62635883,
+      "total_neo_compensation": 50473332,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -29444,8 +29444,8 @@
       "cik": "0000029989",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/29989/000121390026034811/ea0274271-02.htm",
-      "total_neo_compensation": 18966644,
-      "neo_count": 2,
+      "total_neo_compensation": 44780795,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -29556,13 +29556,13 @@
       ],
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/753308/000110465926038551/tm261592-1_def14a.htm",
-      "neo_count": 3,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 38713651,
+      "total_neo_compensation": 21603598,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -29829,8 +29829,8 @@
       "cik": "0001138118",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1138118/000119312526141285/cbre-20260402.htm",
-      "total_neo_compensation": 52867877,
-      "neo_count": 5,
+      "total_neo_compensation": 35385308,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -30015,8 +30015,8 @@
       "cik": "0000875320",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/875320/000087532026000153/vrtx-20260402.htm",
-      "total_neo_compensation": 59780901,
-      "neo_count": 6,
+      "total_neo_compensation": 38921571,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -30224,7 +30224,7 @@
       "cik": "0001120193",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1120193/000162828026027245/ndaq-20260424.htm",
-      "total_neo_compensation": 66804010,
+      "total_neo_compensation": 44714777,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -30342,8 +30342,8 @@
       "cik": "0001032208",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312526127603/d90144ddef14a.htm",
-      "total_neo_compensation": 15279243,
-      "neo_count": 3,
+      "total_neo_compensation": 8097053,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -30524,8 +30524,8 @@
       "cik": "0001260221",
       "filing_date": "2026-01-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1260221/000126022126000009/tdg-20260122.htm",
-      "total_neo_compensation": 73374084,
-      "neo_count": 2,
+      "total_neo_compensation": 77776285,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -30768,8 +30768,8 @@
       "cik": "0000885725",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/885725/000088572526000025/bsx-20260318.htm",
-      "total_neo_compensation": 52022225,
-      "neo_count": 6,
+      "total_neo_compensation": 43484133,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -30935,8 +30935,8 @@
       "cik": "0001645590",
       "filing_date": "2026-02-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1645590/000164559026000019/hpe-20260210.htm",
-      "total_neo_compensation": 62135615,
-      "neo_count": 4,
+      "total_neo_compensation": 44102210,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -31079,8 +31079,8 @@
       "cik": "0002005951",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/2005951/000110465926026094/sw-20260501xdef14a.htm",
-      "total_neo_compensation": 29960559,
-      "neo_count": 5,
+      "total_neo_compensation": 21540573,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -31275,8 +31275,8 @@
       "cik": "0001539838",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1539838/000130817926000242/fang015366-def14a.htm",
-      "total_neo_compensation": 53735835,
-      "neo_count": 5,
+      "total_neo_compensation": 46324420,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -31624,8 +31624,8 @@
       "cik": "0001136893",
       "filing_date": "2026-04-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1136893/000113689326000026/fis-20260428.htm",
-      "total_neo_compensation": 47894456,
-      "neo_count": 5,
+      "total_neo_compensation": 42136007,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -31819,7 +31819,7 @@
       "cik": "0000066740",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/66740/000006674026000151/mmm-20260324.htm",
-      "total_neo_compensation": 45776471,
+      "total_neo_compensation": 49652189,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -32212,7 +32212,7 @@
       "cik": "0000202058",
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/202058/000110465926038170/tmb-20260511xdef14a.htm",
-      "total_neo_compensation": 49146855,
+      "total_neo_compensation": 42601322,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -32400,8 +32400,8 @@
       "cik": "0000051434",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/51434/000162828026021729/ipc-20260327.htm",
-      "total_neo_compensation": 32107832,
-      "neo_count": 4,
+      "total_neo_compensation": 31896458,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -32603,8 +32603,8 @@
       "cik": "0001707925",
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1707925/000119312526192209/lin-20260429.htm",
-      "total_neo_compensation": 48119007,
-      "neo_count": 5,
+      "total_neo_compensation": 41066807,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -32817,8 +32817,8 @@
       "cik": "0001413447",
       "filing_date": "2026-04-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1413447/000141344726000026/nxpi-20260427.htm",
-      "total_neo_compensation": 35498365,
-      "neo_count": 6,
+      "total_neo_compensation": 37998807,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -33215,7 +33215,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 51408755,
+      "total_neo_compensation": 41450348,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "F",
@@ -33375,8 +33375,8 @@
       "cik": "0000027419",
       "filing_date": "2026-04-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/27419/000162828026027508/tgt-20260426.htm",
-      "total_neo_compensation": 33441325,
-      "neo_count": 5,
+      "total_neo_compensation": 22239363,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -33640,8 +33640,8 @@
       "cik": "0001065088",
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1065088/000155278126000285/e26002_ebay-def14a.htm",
-      "total_neo_compensation": 97299367,
-      "neo_count": 7,
+      "total_neo_compensation": 48836927,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -33844,8 +33844,8 @@
       "cik": "0001564708",
       "filing_date": "2025-10-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1564708/000114036125037696/ny20055386x3_def14a.htm",
-      "total_neo_compensation": 47061999,
-      "neo_count": 6,
+      "total_neo_compensation": 36866495,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -34002,7 +34002,7 @@
       "cik": "0001099219",
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000026/met-20260429.htm",
-      "total_neo_compensation": 38206029,
+      "total_neo_compensation": 34746887,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -34141,8 +34141,8 @@
       "cik": "0001413329",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1413329/000162828026021169/pmi-20260325.htm",
-      "total_neo_compensation": 14554263,
-      "neo_count": 4,
+      "total_neo_compensation": 7387006,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -34292,7 +34292,7 @@
           "_total_source": "verified"
         }
       ],
-      "total_neo_compensation": 1367554937,
+      "total_neo_compensation": 43270545,
       "neo_count": 5,
       "available_years": [
         2025,
@@ -34453,12 +34453,12 @@
       ],
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/60667/000006066726000056/low-20260415.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024
       ],
-      "total_neo_compensation": 49429382,
+      "total_neo_compensation": 37243738,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -34667,7 +34667,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 43914846,
+      "total_neo_compensation": 43827654,
       "available_years": [
         2025,
         2024,
@@ -34910,13 +34910,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 33899070,
+      "total_neo_compensation": 28138200,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -35176,13 +35176,13 @@
       ],
       "filing_date": "2026-03-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1701605/000119312526130309/d939028ddef14a.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 95846919,
+      "total_neo_compensation": 75047036,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.78,
@@ -35396,7 +35396,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 35289907,
+      "total_neo_compensation": 122912406,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 65.11,
@@ -35811,7 +35811,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 48480333,
+      "total_neo_compensation": 41834739,
       "available_years": [
         2025,
         2024,
@@ -36029,7 +36029,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 51387102,
+      "total_neo_compensation": 81882136,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -36419,7 +36419,7 @@
         }
       ],
       "neo_count": 4,
-      "total_neo_compensation": 47286680,
+      "total_neo_compensation": 48523977,
       "available_years": [
         2025,
         2024,
@@ -36602,8 +36602,8 @@
       "cik": "0001113169",
       "filing_date": "2026-03-17",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1113169/000110465926028876/tm268615d3_def14a.htm",
-      "total_neo_compensation": 46784677,
-      "neo_count": 5,
+      "total_neo_compensation": 42492174,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -36993,13 +36993,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 51105194,
+      "total_neo_compensation": 70059187,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -37249,13 +37249,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 68595915,
+      "total_neo_compensation": 82123980,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.5,
@@ -37424,13 +37424,13 @@
           "_total_source": "recomputed_implausible_total"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 10965838,
+      "total_neo_compensation": 5767848,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -37604,7 +37604,7 @@
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "total_neo_compensation": 104710231,
+      "total_neo_compensation": 36042797,
       "say_on_pay": {
         "approval_pct": 86.93,
         "votes_for": 195205028,
@@ -37849,7 +37849,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 52369651,
+      "total_neo_compensation": 61430613,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.11,
@@ -38307,7 +38307,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 45802069,
+      "total_neo_compensation": 161304650,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -38517,13 +38517,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 41919433,
+      "total_neo_compensation": 33976429,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 91.36,
@@ -38765,7 +38765,7 @@
         2023
       ],
       "data_source": "def14a_manual",
-      "total_neo_compensation": 52997956,
+      "total_neo_compensation": 50137948,
       "ceo_gender": "M",
       "ceo_tenure": {
         "year": 2023,
@@ -39023,7 +39023,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 36274978,
+      "total_neo_compensation": 46920572,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -39124,13 +39124,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
+      "neo_count": 1,
       "available_years": [
         2026,
         2024
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-      "total_neo_compensation": 41932715,
+      "total_neo_compensation": 17437508,
       "ceo_gender": "M",
       "say_on_pay": {
         "approval_pct": 91.8,
@@ -39379,12 +39379,12 @@
       ],
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/864749/000086474926000042/trmb-20260409.htm",
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024
       ],
-      "total_neo_compensation": 16135009,
+      "total_neo_compensation": 13854131,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -39701,7 +39701,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 42953019,
+      "total_neo_compensation": 39061707,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.53,
@@ -39882,7 +39882,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 53943165,
+      "total_neo_compensation": 63193775,
       "available_years": [
         2025,
         2024,
@@ -40091,13 +40091,13 @@
       ],
       "filing_date": "2025-09-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/76334/000130817925000603/ph-20250919.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 45437244,
+      "total_neo_compensation": 73796543,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
       "say_on_pay": {
@@ -40321,13 +40321,13 @@
       ],
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/91576/000119312526127600/d944221ddef14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 33243941,
+      "total_neo_compensation": 38103678,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.41,
@@ -40848,13 +40848,13 @@
       ],
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1551152/000110465926033387/abbv-20260508xdef14a.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 81024109,
+      "total_neo_compensation": 53448652,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -41054,7 +41054,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 43298250,
+      "total_neo_compensation": 94704386,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -41275,8 +41275,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 33812245,
+      "neo_count": 5,
+      "total_neo_compensation": 36832412,
       "available_years": [
         2025,
         2024,
@@ -41505,13 +41505,13 @@
       ],
       "filing_date": "2026-03-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/12927/000119312526096787/d39411ddef14a.htm",
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 78548175,
+      "total_neo_compensation": 38335244,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 89.7,
@@ -41724,7 +41724,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 39925441,
+      "total_neo_compensation": 47689632,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 85.65,
@@ -41954,7 +41954,7 @@
       "cik": "0001020569",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1020569/000102056926000026/irm-20260323.htm",
-      "total_neo_compensation": 39910736,
+      "total_neo_compensation": 40763291,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -42151,8 +42151,8 @@
       "cik": "0000749251",
       "filing_date": "2026-04-15",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/749251/000074925126000159/it-20260415.htm",
-      "total_neo_compensation": 38304260,
-      "neo_count": 5,
+      "total_neo_compensation": 33211342,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -42365,7 +42365,7 @@
       "cik": "0000045012",
       "filing_date": "2026-03-31",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/45012/000004501226000033/hal-20260330.htm",
-      "total_neo_compensation": 40503713,
+      "total_neo_compensation": 43252966,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -42666,8 +42666,8 @@
       "cik": "0001659166",
       "filing_date": "2026-04-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1659166/000119312526189078/ftv-20260427.htm",
-      "total_neo_compensation": 67765139,
-      "neo_count": 8,
+      "total_neo_compensation": 44542542,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -42916,8 +42916,8 @@
       "cik": "0000773840",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/773840/000077384026000029/hon-20260409.htm",
-      "total_neo_compensation": 51831988,
-      "neo_count": 7,
+      "total_neo_compensation": 37764911,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -43146,8 +43146,8 @@
       "cik": "0000021665",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/21665/000130817926000136/cl015164-def14a.htm",
-      "total_neo_compensation": 41916945,
-      "neo_count": 5,
+      "total_neo_compensation": 33002338,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -43315,8 +43315,8 @@
       "cik": "0001035267",
       "filing_date": "2026-03-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1035267/000103526726000023/isrg-20260313.htm",
-      "total_neo_compensation": 64858766,
-      "neo_count": 6,
+      "total_neo_compensation": 45460927,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -43494,8 +43494,8 @@
       "cik": "0000063908",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/63908/000119312526145548/mcd-20260407.htm",
-      "total_neo_compensation": 45931258,
-      "neo_count": 5,
+      "total_neo_compensation": 35674294,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -43686,7 +43686,7 @@
       "cik": "1973266",
       "filing_date": "2026-04-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1973266/000119312526173833/d913980ddef14a.htm",
-      "total_neo_compensation": 143116155,
+      "total_neo_compensation": 67732925,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -43966,8 +43966,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
-      "total_neo_compensation": 26361099,
+      "neo_count": 3,
+      "total_neo_compensation": 29924369,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
         2025,
@@ -44152,8 +44152,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 49698900,
+      "neo_count": 4,
+      "total_neo_compensation": 35323204,
       "available_years": [
         2025,
         2024,
@@ -44578,7 +44578,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 54703270,
+      "total_neo_compensation": 42270137,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "available_years": [
         2025,
@@ -44779,8 +44779,8 @@
       "cik": "1001250",
       "filing_date": "2025-09-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1001250/000110465925093184/tm2523020-3_def14a.htm",
-      "total_neo_compensation": 56289367,
-      "neo_count": 6,
+      "total_neo_compensation": 31003290,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -45010,8 +45010,8 @@
       "cik": "64803",
       "filing_date": "2026-04-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/64803/000130817926000201/cvs014969-def14a.htm",
-      "total_neo_compensation": 73293766,
-      "neo_count": 6,
+      "total_neo_compensation": 50080354,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -45226,13 +45226,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 85646428,
+      "total_neo_compensation": 57017377,
       "proxy_fiscal_year": 2026,
       "say_on_pay": {
         "approval_pct": 93.91,
@@ -45470,13 +45470,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 40274588,
+      "total_neo_compensation": 42498219,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -45622,8 +45622,8 @@
       "cik": "916076",
       "filing_date": "2026-04-15",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/916076/000119312526157039/d28378ddef14a.htm",
-      "total_neo_compensation": 26617927,
-      "neo_count": 5,
+      "total_neo_compensation": 26581426,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -45963,8 +45963,8 @@
       "cik": "106040",
       "filing_date": "2025-10-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/106040/000162828025044298/wdc-20251006.htm",
-      "total_neo_compensation": 80077069,
-      "neo_count": 9,
+      "total_neo_compensation": 54382427,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -46250,7 +46250,7 @@
       "cik": "100885",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/100885/000010088526000098/unp-20260324.htm",
-      "total_neo_compensation": 32537541,
+      "total_neo_compensation": 43460309,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -46486,8 +46486,8 @@
       "cik": "879169",
       "filing_date": "2026-04-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/879169/000087916926000031/incy-20260428.htm",
-      "total_neo_compensation": 69785689,
-      "neo_count": 7,
+      "total_neo_compensation": 69686161,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -46653,7 +46653,7 @@
       "cik": "354190",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/354190/000035419026000101/ajg-20260323.htm",
-      "total_neo_compensation": 40746685,
+      "total_neo_compensation": 32293322,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -46945,7 +46945,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 44750522,
+      "total_neo_compensation": 46279955,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 98.51,
@@ -47058,8 +47058,8 @@
       "cik": "721371",
       "filing_date": "2025-09-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/721371/000072137125000114/cah-20250916.htm",
-      "total_neo_compensation": 40364483,
-      "neo_count": 5,
+      "total_neo_compensation": 4659788,
+      "neo_count": 1,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -47242,8 +47242,8 @@
       "cik": "10795",
       "filing_date": "2025-12-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/10795/000162828025057846/bdx-20251217.htm",
-      "total_neo_compensation": 34150756,
-      "neo_count": 5,
+      "total_neo_compensation": 29834005,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -47459,8 +47459,8 @@
       "cik": "87347",
       "filing_date": "2026-02-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/87347/000130817926000024/slb2026-def14a.htm",
-      "total_neo_compensation": 43920422,
-      "neo_count": 6,
+      "total_neo_compensation": 39914144,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -47668,7 +47668,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 49136200,
+      "total_neo_compensation": 62756992,
       "available_years": [
         2025,
         2024,
@@ -47875,7 +47875,7 @@
       "cik": "1555280",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1555280/000155528026000015/zts-20260406.htm",
-      "total_neo_compensation": 70219600,
+      "total_neo_compensation": 51155246,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -48025,7 +48025,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 35972942,
+      "total_neo_compensation": 30189031,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -48369,8 +48369,8 @@
       "cik": "1170010",
       "filing_date": "2026-05-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1170010/000117001026000045/kmx-20260508.htm",
-      "total_neo_compensation": 31081159,
-      "neo_count": 6,
+      "total_neo_compensation": 30411737,
+      "neo_count": 4,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -48473,13 +48473,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 3,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26093719,
+      "total_neo_compensation": 22056848,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -48744,8 +48744,8 @@
       "cik": "1090012",
       "filing_date": "2026-05-28",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1090012/000110465926067065/tm261373-2_def14a.htm",
-      "total_neo_compensation": 36012675,
-      "neo_count": 7,
+      "total_neo_compensation": 81592360,
+      "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -48969,8 +48969,8 @@
       "cik": "1489393",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1489393/000130817926000250/lyb014791-def14a.htm",
-      "total_neo_compensation": 36619351,
-      "neo_count": 6,
+      "total_neo_compensation": 56770249,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -49146,8 +49146,8 @@
       "cik": "745732",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/745732/000074573226000013/rost-20260406.htm",
-      "total_neo_compensation": 53505920,
-      "neo_count": 5,
+      "total_neo_compensation": 72426272,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -49348,7 +49348,7 @@
       "cik": "1059556",
       "filing_date": "2026-03-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
-      "total_neo_compensation": 36559627,
+      "total_neo_compensation": 41808192,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -49517,13 +49517,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 21177431,
+      "total_neo_compensation": 14730097,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.08,
@@ -49760,7 +49760,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 24003258,
+      "total_neo_compensation": 27929090,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.36,
@@ -49950,8 +49950,8 @@
       "cik": "1996862",
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1996862/000162828026024588/bg-20260410.htm",
-      "total_neo_compensation": 57627621,
-      "neo_count": 6,
+      "total_neo_compensation": 32040819,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -50214,7 +50214,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 35530682,
+      "total_neo_compensation": 37379426,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.2,
@@ -50437,7 +50437,7 @@
       "cik": "1699150",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1699150/000114036126016726/ny20063676x1_def14a.htm",
-      "total_neo_compensation": 27156163,
+      "total_neo_compensation": 28518380,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -50636,8 +50636,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
-      "total_neo_compensation": 66817133,
+      "neo_count": 4,
+      "total_neo_compensation": 36646400,
       "available_years": [
         2025,
         2024,
@@ -50847,8 +50847,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 65804182,
+      "neo_count": 4,
+      "total_neo_compensation": 42490677,
       "available_years": [
         2026,
         2025,
@@ -51046,12 +51046,12 @@
       ],
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1051470/000105147026000039/cci-20260406.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024
       ],
-      "total_neo_compensation": 71762818,
+      "total_neo_compensation": 35619946,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -51442,8 +51442,8 @@
       "cik": "1024478",
       "filing_date": "2025-12-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1024478/000130817925000665/rok014559-def14a.htm",
-      "total_neo_compensation": 31153920,
-      "neo_count": 5,
+      "total_neo_compensation": 24954510,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -51748,7 +51748,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 32491339,
+      "total_neo_compensation": 63930932,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.24,
@@ -51960,7 +51960,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 36542318,
+      "total_neo_compensation": 73678144,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.98,
@@ -52184,13 +52184,13 @@
           "pension_nqdc": 0
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 57529887,
+      "total_neo_compensation": 32887552,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.35,
@@ -52389,13 +52389,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 36301525,
+      "total_neo_compensation": 30718938,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -52646,7 +52646,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 31198194,
+      "total_neo_compensation": 33733783,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.11,
@@ -52896,8 +52896,8 @@
       "cik": "107263",
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/107263/000119312526112643/wmb-20260317.htm",
-      "total_neo_compensation": 102081020,
-      "neo_count": 7,
+      "total_neo_compensation": 71219902,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -53027,7 +53027,7 @@
         }
       ],
       "neo_count": 3,
-      "total_neo_compensation": 30767982,
+      "total_neo_compensation": 23342487,
       "available_years": [
         2025,
         2024,
@@ -53255,7 +53255,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 42246717,
+      "total_neo_compensation": 36802657,
       "available_years": [
         2025,
         2024,
@@ -53421,7 +53421,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 35637207,
+      "total_neo_compensation": 33239754,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -53651,8 +53651,8 @@
       "cik": "764478",
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/764478/000114036126018265/ny20063180x1_def14a.htm",
-      "total_neo_compensation": 39206766,
-      "neo_count": 6,
+      "total_neo_compensation": 30073049,
+      "neo_count": 5,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -53882,7 +53882,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 28547057,
+      "total_neo_compensation": 32287709,
       "available_years": [
         2025,
         2024,
@@ -54145,8 +54145,8 @@
       "cik": "93556",
       "filing_date": "2026-03-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/93556/000114036126008170/ny20055502x771_def14a.htm",
-      "total_neo_compensation": 43828153,
-      "neo_count": 8,
+      "total_neo_compensation": 36883178,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -54326,8 +54326,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
-      "total_neo_compensation": 20243070,
+      "neo_count": 3,
+      "total_neo_compensation": 14161962,
       "available_years": [
         2025,
         2024,
@@ -54485,7 +54485,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 23238100,
+      "total_neo_compensation": 23968502,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 98.5,
@@ -54708,13 +54708,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 55761650,
+      "total_neo_compensation": 43161122,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.26,
@@ -54945,8 +54945,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 49170432,
+      "neo_count": 4,
+      "total_neo_compensation": 32616622,
       "available_years": [
         2025,
         2024,
@@ -55166,8 +55166,8 @@
       "cik": "1093557",
       "filing_date": "2026-04-15",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1093557/000109355726000061/dxcm-20260415.htm",
-      "total_neo_compensation": 50688742,
-      "neo_count": 6,
+      "total_neo_compensation": 37475563,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -55571,13 +55571,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 10,
+      "neo_count": 9,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 49421704,
+      "total_neo_compensation": 87461557,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 99.91,
@@ -55788,7 +55788,7 @@
       "cik": "789570",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/789570/000119312526129074/d899213ddef14a.htm",
-      "total_neo_compensation": 51987491,
+      "total_neo_compensation": 39560151,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -56165,13 +56165,13 @@
       ],
       "filing_date": "2026-04-30",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/891103/000089110326000066/mtch-20260430.htm",
-      "neo_count": 6,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 79752520,
+      "total_neo_compensation": 29616461,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -56395,13 +56395,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 56380688,
+      "total_neo_compensation": 61304379,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.57,
@@ -56559,13 +56559,13 @@
       ],
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1666700/000119312526151204/d11932ddef14a.htm",
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 29775416,
+      "total_neo_compensation": 21169031,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -56819,7 +56819,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 43507711,
+      "total_neo_compensation": 41505227,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.07,
@@ -57051,8 +57051,8 @@
       "cik": "56873",
       "filing_date": "2026-05-13",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm",
-      "total_neo_compensation": 78899884,
-      "neo_count": 7,
+      "total_neo_compensation": 59186368,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -57335,7 +57335,7 @@
       "cik": "96021",
       "filing_date": "2025-10-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/96021/000009602125000147/syy-20251001.htm",
-      "total_neo_compensation": 26305400,
+      "total_neo_compensation": 24887988,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -57460,13 +57460,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 13050000,
+      "total_neo_compensation": 550000,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.42,
@@ -57655,7 +57655,7 @@
       "cik": "354950",
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/354950/000035495026000090/hd-20260406.htm",
-      "total_neo_compensation": 35251804,
+      "total_neo_compensation": 31586330,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -57791,7 +57791,7 @@
       "cik": "1389170",
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1389170/000119312526126280/trgp-20260326.htm",
-      "total_neo_compensation": 36693921,
+      "total_neo_compensation": 26637835,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -57988,8 +57988,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 37560897,
+      "neo_count": 4,
+      "total_neo_compensation": 30677959,
       "available_years": [
         2025,
         2024,
@@ -58231,7 +58231,7 @@
       "cik": "711404",
       "filing_date": "2026-02-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/711404/000162828026011110/coo-20260224.htm",
-      "total_neo_compensation": 32513350,
+      "total_neo_compensation": 30496223,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -58460,13 +58460,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 64187275,
+      "total_neo_compensation": 62265059,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.85,
@@ -58643,7 +58643,7 @@
         2025,
         2024
       ],
-      "total_neo_compensation": 121829252,
+      "total_neo_compensation": 45280406,
       "proxy_fiscal_year": 2026,
       "say_on_pay": {
         "approval_pct": 93.32,
@@ -58793,13 +58793,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26839125,
+      "total_neo_compensation": 24552516,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -58986,7 +58986,7 @@
       "cik": "726728",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000021/o-20260325.htm",
-      "total_neo_compensation": 34443192,
+      "total_neo_compensation": 31905271,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -59236,7 +59236,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 40615947,
+      "total_neo_compensation": 37142148,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -59399,7 +59399,7 @@
       "cik": "352915",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/352915/000119312526148814/uhs-20260403.htm",
-      "total_neo_compensation": 30199058,
+      "total_neo_compensation": 28886397,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -59597,8 +59597,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 30234629,
+      "neo_count": 4,
+      "total_neo_compensation": 27695932,
       "available_years": [
         2026,
         2025,
@@ -59762,8 +59762,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 40542719,
+      "neo_count": 3,
+      "total_neo_compensation": 24356259,
       "available_years": [
         2025,
         2024,
@@ -59972,8 +59972,8 @@
       "cik": "1047862",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
-      "total_neo_compensation": 56139897,
-      "neo_count": 5,
+      "total_neo_compensation": 45412681,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -60442,8 +60442,8 @@
       "cik": "33185",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/33185/000119312526127556/d947238ddef14a.htm",
-      "total_neo_compensation": 61341483,
-      "neo_count": 7,
+      "total_neo_compensation": 37051527,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -60644,8 +60644,8 @@
       "cik": "1792044",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1792044/000114036126013002/ny20062029x771_def14a.htm",
-      "total_neo_compensation": 35885326,
-      "neo_count": 5,
+      "total_neo_compensation": 31737769,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -61013,8 +61013,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 31045044,
+      "neo_count": 4,
+      "total_neo_compensation": 24622025,
       "available_years": [
         2025,
         2024,
@@ -61183,13 +61183,13 @@
       ],
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1037868/000103786826000062/ame-20260311.htm",
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26029367,
+      "total_neo_compensation": 22046372,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -61346,8 +61346,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 41010362,
+      "neo_count": 2,
+      "total_neo_compensation": 19188135,
       "available_years": [
         2025,
         2024,
@@ -61569,13 +61569,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 27040033,
+      "total_neo_compensation": 43904136,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 98.66,
@@ -61865,7 +61865,7 @@
       "cik": "1755672",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1755672/000119312526116069/ctva-20260319.htm",
-      "total_neo_compensation": 21978037,
+      "total_neo_compensation": 20345846,
       "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -62034,13 +62034,13 @@
       ],
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/740260/000074026026000010/vtr-20260401.htm",
-      "neo_count": 5,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 38683400,
+      "total_neo_compensation": 15302975,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "F",
@@ -62257,7 +62257,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 28631982,
+      "total_neo_compensation": 26465743,
       "available_years": [
         2025,
         2024,
@@ -62484,7 +62484,7 @@
       "cik": "1510295",
       "filing_date": "2026-03-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1510295/000151029526000023/mpc-20260316.htm",
-      "total_neo_compensation": 52714123,
+      "total_neo_compensation": 58338440,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -62714,13 +62714,13 @@
       ],
       "filing_date": "2026-03-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 34870436,
+      "total_neo_compensation": 29791885,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -62907,8 +62907,8 @@
       "cik": "910521",
       "filing_date": "2026-07-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/910521/000091052126000018/deck-20260724.htm",
-      "total_neo_compensation": 27203475,
-      "neo_count": 5,
+      "total_neo_compensation": 14658846,
+      "neo_count": 3,
       "proxy_fiscal_year": 2026,
       "available_years": [
         2026,
@@ -63096,8 +63096,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 31882546,
+      "neo_count": 4,
+      "total_neo_compensation": 25451034,
       "available_years": [
         2025,
         2024,
@@ -63332,7 +63332,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 26011104,
+      "total_neo_compensation": 24599030,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -63467,7 +63467,7 @@
         }
       ],
       "neo_count": 3,
-      "total_neo_compensation": 26070698,
+      "total_neo_compensation": 23250486,
       "available_years": [
         2025,
         2024,
@@ -63692,7 +63692,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 36503747,
+      "total_neo_compensation": 57059005,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -63878,13 +63878,13 @@
           "_total_source": "rounding"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 28534356,
+      "total_neo_compensation": 19722870,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 99.38,
@@ -64157,7 +64157,7 @@
       "cik": "1267238",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1267238/000126723826000018/aiz-20260406.htm",
-      "total_neo_compensation": 35750546,
+      "total_neo_compensation": 33112313,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -64387,13 +64387,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 20437443,
+      "total_neo_compensation": 20532862,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -64557,8 +64557,8 @@
           "change_pension": 0
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 39363731,
+      "neo_count": 4,
+      "total_neo_compensation": 29182738,
       "available_years": [
         2025,
         2024,
@@ -64742,8 +64742,8 @@
       "cik": "72741",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/72741/000110465926036077/tm261423-1_def14a.htm",
-      "total_neo_compensation": 27540777,
-      "neo_count": 5,
+      "total_neo_compensation": 21901420,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -65129,13 +65129,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 34506493,
+      "total_neo_compensation": 30489928,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.25,
@@ -65321,13 +65321,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 37266472,
+      "total_neo_compensation": 30857832,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.99,
@@ -65543,7 +65543,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 18612771,
+      "total_neo_compensation": 22952918,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -65735,8 +65735,8 @@
       "cik": "1145197",
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1145197/000114036126013333/ny20060552x1_def14a.htm",
-      "total_neo_compensation": 47382408,
-      "neo_count": 6,
+      "total_neo_compensation": 20342522,
+      "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -65867,13 +65867,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 3,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 37285116,
+      "total_neo_compensation": 71359427,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
       "ceo_tenure": {
@@ -66187,13 +66187,13 @@
       ],
       "filing_date": "2026-03-18",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/4904/000000490426000022/aep-20260318.htm",
-      "neo_count": 6,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 67166803,
+      "total_neo_compensation": 17099755,
       "proxy_fiscal_year": 2025,
       "data_source": "sec_edgar_def14a",
       "ceo_gender": "M",
@@ -66426,13 +66426,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 47469512,
+      "total_neo_compensation": 33693032,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -66607,13 +66607,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 2,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 47478537,
+      "total_neo_compensation": 32052036,
       "proxy_fiscal_year": 2026,
       "say_on_pay": {
         "approval_pct": 85.54,
@@ -66780,8 +66780,8 @@
       "cik": "1944048",
       "filing_date": "2026-04-08",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1944048/000194404826000085/kvue-20260408.htm",
-      "total_neo_compensation": 44895950,
-      "neo_count": 6,
+      "total_neo_compensation": 17663199,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -66957,13 +66957,13 @@
       ],
       "filing_date": "2026-04-29",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1262039/000207709626000106/ea0287420-01.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 34155139,
+      "total_neo_compensation": 31044727,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -67146,13 +67146,13 @@
       ],
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1067701/000119312526124113/uri-20260324.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 25758614,
+      "total_neo_compensation": 47898020,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -67383,8 +67383,8 @@
       "cik": "874716",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/874716/000087471626000064/idxx-20260327.htm",
-      "total_neo_compensation": 29874116,
-      "neo_count": 6,
+      "total_neo_compensation": 28075881,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -67626,7 +67626,7 @@
       "cik": "89800",
       "filing_date": "2026-03-11",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/89800/000008980026000025/shw-20260310.htm",
-      "total_neo_compensation": 32841837,
+      "total_neo_compensation": 30650188,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -67891,7 +67891,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 28300292,
+      "total_neo_compensation": 25856260,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.7,
@@ -68115,13 +68115,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 38315077,
+      "total_neo_compensation": 30521449,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.75,
@@ -68288,8 +68288,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 30485434,
+      "neo_count": 3,
+      "total_neo_compensation": 20242248,
       "available_years": [
         2025,
         2024,
@@ -68526,13 +68526,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32657303,
+      "total_neo_compensation": 45676228,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 90.48,
@@ -68757,13 +68757,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26644934,
+      "total_neo_compensation": 44421772,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.25,
@@ -69021,7 +69021,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 36336635,
+      "total_neo_compensation": 53483383,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.72,
@@ -69181,8 +69181,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
-      "total_neo_compensation": 16250207,
+      "neo_count": 3,
+      "total_neo_compensation": 10724171,
       "available_years": [
         2025,
         2024,
@@ -69367,7 +69367,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 59288105,
+      "total_neo_compensation": 32540800,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -69715,7 +69715,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 31083500,
+      "total_neo_compensation": 50066348,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 94.92,
@@ -69917,7 +69917,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 27956873,
+      "total_neo_compensation": 27410211,
       "available_years": [
         2025,
         2024,
@@ -70399,13 +70399,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32551346,
+      "total_neo_compensation": 27966059,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -70572,8 +70572,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 39401765,
+      "neo_count": 3,
+      "total_neo_compensation": 21770698,
       "available_years": [
         2025,
         2024,
@@ -70710,7 +70710,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 14895333,
+      "total_neo_compensation": 37859772,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -71211,13 +71211,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 33044523,
+      "total_neo_compensation": 12697374,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 87.42,
@@ -71428,7 +71428,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 29401181,
+      "total_neo_compensation": 31527394,
       "available_years": [
         2025,
         2024,
@@ -71601,13 +71601,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32414654,
+      "total_neo_compensation": 38832656,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -71774,13 +71774,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 35425168,
+      "total_neo_compensation": 44160735,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -71990,13 +71990,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 28855470,
+      "total_neo_compensation": 22938674,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.54,
@@ -72203,8 +72203,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 53237476,
+      "neo_count": 4,
+      "total_neo_compensation": 27213985,
       "available_years": [
         2025,
         2024,
@@ -72461,13 +72461,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 29486350,
+      "total_neo_compensation": 16077123,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -72669,7 +72669,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 34064327,
+      "total_neo_compensation": 30738571,
       "available_years": [
         2025,
         2024,
@@ -72961,13 +72961,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 33037824,
+      "total_neo_compensation": 32313641,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -73185,13 +73185,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 24982777,
+      "total_neo_compensation": 20205189,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 88.1,
@@ -73377,13 +73377,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 36755882,
+      "total_neo_compensation": 26270022,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.91,
@@ -73590,7 +73590,7 @@
       "cik": "0000909832",
       "filing_date": "2025-12-04",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000159/cost-20251204.htm",
-      "total_neo_compensation": 41513848,
+      "total_neo_compensation": 54139630,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -73841,13 +73841,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 28608991,
+      "total_neo_compensation": 34978834,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 94.37,
@@ -74050,13 +74050,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26814632,
+      "total_neo_compensation": 41190323,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.57,
@@ -74467,7 +74467,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 26641486,
+      "total_neo_compensation": 24730196,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -74658,8 +74658,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 28881894,
+      "neo_count": 4,
+      "total_neo_compensation": 23616556,
       "available_years": [
         2025,
         2024,
@@ -74850,13 +74850,13 @@
           "_total_source": "recomputed"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26928119,
+      "total_neo_compensation": 22967845,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.02,
@@ -75107,7 +75107,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 29586122,
+      "total_neo_compensation": 23340866,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -75460,13 +75460,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 34550937,
+      "total_neo_compensation": 29387028,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -75697,7 +75697,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 42947312,
+      "total_neo_compensation": 21157586,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -76028,13 +76028,13 @@
       ],
       "filing_date": "2026-03-05",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/79879/000007987926000088/ppg-20260304.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 56814452,
+      "total_neo_compensation": 22530747,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -76258,13 +76258,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 23248273,
+      "total_neo_compensation": 45138672,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -76553,7 +76553,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 28397828,
+      "total_neo_compensation": 26528613,
       "available_years": [
         2025,
         2024,
@@ -76785,7 +76785,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 30554387,
+      "total_neo_compensation": 25813573,
       "available_years": [
         2025,
         2024,
@@ -76991,13 +76991,13 @@
       ],
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm",
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 36274127,
+      "total_neo_compensation": 27323486,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -77225,13 +77225,13 @@
           "stock_awards": 1141820
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32668351,
+      "total_neo_compensation": 27153218,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -77433,13 +77433,13 @@
       ],
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/922224/000119312526135991/ppl-20260331.htm",
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 31445471,
+      "total_neo_compensation": 25486526,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -77658,13 +77658,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 35923305,
+      "total_neo_compensation": 20675786,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -77812,13 +77812,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 37493579,
+      "total_neo_compensation": 22401380,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -77982,13 +77982,13 @@
       ],
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/914208/000119312526140019/d931607ddef14a.htm",
-      "neo_count": 6,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 45180561,
+      "total_neo_compensation": 22784880,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -78182,7 +78182,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 47206782,
+      "total_neo_compensation": 34923780,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 87.78,
@@ -78483,13 +78483,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26655523,
+      "total_neo_compensation": 52584868,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -78748,13 +78748,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 36063736,
+      "total_neo_compensation": 45192371,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 80.17,
@@ -78936,8 +78936,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 17318780,
+      "neo_count": 4,
+      "total_neo_compensation": 18798671,
       "available_years": [
         2025,
         2024,
@@ -79179,7 +79179,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 26741462,
+      "total_neo_compensation": 35450503,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 94.27,
@@ -79401,7 +79401,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 32337304,
+      "total_neo_compensation": 25068225,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.62,
@@ -79586,13 +79586,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 27442622,
+      "total_neo_compensation": 21621022,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -79780,7 +79780,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 23748458,
+      "total_neo_compensation": 26608542,
       "available_years": [
         2025,
         2024,
@@ -80002,13 +80002,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 27405511,
+      "total_neo_compensation": 39018258,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 53.59,
@@ -80218,13 +80218,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 20768781,
+      "total_neo_compensation": 34166707,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -80339,13 +80339,13 @@
       ],
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/77360/000007736026000014/pnr-20260317.htm",
-      "neo_count": 3,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 17687972,
+      "total_neo_compensation": 4149882,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -80549,7 +80549,7 @@
       "cik": "1652044",
       "filing_date": "2026-04-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817926000342/goog-20260424.htm",
-      "total_neo_compensation": 142644917,
+      "total_neo_compensation": 168132025,
       "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -80814,13 +80814,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 21806030,
+      "total_neo_compensation": 38499808,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -81022,13 +81022,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 35816196,
+      "total_neo_compensation": 42159253,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 91.44,
@@ -81211,13 +81211,13 @@
           "_total_source": "recomputed_implausible_total"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 25824480,
+      "total_neo_compensation": 14015316,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -81420,13 +81420,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 49802417,
+      "total_neo_compensation": 39144153,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.44,
@@ -81636,7 +81636,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 24091478,
+      "total_neo_compensation": 30433150,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.85,
@@ -81873,7 +81873,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 20983695,
+      "total_neo_compensation": 40572531,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -82087,8 +82087,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 24009191,
+      "neo_count": 5,
+      "total_neo_compensation": 21474151,
       "available_years": [
         2025,
         2024,
@@ -82341,13 +82341,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 27875593,
+      "total_neo_compensation": 23012875,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -82572,13 +82572,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 29792601,
+      "total_neo_compensation": 23895150,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -82730,13 +82730,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 28419220,
+      "total_neo_compensation": 17297244,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -83015,7 +83015,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 29317728,
+      "total_neo_compensation": 64527972,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -83165,8 +83165,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 36027499,
+      "neo_count": 3,
+      "total_neo_compensation": 17744985,
       "available_years": [
         2025,
         2024,
@@ -83292,13 +83292,13 @@
       ],
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/49196/000119312526103196/hban-20260312.htm",
-      "neo_count": 5,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 28879835,
+      "total_neo_compensation": 10719994,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -83495,13 +83495,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 19046250,
+      "total_neo_compensation": 18740939,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 98.24,
@@ -83663,13 +83663,13 @@
       ],
       "filing_date": "2026-04-16",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1285785/000128578526000061/mos-20260415.htm",
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22538072,
+      "total_neo_compensation": 20536908,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -83887,13 +83887,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 50993957,
+      "total_neo_compensation": 7637310,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -84083,13 +84083,13 @@
       ],
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/8818/000119312526102965/d47885ddef14a.htm",
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 20919847,
+      "total_neo_compensation": 19420446,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -84336,13 +84336,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 34916953,
+      "total_neo_compensation": 37175396,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.69,
@@ -84598,7 +84598,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 23473092,
+      "total_neo_compensation": 37477178,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
       "say_on_pay": {
@@ -84783,12 +84783,12 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2024
       ],
-      "total_neo_compensation": 24419668,
+      "total_neo_compensation": 19423543,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -84965,13 +84965,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 27882691,
+      "total_neo_compensation": 20929615,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.18,
@@ -85196,8 +85196,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 16919582,
+      "neo_count": 5,
+      "total_neo_compensation": 16322068,
       "available_years": [
         2025,
         2024,
@@ -85425,7 +85425,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 21667629,
+      "total_neo_compensation": 20218609,
       "available_years": [
         2025,
         2024,
@@ -85654,13 +85654,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 16491170,
+      "total_neo_compensation": 32158136,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 94.86,
@@ -85827,7 +85827,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 15707431,
+      "total_neo_compensation": 12663122,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -86044,13 +86044,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 32070402,
+      "total_neo_compensation": 34354884,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.91,
@@ -86273,7 +86273,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 10734886,
+      "total_neo_compensation": 16123488,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -86505,7 +86505,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 36254322,
+      "total_neo_compensation": 40081769,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -86696,7 +86696,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 26510416,
+      "total_neo_compensation": 25831742,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -86907,8 +86907,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 25827036,
+      "neo_count": 5,
+      "total_neo_compensation": 25808945,
       "available_years": [
         2025,
         2024,
@@ -87101,13 +87101,13 @@
       ],
       "filing_date": "2026-02-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1090872/000119312526040286/a-20260203.htm",
-      "neo_count": 6,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 31806094,
+      "total_neo_compensation": 21639379,
       "proxy_fiscal_year": 2025,
       "data_source": "sec_edgar_def14a",
       "say_on_pay": {
@@ -87273,8 +87273,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 30917656,
+      "neo_count": 4,
+      "total_neo_compensation": 22613535,
       "available_years": [
         2025,
         2024,
@@ -87494,7 +87494,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 38013631,
+      "total_neo_compensation": 31070311,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -87759,13 +87759,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 71292290,
+      "total_neo_compensation": 61780739,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -87969,7 +87969,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 24641903,
+      "total_neo_compensation": 20552659,
       "available_years": [
         2025,
         2024,
@@ -88191,13 +88191,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 19285819,
+      "total_neo_compensation": 33146810,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.29,
@@ -88420,7 +88420,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 27473672,
+      "total_neo_compensation": 40794760,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -88623,7 +88623,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 19836573,
+      "total_neo_compensation": 24675414,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -88875,7 +88875,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 17886088,
+      "total_neo_compensation": 60963464,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -89062,13 +89062,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 29371025,
+      "total_neo_compensation": 23832857,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -89477,13 +89477,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 19067588,
+      "total_neo_compensation": 32054918,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -89704,13 +89704,13 @@
       ],
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/765880/000110465926027086/doc-20260430xdef14a.htm",
-      "neo_count": 7,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26799115,
+      "total_neo_compensation": 21585406,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -89856,13 +89856,13 @@
       ],
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/320335/000032033526000135/gl-20260318.htm",
-      "neo_count": 4,
+      "neo_count": 1,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26427866,
+      "total_neo_compensation": 8727298,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -90061,13 +90061,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 19215506,
+      "total_neo_compensation": 15860525,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 90.75,
@@ -90269,8 +90269,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 30364243,
+      "neo_count": 5,
+      "total_neo_compensation": 28549323,
       "available_years": [
         2025,
         2024,
@@ -90407,13 +90407,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 2,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 13998816,
+      "total_neo_compensation": 9908691,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 92.15,
@@ -90609,13 +90609,13 @@
       ],
       "filing_date": "2026-03-12",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/105770/000110465926026778/wst-20260504xdef14a.htm",
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 26190181,
+      "total_neo_compensation": 14014202,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -90773,8 +90773,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 31827562,
+      "neo_count": 3,
+      "total_neo_compensation": 13598361,
       "available_years": [
         2025,
         2024,
@@ -90984,7 +90984,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 11188666,
+      "total_neo_compensation": 21362134,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -91180,7 +91180,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 20786953,
+      "total_neo_compensation": 31031494,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 93.84,
@@ -91376,13 +91376,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22734229,
+      "total_neo_compensation": 11701517,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -91592,8 +91592,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
-      "total_neo_compensation": 28166555,
+      "neo_count": 5,
+      "total_neo_compensation": 26272793,
       "available_years": [
         2025,
         2024,
@@ -91735,7 +91735,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 16189468,
+      "total_neo_compensation": 13621583,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -91887,13 +91887,13 @@
           "_total_source": "filing_only"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 21633072,
+      "total_neo_compensation": 18006412,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -92063,8 +92063,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 37767638,
+      "neo_count": 3,
+      "total_neo_compensation": 15567388,
       "available_years": [
         2025,
         2024,
@@ -92265,7 +92265,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 9650841,
+      "total_neo_compensation": 5814763,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.58,
@@ -92460,7 +92460,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 17127308,
+      "total_neo_compensation": 14874044,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -92687,8 +92687,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
-      "total_neo_compensation": 33220283,
+      "neo_count": 5,
+      "total_neo_compensation": 30418595,
       "available_years": [
         2025,
         2024,
@@ -93035,8 +93035,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 20396061,
+      "neo_count": 4,
+      "total_neo_compensation": 15145166,
       "available_years": [
         2025,
         2024,
@@ -93258,13 +93258,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 4555444,
+      "total_neo_compensation": 3882779,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -93516,7 +93516,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 76630952,
+      "total_neo_compensation": 55391583,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -93725,7 +93725,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 17636104,
+      "total_neo_compensation": 41193426,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -93903,8 +93903,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 36980096,
+      "neo_count": 3,
+      "total_neo_compensation": 15386550,
       "available_years": [
         2025,
         2024,
@@ -94116,13 +94116,13 @@
           "_total_source": "rounding"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 3,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 35597896,
+      "total_neo_compensation": 9681447,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -94374,13 +94374,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 38762885,
+      "total_neo_compensation": 42655570,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 96.12,
@@ -94584,8 +94584,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 22082828,
+      "neo_count": 4,
+      "total_neo_compensation": 13245072,
       "available_years": [
         2025,
         2024,
@@ -94820,7 +94820,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 23145213,
+      "total_neo_compensation": 19152781,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -95024,8 +95024,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
-      "total_neo_compensation": 45931734,
+      "neo_count": 5,
+      "total_neo_compensation": 36906504,
       "available_years": [
         2025,
         2024,
@@ -95221,8 +95221,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
-      "total_neo_compensation": 14237786,
+      "neo_count": 4,
+      "total_neo_compensation": 12146861,
       "available_years": [
         2025,
         2024,
@@ -95458,13 +95458,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 91405702,
+      "total_neo_compensation": 77327916,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 90.5,
@@ -95615,8 +95615,8 @@
       "cik": "1341439",
       "filing_date": "2025-09-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312525220801/d72066ddef14a.htm",
-      "total_neo_compensation": 57758571,
-      "neo_count": 6,
+      "total_neo_compensation": 58569828,
+      "neo_count": 2,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -95868,7 +95868,7 @@
         }
       ],
       "neo_count": 6,
-      "total_neo_compensation": 46205455,
+      "total_neo_compensation": 39037356,
       "available_years": [
         2025,
         2024,
@@ -96074,7 +96074,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 18455809,
+      "total_neo_compensation": 14410508,
       "available_years": [
         2025,
         2024,
@@ -96303,13 +96303,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22606441,
+      "total_neo_compensation": 13168446,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.79,
@@ -96505,7 +96505,7 @@
         }
       ],
       "neo_count": 5,
-      "total_neo_compensation": 24041652,
+      "total_neo_compensation": 19280320,
       "available_years": [
         2025,
         2024,
@@ -96727,13 +96727,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 42003546,
+      "total_neo_compensation": 33164118,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 87.39,
@@ -96882,13 +96882,13 @@
       ],
       "filing_date": "2026-03-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/945841/000094584126000077/pool-20260325.htm",
-      "neo_count": 4,
+      "neo_count": 3,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 12597212,
+      "total_neo_compensation": 9892923,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -97092,13 +97092,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 39378602,
+      "total_neo_compensation": 34748998,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 97.18,
@@ -97272,13 +97272,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 20298664,
+      "total_neo_compensation": 13683160,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -97522,7 +97522,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 66736187,
+      "total_neo_compensation": 55792063,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 84.77,
@@ -97690,7 +97690,7 @@
         2025,
         2024
       ],
-      "total_neo_compensation": 40125036,
+      "total_neo_compensation": 28137487,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -97926,13 +97926,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 24908208,
+      "total_neo_compensation": 18737029,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 95.77,
@@ -98185,8 +98185,8 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 8,
-      "total_neo_compensation": 53927242,
+      "neo_count": 6,
+      "total_neo_compensation": 23196364,
       "available_years": [
         2025,
         2024,
@@ -98522,13 +98522,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2026,
         2025,
         2024
       ],
-      "total_neo_compensation": 194520533,
+      "total_neo_compensation": 52488376,
       "proxy_fiscal_year": 2026,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -98699,13 +98699,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 27758736,
+      "total_neo_compensation": 8306531,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 91.91,
@@ -99042,7 +99042,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 1109957,
+      "total_neo_compensation": 4581298,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -99322,13 +99322,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 52810441,
+      "total_neo_compensation": 28805112,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -99666,13 +99666,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 7,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 13202068,
+      "total_neo_compensation": 5635970,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -99864,7 +99864,7 @@
       "cik": "1018724",
       "filing_date": "2026-04-09",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926041026/tm261382-1_def14a.htm",
-      "total_neo_compensation": 5538347,
+      "total_neo_compensation": 122088518,
       "neo_count": 6,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -100067,13 +100067,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 5,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 221480364,
+      "total_neo_compensation": 154738065,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
@@ -100262,13 +100262,13 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 3,
+      "neo_count": 4,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 48365000,
+      "total_neo_compensation": 400000,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 99.21,
@@ -100526,7 +100526,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 41235440,
+      "total_neo_compensation": 64001176,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -100672,7 +100672,7 @@
         }
       ],
       "neo_count": 4,
-      "total_neo_compensation": 19691424,
+      "total_neo_compensation": 17639532,
       "available_years": [
         2026,
         2025,
@@ -100844,7 +100844,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 19582591,
+      "total_neo_compensation": 27728217,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "say_on_pay": {
