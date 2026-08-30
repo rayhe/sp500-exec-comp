@@ -176,7 +176,7 @@ function computeCeoTrend(companies) {
 }
 
 /* Pre-compute CEO stock awards as percentage of total compensation.
-   Sets c._ceoStockPct (0-100 or null) for the latest fiscal year.
+   Sets c._ceoStockPct (0-100 or null) for the primary fiscal year (FY2024).
    Also sets c._ceoStockPctHistory = { year: pct, ... } for multi-year trend analysis. */
 function computeCeoStockPct(companies) {
     companies.forEach(function(c) {
@@ -187,7 +187,12 @@ function computeCeoStockPct(companies) {
         var allYears = [];
         c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
         allYears.sort(function(a, b) { return b - a; });
-        var latestYear = allYears[0];
+        // Primary fiscal year alignment — fixes AXON/SBUX/SOLV mismatch where FY2025 exec would be used for FY2024 CEO total
+        var targetYear = c.fiscal_year || allYears[0];
+        var targetYearExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        if (targetYearExecs.length === 0) {
+            targetYear = allYears[0];
+        }
 
         // Compute stock % for each available year (multi-year trend)
         allYears.forEach(function(yr) {
@@ -204,9 +209,9 @@ function computeCeoStockPct(companies) {
             }
         });
 
-        var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        var latestExecs = c.executives.filter(function(e) { return e.year === targetYear; });
 
-        // Find CEO for latest year
+        // Find CEO for primary fiscal year
         var ceo = latestExecs.find(function(e) {
             return e.title && (/chief executive/i.test(e.title) || /\bceo\b/i.test(e.title));
         });
@@ -287,17 +292,24 @@ function computeSayOnPay(companies) {
 
 /* Pre-compute CEO-to-CFO pay premium.
    For each company with both CEO and CFO NEOs, sets _ceoCfoPremium (ratio of CEO total / CFO total)
-   and _cfoExec (the CFO exec record). */
+   and _cfoExec (the CFO exec record). Uses primary fiscal_year for consistency. */
 function computeCeoCfoPremium(companies) {
     companies.forEach(function(c) {
         c._ceoCfoPremium = null;
         c._cfoExec = null;
         if (!c.executives || c.executives.length === 0) return;
-        var latestYear = 0;
-        c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+        var targetYear = c.fiscal_year || 0;
+        if (!targetYear) {
+            c.executives.forEach(function(e) { if (e.year > targetYear) targetYear = e.year; });
+        }
+        var yearExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        if (yearExecs.length === 0) {
+            var latestYear = 0;
+            c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+            yearExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        }
         var ceo = null, cfo = null;
-        c.executives.forEach(function(e) {
-            if (e.year !== latestYear) return;
+        yearExecs.forEach(function(e) {
             var t = (e.title || '').toLowerCase();
             if (/\b(chief executive|(?:^|\s)ceo\b)/.test(t) || (/\bpresident\b/.test(t) && !/vice/i.test(t) && !ceo)) {
                 if (!ceo || (e.total || 0) > (ceo.total || 0)) ceo = e;
@@ -485,7 +497,7 @@ var ROLE_COLORS = {
 
 var ROLE_ORDER = ['CEO', 'CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO', 'Other'];
 
-/* Pre-compute S&P 500 role-level compensation benchmarks from latest FY NEO data.
+/* Pre-compute S&P 500 role-level compensation benchmarks from primary FY NEO data.
    Sets window._roleBenchmarks = { role: { count, median, mean, p25, p75, max, topEarner } } */
 var _roleBenchmarks = null;
 function computeRoleBenchmarks(companies) {
@@ -493,10 +505,17 @@ function computeRoleBenchmarks(companies) {
     ROLE_ORDER.forEach(function(r) { roleMap[r] = []; });
     companies.forEach(function(c) {
         if (!c.executives || c.executives.length === 0) return;
-        var allYears = [];
-        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
-        var maxYr = Math.max.apply(null, allYears);
-        c.executives.filter(function(e) { return e.year === maxYr; }).forEach(function(e) {
+        var targetYear = c.fiscal_year || 0;
+        if (!targetYear) {
+            c.executives.forEach(function(e) { if (e.year > targetYear) targetYear = e.year; });
+        }
+        var yearExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        if (yearExecs.length === 0) {
+            var maxYr = 0;
+            c.executives.forEach(function(e) { if (e.year > maxYr) maxYr = e.year; });
+            yearExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        }
+        yearExecs.forEach(function(e) {
             var role = classifyExecRole(e.title);
             if (!roleMap[role]) roleMap[role] = [];
             roleMap[role].push({ total: e.total || 0, ticker: c.ticker, name: e.name, sector: c.sector, title: e.title });
@@ -530,15 +549,21 @@ function computeRoleBenchmarks(companies) {
 }
 
 /* Pre-compute role-specific exec data per company for role filter pivot.
-   Sets c._roleExecs = { 'CFO': {name, title, total, year, ...}, 'COO': {...}, ... } */
+   Sets c._roleExecs = { 'CFO': {name, title, total, year, ...}, 'COO': {...}, ... } Uses primary fiscal_year. */
 function computeRoleExecs(companies) {
     companies.forEach(function(c) {
         c._roleExecs = {};
         if (!c.executives || c.executives.length === 0) return;
-        var allYears = [];
-        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
-        var maxYr = Math.max.apply(null, allYears);
-        var latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        var targetYear = c.fiscal_year || 0;
+        if (!targetYear) {
+            c.executives.forEach(function(e) { if (e.year > targetYear) targetYear = e.year; });
+        }
+        var latestExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        if (latestExecs.length === 0) {
+            var maxYr = 0;
+            c.executives.forEach(function(e) { if (e.year > maxYr) maxYr = e.year; });
+            latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        }
 
         ROLE_ORDER.forEach(function(role) {
             if (role === 'Other') return;
@@ -554,7 +579,7 @@ function computeRoleExecs(companies) {
 }
 
 /* Pre-compute executive team completeness — which C-suite roles each company's NEO disclosure covers.
-   Sets c._teamRoles (filled roles), c._teamRoleCount (0-7), c._teamMissingExpected (missing common roles). */
+   Sets c._teamRoles (filled roles), c._teamRoleCount (0-7), c._teamMissingExpected (missing common roles). Uses primary fiscal_year. */
 function computeTeamCompleteness(companies) {
     // Expected roles for a typical S&P 500 company: CEO + CFO are near-universal, others vary
     var EXPECTED_ROLES = ['CEO', 'CFO'];
@@ -564,10 +589,16 @@ function computeTeamCompleteness(companies) {
         c._teamRoleCount = 0;
         c._teamMissingExpected = [];
         if (!c.executives || c.executives.length === 0) return;
-        var allYears = [];
-        c.executives.forEach(function(e) { if (allYears.indexOf(e.year) < 0) allYears.push(e.year); });
-        var maxYr = Math.max.apply(null, allYears);
-        var latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        var targetYear = c.fiscal_year || 0;
+        if (!targetYear) {
+            c.executives.forEach(function(e) { if (e.year > targetYear) targetYear = e.year; });
+        }
+        var latestExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        if (latestExecs.length === 0) {
+            var maxYr = 0;
+            c.executives.forEach(function(e) { if (e.year > maxYr) maxYr = e.year; });
+            latestExecs = c.executives.filter(function(e) { return e.year === maxYr; });
+        }
         var rolesFound = {};
         latestExecs.forEach(function(e) {
             var role = classifyExecRole(e.title);
