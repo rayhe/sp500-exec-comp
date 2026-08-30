@@ -3276,8 +3276,6 @@ function drawScatterChart(companies) {
                 function _semanticColor(delta, metricKey) {
                     var isLowerBetter = !!_lowerIsBetter[metricKey];
                     var isGood = isLowerBetter ? (delta < 0) : (delta > 0);
-                    // Neutral metrics (total_comp, stock %, PageRank, tenure, YoY) — use muted purple/blue instead of green/red
-                    var neutralKeys = { 'total_compensation': true, '_ceoStockPctSort': true, '_pageRankScore': true, '_ceoTenureYears': true, '_ceoYoYPct': true, 'median_worker_pay': false };
                     var isNeutral = metricKey === 'total_compensation' || metricKey === '_ceoStockPctSort' || metricKey === '_pageRankScore' || metricKey === '_ceoTenureYears' || metricKey === '_ceoYoYPct';
                     if (isNeutral) {
                         return isGood ? (dark ? '#a78bfa' : '#7c3aed') : (dark ? '#94a3b8' : '#6b7280');
@@ -3299,22 +3297,56 @@ function drawScatterChart(companies) {
                 // Position delta text near intersection, offset to bottom-right
                 var _badgeX = x(_commCrosshairMedX);
                 var _badgeY = yScale(_commCrosshairMedY);
-                var _dxBadgeX = Math.min(_badgeX + 10, w - 140);
-                var _dxBadgeY = _badgeY + 18;
-                var _dyBadgeY = _badgeY + 30;
+                var _dxBadgeX = Math.min(_badgeX + 12, w - 10);
+                var _dxBadgeY = _badgeY + 20;
+                var _dyBadgeY = _badgeY + 32;
 
                 // If too close to bottom, flip above
-                if (_dxBadgeY > h - 10) { _dxBadgeY = _badgeY - 24; _dyBadgeY = _badgeY - 12; }
+                if (_dxBadgeY > h - 16) { _dxBadgeY = _badgeY - 26; _dyBadgeY = _badgeY - 14; }
+                if (_dyBadgeY > h - 6) { _dyBadgeY = h - 8; }
 
-                // Background rect for readability — auto-width based on longer string
-                var _bgX = _dxBadgeX - 4;
-                var _bgY = Math.min(_dxBadgeY, _dyBadgeY) - 11;
-                var _bgW = Math.max(_dxStr.length, _dyStr.length) * 5.8 + 16;
-                var _bgH = 32;
-                // Clamp width to chart bounds
-                if (_bgX + _bgW > w) { _bgW = w - _bgX - 4; }
+                // Leader line from intersection to badge — visual anchor, prevents quadrant-label overlap confusion
+                var _leaderMidX = _dxBadgeX - 6;
+                var _leaderMidY = (_dxBadgeY + _dyBadgeY) / 2 - 1;
+                svg.append('line')
+                    .attr('x1', _badgeX).attr('y1', _badgeY)
+                    .attr('x2', _leaderMidX).attr('y2', _leaderMidY)
+                    .attr('stroke', _commCrosshairColor).attr('stroke-width', 0.8)
+                    .attr('stroke-dasharray', '3,3').attr('opacity', 0.6)
+                    .attr('pointer-events', 'none');
 
-                svg.append('rect')
+                // Create a group for measured badge — text first, then bg rect sized via getBBox
+                var _deltaGroup = svg.append('g').attr('class', 'comm-delta-group');
+
+                var _txt1 = _deltaGroup.append('text')
+                    .attr('x', _dxBadgeX).attr('y', _dxBadgeY)
+                    .attr('fill', _dxColor).attr('font-size', '9px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
+                    .text(_dxStr);
+                var _txt2 = _deltaGroup.append('text')
+                    .attr('x', _dxBadgeX).attr('y', _dyBadgeY)
+                    .attr('fill', _dyColor).attr('font-size', '9px').attr('font-weight', '700')
+                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
+                    .text(_dyStr);
+
+                // Measure actual text bounds — fixes overflow on long metric labels (prev used len*5.8 estimate)
+                var _b1, _b2;
+                try { _b1 = _txt1.node().getBBox(); } catch (e) { _b1 = { width: _dxStr.length * 5.2, height: 10, x: _dxBadgeX, y: _dxBadgeY - 9 }; }
+                try { _b2 = _txt2.node().getBBox(); } catch (e) { _b2 = { width: _dyStr.length * 5.2, height: 10, x: _dxBadgeX, y: _dyBadgeY - 9 }; }
+                var _maxW = Math.max(_b1.width, _b2.width);
+                var _minX = Math.min(_b1.x, _b2.x);
+                var _minY = Math.min(_b1.y, _b2.y);
+                var _maxY2 = Math.max(_b1.y + _b1.height, _b2.y + _b2.height);
+                var _bgPadX = 10, _bgPadY = 6;
+                var _bgX = _minX - _bgPadX;
+                var _bgY = _minY - _bgPadY;
+                var _bgW = _maxW + _bgPadX * 2 + 6; // +6 for dot indicator
+                var _bgH = (_maxY2 - _minY) + _bgPadY * 2;
+                // Clamp to chart bounds
+                if (_bgX < 2) { var _shift = 2 - _bgX; _bgX = 2; _txt1.attr('x', +_txt1.attr('x') + _shift); _txt2.attr('x', +_txt2.attr('x') + _shift); }
+                if (_bgX + _bgW > w - 2) { _bgW = w - 2 - _bgX; }
+
+                _deltaGroup.insert('rect', ':first-child')
                     .attr('x', _bgX).attr('y', _bgY)
                     .attr('width', _bgW).attr('height', _bgH)
                     .attr('rx', 6).attr('ry', 6)
@@ -3323,21 +3355,10 @@ function drawScatterChart(companies) {
                     .attr('opacity', 0.95);
 
                 // Small community dot indicator in badge header
-                svg.append('circle')
-                    .attr('cx', _dxBadgeX + 3).attr('cy', _bgY + 4)
+                _deltaGroup.append('circle')
+                    .attr('cx', _bgX + 5).attr('cy', _bgY + 5)
                     .attr('r', 2.5)
                     .attr('fill', _commCrosshairColor).attr('opacity', 0.9);
-
-                svg.append('text')
-                    .attr('x', _dxBadgeX).attr('y', _dxBadgeY)
-                    .attr('fill', _dxColor).attr('font-size', '9px').attr('font-weight', '700')
-                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
-                    .text(_dxStr);
-                svg.append('text')
-                    .attr('x', _dxBadgeX).attr('y', _dyBadgeY)
-                    .attr('fill', _dyColor).attr('font-size', '9px').attr('font-weight', '700')
-                    .attr('font-family', 'Inter, system-ui, sans-serif').attr('opacity', 0.95)
-                    .text(_dyStr);
             }
         }
     }

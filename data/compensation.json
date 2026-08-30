@@ -34,80 +34,80 @@
     "sector_medians": {
       "Industrials": {
         "count": 70,
-        "median_ceo_pay": 13923884.5,
-        "min": 40001,
-        "max": 70547718,
-        "mean": 15209239.228571428
+        "median_ceo_pay": 17230671.5,
+        "min": 1693133,
+        "max": 164525721,
+        "mean": 19012281.542857144
       },
       "Consumer Discretionary": {
         "count": 59,
-        "median_ceo_pay": 16587882,
+        "median_ceo_pay": 15574678,
         "min": 0,
-        "max": 36340876,
-        "mean": 16692190.152542373
+        "max": 95801676,
+        "mean": 17387409.01694915
       },
       "Financials": {
         "count": 66,
-        "median_ceo_pay": 17936510.0,
+        "median_ceo_pay": 19455209.0,
         "min": 100000,
-        "max": 118891684,
-        "mean": 26586833.575757574
+        "max": 84027074,
+        "mean": 22558059.636363637
       },
       "Information Technology": {
         "count": 81,
-        "median_ceo_pay": 22157635,
+        "median_ceo_pay": 20694772,
         "min": 141704,
-        "max": 247579143,
-        "mean": 27677238.962962963
+        "max": 79106183,
+        "mean": 24477637.407407407
       },
       "Communication Services": {
         "count": 20,
-        "median_ceo_pay": 27827869.5,
-        "min": 403019,
-        "max": 165009366,
-        "mean": 34309585.0
+        "median_ceo_pay": 21001650.5,
+        "min": 274074,
+        "max": 100837126,
+        "mean": 26232269.1
       },
       "Real Estate": {
         "count": 29,
-        "median_ceo_pay": 12759187,
-        "min": 3657144,
-        "max": 821090355,
-        "mean": 40749290.72413793
+        "median_ceo_pay": 15246209,
+        "min": 4124066,
+        "max": 61394770,
+        "mean": 16689419.689655172
       },
       "Energy": {
         "count": 22,
-        "median_ceo_pay": 17471111.0,
+        "median_ceo_pay": 16762744.5,
         "min": 4864564,
-        "max": 42727650,
-        "mean": 18492965.818181816
+        "max": 44052537,
+        "mean": 19752285.90909091
       },
       "Health Care": {
         "count": 61,
-        "median_ceo_pay": 18256227,
-        "min": 4090438,
-        "max": 79923350,
-        "mean": 19324450.04918033
+        "median_ceo_pay": 17437508,
+        "min": 550000,
+        "max": 78569534,
+        "mean": 17804337.04918033
       },
       "Consumer Staples": {
         "count": 34,
-        "median_ceo_pay": 15487307.0,
-        "min": 6428699,
-        "max": 49122360,
-        "mean": 17285883.67647059
+        "median_ceo_pay": 16925494.5,
+        "min": 5695862,
+        "max": 53577224,
+        "mean": 18643396.29411765
       },
       "Materials": {
         "count": 27,
-        "median_ceo_pay": 14699497,
-        "min": 3708475,
-        "max": 29770044,
-        "mean": 12894703.925925925
+        "median_ceo_pay": 12992297,
+        "min": 3631262,
+        "max": 32187200,
+        "mean": 14546882.148148147
       },
       "Utilities": {
         "count": 31,
-        "median_ceo_pay": 12684812,
-        "min": 4668828,
-        "max": 36601524,
-        "mean": 13402025.322580645
+        "median_ceo_pay": 13355284,
+        "min": 3890007,
+        "max": 30247878,
+        "mean": 15103655.064516129
       }
     },
     "edgar_coverage": 500,
