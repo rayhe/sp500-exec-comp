@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 500,
     "total_companies": 500,
-    "last_updated": "2026-08-30T07:30:00Z",
+    "last_updated": "2026-08-30T20:58:57.935854Z",
     "total_neo_records": 6164,
     "title_coverage": "6164/6164",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 302,
+    "board_independence_coverage": 304,
     "data_quality_detailed": {
       "verified": 5610,
       "recomputed": 145,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 316,
+    "board_independence_any": 318,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5
   },
@@ -732,6 +732,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 9,
+        "independence_pct": 88.9,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -1282,7 +1289,14 @@
           "prose"
         ]
       },
-      "notes": "CEO corrected to David Gitlin per Carrier press releases 2025; compensation table missing Gitlin \u2013 requires primary DEF 14A read"
+      "notes": "CEO corrected to David Gitlin per Carrier press releases 2025; compensation table missing Gitlin \u2013 requires primary DEF 14A read",
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 10,
+        "independence_pct": 80.0,
+        "lead_independent_director": true,
+        "chair_independent": true
+      }
     },
     {
       "ticker": "NFLX",
@@ -101072,5 +101086,5 @@
       }
     }
   ],
-  "last_updated": "2026-08-30T13:03:20Z"
+  "last_updated": "2026-08-30T20:58:57.935854Z"
 }
