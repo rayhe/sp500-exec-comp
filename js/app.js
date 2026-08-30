@@ -8393,16 +8393,22 @@ function setupDetailPanel(companies) {
             }
             html += '</div>';
 
-            // Year tabs (if multiple years available)
+            // Year tabs (if multiple years available) + side-by-side toggle
             if (allYears.length > 1) {
+                html += '<div class="neo-year-tabs-wrap">';
                 html += '<div class="neo-year-tabs" role="tablist" aria-label="Select fiscal year">';
                 allYears.forEach(function(yr, idx) {
                     html += '<button class="neo-year-tab' + (idx === 0 ? ' active' : '') + '" data-year="' + yr + '" role="tab" aria-selected="' + (idx === 0 ? 'true' : 'false') + '" tabindex="' + (idx === 0 ? '0' : '-1') + '">FY' + yr + '</button>';
                 });
                 html += '</div>';
+                html += '<button class="neo-compare-years-btn" data-action="toggle-sbs" title="Toggle side-by-side year comparison">↔ Compare FYs</button>';
+                html += '</div>';
             }
 
-            // Render a table for each year (only first visible)
+            // Container for year panels (supports side-by-side grid mode)
+            html += '<div class="neo-year-panels">';
+
+            // Render a table for each year (only first visible in tab mode)
             allYears.forEach(function(yr, yrIdx) {
                 var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
                 var yrTotal = 0;
@@ -8518,6 +8524,8 @@ function setupDetailPanel(companies) {
 
                 html += '</div>'; // neo-year-panel
             });
+
+            html += '</div>'; // neo-year-panels wrapper
 
             // Data quality summary for this company's exec records
             var dqCounts = { verified: 0, recomputed: 0, incomplete: 0, bloated: 0, other: 0 };
@@ -9163,7 +9171,8 @@ function setupDetailPanel(companies) {
                 tab.classList.add('active');
                 tab.setAttribute('aria-selected', 'true');
                 tab.setAttribute('tabindex', '0');
-                // Show/hide year panels
+                // Show/hide year panels (unless in side-by-side mode)
+                if (section.classList.contains('neo-sbs-mode')) return;
                 section.querySelectorAll('.neo-year-panel').forEach(function(panel) {
                     panel.style.display = panel.getAttribute('data-year') === yr ? '' : 'none';
                 });
@@ -9178,6 +9187,29 @@ function setupDetailPanel(companies) {
                 var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
                 tabs[next].click();
                 tabs[next].focus();
+            });
+        });
+
+        // Wire up side-by-side year comparison toggle
+        detailRow.querySelectorAll('[data-action="toggle-sbs"]').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var section = btn.closest('.neo-section');
+                if (!section) return;
+                var isSbs = section.classList.toggle('neo-sbs-mode');
+                btn.classList.toggle('active', isSbs);
+                btn.textContent = isSbs ? '↩ Tabs' : '↔ Compare FYs';
+                btn.setAttribute('aria-pressed', isSbs ? 'true' : 'false');
+                // Show all panels in SBS mode, restore tab selection when exiting
+                section.querySelectorAll('.neo-year-panel').forEach(function(panel) {
+                    if (isSbs) {
+                        panel.style.display = '';
+                    } else {
+                        var activeTab = section.querySelector('.neo-year-tab.active');
+                        var activeYr = activeTab ? activeTab.getAttribute('data-year') : null;
+                        panel.style.display = (panel.getAttribute('data-year') === activeYr) ? '' : 'none';
+                    }
+                });
             });
         });
 

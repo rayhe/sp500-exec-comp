@@ -110,9 +110,9 @@
         "mean": 13402025.322580645
       }
     },
-    "edgar_coverage": 498,
+    "edgar_coverage": 500,
     "total_companies": 500,
-    "last_updated": "2026-08-30T02:31:10Z",
+    "last_updated": "2026-08-30T09:03:30Z",
     "total_neo_records": 6164,
     "title_coverage": "6164/6164",
     "data_quality": {
@@ -120,7 +120,8 @@
       "recomputed": 538,
       "incomplete_components": 0,
       "bloated_component": 0,
-      "component_mismatch": 0
+      "component_mismatch": 0,
+      "last_audit": "2026-08-30"
     },
     "median_ceo_pay": 17136407.5,
     "mean_ceo_pay": 19704690.816,
