@@ -924,6 +924,22 @@ function computeCeoPayVolatility(companies) {
     });
 }
 
+function computeBoardIndependence(companies) {
+    companies.forEach(function(c) {
+        c._boardIndependence = null;
+        c._boardIndepPct = null;
+        c._chairIndep = null;
+        if (c.board_independence) {
+            var bi = c.board_independence;
+            if (bi.independence_pct != null) {
+                c._boardIndependence = bi.independence_pct;
+                c._boardIndepPct = bi.independence_pct;
+            }
+            if (bi.chair_independent != null) c._chairIndep = bi.chair_independent;
+        }
+    });
+}
+
 /* Pre-compute PageRank centrality scores from the peer network.
    PageRank measures transitive influence: a company is central if it's benchmarked by
    companies that are themselves benchmarked by many others. Uses the classic power iteration
@@ -1572,7 +1588,7 @@ function sortTableByKey(key, dir) {
     if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
     scrollToTable();
-    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score', '_gerScore': 'governance erosion risk score', '_ceoVolatility': 'CEO pay volatility' };
+    var sortLabelMap = { '_ceoYoYSort': 'CEO comp year over year change', '_ceoStockPctSort': 'CEO equity percentage of total comp', '_compPercentile': 'compensation percentile rank', '_ceoConcPct': 'CEO concentration percentage', '_sopApproval': 'say-on-pay shareholder approval', '_aspDelta': 'peer group pay delta', '_pageRankScore': 'PageRank centrality score', '_boardIndepPct': 'board independence percentage', '_boardIndependence': 'board independence percentage', 'ceo_name': 'CEO name', '_ceoTenureYears': 'CEO tenure in years', '_govScore': 'compensation governance score', '_gerScore': 'governance erosion risk score', '_ceoVolatility': 'CEO pay volatility' };
     var sortLbl = sortLabelMap[key] || key.replace(/_/g, ' ');
     announce('Table sorted by ' + sortLbl + ', ' + (dir === 'asc' ? 'ascending' : 'descending') + '. ' + _lastTableAnnounce);
 }
@@ -10712,6 +10728,9 @@ function setupDualSparklineTooltips() {
 
     // Pre-compute CEO pay volatility (coefficient of variation across fiscal years)
     computeCeoPayVolatility(companies);
+
+    // Pre-compute board independence derived fields
+    computeBoardIndependence(companies);
 
     // Pre-compute radar chart percentiles for 8-dimension compensation profile
     computeRadarPercentiles(companies);

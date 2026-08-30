@@ -602,6 +602,7 @@
                             <option value="_sopApproval">Say-on-Pay %</option>
                             <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                             <option value="_pageRankScore">PageRank Centrality</option>
+                            <option value="_boardIndepPct">Board Independence %</option>
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
                             <option value="_govScore">Governance Score</option>
                             <option value="_gerScore">GER Score</option>
@@ -619,6 +620,7 @@
                             <option value="_sopApproval">Say-on-Pay %</option>
                             <option value="_ceoCfoPremium">CEO/CFO Premium</option>
                             <option value="_pageRankScore">PageRank Centrality</option>
+                            <option value="_boardIndepPct">Board Independence %</option>
                             <option value="_ceoTenureYears">CEO Tenure (Years)</option>
                             <option value="_govScore">Governance Score</option>
                             <option value="_gerScore">GER Score</option>
@@ -635,9 +637,11 @@
                     <button class="scatter-preset-btn" data-x="median_worker_pay" data-y="total_compensation" title="Worker pay vs CEO pay — the fundamental equity question">Worker vs CEO</button>
                     <button class="scatter-preset-btn" data-x="total_compensation" data-y="_sopApproval" title="CEO total compensation vs say-on-pay approval — do shareholders resist higher pay?">Pay vs SoP</button>
                     <button class="scatter-preset-btn" data-x="_pageRankScore" data-y="total_compensation" title="PageRank centrality vs CEO pay — do the most central peer-network companies pay more?">Centrality vs Pay</button>
+                    <button class="scatter-preset-btn" data-x="_boardIndepPct" data-y="total_compensation" title="Board independence % vs CEO pay — do more independent boards restrain pay?">Board vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="total_compensation" title="CEO tenure vs total compensation — does longer tenure correlate with higher pay?">Tenure vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_govScore" data-y="total_compensation" title="Governance score vs CEO pay — do well-governed companies pay more or less?">Gov vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoTenureYears" data-y="_govScore" title="CEO tenure vs governance score — does longer tenure erode governance quality?">Tenure vs Gov</button>
+                    <button class="scatter-preset-btn" data-x="_boardIndepPct" data-y="_govScore" title="Board independence % vs governance score — does independence predict better governance?">Board vs Gov</button>
                     <button class="scatter-preset-btn" data-x="_gerScore" data-y="total_compensation" title="Governance erosion risk vs CEO pay — are the highest-risk companies also the highest-paid?">GER vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoVolatility" data-y="total_compensation" title="CEO pay volatility (coefficient of variation) vs total compensation — do higher-paid CEOs have more volatile pay?">Volatility vs Pay</button>
                     <button class="scatter-preset-btn" data-x="_ceoVolatility" data-y="_govScore" title="CEO pay volatility vs governance score — do poorly governed companies have more volatile pay?">Vol vs Gov</button>

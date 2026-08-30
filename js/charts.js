@@ -2954,6 +2954,26 @@ function drawScatterChart(companies) {
             minForLog: 1,
             canBeNegative: false
         },
+        _pageRankScore: {
+            label: 'PageRank Centrality',
+            shortLabel: 'PageRank',
+            get: function(c) { return c._pageRankScore; },
+            fmt: function(v) { return v != null ? v.toString() : '—'; },
+            fmtAxis: function(v) { return Math.round(v); },
+            unit: '',
+            minForLog: 1,
+            canBeNegative: false
+        },
+        _boardIndepPct: {
+            label: 'Board Independence %',
+            shortLabel: 'Board %',
+            get: function(c) { return c.board_independence ? c.board_independence.independence_pct : (c._boardIndependence != null ? c._boardIndependence : null); },
+            fmt: function(v) { return v != null ? v.toFixed(1) + '%' : '—'; },
+            fmtAxis: function(v) { return Math.round(v) + '%'; },
+            unit: '%',
+            minForLog: 1,
+            canBeNegative: false
+        },
         _ceoVolatility: {
             label: 'CEO Pay Volatility (CV%)',
             shortLabel: 'Volatility',
@@ -6770,6 +6790,8 @@ function drawCorrelationMatrix(companies) {
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
         { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
+        { key: '_pageRankScore', label: 'PageRank', short: 'PR', get: function(c) { return c._pageRankScore; } },
+        { key: '_boardIndepPct', label: 'Board Indep %', short: 'Board%', get: function(c) { return c.board_independence ? c.board_independence.independence_pct : (c._boardIndependence != null ? c._boardIndependence : null); } },
         { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } },
         { key: '_govScore', label: 'Governance Score', short: 'Gov', get: function(c) { return c._govScore; } },
         { key: '_gerScore', label: 'Governance Erosion Risk', short: 'GER', get: function(c) { return c._gerScore; } },
@@ -7248,6 +7270,8 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
         { key: '_ceoYoYPct', label: 'YoY Change %', short: 'YoY%', get: function(c) { return c._ceoYoY ? c._ceoYoY.pct : null; } },
         { key: '_sopApproval', label: 'Say-on-Pay %', short: 'SoP%', get: function(c) { return c._sopApproval; } },
         { key: '_ceoCfoPremium', label: 'CEO/CFO Premium', short: 'CEO/CFO', get: function(c) { return c._ceoCfoPremium; } },
+        { key: '_pageRankScore', label: 'PageRank', short: 'PR', get: function(c) { return c._pageRankScore; } },
+        { key: '_boardIndepPct', label: 'Board Indep %', short: 'Board%', get: function(c) { return c.board_independence ? c.board_independence.independence_pct : (c._boardIndependence != null ? c._boardIndependence : null); } },
         { key: '_ceoTenureYears', label: 'CEO Tenure (Years)', short: 'Tenure', get: function(c) { return c._ceoTenureYears; } },
         { key: '_govScore', label: 'Governance Score', short: 'Gov', get: function(c) { return c._govScore; } },
         { key: '_gerScore', label: 'Governance Erosion Risk', short: 'GER', get: function(c) { return c._gerScore; } },
