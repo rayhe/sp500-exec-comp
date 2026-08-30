@@ -231,10 +231,20 @@ function computeCeoConcentration(companies) {
         c._ceoPremiumRatio = null;
         if (!c.executives || c.executives.length === 0) return;
 
-        // Find latest fiscal year
-        var latestYear = 0;
-        c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
-        var latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        // Use primary fiscal_year (FY2024 for most) to align with stored totals — fixes AXON/SBUX/SOLV mismatch where latestYear=2025 team < FY2024 CEO
+        var targetYear = c.fiscal_year || 0;
+        if (!targetYear) {
+            // Fallback to latest if no fiscal_year
+            targetYear = 0;
+            c.executives.forEach(function(e) { if (e.year > targetYear) targetYear = e.year; });
+        }
+        var latestExecs = c.executives.filter(function(e) { return e.year === targetYear; });
+        // Fallback: if no execs for fiscal_year (edge case), use latest available
+        if (latestExecs.length === 0) {
+            var latestYear = 0;
+            c.executives.forEach(function(e) { if (e.year > latestYear) latestYear = e.year; });
+            latestExecs = c.executives.filter(function(e) { return e.year === latestYear; });
+        }
         if (latestExecs.length < 2) return;
 
         // Identify CEO

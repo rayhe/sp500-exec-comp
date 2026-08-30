@@ -145,7 +145,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 291,
+    "board_independence_coverage": 305,
     "data_quality_detailed": {
       "verified": 5610,
       "recomputed": 145,
@@ -3188,6 +3188,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "independence_pct": 90.0,
+        "source": "DEF 14A auto-extract",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/1781335/000114036126015389/ny20061782x1_def14a.htm"
       }
     },
     {
