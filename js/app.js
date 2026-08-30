@@ -7641,7 +7641,8 @@ function setupDetailPanel(companies) {
                     biSub += ' \u00b7 Non-independent chair';
                     if (bi.lead_independent_director === true) biSub += ' (lead independent director)';
                 }
-                html += '<div class="detail-stat"><div class="detail-stat-label" title="' + biTip + '">Board Independence</div><div class="detail-stat-value ' + biCls + '">' + biPct.toFixed(1) + '%</div>' + distBar(biPct, '0%', '100%') + '<div class="detail-stat-sub">' + biSub + '</div></div>';
+                var biLink = company.filing_url ? ' <a href="' + company.filing_url + '" target="_blank" rel="noopener" class="detail-stat-source" title="Source DEF 14A filing">DEF 14A↗</a>' : '';
+                html += '<div class="detail-stat"><div class="detail-stat-label" title="' + biTip + '">Board Independence' + biLink + '</div><div class="detail-stat-value ' + biCls + '">' + biPct.toFixed(1) + '%</div>' + distBar(biPct, '0%', '100%') + '<div class="detail-stat-sub">' + biSub + '</div></div>';
             }
         }
 
