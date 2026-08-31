@@ -20936,6 +20936,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-04",
         "source_url": "https://www.sec.gov/Archives/edgar/data/51253/000114036126018910/ef20072401_8k.htm"
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-03-18 (10 directors, 9 independent excl CEO J. Erik Fyrwald, non-executive Chair Kevin O'Byrne/Roger Ferguson, all non-employee independent)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/51253/000114036125009165/ny20039195x1_def14a.htm"
       }
     },
     {
@@ -21567,6 +21576,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-31 (10 directors, 9 independent excl CEO Martina Cheung, independent Chair Lord Ian Livingston, separate Chair/CEO structure, all current directors except CEO independent per p8)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/64040/000110465926037380/0001104659-26-037380-index.html"
       }
     },
     {
