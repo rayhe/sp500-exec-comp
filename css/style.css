@@ -339,7 +339,7 @@ header h1 {
 /* === Metrics Strip === */
 .metrics-strip {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 12px;
     padding: 20px 32px;
     max-width: 1440px;
