@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-31T18:30:00Z",
+    "last_updated": "2026-08-31T21:15:00Z",
     "total_neo_records": 6226,
     "title_coverage": "6222/6226",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 310,
+    "board_independence_coverage": 311,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -168,7 +168,9 @@
       "incomplete": 0,
       "board_independence": 324
     },
-    "board_independence_count": 324
+    "board_independence_count": 324,
+    "board_independence_full": 311,
+    "last_audit": "2026-08-31"
   },
   "companies": [
     {
@@ -3681,9 +3683,14 @@
         ]
       },
       "board_independence": {
-        "independent_directors": 15,
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
         "lead_independent_director": false,
-        "chair_independent": true
+        "source": "DEF 14A 2026-03-23 (11 directors, 10 independent excl CEO Dara Khosrowshahi \u2014 Revathi Advaithi, Nikesh Arora, Robert Eckert, Ronald Sugar (Independent Chair), David Trujillo, Turqi Alnowaiser, Ursula Burns, Amanda Ginsberg, John Thain, Alexander Wynaendts independent; chair separate from CEO per governance guidelines)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1543151/000130817926000125/uber014597-def14a.htm",
+        "filing_date": "2026-03-23"
       }
     },
     {
