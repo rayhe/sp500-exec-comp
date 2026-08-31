@@ -347,6 +347,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-04-16 (pre-Aug 28 2025 expansion), SEC 2025-08-28 8-K board 10\u219211",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1069183/000106918323000019/axon-20230531xdef14a.htm"
       }
     },
     {
@@ -4970,6 +4979,15 @@
           "prose_since",
           "table_director"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2024-11-26 / 2025-11-26, all non-employee directors independent (9 of 10, CEO non-independent)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687825000057/intu-20251126.htm"
       }
     },
     {
