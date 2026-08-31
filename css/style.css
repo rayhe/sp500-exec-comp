@@ -2863,6 +2863,25 @@ header h1 {
 .export-btn-group .export-neo-btn:active {
     background: rgba(6,214,160,0.25);
 }
+.export-btn-group .reset-all-btn {
+    margin-left: 8px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(251,146,60,0.35);
+    color: #fb923c;
+    background: rgba(251,146,60,0.08);
+}
+.export-btn-group .reset-all-btn:hover {
+    background: rgba(251,146,60,0.18);
+    border-color: rgba(251,146,60,0.6);
+    color: #fdba74;
+}
+.export-btn-group .reset-all-btn:active {
+    background: rgba(251,146,60,0.25);
+}
+.export-btn-group .reset-all-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
 
 .sector-chips {
     display: flex;

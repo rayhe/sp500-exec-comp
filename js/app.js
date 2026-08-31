@@ -6639,6 +6639,7 @@ function renderTable(companies, options) {
 
     // Persist state to URL hash
     pushState();
+    if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
 }
 
 function buildPageNumbers(current, total, maxVisible) {
@@ -11756,6 +11757,133 @@ function setupDualSparklineTooltips() {
         }
     }
 
+    /* ---- Global Reset All Filters ---- */
+    window.resetAllFilters = function() {
+        // Core filters
+        setActiveSector(null);
+        searchTerm = '';
+        activeRole = null;
+        currentSort = { key: 'total_compensation', dir: 'desc' };
+        currentPage = 1;
+
+        // Clear all 17 filter dimensions
+        window._activeRatioBucket = null;
+        window._activeDistFilter = null;
+        window._activeConcTier = null;
+        window._activeSopFilter = null;
+        window._activeCeoTransitionFilter = false;
+        window._activeTeamCompletenessFilter = null;
+        window._activeYoYBucket = null;
+        window._activePctileTier = null;
+        window._activeStockPctTier = null;
+        window._activeGenderFilter = null;
+        window._activeAspDeltaTier = null;
+        window._activeTenureQuartile = null;
+        window._activeGovGrade = null;
+        window._activeVolatilityBucket = null;
+        window._activeVolTenureBracket = null;
+        window._activePeerDistFilter = null;
+        window._activeCommunityFilter = null;
+        window._activeQuartileFilter = null;
+        window._activePositionFilter = null;
+
+        // Clear filter chips
+        [
+            'ratio-filter-chip', 'dist-filter-chip', 'conc-filter-chip', 'sop-filter-chip',
+            'ceo-transition-chip', 'team-filter-chip', 'yoy-filter-chip', 'pctile-filter-chip',
+            'stock-pct-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
+            'gov-filter-chip', 'volatility-filter-chip', 'vol-tenure-chip',
+            'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip'
+        ].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.remove();
+        });
+
+        // Reset search input
+        var searchInput = document.getElementById('table-search');
+        if (searchInput) searchInput.value = '';
+        var searchResults = document.getElementById('table-search-results');
+        if (searchResults) searchResults.style.display = 'none';
+
+        // Reset sector chips
+        document.querySelectorAll('.chip').forEach(function(chip) {
+            chip.classList.remove('active');
+            if (chip.textContent === 'All') chip.classList.add('active');
+        });
+        // Reset role chips
+        document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+        var firstRoleChip = document.querySelector('.role-chip');
+        if (firstRoleChip) firstRoleChip.classList.add('active');
+        updateRoleColumnHeader();
+
+        // Reset sortable headers
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === 'total_compensation') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        // Clear chart highlights
+        if (window.highlightSectorBar) window.highlightSectorBar(null);
+        if (window.highlightRatioBucket) window.highlightRatioBucket(null);
+        if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
+        if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
+        if (window.highlightYoYBucket) window.highlightYoYBucket(null);
+        if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        if (window.highlightStockPctBucket) window.highlightStockPctBucket(null);
+        if (window.highlightGenderChart) window.highlightGenderChart(null);
+        if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null);
+        if (window.highlightTenureBucket) window.highlightTenureBucket(null);
+        if (window.highlightGovChart) window.highlightGovChart(null);
+        if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null);
+        if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
+        if (window.clearCommunityHighlight) window.clearCommunityHighlight();
+        if (window.clearQuartileHighlight) window.clearQuartileHighlight();
+        if (window.clearPositionHighlight) window.clearPositionHighlight();
+
+        // Update filter indicator chips
+        if (window._updateMetricsStrip) window._updateMetricsStrip(null);
+        // Update reset button visibility
+        if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
+
+        renderTable(companies);
+        pushState();
+        if (window._refreshInsights) window._refreshInsights(null);
+        announce('All filters reset');
+
+        // Close detail panel if open
+        if (typeof _expandedDetailTicker !== 'undefined' && _expandedDetailTicker) {
+            // Keep panel open? Per UX, reset should not necessarily close — but clear highlight
+        }
+    };
+
+    // Visibility toggle for Reset All button
+    window._hasActiveFilters = function() {
+        return !!(activeSector || searchTerm || (activeRole && activeRole !== 'CEO') ||
+            window._activeRatioBucket || window._activeDistFilter || window._activeConcTier ||
+            window._activeSopFilter || window._activeCeoTransitionFilter ||
+            window._activeTeamCompletenessFilter || window._activeYoYBucket ||
+            window._activePctileTier || window._activeStockPctTier ||
+            window._activeGenderFilter || window._activeAspDeltaTier ||
+            window._activeTenureQuartile || window._activeGovGrade ||
+            window._activeVolatilityBucket || window._activeVolTenureBracket ||
+            window._activePeerDistFilter || window._activeCommunityFilter ||
+            window._activeQuartileFilter || window._activePositionFilter ||
+            (currentSort && (currentSort.key !== 'total_compensation' || currentSort.dir !== 'desc')));
+    };
+
+    window._updateResetAllButtonVisibility = function() {
+        var btn = document.getElementById('reset-all-filters-btn');
+        if (!btn) return;
+        var hasFilters = window._hasActiveFilters();
+        btn.style.display = hasFilters ? 'inline-flex' : 'none';
+        btn.disabled = !hasFilters;
+        btn.setAttribute('aria-hidden', hasFilters ? 'false' : 'true');
+    };
+
     // Find a specific company in the table by ticker — used by Top 10 chart click
     window.findCompanyInTable = function(ticker) {
         // Clear filters to ensure company is visible
@@ -12900,6 +13028,16 @@ function setupDualSparklineTooltips() {
 
             announce('Downloaded full multi-year NEO compensation data for ' + filtered.length + ' companies');
         });
+    }
+
+    // === Reset All Filters Button ===
+    var resetBtn = document.getElementById('reset-all-filters-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (window.resetAllFilters) window.resetAllFilters();
+        });
+        // Initial visibility check (after restore from URL)
+        if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
     }
 
     // === Company Comparison Mode ===
