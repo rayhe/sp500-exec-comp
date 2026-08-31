@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 492,
     "governance_coverage": 496,
-    "board_independence_coverage": 304,
+    "board_independence_coverage": 322,
     "data_quality_detailed": {
       "verified": 5610,
       "recomputed": 145,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 318,
+    "board_independence_any": 322,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5
   },
@@ -6723,6 +6723,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 11,
+        "independence_pct": 84.6,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-03-25",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/947484/000094748425000031/acgl-20250325.htm"
       }
     },
     {
@@ -17000,6 +17009,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-05-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/18230/000130817925000529/cat012723-def14a.htm"
       }
     },
     {
