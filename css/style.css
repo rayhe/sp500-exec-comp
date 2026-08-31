@@ -5557,7 +5557,11 @@ footer li::before {
     .section-nav-inner { padding: 0 12px; gap: 0; }
     .section-nav-link { padding: 8px 10px; font-size: 0.72rem; }
     #network-graph { height: 400px; }
-    .network-minimap { width: 120px !important; height: 82px !important; bottom: 6px; right: 6px; }
+    /* Mobile minimap — move to top-right to avoid overlap with full-width cluster stats panel (bottom: 8px, left/right: 8px) */
+    .network-minimap { width: 96px !important; height: 66px !important; top: 8px !important; bottom: auto !important; right: 8px !important; }
+    /* When cluster stats is visible on mobile, hide minimap entirely to prevent any overlap */
+    .network-cluster-stats.visible ~ .network-minimap { display: none !important; }
+    #network-graph:has(.network-cluster-stats.visible) .network-minimap { opacity: 0 !important; pointer-events: none !important; }
     .path-finder-bar { gap: 4px; }
     .path-finder-search-box input { width: 70px; font-size: 0.72rem; }
     .path-finder-label { font-size: 0.64rem; }
