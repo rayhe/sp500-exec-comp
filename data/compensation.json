@@ -7,7 +7,7 @@
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-08-31",
+    "data_collected": "2026-09-01",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-31T21:15:00Z",
+    "last_updated": "2026-09-01T01:01:50Z",
     "total_neo_records": 6226,
     "title_coverage": "6222/6226",
     "data_quality": {
@@ -121,7 +121,7 @@
       "incomplete_components": 0,
       "bloated_component": 0,
       "component_mismatch": 0,
-      "last_audit": "2026-08-31"
+      "last_audit": "2026-09-01"
     },
     "median_ceo_pay": 17136407.5,
     "mean_ceo_pay": 19704690.816,
@@ -144,9 +144,9 @@
       "male_median_pay": 15989188,
       "female_premium_pct": 9.5
     },
-    "ceo_tenure_coverage": 492,
+    "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 311,
+    "board_independence_coverage": 312,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -157,20 +157,21 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 324,
+    "board_independence_any": 325,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
-    "last_verified": "2026-08-31T10:00:00-07:00",
+    "last_verified": "2026-09-01T01:01:50Z",
     "total_executives": 6226,
     "verification_status": {
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
-      "board_independence": 324
+      "board_independence": 312
     },
-    "board_independence_count": 324,
-    "board_independence_full": 311,
-    "last_audit": "2026-08-31"
+    "board_independence_count": 325,
+    "board_independence_full": 312,
+    "last_audit": "2026-09-01",
+    "companies_with_pay_ratio": 496
   },
   "companies": [
     {
@@ -11818,6 +11819,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 7,
+        "independence_pct": 70.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-04-24 (10 directors, 7 independent: Daniel Fairfax, Judy Lin, Robert Blair, Sherman Tuan, Tally Liu, Susan Mogensen (Susie Giordano), Scott Angel independent; Chair Charles Liang CEO not independent, lead independent Tally Liu)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536525000009/smci-20250424-def14a.htm",
+        "filing_date": "2025-04-24"
       }
     },
     {

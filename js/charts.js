@@ -3780,6 +3780,22 @@ function drawScatterChart(companies) {
         if (xMetricKey !== 'total_compensation' && yMetricKey !== 'total_compensation') {
             html += '<div class="ct-row"><span class="ct-label">Total Comp</span><span class="ct-val">' + fmtCurr(d.total_compensation) + '</span></div>';
         }
+        // Board independence extra detail when board mode is active
+        if (xMetricKey === '_boardIndepPct' || yMetricKey === '_boardIndepPct') {
+            if (d.board_independence) {
+                var bi = d.board_independence;
+                var indepStr = bi.independent_directors != null && bi.total_directors != null ? bi.independent_directors + '/' + bi.total_directors + ' (' + (bi.independence_pct != null ? bi.independence_pct.toFixed(1) + '%' : '') + ')' : '';
+                if (indepStr) html += '<div class="ct-row"><span class="ct-label">Board</span><span class="ct-val">' + indepStr + '</span></div>';
+                if (bi.chair_independent === true) {
+                    html += '<div class="ct-row"><span class="ct-label">Chair</span><span class="ct-val" style="color:#fbbf24">Independent ★</span></div>';
+                } else if (bi.chair_independent === false) {
+                    if (bi.lead_independent_director === true) html += '<div class="ct-row"><span class="ct-label">Lead</span><span class="ct-val" style="color:#a78bfa">Lead Independent ◇</span></div>';
+                    else html += '<div class="ct-row"><span class="ct-label">Chair</span><span class="ct-val">Not independent</span></div>';
+                }
+            } else if (d._boardIndependence != null) {
+                html += '<div class="ct-row"><span class="ct-label">Board</span><span class="ct-val">' + d._boardIndependence.toFixed(1) + '%</span></div>';
+            }
+        }
         // Show sector if not in sector overlay mode
         if (!includeVsSector) {
             html += '<div class="ct-row"><span class="ct-label">Sector</span><span class="ct-val">' + (d.sector || '—') + '</span></div>';
@@ -3915,6 +3931,84 @@ function drawScatterChart(companies) {
                 }
                 _drawScatterTrendTrail(d);
             });
+    }
+
+    // Board independence visual polish: independent-chair halo + lead-director icon
+    // When either axis is board independence %, highlight governance structure
+    if (xMetricKey === '_boardIndepPct' || yMetricKey === '_boardIndepPct') {
+        var boardModePts = pts.filter(function(c) { return c.board_independence && (c.board_independence.chair_independent != null || c.board_independence.lead_independent_director != null); });
+        // Independent chair: gold halo ring outside dot
+        var chairIndPts = boardModePts.filter(function(c) { return c.board_independence.chair_independent === true; });
+        if (chairIndPts.length > 0) {
+            svg.selectAll('.scatter-chair-halo')
+                .data(chairIndPts)
+                .join('circle')
+                .attr('class', 'scatter-chair-halo')
+                .attr('cx', dotX)
+                .attr('cy', dotY)
+                .attr('r', function(d) { return r(d.total_compensation || 0) + 5; })
+                .attr('fill', 'none')
+                .attr('stroke', '#fbbf24')
+                .attr('stroke-width', 1.6)
+                .attr('stroke-dasharray', '3,2')
+                .attr('opacity', 0.85)
+                .attr('pointer-events', 'none');
+            // Small star at top-right of halo for legend consistency
+            svg.selectAll('.scatter-chair-star')
+                .data(chairIndPts)
+                .join('text')
+                .attr('class', 'scatter-chair-star')
+                .attr('x', function(d) { return dotX(d) + r(d.total_compensation || 0) + 6; })
+                .attr('y', function(d) { return dotY(d) - r(d.total_compensation || 0) - 4; })
+                .attr('font-size', '9px')
+                .attr('fill', '#fbbf24')
+                .attr('opacity', 0.9)
+                .attr('pointer-events', 'none')
+                .text('★');
+        }
+        // Lead independent director (when chair not independent): purple diamond marker
+        var leadPts = boardModePts.filter(function(c) { return c.board_independence.chair_independent === false && c.board_independence.lead_independent_director === true; });
+        if (leadPts.length > 0) {
+            svg.selectAll('.scatter-lead-marker')
+                .data(leadPts)
+                .join('circle')
+                .attr('class', 'scatter-lead-marker')
+                .attr('cx', dotX)
+                .attr('cy', dotY)
+                .attr('r', function(d) { return r(d.total_compensation || 0) + 4; })
+                .attr('fill', 'none')
+                .attr('stroke', '#a78bfa')
+                .attr('stroke-width', 1.2)
+                .attr('stroke-dasharray', '2,3')
+                .attr('opacity', 0.7)
+                .attr('pointer-events', 'none');
+            svg.selectAll('.scatter-lead-icon')
+                .data(leadPts)
+                .join('text')
+                .attr('class', 'scatter-lead-icon')
+                .attr('x', function(d) { return dotX(d) + r(d.total_compensation || 0) + 5; })
+                .attr('y', function(d) { return dotY(d) - r(d.total_compensation || 0) - 4; })
+                .attr('font-size', '8px')
+                .attr('fill', '#a78bfa')
+                .attr('opacity', 0.85)
+                .attr('pointer-events', 'none')
+                .text('◇');
+        }
+        // Legend for board mode
+        if (chairIndPts.length > 0 || leadPts.length > 0) {
+            var legendY = h + 38;
+            var leg = svg.append('g').attr('class', 'board-legend').attr('transform', 'translate(8,' + legendY + ')');
+            var lx = 0;
+            if (chairIndPts.length > 0) {
+                leg.append('circle').attr('cx', lx + 6).attr('cy', -3).attr('r', 5).attr('fill', 'none').attr('stroke', '#fbbf24').attr('stroke-width', 1.2).attr('stroke-dasharray', '3,2');
+                leg.append('text').attr('x', lx + 14).attr('y', 0).attr('font-size', '9px').attr('fill', dark ? '#fbbf24' : '#d97706').attr('font-family', 'Inter, system-ui, sans-serif').text('Independent Chair ★ (' + chairIndPts.length + ')');
+                lx += 160;
+            }
+            if (leadPts.length > 0) {
+                leg.append('circle').attr('cx', lx + 6).attr('cy', -3).attr('r', 4).attr('fill', 'none').attr('stroke', '#a78bfa').attr('stroke-width', 1).attr('stroke-dasharray', '2,3');
+                leg.append('text').attr('x', lx + 14).attr('y', 0).attr('font-size', '9px').attr('fill', dark ? '#a78bfa' : '#7c3aed').attr('font-family', 'Inter, system-ui, sans-serif').text('Lead Independent ◇ (' + leadPts.length + ')');
+            }
+        }
     }
 
     // Label outliers — top by X and Y values from the relevant set
