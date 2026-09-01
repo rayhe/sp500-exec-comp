@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 331,
+    "board_independence_coverage": 333,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 332,
+    "board_independence_any": 334,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -166,10 +166,10 @@
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
-      "board_independence": 331
+      "board_independence": 333
     },
-    "board_independence_count": 332,
-    "board_independence_full": 331,
+    "board_independence_count": 334,
+    "board_independence_full": 333,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -29098,6 +29098,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 5,
+        "independence_pct": 62.5,
+        "chair_independent": false,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-01 \u2014 Board has determined five of its eight current members (Besca, Chau, Kramer, Li, Pant) satisfy independence under Exchange Act and NYSE",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/1300514/000130051426000031/lvs-20260401.htm"
       }
     },
     {
@@ -30139,6 +30148,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-22",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1138118/000119312526237130/cbre-20260521.htm"
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": true,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-02 \u2014 Board has determined 80% of director nominees (all except Messrs. Sulentic and Clancy) are independent per NYSE; 10 nominees => 8 independent",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/1138118/000119312526141285/cbre-20260402.htm"
       }
     },
     {
