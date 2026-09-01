@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-01T04:59:08.170731Z",
+    "last_updated": "2026-09-01T06:30:36.748779Z",
     "total_neo_records": 6226,
     "title_coverage": "6222/6226",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 313,
+    "board_independence_coverage": 316,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 326,
+    "board_independence_any": 328,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T01:01:50Z",
@@ -166,10 +166,10 @@
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
-      "board_independence": 312
+      "board_independence": 316
     },
-    "board_independence_count": 326,
-    "board_independence_full": 313,
+    "board_independence_count": 328,
+    "board_independence_full": 316,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -22021,9 +22021,13 @@
         "source_url": "https://www.sec.gov/Archives/edgar/data/92122/000009212226000040/so-20260513.htm"
       },
       "board_independence": {
-        "independent_directors": 4,
+        "total_directors": 13,
+        "independent_directors": 12,
+        "independence_pct": 92.3,
+        "chair_independent": false,
         "lead_independent_director": true,
-        "chair_independent": true
+        "source": "DEF 14A 2024-04-12 \u2014 Board affirmatively determined 12 of 13 nominees independent (only Womack non-independent), Chair/CEO combined, Lead Independent Director chairs executive sessions",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/92122/000130817924000515/so4274141-def14a.htm"
       }
     },
     {
@@ -33651,6 +33655,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-06-12",
         "source_url": "https://www.sec.gov/Archives/edgar/data/27419/000002741926000026/tgt-20260610.htm"
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 91.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-04-28 Target Corporation 2025 Proxy Statement \u2014 Election of 12 directors, \"all of our directors other than our CEO are independent\" (Board believes majority independent, nonemployee independent), combined Chair/CEO Brian Cornell, Lead Independent Director Christine Leahy effective 2025",
+        "source_url": "https://corporate.target.com/getmedia/d175758f-1fba-4d13-a1fa-694decc40b40/Target-Corporation-2025-Proxy-Statement.pdf"
       }
     },
     {
@@ -102137,5 +102150,5 @@
       }
     }
   ],
-  "last_updated": "2026-08-30T20:58:57.935854Z"
+  "last_updated": "2026-09-01T06:30:36.748779Z"
 }
