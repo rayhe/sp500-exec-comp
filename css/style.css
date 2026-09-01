@@ -1417,6 +1417,15 @@ header h1 {
 
 #network-graph svg { width: 100%; height: 100%; }
 #network-graph canvas { display: block; }
+#network-graph canvas:focus {
+    outline: 2px solid #00b4d8;
+    outline-offset: -2px;
+}
+#network-graph canvas.kb-focused {
+    outline: 2px solid #00b4d8;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 1px rgba(0,180,216,0.35);
+}
 
 /* Mini-map overlay */
 .network-minimap {
@@ -12676,6 +12685,17 @@ body.light-mode .cross-sector-pair-select:focus {
     box-shadow: 0 0 8px rgba(255,180,0,0.5);
     z-index: 2;
     position: relative;
+}
+.cf-cell:focus {
+    outline: 2px solid #00b4d8;
+    outline-offset: 1px;
+    z-index: 3;
+    position: relative;
+}
+.cf-cell:focus-visible {
+    outline: 2px solid #00b4d8;
+    outline-offset: 1px;
+    box-shadow: 0 0 0 3px rgba(0,180,216,0.25);
 }
 .cf-cell.cf-total {
     font-weight: 600;

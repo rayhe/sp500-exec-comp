@@ -28,7 +28,21 @@ function initNetwork(peerData) {
     canvas.style.height = height + 'px';
     canvas.width = width * dpr;
     canvas.height = height * dpr;
+    canvas.setAttribute('tabindex', '0');
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', 'Peer network graph of S&P 500 companies. Use arrow keys to navigate nodes, Enter to view details, plus and minus to zoom. Tab to flow matrix.');
+    canvas.setAttribute('aria-describedby', 'network-a11y-help');
     container.appendChild(canvas);
+
+    // A11y help text (visually hidden but available to screen readers)
+    if (!document.getElementById('network-a11y-help')) {
+        var a11yHelp = document.createElement('div');
+        a11yHelp.id = 'network-a11y-help';
+        a11yHelp.className = 'sr-only';
+        a11yHelp.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+        a11yHelp.textContent = 'Peer network canvas. Focus to enable keyboard navigation. Arrow keys move between companies sorted by influence. Enter or Space opens company detail. Plus and minus zoom. Escape clears focus. When community mode is on, Tab reaches the flow matrix cells which are also keyboard accessible.';
+        container.appendChild(a11yHelp);
+    }
 
     // Create cluster stats panel inside the container (survives innerHTML wipe)
     var clusterStatsEl = document.createElement('div');
@@ -2641,6 +2655,131 @@ function initNetwork(peerData) {
         draw();
     });
 
+    // === Keyboard Accessibility for Canvas Network ===
+    // Arrow keys cycle nodes, Enter/Space opens detail, Esc clears, +/- zoom.
+    var _kbFocusedNode = null;
+    var _kbNodeIdx = -1;
+
+    function _getKeyboardNavigableNodes() {
+        var visible = nodes.filter(function(n) {
+            // Apply GER threshold if active
+            if (gerHeatmapMode && gerThreshold > 0) {
+                var comp = _compLookup ? _compLookup[n.ticker] : null;
+                var gs = comp ? comp._gerScore : null;
+                if (gs == null || gs < gerThreshold) return false;
+            }
+            // Apply community filter if active
+            if (window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0) {
+                if (!window._activeCommunityScatterTickers.has(n.ticker)) return false;
+            }
+            return true;
+        });
+        // Sort by influence (in_degree) then ticker for stable order
+        visible.sort(function(a, b) {
+            var da = (a.in_degree || 0) - (b.in_degree || 0);
+            if (da !== 0) return b.in_degree - a.in_degree;
+            return a.ticker.localeCompare(b.ticker);
+        });
+        return visible;
+    }
+
+    function _focusKeyboardNode(node, announceNode) {
+        _kbFocusedNode = node;
+        hoveredNode = node;
+        if (node) {
+            // Position tooltip near node's projected position if available
+            var rect = canvas.getBoundingClientRect();
+            var t = d3.zoomTransform(canvas);
+            var px = t ? t.applyX(node.x) : width/2;
+            var py = t ? t.applyY(node.y) : height/2;
+            px = Math.max(20, Math.min(width-20, px));
+            py = Math.max(20, Math.min(height-20, py));
+            var clientX = rect.left + px;
+            var clientY = rect.top + py;
+            showTooltip(clientX + 12, clientY - 10, node);
+            // ARIA announcement
+            if (announceNode !== false && typeof announce === 'function') {
+                var adj = adjacency[node.ticker];
+                var inC = adj ? adj.in.length : 0;
+                var outC = adj ? adj.out.length : 0;
+                var sector = node.sector ? ' in ' + node.sector : '';
+                var comp = _compLookup && _compLookup[node.ticker];
+                var pay = comp && comp.total ? ', CEO pay ' + _fmtComp(comp.total) : '';
+                announce('Focused ' + node.ticker + ' ' + node.name + sector + pay + '. ' + inC + ' inbound, ' + outC + ' outbound peers. Press Enter for details.');
+            }
+        } else {
+            hideTooltip();
+            if (announceNode !== false && typeof announce === 'function') announce('Network focus cleared');
+        }
+        draw();
+    }
+
+    canvas.addEventListener('focus', function() {
+        if (!_kbFocusedNode) {
+            var list = _getKeyboardNavigableNodes();
+            if (list.length > 0) {
+                _kbNodeIdx = 0;
+                _focusKeyboardNode(list[0], true);
+            }
+        } else {
+            hoveredNode = _kbFocusedNode;
+            draw();
+        }
+        canvas.classList.add('kb-focused');
+    });
+
+    canvas.addEventListener('blur', function() {
+        canvas.classList.remove('kb-focused');
+    });
+
+    canvas.addEventListener('keydown', function(ev) {
+        var list = _getKeyboardNavigableNodes();
+        if (list.length === 0) return;
+
+        if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'Tab') {
+            ev.preventDefault();
+            _kbNodeIdx = (_kbNodeIdx + 1) % list.length;
+            _focusKeyboardNode(list[_kbNodeIdx], true);
+        } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') {
+            ev.preventDefault();
+            _kbNodeIdx = (_kbNodeIdx - 1 + list.length) % list.length;
+            _focusKeyboardNode(list[_kbNodeIdx], true);
+        } else if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            var target = _kbFocusedNode || hoveredNode;
+            if (target && window.findCompanyInTable) {
+                _stopPulseAnimation();
+                hideTooltip();
+                window.findCompanyInTable(target.ticker);
+                if (typeof announce === 'function') announce('Opened details for ' + target.ticker);
+            }
+        } else if (ev.key === 'Escape') {
+            ev.preventDefault();
+            _kbFocusedNode = null;
+            _kbNodeIdx = -1;
+            hoveredNode = null;
+            hideTooltip();
+            if (typeof announce === 'function') announce('Cleared network focus');
+            draw();
+        } else if (ev.key === '+' || ev.key === '=') {
+            ev.preventDefault();
+            // Zoom in
+            var t = d3.zoomTransform(canvas);
+            d3.select(canvas).transition().duration(200).call(zoom.scaleBy, 1.3, [width/2, height/2]);
+        } else if (ev.key === '-' || ev.key === '_') {
+            ev.preventDefault();
+            d3.select(canvas).transition().duration(200).call(zoom.scaleBy, 0.77, [width/2, height/2]);
+        } else if (ev.key.length === 1 && /[a-zA-Z0-9]/.test(ev.key)) {
+            // Quick-jump: focus search input if user types alphanumeric
+            var searchInput = document.getElementById('network-search');
+            if (searchInput && document.activeElement === canvas) {
+                // Let typing go to search — focus search and inject char
+                searchInput.focus();
+                // Don't preventDefault, let the char appear in search
+            }
+        }
+    });
+
     // Long-press touch support for mobile node details
     // Tap = pan/zoom (handled by D3). Hold 400ms on a node = show tooltip.
     var _lpTimer = null;
@@ -4905,6 +5044,8 @@ function initNetwork(peerData) {
                 html += '<div class="cf-cell' + (isDiag ? ' cf-diag' : '') + '" '
                     + 'data-cf-from="' + csRow.id + '" data-cf-to="' + csCol.id + '" '
                     + 'data-cf-i="' + i + '" data-cf-j="' + j + '" '
+                    + 'tabindex="0" role="gridcell" '
+                    + 'aria-label="' + csRow.label + (isDiag ? ' internal edges, ' : ' to ' + comms[j].label + ', ') + val + ' peer edges. Press Enter to highlight path or filter." '
                     + 'style="background:' + bgColor + ';color:' + textColor + '">'
                     + displayVal + asymArrow + '</div>';
             });
@@ -4979,14 +5120,71 @@ function initNetwork(peerData) {
             transposeBtn.addEventListener('click', function() {
                 _cfTransposed = !_cfTransposed;
                 _renderCommunityFlowMatrix();
-                var announcer = document.getElementById('aria-live-announcer');
-                if (announcer) announcer.textContent = _cfTransposed ? 'Flow matrix transposed: rows show inbound selections' : 'Flow matrix restored: rows show outbound selections';
+                if (typeof announce === 'function') announce(_cfTransposed ? 'Flow matrix transposed: rows show inbound selections' : 'Flow matrix restored: rows show outbound selections');
             });
         }
 
-        // Wire hover/click on cells
+        // Wire hover/click/keyboard on cells
         _communityFlowEl.querySelectorAll('.cf-cell[data-cf-from]').forEach(function(cell) {
             cell.style.cursor = 'pointer';
+
+            cell.addEventListener('focus', function(ev) {
+                var fromId = parseInt(cell.dataset.cfFrom);
+                var toId = parseInt(cell.dataset.cfTo);
+                _hoveredFlowCell = { from: fromId, to: toId };
+                cell.classList.add('cf-hover');
+                draw();
+                // Announce cell value for screen readers
+                var ci = parseInt(cell.dataset.cfI);
+                var cj = parseInt(cell.dataset.cfJ);
+                var fromCs = comms.find(function(cs) { return cs.id === fromId; });
+                var toCs = comms.find(function(cs) { return cs.id === toId; });
+                var fromLabel = fromCs ? fromCs.label : '?';
+                var toLabel = toCs ? toCs.label : '?';
+                var val = flowMatrix[ci][cj];
+                var msg = fromId === toId ? fromLabel + ' internal: ' + val + ' edges' : fromLabel + ' to ' + toLabel + ': ' + val + ' edges';
+                if (typeof announce === 'function') announce(msg);
+            });
+
+            cell.addEventListener('blur', function() {
+                _hoveredFlowCell = null;
+                cell.classList.remove('cf-hover');
+                draw();
+            });
+
+            cell.addEventListener('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    cell.click();
+                } else if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') {
+                    ev.preventDefault();
+                    var next = cell.nextElementSibling;
+                    // Skip totals, wrap to next row first cell
+                    if (!next || !next.dataset.cfFrom) {
+                        var row = cell.parentElement.nextElementSibling;
+                        if (row) {
+                            var firstInRow = row.querySelector('.cf-cell[data-cf-from]');
+                            if (firstInRow) firstInRow.focus();
+                        }
+                    } else {
+                        next.focus();
+                    }
+                } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') {
+                    ev.preventDefault();
+                    var prev = cell.previousElementSibling;
+                    if (!prev || !prev.dataset.cfFrom) {
+                        var prevRow = cell.parentElement.previousElementSibling;
+                        if (prevRow) {
+                            var cells = prevRow.querySelectorAll('.cf-cell[data-cf-from]');
+                            if (cells.length) cells[cells.length-1].focus();
+                        }
+                    } else {
+                        prev.focus();
+                    }
+                } else if (ev.key === 'Escape') {
+                    cell.blur();
+                }
+            });
 
             cell.addEventListener('mouseenter', function(ev) {
                 var fromId = parseInt(cell.dataset.cfFrom);
