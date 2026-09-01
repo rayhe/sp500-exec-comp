@@ -7,7 +7,7 @@
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-09-01",
+    "data_collected": "2026-08-27",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-01T06:30:36.748779Z",
+    "last_updated": "2026-09-01",
     "total_neo_records": 6226,
     "title_coverage": "6222/6226",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 316,
+    "board_independence_coverage": 323,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -157,19 +157,19 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 328,
+    "board_independence_any": 332,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
-    "last_verified": "2026-09-01T01:01:50Z",
+    "last_verified": "2026-09-01T09:08:43Z",
     "total_executives": 6226,
     "verification_status": {
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
-      "board_independence": 316
+      "board_independence": 323
     },
-    "board_independence_count": 328,
-    "board_independence_full": 316,
+    "board_independence_count": 332,
+    "board_independence_full": 323,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -12585,11 +12585,11 @@
         ]
       },
       "board_independence": {
-        "total_directors": null,
         "independent_directors": 8,
-        "independence_pct": null,
-        "chair_independent": false,
-        "lead_independent_director": true
+        "total_directors": 9,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 88.9
       }
     },
     {
@@ -26551,6 +26551,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 13,
+        "total_directors": 14,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 92.9
       }
     },
     {
@@ -26816,6 +26823,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -28092,6 +28106,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-07",
         "source_url": "https://www.sec.gov/Archives/edgar/data/313616/000031361626000127/dhr-20260505.htm"
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 63.6
       }
     },
     {
@@ -28682,6 +28703,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 12,
+        "total_directors": 12,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 100.0
       }
     },
     {
@@ -49744,9 +49772,11 @@
         ]
       },
       "board_independence": {
-        "independent_directors": 3,
+        "independent_directors": 8,
+        "total_directors": 9,
         "lead_independent_director": true,
-        "chair_independent": true
+        "chair_independent": true,
+        "independence_pct": 88.9
       }
     },
     {
@@ -96667,6 +96697,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-11-21",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312525291441/d43173d8k.htm"
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 13,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 69.2
       }
     },
     {
