@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-01T01:01:50Z",
+    "last_updated": "2026-09-01T04:59:08.170731Z",
     "total_neo_records": 6226,
     "title_coverage": "6222/6226",
     "data_quality": {
@@ -171,7 +171,8 @@
     "board_independence_count": 326,
     "board_independence_full": 313,
     "last_audit": "2026-09-01",
-    "companies_with_pay_ratio": 496
+    "companies_with_pay_ratio": 496,
+    "enriched_count": 498
   },
   "companies": [
     {
@@ -22363,6 +22364,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 6,
+        "independence_pct": 66.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-13 (000119312526106142)",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/860730/000119312526106142/d939252ddef14a.htm",
+        "note": "Board consists of 10 directors pre-meeting, 7 independent (70%). Post-meeting size reduced to 9 after Robert J. Dennis retirement, 6 independent (66.7%). Independent: Chidsey, DeParle, Johnston, Michelson, Riley, Smith. Non-independent: Frist III (Chair), Hazen (CEO), William R. Frist (founder family)."
       }
     },
     {
@@ -100819,8 +100830,8 @@
     {
       "ticker": "AMZN",
       "company_name": "Amazon.com Inc",
-      "ceo_name": "Douglas J. Herrington",
-      "total_compensation": 34193958,
+      "ceo_name": "Andy Jassy",
+      "total_compensation": 1596889,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
       "median_worker_pay": 37181,
