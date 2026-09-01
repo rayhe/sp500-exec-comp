@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 330,
+    "board_independence_coverage": 331,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -166,10 +166,10 @@
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
-      "board_independence": 323
+      "board_independence": 331
     },
     "board_independence_count": 332,
-    "board_independence_full": 323,
+    "board_independence_full": 331,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -24974,6 +24974,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-01-08 \u2014 Ten of 12 directors deemed independent under SEC/NYSE rules",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/720005/000072000526000019/rjf-20260106.htm"
       }
     },
     {
