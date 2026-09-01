@@ -15460,4 +15460,103 @@ function setupDualSparklineTooltips() {
             });
         }, { passive: true });
     })();
+
+/* === Governance / GER Methodology Modal === */
+(function() {
+    var METHODOLOGY_CONTENT = {
+        gov: {
+            title: 'Governance Score Methodology',
+            html: '<h4>Composite Score (0–100)</h4>' +
+                '<p>Compensation Governance Score measures how well a company governs executive pay. Four components, equal-weighted at <span class="method-pill">25% each</span>, renormalized if any component is missing (requires ≥2 components).</p>' +
+                '<div class="method-formula">GovScore = mean(SoP%ile, (100 − CEOConc%ile), (100 − PayRatio%ile), TeamComplete%)</div>' +
+                '<h4>Four Components</h4>' +
+                '<ol>' +
+                '<li><strong>Say-on-Pay Approval Percentile</strong> — Shareholder approval % from 8-K Item 5.07 filings, ranked across S&P 500. Higher approval → higher percentile → better governance.</li>' +
+                '<li><strong>Inverse CEO Concentration</strong> — CEO total pay as % of total NEO compensation. Lower concentration = more distributed pay = better. Inverted percentile: <code>100 − conc%ile</code>.</li>' +
+                '<li><strong>Inverse Pay Ratio</strong> — CEO-to-median-worker pay ratio. Lower ratio = better alignment. Inverted percentile: <code>100 − ratio%ile</code>.</li>' +
+                '<li><strong>Team Disclosure Completeness</strong> — Count of C-suite roles (CEO, CFO, COO, GC/CLO, CTO, CHRO, CIO) present in NEO disclosure, scaled to 0–100: <code>roleCount / 7 × 100</code>.</li>' +
+                '</ol>' +
+                '<h4>Missing-Data Rule</h4>' +
+                '<p>If a component is absent (e.g., no SoP filing, no pay ratio), it is skipped and the mean is taken over remaining components. Companies missing ≥3 components get <code>null</code> (excluded from governance charts).</p>' +
+                '<h4>Letter Grades</h4>' +
+                '<p><span class="method-pill">A ≥80</span> <span class="method-pill">B ≥65</span> <span class="method-pill">C ≥50</span> <span class="method-pill">D ≥35</span> <span class="method-pill">F &lt;35</span></p>' +
+                '<p>Grade thresholds apply to the 0–100 composite, not raw percentiles.</p>' +
+                '<div class="method-note">Primary sources: SEC DEF 14A Summary Compensation Table (SCT) for NEO totals and role inference, 8-K Item 5.07 for SoP approval %, proxy Item 402(u) for pay ratio and median worker pay. Governance score is a descriptive composite, not a causal claim about governance quality.</div>'
+        },
+        ger: {
+            title: 'Governance Erosion Risk (GER) Methodology',
+            html: '<h4>Composite Score (0–100)</h4>' +
+                '<p>GER measures risk of governance erosion from CEO entrenchment. Four components, each 0–25, summed to 0–100. Unlike GovScore (percentile-based), GER uses absolute thresholds calibrated from the S&P 500 distribution.</p>' +
+                '<div class="method-formula">GER = TenureRisk(0–25) + GovDeficit(0–25) + PayMismatch(0–25) + Concentration(0–25)</div>' +
+                '<h4>Four Components</h4>' +
+                '<ol>' +
+                '<li><strong>Tenure Risk (0–25)</strong> — CEO tenure years from DEF 14A biography parsing:' +
+                '<ul><li>&gt;20 yrs → 25</li><li>16–20 → 20</li><li>11–15 → 15</li><li>6–10 → 10</li><li>3–5 → 5</li><li>&lt;3 → 0</li></ul></li>' +
+                '<li><strong>Governance Deficit (0–25)</strong> — Inverse of GovScore quartile:' +
+                '<ul><li>GovScore ≤ Q1 (bottom 25%) → 25</li><li>Q1 &lt; GovScore ≤ Q2 (median) → 17</li><li>Q2 &lt; GovScore ≤ Q3 → 8</li><li>&gt; Q3 → 0</li><li>No GovScore → 12 (neutral)</li></ul></li>' +
+                '<li><strong>Pay-Governance Mismatch (0–25)</strong> — High pay percentile with low governance percentile:' +
+                '<ul><li><code>max(0, comp%ile − gov%ile) / 4</code> capped at 25</li><li>Example: P90 pay + P30 gov → (90−30)/4 = 15 → Elevated risk</li></ul></li>' +
+                '<li><strong>CEO Concentration Risk (0–25)</strong> — CEO pay as % of total NEO:' +
+                '<ul><li>≥60% → 25</li><li>50–59% → 18</li><li>40–49% → 10</li><li>30–39% → 5</li><li>&lt;30% → 0</li></ul></li>' +
+                '</ol>' +
+                '<h4>Risk Tiers</h4>' +
+                '<p><span class="method-pill" style="border-color:rgba(239,68,68,0.35);color:#ef4444">Critical ≥75</span> <span class="method-pill" style="border-color:rgba(251,146,60,0.35)">High ≥60</span> <span class="method-pill">Elevated ≥45</span> <span class="method-pill">Moderate ≥30</span> <span class="method-pill">Low &lt;30</span></p>' +
+                '<h4>Interpretation</h4>' +
+                '<p>GER is a screening tool, not a prediction of misconduct. A Critical score (≥75) indicates overlapping risk factors: long tenure + weak governance + high pay relative to governance + concentrated pay. Many high-GER companies are founder-led or turnaround situations where concentration reflects context, not necessarily entrenchment.</p>' +
+                '<div class="method-note ger-note">Thresholds (tenure 3/6/11/16/20, concentration 30/40/50/60, GER tiers 30/45/60/75) are calibrated to S&P 500 FY2024 distribution. YoY direction 5% threshold for trend sparklines (red &gt;5% increase, green decrease, amber stable) is an arbitrary materiality convention, not a statistical test.</div>'
+        }
+    };
+
+    function openMethodologyModal(method) {
+        var content = METHODOLOGY_CONTENT[method];
+        if (!content) return;
+        var overlay = document.getElementById('methodology-modal-overlay');
+        var titleEl = document.getElementById('methodology-modal-title');
+        var bodyEl = document.getElementById('methodology-modal-body');
+        if (!overlay || !titleEl || !bodyEl) return;
+        titleEl.textContent = content.title;
+        bodyEl.innerHTML = content.html;
+        overlay.hidden = false;
+        // Focus close button for accessibility
+        var closeBtn = document.getElementById('methodology-modal-close');
+        if (closeBtn) setTimeout(function() { closeBtn.focus(); }, 50);
+        document.body.style.overflow = 'hidden';
+        if (typeof announce === 'function') announce(content.title + ' opened');
+    }
+
+    function closeMethodologyModal() {
+        var overlay = document.getElementById('methodology-modal-overlay');
+        if (!overlay) return;
+        overlay.hidden = true;
+        document.body.style.overflow = '';
+        if (typeof announce === 'function') announce('Methodology closed');
+    }
+
+    // Wire up info buttons
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.methodology-info-btn');
+        if (btn && btn.dataset.method) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMethodologyModal(btn.dataset.method);
+            return;
+        }
+        var overlay = document.getElementById('methodology-modal-overlay');
+        if (overlay && !overlay.hidden) {
+            if (e.target === overlay) closeMethodologyModal();
+        }
+        if (e.target && e.target.id === 'methodology-modal-close') closeMethodologyModal();
+    });
+
+    // Escape to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var overlay = document.getElementById('methodology-modal-overlay');
+            if (overlay && !overlay.hidden) {
+                closeMethodologyModal();
+                e.preventDefault();
+            }
+        }
+    });
+})();
 })();

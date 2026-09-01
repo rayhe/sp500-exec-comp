@@ -411,14 +411,14 @@
     <section class="section charts-grid">
         <div class="chart-panel" id="gov-dist-panel">
             <div class="section-header">
-                <h2>Governance Score Distribution</h2>
+                <h2>Governance Score Distribution <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed — click for details">ⓘ</button></h2>
                 <p class="section-desc">Distribution of compensation governance scores (0–100) across the S&P 500. Composite of SoP approval, CEO concentration, pay ratio, and team completeness. Click a bucket to filter the table.</p>
             </div>
             <div id="gov-dist-chart"></div>
         </div>
         <div class="chart-panel" id="sector-gov-panel">
             <div class="section-header">
-                <h2>Governance Score by Sector</h2>
+                <h2>Governance Score by Sector <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed">ⓘ</button></h2>
                 <p class="section-desc">Median compensation governance score per GICS sector with IQR range. Dashed line = S&P 500 overall median. Click a sector to filter the table.</p>
             </div>
             <div id="sector-gov-chart"></div>
@@ -428,7 +428,7 @@
     <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="gov-quartile-comp-panel">
             <div class="section-header">
-                <h2>Pay Structure by Governance Quality</h2>
+                <h2>Pay Structure by Governance Quality <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed">ⓘ</button></h2>
                 <p class="section-desc">How compensation composition shifts across governance quartiles — do well-governed companies structure CEO pay differently? Companies ranked by governance score (SoP approval, CEO concentration, pay ratio, team completeness), then split into quartiles.</p>
             </div>
             <div id="gov-quartile-comp-chart"></div>
@@ -438,7 +438,7 @@
     <section class="section charts-grid">
         <div class="chart-panel" id="gov-pay-scatter-panel">
             <div class="section-header">
-                <h2>Governance vs CEO Pay</h2>
+                <h2>Governance vs CEO Pay <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed">ⓘ</button></h2>
                 <p class="section-desc">Each dot is an S&P 500 company. X = governance score, Y = CEO total compensation (log scale). Quadrants split at median values. Regression line shows the relationship between governance quality and pay level. Red-outlined dots are in the "Weak Governance / High Pay" quadrant.</p>
             </div>
             <div id="gov-pay-scatter-chart"></div>
@@ -478,7 +478,7 @@
     <section class="section charts-grid">
         <div class="chart-panel chart-panel-full" id="ger-chart-panel">
             <div class="section-header">
-                <h2 id="ger-chart-title">Governance Erosion Risk</h2>
+                <h2 id="ger-chart-title">Governance Erosion Risk <button class="methodology-info-btn ger-method-btn" data-method="ger" aria-label="GER scoring methodology" title="How GER scores are computed — click for details">ⓘ</button></h2>
                 <p class="section-desc" id="ger-chart-desc">Companies most at risk for governance erosion from CEO entrenchment. Score 0–100 from four components: tenure duration, governance quality deficit, pay-governance mismatch, and CEO pay concentration. Click any bar for company details.</p>
                 <div class="anomaly-sector-chips" id="ger-sector-chips"></div>
             </div>
@@ -817,6 +817,16 @@
 
     <script src="js/app.js"></script>
     <script src="js/network.js"></script>
+    <div class="methodology-modal-overlay" id="methodology-modal-overlay" hidden>
+        <div class="methodology-modal" role="dialog" aria-modal="true" aria-labelledby="methodology-modal-title">
+            <div class="methodology-modal-header">
+                <h3 id="methodology-modal-title"></h3>
+                <button class="methodology-modal-close" id="methodology-modal-close" aria-label="Close methodology">✕</button>
+            </div>
+            <div class="methodology-modal-body" id="methodology-modal-body"></div>
+        </div>
+    </div>
+
     <script src="js/charts.js"></script>
 </body>
 </html>

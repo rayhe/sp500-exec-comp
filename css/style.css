@@ -13529,3 +13529,205 @@ body.light-mode .cross-sector-pair-select:focus {
     .scatter-path-label { display: none; }
     .pf-export-group { flex-direction: column; }
 }
+
+/* === Governance / GER Methodology Info Buttons & Modal === */
+.methodology-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    padding: 0;
+    border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 50%;
+    background: rgba(167,139,250,0.12);
+    color: #a78bfa;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    vertical-align: middle;
+    line-height: 1;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.methodology-info-btn:hover {
+    background: rgba(167,139,250,0.22);
+    border-color: rgba(167,139,250,0.55);
+    color: #c4b5fd;
+    transform: scale(1.05);
+}
+.methodology-info-btn:active { transform: scale(0.95); }
+.methodology-info-btn.ger-method-btn {
+    border-color: rgba(239,68,68,0.3);
+    background: rgba(239,68,68,0.1);
+    color: #f87171;
+}
+.methodology-info-btn.ger-method-btn:hover {
+    background: rgba(239,68,68,0.18);
+    border-color: rgba(239,68,68,0.5);
+    color: #fca5a5;
+}
+[data-theme="light"] .methodology-info-btn {
+    border-color: rgba(124,58,237,0.25);
+    background: rgba(124,58,237,0.08);
+    color: #7c3aed;
+}
+[data-theme="light"] .methodology-info-btn:hover {
+    background: rgba(124,58,237,0.15);
+    border-color: rgba(124,58,237,0.4);
+    color: #6d28d9;
+}
+[data-theme="light"] .methodology-info-btn.ger-method-btn {
+    border-color: rgba(220,38,38,0.22);
+    background: rgba(220,38,38,0.08);
+    color: #dc2626;
+}
+
+.methodology-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    animation: methodology-overlay-in 0.18s ease;
+}
+.methodology-modal-overlay[hidden] { display: none !important; }
+@keyframes methodology-overlay-in {
+    from { opacity: 0; } to { opacity: 1; }
+}
+.methodology-modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    animation: methodology-modal-in 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes methodology-modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.methodology-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.methodology-modal-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+.methodology-modal-close {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.methodology-modal-close:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+.methodology-modal-body {
+    padding: 18px 22px 22px;
+    overflow-y: auto;
+    font-size: 0.84rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+.methodology-modal-body h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 16px 0 8px;
+}
+.methodology-modal-body h4:first-child { margin-top: 0; }
+.methodology-modal-body p { margin: 0 0 10px; }
+.methodology-modal-body ul, .methodology-modal-body ol {
+    margin: 0 0 12px 18px;
+    padding: 0;
+}
+.methodology-modal-body li { margin: 4px 0; }
+.methodology-modal-body code {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--text-primary);
+}
+.methodology-modal-body .method-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    margin-right: 4px;
+}
+.methodology-modal-body .method-formula {
+    display: block;
+    margin: 10px 0;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+.methodology-modal-body .method-note {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.18);
+    border-radius: 6px;
+    font-size: 0.78rem;
+}
+.methodology-modal-body .method-note.ger-note {
+    background: rgba(239,68,68,0.06);
+    border-color: rgba(239,68,68,0.15);
+}
+[data-theme="light"] .methodology-modal {
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .methodology-modal-body .method-note {
+    background: rgba(124,58,237,0.06);
+    border-color: rgba(124,58,237,0.15);
+}
+[data-theme="light"] .methodology-modal-body .method-note.ger-note {
+    background: rgba(220,38,38,0.05);
+    border-color: rgba(220,38,38,0.12);
+}
+
