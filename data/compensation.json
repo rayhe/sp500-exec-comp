@@ -7,7 +7,7 @@
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-08-27",
+    "data_collected": "2026-09-01",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 323,
+    "board_independence_coverage": 330,
     "data_quality_detailed": {
       "verified": 5681,
       "recomputed": 141,
@@ -30641,6 +30641,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 11,
+        "independence_pct": 81.8,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -31378,6 +31385,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 12,
+        "independence_pct": 83.3,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -31741,6 +31755,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 13,
+        "total_directors": 14,
+        "independence_pct": 92.9,
+        "lead_independent_director": true,
+        "chair_independent": true
       }
     },
     {
@@ -34457,6 +34478,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 8,
+        "total_directors": 9,
+        "independence_pct": 88.9,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
@@ -36483,6 +36511,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-11",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1932393/000193239326000034/gehc-20260507.htm"
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 8,
+        "independence_pct": 87.5,
+        "lead_independent_director": false,
+        "chair_independent": true
       }
     },
     {
@@ -37747,6 +37782,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 10,
+        "total_directors": 11,
+        "independence_pct": 90.9,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
@@ -39569,6 +39611,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 7,
+        "independence_pct": 85.7,
+        "lead_independent_director": true,
+        "chair_independent": false
       }
     },
     {
