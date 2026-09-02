@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-02T17:07:11Z",
+    "last_updated": "2026-09-02T18:39:36Z",
     "total_neo_records": 6225,
     "title_coverage": "6225/6225",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 402,
+    "board_independence_coverage": 420,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 402,
+    "board_independence_any": 420,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 402,
-    "board_independence_full": 402,
+    "board_independence_count": 420,
+    "board_independence_full": 420,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -44585,6 +44585,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/10456/000162828026020330/bax-20260320.htm"
       }
     },
     {
@@ -46096,6 +46105,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 7,
+        "independence_pct": 87.5,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1035443/000103544326000031/are-20260331.htm"
       }
     },
     {
@@ -47863,6 +47881,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 91.7,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-09-16",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/721371/000072137125000114/cah-20250916.htm"
       }
     },
     {
@@ -51888,6 +51915,15 @@
         "sources": [
           "prose_since"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1051470/000105147026000039/cci-20260406.htm"
       }
     },
     {
@@ -60127,6 +60163,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-31",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1086222/000108622226000042/akam-20260330.htm"
       }
     },
     {
@@ -66451,6 +66496,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-04-30",
         "source_url": "https://www.sec.gov/Archives/edgar/data/874761/000087476126000100/aes-20260429.htm"
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": null,
+        "lead_independent_director": null,
+        "source": "DEF 14A 2026-03-20",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/874761/000087476126000070/aes-20260320.htm"
       }
     },
     {
@@ -70309,6 +70363,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 9,
+        "independence_pct": 81.8,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-10",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1037540/000103754026000010/bxp-20260410.htm"
       }
     },
     {
@@ -73586,6 +73649,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/9389/000110465926029499/tm2525516-2_def14a.htm"
       }
     },
     {
@@ -73793,6 +73865,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1324404/000110465926029482/tm261459-1_def14a.htm"
       }
     },
     {
@@ -74087,6 +74168,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-11-19",
         "source_url": "https://www.sec.gov/Archives/edgar/data/16732/000001673225000117/cpb-20251118.htm"
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 91.7,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-10-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/16732/000130817925000618/cpb-20251007.htm"
       }
     },
     {
@@ -78273,6 +78363,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-09",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm"
       }
     },
     {
@@ -82344,6 +82443,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 91.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-09",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/759944/000075994426000064/cfg-20260309.htm"
       }
     },
     {
@@ -88026,6 +88134,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-06",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/915912/000110465926039943/avb-20250520xdef14a.htm"
       }
     },
     {
@@ -90376,6 +90493,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 14,
+        "independent_directors": 10,
+        "independence_pct": 71.4,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/20286/000002028626000015/cinf-20260316.htm"
       }
     },
     {
@@ -91576,6 +91702,15 @@
           "experience",
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 7,
+        "independence_pct": 87.5,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1579241/000110465926044597/alle-20260604xdef14a.htm"
       }
     },
     {
@@ -93394,6 +93529,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-04",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/91142/000119312526089938/d79196ddef14a.htm"
       }
     },
     {
@@ -94210,6 +94354,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-09-23",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1748790/000174879025000032/amcr-20250922.htm"
       }
     },
     {
@@ -99915,6 +100068,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 11,
+        "independence_pct": 84.6,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1316835/000119312526140509/bldr-20260402.htm"
       }
     },
     {
