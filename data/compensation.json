@@ -1,13 +1,13 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "500 companies, 6226 NEO records, 498 companies enriched",
+    "description": "500 companies, 6225 NEO records, 498 companies enriched",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
     ],
     "primary_fiscal_year": 2024,
-    "data_collected": "2026-09-01",
+    "data_collected": "2026-09-02",
     "notes": [
       "Total compensation from Summary Compensation Table in proxy statements",
       "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -112,11 +112,11 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-01",
-    "total_neo_records": 6226,
-    "title_coverage": "6222/6226",
+    "last_updated": "2026-09-02T02:30:27Z",
+    "total_neo_records": 6225,
+    "title_coverage": "6225/6225",
     "data_quality": {
-      "verified": 5681,
+      "verified": 5680,
       "recomputed": 141,
       "incomplete_components": 0,
       "bloated_component": 0,
@@ -148,7 +148,7 @@
     "governance_coverage": 496,
     "board_independence_coverage": 337,
     "data_quality_detailed": {
-      "verified": 5681,
+      "verified": 5680,
       "recomputed": 141,
       "rounding": 286,
       "computed": 31,
@@ -161,7 +161,7 @@
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
-    "total_executives": 6226,
+    "total_executives": 6225,
     "verification_status": {
       "verified": 5681,
       "recomputed": 141,
@@ -36496,18 +36496,6 @@
           "_total_source": "verified"
         },
         {
-          "name": "James Saccaro",
-          "year": 2025,
-          "salary": 890415,
-          "stock_awards": 2715368,
-          "option_awards": 874977,
-          "non_equity_incentive": 909000,
-          "all_other": 108310,
-          "total": 5498070,
-          "title": "VP and Chief Financial Officer",
-          "_total_source": "verified"
-        },
-        {
           "name": "Frank Jimenez",
           "year": 2023,
           "salary": 871629,
@@ -36533,7 +36521,7 @@
           "_total_source": "verified"
         }
       ],
-      "neo_count": 4,
+      "neo_count": 6,
       "available_years": [
         2025,
         2023
