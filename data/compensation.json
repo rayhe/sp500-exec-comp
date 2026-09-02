@@ -55691,6 +55691,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-09-25",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/8670/000130817925000607/adp014341-def14a.htm",
+        "note": "12 nominees (Jones/Ready not standing for re-election). Non-independent: Maria Black (CEO), Carlos Rodriguez (former Exec Chair/CEO). Chair: Thomas J. Lynch (independent, non-executive)."
       }
     },
     {
@@ -59534,9 +59544,14 @@
         ]
       },
       "board_independence": {
-        "independent_directors": 23,
-        "lead_independent_director": true,
-        "chair_independent": true
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-30",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm",
+        "note": "Replaces corrupt partial (independent_directors=23, no total). 12 nominees; Board-determined independent: Bostick, Chow, Halverson, Hilal, Moffett, Riefler, Vautrinot, Wainscott, Whisler, Zillmer. Non-independent: S. Angel (CEO), A. Begeman. Chair: John J. Zillmer (non-executive, independent). No lead independent director."
       }
     },
     {
@@ -72679,6 +72694,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 8,
+        "independence_pct": 72.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-08-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1048911/000110465926097836/tm2531093-3_def14a.htm",
+        "note": "11 nominees; Amy B. Lane retiring, board decreases 12->11. Non-independent: R.B. Martin (Executive Chairman), R. Subramaniam (CEO), R.W. Smith (exec). Chair: R. Brad Martin (not independent). Lead independent: Susan P. Griffith."
       }
     },
     {
