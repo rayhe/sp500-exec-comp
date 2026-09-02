@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-02T02:30:27Z",
+    "last_updated": "2026-09-02T05:30:00Z",
     "total_neo_records": 6225,
     "title_coverage": "6225/6225",
     "data_quality": {
@@ -35300,6 +35300,17 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-10-21",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1613103/000162828025045695/mdt-20251016.htm"
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-08-17 \u2014 board determined majority independent, no more than two may be employees; Geoff Martha (CEO) not independent, remaining 10 independent",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/1613103/000161310325000030/mdt-20250817.htm",
+        "confidence": "medium",
+        "notes": "Total board size inferred from nominee list; 10 independent / 11 total"
       }
     },
     {
@@ -41389,6 +41400,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 12,
+        "independence_pct": 92.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-03-23 \u2014 board has determined each of the following individuals is independent: Alpern, Austin, Burnside, Davis, Falk, Freyman, Hart, Meyer, Quaggin, Rapp, Roberts, Waddell (12); plus CEO Robert Michael non-independent",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/1551152/000155115225000032/abbv-20250323.htm",
+        "confidence": "high"
       }
     },
     {
@@ -74481,6 +74502,16 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-12-04 \u2014 directors currently serving deemed independent: Decker, Foulkes, Jewell, Wilderotter, Denman, James, Raikes, Stanton (8) constitute majority; total board currently serving 9 including non-independent CEO Ron Vachris",
+        "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000040/cost-20241204.htm",
+        "confidence": "high"
       }
     },
     {
@@ -100511,8 +100542,8 @@
       "ticker": "CPRT",
       "company_name": "Copart Inc",
       "ceo_name": "Jeffrey Liaw",
-      "total_compensation": 4145384,
-      "fiscal_year": 2024,
+      "total_compensation": 2072692,
+      "fiscal_year": 2025,
       "source": "SEC DEF 14A 2025 \u2014 FY2025 CEO",
       "median_worker_pay": 42139,
       "pay_ratio": 49,
