@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-02T09:04:46Z",
+    "last_updated": "2026-09-02T10:35:00Z",
     "total_neo_records": 6225,
     "title_coverage": "6225/6225",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 355,
+    "board_independence_coverage": 358,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 355,
+    "board_independence_any": 358,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 355,
-    "board_independence_full": 355,
+    "board_independence_count": 358,
+    "board_independence_full": 358,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498
@@ -48899,6 +48899,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 7,
+        "independence_pct": 87.5,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926040688/tm261344-1_def14a.htm"
       }
     },
     {
@@ -96314,6 +96323,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 11,
+        "independence_pct": 84.6,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-24",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/872589/000130817926000340/regn-20260424.htm"
       }
     },
     {
@@ -102403,6 +102421,15 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 7,
+        "independence_pct": 77.8,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-09-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465925090866/tm252289-12_def14a.htm"
       }
     }
   ],
