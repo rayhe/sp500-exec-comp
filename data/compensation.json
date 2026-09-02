@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "500 companies, 6225 NEO records, 498 companies enriched",
+    "description": "500 companies, 6279 NEO records, 498 companies enriched",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -113,7 +113,7 @@
     "edgar_coverage": 498,
     "total_companies": 500,
     "last_updated": "2026-09-02T18:39:36Z",
-    "total_neo_records": 6225,
+    "total_neo_records": 6279,
     "title_coverage": "6225/6225",
     "data_quality": {
       "verified": 5680,
@@ -161,7 +161,7 @@
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
-    "total_executives": 6225,
+    "total_executives": 6279,
     "verification_status": {
       "verified": 5681,
       "recomputed": 141,
@@ -172,7 +172,23 @@
     "board_independence_full": 420,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
-    "enriched_count": 498
+    "enriched_count": 498,
+    "multiyear_fill_20260902_1400": {
+      "date": "2026-09-02",
+      "added_records": 54,
+      "companies": [
+        "V",
+        "MSFT",
+        "COST",
+        "NOW",
+        "DIS",
+        "LOW",
+        "CARR",
+        "LEN",
+        "HPQ"
+      ],
+      "note": "backfilled missing middle/latest years from stored DEF 14A URLs; component-sum verified + same-year overlap gate >=70%; MSFT rolled to FY2025"
+    }
   },
   "companies": [
     {
@@ -804,8 +820,8 @@
       "ticker": "MSFT",
       "company_name": "Microsoft Corp",
       "ceo_name": "Satya Nadella",
-      "total_compensation": 79106183,
-      "fiscal_year": 2024,
+      "total_compensation": 96496790,
+      "fiscal_year": 2025,
       "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
       "median_worker_pay": 193744,
       "pay_ratio": 408,
@@ -906,15 +922,71 @@
           "all_other": 212777,
           "total": 18115690,
           "_total_source": "verified"
+        },
+        {
+          "name": "Satya Nadella",
+          "year": 2025,
+          "salary": 2500000,
+          "stock_awards": 84245496,
+          "non_equity_incentive": 9555000,
+          "all_other": 196294,
+          "total": 96496790,
+          "title": "Chairman and Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Amy E. Hood",
+          "year": 2025,
+          "salary": 1000000,
+          "stock_awards": 25037360,
+          "non_equity_incentive": 3421000,
+          "all_other": 23191,
+          "total": 29481551,
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Judson B. Althoff",
+          "year": 2025,
+          "salary": 993333,
+          "stock_awards": 23708619,
+          "non_equity_incentive": 3398194,
+          "all_other": 98588,
+          "total": 28198734,
+          "title": "Executive Vice President and CEO Microsoft Commercial",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Takeshi Numoto",
+          "year": 2025,
+          "salary": 800000,
+          "stock_awards": 9005380,
+          "non_equity_incentive": 2056000,
+          "all_other": 15250,
+          "total": 11876630,
+          "title": "Executive Vice President and Chief Marketing Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Bradford L. Smith",
+          "year": 2025,
+          "salary": 1000000,
+          "stock_awards": 23734545,
+          "non_equity_incentive": 3421000,
+          "all_other": 111750,
+          "total": 28267295,
+          "title": "Vice Chair and President",
+          "_total_source": "verified"
         }
       ],
       "cik": "0000789019",
       "filing_date": "2025-10-21",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525245150/d908201ddef14a.htm",
-      "total_neo_compensation": 151395509,
-      "neo_count": 4,
-      "proxy_fiscal_year": 2024,
+      "total_neo_compensation": 194321000,
+      "neo_count": 5,
+      "proxy_fiscal_year": 2025,
       "available_years": [
+        2025,
         2024,
         2023
       ],
@@ -1293,6 +1365,69 @@
           "total": 3226395,
           "title": "President, HVAC",
           "_total_source": "verified"
+        },
+        {
+          "name": "David L. Gitlin",
+          "year": 2025,
+          "salary": 1500000,
+          "stock_awards": 5634548,
+          "option_awards": 5747165,
+          "non_equity_incentive": 1023750,
+          "pension_nqdc": 237661,
+          "all_other": 819789,
+          "total": 14962913,
+          "title": "Chairman & Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "David L. Gitlin",
+          "year": 2024,
+          "salary": 1475000,
+          "stock_awards": 31188838,
+          "option_awards": 29602373,
+          "non_equity_incentive": 2362500,
+          "pension_nqdc": 179400,
+          "all_other": 926134,
+          "total": 65734245,
+          "title": "Chairman & Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "David L. Gitlin",
+          "year": 2023,
+          "salary": 1387500,
+          "stock_awards": 6127211,
+          "option_awards": 5894030,
+          "non_equity_incentive": 3503500,
+          "pension_nqdc": 36319,
+          "all_other": 746640,
+          "total": 17695200,
+          "title": "Chairman & Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Patrick Goris",
+          "year": 2024,
+          "salary": 837500,
+          "stock_awards": 4229042,
+          "option_awards": 3637525,
+          "non_equity_incentive": 879750,
+          "all_other": 235859,
+          "total": 9819676,
+          "title": "EVP, Chief Financial & Strategy Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Gaurang Pandya",
+          "year": 2024,
+          "salary": 700000,
+          "stock_awards": 1113197,
+          "option_awards": 1090253,
+          "non_equity_incentive": 652050,
+          "all_other": 125783,
+          "total": 3681283,
+          "title": "President, CSA",
+          "_total_source": "verified"
         }
       ],
       "cik": "0001783180",
@@ -1303,6 +1438,7 @@
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
+        2024,
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -3365,6 +3501,80 @@
           "all_other": 6232347,
           "total": 9864713,
           "_total_source": "verified"
+        },
+        {
+          "name": "Robert A. Iger",
+          "year": 2023,
+          "salary": 865385,
+          "stock_awards": 16103421,
+          "option_awards": 10000027,
+          "non_equity_incentive": 2140000,
+          "all_other": 2478333,
+          "total": 31587166,
+          "title": "Chief Executive Officer; Former Executive Chairman",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Robert A. Iger",
+          "year": 2022,
+          "salary": 1096154,
+          "stock_awards": 4670521,
+          "option_awards": 2395104,
+          "non_equity_incentive": 4370000,
+          "all_other": 2466520,
+          "total": 14998299,
+          "title": "Chief Executive Officer; Former Executive Chairman",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Kevin A. Lansberry",
+          "year": 2023,
+          "salary": 765114,
+          "stock_awards": 1383396,
+          "option_awards": 592861,
+          "non_equity_incentive": 1000000,
+          "pension_nqdc": 169497,
+          "all_other": 96049,
+          "total": 4006917,
+          "title": "Former Interim Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Horacio E. Gutierrez",
+          "year": 2023,
+          "salary": 1322500,
+          "stock_awards": 5544337,
+          "option_awards": 1662525,
+          "non_equity_incentive": 3000000,
+          "all_other": 123073,
+          "total": 11652435,
+          "title": "Senior Executive Vice President, Chief Legal and Compliance Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Sonia L. Coleman",
+          "year": 2023,
+          "salary": 646546,
+          "stock_awards": 1827251,
+          "option_awards": 209028,
+          "non_equity_incentive": 1250000,
+          "pension_nqdc": 73971,
+          "all_other": 25277,
+          "total": 4032073,
+          "title": "Senior Executive Vice President and Chief Human Resources Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Kristina K. Schake",
+          "year": 2023,
+          "salary": 755346,
+          "stock_awards": 1390327,
+          "option_awards": 462210,
+          "non_equity_incentive": 1250000,
+          "all_other": 114188,
+          "total": 3972071,
+          "title": "Senior Executive Vice President and Chief Communications Officer",
+          "_total_source": "verified"
         }
       ],
       "cik": "0001744489",
@@ -3375,6 +3585,7 @@
       "proxy_fiscal_year": 2024,
       "available_years": [
         2024,
+        2023,
         2022
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -4265,6 +4476,94 @@
           "all_other": 499440,
           "total": 20098002,
           "_total_source": "verified"
+        },
+        {
+          "name": "William R. McDermott",
+          "year": 2024,
+          "salary": 1350000,
+          "stock_awards": 31460267,
+          "non_equity_incentive": 2681100,
+          "all_other": 2066751,
+          "total": 37558118,
+          "title": "Chairman and Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "William R. McDermott",
+          "year": 2023,
+          "salary": 1325000,
+          "stock_awards": 32777514,
+          "non_equity_incentive": 3152642,
+          "all_other": 351088,
+          "total": 37606244,
+          "title": "Chairman and Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Gina Mastantuono",
+          "year": 2024,
+          "salary": 841667,
+          "stock_awards": 14157728,
+          "non_equity_incentive": 1012331,
+          "all_other": 233291,
+          "total": 16245017,
+          "title": "President and Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Gina Mastantuono",
+          "year": 2023,
+          "salary": 791667,
+          "stock_awards": 12564740,
+          "non_equity_incentive": 941590,
+          "all_other": 107976,
+          "total": 14405973,
+          "title": "President and Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Jacqueline C. Canney",
+          "year": 2024,
+          "salary": 691667,
+          "stock_awards": 9438487,
+          "non_equity_incentive": 686961,
+          "all_other": 36029,
+          "total": 10853144,
+          "title": "Chief People and AI Enablement Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Jacqueline C. Canney",
+          "year": 2023,
+          "salary": 633333,
+          "stock_awards": 7648497,
+          "non_equity_incentive": 753631,
+          "all_other": 25815,
+          "total": 9061276,
+          "title": "Chief People and AI Enablement Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Paul Smith",
+          "year": 2024,
+          "salary": 755726,
+          "stock_awards": 17146708,
+          "non_equity_incentive": 894795,
+          "all_other": 1366986,
+          "total": 20164215,
+          "title": "Former President of Global Customer and Field Operations",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Paul Smith",
+          "year": 2023,
+          "salary": 666118,
+          "stock_awards": 15296173,
+          "non_equity_incentive": 792643,
+          "all_other": 1163706,
+          "total": 17918640,
+          "title": "Former President of Global Customer and Field Operations",
+          "_total_source": "verified"
         }
       ],
       "cik": "0001373715",
@@ -4275,7 +4574,8 @@
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
-        2024
+        2024,
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
@@ -9909,6 +10209,95 @@
           "total": 2275324,
           "title": "General Counsel",
           "_total_source": "verified"
+        },
+        {
+          "name": "Stuart Miller",
+          "year": 2024,
+          "salary": 1000000,
+          "stock_awards": 26699567,
+          "non_equity_incentive": 1828992,
+          "all_other": 18117,
+          "total": 29546675,
+          "title": "Executive Chairman",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Diane Bessette",
+          "year": 2024,
+          "salary": 750000,
+          "stock_awards": 3267906,
+          "non_equity_incentive": 3000000,
+          "all_other": 38866,
+          "total": 7056772,
+          "title": "Vice President and Chief Financial",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Diane Bessette",
+          "year": 2023,
+          "salary": 750000,
+          "stock_awards": 3230346,
+          "non_equity_incentive": 3000000,
+          "all_other": 21545,
+          "total": 7001891,
+          "title": "Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "David Collins",
+          "year": 2024,
+          "salary": 325000,
+          "bonus": 50000,
+          "stock_awards": 950471,
+          "non_equity_incentive": 900000,
+          "all_other": 18117,
+          "total": 2243588,
+          "title": "Vice President, Controller",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Jonathan M. Jaffe",
+          "year": 2024,
+          "salary": 800000,
+          "stock_awards": 23374974,
+          "non_equity_incentive": 872946,
+          "all_other": 38886,
+          "total": 25086806,
+          "title": "Former Co-Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Jonathan M. Jaffe",
+          "year": 2023,
+          "salary": 800000,
+          "stock_awards": 22999640,
+          "non_equity_incentive": 5306190,
+          "all_other": 34837,
+          "total": 29140667,
+          "title": "and President",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Mark Sustana",
+          "year": 2024,
+          "salary": 500000,
+          "stock_awards": 1550259,
+          "non_equity_incentive": 1400000,
+          "all_other": 18117,
+          "total": 3468376,
+          "title": "Former Vice President,",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Mark Sustana",
+          "year": 2023,
+          "salary": 500000,
+          "stock_awards": 1550259,
+          "non_equity_incentive": 1225000,
+          "all_other": 14068,
+          "total": 3289327,
+          "title": "General Counsel & Secretary",
+          "_total_source": "verified"
         }
       ],
       "filing_date": "2026-02-26",
@@ -9916,6 +10305,7 @@
       "neo_count": 6,
       "available_years": [
         2025,
+        2024,
         2023
       ],
       "total_neo_compensation": 73750888,
@@ -16364,6 +16754,69 @@
           "total": 12436874,
           "title": "Vice Chair, Chief People, Policy and Purpose Officer",
           "_total_source": "verified"
+        },
+        {
+          "name": "Ryan McInerney",
+          "year": 2024,
+          "salary": 1455587,
+          "stock_awards": 15303203,
+          "option_awards": 4937518,
+          "non_equity_incentive": 3987500,
+          "pension_nqdc": 5752,
+          "all_other": 309733,
+          "total": 25999293,
+          "title": "Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Chris Suh",
+          "year": 2024,
+          "salary": 903478,
+          "stock_awards": 3829641,
+          "option_awards": 2249985,
+          "non_equity_incentive": 1732500,
+          "all_other": 61943,
+          "total": 8777547,
+          "title": "Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Paul Fabara",
+          "year": 2024,
+          "salary": 803087,
+          "stock_awards": 4977224,
+          "option_awards": 1124992,
+          "non_equity_incentive": 1408000,
+          "all_other": 39300,
+          "total": 8352603,
+          "title": "Chief Risk and Client Services Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Rajat Taneja",
+          "year": 2024,
+          "salary": 1204630,
+          "stock_awards": 13233399,
+          "option_awards": 3125020,
+          "non_equity_incentive": 2640000,
+          "pension_nqdc": 3117,
+          "all_other": 41167,
+          "total": 20247333,
+          "title": "President, Technology",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Kelly Mahon Tullier",
+          "year": 2024,
+          "salary": 903478,
+          "stock_awards": 8589506,
+          "option_awards": 1874987,
+          "non_equity_incentive": 1732500,
+          "pension_nqdc": 2722,
+          "all_other": 75826,
+          "total": 13179019,
+          "title": "Vice Chair, Chief People and Corporate Affairs Officer",
+          "_total_source": "verified"
         }
       ],
       "cik": "0001403161",
@@ -16374,6 +16827,7 @@
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
+        2024,
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -34836,6 +35290,78 @@
           "all_other": 87384,
           "total": 5531414,
           "_total_source": "verified"
+        },
+        {
+          "name": "Marvin R. Ellison",
+          "year": 2023,
+          "salary": 1450000,
+          "stock_awards": 11193496,
+          "option_awards": 3591228,
+          "non_equity_incentive": 1826130,
+          "all_other": 101418,
+          "total": 18162272,
+          "title": "Chairman, President and Chief Executive Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Brandon J. Sink",
+          "year": 2023,
+          "salary": 718577,
+          "stock_awards": 2505076,
+          "option_awards": 803703,
+          "non_equity_incentive": 452488,
+          "all_other": 69913,
+          "total": 4549757,
+          "title": "Executive Vice President, Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Joseph M. McFarland III",
+          "year": 2023,
+          "salary": 857704,
+          "stock_awards": 3321989,
+          "option_awards": 1065757,
+          "non_equity_incentive": 540096,
+          "all_other": 8384,
+          "total": 5793930,
+          "title": "Executive Vice President, Stores",
+          "_total_source": "verified"
+        },
+        {
+          "name": "William P. Boltz",
+          "year": 2024,
+          "salary": 866781,
+          "stock_awards": 3472239,
+          "option_awards": 1087386,
+          "non_equity_incentive": 851525,
+          "all_other": 89468,
+          "total": 6367399,
+          "title": "Executive Vice President, Merchandising",
+          "_total_source": "verified"
+        },
+        {
+          "name": "William P. Boltz",
+          "year": 2023,
+          "salary": 840650,
+          "stock_awards": 3259415,
+          "option_awards": 1045694,
+          "non_equity_incentive": 529357,
+          "all_other": 68323,
+          "total": 5743439,
+          "title": "Executive Vice President, Merchandising",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Seemantini Godbole",
+          "year": 2023,
+          "salary": 778827,
+          "stock_awards": 2717485,
+          "option_awards": 871854,
+          "non_equity_incentive": 490427,
+          "all_other": 73299,
+          "total": 4931893,
+          "title": "Executive Vice President, Chief Digital and Information Officer",
+          "_total_source": "verified"
         }
       ],
       "filing_date": "2026-04-16",
@@ -34843,7 +35369,8 @@
       "neo_count": 5,
       "available_years": [
         2025,
-        2024
+        2024,
+        2023
       ],
       "total_neo_compensation": 37243738,
       "proxy_fiscal_year": 2025,
@@ -37137,11 +37664,92 @@
           "all_other": 6153076,
           "total": 11577656,
           "_total_source": "verified"
+        },
+        {
+          "name": "Enrique J. Lores",
+          "year": 2024,
+          "salary": 1400000,
+          "stock_awards": 15289708,
+          "non_equity_incentive": 2380000,
+          "all_other": 290419,
+          "total": 19360127,
+          "title": "Former President and CEO",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Enrique J. Lores",
+          "year": 2023,
+          "salary": 1300000,
+          "stock_awards": 10148835,
+          "option_awards": 5714757,
+          "non_equity_incentive": 1989000,
+          "all_other": 305924,
+          "total": 19458516,
+          "title": "Former President and CEO",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Karen Parkhill",
+          "year": 2024,
+          "salary": 230303,
+          "stock_awards": 14999991,
+          "non_equity_incentive": 264273,
+          "all_other": 20220,
+          "total": 15514787,
+          "title": "Chief Financial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Alex Cho",
+          "year": 2024,
+          "salary": 827600,
+          "stock_awards": 5363227,
+          "non_equity_incentive": 865877,
+          "pension_nqdc": 34145,
+          "all_other": 39335,
+          "total": 7130184,
+          "title": "Former President, Personal Systems",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Alex Cho",
+          "year": 2023,
+          "salary": 803500,
+          "stock_awards": 4046599,
+          "option_awards": 1696667,
+          "non_equity_incentive": 829815,
+          "all_other": 41916,
+          "total": 7418497,
+          "title": "Former President, Personal Systems",
+          "_total_source": "verified"
+        },
+        {
+          "name": "David McQuarrie",
+          "year": 2024,
+          "salary": 715000,
+          "stock_awards": 3329259,
+          "non_equity_incentive": 589875,
+          "all_other": 61009,
+          "total": 4695143,
+          "title": "Chief Commercial Officer",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Julie Jacobs",
+          "year": 2024,
+          "salary": 756000,
+          "stock_awards": 3097499,
+          "non_equity_incentive": 661500,
+          "all_other": 69892,
+          "total": 4584891,
+          "title": "Chief Legal Officer & General Counsel",
+          "_total_source": "verified"
         }
       ],
       "neo_count": 5,
       "available_years": [
         2025,
+        2024,
         2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -74777,6 +75385,56 @@
           "_total_source": "verified",
           "stock_awards": 4212982,
           "change_pension": 1595354
+        },
+        {
+          "name": "Ron M. Vachris",
+          "year": 2023,
+          "salary": 937500,
+          "stock_awards": 7151883,
+          "non_equity_incentive": 248000,
+          "pension_nqdc": 62801,
+          "all_other": 52658,
+          "total": 8452842,
+          "title": "Chief Executive Officer, President and Director",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Russ D. Miller",
+          "year": 2023,
+          "salary": 728135,
+          "bonus": 16000,
+          "stock_awards": 4004156,
+          "non_equity_incentive": 108000,
+          "pension_nqdc": 32752,
+          "all_other": 59403,
+          "total": 4948446,
+          "title": "Senior Executive Vice President, COO - U.S. and Mexico Operations",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Pierre Riel",
+          "year": 2023,
+          "salary": 679258,
+          "bonus": 16000,
+          "stock_awards": 3629438,
+          "non_equity_incentive": 108000,
+          "all_other": 616169,
+          "total": 5048865,
+          "title": "Executive Vice President, COO - International Division",
+          "_total_source": "verified"
+        },
+        {
+          "name": "Richard A. Galanti",
+          "year": 2023,
+          "salary": 919231,
+          "bonus": 16000,
+          "stock_awards": 5108767,
+          "non_equity_incentive": 108000,
+          "pension_nqdc": 612858,
+          "all_other": 51543,
+          "total": 6816399,
+          "title": "Former Executive Vice President",
+          "_total_source": "verified"
         }
       ],
       "cik": "0000909832",
@@ -74787,7 +75445,8 @@
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
-        2024
+        2024,
+        2023
       ],
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "say_on_pay": {
