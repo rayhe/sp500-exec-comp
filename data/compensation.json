@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "500 companies, 6279 NEO records, 498 companies enriched",
+    "description": "500 companies, 6301 NEO records, 498 companies enriched",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-09-02T22:36:32Z",
+    "last_updated": "2026-08-27",
     "total_neo_records": 6279,
     "title_coverage": "6225/6225",
     "data_quality": {
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 438,
+    "board_independence_coverage": 445,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -26998,12 +26998,25 @@
           "all_other": 188756,
           "total": 7444173,
           "_total_source": "verified"
+        },
+        {
+          "name": "Brian Mandell",
+          "year": 2023,
+          "salary": 850802,
+          "bonus": 2840101,
+          "stock_awards": 887604,
+          "option_awards": 1232812,
+          "non_equity_incentive": 1412212,
+          "pension_nqdc": 291960,
+          "all_other": 7515491,
+          "total": 15030982,
+          "_total_source": "verified"
         }
       ],
       "cik": "0001534701",
       "filing_date": "2026-04-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1534701/000153470126000010/psx-20260401.htm",
-      "total_neo_compensation": 24172096,
+      "total_neo_compensation": 22991340,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -27618,7 +27631,7 @@
       "cik": "0001035002",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1035002/000162828026019806/vlo-20260318.htm",
-      "total_neo_compensation": 41332828,
+      "total_neo_compensation": 63761466,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -29696,7 +29709,7 @@
       "cik": "0000927066",
       "filing_date": "2026-04-22",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/927066/000092706626000053/dva-20260422.htm",
-      "total_neo_compensation": 30494001,
+      "total_neo_compensation": 26302674,
       "neo_count": 3,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -30200,17 +30213,76 @@
           "total": 9168701,
           "title": "Chairman",
           "_total_source": "verified"
+        },
+        {
+          "name": "Armando Pimentel, Jr.",
+          "year": 2025,
+          "salary": 1074115,
+          "stock_awards": 7099737,
+          "option_awards": 1331997,
+          "non_equity_incentive": 2140000,
+          "pension_nqdc": 395763,
+          "all_other": 194156,
+          "total": 12235768,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Armando Pimentel, Jr.",
+          "year": 2023,
+          "salary": 896154,
+          "stock_awards": 6274511,
+          "option_awards": 1199997,
+          "non_equity_incentive": 1840000,
+          "pension_nqdc": 117429,
+          "all_other": 235316,
+          "total": 10563407,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Rebecca J. Kujawa",
+          "year": 2025,
+          "salary": 514800,
+          "stock_awards": 19888215,
+          "option_awards": 5126242,
+          "pension_nqdc": 391572,
+          "all_other": 184802,
+          "total": 26105632,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Rebecca J. Kujawa",
+          "year": 2023,
+          "salary": 1100000,
+          "stock_awards": 7111077,
+          "option_awards": 1359993,
+          "non_equity_incentive": 2024000,
+          "pension_nqdc": 407530,
+          "all_other": 173876,
+          "total": 12176476,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Charles E. Sieving",
+          "year": 2025,
+          "salary": 1317548,
+          "stock_awards": 3011104,
+          "option_awards": 564898,
+          "non_equity_incentive": 2100000,
+          "pension_nqdc": 538422,
+          "all_other": 249195,
+          "total": 7781167,
+          "_total_source": "verified"
         }
       ],
       "filing_date": "2026-04-01",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/753308/000110465926038551/tm261592-1_def14a.htm",
-      "neo_count": 3,
+      "neo_count": 6,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 21603598,
+      "total_neo_compensation": 84836218,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -31108,17 +31180,41 @@
           "all_other": 57763,
           "total": 2036319,
           "_total_source": "verified"
+        },
+        {
+          "name": "Karen L. Sedgwick",
+          "year": 2025,
+          "salary": 700000,
+          "stock_awards": 1811056,
+          "option_awards": 840014,
+          "non_equity_incentive": 1088600,
+          "pension_nqdc": 2050160,
+          "all_other": 129644,
+          "total": 6619474,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Karen L. Sedgwick",
+          "year": 2023,
+          "salary": 560000,
+          "stock_awards": 1627040,
+          "non_equity_incentive": 691700,
+          "pension_nqdc": 5047785,
+          "all_other": 63671,
+          "total": 7990196,
+          "_total_source": "verified"
         }
       ],
       "cik": "0001032208",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312526127603/d90144ddef14a.htm",
-      "total_neo_compensation": 8097053,
-      "neo_count": 3,
+      "total_neo_compensation": 21898717,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
-        2024
+        2024,
+        2023
       ],
       "say_on_pay": {
         "approval_pct": 87.52,
@@ -45633,6 +45729,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 91.7
       }
     },
     {
@@ -48066,13 +48169,25 @@
           "all_other": 6689533,
           "total": 6689533,
           "_total_source": "rounding"
+        },
+        {
+          "name": "Patrick Gallagher",
+          "year": 2025,
+          "salary": 900000,
+          "bonus": 1722812,
+          "stock_awards": 1169511,
+          "option_awards": 3150000,
+          "non_equity_incentive": 750000,
+          "all_other": 593291,
+          "total": 8285614,
+          "_total_source": "verified"
         }
       ],
       "cik": "354190",
       "filing_date": "2026-03-23",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/354190/000035419026000101/ajg-20260323.htm",
-      "total_neo_compensation": 32293322,
-      "neo_count": 3,
+      "total_neo_compensation": 49032299,
+      "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -49923,6 +50038,18 @@
           "total": 4959728,
           "title": "Executive",
           "_total_source": "verified"
+        },
+        {
+          "name": "Devina A. Rankin",
+          "year": 2023,
+          "salary": 760792,
+          "bonus": 1982933,
+          "stock_awards": 460005,
+          "option_awards": 915228,
+          "non_equity_incentive": 95142,
+          "pension_nqdc": 4214100,
+          "total": 8428200,
+          "_total_source": "verified"
         }
       ],
       "neo_count": 3,
@@ -49931,7 +50058,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 22056848,
+      "total_neo_compensation": 26093719,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -51923,6 +52050,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 10,
+        "lead_independent_director": false,
+        "chair_independent": false,
+        "independence_pct": 60.0
       }
     },
     {
@@ -55658,6 +55792,13 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 7,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 63.6
       }
     },
     {
@@ -55984,7 +56125,7 @@
         2024,
         2023
       ],
-      "total_neo_compensation": 23968502,
+      "total_neo_compensation": 23238100,
       "proxy_fiscal_year": 2025,
       "say_on_pay": {
         "approval_pct": 98.5,
@@ -58868,13 +59009,58 @@
           "all_other": 103082,
           "total": 4984735,
           "_total_source": "verified"
+        },
+        {
+          "name": "Greg D. Bertrand",
+          "year": 2023,
+          "salary": 749025,
+          "stock_awards": 1745800,
+          "option_awards": 740980,
+          "non_equity_incentive": 848808,
+          "pension_nqdc": 9906,
+          "all_other": 147950,
+          "total": 4242469,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Thomas R. Peck, Jr.",
+          "year": 2025,
+          "salary": 760385,
+          "stock_awards": 3718003,
+          "option_awards": 535498,
+          "non_equity_incentive": 504000,
+          "all_other": 57181,
+          "total": 5575067,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Thomas R. Peck, Jr.",
+          "year": 2023,
+          "salary": 678480,
+          "stock_awards": 1448101,
+          "option_awards": 614607,
+          "non_equity_incentive": 645847,
+          "all_other": 56899,
+          "total": 3443934,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Ronald L. Phillips",
+          "year": 2025,
+          "salary": 703846,
+          "stock_awards": 1709061,
+          "option_awards": 423600,
+          "non_equity_incentive": 467000,
+          "all_other": 86625,
+          "total": 3390132,
+          "_total_source": "verified"
         }
       ],
       "cik": "96021",
       "filing_date": "2025-10-02",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/96021/000009602125000147/syy-20251001.htm",
-      "total_neo_compensation": 24887988,
-      "neo_count": 3,
+      "total_neo_compensation": 35270599,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -59361,6 +59547,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 11,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 54.5
       }
     },
     {
@@ -60976,6 +61169,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 4,
+        "total_directors": 7,
+        "lead_independent_director": true,
+        "chair_independent": false,
+        "independence_pct": 57.1
       }
     },
     {
@@ -63448,13 +63648,48 @@
           "all_other": 5225,
           "total": 5838788,
           "_total_source": "verified"
+        },
+        {
+          "name": "David P. Johnson",
+          "year": 2024,
+          "salary": 214712,
+          "bonus": 450000,
+          "stock_awards": 4560121,
+          "option_awards": 440016,
+          "non_equity_incentive": 168715,
+          "all_other": 5225,
+          "total": 5838788,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Robert D. King",
+          "year": 2025,
+          "salary": 685981,
+          "stock_awards": 1400071,
+          "option_awards": 350007,
+          "non_equity_incentive": 1228205,
+          "all_other": 87179,
+          "total": 3751442,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Judd M. O'Connor",
+          "year": 2025,
+          "salary": 627404,
+          "stock_awards": 960067,
+          "option_awards": 240005,
+          "non_equity_incentive": 1167500,
+          "pension_nqdc": 102736,
+          "all_other": 107507,
+          "total": 3205218,
+          "_total_source": "verified"
         }
       ],
       "cik": "1755672",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1755672/000119312526116069/ctva-20260319.htm",
-      "total_neo_compensation": 20345846,
-      "neo_count": 2,
+      "total_neo_compensation": 28934697,
+      "neo_count": 5,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -67480,15 +67715,51 @@
           "total": 4333461,
           "title": "Chairman",
           "_total_source": "verified"
+        },
+        {
+          "name": "Maree E. Robertson",
+          "year": 2023,
+          "salary": 637500,
+          "bonus": 2044310,
+          "stock_awards": 800000,
+          "option_awards": 1673,
+          "non_equity_incentive": 265065,
+          "pension_nqdc": 3748548,
+          "total": 7497096,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Douglas N. Currault II",
+          "year": 2023,
+          "salary": 487500,
+          "bonus": 1567365,
+          "stock_awards": 735000,
+          "option_awards": 53876,
+          "non_equity_incentive": 91078,
+          "pension_nqdc": 2934819,
+          "total": 5869637,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Stephen T. Higgins",
+          "year": 2023,
+          "salary": 537500,
+          "bonus": 1749405,
+          "stock_awards": 810000,
+          "option_awards": 34162,
+          "non_equity_incentive": 101278,
+          "pension_nqdc": 3232345,
+          "total": 6464690,
+          "_total_source": "verified"
         }
       ],
-      "neo_count": 3,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 71359427,
+      "total_neo_compensation": 37285116,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "F",
       "ceo_tenure": {
@@ -82482,17 +82753,39 @@
           "total": 2361391,
           "title": "Executive Vice President",
           "_total_source": "verified"
+        },
+        {
+          "name": "De'Mon L. Wiggins",
+          "year": 2025,
+          "salary": 600023,
+          "stock_awards": 1012534,
+          "option_awards": 337492,
+          "non_equity_incentive": 645120,
+          "all_other": 37296,
+          "total": 2632465,
+          "_total_source": "verified"
+        },
+        {
+          "name": "Adrian C. Chiu",
+          "year": 2025,
+          "salary": 600023,
+          "stock_awards": 1012534,
+          "option_awards": 337492,
+          "non_equity_incentive": 443040,
+          "all_other": 37541,
+          "total": 2430630,
+          "_total_source": "verified"
         }
       ],
       "filing_date": "2026-03-20",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/77360/000007736026000014/pnr-20260317.htm",
-      "neo_count": 3,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 4149882,
+      "total_neo_compensation": 22751067,
       "proxy_fiscal_year": 2025,
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "ceo_gender": "M",
@@ -82985,6 +83278,13 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-05-14",
         "source_url": "https://www.sec.gov/Archives/edgar/data/62996/000006299626000016/mas-20260508.htm"
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 10,
+        "lead_independent_director": true,
+        "chair_independent": true,
+        "independence_pct": 90.0
       }
     },
     {
@@ -84046,6 +84346,13 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 6,
+        "total_directors": 10,
+        "lead_independent_director": false,
+        "chair_independent": true,
+        "independence_pct": 60.0
       }
     },
     {
