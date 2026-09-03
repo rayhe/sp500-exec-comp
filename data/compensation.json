@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 463,
+    "board_independence_coverage": 464,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 463,
+    "board_independence_any": 464,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 463,
-    "board_independence_full": 463,
+    "board_independence_count": 464,
+    "board_independence_full": 464,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -63485,6 +63485,15 @@
         "confidence": "verified",
         "source": "manual",
         "start_month": 3
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 12,
+        "independence_pct": 75.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-06-08: 12 nominees, 9 independent; non-independent: Nicholas I. Fink (President/CEO), Richard Sands, Robert Sands; Christopher J. Baldwin Independent Chair (no lead independent director role)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/16918/000001691826000023/stz-20260603.htm"
       }
     },
     {
