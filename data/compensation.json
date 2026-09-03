@@ -112,7 +112,7 @@
     },
     "edgar_coverage": 498,
     "total_companies": 500,
-    "last_updated": "2026-08-27",
+    "last_updated": "2026-09-03",
     "total_neo_records": 6279,
     "title_coverage": "6225/6225",
     "data_quality": {
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 438,
+    "board_independence_any": 461,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 438,
-    "board_independence_full": 438,
+    "board_independence_count": 461,
+    "board_independence_full": 461,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -51367,6 +51367,18 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": true,
+        "chair_note": "Richard S. Stoddart, non-executive Chair of the Board (independent; interim CEO role ended Feb 2022)",
+        "lead_independent_director": false,
+        "lead_note": "No Lead Independent Director; policy provides one only if the Chair is not independent",
+        "note": "Proxy states explicitly: 'Of the eleven (11) Board nominees, ten (10) are independent, with Mr. Cocks (CEO) the only non-independent nominee.'",
+        "source": "DEF 14A 2026-04-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/46080/000119312526160426/d36474ddef14a.htm"
       }
     },
     {
@@ -68698,6 +68710,17 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 11,
+        "independence_pct": 91.7,
+        "chair_independent": true,
+        "chair_reason": "Larry J. Merlo serves as independent Board Chair since May 2023",
+        "lead_independent_director": false,
+        "lead_reason": "No lead independent director role; board uses independent-chair leadership structure",
+        "source": "DEF 14A 2026-04-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1944048/000194404826000085/kvue-20260408.htm"
       }
     },
     {
@@ -72102,6 +72125,17 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-05-29",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1043604/000104360425000092/jnpr-20250528.htm"
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "chair_reason": "Scott Kriens serves as independent Chair of the Board (proxy: 'independent Chair of the Board')",
+        "lead_independent_director": true,
+        "lead_reason": "Christine Gorjanc has served as Lead Independent Director since May 10, 2023",
+        "source": "DEF 14A 2025-04-16",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1043604/000110465925035489/tm2431514-1_def14a.htm"
       }
     },
     {
@@ -76286,6 +76320,16 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-12-18",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/52988/000119312525325103/d76905ddef14a.htm",
+        "note": "10 nominees on proxy card; all independent except Chair/CEO Robert V. Pragada; Lead Independent Director Louis V. Pinkham"
       }
     },
     {
@@ -77099,6 +77143,18 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": false,
+        "chair_note": "Brian X. Tierney is Board Chair, President and CEO (not independent)",
+        "lead_independent_director": true,
+        "lead_note": "Lisa Winston Hicks, Lead Independent Director since 2022",
+        "note": "Board affirmatively determined all 8 non-employee nominees independent; Tierney (CEO) not independent.",
+        "source": "DEF 14A 2026-04-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1031296/000119312526138029/fe-20260401.htm"
       }
     },
     {
@@ -78739,6 +78795,16 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": null,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-04-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1000228/000119312526146317/d904292ddef14a.htm",
+        "note": "Board shrinking 15 to 10 at 2026 annual meeting; 9 of 10 nominees independent (all except CEO Frederick M. Lowery); Chair Stanley Bergman retiring to Chairman Emeritus at meeting end, successor Chair to be appointed after (TBD); Lead Director Philip A. Laskawy"
       }
     },
     {
@@ -81360,6 +81426,17 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": false,
+        "chair_reason": "David B. Foss serves as Board Chair and is not independent",
+        "lead_independent_director": true,
+        "lead_reason": "Matthew C. Flanigan serves as Vice Chair and Lead Director",
+        "source": "DEF 14A 2025-10-02",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/779152/000077915225000079/jkhy-20251001.htm"
       }
     },
     {
@@ -82212,6 +82289,17 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 6,
+        "independence_pct": 66.7,
+        "chair_independent": true,
+        "chair_reason": "Richard B. Saltzman appointed non-executive Independent Chairman on April 29, 2025",
+        "lead_independent_director": false,
+        "lead_reason": "Lead Independent Director role eliminated effective May 2025 annual meeting upon appointment of independent chairman",
+        "source": "DEF 14A 2026-04-08",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/879101/000120677426000197/kim4498121-def14a.htm"
       }
     },
     {
@@ -85488,6 +85576,18 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 16,
+        "independent_directors": 15,
+        "independence_pct": 93.8,
+        "chair_independent": false,
+        "chair_note": "Timothy N. Spence is Chair, CEO and President (not independent)",
+        "lead_independent_director": true,
+        "lead_note": "Nicholas K. Akins, Lead Independent Director (elected 2025)",
+        "note": "Board determined all nominees independent under Nasdaq standards except Mr. Spence (President/CEO). 16 nominee bios counted via Career Highlights blocks.",
+        "source": "DEF 14A 2026-03-09",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/35527/000119312526098679/d47600ddef14a.htm"
       }
     },
     {
@@ -87694,6 +87794,16 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-26",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/832101/000119312526125451/iex-20260325.htm",
+        "note": "Classified board: 4 Class I nominees + 6 continuing = 10; 9 independent (all except CEO/President Ashleman, named in board's independence determination); Non-Executive Chair Katrina L. Helmkamp; no Lead Director (bylaws require one only if Chair is CEO/non-independent)"
       }
     },
     {
@@ -88152,6 +88262,19 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": false,
+        "chair_note": "Aaron P. Jagdfeld is Chairman, President and CEO (not independent)",
+        "lead_independent_director": true,
+        "lead_note": "Bennett J. Morgan, independent Lead Director",
+        "note": "Parent-corrected from agent 3/3: classified board, full board is 10 ('Including the nominees, the Board of Directors currently consists of ten directors'); proxy states 'all directors being independent except for Mr. Jagdfeld' => 9/10. ENPH precedent: full board governs for classified boards, not the nominee class.",
+        "source": "DEF 14A 2026-04-29",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1474735/000110465926051499/tm261388-1_def14a.htm",
+        "parent_verified": true
       }
     },
     {
@@ -88319,6 +88442,18 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 8,
+        "independent_directors": 7,
+        "independence_pct": 87.5,
+        "chair_independent": true,
+        "chair_note": "David W. Faeder, independent Non-Executive Chairman (role independent since 2003)",
+        "lead_independent_director": false,
+        "lead_note": "No lead independent trustee; independent-chair structure",
+        "note": "REIT uses 'Trustees'. Board concluded all trustees other than CEO Donald C. Wood are independent. 8 nominees per proxy card.",
+        "source": "DEF 14A 2026-03-27",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/34903/000119312526127642/d33770ddef14a.htm"
       }
     },
     {
@@ -92589,6 +92724,18 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": false,
+        "chair_note": "Co-Chairmen J. Matthew Darden and Frank M. Svoboda are both Co-CEOs (not independent)",
+        "lead_independent_director": true,
+        "lead_note": "James P. Brannen serves as Lead Director upon expiry of Linda L. Addison's term on April 30, 2026",
+        "note": "12 nominees counted via 'Reasons for Nomination' bio blocks; 10 marked Independent, 2 Co-Chair/Co-CEO not.",
+        "source": "DEF 14A 2026-03-19",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/320335/000032033526000135/gl-20260318.htm"
       }
     },
     {
@@ -93003,6 +93150,17 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 6,
+        "independence_pct": 66.7,
+        "chair_independent": false,
+        "chair_reason": "John N. Roberts III serves as Executive Chairman of the Board and is not independent",
+        "lead_independent_director": true,
+        "lead_reason": "James L. Robo appointed Independent Lead Director",
+        "source": "DEF 14A 2026-03-11",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/728535/000143774926007732/jbht20260304_def14a.htm"
       }
     },
     {
@@ -94117,6 +94275,16 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 9,
+        "independence_pct": 75.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2025-12-17",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/48465/000004846525000074/hrl-20251216.htm",
+        "note": "12 director nominees; Aakre, Ettinger, Ghingo (company employees) not independent, all other nominees independent; independent Chair William A. Newlands; no Lead Director (appointed only when Chair is not independent)"
       }
     },
     {
@@ -96725,6 +96893,18 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 6,
+        "independence_pct": 60.0,
+        "chair_independent": false,
+        "chair_reason": "James S. Tisch serves as Chairman of the Board and is not independent",
+        "lead_independent_director": true,
+        "lead_reason": "Paul J. Fribourg serves as Lead Director and is independent",
+        "note": "Board determined 8 sitting directors independent, but Ann Berman and Charles Diker retire at the 2026 meeting and are not nominees; 6 of the 10 nominees are independent",
+        "source": "DEF 14A 2026-04-01",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/60086/000006008626000023/l-20260331.htm"
       }
     },
     {
