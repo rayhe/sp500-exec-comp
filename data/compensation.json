@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 464,
+    "board_independence_coverage": 466,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 464,
+    "board_independence_any": 466,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 464,
-    "board_independence_full": 464,
+    "board_independence_count": 466,
+    "board_independence_full": 466,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -67340,6 +67340,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 9,
+        "total_directors": 11,
+        "independence_pct": 81.8,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-10-02: 11 nominees, 9 independent; non-independent: Michael 'Mick' Farrell (Chairman/CEO), Peter Farrell (founder); Ronald Taylor lead independent director",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/943819/000094381925000079/rmd-20251001.htm"
       }
     },
     {
@@ -72252,6 +72261,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "independence_pct": 91.7,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-05-12: 12 directors, 11 independent; non-independent: Natascha Viljoen (President/CEO); independent non-executive Chair, roles separated (no lead independent director role)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1164727/000110465926035211/nem-20260512xdef14a.htm"
       }
     },
     {
