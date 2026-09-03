@@ -84990,6 +84990,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "independent_directors": 12,
+        "total_directors": 13,
+        "independence_pct": 92.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-23: 13 nominees, all independent except John M. Turner Jr. (Chairman, President and CEO); Ruth Ann Marshall Lead Independent Director",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1281761/000128176126000027/rf-20260323.htm"
       }
     },
     {
@@ -85940,6 +85949,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2026-04-23",
         "source_url": "https://www.sec.gov/Archives/edgar/data/36270/000003627026000027/mbt-20260421.htm"
+      },
+      "board_independence": {
+        "independent_directors": 11,
+        "total_directors": 12,
+        "independence_pct": 91.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-10: 12 nominees, all independent except Rene F. Jones (Chairman and CEO); non-executive Vice Chairman serves as lead independent director",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/36270/000119312526099298/d74790ddef14a.htm"
       }
     },
     {
