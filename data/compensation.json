@@ -113,8 +113,8 @@
     "edgar_coverage": 498,
     "total_companies": 500,
     "last_updated": "2026-09-03",
-    "total_neo_records": 6335,
-    "title_coverage": "6315/6335",
+    "total_neo_records": 6475,
+    "title_coverage": "6455/6475",
     "data_quality": {
       "verified": 5680,
       "recomputed": 141,
@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 461,
+    "board_independence_coverage": 463,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,19 +157,19 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 461,
+    "board_independence_any": 463,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
-    "total_executives": 6335,
+    "total_executives": 6475,
     "verification_status": {
       "verified": 5681,
       "recomputed": 141,
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 461,
-    "board_independence_full": 461,
+    "board_independence_count": 463,
+    "board_independence_full": 463,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
