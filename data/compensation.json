@@ -12336,7 +12336,7 @@
       "executives": [
         {
           "name": "Charles Liang",
-          "title": "Chief Executive Officer and Chairman",
+          "title": "President, Chief Executive Officer and Chairman of the Board",
           "year": 2024,
           "salary": 1,
           "bonus": 0,
@@ -12479,7 +12479,7 @@
       "filing_date": "2026-03-03",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000008/smci-20260303.htm",
       "total_neo_compensation": 44316491,
-      "neo_count": 3,
+      "neo_count": 10,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -24177,124 +24177,132 @@
           "name": "Neil Hunn",
           "year": 2025,
           "salary": 1000000,
-          "bonus": 17533527,
-          "stock_awards": 5098979,
-          "option_awards": 2096000,
-          "non_equity_incentive": 477259,
-          "pension_nqdc": 26205765,
+          "bonus": 0,
+          "stock_awards": 17533527,
+          "option_awards": 5098979,
+          "non_equity_incentive": 2096000,
+          "pension_nqdc": 0,
           "total": 26205765,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 477259
         },
         {
           "name": "Neil Hunn",
           "year": 2024,
           "salary": 1000000,
-          "bonus": 15023657,
-          "stock_awards": 4847184,
-          "option_awards": 2282000,
-          "non_equity_incentive": 533781,
-          "pension_nqdc": 23686622,
+          "bonus": 0,
+          "stock_awards": 15023657,
+          "option_awards": 4847184,
+          "non_equity_incentive": 2282000,
+          "pension_nqdc": 0,
           "total": 23686622,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 533781
         },
         {
           "name": "Neil Hunn",
           "year": 2023,
           "salary": 1000000,
-          "bonus": 13982907,
-          "stock_awards": 4632002,
-          "option_awards": 21168465,
-          "non_equity_incentive": 512211,
-          "pension_nqdc": 41295585,
+          "bonus": 0,
+          "stock_awards": 13982907,
+          "option_awards": 4632002,
+          "non_equity_incentive": 21168465,
+          "pension_nqdc": 0,
           "total": 41295585,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 512211
         },
         {
           "name": "Jason P. Conley",
           "year": 2025,
           "salary": 745000,
-          "bonus": 6232167,
-          "stock_awards": 1812368,
-          "option_awards": 975950,
-          "non_equity_incentive": 184243,
-          "pension_nqdc": 9949728,
+          "bonus": 0,
+          "stock_awards": 6232167,
+          "option_awards": 1812368,
+          "non_equity_incentive": 975950,
+          "pension_nqdc": 0,
           "total": 9949728,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 184243
         },
         {
           "name": "Jason P. Conley",
           "year": 2024,
           "salary": 710000,
-          "bonus": 4649142,
-          "stock_awards": 1499975,
-          "option_awards": 1012638,
-          "non_equity_incentive": 165304,
-          "pension_nqdc": 8037059,
+          "bonus": 0,
+          "stock_awards": 4649142,
+          "option_awards": 1499975,
+          "non_equity_incentive": 1012638,
+          "pension_nqdc": 0,
           "total": 8037059,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 165304
         },
         {
           "name": "Jason P. Conley",
           "year": 2023,
           "salary": 675000,
-          "bonus": 3773437,
-          "stock_awards": 1250053,
-          "option_awards": 843750,
-          "non_equity_incentive": 149571,
-          "pension_nqdc": 6691811,
+          "bonus": 0,
+          "stock_awards": 3773437,
+          "option_awards": 1250053,
+          "non_equity_incentive": 843750,
+          "pension_nqdc": 0,
           "total": 6691811,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 149571
         },
         {
           "name": "John K. Stipancich",
           "year": 2025,
           "salary": 865000,
-          "bonus": 5759149,
-          "stock_awards": 1674885,
-          "option_awards": 1133150,
-          "non_equity_incentive": 106272,
-          "pension_nqdc": 9538456,
+          "bonus": 0,
+          "stock_awards": 5759149,
+          "option_awards": 1674885,
+          "non_equity_incentive": 1133150,
+          "pension_nqdc": 0,
           "total": 9538456,
           "title": "EVP, General Counsel and Corporate Secretary",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 106272
         },
         {
           "name": "John K. Stipancich",
           "year": 2024,
           "salary": 835000,
-          "bonus": 4338897,
-          "stock_awards": 1399988,
-          "option_awards": 1190919,
-          "non_equity_incentive": 172125,
-          "pension_nqdc": 7936929,
+          "bonus": 0,
+          "stock_awards": 4338897,
+          "option_awards": 1399988,
+          "non_equity_incentive": 1190919,
+          "pension_nqdc": 0,
           "total": 7936929,
           "title": "EVP, General Counsel and Corporate Secretary",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 172125
         },
         {
           "name": "John K. Stipancich",
           "year": 2023,
           "salary": 800000,
-          "bonus": 3471648,
-          "stock_awards": 1150007,
-          "option_awards": 1000000,
-          "non_equity_incentive": 163687,
-          "pension_nqdc": 6585342,
-          "all_other": -1,
-          "total": 6585341,
+          "bonus": 0,
+          "stock_awards": 3471648,
+          "option_awards": 1150007,
+          "non_equity_incentive": 1000000,
+          "pension_nqdc": 0,
+          "all_other": 163687,
+          "total": 6585342,
           "title": "EVP, General Counsel and Corporate Secretary",
           "_total_source": "verified"
         }
       ],
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/882835/000119312526145481/d204543ddef14a.htm",
-      "neo_count": 3,
+      "neo_count": 9,
       "available_years": [
         2025,
         2024,
@@ -46133,7 +46141,7 @@
       "ticker": "MCD",
       "company_name": "McDonald's Corp",
       "ceo_name": "Chris Kempczinski",
-      "total_compensation": 6113388,
+      "total_compensation": 18195263,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
       "median_worker_pay": 17492,
@@ -46144,26 +46152,27 @@
           "name": "Chris Kempczinski",
           "year": 2025,
           "salary": 1550000,
-          "bonus": 8000215,
-          "stock_awards": 8000066,
-          "option_awards": 2367160,
-          "non_equity_incentive": 657084,
-          "pension_nqdc": 20574525,
+          "bonus": 0,
+          "stock_awards": 8000215,
+          "option_awards": 8000066,
+          "non_equity_incentive": 2367160,
+          "pension_nqdc": 0,
           "total": 20574525,
-          "title": "Chairman and CEO",
-          "_total_source": "verified"
+          "title": "Chairman, President and CEO",
+          "_total_source": "verified",
+          "all_other": 657084
         },
         {
           "name": "Joseph Erlinger",
           "year": 2024,
-          "salary": 1529167,
-          "bonus": 7500146,
-          "stock_awards": 7500052,
-          "option_awards": 854670,
-          "non_equity_incentive": 811228,
-          "pension_nqdc": 18195263,
-          "all_other": 2023,
-          "total": 18197286,
+          "salary": 869167,
+          "bonus": 0,
+          "stock_awards": 1875265,
+          "option_awards": 1875058,
+          "non_equity_incentive": 314922,
+          "pension_nqdc": 0,
+          "all_other": 1176953,
+          "total": 6111365,
           "title": "President, McDonald's USA",
           "_total_source": "verified"
         },
@@ -46171,106 +46180,112 @@
           "name": "Ian Borden",
           "year": 2025,
           "salary": 970833,
-          "bonus": 2750169,
-          "stock_awards": 2750029,
-          "option_awards": 967863,
-          "non_equity_incentive": 1150837,
-          "pension_nqdc": 8589731,
+          "bonus": 0,
+          "stock_awards": 2750169,
+          "option_awards": 2750029,
+          "non_equity_incentive": 967863,
+          "pension_nqdc": 0,
           "total": 8589731,
-          "title": "EVP, Global Chief Restaurant Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Global CFO",
+          "_total_source": "verified",
+          "all_other": 1150837
         },
         {
           "name": "Ian Borden",
           "year": 2024,
           "salary": 941667,
-          "bonus": 2375275,
-          "stock_awards": 2375033,
-          "option_awards": 340490,
-          "non_equity_incentive": 279165,
-          "pension_nqdc": 6311630,
-          "all_other": 2023,
-          "total": 6313653,
-          "title": "EVP, Global Chief Restaurant Officer",
+          "bonus": 0,
+          "stock_awards": 2375275,
+          "option_awards": 2375033,
+          "non_equity_incentive": 340490,
+          "pension_nqdc": 0,
+          "all_other": 279165,
+          "total": 6311630,
+          "title": "Executive Vice President and Global CFO",
           "_total_source": "verified"
         },
         {
           "name": "Gillian McDonald",
           "year": 2025,
           "salary": 929541,
-          "bonus": 1875329,
-          "stock_awards": 1875056,
-          "option_awards": 887994,
-          "non_equity_incentive": 494067,
-          "pension_nqdc": 6061987,
+          "bonus": 0,
+          "stock_awards": 1875329,
+          "option_awards": 1875056,
+          "non_equity_incentive": 887994,
+          "pension_nqdc": 0,
           "total": 6061987,
-          "title": "Executive Vice President and Global Chief Financial Officer (\u201c CFO \u201d)",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Global Chief Restaurant Experience Officer",
+          "_total_source": "verified",
+          "all_other": 494067
         },
         {
           "name": "Gillian McDonald",
           "year": 2024,
           "salary": 889320,
-          "bonus": 1875265,
-          "stock_awards": 1875058,
-          "option_awards": 258810,
-          "non_equity_incentive": 151514,
-          "pension_nqdc": 5049967,
+          "bonus": 0,
+          "stock_awards": 1875265,
+          "option_awards": 1875058,
+          "non_equity_incentive": 258810,
+          "pension_nqdc": 0,
           "total": 5049967,
-          "title": "Executive Vice President and Global Chief Financial Officer (\u201c CFO \u201d)",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Global Chief Restaurant Experience Officer",
+          "_total_source": "verified",
+          "all_other": 151514
         },
         {
           "name": "Ian Borden",
           "year": 2023,
-          "salary": 808365,
-          "bonus": 4125589,
-          "stock_awards": 2125031,
-          "option_awards": 1296651,
-          "non_equity_incentive": 145288,
-          "pension_nqdc": 8500924,
-          "total": 8500924,
-          "title": "EVP, Global Chief Restaurant Officer",
-          "_total_source": "verified"
+          "salary": 900000,
+          "bonus": 0,
+          "stock_awards": 2000162,
+          "option_awards": 2000026,
+          "non_equity_incentive": 1589850,
+          "pension_nqdc": 0,
+          "total": 6805470,
+          "title": "Executive Vice President and Global CFO",
+          "_total_source": "verified",
+          "all_other": 315432
         },
         {
           "name": "Joseph Erlinger",
           "year": 2025,
           "salary": 895833,
-          "bonus": 2000306,
-          "stock_awards": 2000033,
-          "option_awards": 711774,
-          "non_equity_incentive": 118704,
-          "pension_nqdc": 5726650,
+          "bonus": 0,
+          "stock_awards": 2000306,
+          "option_awards": 2000033,
+          "non_equity_incentive": 711774,
+          "pension_nqdc": 0,
           "total": 5726650,
           "title": "President, McDonald's USA",
-          "_total_source": "verified"
-        },
-        {
-          "name": "McDonald\u2019s USA",
-          "year": 2024,
-          "salary": 869167,
-          "bonus": 1875265,
-          "stock_awards": 1875058,
-          "option_awards": 314922,
-          "non_equity_incentive": 1176953,
-          "pension_nqdc": 6111365,
-          "all_other": 2023,
-          "total": 6113388,
-          "title": "President and Chief Executive Officer (2019 \u2013 2023) President",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 118704
         },
         {
           "name": "Manuel JM Steijaert",
           "year": 2025,
           "salary": 854456,
-          "bonus": 1375084,
-          "stock_awards": 1375014,
-          "option_awards": 854131,
-          "non_equity_incentive": 519680,
-          "pension_nqdc": 4978365,
+          "bonus": 0,
+          "stock_awards": 1375084,
+          "option_awards": 1375014,
+          "non_equity_incentive": 854131,
+          "pension_nqdc": 0,
           "total": 4978365,
-          "title": "President",
+          "title": "President, International Operated Markets",
+          "_total_source": "verified",
+          "all_other": 519680
+        },
+        {
+          "salary": 1529167,
+          "bonus": 0,
+          "stock_awards": 7500146,
+          "option_awards": 7500052,
+          "non_equity_incentive": 854670,
+          "pension_nqdc": 0,
+          "all_other": 811228,
+          "name": "Chris Kempczinski",
+          "title": "Chairman, President and CEO",
+          "year": 2024,
+          "total": 18195263,
           "_total_source": "verified"
         }
       ],
@@ -46278,7 +46293,7 @@
       "filing_date": "2026-04-07",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/63908/000119312526145548/mcd-20260407.htm",
       "total_neo_compensation": 35674294,
-      "neo_count": 5,
+      "neo_count": 10,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -54445,12 +54460,13 @@
           "salary": 269231,
           "bonus": 800000,
           "stock_awards": 12147036,
-          "option_awards": 823522,
-          "non_equity_incentive": 115012,
-          "pension_nqdc": 14154801,
+          "option_awards": 0,
+          "non_equity_incentive": 823522,
+          "pension_nqdc": 0,
           "total": 14154801,
-          "title": "SVP, Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "President and CEO",
+          "_total_source": "verified",
+          "all_other": 115012
         },
         {
           "name": "Sunit S. Patel",
@@ -54458,12 +54474,13 @@
           "salary": 456731,
           "bonus": 250000,
           "stock_awards": 7695957,
-          "option_awards": 655291,
-          "non_equity_incentive": 45295,
-          "pension_nqdc": 9103274,
+          "option_awards": 0,
+          "non_equity_incentive": 655291,
+          "pension_nqdc": 0,
           "total": 9103274,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 45295
         },
         {
           "name": "Daniel K. Schlanger",
@@ -54471,87 +54488,97 @@
           "salary": 640000,
           "bonus": 572473,
           "stock_awards": 9885430,
-          "option_awards": 890624,
-          "non_equity_incentive": 46573,
-          "pension_nqdc": 12035100,
+          "option_awards": 0,
+          "non_equity_incentive": 890624,
+          "pension_nqdc": 0,
           "total": 12035100,
-          "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "EVP & CTRO",
+          "_total_source": "verified",
+          "all_other": 46573
         },
         {
           "name": "Daniel K. Schlanger",
           "year": 2024,
           "salary": 636154,
           "stock_awards": 6541679,
-          "option_awards": 681792,
-          "non_equity_incentive": 61337,
-          "pension_nqdc": 7920962,
-          "all_other": 2023,
-          "total": 7922985,
-          "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "option_awards": 0,
+          "non_equity_incentive": 681792,
+          "pension_nqdc": 0,
+          "all_other": 61337,
+          "total": 7920962,
+          "title": "EVP & CTRO",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Christopher D. Levendos",
           "year": 2025,
           "salary": 600000,
           "stock_awards": 5423183,
-          "option_awards": 834960,
-          "non_equity_incentive": 46666,
-          "pension_nqdc": 6904809,
+          "option_awards": 0,
+          "non_equity_incentive": 834960,
+          "pension_nqdc": 0,
           "total": 6904809,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Fiber",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Operating Officer-Fiber",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 46666
         },
         {
           "name": "Christopher D. Levendos",
           "year": 2024,
           "salary": 585577,
           "stock_awards": 4498170,
-          "option_awards": 639180,
-          "non_equity_incentive": 62076,
-          "pension_nqdc": 5785003,
-          "all_other": 2023,
-          "total": 5787026,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Fiber",
-          "_total_source": "verified"
+          "option_awards": 0,
+          "non_equity_incentive": 639180,
+          "pension_nqdc": 0,
+          "all_other": 62076,
+          "total": 5785003,
+          "title": "Executive Vice President and Chief Operating Officer-Fiber",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Edward B. Adams, Jr.",
           "year": 2025,
           "salary": 515000,
           "stock_awards": 4449373,
-          "option_awards": 716674,
-          "non_equity_incentive": 18425,
-          "pension_nqdc": 5699472,
+          "option_awards": 0,
+          "non_equity_incentive": 716674,
+          "pension_nqdc": 0,
           "total": 5699472,
           "title": "Executive Vice President and General Counsel",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 18425
         },
         {
           "name": "Edward B. Adams, Jr.",
           "year": 2024,
           "salary": 512115,
           "stock_awards": 2998892,
-          "option_awards": 548629,
-          "non_equity_incentive": 35425,
-          "pension_nqdc": 4095061,
-          "all_other": 2023,
-          "total": 4097084,
+          "option_awards": 0,
+          "non_equity_incentive": 548629,
+          "pension_nqdc": 0,
+          "all_other": 35425,
+          "total": 4095061,
           "title": "Executive Vice President and General Counsel",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Catherine Piche",
           "year": 2025,
           "salary": 550000,
           "stock_awards": 4286658,
-          "option_awards": 765380,
-          "non_equity_incentive": 44870,
-          "pension_nqdc": 5646908,
+          "option_awards": 0,
+          "non_equity_incentive": 765380,
+          "pension_nqdc": 0,
           "total": 5646908,
-          "title": "SVP, Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "EVP and COO - Towers",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 44870
         },
         {
           "name": "Catherine Piche",
@@ -54568,33 +54595,37 @@
           "_total_source": "recomputed"
         },
         {
-          "name": "Steven J. Moskowitz (j)",
+          "name": "Steven J. Moskowitz",
           "year": 2025,
           "salary": 225000,
           "stock_awards": 12504484,
-          "option_awards": 492397,
-          "non_equity_incentive": 4996573,
-          "pension_nqdc": 18218454,
+          "option_awards": 0,
+          "non_equity_incentive": 492397,
+          "pension_nqdc": 0,
           "total": 18218454,
-          "title": "President",
-          "_total_source": "verified"
+          "title": "Former President & CEO",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 4996573
         },
         {
           "name": "Steven J. Moskowitz",
           "year": 2024,
           "salary": 630000,
           "stock_awards": 14566409,
-          "option_awards": 1210251,
-          "non_equity_incentive": 35115,
-          "pension_nqdc": 16441775,
+          "option_awards": 0,
+          "non_equity_incentive": 1210251,
+          "pension_nqdc": 0,
           "total": 16441775,
-          "title": "Executive Vice President and Chief Operating Officer\u2014Towers",
-          "_total_source": "verified"
+          "title": "Former President & CEO",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 35115
         }
       ],
       "filing_date": "2026-04-06",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1051470/000105147026000039/cci-20260406.htm",
-      "neo_count": 7,
+      "neo_count": 12,
       "available_years": [
         2025,
         2024
@@ -57284,7 +57315,8 @@
           "pension_nqdc": 274971,
           "total": 12492830,
           "title": "Chairman of the Board & CEO",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 92182
         },
         {
           "name": "Jeffrey L. Harmening",
@@ -57297,7 +57329,8 @@
           "pension_nqdc": 3303184,
           "total": 16056114,
           "title": "Chairman of the Board & CEO",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 164164
         },
         {
           "name": "Jeffrey L. Harmening",
@@ -57310,7 +57343,8 @@
           "pension_nqdc": 2465417,
           "total": 16385646,
           "title": "Chairman of the Board & CEO",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 334953
         },
         {
           "name": "Kofi A. Bruce",
@@ -57323,7 +57357,8 @@
           "pension_nqdc": 428604,
           "total": 4728795,
           "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 57911
         },
         {
           "name": "Kofi A. Bruce",
@@ -57336,7 +57371,8 @@
           "pension_nqdc": 800182,
           "total": 4617517,
           "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 82547
         },
         {
           "name": "Kofi A. Bruce",
@@ -57349,7 +57385,8 @@
           "pension_nqdc": 564458,
           "total": 5014160,
           "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 136742
         },
         {
           "name": "Dana M. McNabb",
@@ -57362,7 +57399,8 @@
           "pension_nqdc": 285823,
           "total": 4119856,
           "title": "Group President, North America Retail and North America Pet",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 58216
         },
         {
           "name": "Dana M. McNabb",
@@ -57375,7 +57413,8 @@
           "pension_nqdc": 356666,
           "total": 3165514,
           "title": "Group President, North America Retail and North America Pet",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 58303
         },
         {
           "name": "Jaime Montemayor",
@@ -57388,7 +57427,8 @@
           "pension_nqdc": 0,
           "total": 3252581,
           "title": "Chief Digital and Technology Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 118674
         },
         {
           "name": "Jaime Montemayor",
@@ -57401,7 +57441,8 @@
           "pension_nqdc": 0,
           "total": 3257331,
           "title": "Chief Digital and Technology Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 182077
         },
         {
           "name": "Jaime Montemayor",
@@ -57414,7 +57455,8 @@
           "pension_nqdc": 0,
           "total": 3507148,
           "title": "Chief Digital and Technology Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 164084
         },
         {
           "name": "Jonathon J. Nudi",
@@ -57426,8 +57468,9 @@
           "non_equity_incentive": 371124,
           "pension_nqdc": 0,
           "total": 3952995,
-          "title": "President",
-          "_total_source": "verified"
+          "title": "Former Group President, North America Pet, International & North America Foodservice",
+          "_total_source": "verified",
+          "all_other": 67454
         },
         {
           "name": "Jonathon J. Nudi",
@@ -57439,8 +57482,9 @@
           "non_equity_incentive": 537212,
           "pension_nqdc": 1009514,
           "total": 5191233,
-          "title": "President",
-          "_total_source": "verified"
+          "title": "Former Group President, North America Pet, International & North America Foodservice",
+          "_total_source": "verified",
+          "all_other": 96587
         },
         {
           "name": "Jonathon J. Nudi",
@@ -57452,11 +57496,12 @@
           "non_equity_incentive": 1712880,
           "pension_nqdc": 1512880,
           "total": 6450505,
-          "title": "President",
-          "_total_source": "verified"
+          "title": "Former Group President, North America Pet, International & North America Foodservice",
+          "_total_source": "verified",
+          "all_other": 154535
         }
       ],
-      "neo_count": 5,
+      "neo_count": 14,
       "total_neo_compensation": 32287709,
       "available_years": [
         2025,
@@ -68910,11 +68955,13 @@
           "salary": 1025001,
           "stock_awards": 11000214,
           "non_equity_incentive": 1763514,
-          "pension_nqdc": 101572,
+          "pension_nqdc": 0,
           "total": 13890300,
           "all_other": 101572,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "William Burns",
@@ -68922,11 +68969,13 @@
           "salary": 1000002,
           "stock_awards": 10000240,
           "non_equity_incentive": 2366554,
-          "pension_nqdc": 95998,
+          "pension_nqdc": 0,
           "total": 13462794,
           "all_other": 95998,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "William Burns",
@@ -68934,11 +68983,13 @@
           "salary": 946205,
           "stock_awards": 10000537,
           "non_equity_incentive": 224372,
-          "pension_nqdc": 88782,
+          "pension_nqdc": 0,
           "total": 11259895,
           "all_other": 88782,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Nathan Winters",
@@ -68946,11 +68997,13 @@
           "salary": 640500,
           "stock_awards": 4150011,
           "non_equity_incentive": 734654,
-          "pension_nqdc": 48379,
+          "pension_nqdc": 0,
           "total": 5573544,
           "all_other": 48379,
-          "title": "CFO",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Nathan Winters",
@@ -68958,11 +69011,13 @@
           "salary": 625000,
           "stock_awards": 3750322,
           "non_equity_incentive": 1095624,
-          "pension_nqdc": 30732,
+          "pension_nqdc": 0,
           "total": 5501678,
           "all_other": 30732,
-          "title": "CFO",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Nathan Winters",
@@ -68970,11 +69025,13 @@
           "salary": 620192,
           "stock_awards": 3750318,
           "non_equity_incentive": 112255,
-          "pension_nqdc": 30122,
+          "pension_nqdc": 0,
           "total": 4512887,
           "all_other": 30122,
-          "title": "CFO",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Richard Hudson",
@@ -68982,11 +69039,13 @@
           "salary": 575228,
           "stock_awards": 2700192,
           "non_equity_incentive": 659786,
-          "pension_nqdc": 312926,
+          "pension_nqdc": 0,
           "total": 4248132,
           "all_other": 312926,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief Revenue Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Cristen Kogl",
@@ -68994,11 +69053,13 @@
           "salary": 615000,
           "stock_awards": 2500439,
           "non_equity_incentive": 564324,
-          "pension_nqdc": 98823,
+          "pension_nqdc": 0,
           "total": 3778586,
           "all_other": 98823,
-          "title": "Chief Legal Officer",
-          "_total_source": "verified"
+          "title": "Chief Legal Officer, General Counsel and Corporate Secretary",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Cristen Kogl",
@@ -69006,11 +69067,13 @@
           "salary": 599999,
           "stock_awards": 2250502,
           "non_equity_incentive": 841439,
-          "pension_nqdc": 69035,
+          "pension_nqdc": 0,
           "total": 3760975,
           "all_other": 69035,
-          "title": "Chief Legal Officer",
-          "_total_source": "verified"
+          "title": "Chief Legal Officer, General Counsel and Corporate Secretary",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Cristen Kogl",
@@ -69018,11 +69081,13 @@
           "salary": 596226,
           "stock_awards": 2250243,
           "non_equity_incentive": 86334,
-          "pension_nqdc": 59337,
+          "pension_nqdc": 0,
           "total": 2992140,
           "all_other": 59337,
-          "title": "Chief Legal Officer",
-          "_total_source": "verified"
+          "title": "Chief Legal Officer, General Counsel and Corporate Secretary",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Jeffrey Schmitz",
@@ -69030,11 +69095,13 @@
           "salary": 543500,
           "stock_awards": 2200043,
           "non_equity_incentive": 498716,
-          "pension_nqdc": 78381,
+          "pension_nqdc": 0,
           "total": 3320639,
           "all_other": 78381,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief People Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Jeffrey Schmitz",
@@ -69042,11 +69109,13 @@
           "salary": 530001,
           "stock_awards": 2000172,
           "non_equity_incentive": 743273,
-          "pension_nqdc": 59395,
+          "pension_nqdc": 0,
           "total": 3332841,
           "all_other": 59395,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief People Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Jeffrey Schmitz",
@@ -69054,22 +69123,27 @@
           "salary": 526662,
           "stock_awards": 2000273,
           "non_equity_incentive": 76261,
-          "pension_nqdc": 43823,
+          "pension_nqdc": 0,
           "total": 2647019,
           "all_other": 43823,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief People Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         },
         {
           "name": "Joseph White",
           "year": 2025,
           "salary": 490942,
           "stock_awards": 3125165,
-          "pension_nqdc": 79184,
+          "pension_nqdc": 0,
           "total": 3695292,
           "all_other": 79184,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Former Chief Products and Solutions Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "non_equity_incentive": 0
         },
         {
           "name": "Joseph White",
@@ -69077,14 +69151,16 @@
           "salary": 549995,
           "stock_awards": 2875401,
           "non_equity_incentive": 964141,
-          "pension_nqdc": 42103,
+          "pension_nqdc": 0,
           "total": 4431640,
           "all_other": 42103,
-          "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Former Chief Products and Solutions Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0
         }
       ],
-      "neo_count": 6,
+      "neo_count": 15,
       "available_years": [
         2025,
         2024,
@@ -74653,8 +74729,12 @@
           "stock_awards": 9754753,
           "non_equity_incentive": 1696000,
           "total": 13333032,
-          "title": "Chair, and Chief Executive Officer (CEO)",
-          "_total_source": "verified"
+          "title": "Chair and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 574587
         },
         {
           "name": "Linda Rendle",
@@ -74664,8 +74744,11 @@
           "non_equity_incentive": 2000000,
           "pension_nqdc": 668,
           "total": 12685308,
-          "title": "Chair, and Chief Executive Officer (CEO)",
-          "_total_source": "verified"
+          "title": "Chair and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "all_other": 713384
         },
         {
           "name": "Linda Rendle",
@@ -74676,8 +74759,10 @@
           "non_equity_incentive": 3121313,
           "pension_nqdc": 1293,
           "total": 11649650,
-          "title": "Chair, and Chief Executive Officer (CEO)",
-          "_total_source": "verified"
+          "title": "Chair and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 359076
         },
         {
           "name": "Luc Bellet",
@@ -74686,8 +74771,12 @@
           "stock_awards": 1599673,
           "non_equity_incentive": 362301,
           "total": 2622295,
-          "title": "EVP and Chief Financial Officer (CFO)",
-          "_total_source": "verified"
+          "title": "EVP and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 145546
         },
         {
           "name": "Eric Reynolds",
@@ -74698,7 +74787,10 @@
           "pension_nqdc": 418,
           "total": 4762866,
           "title": "EVP and Chief Operating & Strategy Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "all_other": 271097
         },
         {
           "name": "Eric Reynolds",
@@ -74709,7 +74801,10 @@
           "pension_nqdc": 1758,
           "total": 4765745,
           "title": "EVP and Chief Operating & Strategy Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "all_other": 351627
         },
         {
           "name": "Eric Reynolds",
@@ -74721,7 +74816,9 @@
           "pension_nqdc": 2869,
           "total": 4854294,
           "title": "EVP and Chief Operating & Strategy Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 192340
         },
         {
           "name": "Nina Barton",
@@ -74731,8 +74828,11 @@
           "stock_awards": 7998301,
           "non_equity_incentive": 475003,
           "total": 10070862,
-          "title": "EVP and Group President\u2013Care & Connection",
-          "_total_source": "verified"
+          "title": "EVP and Group President - Care & Connection",
+          "_total_source": "verified",
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 110676
         },
         {
           "name": "Chris Hyder",
@@ -74741,8 +74841,12 @@
           "stock_awards": 2999203,
           "non_equity_incentive": 486000,
           "total": 4366368,
-          "title": "EVP and Group President\u2013Health & Hygiene",
-          "_total_source": "verified"
+          "title": "EVP and Group President - Health & Hygiene",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 211934
         },
         {
           "name": "Kevin Jacobsen",
@@ -74752,8 +74856,11 @@
           "non_equity_incentive": 513383,
           "pension_nqdc": 6097,
           "total": 4246342,
-          "title": "EVP and Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former EVP and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "all_other": 276939
         },
         {
           "name": "Kevin Jacobsen",
@@ -74763,8 +74870,11 @@
           "non_equity_incentive": 780000,
           "pension_nqdc": 8430,
           "total": 4319645,
-          "title": "EVP and Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former EVP and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "all_other": 342787
         },
         {
           "name": "Kevin Jacobsen",
@@ -74775,11 +74885,13 @@
           "non_equity_incentive": 1258370,
           "pension_nqdc": 6051,
           "total": 4428950,
-          "title": "EVP and Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former EVP and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "all_other": 196330
         }
       ],
-      "neo_count": 6,
+      "neo_count": 12,
       "total_neo_compensation": 21770698,
       "available_years": [
         2025,
@@ -75220,26 +75332,27 @@
           "name": "Gerardo Norcia",
           "year": 2023,
           "salary": 1340000,
-          "bonus": 6729046,
-          "stock_awards": 896540,
-          "option_awards": 1176501,
-          "non_equity_incentive": 136011,
-          "pension_nqdc": 10278098,
+          "bonus": 0,
+          "stock_awards": 6729046,
+          "option_awards": 0,
+          "non_equity_incentive": 896540,
+          "pension_nqdc": 1176501,
           "total": 10278098,
-          "title": "President and State Government Official",
-          "_total_source": "verified"
+          "title": "Executive Chairman",
+          "_total_source": "verified",
+          "all_other": 136011
         },
         {
           "name": "David Ruud",
           "year": 2025,
           "salary": 756731,
-          "bonus": 3369968,
-          "stock_awards": 1359000,
-          "option_awards": 1023367,
-          "non_equity_incentive": 52072,
-          "pension_nqdc": 6561138,
-          "all_other": 2024,
-          "total": 6563162,
+          "bonus": 0,
+          "stock_awards": 3369968,
+          "option_awards": 0,
+          "non_equity_incentive": 1359000,
+          "pension_nqdc": 1023367,
+          "all_other": 52072,
+          "total": 6561138,
           "title": "Vice Chairman and Chief Financial Officer",
           "_total_source": "verified"
         },
@@ -75247,53 +75360,55 @@
           "name": "David Ruud",
           "year": 2023,
           "salary": 670000,
-          "bonus": 1807875,
-          "stock_awards": 265600,
-          "option_awards": 800777,
-          "non_equity_incentive": 43947,
-          "pension_nqdc": 3588199,
+          "bonus": 0,
+          "stock_awards": 1807875,
+          "option_awards": 0,
+          "non_equity_incentive": 265600,
+          "pension_nqdc": 800777,
           "total": 3588199,
           "title": "Vice Chairman and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 43947
         },
         {
-          "name": "JoAnn Chavez Special Advisor to CEO",
+          "name": "JoAnn Chavez",
           "year": 2025,
           "salary": 679615,
-          "bonus": 1345073,
-          "stock_awards": 872700,
-          "option_awards": 402088,
-          "non_equity_incentive": 61237,
-          "pension_nqdc": 3360713,
-          "all_other": 2024,
-          "total": 3362737,
-          "title": "General Counsel",
+          "bonus": 0,
+          "stock_awards": 1345073,
+          "option_awards": 0,
+          "non_equity_incentive": 872700,
+          "pension_nqdc": 402088,
+          "all_other": 61237,
+          "total": 3360713,
+          "title": "Special Advisor to CEO and General Counsel",
           "_total_source": "verified"
         },
         {
-          "name": "JoAnn Chavez Special Advisor to CEO",
+          "name": "JoAnn Chavez",
           "year": 2023,
           "salary": 605000,
-          "bonus": 1104059,
-          "stock_awards": 209900,
-          "option_awards": 362105,
-          "non_equity_incentive": 91317,
-          "pension_nqdc": 2372381,
+          "bonus": 0,
+          "stock_awards": 1104059,
+          "option_awards": 0,
+          "non_equity_incentive": 209900,
+          "pension_nqdc": 362105,
           "total": 2372381,
-          "title": "General Counsel",
-          "_total_source": "verified"
+          "title": "Special Advisor to CEO and General Counsel",
+          "_total_source": "verified",
+          "all_other": 91317
         },
         {
           "name": "Trevor F. Lauer",
           "year": 2025,
           "salary": 696077,
-          "bonus": 1665903,
-          "stock_awards": 954000,
-          "option_awards": 674451,
-          "non_equity_incentive": 60290,
-          "pension_nqdc": 4050721,
-          "all_other": 2024,
-          "total": 4052745,
+          "bonus": 0,
+          "stock_awards": 1665903,
+          "option_awards": 0,
+          "non_equity_incentive": 954000,
+          "pension_nqdc": 674451,
+          "all_other": 60290,
+          "total": 4050721,
           "title": "President and COO, DTE Electric",
           "_total_source": "verified"
         },
@@ -75301,39 +75416,41 @@
           "name": "Trevor F. Lauer",
           "year": 2023,
           "salary": 640000,
-          "bonus": 1320426,
-          "stock_awards": 253700,
-          "option_awards": 534753,
-          "non_equity_incentive": 55604,
-          "pension_nqdc": 2804483,
+          "bonus": 0,
+          "stock_awards": 1320426,
+          "option_awards": 0,
+          "non_equity_incentive": 253700,
+          "pension_nqdc": 534753,
           "total": 2804483,
           "title": "President and COO, DTE Electric",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 55604
         },
         {
           "name": "Matthew Paul",
           "year": 2025,
           "salary": 616538,
-          "bonus": 1271051,
-          "stock_awards": 707200,
-          "option_awards": 438617,
-          "non_equity_incentive": 66689,
-          "pension_nqdc": 3100095,
+          "bonus": 0,
+          "stock_awards": 1271051,
+          "option_awards": 0,
+          "non_equity_incentive": 707200,
+          "pension_nqdc": 438617,
           "total": 3100095,
           "title": "President and Chief Operating Officer\u2014DTE Electric",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 66689
         },
         {
           "name": "Mark W. Stiers",
           "year": 2025,
           "salary": 649615,
-          "bonus": 1537416,
-          "stock_awards": 648900,
-          "option_awards": 421290,
-          "non_equity_incentive": 55064,
-          "pension_nqdc": 3312285,
-          "all_other": 2024,
-          "total": 3314309,
+          "bonus": 0,
+          "stock_awards": 1537416,
+          "option_awards": 0,
+          "non_equity_incentive": 648900,
+          "pension_nqdc": 421290,
+          "all_other": 55064,
+          "total": 3312285,
           "title": "President and COO, DTE Gas",
           "_total_source": "verified"
         },
@@ -75341,18 +75458,18 @@
           "name": "Mark W. Stiers",
           "year": 2023,
           "salary": 597000,
-          "bonus": 1047316,
-          "stock_awards": 699900,
-          "option_awards": 304150,
-          "non_equity_incentive": 47280,
-          "pension_nqdc": 2695646,
-          "all_other": -1,
-          "total": 2695645,
+          "bonus": 0,
+          "stock_awards": 1047316,
+          "option_awards": 0,
+          "non_equity_incentive": 699900,
+          "pension_nqdc": 304150,
+          "all_other": 47280,
+          "total": 2695646,
           "title": "President and COO, DTE Gas",
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 11,
       "available_years": [
         2025,
         2023
@@ -75407,11 +75524,12 @@
           "stock_awards": 4792877,
           "option_awards": 4792556,
           "non_equity_incentive": 4383972,
-          "pension_nqdc": 84255,
+          "pension_nqdc": 0,
           "total": 15403663,
           "all_other": 84255,
-          "title": "President and Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "President and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Kecia L. Steelman",
@@ -75420,11 +75538,12 @@
           "stock_awards": 2975187,
           "option_awards": 1274996,
           "non_equity_incentive": 836236,
-          "pension_nqdc": 77860,
+          "pension_nqdc": 0,
           "total": 6300394,
           "all_other": 77860,
-          "title": "President and Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "President and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Kecia L. Steelman",
@@ -75433,11 +75552,12 @@
           "stock_awards": 2609940,
           "option_awards": 1118334,
           "non_equity_incentive": 1198320,
-          "pension_nqdc": 64187,
+          "pension_nqdc": 0,
           "total": 6055803,
           "all_other": 64187,
-          "title": "President and Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "President and Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Christopher J. DelOrefice",
@@ -75445,11 +75565,13 @@
           "salary": 154540,
           "bonus": 1000000,
           "stock_awards": 3300658,
-          "pension_nqdc": 13900,
+          "pension_nqdc": 0,
           "total": 4469098,
           "all_other": 13900,
           "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "option_awards": 0,
+          "non_equity_incentive": 0
         },
         {
           "name": "Rene G. C\u00e1sares",
@@ -75459,7 +75581,7 @@
           "stock_awards": 634421,
           "option_awards": 634377,
           "non_equity_incentive": 1078007,
-          "pension_nqdc": 14500,
+          "pension_nqdc": 0,
           "total": 4210828,
           "all_other": 14500,
           "title": "Chief Legal Officer",
@@ -75472,11 +75594,12 @@
           "stock_awards": 1225343,
           "option_awards": 1225131,
           "non_equity_incentive": 980987,
-          "pension_nqdc": 40092,
+          "pension_nqdc": 0,
           "total": 4187481,
           "all_other": 40092,
           "title": "Chief Human Resources Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Anita J. Ryan",
@@ -75485,11 +75608,12 @@
           "stock_awards": 566279,
           "option_awards": 242481,
           "non_equity_incentive": 255685,
-          "pension_nqdc": 41123,
+          "pension_nqdc": 0,
           "total": 1751907,
           "all_other": 41123,
           "title": "Chief Human Resources Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Anita J. Ryan",
@@ -75498,11 +75622,12 @@
           "stock_awards": 492194,
           "option_awards": 210904,
           "non_equity_incentive": 357419,
-          "pension_nqdc": 46964,
+          "pension_nqdc": 0,
           "total": 1669497,
           "all_other": 46964,
           "title": "Chief Human Resources Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Paula M. Oyibo",
@@ -75523,11 +75648,12 @@
           "stock_awards": 1015433,
           "option_awards": 435142,
           "non_equity_incentive": 396763,
-          "pension_nqdc": 48322,
+          "pension_nqdc": 0,
           "total": 2586050,
           "all_other": 48322,
-          "title": "Chief Human Resources Officer",
-          "_total_source": "verified"
+          "title": "Former Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Christopher Lialios",
@@ -75536,11 +75662,12 @@
           "stock_awards": 204529,
           "option_awards": 87590,
           "non_equity_incentive": 651417,
-          "pension_nqdc": 23040,
+          "pension_nqdc": 0,
           "total": 1455069,
           "all_other": 23040,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former Interim Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Jodi J. Caro",
@@ -75559,11 +75686,12 @@
           "stock_awards": 726280,
           "option_awards": 311063,
           "non_equity_incentive": 273335,
-          "pension_nqdc": 57390,
+          "pension_nqdc": 0,
           "total": 2059023,
           "all_other": 57390,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former General Counsel and Chief Risk and Compliance Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Jodi J. Caro",
@@ -75572,14 +75700,15 @@
           "stock_awards": 691364,
           "option_awards": 296189,
           "non_equity_incentive": 418494,
-          "pension_nqdc": 55369,
+          "pension_nqdc": 0,
           "total": 2119466,
           "all_other": 55369,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Former General Counsel and Chief Risk and Compliance Officer",
+          "_total_source": "verified",
+          "bonus": 0
         }
       ],
-      "neo_count": 7,
+      "neo_count": 14,
       "available_years": [
         2025,
         2024,
@@ -84375,33 +84504,46 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/879101/000120677426000197/kim4498121-def14a.htm",
       "executives": [
         {
-          "name": "Milton",
+          "name": "Milton Cooper",
           "year": 2025,
           "salary": 111846,
           "bonus": 27578,
           "total": 655590,
-          "title": "Cooper",
-          "_total_source": "minor_gap"
+          "title": "Chairman Emeritus",
+          "_total_source": "verified",
+          "stock_awards": 515093,
+          "option_awards": 0,
+          "non_equity_incentive": 0,
+          "pension_nqdc": 0,
+          "all_other": 1073
         },
         {
-          "name": "Milton",
+          "name": "Milton Cooper",
           "year": 2024,
           "salary": 750000,
           "stock_awards": 1707725,
           "non_equity_incentive": 1700000,
           "total": 4161484,
-          "title": "Cooper",
-          "_total_source": "verified"
+          "title": "Chairman Emeritus",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 3759
         },
         {
-          "name": "Milton",
+          "name": "Milton Cooper",
           "year": 2023,
           "salary": 750000,
           "stock_awards": 2827704,
           "non_equity_incentive": 1380332,
           "total": 4961795,
-          "title": "Cooper",
-          "_total_source": "verified"
+          "title": "Chairman Emeritus",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 3759
         },
         {
           "name": "Conor C. Flynn",
@@ -84412,7 +84554,10 @@
           "non_equity_incentive": 3398400,
           "total": 11581750,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 24264
         },
         {
           "name": "Conor C. Flynn",
@@ -84422,7 +84567,11 @@
           "non_equity_incentive": 3600000,
           "total": 10929025,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 24336
         },
         {
           "name": "Conor C. Flynn",
@@ -84432,38 +84581,53 @@
           "non_equity_incentive": 2923056,
           "total": 13951194,
           "title": "Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 26336
         },
         {
-          "name": "Ross",
+          "name": "Ross Cooper",
           "year": 2025,
           "salary": 700000,
           "bonus": 7470,
           "stock_awards": 1725868,
           "non_equity_incentive": 1368800,
           "total": 3827976,
-          "title": "Cooper",
-          "_total_source": "verified"
+          "title": "President and Chief Investment Officer",
+          "_total_source": "verified",
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 25838
         },
         {
-          "name": "Ross",
+          "name": "Ross Cooper",
           "year": 2024,
           "salary": 700000,
           "stock_awards": 1718033,
           "non_equity_incentive": 1450000,
           "total": 3893871,
-          "title": "Cooper",
-          "_total_source": "verified"
+          "title": "President and Chief Investment Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 25838
         },
         {
-          "name": "Ross",
+          "name": "Ross Cooper",
           "year": 2023,
           "salary": 700000,
           "stock_awards": 4000703,
           "non_equity_incentive": 1177342,
           "total": 5903883,
-          "title": "Cooper",
-          "_total_source": "verified"
+          "title": "President and Chief Investment Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 25838
         },
         {
           "name": "Glenn G. Cohen",
@@ -84473,8 +84637,11 @@
           "stock_awards": 1725868,
           "non_equity_incentive": 1321600,
           "total": 3757135,
-          "title": "Executive Vice President and Chief Financial Officer Age: 62 Tenure:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 27197
         },
         {
           "name": "Glenn G. Cohen",
@@ -84483,8 +84650,12 @@
           "stock_awards": 1718033,
           "non_equity_incentive": 1400000,
           "total": 3817230,
-          "title": "Executive Vice President and Chief Financial Officer Age: 62 Tenure:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 24197
         },
         {
           "name": "Glenn G. Cohen",
@@ -84493,8 +84664,12 @@
           "stock_awards": 3000668,
           "non_equity_incentive": 1136744,
           "total": 4836609,
-          "title": "Executive Vice President and Chief Financial Officer Age: 62 Tenure:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 24197
         },
         {
           "name": "David Jamieson",
@@ -84504,8 +84679,11 @@
           "stock_awards": 1908051,
           "non_equity_incentive": 1321600,
           "total": 3926007,
-          "title": "President and Chief Operating Officer and Director Age: 45 Director Since:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Operating Officer",
+          "_total_source": "verified",
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 13886
         },
         {
           "name": "David Jamieson",
@@ -84514,8 +84692,12 @@
           "stock_awards": 1718033,
           "non_equity_incentive": 1400000,
           "total": 3806932,
-          "title": "President and Chief Operating Officer and Director Age: 45 Director Since:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Operating Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 13899
         },
         {
           "name": "David Jamieson",
@@ -84524,11 +84706,15 @@
           "stock_awards": 4000703,
           "non_equity_incentive": 1136744,
           "total": 5826346,
-          "title": "President and Chief Operating Officer and Director Age: 45 Director Since:",
-          "_total_source": "verified"
+          "title": "Executive Vice President and Chief Operating Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "all_other": 13899
         }
       ],
-      "neo_count": 5,
+      "neo_count": 15,
       "total_neo_compensation": 26608542,
       "available_years": [
         2025,
@@ -89575,13 +89761,13 @@
           "name": "Daniel A. Carestio",
           "year": 2026,
           "salary": 1095707,
-          "bonus": 4333951,
-          "stock_awards": 4334251,
-          "option_awards": 1725007,
-          "non_equity_incentive": 19606,
-          "pension_nqdc": 11508522,
-          "all_other": 2025,
-          "total": 11510547,
+          "bonus": 0,
+          "stock_awards": 4333951,
+          "option_awards": 4334251,
+          "non_equity_incentive": 1725007,
+          "pension_nqdc": 0,
+          "all_other": 19606,
+          "total": 11508522,
           "title": "President and CEO",
           "_total_source": "verified"
         },
@@ -89589,27 +89775,29 @@
           "name": "Daniel A. Carestio",
           "year": 2024,
           "salary": 1030600,
-          "bonus": 2584412,
-          "stock_awards": 4800238,
-          "option_awards": 1123539,
-          "non_equity_incentive": 11987,
-          "pension_nqdc": 9550776,
+          "bonus": 0,
+          "stock_awards": 2584412,
+          "option_awards": 4800238,
+          "non_equity_incentive": 1123539,
+          "pension_nqdc": 0,
           "total": 9550776,
           "title": "President and CEO",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 11987
         },
         {
           "name": "Karen L. Burton",
           "year": 2026,
           "salary": 530762,
-          "bonus": 1042037,
-          "stock_awards": 1111148,
-          "option_awards": 491493,
-          "non_equity_incentive": 16977,
-          "pension_nqdc": 3192417,
+          "bonus": 0,
+          "stock_awards": 1042037,
+          "option_awards": 1111148,
+          "non_equity_incentive": 491493,
+          "pension_nqdc": 0,
           "total": 3192417,
           "title": "Senior Vice President and CFO (starting August 18, 2025)",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 16977
         },
         {
           "name": "Michael J. Tokich",
@@ -89630,26 +89818,27 @@
           "name": "Michael J. Tokich",
           "year": 2024,
           "salary": 613770,
-          "bonus": 775684,
-          "stock_awards": 1441226,
-          "option_awards": 401456,
-          "non_equity_incentive": 11758,
-          "pension_nqdc": 3243894,
+          "bonus": 0,
+          "stock_awards": 775684,
+          "option_awards": 1441226,
+          "non_equity_incentive": 401456,
+          "pension_nqdc": 0,
           "total": 3243894,
           "title": "SVP, CFO and Treasurer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 11758
         },
         {
           "name": "J. Adam Zangerle",
           "year": 2026,
           "salary": 570417,
-          "bonus": 913947,
-          "stock_awards": 914376,
-          "option_awards": 538815,
-          "non_equity_incentive": 16910,
-          "pension_nqdc": 2954465,
-          "all_other": 2025,
-          "total": 2956490,
+          "bonus": 0,
+          "stock_awards": 913947,
+          "option_awards": 914376,
+          "non_equity_incentive": 538815,
+          "pension_nqdc": 0,
+          "all_other": 16910,
+          "total": 2954465,
           "title": "SVP, General Counsel and Secretary",
           "_total_source": "verified"
         },
@@ -89657,26 +89846,27 @@
           "name": "J. Adam Zangerle",
           "year": 2024,
           "salary": 536475,
-          "bonus": 694096,
-          "stock_awards": 1041206,
-          "option_awards": 350896,
-          "non_equity_incentive": 11742,
-          "pension_nqdc": 2634415,
+          "bonus": 0,
+          "stock_awards": 694096,
+          "option_awards": 1041206,
+          "non_equity_incentive": 350896,
+          "pension_nqdc": 0,
           "total": 2634415,
           "title": "SVP, General Counsel and Secretary",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 11742
         },
         {
           "name": "Cary L. Majors",
           "year": 2026,
           "salary": 537115,
-          "bonus": 711010,
-          "stock_awards": 711242,
-          "option_awards": 473535,
-          "non_equity_incentive": 17522,
-          "pension_nqdc": 2450424,
-          "all_other": 2025,
-          "total": 2452449,
+          "bonus": 0,
+          "stock_awards": 711010,
+          "option_awards": 711242,
+          "non_equity_incentive": 473535,
+          "pension_nqdc": 0,
+          "all_other": 17522,
+          "total": 2450424,
           "title": "SVP and President, Healthcare",
           "_total_source": "verified"
         },
@@ -89684,26 +89874,27 @@
           "name": "Cary L. Majors",
           "year": 2024,
           "salary": 488250,
-          "bonus": 539319,
-          "stock_awards": 809661,
-          "option_awards": 298157,
-          "non_equity_incentive": 10543,
-          "pension_nqdc": 2145930,
+          "bonus": 0,
+          "stock_awards": 539319,
+          "option_awards": 809661,
+          "non_equity_incentive": 298157,
+          "pension_nqdc": 0,
           "total": 2145930,
           "title": "SVP and President, Healthcare",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 10543
         },
         {
           "name": "Mary Clare Fraser",
           "year": 2026,
           "salary": 461615,
-          "bonus": 609542,
-          "stock_awards": 609401,
-          "option_awards": 377902,
-          "non_equity_incentive": 15262,
-          "pension_nqdc": 2073722,
-          "all_other": 2025,
-          "total": 2075747,
+          "bonus": 0,
+          "stock_awards": 609542,
+          "option_awards": 609401,
+          "non_equity_incentive": 377902,
+          "pension_nqdc": 0,
+          "all_other": 15262,
+          "total": 2073722,
           "title": "SVP, Chief Human Resources Officer",
           "_total_source": "verified"
         },
@@ -89711,18 +89902,18 @@
           "name": "Mary Clare Fraser",
           "year": 2024,
           "salary": 434180,
-          "bonus": 462531,
-          "stock_awards": 693995,
-          "option_awards": 246122,
-          "non_equity_incentive": 11701,
-          "pension_nqdc": 1848529,
-          "all_other": -1,
-          "total": 1848528,
+          "bonus": 0,
+          "stock_awards": 462531,
+          "option_awards": 693995,
+          "non_equity_incentive": 246122,
+          "pension_nqdc": 0,
+          "all_other": 11701,
+          "total": 1848529,
           "title": "SVP, Chief Human Resources Officer",
           "_total_source": "verified"
         }
       ],
-      "neo_count": 6,
+      "neo_count": 11,
       "available_years": [
         2026,
         2024
@@ -91288,11 +91479,14 @@
           "year": 2025,
           "salary": 150000,
           "option_awards": 2349237,
-          "pension_nqdc": 80182,
+          "pension_nqdc": 0,
           "total": 2579419,
           "all_other": 80182,
           "title": "Executive Chairman",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0,
+          "non_equity_incentive": 0
         },
         {
           "name": "William C. Rhodes, III",
@@ -91301,11 +91495,12 @@
           "stock_awards": 66998,
           "option_awards": 4850336,
           "non_equity_incentive": 474454,
-          "pension_nqdc": 186925,
+          "pension_nqdc": 0,
           "total": 6046598,
           "all_other": 186925,
           "title": "Executive Chairman",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "William C. Rhodes, III",
@@ -91314,11 +91509,12 @@
           "stock_awards": 89372,
           "option_awards": 15877386,
           "non_equity_incentive": 1539720,
-          "pension_nqdc": 240344,
+          "pension_nqdc": 0,
           "total": 18796822,
           "all_other": 240344,
           "title": "Executive Chairman",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Philip B. Daniele, III",
@@ -91327,11 +91523,12 @@
           "stock_awards": 27754,
           "option_awards": 7198789,
           "non_equity_incentive": 1257751,
-          "pension_nqdc": 152120,
+          "pension_nqdc": 0,
           "total": 9636414,
           "all_other": 152120,
-          "title": "Chairman",
-          "_total_source": "verified"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Philip B. Daniele, III",
@@ -91340,11 +91537,12 @@
           "stock_awards": 25022,
           "option_awards": 7199838,
           "non_equity_incentive": 1002363,
-          "pension_nqdc": 116242,
+          "pension_nqdc": 0,
           "total": 9198465,
           "all_other": 116242,
-          "title": "Chairman",
-          "_total_source": "verified"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Philip B. Daniele, III",
@@ -91353,11 +91551,12 @@
           "stock_awards": 28354,
           "option_awards": 4223223,
           "non_equity_incentive": 436602,
-          "pension_nqdc": 83212,
+          "pension_nqdc": 0,
           "total": 5287468,
           "all_other": 83212,
-          "title": "Chairman",
-          "_total_source": "verified"
+          "title": "President & Chief Executive Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Jamere Jackson",
@@ -91365,11 +91564,13 @@
           "salary": 808462,
           "option_awards": 5200014,
           "non_equity_incentive": 782187,
-          "pension_nqdc": 101743,
+          "pension_nqdc": 0,
           "total": 6892406,
           "all_other": 101743,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "Jamere Jackson",
@@ -91378,11 +91579,12 @@
           "stock_awards": 8135,
           "option_awards": 5200028,
           "non_equity_incentive": 771295,
-          "pension_nqdc": 93383,
+          "pension_nqdc": 0,
           "total": 6877610,
           "all_other": 93383,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Jamere Jackson",
@@ -91390,11 +91592,13 @@
           "salary": 727769,
           "option_awards": 4223223,
           "non_equity_incentive": 615693,
-          "pension_nqdc": 97312,
+          "pension_nqdc": 0,
           "total": 5663997,
           "all_other": 97312,
-          "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "title": "Chief Financial Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "Thomas B. Newbern",
@@ -91402,11 +91606,13 @@
           "salary": 808462,
           "option_awards": 5200014,
           "non_equity_incentive": 782187,
-          "pension_nqdc": 99836,
+          "pension_nqdc": 0,
           "total": 6890499,
           "all_other": 99836,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Chief Operating Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "Thomas B. Newbern",
@@ -91414,11 +91620,13 @@
           "salary": 790923,
           "option_awards": 5200028,
           "non_equity_incentive": 760982,
-          "pension_nqdc": 82624,
+          "pension_nqdc": 0,
           "total": 6834557,
           "all_other": 82624,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Chief Operating Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "Thomas B. Newbern",
@@ -91426,11 +91634,13 @@
           "salary": 637154,
           "option_awards": 4223223,
           "non_equity_incentive": 539032,
-          "pension_nqdc": 88184,
+          "pension_nqdc": 0,
           "total": 5487593,
           "all_other": 88184,
-          "title": "Chief Financial Officer",
-          "_total_source": "verified"
+          "title": "Chief Operating Officer",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "William R. Hackney",
@@ -91438,11 +91648,13 @@
           "salary": 516923,
           "option_awards": 5040518,
           "non_equity_incentive": 375093,
-          "pension_nqdc": 38552,
+          "pension_nqdc": 0,
           "total": 5971086,
           "all_other": 38552,
-          "title": "Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Merchandising, Marketing & Supply Chain",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "William R. Hackney",
@@ -91451,11 +91663,12 @@
           "stock_awards": 28442,
           "option_awards": 4684648,
           "non_equity_incentive": 434100,
-          "pension_nqdc": 82027,
+          "pension_nqdc": 0,
           "total": 5727447,
           "all_other": 82027,
-          "title": "Chief Operating Officer",
-          "_total_source": "verified"
+          "title": "Executive Vice President, Merchandising, Marketing & Supply Chain",
+          "_total_source": "verified",
+          "bonus": 0
         },
         {
           "name": "Kenneth E. Jaycox, Jr",
@@ -91463,11 +91676,13 @@
           "salary": 500000,
           "option_awards": 3299639,
           "non_equity_incentive": 290251,
-          "pension_nqdc": 194608,
+          "pension_nqdc": 0,
           "total": 4284498,
           "all_other": 194608,
-          "title": "SVP, Store Operations",
-          "_total_source": "verified"
+          "title": "Senior Vice President, Commercial",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         },
         {
           "name": "Kenneth E. Jaycox, Jr",
@@ -91475,14 +91690,16 @@
           "salary": 48077,
           "option_awards": 5298895,
           "non_equity_incentive": 28647,
-          "pension_nqdc": 21473,
+          "pension_nqdc": 0,
           "total": 5397092,
           "all_other": 21473,
-          "title": "SVP, Store Operations",
-          "_total_source": "verified"
+          "title": "Senior Vice President, Commercial",
+          "_total_source": "verified",
+          "bonus": 0,
+          "stock_awards": 0
         }
       ],
-      "neo_count": 6,
+      "neo_count": 16,
       "available_years": [
         2025,
         2024,
@@ -96877,7 +97094,7 @@
     {
       "ticker": "EG",
       "company_name": "Everest Group Ltd",
-      "ceo_name": "Juan C. Andrade",
+      "ceo_name": "Mark Kociancic",
       "total_compensation": 7250226,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
@@ -96979,7 +97196,7 @@
       ],
       "filing_date": "2026-04-10",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1095073/000162828026024596/eg-20260406.htm",
-      "neo_count": 3,
+      "neo_count": 8,
       "available_years": [
         2025,
         2024,
@@ -99777,7 +99994,8 @@
           "pension_nqdc": 111,
           "total": 8999073,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 555207
         },
         {
           "name": "Lisa Barton",
@@ -99790,7 +100008,8 @@
           "pension_nqdc": 24,
           "total": 6971735,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 348626
         },
         {
           "name": "Lisa Barton",
@@ -99803,7 +100022,8 @@
           "pension_nqdc": 4,
           "total": 5712727,
           "title": "President and Chief Executive Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 130299
         },
         {
           "name": "Robert Durian",
@@ -99816,7 +100036,8 @@
           "pension_nqdc": 13726,
           "total": 3421906,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 254020
         },
         {
           "name": "Robert Durian",
@@ -99829,7 +100050,8 @@
           "pension_nqdc": 7860,
           "total": 2784321,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 225595
         },
         {
           "name": "Robert Durian",
@@ -99842,7 +100064,8 @@
           "pension_nqdc": 22608,
           "total": 2859252,
           "title": "Executive Vice President and Chief Financial Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 196598
         },
         {
           "name": "Raja Sundararajan",
@@ -99868,7 +100091,8 @@
           "pension_nqdc": 0,
           "total": 2113940,
           "title": "Executive Vice President and Chief Strategy Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 137701
         },
         {
           "name": "Raja Sundararajan",
@@ -99881,7 +100105,8 @@
           "pension_nqdc": 0,
           "total": 1846058,
           "title": "Executive Vice President and Chief Strategy Officer",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 65900
         },
         {
           "name": "Antonio Smyth",
@@ -99894,7 +100119,8 @@
           "pension_nqdc": 0,
           "total": 4711479,
           "title": "Executive Vice President",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 360144
         },
         {
           "name": "David de Leon",
@@ -99907,7 +100133,8 @@
           "pension_nqdc": 12000,
           "total": 1721063,
           "title": "Senior Vice President",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 108601
         },
         {
           "name": "David de Leon",
@@ -99920,7 +100147,8 @@
           "pension_nqdc": 6000,
           "total": 1375076,
           "title": "Senior Vice President",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 96170
         },
         {
           "name": "David de Leon",
@@ -99933,10 +100161,11 @@
           "pension_nqdc": 24000,
           "total": 1277479,
           "title": "Senior Vice President",
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 84305
         }
       ],
-      "neo_count": 5,
+      "neo_count": 13,
       "total_neo_compensation": 13245072,
       "available_years": [
         2025,
@@ -106755,5 +106984,5 @@
       }
     }
   ],
-  "last_updated": "2026-09-03"
+  "last_updated": "2026-09-03T14:00:00-07:00"
 }
