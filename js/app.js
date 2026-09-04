@@ -8407,7 +8407,8 @@ function setupDetailPanel(companies) {
             html += '<div class="neo-section-header">';
             html += '<span class="neo-section-title">Named Executive Officers</span>';
             if (company.filing_url) {
-                html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="View DEF 14A proxy statement on SEC EDGAR">📄 SEC Filing</a>';
+                var _flIs10K = /10-K/.test(company.source || '') || /10k\.htm/i.test(company.filing_url || '');
+                html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="' + (_flIs10K ? 'View 10-K (Part III Item 11 comp disclosure) on SEC EDGAR' : 'View DEF 14A proxy statement on SEC EDGAR') + '">📄 ' + (_flIs10K ? 'SEC 10-K' : 'SEC Filing') + '</a>';
             }
             html += '</div>';
 
