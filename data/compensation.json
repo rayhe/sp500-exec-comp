@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "500 companies, 6519 NEO records, 498 companies enriched",
+    "description": "500 companies, 6530 NEO records, 498 companies enriched",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -28286,9 +28286,9 @@
     {
       "ticker": "VLO",
       "company_name": "Valero Energy Corp",
-      "ceo_name": "Gary K Simmons",
-      "total_compensation": 16087864,
-      "fiscal_year": 2024,
+      "ceo_name": "R. Lane Riggs",
+      "total_compensation": 34228523,
+      "fiscal_year": 2025,
       "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
       "median_worker_pay": 193216,
       "pay_ratio": 116,
@@ -28296,137 +28296,179 @@
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "executives": [
         {
-          "name": "Jason W Fraser",
-          "title": "Executive Vice President and Chief Financial Officer",
-          "year": 2025,
-          "salary": 988490,
-          "bonus": 5897165,
-          "stock_awards": 1969369,
-          "non_equity_incentive": 2278894,
-          "pension_nqdc": 132963,
-          "all_other": 11266881,
-          "total": 22533762,
-          "_original_total": 8987987,
-          "_total_source": "recomputed"
+          "_total_source": "verified",
+          "all_other": 425260,
+          "name": "R. Lane Riggs",
+          "non_equity_incentive": 5482810,
+          "pension_nqdc": 10839917,
+          "salary": 1720000,
+          "stock_awards": 15760536,
+          "title": "Chairman, Chief Executive Officer and President",
+          "total": 34228523,
+          "year": 2025
         },
         {
-          "name": "Jason W Fraser",
-          "title": "Executive Vice President and Chief Financial Officer",
-          "year": 2024,
+          "_total_source": "verified",
+          "all_other": 314215,
+          "name": "R. Lane Riggs",
+          "non_equity_incentive": 3710520,
+          "pension_nqdc": 5917094,
+          "salary": 1650000,
+          "stock_awards": 10820463,
+          "title": "Chairman, Chief Executive Officer and President",
+          "total": 22412292,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 179801,
+          "name": "R. Lane Riggs",
+          "non_equity_incentive": 3352046,
+          "pension_nqdc": 6723177,
+          "salary": 1250000,
+          "stock_awards": 8635908,
+          "title": "Chairman, Chief Executive Officer and President",
+          "total": 20140932,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 132963,
+          "name": "Jason W. Fraser",
+          "non_equity_incentive": 1969369,
+          "pension_nqdc": 2278894,
+          "salary": 988490,
+          "stock_awards": 5897165,
+          "title": "Retired EVP and Chief Financial Officer",
+          "total": 11266881,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 121823,
+          "name": "Jason W. Fraser",
+          "non_equity_incentive": 1345591,
+          "pension_nqdc": 528398,
           "salary": 957375,
-          "bonus": 4791778,
-          "stock_awards": 1345591,
-          "non_equity_incentive": 528398,
-          "pension_nqdc": 121823,
-          "all_other": 7744965,
-          "total": 15489930,
-          "_original_total": 7216567,
-          "_total_source": "recomputed"
+          "stock_awards": 4791778,
+          "title": "Retired EVP and Chief Financial Officer",
+          "total": 7744965,
+          "year": 2024
         },
         {
-          "name": "Jason W Fraser",
-          "title": "Executive Vice President and Chief Financial Officer",
-          "year": 2023,
+          "_total_source": "verified",
+          "all_other": 168900,
+          "name": "Jason W. Fraser",
+          "non_equity_incentive": 1790985,
+          "pension_nqdc": 2430036,
           "salary": 925000,
-          "bonus": 5294801,
-          "stock_awards": 1790985,
-          "non_equity_incentive": 2430036,
-          "pension_nqdc": 168900,
-          "all_other": 10609722,
-          "total": 21219444,
-          "_original_total": 8179686,
-          "_total_source": "recomputed"
+          "stock_awards": 5294801,
+          "title": "Retired EVP and Chief Financial Officer",
+          "total": 10609722,
+          "year": 2023
         },
         {
-          "name": "Gary K Simmons",
-          "title": "Executive Vice President and Chief Commercial Officer",
-          "year": 2025,
+          "_total_source": "verified",
+          "all_other": 166930,
+          "name": "Gary K. Simmons",
+          "non_equity_incentive": 2166306,
+          "pension_nqdc": 3375999,
           "salary": 988490,
-          "bonus": 5989147,
-          "stock_awards": 2166306,
-          "non_equity_incentive": 3375999,
-          "pension_nqdc": 166930,
-          "all_other": 12686872,
-          "total": 25373744,
-          "_original_total": 9310873,
-          "_total_source": "recomputed"
+          "stock_awards": 5989147,
+          "title": "EVP and Chief Operating Officer",
+          "total": 12686872,
+          "year": 2025
         },
         {
-          "name": "Gary K Simmons",
-          "title": "Executive Vice President and Chief Commercial Officer",
-          "year": 2024,
+          "_total_source": "verified",
+          "all_other": 153917,
+          "name": "Gary K. Simmons",
+          "non_equity_incentive": 1309223,
+          "pension_nqdc": 1478054,
           "salary": 931500,
-          "bonus": 4171238,
-          "stock_awards": 1309223,
-          "non_equity_incentive": 1478054,
-          "pension_nqdc": 153917,
-          "all_other": 8043932,
-          "total": 16087864,
-          "_original_total": 6565878,
-          "_total_source": "recomputed"
+          "stock_awards": 4171238,
+          "title": "EVP and Chief Operating Officer",
+          "total": 8043932,
+          "year": 2024
         },
         {
-          "name": "Gary K Simmons",
-          "title": "Executive Vice President and Chief Commercial Officer",
-          "year": 2023,
+          "_total_source": "verified",
+          "all_other": 129908,
+          "name": "Gary K. Simmons",
+          "non_equity_incentive": 1599785,
+          "pension_nqdc": 4365732,
           "salary": 818333,
-          "bonus": 3842061,
-          "stock_awards": 1599785,
-          "non_equity_incentive": 4365732,
-          "pension_nqdc": 129908,
-          "all_other": 10755819,
-          "total": 21511638,
-          "_original_total": 6390087,
-          "_total_source": "recomputed"
+          "stock_awards": 3842061,
+          "title": "EVP and Chief Operating Officer",
+          "total": 10755819,
+          "year": 2023
         },
         {
-          "name": "Richard J Walsh",
-          "title": "SVP and Chief Human Resources Officer",
-          "year": 2025,
+          "_total_source": "verified",
+          "all_other": 140212,
+          "name": "Richard J. Walsh",
+          "non_equity_incentive": 1626116,
+          "pension_nqdc": 2035184,
           "salary": 816200,
-          "bonus": 3309268,
-          "stock_awards": 1626116,
-          "non_equity_incentive": 2035184,
-          "pension_nqdc": 140212,
-          "all_other": 7926980,
-          "total": 15853960,
-          "_original_total": 5891796,
-          "_total_source": "recomputed"
+          "stock_awards": 3309268,
+          "title": "EVP and General Counsel",
+          "total": 7926980,
+          "year": 2025
         },
         {
-          "name": "Richard J Walsh",
-          "title": "SVP and Chief Human Resources Officer",
-          "year": 2024,
+          "_total_source": "verified",
+          "all_other": 134151,
+          "name": "Richard J. Walsh",
+          "non_equity_incentive": 919900,
+          "pension_nqdc": 856773,
           "salary": 770000,
-          "bonus": 2196693,
-          "stock_awards": 919900,
-          "non_equity_incentive": 856773,
-          "pension_nqdc": 134151,
-          "all_other": 4877517,
-          "total": 9755034,
-          "_original_total": 4020744,
-          "_total_source": "recomputed"
+          "stock_awards": 2196693,
+          "title": "EVP and General Counsel",
+          "total": 4877517,
+          "year": 2024
         },
         {
-          "name": "Richard J Walsh",
-          "title": "SVP and Chief Human Resources Officer",
-          "year": 2023,
+          "_total_source": "verified",
+          "all_other": 99666,
+          "name": "Richard J. Walsh",
+          "non_equity_incentive": 1110895,
+          "pension_nqdc": 1838871,
           "salary": 675000,
-          "bonus": 2191857,
-          "stock_awards": 1110895,
-          "non_equity_incentive": 1838871,
-          "pension_nqdc": 99666,
-          "all_other": 5916289,
-          "total": 11832578,
-          "_original_total": 4077418,
-          "_total_source": "recomputed"
+          "stock_awards": 2191857,
+          "title": "EVP and General Counsel",
+          "total": 5916289,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 142676,
+          "name": "Eric A. Fisher",
+          "non_equity_incentive": 1254072,
+          "pension_nqdc": 1335475,
+          "salary": 740540,
+          "stock_awards": 2771963,
+          "title": "SVP Product Supply, Trading and Wholesale",
+          "total": 6244726,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 116691,
+          "name": "Eric A. Fisher",
+          "non_equity_incentive": 834630,
+          "pension_nqdc": 418962,
+          "salary": 698625,
+          "stock_awards": 2029759,
+          "title": "SVP Product Supply, Trading and Wholesale",
+          "total": 4098667,
+          "year": 2024
         }
       ],
       "cik": "0001035002",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1035002/000162828026019806/vlo-20260318.htm",
-      "total_neo_compensation": 63761466,
-      "neo_count": 3,
+      "total_neo_compensation": 72353982,
+      "neo_count": 14,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -31220,7 +31262,8 @@
           "pension_nqdc": 395763,
           "all_other": 194156,
           "total": 12235768,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Chief Executive Officer of FPL"
         },
         {
           "name": "Armando Pimentel, Jr.",
@@ -31232,7 +31275,8 @@
           "pension_nqdc": 117429,
           "all_other": 235316,
           "total": 10563407,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Chief Executive Officer of FPL"
         },
         {
           "name": "Rebecca J. Kujawa",
@@ -31243,7 +31287,8 @@
           "pension_nqdc": 391572,
           "all_other": 184802,
           "total": 26105632,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Former President and Chief Executive Officer of NextEra Energy Resources"
         },
         {
           "name": "Rebecca J. Kujawa",
@@ -31255,7 +31300,8 @@
           "pension_nqdc": 407530,
           "all_other": 173876,
           "total": 12176476,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "President and Chief Executive Officer of NextEra Energy Resources"
         },
         {
           "name": "Charles E. Sieving",
@@ -31267,7 +31313,8 @@
           "pension_nqdc": 538422,
           "all_other": 249195,
           "total": 7781167,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President, Chief Legal, Environmental and Federal Regulatory Affairs Officer of NextEra Energy and Executive Vice President of FPL"
         }
       ],
       "filing_date": "2026-04-01",
@@ -32098,10 +32145,10 @@
     {
       "ticker": "SRE",
       "company_name": "Sempra",
-      "ceo_name": "Justin C Bird",
-      "total_compensation": 6060734,
-      "fiscal_year": 2024,
-      "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
+      "ceo_name": "Jeffrey W. Martin",
+      "total_compensation": 22245589,
+      "fiscal_year": 2025,
+      "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
       "median_worker_pay": 125107,
       "pay_ratio": 172,
       "sector": "Utilities",
@@ -32187,7 +32234,8 @@
           "pension_nqdc": 2050160,
           "all_other": 129644,
           "total": 6619474,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Chief Financial Officer"
         },
         {
           "name": "Karen L. Sedgwick",
@@ -32198,7 +32246,8 @@
           "pension_nqdc": 5047785,
           "all_other": 63671,
           "total": 7990196,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Chief Financial Officer"
         },
         {
           "salary": 1700000,
@@ -32260,7 +32309,7 @@
       "cik": "0001032208",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312526127603/d90144ddef14a.htm",
-      "total_neo_compensation": 21898717,
+      "total_neo_compensation": 44144306,
       "neo_count": 4,
       "proxy_fiscal_year": 2025,
       "available_years": [
@@ -50231,7 +50280,8 @@
           "non_equity_incentive": 750000,
           "all_other": 593291,
           "total": 8285614,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Chief Operating Officer"
         }
       ],
       "cik": "354190",
@@ -61597,7 +61647,8 @@
           "pension_nqdc": 9906,
           "all_other": 147950,
           "total": 4242469,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Global Chief Operating Officer"
         },
         {
           "name": "Thomas R. Peck, Jr.",
@@ -61608,7 +61659,8 @@
           "non_equity_incentive": 504000,
           "all_other": 57181,
           "total": 5575067,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President, Chief Information and Digital Officer"
         },
         {
           "name": "Thomas R. Peck, Jr.",
@@ -61619,7 +61671,8 @@
           "non_equity_incentive": 645847,
           "all_other": 56899,
           "total": 3443934,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President, Chief Information and Digital Officer"
         },
         {
           "name": "Ronald L. Phillips",
@@ -61630,7 +61683,8 @@
           "non_equity_incentive": 467000,
           "all_other": 86625,
           "total": 3390132,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Chief Human Resources Officer"
         }
       ],
       "cik": "96021",
@@ -66292,20 +66346,6 @@
           "_total_source": "verified"
         },
         {
-          "name": "David J. Anderson",
-          "title": "EVP and Chief Financial Officer",
-          "year": 2024,
-          "salary": 214712,
-          "bonus": 450000,
-          "stock_awards": 4560121,
-          "option_awards": 440016,
-          "non_equity_incentive": 168715,
-          "pension_nqdc": 0,
-          "all_other": 5225,
-          "total": 5838788,
-          "_total_source": "verified"
-        },
-        {
           "name": "David P. Johnson",
           "year": 2024,
           "salary": 214712,
@@ -66315,7 +66355,8 @@
           "non_equity_incentive": 168715,
           "all_other": 5225,
           "total": 5838788,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "EVP, Chief Financial Officer"
         },
         {
           "name": "Robert D. King",
@@ -66326,7 +66367,8 @@
           "non_equity_incentive": 1228205,
           "all_other": 87179,
           "total": 3751442,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "EVP, Crop Protection Business Unit"
         },
         {
           "name": "Judd M. O'Connor",
@@ -66338,14 +66380,15 @@
           "pension_nqdc": 102736,
           "all_other": 107507,
           "total": 3205218,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "EVP, Seed Business Unit"
         }
       ],
       "cik": "1755672",
       "filing_date": "2026-03-19",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1755672/000119312526116069/ctva-20260319.htm",
       "total_neo_compensation": 28934697,
-      "neo_count": 5,
+      "neo_count": 7,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -69893,9 +69936,9 @@
     {
       "ticker": "AES",
       "company_name": "AES Corp/The",
-      "ceo_name": "Stephen Coughlin",
-      "total_compensation": 13355284,
-      "fiscal_year": 2024,
+      "ceo_name": "Andr\u00e9s Gluski",
+      "total_compensation": 9153896,
+      "fiscal_year": 2025,
       "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
       "median_worker_pay": 97584,
       "pay_ratio": 137,
@@ -69906,181 +69949,170 @@
       "filing_url": "https://www.sec.gov/Archives/edgar/data/874761/000087476126000070/aes-20260320.htm",
       "executives": [
         {
-          "name": "Stephen Coughlin",
-          "title": "EVP and Chief Financial Officer",
-          "year": 2025,
-          "salary": 1241000,
-          "bonus": 0,
-          "stock_awards": 5019117,
-          "option_awards": 0,
-          "non_equity_incentive": 2568870,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 324909,
+          "name": "Andr\u00e9s Gluski",
+          "non_equity_incentive": 2568870,
+          "salary": 1241000,
+          "stock_awards": 5019117,
+          "title": "CEO",
           "total": 9153896,
-          "_total_source": "verified"
+          "year": 2025
         },
         {
-          "name": "Stephen Coughlin",
-          "title": "EVP and Chief Financial Officer",
-          "year": 2024,
-          "salary": 1241000,
-          "bonus": 0,
-          "stock_awards": 9368525,
-          "option_awards": 0,
-          "non_equity_incentive": 2419950,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 325809,
-          "total": 13355284,
-          "_total_source": "verified"
-        },
-        {
-          "name": "Stephen Coughlin",
-          "title": "EVP and Chief Financial Officer",
-          "year": 2023,
+          "name": "Andr\u00e9s Gluski",
+          "non_equity_incentive": 2419950,
           "salary": 1241000,
-          "bonus": 0,
-          "stock_awards": 8796107,
-          "option_awards": 0,
-          "non_equity_incentive": 2364105,
-          "pension_nqdc": 0,
+          "stock_awards": 9368525,
+          "title": "CEO",
+          "total": 13355284,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
           "all_other": 314982,
+          "name": "Andr\u00e9s Gluski",
+          "non_equity_incentive": 2364105,
+          "salary": 1241000,
+          "stock_awards": 8796107,
+          "title": "CEO",
           "total": 12716194,
-          "_total_source": "verified"
+          "year": 2023
         },
         {
-          "name": "Juan Ignacio Rubiolo",
-          "title": "EVP and President, Energy Infrastructure",
-          "year": 2025,
-          "salary": 645000,
-          "bonus": 89010,
-          "stock_awards": 1406317,
-          "option_awards": 0,
-          "non_equity_incentive": 890100,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 124987,
-          "total": 3155414,
-          "_total_source": "verified"
-        },
-        {
-          "name": "Juan Ignacio Rubiolo",
-          "title": "EVP and President, International Businesses",
-          "year": 2024,
+          "bonus": 89010,
+          "name": "Stephen Coughlin",
+          "non_equity_incentive": 890100,
           "salary": 645000,
-          "bonus": 0,
-          "stock_awards": 1617678,
-          "option_awards": 0,
-          "non_equity_incentive": 838500,
-          "pension_nqdc": 0,
+          "stock_awards": 1406317,
+          "title": "EVP & CFO",
+          "total": 3155414,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
           "all_other": 114545,
+          "name": "Stephen Coughlin",
+          "non_equity_incentive": 838500,
+          "salary": 645000,
+          "stock_awards": 1617678,
+          "title": "EVP & CFO",
           "total": 3215723,
-          "_total_source": "verified"
+          "year": 2024
         },
         {
-          "name": "Letitia Mendoza",
-          "title": "EVP and Chief Human Resources Officer",
-          "year": 2023,
-          "salary": 597000,
-          "bonus": 0,
-          "stock_awards": 1284554,
-          "option_awards": 0,
-          "non_equity_incentive": 1175305,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 70063,
+          "name": "Stephen Coughlin",
+          "non_equity_incentive": 1175305,
+          "salary": 597000,
+          "stock_awards": 1284554,
+          "title": "EVP & CFO",
           "total": 3126922,
-          "_total_source": "verified"
+          "year": 2023
         },
         {
-          "name": "Bernerd Da Santos",
-          "title": "EVP and Chief Operating Officer",
-          "year": 2025,
-          "salary": 550000,
-          "bonus": 0,
-          "stock_awards": 1171928,
-          "option_awards": 0,
-          "non_equity_incentive": 759000,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 842404,
-          "total": 3323332,
-          "_total_source": "verified"
-        },
-        {
-          "name": "Bernerd Da Santos",
-          "title": "EVP and Chief Operating Officer",
-          "year": 2024,
+          "name": "Juan Ignacio Rubiolo",
+          "non_equity_incentive": 759000,
           "salary": 550000,
-          "bonus": 0,
-          "stock_awards": 1348073,
-          "option_awards": 0,
-          "non_equity_incentive": 715000,
-          "pension_nqdc": 0,
+          "stock_awards": 1171928,
+          "title": "EVP & COO",
+          "total": 3323332,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
           "all_other": 675254,
+          "name": "Juan Ignacio Rubiolo",
+          "non_equity_incentive": 715000,
+          "salary": 550000,
+          "stock_awards": 1348073,
+          "title": "EVP & COO",
           "total": 3288327,
-          "_total_source": "verified"
+          "year": 2024
         },
         {
-          "name": "Bernerd Da Santos",
-          "title": "EVP and Chief Operating Officer",
-          "year": 2023,
-          "salary": 530000,
-          "bonus": 0,
-          "stock_awards": 1809816,
-          "option_awards": 0,
-          "non_equity_incentive": 673100,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 224311,
+          "name": "Juan Ignacio Rubiolo",
+          "non_equity_incentive": 673100,
+          "salary": 530000,
+          "stock_awards": 1809816,
+          "title": "EVP & COO",
           "total": 3237227,
-          "_total_source": "verified"
+          "year": 2023
         },
         {
-          "name": "Ricardo Fal\u00fa",
-          "title": "EVP and President, US & Renewables",
-          "year": 2025,
-          "salary": 663000,
-          "bonus": 0,
-          "stock_awards": 1250057,
-          "option_awards": 0,
-          "non_equity_incentive": 914940,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
           "all_other": 152132,
-          "total": 2980129,
-          "_total_source": "verified"
-        },
-        {
-          "name": "Ricardo Fal\u00fa",
-          "title": "EVP and President, US & Renewables",
-          "year": 2024,
+          "name": "Bernerd Da Santos",
+          "non_equity_incentive": 914940,
           "salary": 663000,
-          "bonus": 0,
-          "stock_awards": 1437936,
-          "option_awards": 0,
-          "non_equity_incentive": 861900,
-          "pension_nqdc": 0,
-          "all_other": 130748,
-          "total": 3093584,
-          "_total_source": "verified"
+          "stock_awards": 1250057,
+          "title": "EVP & President, US & Renewables",
+          "total": 2980129,
+          "year": 2025
         },
         {
-          "name": "Ricardo Fal\u00fa",
-          "title": "EVP and President, US & Renewables",
-          "year": 2023,
-          "salary": 644000,
-          "bonus": 204470,
-          "stock_awards": 1369376,
-          "option_awards": 0,
-          "non_equity_incentive": 817880,
-          "pension_nqdc": 0,
+          "_total_source": "verified",
+          "all_other": 130748,
+          "name": "Bernerd Da Santos",
+          "non_equity_incentive": 861900,
+          "salary": 663000,
+          "stock_awards": 1437936,
+          "title": "EVP & President, US & Renewables",
+          "total": 3093584,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
           "all_other": 120060,
+          "bonus": 204470,
+          "name": "Bernerd Da Santos",
+          "non_equity_incentive": 817880,
+          "salary": 644000,
+          "stock_awards": 1369376,
+          "title": "EVP & President, US & Renewables",
           "total": 3155786,
-          "_total_source": "verified"
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 96891,
+          "bonus": 114885,
+          "name": "Ricardo Fal\u00fa",
+          "non_equity_incentive": 765900,
+          "salary": 555000,
+          "stock_awards": 1171928,
+          "title": "President",
+          "total": 2704604,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 249412,
+          "name": "Ricardo Fal\u00fa",
+          "non_equity_incentive": 1023305,
+          "salary": 555000,
+          "stock_awards": 1348073,
+          "title": "President",
+          "total": 3175790,
+          "year": 2024
         }
       ],
-      "neo_count": 4,
+      "neo_count": 14,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 22952918,
+      "total_neo_compensation": 21317375,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -70409,7 +70441,7 @@
           "pension_nqdc": 5802,
           "all_other": 127329,
           "total": 4333461,
-          "title": "Chairman",
+          "title": "Executive Vice President and Chief Financial Officer",
           "_total_source": "verified"
         },
         {
@@ -70422,7 +70454,8 @@
           "non_equity_incentive": 265065,
           "pension_nqdc": 3748548,
           "total": 7497096,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Chief Financial Officer"
         },
         {
           "name": "Douglas N. Currault II",
@@ -70434,7 +70467,8 @@
           "non_equity_incentive": 91078,
           "pension_nqdc": 2934819,
           "total": 5869637,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and General Counsel"
         },
         {
           "name": "Stephen T. Higgins",
@@ -70446,7 +70480,8 @@
           "non_equity_incentive": 101278,
           "pension_nqdc": 3232345,
           "total": 6464690,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "title": "Executive Vice President and Chief Administrative Officer"
         }
       ],
       "neo_count": 5,
@@ -101773,8 +101808,8 @@
       "ticker": "ORCL",
       "company_name": "Oracle Corp",
       "ceo_name": "Safra A. Catz",
-      "total_compensation": 6464234,
-      "fiscal_year": 2024,
+      "total_compensation": 1113417,
+      "fiscal_year": 2025,
       "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
       "median_worker_pay": 78950,
       "pay_ratio": 82,
@@ -101782,137 +101817,175 @@
       "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
       "executives": [
         {
-          "name": "Lawrence J. Ellison",
-          "year": 2025,
-          "salary": 1,
-          "pension_nqdc": 5643947,
-          "all_other": -7,
-          "total": 5643948,
-          "title": "Chair",
-          "_total_source": "verified"
-        },
-        {
-          "name": "Lawrence J. Ellison",
-          "year": 2024,
-          "salary": 1,
-          "non_equity_incentive": 5292260,
-          "pension_nqdc": 3013678,
-          "all_other": 8305939,
-          "total": 16611878,
-          "title": "Chair",
-          "_total_source": "verified"
-        },
-        {
-          "name": "Edward Screven",
-          "year": 2023,
-          "salary": 1,
-          "non_equity_incentive": 4165213,
-          "pension_nqdc": 3136719,
-          "all_other": 7301933,
-          "total": 14603866,
-          "title": "Chief Accounting Officer",
-          "_total_source": "verified"
-        },
-        {
-          "name": "Safra A. Catz",
-          "year": 2025,
-          "salary": 950000,
-          "pension_nqdc": 163417,
-          "all_other": -8,
-          "total": 1113417,
-          "title": "Executive Vice Chair and Former Chief Executive Officer",
-          "_total_source": "verified"
-        },
-        {
-          "name": "Safra A. Catz",
-          "year": 2023,
-          "salary": 950000,
-          "non_equity_incentive": 4165213,
-          "pension_nqdc": 0,
-          "all_other": 135467,
-          "total": 5250680,
-          "title": "Chief Executive Officer",
           "_total_source": "verified",
-          "bonus": 0,
-          "stock_awards": 0,
-          "option_awards": 0
+          "all_other": 5643947,
+          "name": "Lawrence J. Ellison",
+          "salary": 1,
+          "title": "Executive Chair and Chief Technology Officer",
+          "total": 5643948,
+          "year": 2025
         },
         {
+          "_total_source": "verified",
+          "all_other": 3013678,
+          "name": "Lawrence J. Ellison",
+          "non_equity_incentive": 5292260,
+          "salary": 1,
+          "title": "Executive Chair and Chief Technology Officer",
+          "total": 8305939,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 3136719,
+          "name": "Lawrence J. Ellison",
+          "non_equity_incentive": 4165213,
+          "salary": 1,
+          "title": "Executive Chair and Chief Technology Officer",
+          "total": 7301933,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 163417,
+          "name": "Safra A. Catz",
+          "salary": 950000,
+          "title": "Executive Vice Chair and Former Chief Executive Officer",
+          "total": 1113417,
+          "year": 2025
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 221974,
+          "name": "Safra A. Catz",
+          "non_equity_incentive": 5292260,
+          "salary": 950000,
+          "title": "Executive Vice Chair and Former Chief Executive Officer",
+          "total": 6464234,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 135467,
+          "name": "Safra A. Catz",
+          "non_equity_incentive": 4165213,
+          "salary": 950000,
+          "title": "Executive Vice Chair and Former Chief Executive Officer",
+          "total": 5250680,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 8717,
           "name": "Jeffrey O. Henley",
-          "year": 2025,
           "salary": 650000,
           "stock_awards": 8799774,
-          "pension_nqdc": 8717,
-          "all_other": -9,
+          "title": "Executive Vice Chair",
           "total": 9458491,
-          "title": "Vice Chair and Former CEO**",
-          "_total_source": "verified"
+          "year": 2025
         },
         {
+          "_total_source": "verified",
+          "all_other": 7954,
+          "name": "Jeffrey O. Henley",
+          "non_equity_incentive": 529226,
+          "salary": 650000,
+          "stock_awards": 8712433,
+          "title": "Executive Vice Chair",
+          "total": 9899613,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 8050,
+          "name": "Jeffrey O. Henley",
+          "non_equity_incentive": 416521,
+          "salary": 650000,
+          "stock_awards": 8608921,
+          "title": "Executive Vice Chair",
+          "total": 9683492,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 40091,
           "name": "Stuart Levey",
-          "year": 2025,
           "salary": 950000,
           "stock_awards": 13688537,
-          "pension_nqdc": 40091,
-          "all_other": -10,
+          "title": "Executive Vice President, Chief Legal Officer",
           "total": 14678628,
-          "title": "Vice Chair",
-          "_total_source": "verified"
+          "year": 2025
         },
         {
+          "_total_source": "verified",
+          "all_other": 15682,
+          "bonus": 1000000,
+          "name": "Stuart Levey",
+          "salary": 950000,
+          "stock_awards": 11616614,
+          "title": "Executive Vice President, Chief Legal Officer",
+          "total": 13582296,
+          "year": 2024
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 12036,
+          "bonus": 650000,
+          "name": "Stuart Levey",
+          "salary": 557765,
+          "stock_awards": 11537388,
+          "title": "Executive Vice President, Chief Legal Officer",
+          "total": 12757189,
+          "year": 2023
+        },
+        {
+          "_total_source": "verified",
+          "all_other": 134893,
           "name": "Maria Smith",
-          "year": 2025,
           "salary": 504469,
           "stock_awards": 7822021,
-          "pension_nqdc": 134893,
-          "all_other": -11,
+          "title": "Executive Vice President, Chief Accounting Officer",
           "total": 8461383,
-          "title": "Chief Legal Officer",
-          "_total_source": "verified"
+          "year": 2025
         },
         {
+          "_total_source": "verified",
+          "all_other": 7167,
           "name": "Edward Screven",
-          "year": 2025,
           "salary": 796154,
           "stock_awards": 17599383,
-          "pension_nqdc": 7167,
-          "all_other": -12,
+          "title": "Former Executive Vice President, Chief Corporate Architect",
           "total": 18402704,
-          "title": "Chief Accounting Officer",
-          "_total_source": "verified"
+          "year": 2025
         },
         {
+          "_total_source": "verified",
+          "all_other": 7980,
           "name": "Edward Screven",
-          "year": 2024,
+          "non_equity_incentive": 2646130,
           "salary": 900000,
           "stock_awards": 17424865,
-          "non_equity_incentive": 2646130,
-          "pension_nqdc": 7980,
-          "all_other": 20978975,
-          "total": 41957950,
-          "title": "Chief Accounting Officer",
-          "_total_source": "verified"
+          "title": "Former Executive Vice President, Chief Corporate Architect",
+          "total": 20978975,
+          "year": 2024
         },
         {
-          "name": "Safra A. Catz",
-          "title": "Chief Executive Officer",
-          "year": 2024,
-          "salary": 950000,
-          "bonus": 0,
-          "stock_awards": 0,
-          "option_awards": 0,
-          "non_equity_incentive": 5292260,
-          "pension_nqdc": 0,
-          "all_other": 221974,
-          "total": 6464234,
-          "_total_source": "verified"
+          "_total_source": "verified",
+          "all_other": 8050,
+          "name": "Edward Screven",
+          "non_equity_incentive": 2082607,
+          "salary": 900000,
+          "stock_awards": 17217777,
+          "title": "Former Executive Vice President, Chief Corporate Architect",
+          "total": 20208434,
+          "year": 2023
         }
       ],
       "cik": "1341439",
       "filing_date": "2025-09-26",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312525220801/d72066ddef14a.htm",
-      "total_neo_compensation": 58569828,
-      "neo_count": 6,
+      "total_neo_compensation": 57758571,
+      "neo_count": 16,
       "proxy_fiscal_year": 2025,
       "available_years": [
         2025,
@@ -101942,7 +102015,8 @@
         "lead_independent_director": true,
         "chair_independent": false,
         "independence_pct": 69.2
-      }
+      },
+      "notes": "Catz retired as CEO/PFO on September 22, 2025, after FY2025 ended (May 31, 2025); the board appointed Clayton M. Magouyrk and Michael D. Sicilia as co-CEOs effective that date, so the succession applies to FY2026+ and FY2025 CEO remains Safra A. Catz."
     },
     {
       "ticker": "PFG",
@@ -107664,5 +107738,5 @@
       }
     }
   ],
-  "last_updated": "2026-09-03T22:11:00-07:00"
+  "last_updated": "2026-09-04T02:00:00-07:00"
 }
