@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 472,
+    "board_independence_coverage": 482,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 472,
+    "board_independence_any": 482,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 472,
-    "board_independence_full": 472,
+    "board_independence_count": 482,
+    "board_independence_full": 482,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -90704,6 +90704,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-06-11: Board determined 9 of 10 directors independent under NYSE rules (Alegria, Boulud, Breeden, Feldmann, Holland, Martin, Shah, Shapiro, Sohi); Daniel J. Carestio (President & CEO) sole non-independent; Dr. Mohsen M. Sohi independent Chairman since 2018",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1757898/000119312526267599/d142920ddef14a.htm"
       }
     },
     {
@@ -104452,6 +104461,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 9,
+        "independence_pct": 81.8,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2026-03-12: 9 of 11 directors independent under NYSE/SEC rules; Dr. Robert Mehrabian (Executive Chairman) and George C. Bobb III (President & CEO) non-independent; lead independent director presides over executive sessions",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1094285/000119312526104187/d70991ddef14a.htm"
       }
     },
     {
