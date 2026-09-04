@@ -146,7 +146,7 @@
   },
   "ceo_tenure_coverage": 500,
   "governance_coverage": 496,
-  "board_independence_coverage": 486,
+  "board_independence_coverage": 488,
   "data_quality_detailed": {
    "verified": 5680,
    "recomputed": 141,
@@ -157,7 +157,7 @@
    "filing_only": 16
   },
   "companies_with_executives": 498,
-  "board_independence_any": 486,
+  "board_independence_any": 488,
   "median_worker_pay": 81953.0,
   "median_pay_ratio": 196.5,
   "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
    "incomplete": 0,
    "board_independence": 337
   },
-  "board_independence_count": 486,
-  "board_independence_full": 486,
+  "board_independence_count": 488,
+  "board_independence_full": 488,
   "last_audit": "2026-09-01",
   "companies_with_pay_ratio": 496,
   "enriched_count": 498,
@@ -83336,6 +83336,15 @@
     "sources": [
      "table"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 8,
+    "independence_pct": 88.9,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-04-01 ('nine of our ten current directors (and eight of our nine director nominees)' independent; non-independent nominee is CEO Vincent Sorgi, management director; Independent Chair Craig A. Rogerson; board reduced from ten to nine following 2026 annual meeting)",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/922224/000119312526135991/ppl-20260331.htm"
    }
   },
   {
@@ -88935,6 +88944,15 @@
     "sources": [
      "table"
     ]
+   },
+   "board_independence": {
+    "total_directors": 8,
+    "independent_directors": 7,
+    "independence_pct": 87.5,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-04-02 ('Election of 8 Directors'; 'all directors who served in 2025, and all of the directors who are standing for election at the annual meeting, are independent ... except Mr. Toomey, who is not independent because, in addition to serving as Chairman, he is the Company's President and CEO'; Lead Independent Director Jon A. Grove since May 15, 2025)",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/74208/000007420826000037/udr-20260521xdef14a.htm"
    }
   },
   {
