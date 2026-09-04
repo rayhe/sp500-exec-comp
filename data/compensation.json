@@ -36045,6 +36045,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 6,
+        "independent_directors": 4,
+        "independence_pct": 66.7,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-10-08: 4 of 6 directors independent (Bancroft, Pessoa, Aznar, Siddiqui; Ayotte independent during FY2025 service); Chair Lachlan Murdoch not independent; Lead Independent Director Masroor Siddiqui",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1564708/000114036125037696/ny20055386x3_def14a.htm"
       }
     },
     {
@@ -42322,6 +42331,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-09: 8 of 9 nominees independent (all except CEO Painter); independent Chairperson Borje Ekholm",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/864749/000086474926000042/trmb-20260409.htm"
       }
     },
     {
@@ -47078,6 +47096,15 @@
         "sources": [
           "manual_verify"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 8,
+        "independence_pct": 88.9,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-03: 8 of 9 members independent (Batey, Beebe, Guerin, King, McBride, McGlade, Schriesheim, Turcke); independent Chair Christine King",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/4127/000110465926039476/tm261577-5_def14a.htm"
       }
     },
     {
@@ -53601,6 +53628,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 13,
+        "independent_directors": 11,
+        "independence_pct": 84.6,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-01-15: 11 of 13 nominees independent (incl. Chairman Davidson); independent Chairman Carol A. Davidson",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1385157/000110465926003934/tel-20260311xdef14a.htm"
       }
     },
     {
@@ -60247,6 +60283,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-02-28",
         "source_url": "https://www.sec.gov/Archives/edgar/data/859737/000114036125006521/ef20044540_8k.htm"
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-01-16: 9 of 10 directors independent; combined Chair/CEO MacMillan not independent; Lead Independent Director Amy Wendell",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/859737/000114036125001287/ny20038205x1_def14a.htm"
       }
     },
     {
@@ -61057,6 +61102,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 9,
+        "independent_directors": 7,
+        "independence_pct": 77.8,
+        "chair_independent": false,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-03-27: 7 of 9 nominees independent (all except Chair/CEO Kowlzan and former Chair/CEO Stecko); Chair Kowlzan not independent; no lead independent director",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/75677/000119312526127602/d176963ddef14a.htm"
       }
     },
     {
@@ -61511,6 +61565,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 9,
+        "independence_pct": 90.0,
+        "chair_independent": true,
+        "lead_independent_director": false,
+        "source": "DEF 14A 2026-04-10: 9 of 10 nominees independent (all except CEO Austin); separate independent Chairman Doyle Beneby",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1050915/000119312526150293/d118470ddef14a.htm"
       }
     },
     {
@@ -69129,6 +69192,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 11,
+        "independent_directors": 10,
+        "independence_pct": 90.9,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A 2025-09-09: 10 of 11 (91%) independent; post-2025 AGM combined Chair/CEO Mosley not independent; Lead Independent Director Michael Cannon",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1137789/000113778925000211/stx-20250909.htm"
       }
     },
     {
@@ -107756,5 +107828,5 @@
       }
     }
   ],
-  "last_updated": "2026-09-04T02:00:00-07:00"
+  "last_updated": "2026-09-04T06:00:00-07:00"
 }
