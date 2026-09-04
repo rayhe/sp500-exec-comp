@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 470,
+    "board_independence_coverage": 472,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 470,
+    "board_independence_any": 472,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 470,
-    "board_independence_full": 470,
+    "board_independence_count": 472,
+    "board_independence_full": 472,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -83095,6 +83095,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 14,
+        "independent_directors": 9,
+        "independence_pct": 64.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A filed 2026-03-25; Board determined 9 of 14 nominated directors independent under NYSE standards (Cocks, Eaton, Ferguson-McHugh, Herington, O'Sullivan, Riley, Timm, Williams, Winnefeld). Controlled company; board size set at 15 with one Class A vacancy, 14 nominated. Chair David S. Coors (family) not independent. No formal Lead Independent Director title; Independent Governance Committee Member (Roger G. Eaton) chairs executive sessions of independent directors and reviews/agrees agendas with Chair/Vice Chair.",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000110465926034154/tap-20260506xdef14a.htm"
       }
     },
     {
@@ -94532,6 +94541,15 @@
         "sources": [
           "table"
         ]
+      },
+      "board_independence": {
+        "total_directors": 10,
+        "independent_directors": 8,
+        "independence_pct": 80.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A filed 2026-04-09; Board affirmatively determined Mses. Bowen, Chan, Wilson and Messrs. Beebe, Bernstein, Johnson, Krouse, Langer independent (Nasdaq). Non-independent: Jeffrey A. Stoops (Non-Executive Chair, former President & CEO) and Brendan T. Cavanagh (President & CEO). Lead Independent Director: Jack Langer.",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1034054/000119312526149656/d98181ddef14a.htm"
       }
     },
     {
