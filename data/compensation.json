@@ -146,7 +146,7 @@
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 496,
-    "board_independence_coverage": 468,
+    "board_independence_coverage": 470,
     "data_quality_detailed": {
       "verified": 5680,
       "recomputed": 141,
@@ -157,7 +157,7 @@
       "filing_only": 16
     },
     "companies_with_executives": 498,
-    "board_independence_any": 468,
+    "board_independence_any": 470,
     "median_worker_pay": 81953.0,
     "median_pay_ratio": 196.5,
     "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
       "incomplete": 0,
       "board_independence": 337
     },
-    "board_independence_count": 468,
-    "board_independence_full": 468,
+    "board_independence_count": 470,
+    "board_independence_full": 470,
     "last_audit": "2026-09-01",
     "companies_with_pay_ratio": 496,
     "enriched_count": 498,
@@ -70626,6 +70626,15 @@
         "source": "8-K Item 5.07",
         "filing_date": "2025-07-11",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1618921/000119312525158216/d94027d8k.htm"
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 10,
+        "independence_pct": 83.3,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A filed 2024-12-13 (2025 annual meeting), proxy summary \"10 of 12 nominees are independent\"; non-independent: Stefano Pessina (Executive Chairman) and Timothy C. Wentworth (CEO)",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1618921/000155837024016214/tmb-20250130xdef14a.htm"
       }
     },
     {
@@ -78985,6 +78994,15 @@
         "sources": [
           "prose"
         ]
+      },
+      "board_independence": {
+        "total_directors": 12,
+        "independent_directors": 9,
+        "independence_pct": 75.0,
+        "chair_independent": false,
+        "lead_independent_director": true,
+        "source": "DEF 14A filed 2026-03-18, \"Seventy-five percent of the Company's twelve director nominees are independent\" (Nasdaq Rule 5605(a)(2)); Executive Chairman + independent lead director M. A. Schulz",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/75362/000119312526113876/pcar-20260318.htm"
       }
     },
     {
