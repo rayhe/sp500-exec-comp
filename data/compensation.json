@@ -127,15 +127,15 @@
   "mean_ceo_pay": 19704690.816,
   "max_ceo_pay": 164525721,
   "min_ceo_pay": 0,
-  "say_on_pay_coverage": 416,
+  "say_on_pay_coverage": 484,
   "say_on_pay_stats": {
-   "count": 416,
-   "median_approval": 93.33,
-   "mean_approval": 90.49,
+   "count": 484,
+   "median_approval": 93.47,
+   "mean_approval": 90.36,
    "min_approval": 15.69,
-   "max_approval": 99.93,
-   "below_70": 24,
-   "below_50": 4
+   "max_approval": 100.0,
+   "below_70": 29,
+   "below_50": 6
   },
   "gender_coverage": {
    "female_ceos": 33,
@@ -2728,6 +2728,13 @@
     "independence_pct": 90.9,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 50.7,
+    "votes_for": 148837167,
+    "votes_against": 144993886,
+    "filing_date": "2026-04-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000101/adbe-20260415.htm"
    }
   },
   {
@@ -3725,6 +3732,13 @@
     "independence_pct": 90.0,
     "source": "DEF 14A auto-extract",
     "filing_url": "https://www.sec.gov/Archives/edgar/data/1781335/000114036126015389/ny20061782x1_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 93.9,
+    "votes_for": 300604166,
+    "votes_against": 19385429,
+    "filing_date": "2026-05-29",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1781335/000178133526000102/otis-20260527.htm"
    }
   },
   {
@@ -4107,6 +4121,13 @@
     "independence_pct": 91.7,
     "chair_independent": true,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 74.2,
+    "votes_for": 105240522,
+    "votes_against": 36603358,
+    "filing_date": "2026-05-20",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1964738/000196473826000027/solv-20260515.htm"
    }
   },
   {
@@ -7437,6 +7458,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 91.7
+   },
+   "say_on_pay": {
+    "approval_pct": 97.0,
+    "votes_for": 1370288108,
+    "votes_against": 42907510,
+    "filing_date": "2026-05-29",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/93410/000009341026000125/cvx-20260527.htm"
    }
   },
   {
@@ -9135,6 +9163,13 @@
     "independence_pct": 84.2,
     "lead_independent_director": true,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 65.0,
+    "votes_for": 78657599,
+    "votes_against": 42362921,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526237027/d30456d8k.htm"
    }
   },
   {
@@ -9372,6 +9407,13 @@
     "independence_pct": 100,
     "lead_independent_director": false,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 31.8,
+    "votes_for": 99928178,
+    "votes_against": 214525673,
+    "filing_date": "2026-05-26",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/97745/000009774526000117/tmo-20260520.htm"
    }
   },
   {
@@ -10508,7 +10550,13 @@
      "prose"
     ]
    },
-   "say_on_pay": null,
+   "say_on_pay": {
+    "approval_pct": 95.1,
+    "votes_for": 770405752,
+    "votes_against": 39292984,
+    "filing_date": "2026-01-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000110465926005366/tm263707d1_8k.htm"
+   },
    "board_independence": {
     "total_directors": 8,
     "independent_directors": 7,
@@ -11462,7 +11510,13 @@
      "experience_history"
     ]
    },
-   "say_on_pay": null,
+   "say_on_pay": {
+    "approval_pct": 96.0,
+    "votes_for": 731998717,
+    "votes_against": 30467278,
+    "filing_date": "2026-05-07",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/59478/000005947826000048/lly-20260504.htm"
+   },
    "board_independence": {
     "total_directors": 12,
     "independent_directors": 11,
@@ -15450,7 +15504,13 @@
      "experience"
     ]
    },
-   "say_on_pay": null,
+   "say_on_pay": {
+    "approval_pct": 89.5,
+    "votes_for": 4466829916,
+    "votes_against": 521809410,
+    "filing_date": "2025-05-30",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000090/meta-20250528.htm"
+   },
    "board_independence": {
     "total_directors": 12,
     "independent_directors": 11,
@@ -17463,6 +17523,13 @@
     "independence_pct": 90.9,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 87.6,
+    "votes_for": 548387515,
+    "votes_against": 77467758,
+    "filing_date": "2026-06-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1327811/000132781126000031/wday-20260616.htm"
    }
   },
   {
@@ -17693,6 +17760,13 @@
     "independence_pct": 90.9,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 93.5,
+    "votes_for": 1216862538,
+    "votes_against": 83979071,
+    "filing_date": "2026-01-28",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000029/v-20260127.htm"
    }
   },
   {
@@ -19451,7 +19525,13 @@
      "manual_verify"
     ]
    },
-   "say_on_pay": null,
+   "say_on_pay": {
+    "approval_pct": 87.7,
+    "votes_for": 400199445,
+    "votes_against": 55968491,
+    "filing_date": "2026-01-28",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1467373/000146737326000005/acn-20260128.htm"
+   },
    "board_independence": {
     "total_directors": 11,
     "independent_directors": 9,
@@ -21568,6 +21648,13 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 100.0
+   },
+   "say_on_pay": {
+    "approval_pct": 96.0,
+    "votes_for": 183990315,
+    "votes_against": 7733058,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1996810/000199681026000115/gev-20260520.htm"
    }
   },
   {
@@ -23234,6 +23321,13 @@
     "independent_directors": 8,
     "independence_pct": 100.0,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 88.3,
+    "votes_for": 259576112,
+    "votes_against": 34530288,
+    "filing_date": "2026-05-19",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1156375/000115637526000028/cme-20260514.htm"
    }
   },
   {
@@ -23872,6 +23966,13 @@
     "source": "DEF 14A 2026-03-13 (000119312526106142)",
     "filing_url": "https://www.sec.gov/Archives/edgar/data/860730/000119312526106142/d939252ddef14a.htm",
     "note": "Board consists of 10 directors pre-meeting, 7 independent (70%). Post-meeting size reduced to 9 after Robert J. Dennis retirement, 6 independent (66.7%). Independent: Chidsey, DeParle, Johnston, Michelson, Riley, Smith. Non-independent: Frist III (Chair), Hazen (CEO), William R. Frist (founder family)."
+   },
+   "say_on_pay": {
+    "approval_pct": 93.5,
+    "votes_for": 182386619,
+    "votes_against": 12758446,
+    "filing_date": "2026-04-28",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/860730/000119312526187155/d25325d8k.htm"
    }
   },
   {
@@ -29978,6 +30079,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 80.0
+   },
+   "say_on_pay": {
+    "approval_pct": 93.5,
+    "votes_for": 269367775,
+    "votes_against": 18597825,
+    "filing_date": "2026-05-08",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/310764/000031076426000029/syk-20260506.htm"
    }
   },
   {
@@ -30187,6 +30295,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 80.0
+   },
+   "say_on_pay": {
+    "approval_pct": 52.8,
+    "votes_for": 22459321,
+    "votes_against": 20116888,
+    "filing_date": "2026-05-11",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1179929/000117992926000026/moh-20260506.htm"
    }
   },
   {
@@ -30438,6 +30553,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 100.0
+   },
+   "say_on_pay": {
+    "approval_pct": 93.0,
+    "votes_for": 1895785665,
+    "votes_against": 143344423,
+    "filing_date": "2026-05-13",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1048286/000119312526220804/d152439d8k.htm"
    }
   },
   {
@@ -31661,6 +31783,13 @@
     "independent_directors": 11,
     "independence_pct": 91.7,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 88.2,
+    "votes_for": 1444310601,
+    "votes_against": 193158674,
+    "filing_date": "2026-05-27",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/753308/000075330826000041/nee-20260521.htm"
    }
   },
   {
@@ -32245,6 +32374,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 81.8
+   },
+   "say_on_pay": {
+    "approval_pct": 93.5,
+    "votes_for": 207918843,
+    "votes_against": 14522776,
+    "filing_date": "2026-05-13",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/875320/000087532026000204/vrtx-20260513.htm"
    }
   },
   {
@@ -33197,6 +33333,13 @@
     "independence_pct": 90,
     "lead_independent_director": true,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 90.8,
+    "votes_for": 1096889576,
+    "votes_against": 110645813,
+    "filing_date": "2026-05-05",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/885725/000088572526000036/bsx-20260430.htm"
    }
   },
   {
@@ -33711,6 +33854,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 75.0
+   },
+   "say_on_pay": {
+    "approval_pct": 98.1,
+    "votes_for": 245001012,
+    "votes_against": 4645408,
+    "filing_date": "2026-05-20",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1539838/000153983826000090/fang-20260520.htm"
    }
   },
   {
@@ -34067,6 +34217,13 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 94.1
+   },
+   "say_on_pay": {
+    "approval_pct": 70.6,
+    "votes_for": 301711970,
+    "votes_against": 125371576,
+    "filing_date": "2026-06-12",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1136893/000119312526269601/d167902d8k.htm"
    }
   },
   {
@@ -35059,6 +35216,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2025-04-30 \u2014 Board has determined each qualifies as independent except for Mr. Angel (Chairman and former CEO) and Mr. Lamba (current CEO); ten directors; Board elected Mr. Angel as Chairman and appointed Robert L. Wood as Lead Independent Director",
     "filing_url": "https://www.sec.gov/Archives/edgar/data/1707925/000095017025060925/lin-20250430.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 94.8,
+    "votes_for": 355847335,
+    "votes_against": 19551707,
+    "filing_date": "2026-07-30",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1707925/000119312526325127/lin-20260728.htm"
    }
   },
   {
@@ -41269,6 +41433,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-28",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1058090/000114036126017294/ny20063214x1_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 95.3,
+    "votes_for": 973639399,
+    "votes_against": 47598354,
+    "filing_date": "2026-06-17",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1058090/000105809026000056/cmg-20260611.htm"
    }
   },
   {
@@ -43927,6 +44098,13 @@
     "independent_directors": 14,
     "independence_pct": 93.3,
     "chair_independent": false
+   },
+   "say_on_pay": {
+    "approval_pct": 80.1,
+    "votes_for": 120596731,
+    "votes_against": 29997637,
+    "filing_date": "2025-05-06",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1725057/000172505725000080/day-20250502.htm"
    }
   },
   {
@@ -44397,6 +44575,13 @@
     "source": "DEF 14A 2025-03-23 \u2014 board has determined each of the following individuals is independent: Alpern, Austin, Burnside, Davis, Falk, Freyman, Hart, Meyer, Quaggin, Rapp, Roberts, Waddell (12); plus CEO Robert Michael non-independent",
     "filing_url": "https://www.sec.gov/Archives/edgar/data/1551152/000155115225000032/abbv-20250323.htm",
     "confidence": "high"
+   },
+   "say_on_pay": {
+    "approval_pct": 94.7,
+    "votes_for": 1228615745,
+    "votes_against": 69336359,
+    "filing_date": "2026-05-12",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1551152/000110465926059484/tm2614276d1_8k.htm"
    }
   },
   {
@@ -45520,6 +45705,13 @@
     "independence_pct": 90.9,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 96.7,
+    "votes_for": 223486130,
+    "votes_against": 7742108,
+    "filing_date": "2026-05-12",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1020569/000102056926000055/irm-20260507.htm"
    }
   },
   {
@@ -47438,6 +47630,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-03: 8 of 9 members independent (Batey, Beebe, Guerin, King, McBride, McGlade, Schriesheim, Turcke); independent Chair Christine King",
     "source_url": "https://www.sec.gov/Archives/edgar/data/4127/000110465926039476/tm261577-5_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 49.8,
+    "votes_for": 54203161,
+    "votes_against": 54542944,
+    "filing_date": "2026-05-19",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/4127/000000412726000031/swks-20260513.htm"
    }
   },
   {
@@ -47699,6 +47898,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-03-23",
     "source_url": "https://www.sec.gov/Archives/edgar/data/10456/000162828026020330/bax-20260320.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 91.2,
+    "votes_for": 401367909,
+    "votes_against": 38914808,
+    "filing_date": "2026-05-08",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/10456/000119312526214680/d24051d8k.htm"
    }
   },
   {
@@ -48128,6 +48334,13 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 91.7
+   },
+   "say_on_pay": {
+    "approval_pct": 96.0,
+    "votes_for": 242922564,
+    "votes_against": 10155312,
+    "filing_date": "2025-05-16",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/4447/000119312525121673/d928300d8k.htm"
    }
   },
   {
@@ -51401,6 +51614,13 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 92.3
+   },
+   "say_on_pay": {
+    "approval_pct": 91.4,
+    "votes_for": 219718308,
+    "votes_against": 20659474,
+    "filing_date": "2026-01-30",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/10795/000162828026004393/bdx-20260127.htm"
    }
   },
   {
@@ -52652,6 +52872,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 81.8
+   },
+   "say_on_pay": {
+    "approval_pct": 95.0,
+    "votes_for": 107869976,
+    "votes_against": 5685835,
+    "filing_date": "2026-06-24",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1170010/000117001026000057/kmx-20260623.htm"
    }
   },
   {
@@ -53163,6 +53390,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 63.6
+   },
+   "say_on_pay": {
+    "approval_pct": 94.9,
+    "votes_for": 842136244,
+    "votes_against": 45324326,
+    "filing_date": "2026-06-30",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1090012/000119312526290829/d214249d8k.htm"
    }
   },
   {
@@ -57418,6 +57652,13 @@
     "independence_pct": 81.8,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 97.0,
+    "votes_for": 954373556,
+    "votes_against": 29628316,
+    "filing_date": "2026-05-04",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/107263/000010726326000013/wmb-20260504.htm"
    }
   },
   {
@@ -62141,6 +62382,13 @@
     "independence_pct": 83.3,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 93.0,
+    "votes_for": 359600992,
+    "votes_against": 27094509,
+    "filing_date": "2025-11-17",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/96021/000009602125000161/syy-20251114.htm"
    }
   },
   {
@@ -63688,6 +63936,13 @@
     "source": "DEF 14A 2026-03-30",
     "source_url": "https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm",
     "note": "Replaces corrupt partial (independent_directors=23, no total). 12 nominees; Board-determined independent: Bostick, Chow, Halverson, Hilal, Moffett, Riefler, Vautrinot, Wainscott, Whisler, Zillmer. Non-independent: S. Angel (CEO), A. Begeman. Chair: John J. Zillmer (non-executive, independent). No lead independent director."
+   },
+   "say_on_pay": {
+    "approval_pct": 93.0,
+    "votes_for": 1324087828,
+    "votes_against": 98932409,
+    "filing_date": "2026-05-14",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/277948/000095010326007181/dp246573_8k.htm"
    }
   },
   {
@@ -64129,6 +64384,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-03-31",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1086222/000108622226000042/akam-20260330.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 90.7,
+    "votes_for": 102401186,
+    "votes_against": 10534958,
+    "filing_date": "2026-05-13",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1086222/000108622226000064/akam-20260513.htm"
    }
   },
   {
@@ -64305,6 +64567,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 57.1
+   },
+   "say_on_pay": {
+    "approval_pct": 99.6,
+    "votes_for": 62219230,
+    "votes_against": 228600,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/352915/000119312526235480/uhs-20260520.htm"
    }
   },
   {
@@ -65760,6 +66029,13 @@
     "independence_pct": 90.0,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 92.0,
+    "votes_for": 579899380,
+    "votes_against": 50716007,
+    "filing_date": "2025-05-05",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/858470/000085847025000106/ctra-20250430.htm"
    }
   },
   {
@@ -67014,6 +67290,13 @@
     "independence_pct": 91.7,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 91.7,
+    "votes_for": 392256709,
+    "votes_against": 35413128,
+    "filing_date": "2026-05-15",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/740260/000110465926062795/tm2614646d2_8k.htm"
    }
   },
   {
@@ -69394,6 +69677,13 @@
     "lead_independent_director": false,
     "chair_independent": false,
     "independence_pct": 91.7
+   },
+   "say_on_pay": {
+    "approval_pct": 94.9,
+    "votes_for": 133327617,
+    "votes_against": 7121268,
+    "filing_date": "2026-02-10",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/731802/000119312526044926/d97547d8k.htm"
    }
   },
   {
@@ -69762,6 +70052,13 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 90.0
+   },
+   "say_on_pay": {
+    "approval_pct": 90.8,
+    "votes_for": 274093305,
+    "votes_against": 27611480,
+    "filing_date": "2026-05-06",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/72741/000110465926056267/tm2613673d1_8k.htm"
    }
   },
   {
@@ -69929,6 +70226,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 75.0
+   },
+   "say_on_pay": {
+    "approval_pct": 93.8,
+    "votes_for": 41356139,
+    "votes_against": 2716251,
+    "filing_date": "2026-05-11",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1100682/000095010326007060/dp246529_8k.htm"
    }
   },
   {
@@ -70955,6 +71259,13 @@
     "independence_pct": 83.3,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 97.2,
+    "votes_for": 1076527313,
+    "votes_against": 30557400,
+    "filing_date": "2026-06-10",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/831259/000083125926000030/fcx-20260610.htm"
    }
   },
   {
@@ -72078,6 +72389,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-29",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1262039/000207709626000106/ea0287420-01.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 88.7,
+    "votes_for": 506869004,
+    "votes_against": 64560858,
+    "filing_date": "2026-06-16",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1262039/000126203926000015/ftnt-20260612.htm"
    }
   },
   {
@@ -75740,6 +76058,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 90.0
+   },
+   "say_on_pay": {
+    "approval_pct": 97.9,
+    "votes_for": 187057113,
+    "votes_against": 4034462,
+    "filing_date": "2026-05-15",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1289490/000128949026000039/exr-20260514.htm"
    }
   },
   {
@@ -76083,6 +76408,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-01",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1463101/000146310126000026/enph-20260401.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 91.0,
+    "votes_for": 76051038,
+    "votes_against": 7560943,
+    "filing_date": "2026-05-15",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1463101/000146310126000049/enph-20260513.htm"
    }
   },
   {
@@ -76332,6 +76664,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 66.7
+   },
+   "say_on_pay": {
+    "approval_pct": 96.8,
+    "votes_for": 184208910,
+    "votes_against": 6104470,
+    "filing_date": "2026-05-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000013/odfl-20260520.htm"
    }
   },
   {
@@ -76980,6 +77319,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-03-27",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1140536/000119312526127613/wtw-20260327.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 97.2,
+    "votes_for": 82052852,
+    "votes_against": 2326840,
+    "filing_date": "2026-05-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1140536/000119312526234740/d125692d8k.htm"
    }
   },
   {
@@ -83932,6 +84278,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-02",
     "source_url": "https://www.sec.gov/Archives/edgar/data/914208/000119312526140019/d931607ddef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 98.6,
+    "votes_for": 339412197,
+    "votes_against": 4992802,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/914208/000091420826000196/ivz-20260521.htm"
    }
   },
   {
@@ -86279,6 +86632,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-02-18",
     "source_url": "https://www.sec.gov/Archives/edgar/data/63754/000006375426000140/mkc-20260217.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 96.1,
+    "votes_for": 6948728,
+    "votes_against": 280800,
+    "filing_date": "2026-04-03",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/63754/000006375426000196/mkc-20260401.htm"
    }
   },
   {
@@ -86748,6 +87108,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 90.0
+   },
+   "say_on_pay": {
+    "approval_pct": 81.1,
+    "votes_for": 9989122717,
+    "votes_against": 2333576331,
+    "filing_date": "2026-06-11",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526267578/d57679d8k.htm"
    }
   },
   {
@@ -87426,6 +87793,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 88.9
+   },
+   "say_on_pay": {
+    "approval_pct": 87.8,
+    "votes_for": 176623615,
+    "votes_against": 24442685,
+    "filing_date": "2026-05-18",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1524472/000152447226000091/xyl-20260514.htm"
    }
   },
   {
@@ -92728,6 +93102,13 @@
     "lead_independent_director": false,
     "source": "DEF 14C 2026-03-20",
     "source_url": "https://www.sec.gov/Archives/edgar/data/922621/000119312526116761/d49742ddef14c.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 100.0,
+    "votes_for": 2542,
+    "votes_against": 0,
+    "filing_date": "2026-04-23",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/922621/000162828026026857/erie-20260421.htm"
    }
   },
   {
@@ -92995,6 +93376,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2025-10-28",
     "source_url": "https://www.sec.gov/Archives/edgar/data/866787/000110465925103210/azo-20251217xdef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 90.0,
+    "votes_for": 12397320,
+    "votes_against": 1374590,
+    "filing_date": "2025-12-19",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/866787/000117184325008040/f8k_121925.htm"
    }
   },
   {
@@ -93195,6 +93583,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-06",
     "source_url": "https://www.sec.gov/Archives/edgar/data/915912/000110465926039943/avb-20250520xdef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 95.6,
+    "votes_for": 119464870,
+    "votes_against": 5518957,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/915912/000110465926065770/tm2615343d5_8k.htm"
    }
   },
   {
@@ -97031,6 +97426,13 @@
     "lead_reason": "James L. Robo appointed Independent Lead Director",
     "source": "DEF 14A 2026-03-11",
     "source_url": "https://www.sec.gov/Archives/edgar/data/728535/000143774926007732/jbht20260304_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 93.5,
+    "votes_for": 77169925,
+    "votes_against": 5396316,
+    "filing_date": "2026-04-24",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/728535/000143774926013243/jbht20260423_8k.htm"
    }
   },
   {
@@ -98537,6 +98939,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-10",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1095073/000162828026024596/eg-20260406.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 92.0,
+    "votes_for": 35258009,
+    "votes_against": 3086503,
+    "filing_date": "2026-05-15",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1095073/000109507326000023/everestre-20260513.htm"
    }
   },
   {
@@ -98703,6 +99112,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-03-04",
     "source_url": "https://www.sec.gov/Archives/edgar/data/91142/000119312526089938/d79196ddef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 97.7,
+    "votes_for": 33953726,
+    "votes_against": 814753,
+    "filing_date": "2026-04-17",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/91142/000009114226000078/aos-20260413.htm"
    }
   },
   {
@@ -100387,6 +100803,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 77.8
+   },
+   "say_on_pay": {
+    "approval_pct": 97.7,
+    "votes_for": 926035361,
+    "votes_against": 22171778,
+    "filing_date": "2025-06-25",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1679788/000167978825000138/coin-20250618.htm"
    }
   },
   {
@@ -101505,6 +101928,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-03-31",
     "source_url": "https://www.sec.gov/Archives/edgar/data/352541/000035254126000025/lnt-20260330.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 95.7,
+    "votes_for": 196043476,
+    "votes_against": 8748646,
+    "filing_date": "2026-05-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/352541/000035254126000036/lnt-20260520.htm"
    }
   },
   {
@@ -103102,6 +103532,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-02",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1274494/000127449426000096/fslr-20260401.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 87.0,
+    "votes_for": 69193058,
+    "votes_against": 10350148,
+    "filing_date": "2026-05-15",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1274494/000127449426000138/fslr-20260513.htm"
    }
   },
   {
@@ -104346,6 +104783,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-03: 6 of 9 directors independent (Bruckmann, Burris, Engquist, Onorato, Runge, Bogart); combined Chairman/CEO Lorberbaum; Lead Independent Director Engquist",
     "source_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926039491/tm261333-4_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 92.9,
+    "votes_for": 48793836,
+    "votes_against": 3732023,
+    "filing_date": "2026-05-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926065151/tm2615069d1_8k.htm"
    }
   },
   {
@@ -105284,6 +105728,13 @@
     "independence_pct": 83.3,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 92.4,
+    "votes_for": 78374638,
+    "votes_against": 6486027,
+    "filing_date": "2026-05-18",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1374310/000110465926063250/tm2614804d1_8k.htm"
    }
   },
   {
@@ -106231,6 +106682,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-03-17",
     "source_url": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000029/nvr-20260316.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 96.6,
+    "votes_for": 2356887,
+    "votes_against": 84062,
+    "filing_date": "2026-05-08",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000044/nvr-20260507.htm"
    }
   },
   {
@@ -107215,6 +107673,13 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 100.0
+   },
+   "say_on_pay": {
+    "approval_pct": 94.0,
+    "votes_for": 7391737243,
+    "votes_against": 470466853,
+    "filing_date": "2026-05-22",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926065717/tm2614288d1_8k.htm"
    }
   },
   {
@@ -107893,6 +108358,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-20",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1792789/000179278926000018/dash-20260420.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 96.5,
+    "votes_for": 801393913,
+    "votes_against": 28919623,
+    "filing_date": "2026-06-12",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1792789/000179278926000040/dash-20260610.htm"
    }
   },
   {
