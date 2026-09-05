@@ -1,13 +1,13 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "500 companies, 6530 NEO records, 498 companies enriched",
+  "description": "500 companies, 6551 NEO records, 500 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
   ],
   "primary_fiscal_year": 2024,
-  "data_collected": "2026-09-03",
+  "data_collected": "2026-09-05",
   "notes": [
    "Total compensation from Summary Compensation Table in proxy statements",
    "Includes salary, bonus, stock awards, option awards, non-equity incentive, and other compensation",
@@ -110,11 +110,11 @@
     "mean": 15103655.064516129
    }
   },
-  "edgar_coverage": 498,
+  "edgar_coverage": 500,
   "total_companies": 500,
-  "last_updated": "2026-09-03",
-  "total_neo_records": 6475,
-  "title_coverage": "6455/6475",
+  "last_updated": "2026-09-05",
+  "total_neo_records": 6551,
+  "title_coverage": "6549/6551",
   "data_quality": {
    "verified": 5680,
    "recomputed": 141,
@@ -156,12 +156,12 @@
    "recomputed_implausible_total": 35,
    "filing_only": 16
   },
-  "companies_with_executives": 498,
+  "companies_with_executives": 500,
   "board_independence_any": 500,
   "median_worker_pay": 81953.0,
   "median_pay_ratio": 196.5,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 6475,
+  "total_executives": 6551,
   "verification_status": {
    "verified": 5681,
    "recomputed": 141,
@@ -172,7 +172,7 @@
   "board_independence_full": 500,
   "last_audit": "2026-09-01",
   "companies_with_pay_ratio": 496,
-  "enriched_count": 498,
+  "enriched_count": 500,
   "multiyear_fill_20260902_1400": {
    "date": "2026-09-02",
    "added_records": 54,
