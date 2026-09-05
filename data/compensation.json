@@ -16,16 +16,16 @@
    "Some companies (e.g., Amazon) have low SCT totals because equity grants span multiple years",
    "Tesla/Elon Musk has $0 compensation - correct per proxy filing",
    "Some entries are FY2025 (ADSK, BBY, CRM, TJX, WDAY, NVDA, KMX) due to non-calendar fiscal years",
-   "Data quality flags: verified = component sum matches stated total; recomputed = stated total replaced with component sum; incomplete_components = equity data not parsed, total from filing; bloated_component = one component appears inflated, total from filing retained",
    "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant",
    "Compensation Governance Score: composite 0-100 from SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness",
-   "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used."
+   "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used.",
+   "Data quality flags (per NEO record, audited 2026-09-05 over 6560 records): verified = components sum exactly to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~45 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); 20 minor_gap records (PEP/STX/GRMN/COIN/SW) still need per-filing re-parse."
   ],
   "aggregate_stats": {
    "total_companies": 500,
    "companies_with_pay_ratio": 496,
-   "median_ceo_pay": 17136407.5,
-   "mean_ceo_pay": 19704690.816,
+   "median_ceo_pay": 17825490.5,
+   "mean_ceo_pay": 20420062.156,
    "max_ceo_pay": 164525721,
    "min_ceo_pay": 0,
    "median_worker_pay": 81953.0,
@@ -90,10 +90,10 @@
    },
    "Consumer Staples": {
     "count": 34,
-    "median_ceo_pay": 16925494.5,
+    "median_ceo_pay": 17369348.0,
     "min": 5695862,
     "max": 53577224,
-    "mean": 18643396.29411765
+    "mean": 19023303.76470588
    },
    "Materials": {
     "count": 27,
@@ -116,12 +116,12 @@
   "total_neo_records": 6551,
   "title_coverage": "6549/6551",
   "data_quality": {
-   "verified": 5680,
-   "recomputed": 141,
+   "verified": 6060,
+   "recomputed": 132,
    "incomplete_components": 0,
    "bloated_component": 0,
    "component_mismatch": 0,
-   "last_audit": "2026-09-01"
+   "last_audit": "2026-09-05"
   },
   "median_ceo_pay": 17136407.5,
   "mean_ceo_pay": 19704690.816,
@@ -148,13 +148,13 @@
   "governance_coverage": 496,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 5680,
-   "recomputed": 141,
-   "rounding": 286,
+   "verified": 6060,
+   "recomputed": 132,
+   "rounding": 282,
    "computed": 31,
-   "minor_gap": 36,
-   "recomputed_implausible_total": 35,
-   "filing_only": 16
+   "minor_gap": 18,
+   "recomputed_implausible_total": 34,
+   "filing_only": 3
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
@@ -2353,14 +2353,15 @@
      "title": "Chair of the Board and, CEO",
      "year": 2026,
      "salary": 1550000,
-     "bonus": -8335,
+     "bonus": 833,
      "stock_awards": 27265360,
      "option_awards": 10743097,
      "non_equity_incentive": 3602588,
      "pension_nqdc": 0,
      "all_other": 6217374,
      "total": 49379252,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Marc Benioff",
@@ -2396,13 +2397,14 @@
      "year": 2026,
      "salary": 1100000,
      "bonus": 8500000,
-     "stock_awards": -140913507,
+     "stock_awards": 14091350,
      "option_awards": 2685820,
      "non_equity_incentive": 1988525,
      "pension_nqdc": 0,
      "all_other": 80004,
      "total": 28445699,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Srinivas Tallapragada",
@@ -2423,14 +2425,15 @@
      "title": "President and Chief Revenue Officer",
      "year": 2026,
      "salary": 1000000,
-     "bonus": -11250008,
+     "bonus": 1125000,
      "stock_awards": 12122912,
      "option_awards": 2238153,
      "non_equity_incentive": 1549500,
      "pension_nqdc": 0,
      "all_other": 665916,
      "total": 18701481,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Parker Harris",
@@ -2473,9 +2476,99 @@
      "all_other": 37655,
      "total": 1230063,
      "_total_source": "verified"
+    },
+    {
+     "name": "Srinivas Tallapragada",
+     "title": "President and Chief Engineering and Customer Success Officer",
+     "year": 2025,
+     "salary": 1000000,
+     "bonus": 0,
+     "stock_awards": 15640564,
+     "option_awards": 0,
+     "non_equity_incentive": 1500000,
+     "pension_nqdc": 0,
+     "all_other": 12428,
+     "total": 18152992,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Srinivas Tallapragada",
+     "title": "President and Chief Engineering and Customer Success Officer",
+     "year": 2024,
+     "salary": 1000000,
+     "bonus": 0,
+     "stock_awards": 10269502,
+     "option_awards": 0,
+     "non_equity_incentive": 1000000,
+     "pension_nqdc": 0,
+     "all_other": 5000,
+     "total": 12274502,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Parker Harris",
+     "title": "Co-Founder and Chief Technology Officer, Slack",
+     "year": 2025,
+     "salary": 1000000,
+     "bonus": 0,
+     "stock_awards": 13227812,
+     "option_awards": 0,
+     "non_equity_incentive": 1250000,
+     "pension_nqdc": 0,
+     "all_other": 0,
+     "total": 15477812,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Parker Harris",
+     "title": "Co-Founder and Chief Technology Officer, Slack",
+     "year": 2024,
+     "salary": 1000000,
+     "bonus": 0,
+     "stock_awards": 10269502,
+     "option_awards": 0,
+     "non_equity_incentive": 1000000,
+     "pension_nqdc": 0,
+     "all_other": 0,
+     "total": 12269502,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Amy Weaver",
+     "title": "Former President and Chief Financial Officer",
+     "year": 2025,
+     "salary": 1050000,
+     "bonus": 0,
+     "stock_awards": 15640564,
+     "option_awards": 0,
+     "non_equity_incentive": 1575000,
+     "pension_nqdc": 0,
+     "all_other": 16888,
+     "total": 18282452,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Amy Weaver",
+     "title": "Former President and Chief Financial Officer",
+     "year": 2024,
+     "salary": 1000000,
+     "bonus": 0,
+     "stock_awards": 10269502,
+     "option_awards": 0,
+     "non_equity_incentive": 1000000,
+     "pension_nqdc": 0,
+     "all_other": 6072,
+     "total": 12275574,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
     }
    ],
-   "total_neo_compensation": 77734346,
+   "total_neo_compensation": 114553924,
    "neo_count": 7,
    "proxy_fiscal_year": 2026,
    "available_years": [
@@ -9857,11 +9950,12 @@
      "bonus": 0,
      "stock_awards": 24101123,
      "option_awards": 0,
-     "non_equity_incentive": -29383204,
+     "non_equity_incentive": 2938320,
      "pension_nqdc": 0,
      "all_other": 22179,
      "total": 28298161,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Timothy M. Archer",
@@ -9871,11 +9965,12 @@
      "bonus": 0,
      "stock_awards": 19847946,
      "option_awards": 6261433,
-     "non_equity_incentive": -28313005,
+     "non_equity_incentive": 2831300,
      "pension_nqdc": 0,
      "all_other": 17439,
      "total": 30135041,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Timothy M. Archer",
@@ -9885,11 +9980,12 @@
      "bonus": 0,
      "stock_awards": 11291907,
      "option_awards": 3643192,
-     "non_equity_incentive": -22126006,
+     "non_equity_incentive": 2212600,
      "pension_nqdc": 0,
      "all_other": 12400,
      "total": 18310099,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Douglas R. Bettinger",
@@ -9899,11 +9995,12 @@
      "bonus": 0,
      "stock_awards": 6800221,
      "option_awards": 0,
-     "non_equity_incentive": -10223794,
+     "non_equity_incentive": 1022379,
      "pension_nqdc": 0,
      "all_other": 27136,
      "total": 8593735,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Douglas R. Bettinger",
@@ -9913,11 +10010,12 @@
      "bonus": 0,
      "stock_awards": 5353700,
      "option_awards": 1689107,
-     "non_equity_incentive": -10011955,
+     "non_equity_incentive": 1001195,
      "pension_nqdc": 0,
      "all_other": 17239,
      "total": 8781832,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Douglas R. Bettinger",
@@ -9927,11 +10025,12 @@
      "bonus": 0,
      "stock_awards": 3198654,
      "option_awards": 1031855,
-     "non_equity_incentive": -7783206,
+     "non_equity_incentive": 778320,
      "pension_nqdc": 0,
      "all_other": 12183,
      "total": 5726012,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Patrick J. Lord",
@@ -9941,11 +10040,12 @@
      "bonus": 0,
      "stock_awards": 5500184,
      "option_awards": 0,
-     "non_equity_incentive": -9225104,
+     "non_equity_incentive": 922510,
      "pension_nqdc": 0,
      "all_other": 19805,
      "total": 7142114,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Patrick J. Lord",
@@ -9955,11 +10055,12 @@
      "bonus": 0,
      "stock_awards": 4292294,
      "option_awards": 1353582,
-     "non_equity_incentive": -8065795,
+     "non_equity_incentive": 806579,
      "pension_nqdc": 0,
      "all_other": 15736,
      "total": 7067282,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Patrick J. Lord",
@@ -9969,67 +10070,72 @@
      "bonus": 0,
      "stock_awards": 2633964,
      "option_awards": 849515,
-     "non_equity_incentive": -6100106,
+     "non_equity_incentive": 610010,
      "pension_nqdc": 0,
      "all_other": 11392,
      "total": 4682542,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Ava A. Harter",
      "title": "Senior Vice Chief Legal Officer and Secretary",
      "year": 2025,
      "salary": 665684,
-     "bonus": -5000007,
+     "bonus": 500000,
      "stock_awards": 8388408,
      "option_awards": 517991,
-     "non_equity_incentive": -3573144,
+     "non_equity_incentive": 357314,
      "pension_nqdc": 0,
      "all_other": 162285,
      "total": 10591682,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Seshasayee (Sesha) Varadarajan",
      "title": "Senior Vice President, Global Products Group",
      "year": 2025,
      "salary": 714596,
-     "bonus": -25608,
+     "bonus": 2560,
      "stock_awards": 5609261,
      "option_awards": 0,
-     "non_equity_incentive": -8386464,
+     "non_equity_incentive": 838646,
      "pension_nqdc": 0,
      "all_other": 15789,
      "total": 7180852,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Seshasayee (Sesha) Varadarajan",
      "title": "Senior Vice President, Global Products Group",
      "year": 2024,
      "salary": 561697,
-     "bonus": -28008,
+     "bonus": 2800,
      "stock_awards": 4528866,
      "option_awards": 857469,
-     "non_equity_incentive": -6498055,
+     "non_equity_incentive": 649805,
      "pension_nqdc": 0,
      "all_other": 12684,
      "total": 6613321,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Seshasayee (Sesha) Varadarajan",
      "title": "Senior Vice President, Global Products Group",
      "year": 2023,
      "salary": 537151,
-     "bonus": -64008,
+     "bonus": 6400,
      "stock_awards": 2603133,
      "option_awards": 520842,
-     "non_equity_incentive": -5167396,
+     "non_equity_incentive": 516739,
      "pension_nqdc": 0,
      "all_other": 9312,
      "total": 4193577,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     }
    ],
    "total_neo_compensation": 52597476,
@@ -19152,14 +19258,15 @@
      "title": "Chief Financial Officer",
      "year": 2025,
      "salary": 1003846,
-     "bonus": -22000005,
+     "bonus": 2200000,
      "stock_awards": 6606075,
      "option_awards": 0,
      "non_equity_incentive": 0,
      "pension_nqdc": 0,
      "all_other": 10350,
      "total": 9820271,
-     "_total_source": "minor_gap"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: corrected footnote-negation parser bug (parenthesized footnote marker read as negative); components re-extracted from primary DEF 14A SCT and sum exactly to filing total."
     },
     {
      "name": "Robert Dzielak",
@@ -36728,8 +36835,8 @@
   {
    "ticker": "PM",
    "company_name": "Philip Morris International Inc",
-   "ceo_name": "Stacey Kennedy",
-   "total_compensation": 7321062,
+   "ceo_name": "Jacek Olczak",
+   "total_compensation": 20237916,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
    "median_worker_pay": 47109,
@@ -36775,51 +36882,93 @@
     },
     {
      "name": "Jacek Olczak",
-     "title": "Chairman",
+     "title": "Group CEO PMI",
      "year": 2025,
-     "salary": 0,
-     "total": 27080,
-     "_total_source": "filing_only"
+     "salary": 1809737,
+     "bonus": 0,
+     "stock_awards": 18033564,
+     "option_awards": 0,
+     "non_equity_incentive": 5217391,
+     "pension_nqdc": 3984399,
+     "all_other": 27080,
+     "total": 29072171,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Jacek Olczak",
-     "title": "Chairman",
+     "title": "Group CEO PMI",
      "year": 2024,
-     "salary": 0,
-     "total": 26314,
-     "_total_source": "filing_only"
+     "salary": 1706594,
+     "bonus": 0,
+     "stock_awards": 11785368,
+     "option_awards": 0,
+     "non_equity_incentive": 5821539,
+     "pension_nqdc": 898101,
+     "all_other": 26314,
+     "total": 20237916,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Jacek Olczak",
-     "title": "Chairman",
+     "title": "Group CEO PMI",
      "year": 2023,
-     "salary": 0,
-     "total": 18599,
-     "_total_source": "filing_only"
+     "salary": 1649458,
+     "bonus": 0,
+     "stock_awards": 13225739,
+     "option_awards": 0,
+     "non_equity_incentive": 4530802,
+     "pension_nqdc": 6055916,
+     "all_other": 18599,
+     "total": 25480514,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Emmanuel Babeau",
-     "title": "Chief Financial Officer",
+     "title": "Group Chief Financial Officer",
      "year": 2025,
-     "salary": 0,
-     "total": 23149,
-     "_total_source": "filing_only"
+     "salary": 1517944,
+     "bonus": 0,
+     "stock_awards": 5456863,
+     "option_awards": 0,
+     "non_equity_incentive": 2510894,
+     "pension_nqdc": 17385133,
+     "all_other": 23149,
+     "total": 26893983,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Emmanuel Babeau",
-     "title": "Chief Financial Officer",
+     "title": "Group Chief Financial Officer",
      "year": 2024,
-     "salary": 0,
-     "total": 39630,
-     "_total_source": "filing_only"
+     "salary": 1426010,
+     "bonus": 0,
+     "stock_awards": 3961096,
+     "option_awards": 0,
+     "non_equity_incentive": 2490349,
+     "pension_nqdc": 1371989,
+     "all_other": 39630,
+     "total": 9289074,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Emmanuel Babeau",
-     "title": "Chief Financial Officer",
+     "title": "Group Chief Financial Officer",
      "year": 2023,
-     "salary": 2661,
-     "total": 28934,
-     "_total_source": "minor_gap"
+     "salary": 1335944,
+     "bonus": 0,
+     "stock_awards": 4810773,
+     "option_awards": 0,
+     "non_equity_incentive": 2166914,
+     "pension_nqdc": 1868986,
+     "all_other": 28934,
+     "total": 10211551,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: full SCT re-parse from primary DEF 14A pmi-20260325.htm (prior parse stored All Other as total and dropped all other columns); components sum exactly to filing total."
     },
     {
      "name": "Stacey Kennedy",
@@ -36828,13 +36977,58 @@
      "salary": 2335645,
      "total": 2407624,
      "_total_source": "verified"
+    },
+    {
+     "name": "Frederic de Wilde",
+     "title": "CEO PMI International",
+     "year": 2025,
+     "salary": 1207773,
+     "bonus": 0,
+     "stock_awards": 4921681,
+     "option_awards": 0,
+     "non_equity_incentive": 2355091,
+     "pension_nqdc": 2285019,
+     "all_other": 18446,
+     "total": 10788010,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Frederic de Wilde",
+     "title": "CEO PMI International",
+     "year": 2024,
+     "salary": 1138937,
+     "bonus": 0,
+     "stock_awards": 3601159,
+     "option_awards": 0,
+     "non_equity_incentive": 2245983,
+     "pension_nqdc": 732770,
+     "all_other": 55464,
+     "total": 7774313,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
+    },
+    {
+     "name": "Frederic de Wilde",
+     "title": "CEO PMI International",
+     "year": 2023,
+     "salary": 1103535,
+     "bonus": 0,
+     "stock_awards": 2156654,
+     "option_awards": 0,
+     "non_equity_incentive": 1969931,
+     "pension_nqdc": 5290091,
+     "all_other": 253550,
+     "total": 10773761,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
     }
    ],
    "cik": "0001413329",
    "filing_date": "2026-03-26",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/1413329/000162828026021169/pmi-20260325.htm",
-   "total_neo_compensation": 7387006,
-   "neo_count": 4,
+   "total_neo_compensation": 44622365,
+   "neo_count": 5,
    "proxy_fiscal_year": 2025,
    "available_years": [
     2025,
@@ -108962,5 +109156,5 @@
    }
   }
  ],
- "last_updated": "2026-09-04T06:00:00-07:00"
+ "last_updated": "2026-09-05T10:30:00-07:00"
 }
