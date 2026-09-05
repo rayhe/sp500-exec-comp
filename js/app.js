@@ -683,7 +683,7 @@ function computeRadarPercentiles(companies) {
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
     'GEV':  'GE Vernova spun off from GE in April 2024 — no full-year proxy data available for FY2024.',
-    'SW':   'Smurfit WestRock formed via merger in July 2024 — no full-year proxy data available for FY2024.',
+    'SW':   'Smurfit WestRock formed via merger in July 2024 — no FY2024 pay ratio disclosed.',
     'TSLA': 'Tesla reports $0 CEO compensation (Elon Musk). Pay ratio not computed by Tesla in proxy filings.'
 };
 
