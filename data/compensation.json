@@ -127,11 +127,11 @@
   "mean_ceo_pay": 19704690.816,
   "max_ceo_pay": 164525721,
   "min_ceo_pay": 0,
-  "say_on_pay_coverage": 496,
+  "say_on_pay_coverage": 497,
   "say_on_pay_stats": {
-   "count": 496,
-   "median_approval": 93.39,
-   "mean_approval": 90.31,
+   "count": 497,
+   "median_approval": 93.33,
+   "mean_approval": 90.3,
    "min_approval": 15.69,
    "max_approval": 100.0,
    "below_70": 30,
@@ -6330,6 +6330,13 @@
     "year": 2011,
     "month": "November",
     "confidence": "high"
+   },
+   "say_on_pay": {
+    "approval_pct": 86.5,
+    "votes_for": 233006769,
+    "votes_against": 36368551,
+    "filing_date": "2024-06-21",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1535527/000110465924073944/tm2417737d1_8k.htm"
    },
    "board_independence": {
     "total_directors": 9,
