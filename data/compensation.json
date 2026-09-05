@@ -17,9 +17,9 @@
    "Tesla/Elon Musk has $0 compensation - correct per proxy filing",
    "Some entries are FY2025 (ADSK, BBY, CRM, TJX, WDAY, NVDA, KMX) due to non-calendar fiscal years",
    "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant",
-   "Compensation Governance Score: composite 0-100 from SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness",
+   "Compensation Governance Score: composite 0-100, mean of available percentile components (requires 2+): SoP approval, CEO concentration (inverted), pay ratio (inverted), team disclosure completeness, and board independence (added 2026-09-05, now 500/500 coverage)",
    "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used.",
-   "Data quality flags (per NEO record, audited 2026-09-05 over 6560 records): verified = components sum exactly to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~45 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); 20 minor_gap records (PEP/STX/GRMN/COIN/SW) still need per-filing re-parse."
+   "Data quality flags (per NEO record, audited 2026-09-05 over 6560 records): verified = components sum exactly to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~45 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); minor_gap backlog cleared 2026-09-05 (PEP/SW/STX/GRMN/COIN SCTs rebuilt from primary DEF 14A; 2026-09-05 audit shows 0 minor_gap of 6567 records)."
   ],
   "aggregate_stats": {
    "total_companies": 500,
@@ -114,7 +114,7 @@
   "total_companies": 500,
   "last_updated": "2026-09-05",
   "total_neo_records": 6567,
-  "title_coverage": "6549/6551",
+  "title_coverage": "6565/6567",
   "data_quality": {
    "verified": 6101,
    "recomputed": 132,
@@ -170,7 +170,7 @@
   "board_independence_count": 500,
   "board_independence_full": 500,
   "last_audit": "2026-09-05",
-  "companies_with_pay_ratio": 496,
+  "companies_with_pay_ratio": 500,
   "enriched_count": 500,
   "multiyear_fill_20260902_1400": {
    "date": "2026-09-02",
@@ -4220,7 +4220,9 @@
     "votes_against": 36603358,
     "filing_date": "2026-05-20",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1964738/000196473826000027/solv-20260515.htm"
-   }
+   },
+   "pay_ratio": 245,
+   "median_worker_pay": 82152
   },
   {
    "ticker": "UBER",
@@ -21768,7 +21770,9 @@
     "votes_against": 7733058,
     "filing_date": "2026-05-22",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1996810/000199681026000115/gev-20260520.htm"
-   }
+   },
+   "pay_ratio": 282,
+   "median_worker_pay": 63902
   },
   {
    "ticker": "JNJ",
@@ -33883,7 +33887,9 @@
     "independence_pct": 83.3,
     "lead_independent_director": true,
     "chair_independent": true
-   }
+   },
+   "pay_ratio": 271,
+   "median_worker_pay": 60554
   },
   {
    "ticker": "FANG",
@@ -109311,7 +109317,9 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2025-09-17",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465925090866/tm252289-12_def14a.htm"
-   }
+   },
+   "pay_ratio": 0,
+   "median_worker_pay": 57243
   }
  ],
  "last_updated": "2026-09-05T10:30:00-07:00"
