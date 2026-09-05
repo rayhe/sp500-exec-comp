@@ -146,7 +146,7 @@
   },
   "ceo_tenure_coverage": 500,
   "governance_coverage": 496,
-  "board_independence_coverage": 488,
+  "board_independence_coverage": 490,
   "data_quality_detailed": {
    "verified": 5680,
    "recomputed": 141,
@@ -157,7 +157,7 @@
    "filing_only": 16
   },
   "companies_with_executives": 498,
-  "board_independence_any": 488,
+  "board_independence_any": 490,
   "median_worker_pay": 81953.0,
   "median_pay_ratio": 196.5,
   "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
    "incomplete": 0,
    "board_independence": 337
   },
-  "board_independence_count": 488,
-  "board_independence_full": 488,
+  "board_independence_count": 490,
+  "board_independence_full": 490,
   "last_audit": "2026-09-01",
   "companies_with_pay_ratio": 496,
   "enriched_count": 498,
@@ -74814,6 +74814,15 @@
     "sources": [
      "table"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 8,
+    "independence_pct": 88.9,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-04-30 ('Our Board has affirmatively determined that eight of our nine directors, Ms. Byng-Thorne, Mr. Cruz, Ms. Jojo, Mr. Lansberry, Mr. Pagliuca, Mr. Cil, Mr. Cohen and Mr. MacDonald, are independent under the applicable rules of the NYSE'; Mr. Chidsey not independent since appointed President/CEO 2026-02-12; Chairperson of the Board = President and CEO John W. Chidsey; Lead Independent Director Alex Cruz)",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1513761/000110465926052146/tm261503-1_def14a.htm"
    }
   },
   {
@@ -80799,6 +80808,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 10,
+    "independent_directors": 9,
+    "independence_pct": 90.0,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-03-16 ('none of Messrs. Chapin, Klobuchar, Michas, or Vounatsos, Ms. Witz, or Drs. Barrett, McMurry-Heath, Vandebroek or Witney, has a material relationship with Revvity, and also that each of these directors is \"independent\" under Section 303A.02(b) of the NYSE Listed Company Manual'; 9 of 10 nominees independent; only non-independent nominee is President/CEO Prahlad R. Singh; Non-Executive Chair Alexis P. Michas; no Lead Independent Director (only external-board mention re Cerus))",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/31791/000119312526107266/d21831ddef14a.htm"
    }
   },
   {
