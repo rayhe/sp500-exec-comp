@@ -146,7 +146,7 @@
   },
   "ceo_tenure_coverage": 500,
   "governance_coverage": 496,
-  "board_independence_coverage": 490,
+  "board_independence_coverage": 492,
   "data_quality_detailed": {
    "verified": 5680,
    "recomputed": 141,
@@ -157,7 +157,7 @@
    "filing_only": 16
   },
   "companies_with_executives": 498,
-  "board_independence_any": 490,
+  "board_independence_any": 492,
   "median_worker_pay": 81953.0,
   "median_pay_ratio": 196.5,
   "last_verified": "2026-09-01T09:08:43Z",
@@ -168,8 +168,8 @@
    "incomplete": 0,
    "board_independence": 337
   },
-  "board_independence_count": 490,
-  "board_independence_full": 490,
+  "board_independence_count": 492,
+  "board_independence_full": 492,
   "last_audit": "2026-09-01",
   "companies_with_pay_ratio": 496,
   "enriched_count": 498,
@@ -82687,6 +82687,15 @@
     "source": "8-K Item 5.07",
     "filing_date": "2026-05-14",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1967680/000196768026000028/vlto-20260513.htm"
+   },
+   "board_independence": {
+    "total_directors": 12,
+    "independent_directors": 9,
+    "independence_pct": 75.0,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-03-27 ('The Board has affirmatively determined that Mses. Filler, Colpron and Wallis-Lage and Messrs. Kambeyanda, Lohr, Mitts, Sankaran, Schwieters and Williams are independent within the meaning of the listing standards of the NYSE'; 9 of 12; non-independent: CEO Jennifer L. Honeycutt and Daniel L. Comas; Ms. Filler serves as independent Chair; non-management executive sessions chaired by independent Chair)",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1967680/000196768026000016/vlto-20260326.htm"
    }
   },
   {
@@ -89832,6 +89841,15 @@
     "sources": [
      "experience"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 8,
+    "independence_pct": 88.9,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-04-08 ('the Board has determined that all of our Board members are independent, except Alok Maskara, our CEO'; governance highlights: 'Board is 89% independent (8 out of 9 directors)'; Mr. Teske serves as independent Chair of the Board)",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1069202/000106920226000046/lii-20260406.htm"
    }
   },
   {
