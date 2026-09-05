@@ -14608,7 +14608,7 @@
    "board_independence": {
     "total_directors": 11,
     "independent_directors": 10,
-    "independence_pct": 91,
+    "independence_pct": 90.9,
     "lead_independent_director": true,
     "chair_independent": true
    }
@@ -88323,7 +88323,7 @@
    "board_independence": {
     "total_directors": 11,
     "independent_directors": 10,
-    "independence_pct": 91,
+    "independence_pct": 90.9,
     "lead_independent_director": false,
     "chair_independent": true
    }
@@ -89632,6 +89632,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 15,
+    "independent_directors": 12,
+    "independence_pct": 80.0,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-03-12: 12 of 15 directors independent (all except Chairman/CEO Steinour, Rollins, Torgow); independent Lead Director David Porteous",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/49196/000119312526103196/hban-20260312.htm"
    }
   },
   {
@@ -90968,6 +90977,15 @@
     "sources": [
      "table"
     ]
+   },
+   "board_independence": {
+    "total_directors": 11,
+    "independent_directors": 9,
+    "independence_pct": 81.8,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-03-25: 9 of 11 nominees independent (all except Executive Chairman Stein and CEO Palmer); Lead Director Blankenship until 2026 AGM retirement, then Evens",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/910606/000119312526122880/d939595ddef14a.htm"
    }
   },
   {
@@ -96188,6 +96206,15 @@
     "source": "8-K Item 5.07",
     "filing_date": "2026-03-04",
     "source_url": "https://www.sec.gov/Archives/edgar/data/72331/000007233126000017/ndsn-20260302.htm"
+   },
+   "board_independence": {
+    "total_directors": 10,
+    "independent_directors": 9,
+    "independence_pct": 90.0,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-01-16: all current directors independent except CEO Nagarajan; independent Chair Richey separate from CEO",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/72331/000119312526014662/d895414ddef14a.htm"
    }
   },
   {
@@ -97157,6 +97184,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 7,
+    "independence_pct": 77.8,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-04-06: 7 of 9 nominees independent (all except Executive Chairman Bolton and CEO Hill); Lead Independent Director Graf",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/912595/000114036126013212/ny20062832x1_def14a.htm"
    }
   },
   {
@@ -103303,6 +103339,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 12,
+    "independent_directors": 11,
+    "independence_pct": 91.7,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-04-29: 11 of 12 directors independent (all except CEO Concannon); independent Chairman Hernandez",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1278021/000119312526191601/mktx-20260429.htm"
    }
   },
   {
@@ -103736,6 +103781,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 10,
+    "independent_directors": 9,
+    "independence_pct": 90.0,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-03-18 (post-2026 AGM state): 9 of 10 nominees independent (all except incoming CEO Gaudette); independent Chair Carrillo; Lead Independent Director role eliminated. Note: filing boilerplate claims all nominees independent except Coben (not a nominee); corrected per NYSE standards since Gaudette is an executive officer",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1013871/000110465926030844/tm261406-2_def14a.htm"
    }
   },
   {
@@ -103892,6 +103946,15 @@
     "sources": [
      "prose"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 7,
+    "independence_pct": 77.8,
+    "chair_independent": true,
+    "lead_independent_director": false,
+    "source": "DEF 14A 2026-03-26: 7 of 9 nominees independent (all except CEO Arvan and former CEO Perez de la Mesa); independent Chairman Whalen",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/945841/000094584126000077/pool-20260325.htm"
    }
   },
   {
@@ -104274,6 +104337,15 @@
     "sources": [
      "table"
     ]
+   },
+   "board_independence": {
+    "total_directors": 9,
+    "independent_directors": 6,
+    "independence_pct": 66.7,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-04-03: 6 of 9 directors independent (Bruckmann, Burris, Engquist, Onorato, Runge, Bogart); combined Chairman/CEO Lorberbaum; Lead Independent Director Engquist",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926039491/tm261333-4_def14a.htm"
    }
   },
   {
