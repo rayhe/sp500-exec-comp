@@ -127,14 +127,14 @@
   "mean_ceo_pay": 19704690.816,
   "max_ceo_pay": 164525721,
   "min_ceo_pay": 0,
-  "say_on_pay_coverage": 484,
+  "say_on_pay_coverage": 496,
   "say_on_pay_stats": {
-   "count": 484,
-   "median_approval": 93.47,
-   "mean_approval": 90.36,
+   "count": 496,
+   "median_approval": 93.39,
+   "mean_approval": 90.31,
    "min_approval": 15.69,
    "max_approval": 100.0,
-   "below_70": 29,
+   "below_70": 30,
    "below_50": 6
   },
   "gender_coverage": {
@@ -27773,6 +27773,13 @@
     "independence_pct": 91.7,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 90.7,
+    "votes_for": 1228911693,
+    "votes_against": 126315146,
+    "filing_date": "2026-04-27",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1800/000110465926049434/tm2612318d1_8k.htm"
    }
   },
   {
@@ -32014,6 +32021,13 @@
     "independence_pct": 100.0,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 96.5,
+    "votes_for": 377036214,
+    "votes_against": 13692455,
+    "filing_date": "2026-05-12",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/7084/000000708426000027/adm-20260507.htm"
    }
   },
   {
@@ -47460,6 +47474,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 58.3
+   },
+   "say_on_pay": {
+    "approval_pct": 71.2,
+    "votes_for": 110000339,
+    "votes_against": 44388047,
+    "filing_date": "2024-06-14",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1973266/000119312524161666/d803433d8k.htm"
    }
   },
   {
@@ -55980,6 +56001,13 @@
     "independence_pct": 90.0,
     "chair_independent": false,
     "lead_independent_director": true
+   },
+   "say_on_pay": {
+    "approval_pct": 91.8,
+    "votes_for": 303006496,
+    "votes_against": 27078463,
+    "filing_date": "2024-05-28",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/51644/000005164424000027/ipg-20240523.htm"
    }
   },
   {
@@ -77683,6 +77711,13 @@
     "source": "DEF 14A 2026-08-17",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1048911/000110465926097836/tm2531093-3_def14a.htm",
     "note": "11 nominees; Amy B. Lane retiring, board decreases 12->11. Non-independent: R.B. Martin (Executive Chairman), R. Subramaniam (CEO), R.W. Smith (exec). Chair: R. Brad Martin (not independent). Lead independent: Susan P. Griffith."
+   },
+   "say_on_pay": {
+    "approval_pct": 63.4,
+    "votes_for": 117787536,
+    "votes_against": 67893921,
+    "filing_date": "2025-10-02",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1048911/000119312525228346/d64398d8k.htm"
    }
   },
   {
@@ -83944,6 +83979,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A filed 2026-03-25; Board determined 9 of 14 nominated directors independent under NYSE standards (Cocks, Eaton, Ferguson-McHugh, Herington, O'Sullivan, Riley, Timm, Williams, Winnefeld). Controlled company; board size set at 15 with one Class A vacancy, 14 nominated. Chair David S. Coors (family) not independent. No formal Lead Independent Director title; Independent Governance Committee Member (Roger G. Eaton) chairs executive sessions of independent directors and reviews/agrees agendas with Chair/Vice Chair.",
     "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000110465926034154/tap-20260506xdef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 95.4,
+    "votes_for": 153627533,
+    "votes_against": 7383703,
+    "filing_date": "2026-05-08",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000110465926058010/tm2614008d1_8k.htm"
    }
   },
   {
@@ -89638,6 +89680,13 @@
     "note": "Board determined all nominees independent under Nasdaq standards except Mr. Spence (President/CEO). 16 nominee bios counted via Career Highlights blocks.",
     "source": "DEF 14A 2026-03-09",
     "source_url": "https://www.sec.gov/Archives/edgar/data/35527/000119312526098679/d47600ddef14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 94.6,
+    "votes_for": 699182469,
+    "votes_against": 39949231,
+    "filing_date": "2026-04-24",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/35527/000003552726000172/fitb-20260421.htm"
    }
   },
   {
@@ -90015,6 +90064,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-03-12: 12 of 15 directors independent (all except Chairman/CEO Steinour, Rollins, Torgow); independent Lead Director David Porteous",
     "source_url": "https://www.sec.gov/Archives/edgar/data/49196/000119312526103196/hban-20260312.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 90.6,
+    "votes_for": 1407891254,
+    "votes_against": 146434626,
+    "filing_date": "2026-04-24",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/49196/000004919626000038/hban-20260422.htm"
    }
   },
   {
@@ -90634,6 +90690,13 @@
     "independence_pct": 85.7,
     "lead_independent_director": true,
     "chair_independent": true
+   },
+   "say_on_pay": {
+    "approval_pct": 82.6,
+    "votes_for": 366406303,
+    "votes_against": 77323079,
+    "filing_date": "2026-08-19",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/827054/000082705426000042/mchp-20260818.htm"
    }
   },
   {
@@ -95985,6 +96048,13 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-03-18",
     "source_url": "https://www.sec.gov/Archives/edgar/data/20286/000002028626000015/cinf-20260316.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 96.4,
+    "votes_for": 118190863,
+    "votes_against": 4425146,
+    "filing_date": "2026-05-06",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/20286/000002028626000030/cinf-20260502.htm"
    }
   },
   {
@@ -100319,6 +100389,13 @@
     "lead_independent_director": true,
     "chair_independent": false,
     "independence_pct": 91.7
+   },
+   "say_on_pay": {
+    "approval_pct": 96.6,
+    "votes_for": 180310780,
+    "votes_against": 6310855,
+    "filing_date": "2026-05-07",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/1711269/000171126926000057/evrg-20260331.htm"
    }
   },
   {
@@ -106984,6 +107061,13 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-07",
     "source_url": "https://www.sec.gov/Archives/edgar/data/29534/000110465926040394/tm261322-1_def14a.htm"
+   },
+   "say_on_pay": {
+    "approval_pct": 88.0,
+    "votes_for": 160040421,
+    "votes_against": 21835901,
+    "filing_date": "2026-06-02",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/29534/000110465926069198/tm2616084d1_8k.htm"
    }
   },
   {
