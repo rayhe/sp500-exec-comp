@@ -367,7 +367,7 @@
                         <th class="sortable sop-col" data-sort="_sopApproval" role="columnheader" aria-sort="none" tabindex="0" title="Say-on-Pay shareholder approval percentage from 8-K Item 5.07 filings">SoP %</th>
                         <th class="sortable asp-col" data-sort="_aspDelta" role="columnheader" aria-sort="none" tabindex="0" title="Peer group median CEO pay vs own CEO pay — positive = selects higher-paid peers (aspirational), negative = pays above peers">Peer Δ</th>
                         <th class="sortable tenure-col" data-sort="_ceoTenureYears" role="columnheader" aria-sort="none" tabindex="0" title="CEO tenure — years since appointment (from DEF 14A proxy statements)">Tenure</th>
-                        <th class="sortable gov-col" data-sort="_govScore" role="columnheader" aria-sort="none" tabindex="0" title="Compensation Governance Score (0-100) — composite of SoP approval, CEO concentration, pay ratio, and team completeness">Gov</th>
+                        <th class="sortable gov-col" data-sort="_govScore" role="columnheader" aria-sort="none" tabindex="0" title="Compensation Governance Score (0-100) — composite of SoP approval, CEO concentration, pay ratio, team completeness, and board independence">Gov</th>
                         <th class="sortable ger-col" data-sort="_gerScore" role="columnheader" aria-sort="none" tabindex="0" title="Governance Erosion Risk — composite score (0-100) measuring risk of governance erosion from CEO entrenchment">GER</th>
                         <th class="sortable vol-col" data-sort="_ceoVolatility" role="columnheader" aria-sort="none" tabindex="0" title="CEO Pay Volatility — coefficient of variation (%) of CEO compensation across fiscal years. Higher = more volatile pay.">Vol%</th>
                         <th class="sortable" data-sort="pay_ratio" role="columnheader" aria-sort="none" tabindex="0">Pay Ratio</th>
@@ -519,7 +519,7 @@
         <div class="chart-panel" id="gov-dist-panel">
             <div class="section-header">
                 <h2>Governance Score Distribution <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed — click for details">ⓘ</button></h2>
-                <p class="section-desc">Distribution of compensation governance scores (0–100) across the S&P 500. Composite of SoP approval, CEO concentration, pay ratio, and team completeness. Click a bucket to filter the table.</p>
+                <p class="section-desc">Distribution of compensation governance scores (0–100) across the S&P 500. Composite of SoP approval, CEO concentration, pay ratio, team completeness, and board independence. Click a bucket to filter the table.</p>
             </div>
             <div id="gov-dist-chart"></div>
         </div>
@@ -536,7 +536,7 @@
         <div class="chart-panel chart-panel-full" id="gov-quartile-comp-panel">
             <div class="section-header">
                 <h2>Pay Structure by Governance Quality <button class="methodology-info-btn" data-method="gov" aria-label="Governance scoring methodology" title="How governance scores are computed">ⓘ</button></h2>
-                <p class="section-desc">How compensation composition shifts across governance quartiles — do well-governed companies structure CEO pay differently? Companies ranked by governance score (SoP approval, CEO concentration, pay ratio, team completeness), then split into quartiles.</p>
+                <p class="section-desc">How compensation composition shifts across governance quartiles — do well-governed companies structure CEO pay differently? Companies ranked by governance score (SoP approval, CEO concentration, pay ratio, team completeness, board independence), then split into quartiles.</p>
             </div>
             <div id="gov-quartile-comp-chart"></div>
         </div>

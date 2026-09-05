@@ -723,7 +723,8 @@ function computeAspirationalBenchmarking(companies) {
      2. Inverse CEO concentration (lower CEO share of NEO comp = more distributed = better)
      3. Inverse pay ratio percentile (lower CEO:worker gap = better alignment)
      4. Team disclosure completeness (more C-suite roles in NEO = better transparency)
-   Companies missing 2+ components get null. Score is the mean of available components.
+     5. Board independence percentile (higher % independent directors = better oversight)
+   Companies with fewer than 2 available components get null. Score is the mean of available components.
    Sets c._govScore (0-100), c._govGrade (A/B/C/D/F), c._govComponents (object),
    c._govComponentCount (number of available components). */
 function computeGovernanceScore(companies) {
@@ -744,6 +745,7 @@ function computeGovernanceScore(companies) {
     var sopPctile = pctileMap(companies, function(c) { return c._sopApproval; }, false);
     var concPctile = pctileMap(companies, function(c) { return c._ceoConcPct; }, true); // invert: lower conc = higher score
     var ratioPctile = pctileMap(companies, function(c) { return c.pay_ratio; }, true);   // invert: lower ratio = higher score
+    var boardPctile = pctileMap(companies, function(c) { return c._boardIndepPct; }, false); // higher independence = better
     // Team completeness: 0-7 roles → scale to 0-100
     var teamPctile = {};
     companies.forEach(function(c) {
@@ -766,6 +768,7 @@ function computeGovernanceScore(companies) {
         if (concPctile[c.ticker] != null) { components.conc = concPctile[c.ticker]; sum += components.conc; count++; }
         if (ratioPctile[c.ticker] != null) { components.ratio = ratioPctile[c.ticker]; sum += components.ratio; count++; }
         if (teamPctile[c.ticker] != null) { components.team = teamPctile[c.ticker]; sum += components.team; count++; }
+        if (boardPctile[c.ticker] != null) { components.board = boardPctile[c.ticker]; sum += components.board; count++; }
 
         if (count < 2) return; // Need at least 2 components for meaningful score
 
@@ -6514,6 +6517,7 @@ function renderTable(companies, options) {
                     if (c._govComponents.conc != null) parts.push('Conc: ' + c._govComponents.conc);
                     if (c._govComponents.ratio != null) parts.push('Ratio: ' + c._govComponents.ratio);
                     if (c._govComponents.team != null) parts.push('Team: ' + c._govComponents.team);
+                    if (c._govComponents.board != null) parts.push('Board: ' + c._govComponents.board);
                 }
                 var tip = 'Governance Score: ' + gs + '/100 (Grade ' + gg + ') \u2014 ' + parts.join(', ') + ' \u2014 click to filter';
                 var gMin = gg === 'A' ? 80 : gg === 'B' ? 65 : gg === 'C' ? 50 : gg === 'D' ? 35 : 0;
@@ -7490,7 +7494,7 @@ function setupDetailPanel(companies) {
             var govS = company._govScore;
             var govG = company._govGrade;
             var govCls = govG === 'A' ? 'positive' : govG === 'B' ? 'positive' : govG === 'C' ? '' : 'negative';
-            var govTip = 'Composite of SoP approval, CEO concentration (inverted), pay ratio (inverted), and team completeness';
+            var govTip = 'Composite of SoP approval, CEO concentration (inverted), pay ratio (inverted), team completeness, and board independence';
             var govSub = 'Grade ' + govG;
             if (company._govComponents) {
                 var gParts = [];
@@ -7498,6 +7502,7 @@ function setupDetailPanel(companies) {
                 if (company._govComponents.conc != null) gParts.push('Conc ' + company._govComponents.conc);
                 if (company._govComponents.ratio != null) gParts.push('Ratio ' + company._govComponents.ratio);
                 if (company._govComponents.team != null) gParts.push('Team ' + company._govComponents.team);
+                if (company._govComponents.board != null) gParts.push('Board ' + company._govComponents.board);
                 govSub += ' · ' + gParts.join(', ');
             }
             html += '<div class="detail-stat"><div class="detail-stat-label" title="' + govTip + '">Governance Score</div><div class="detail-stat-value ' + govCls + '">' + govS + '/100</div>' + distBar(govS, '0', '100') + '<div class="detail-stat-sub">' + govSub + '</div></div>';
@@ -10721,7 +10726,11 @@ function setupDualSparklineTooltips() {
     // Pre-compute executive team completeness (C-suite role coverage per company)
     computeTeamCompleteness(companies);
 
-    // Pre-compute Compensation Governance Score (composite of SoP, concentration, ratio, team)
+    // Pre-compute board independence derived fields
+    // Must run before governance score so board independence can be a composite component
+    computeBoardIndependence(companies);
+
+    // Pre-compute Compensation Governance Score (composite of SoP, concentration, ratio, team, board independence)
     // Must run before radar percentiles so governance can be included as a radar dimension
     computeGovernanceScore(companies);
 
@@ -10730,9 +10739,6 @@ function setupDualSparklineTooltips() {
 
     // Pre-compute CEO pay volatility (coefficient of variation across fiscal years)
     computeCeoPayVolatility(companies);
-
-    // Pre-compute board independence derived fields
-    computeBoardIndependence(companies);
 
     // Pre-compute radar chart percentiles for 8-dimension compensation profile
     computeRadarPercentiles(companies);
@@ -15468,17 +15474,18 @@ function setupDualSparklineTooltips() {
         gov: {
             title: 'Governance Score Methodology',
             html: '<h4>Composite Score (0–100)</h4>' +
-                '<p>Compensation Governance Score measures how well a company governs executive pay. Four components, equal-weighted at <span class="method-pill">25% each</span>, renormalized if any component is missing (requires ≥2 components).</p>' +
-                '<div class="method-formula">GovScore = mean(SoP%ile, (100 − CEOConc%ile), (100 − PayRatio%ile), TeamComplete%)</div>' +
-                '<h4>Four Components</h4>' +
+                '<p>Compensation Governance Score measures how well a company governs executive pay. Five components, equal-weighted at <span class="method-pill">20% each</span>, renormalized if any component is missing (requires ≥2 components).</p>' +
+                '<div class="method-formula">GovScore = mean(SoP%ile, (100 − CEOConc%ile), (100 − PayRatio%ile), TeamComplete%, BoardIndep%ile)</div>' +
+                '<h4>Five Components</h4>' +
                 '<ol>' +
                 '<li><strong>Say-on-Pay Approval Percentile</strong> — Shareholder approval % from 8-K Item 5.07 filings, ranked across S&P 500. Higher approval → higher percentile → better governance.</li>' +
                 '<li><strong>Inverse CEO Concentration</strong> — CEO total pay as % of total NEO compensation. Lower concentration = more distributed pay = better. Inverted percentile: <code>100 − conc%ile</code>.</li>' +
                 '<li><strong>Inverse Pay Ratio</strong> — CEO-to-median-worker pay ratio. Lower ratio = better alignment. Inverted percentile: <code>100 − ratio%ile</code>.</li>' +
                 '<li><strong>Team Disclosure Completeness</strong> — Count of C-suite roles (CEO, CFO, COO, GC/CLO, CTO, CHRO, CIO) present in NEO disclosure, scaled to 0–100: <code>roleCount / 7 × 100</code>.</li>' +
+                '<li><strong>Board Independence Percentile</strong> — % of board directors affirmed independent in the proxy (DEF 14A), ranked across S&P 500. Coverage 500/500 from primary filings. Higher independence → higher percentile → better oversight.</li>' +
                 '</ol>' +
                 '<h4>Missing-Data Rule</h4>' +
-                '<p>If a component is absent (e.g., no SoP filing, no pay ratio), it is skipped and the mean is taken over remaining components. Companies missing ≥3 components get <code>null</code> (excluded from governance charts).</p>' +
+                '<p>If a component is absent (e.g., no SoP filing, no pay ratio), it is skipped and the mean is taken over remaining components. Companies with fewer than 2 available components get <code>null</code> (excluded from governance charts).</p>' +
                 '<h4>Letter Grades</h4>' +
                 '<p><span class="method-pill">A ≥80</span> <span class="method-pill">B ≥65</span> <span class="method-pill">C ≥50</span> <span class="method-pill">D ≥35</span> <span class="method-pill">F &lt;35</span></p>' +
                 '<p>Grade thresholds apply to the 0–100 composite, not raw percentiles.</p>' +

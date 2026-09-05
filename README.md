@@ -75,7 +75,8 @@ All compensation data sourced from primary filings:
 2. Enriched 498/500 with full NEO breakdowns parsed from SEC EDGAR DEF 14A HTML filings via CIK lookup
 3. Peer network extracted from Compensation Discussion & Analysis sections citing benchmarking peers
 4. Component-total consistency verified: ~90% match, 6174 total NEO records, 0 mismatches, multi-year coverage 492/500
-5. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
+5. Governance Score (0-100) composite of five equal-weighted components, all normalized as cross-S&P-500 percentiles: Say-on-Pay approval, inverse CEO concentration, inverse CEO-to-worker pay ratio, C-suite team disclosure completeness, and board independence % (500/500 from primary DEF 14A filings). Mean of available components; null if fewer than 2. Grades: A≥80, B≥65, C≥50, D≥35, F<35.
+6. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
 
 ## License
 
