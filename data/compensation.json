@@ -133,6 +133,15 @@
   "max_ceo_pay": 164525721,
   "min_ceo_pay": 0,
   "say_on_pay_coverage": 497,
+  "say_on_pay_true_negatives": {
+    "count": 3,
+    "verified": "2026-09-05",
+    "companies": {
+      "BX": "Blackstone Inc. — zero DEF 14A in EDGAR 2007-2026 (722+ filings scanned); 10-K discloses Items 10-14 inline as a controlled company; no proxy solicitation and no advisory SoP vote.",
+      "KKR": "KKR & Co. Inc. — only 2026 proxy is 2026-02-27 DEF 14A for the 4/21/2026 special meeting (charter amendments); no annual-meeting advisory vote on executive compensation.",
+      "PARA": "Paramount Global — post-merger true negative; no 2026 SoP vote."
+    }
+  },
   "say_on_pay_stats": {
    "count": 497,
    "median_approval": 93.33,

@@ -2957,7 +2957,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var value = gradeA.length + ' companies Grade A';
         var topNames = top5.map(function(c) { return c.ticker + ' (' + c._govScore + ')'; }).join(', ');
         var botNames = bottom5.map(function(c) { return c.ticker + ' (' + c._govScore + ')'; }).join(', ');
-        var detail = 'Composite score (0–100) from say-on-pay approval, CEO concentration, pay ratio, and team disclosure completeness. ' +
+        var detail = 'Composite score (0–100): equal-weighted mean of five S&P 500 percentiles — say-on-pay approval, inverse CEO concentration, inverse pay ratio, team disclosure completeness, and board independence (mean of available components; requires at least 2). ' +
             'S&amp;P 500 median: ' + median + '/100. ' +
             'Top 5: ' + topNames + '. Bottom 5: ' + botNames + '.';
         if (govPayDelta !== 0) {
