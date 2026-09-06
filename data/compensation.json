@@ -19,53 +19,53 @@
    "WELL (Welltower) FY2025 $821M verified against DEF 14A \u2014 Shankh Mitra received $813.2M front-loaded multi-year equity grant",
    "Compensation Governance Score: composite 0-100, mean of available percentile components (requires 2+): SoP approval, CEO concentration (inverted), pay ratio (inverted), team disclosure completeness, and board independence (added 2026-09-05, now 500/500 coverage)",
    "BX (Blackstone) and KKR are partnerships/alternative asset managers \u2014 no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used.",
-   "Data quality flags (per NEO record, audited 2026-09-05 over 6560 records): verified = components sum exactly to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~45 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); minor_gap backlog cleared 2026-09-05 (PEP/SW/STX/GRMN/COIN SCTs rebuilt from primary DEF 14A; 2026-09-05 audit shows 0 minor_gap of 6567 records)."
+   "Data quality flags (per NEO record, audited 2026-09-05 over 6567 records): verified = components sum to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~30 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); minor_gap backlog cleared 2026-09-05 (PEP/SW/STX/GRMN/COIN SCTs rebuilt from primary DEF 14A). SPG bonus column restored 2026-09-05 (13 records, gaps matched filing exactly); SLB SCT column-shift corrected 2026-09-05 (16 records rebuilt from primary DEF 14A: non_equity_incentive had carried pension values, pension_nqdc had carried all-other values)."
   ],
   "aggregate_stats": {
    "total_companies": 500,
-   "companies_with_pay_ratio": 496,
+   "companies_with_pay_ratio": 500,
    "median_ceo_pay": 17846121.5,
    "mean_ceo_pay": 20457086.094,
    "max_ceo_pay": 164525721,
    "min_ceo_pay": 0,
-   "median_worker_pay": 81953.0,
-   "median_pay_ratio": 196.5
+   "median_worker_pay": 81899.0,
+   "median_pay_ratio": 197.0
   },
   "sector_medians": {
    "Industrials": {
     "count": 70,
-    "median_ceo_pay": 17230671.5,
+    "median_ceo_pay": 17455077.5,
     "min": 1693133,
     "max": 164525721,
-    "mean": 19012281.542857144
+    "mean": 19590158.242857143
    },
    "Consumer Discretionary": {
     "count": 59,
-    "median_ceo_pay": 15574678,
+    "median_ceo_pay": 15931316,
     "min": 0,
     "max": 95801676,
-    "mean": 17387409.01694915
+    "mean": 18077251.72881356
    },
    "Financials": {
     "count": 66,
     "median_ceo_pay": 19455209.0,
     "min": 100000,
-    "max": 84027074,
-    "mean": 22558059.636363637
+    "max": 125641824,
+    "mean": 23662333.803030305
    },
    "Information Technology": {
     "count": 81,
-    "median_ceo_pay": 20694772,
-    "min": 141704,
-    "max": 79106183,
-    "mean": 24477637.407407407
+    "median_ceo_pay": 21243485,
+    "min": 1113417,
+    "max": 96496790,
+    "mean": 24793067.728395063
    },
    "Communication Services": {
     "count": 20,
-    "median_ceo_pay": 21001650.5,
+    "median_ceo_pay": 22980235.5,
     "min": 274074,
     "max": 100837126,
-    "mean": 26232269.1
+    "mean": 27343166
    },
    "Real Estate": {
     "count": 29,
@@ -76,17 +76,17 @@
    },
    "Energy": {
     "count": 22,
-    "median_ceo_pay": 16762744.5,
-    "min": 4864564,
+    "median_ceo_pay": 18046118.0,
+    "min": 8974550,
     "max": 44052537,
-    "mean": 19752285.90909091
+    "mean": 21411086.818181816
    },
    "Health Care": {
     "count": 61,
-    "median_ceo_pay": 17437508,
+    "median_ceo_pay": 18562794,
     "min": 550000,
     "max": 78569534,
-    "mean": 17804337.04918033
+    "mean": 19185778.639344264
    },
    "Consumer Staples": {
     "count": 34,
@@ -97,17 +97,17 @@
    },
    "Materials": {
     "count": 27,
-    "median_ceo_pay": 12992297,
+    "median_ceo_pay": 14264065,
     "min": 3631262,
     "max": 32187200,
-    "mean": 14546882.148148147
+    "mean": 15279379
    },
    "Utilities": {
     "count": 31,
-    "median_ceo_pay": 13355284,
-    "min": 3890007,
+    "median_ceo_pay": 13738568,
+    "min": 4625047,
     "max": 30247878,
-    "mean": 15103655.064516129
+    "mean": 15779133.612903226
    }
   },
   "edgar_coverage": 500,
@@ -116,12 +116,17 @@
   "total_neo_records": 6567,
   "title_coverage": "6565/6567",
   "data_quality": {
-   "verified": 6101,
+   "verified": 6125,
    "recomputed": 132,
    "incomplete_components": 0,
    "bloated_component": 0,
    "component_mismatch": 0,
-   "last_audit": "2026-09-05"
+   "last_audit": "2026-09-05",
+   "rounding": 242,
+   "computed": 31,
+   "recomputed_implausible_total": 34,
+   "filing_only": 3,
+   "minor_gap": 0
   },
   "median_ceo_pay": 17846121.5,
   "mean_ceo_pay": 20457086.094,
@@ -1964,7 +1969,8 @@
      "stock_awards": 7000261,
      "all_other": 413417,
      "title": "Chairman and Chief Executive Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 3000000
     },
     {
      "name": "David Simon",
@@ -1974,7 +1980,8 @@
      "stock_awards": 56451380,
      "all_other": 693390,
      "title": "Chairman and Chief Executive Officer",
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "bonus": 3000000
     },
     {
      "name": "David Simon",
@@ -1984,7 +1991,8 @@
      "stock_awards": 10000259,
      "all_other": 314048,
      "title": "Chairman and Chief Executive Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 4000000
     },
     {
      "name": "Brian J. McDade",
@@ -1994,7 +2002,8 @@
      "stock_awards": 3000303,
      "all_other": 143992,
      "title": "EVP and Chief Financial Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 900000
     },
     {
      "name": "Brian J. McDade",
@@ -2004,7 +2013,8 @@
      "stock_awards": 11129172,
      "all_other": 251445,
      "title": "EVP and Chief Financial Officer",
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "bonus": 800000
     },
     {
      "name": "Brian J. McDade",
@@ -2014,7 +2024,8 @@
      "stock_awards": 3000175,
      "all_other": 120368,
      "title": "EVP and Chief Financial Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 800000
     },
     {
      "name": "Eli Simon",
@@ -2024,7 +2035,8 @@
      "stock_awards": 3000303,
      "all_other": 447316,
      "title": "President",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 1000000
     },
     {
      "name": "Steven E. Fivel",
@@ -2034,7 +2046,8 @@
      "stock_awards": 2500372,
      "all_other": 121985,
      "title": "General Counsel",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 900000
     },
     {
      "name": "Steven E. Fivel",
@@ -2044,7 +2057,8 @@
      "stock_awards": 10629288,
      "all_other": 237911,
      "title": "General Counsel",
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "bonus": 800000
     },
     {
      "name": "Steven E. Fivel",
@@ -2054,7 +2068,8 @@
      "stock_awards": 2500149,
      "all_other": 117834,
      "title": "General Counsel",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 800000
     },
     {
      "name": "John Rulli",
@@ -2064,7 +2079,8 @@
      "stock_awards": 2500372,
      "all_other": 124021,
      "title": "Chief Operating Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 900000
     },
     {
      "name": "John Rulli",
@@ -2074,7 +2090,8 @@
      "stock_awards": 4822886,
      "all_other": 239947,
      "title": "Chief Operating Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 800000
     },
     {
      "name": "John Rulli",
@@ -2084,7 +2101,8 @@
      "stock_awards": 2500149,
      "all_other": 119870,
      "title": "Chief Operating Officer",
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "bonus": 800000
     }
    ],
    "filing_date": "2026-04-01",
@@ -2095,7 +2113,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 93165995,
+   "total_neo_compensation": 29996381,
    "proxy_fiscal_year": 2025,
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "ceo_gender": "M",
@@ -51967,32 +51985,35 @@
      "year": 2025,
      "salary": 1650000,
      "stock_awards": 12374953,
-     "non_equity_incentive": 914130,
-     "pension_nqdc": 324258,
+     "non_equity_incentive": 2083950,
+     "pension_nqdc": 914130,
      "total": 17347291,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 324258
     },
     {
      "name": "Olivier Le Peuch",
      "title": "Chief Executive Officer",
      "year": 2024,
-     "salary": 12374997,
-     "stock_awards": 2042370,
-     "non_equity_incentive": 424342,
-     "pension_nqdc": 17310864,
+     "salary": 1650000,
+     "stock_awards": 12374997,
+     "non_equity_incentive": 2042370,
+     "pension_nqdc": 819155,
      "total": 17310864,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 424342
     },
     {
      "name": "Olivier Le Peuch",
      "title": "Chief Executive Officer",
      "year": 2023,
-     "salary": 12000045,
-     "stock_awards": 3502150,
-     "non_equity_incentive": 174845,
-     "pension_nqdc": 18249585,
+     "salary": 1550000,
+     "stock_awards": 12000045,
+     "non_equity_incentive": 3502150,
+     "pension_nqdc": 1022545,
      "total": 18249585,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 174845
     },
     {
      "name": "Stephane Biguet",
@@ -52000,32 +52021,35 @@
      "year": 2025,
      "salary": 900000,
      "stock_awards": 3700031,
-     "non_equity_incentive": 462721,
-     "pension_nqdc": 180039,
+     "non_equity_incentive": 757800,
+     "pension_nqdc": 462721,
      "total": 6000591,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 180039
     },
     {
      "name": "Stephane Biguet",
      "title": "Chief Financial Officer",
      "year": 2024,
-     "salary": 3699933,
-     "stock_awards": 758880,
-     "non_equity_incentive": 216509,
-     "pension_nqdc": 6169946,
+     "salary": 900000,
+     "stock_awards": 3699933,
+     "non_equity_incentive": 758880,
+     "pension_nqdc": 594624,
      "total": 6169946,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 216509
     },
     {
      "name": "Stephane Biguet",
      "title": "Chief Financial Officer",
      "year": 2023,
-     "salary": 3500022,
-     "stock_awards": 1283100,
-     "non_equity_incentive": 116672,
-     "pension_nqdc": 6370567,
+     "salary": 850000,
+     "stock_awards": 3500022,
+     "non_equity_incentive": 1283100,
+     "pension_nqdc": 620773,
      "total": 6370567,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 116672
     },
     {
      "name": "Abdellah Merad",
@@ -52033,32 +52057,35 @@
      "year": 2025,
      "salary": 900000,
      "stock_awards": 3700031,
-     "non_equity_incentive": 69693,
-     "pension_nqdc": 230994,
+     "non_equity_incentive": 766800,
+     "pension_nqdc": 69693,
      "total": 5667518,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 230994
     },
     {
      "name": "Abdellah Merad",
      "title": "EVP, Core Services and Equipment",
      "year": 2024,
-     "salary": 3699933,
-     "stock_awards": 736380,
-     "non_equity_incentive": 256208,
-     "pension_nqdc": 5592521,
+     "salary": 900000,
+     "stock_awards": 3699933,
+     "non_equity_incentive": 736380,
+     "pension_nqdc": 0,
      "total": 5592521,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 256208
     },
     {
      "name": "Abdellah Merad",
      "title": "EVP, Core Services and Equipment",
      "year": 2023,
-     "salary": 3500022,
-     "stock_awards": 1213600,
-     "non_equity_incentive": 235407,
-     "pension_nqdc": 5829183,
+     "salary": 800000,
+     "stock_awards": 3500022,
+     "non_equity_incentive": 1213600,
+     "pension_nqdc": 80154,
      "total": 5829183,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 235407
     },
     {
      "name": "Dianne Ralston",
@@ -52066,32 +52093,35 @@
      "year": 2025,
      "salary": 825000,
      "stock_awards": 3200019,
-     "non_equity_incentive": 366459,
-     "pension_nqdc": 137602,
+     "non_equity_incentive": 669900,
+     "pension_nqdc": 366459,
      "total": 5198980,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 137602
     },
     {
      "name": "Dianne Ralston",
      "title": "Chief Legal Officer and Secretary",
      "year": 2024,
-     "salary": 3199958,
-     "stock_awards": 695640,
-     "non_equity_incentive": 167739,
-     "pension_nqdc": 5244435,
+     "salary": 825000,
+     "stock_awards": 3199958,
+     "non_equity_incentive": 695640,
+     "pension_nqdc": 356098,
      "total": 5244435,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 167739
     },
     {
      "name": "Dianne Ralston",
      "title": "Chief Legal Officer and Secretary",
      "year": 2023,
-     "salary": 3199909,
-     "stock_awards": 1137750,
-     "non_equity_incentive": 78435,
-     "pension_nqdc": 5436845,
+     "salary": 750022,
+     "stock_awards": 3199909,
+     "non_equity_incentive": 1137750,
+     "pension_nqdc": 270729,
      "total": 5436845,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 78435
     },
     {
      "name": "Demosthenis Pafitis",
@@ -52099,10 +52129,11 @@
      "year": 2025,
      "salary": 750000,
      "stock_awards": 2499993,
-     "non_equity_incentive": 904475,
-     "pension_nqdc": 12000,
+     "non_equity_incentive": 462750,
+     "pension_nqdc": 904475,
      "total": 4629218,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "all_other": 12000
     },
     {
      "name": "Khaled Al Mogharbel",
@@ -52110,38 +52141,41 @@
      "year": 2025,
      "salary": 750000,
      "stock_awards": 3700031,
-     "non_equity_incentive": 104545,
-     "pension_nqdc": 222248,
+     "non_equity_incentive": 300000,
+     "pension_nqdc": 104545,
      "total": 5076824,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "all_other": 222248
     },
     {
      "name": "Khaled Al Mogharbel",
      "title": "EVP, Geographies",
      "year": 2024,
-     "salary": 3699933,
-     "stock_awards": 758880,
-     "non_equity_incentive": 237565,
-     "pension_nqdc": 5596378,
+     "salary": 900000,
+     "stock_awards": 3699933,
+     "non_equity_incentive": 758880,
+     "pension_nqdc": 0,
      "total": 5596378,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 237565
     },
     {
      "name": "Khaled Al Mogharbel",
      "title": "EVP, Geographies",
      "year": 2023,
-     "salary": 3500022,
-     "stock_awards": 1357650,
-     "non_equity_incentive": 118275,
-     "pension_nqdc": 5992760,
+     "salary": 900000,
+     "stock_awards": 3500022,
+     "non_equity_incentive": 1357650,
+     "pension_nqdc": 116813,
      "total": 5992760,
-     "_total_source": "rounding"
+     "_total_source": "verified",
+     "all_other": 118275
     }
    ],
    "cik": "87347",
    "filing_date": "2026-02-26",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/87347/000130817926000024/slb2026-def14a.htm",
-   "total_neo_compensation": 39914144,
+   "total_neo_compensation": 43920422,
    "neo_count": 6,
    "proxy_fiscal_year": 2025,
    "available_years": [
