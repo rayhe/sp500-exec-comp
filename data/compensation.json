@@ -25,11 +25,11 @@
    "total_companies": 500,
    "companies_with_pay_ratio": 500,
    "median_ceo_pay": 17846121.5,
-   "mean_ceo_pay": 20457086.094,
+   "mean_ceo_pay": 20380901.748,
    "max_ceo_pay": 164525721,
    "min_ceo_pay": 0,
    "median_worker_pay": 81899.0,
-   "median_pay_ratio": 197.0
+   "median_pay_ratio": 197
   },
   "sector_medians": {
    "Industrials": {
@@ -58,7 +58,7 @@
     "median_ceo_pay": 21243485,
     "min": 1113417,
     "max": 96496790,
-    "mean": 24793067.728395063
+    "mean": 24322793.98765432
    },
    "Communication Services": {
     "count": 20,
@@ -116,31 +116,31 @@
   "total_neo_records": 6567,
   "title_coverage": "6565/6567",
   "data_quality": {
-   "verified": 6125,
+   "verified": 6127,
    "recomputed": 132,
    "incomplete_components": 0,
    "bloated_component": 0,
    "component_mismatch": 0,
    "last_audit": "2026-09-05",
    "rounding": 242,
-   "computed": 31,
+   "computed": 29,
    "recomputed_implausible_total": 34,
    "filing_only": 3,
    "minor_gap": 0
   },
   "median_ceo_pay": 17846121.5,
-  "mean_ceo_pay": 20457086.094,
+  "mean_ceo_pay": 20380901.748,
   "max_ceo_pay": 164525721,
   "min_ceo_pay": 0,
   "say_on_pay_coverage": 497,
   "say_on_pay_true_negatives": {
-    "count": 3,
-    "verified": "2026-09-05",
-    "companies": {
-      "BX": "Blackstone Inc. — zero DEF 14A in EDGAR 2007-2026 (722+ filings scanned); 10-K discloses Items 10-14 inline as a controlled company; no proxy solicitation and no advisory SoP vote.",
-      "KKR": "KKR & Co. Inc. — only 2026 proxy is 2026-02-27 DEF 14A for the 4/21/2026 special meeting (charter amendments); no annual-meeting advisory vote on executive compensation.",
-      "PARA": "Paramount Global — post-merger true negative; no 2026 SoP vote."
-    }
+   "count": 3,
+   "verified": "2026-09-05",
+   "companies": {
+    "BX": "Blackstone Inc. \u2014 zero DEF 14A in EDGAR 2007-2026 (722+ filings scanned); 10-K discloses Items 10-14 inline as a controlled company; no proxy solicitation and no advisory SoP vote.",
+    "KKR": "KKR & Co. Inc. \u2014 only 2026 proxy is 2026-02-27 DEF 14A for the 4/21/2026 special meeting (charter amendments); no annual-meeting advisory vote on executive compensation.",
+    "PARA": "Paramount Global \u2014 post-merger true negative; no 2026 SoP vote."
+   }
   },
   "say_on_pay_stats": {
    "count": 497,
@@ -154,33 +154,27 @@
   "gender_coverage": {
    "female_ceos": 33,
    "male_ceos": 467,
-   "female_median_pay": 17501073,
-   "male_median_pay": 15989188,
-   "female_premium_pct": 9.5
+   "female_median_pay": 20602148,
+   "male_median_pay": 17700055,
+   "female_premium_pct": 16.4
   },
   "ceo_tenure_coverage": 500,
   "governance_coverage": 496,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 6101,
+   "verified": 6127,
    "recomputed": 132,
-   "rounding": 266,
-   "computed": 31,
+   "rounding": 242,
+   "computed": 29,
    "recomputed_implausible_total": 34,
    "filing_only": 3
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
-  "median_worker_pay": 81953.0,
-  "median_pay_ratio": 196.5,
+  "median_worker_pay": 81899.0,
+  "median_pay_ratio": 197,
   "last_verified": "2026-09-01T09:08:43Z",
   "total_executives": 6567,
-  "verification_status": {
-   "verified": 5681,
-   "recomputed": 141,
-   "incomplete": 0,
-   "board_independence": 337
-  },
   "board_independence_count": 500,
   "board_independence_full": 500,
   "last_audit": "2026-09-05",
@@ -2363,11 +2357,11 @@
    "ticker": "CRM",
    "company_name": "Salesforce Inc",
    "ceo_name": "Marc Benioff",
-   "total_compensation": 77734346,
+   "total_compensation": 39642173,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 178949,
-   "pay_ratio": 308,
+   "median_worker_pay": 164985,
+   "pay_ratio": 240,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0001108524",
@@ -2393,29 +2387,31 @@
      "name": "Marc Benioff",
      "title": "Chair of the Board and, CEO",
      "year": 2025,
-     "salary": 2500,
-     "bonus": 28028587,
-     "stock_awards": 17400069,
-     "option_awards": 3487500,
-     "non_equity_incentive": 4606000,
+     "salary": 1550000,
+     "bonus": 2500,
+     "stock_awards": 28028587,
+     "option_awards": 17400069,
+     "non_equity_incentive": 3487500,
      "pension_nqdc": 0,
-     "all_other": 55074656,
-     "total": 108599312,
-     "_total_source": "computed"
+     "all_other": 4606000,
+     "total": 55074656,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: rebuilt from primary DEF 14A SCT (crm-20260416.htm, filed 2026-04-16); legacy parser column-shifted Stock->Bonus etc., overstating totals ~2x (108.6M/77.7M); components sum exactly to filing total."
     },
     {
      "name": "Marc Benioff",
      "title": "Chair of the Board and, CEO",
      "year": 2024,
-     "salary": 2500,
-     "bonus": 16338290,
-     "stock_awards": 14000033,
-     "option_awards": 3100000,
-     "non_equity_incentive": 4651350,
+     "salary": 1550000,
+     "bonus": 2500,
+     "stock_awards": 16338290,
+     "option_awards": 14000033,
+     "non_equity_incentive": 3100000,
      "pension_nqdc": 0,
-     "all_other": 39642173,
-     "total": 77734346,
-     "_total_source": "computed"
+     "all_other": 4651350,
+     "total": 39642173,
+     "_total_source": "verified",
+     "_fix_note": "2026-09-05: rebuilt from primary DEF 14A SCT (crm-20260416.htm, filed 2026-04-16); legacy parser column-shifted Stock->Bonus etc., overstating totals ~2x (108.6M/77.7M); components sum exactly to filing total."
     },
     {
      "name": "Robin Washington",
@@ -2594,7 +2590,7 @@
      "_fix_note": "2026-09-05: added from primary DEF 14A SCT (row absent in prior parse); components sum exactly to filing total."
     }
    ],
-   "total_neo_compensation": 114553924,
+   "total_neo_compensation": 76461751,
    "neo_count": 7,
    "proxy_fiscal_year": 2026,
    "available_years": [
