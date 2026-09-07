@@ -478,6 +478,13 @@ function classifyExecRole(title) {
     return 'Other';
 }
 
+/* True when a title marks a departed executive ("Former ..."). Former execs are
+   NEOs of the fiscal year but must not win the _roleExecs representative slot
+   over the current office-holder (e.g. a severance-inflated former CEO). */
+function isFormerExecTitle(title) {
+    return /^former\b/i.test(title || '');
+}
+
 /* Helper: get the effective compensation value for a company, respecting role filter */
 function getEffectiveComp(c) {
     if (activeRole && activeRole !== 'CEO' && c._roleViewComp != null) return c._roleViewComp;
@@ -571,8 +578,14 @@ function computeRoleExecs(companies) {
                 return classifyExecRole(e.title) === role;
             });
             if (matches.length > 0) {
-                matches.sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
-                c._roleExecs[role] = matches[0];
+                // Former-aware: prefer the current office-holder over a departed
+                // exec (severance can inflate the former exec's total above the
+                // incumbent's). Fall back to former matches only when no current
+                // exec holds the role.
+                var current = matches.filter(function(e) { return !isFormerExecTitle(e.title); });
+                var pool = current.length > 0 ? current : matches;
+                pool.sort(function(a, b) { return (b.total || 0) - (a.total || 0); });
+                c._roleExecs[role] = pool[0];
             }
         });
     });
