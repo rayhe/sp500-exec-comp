@@ -57,6 +57,50 @@
         }
     }
 
+    // Collapsible filter categories — progressive disclosure
+    var AF_GROUPS = {
+        comp: ['af-pay-band', 'af-conc', 'af-vol'],
+        gov:  ['af-sop-tier', 'af-gov', 'af-board'],
+        lead: ['af-tenure', 'af-gender']
+    };
+    function restoreAfGroupState() {
+        document.querySelectorAll('.af-cat').forEach(function(details){
+            var cat = details.getAttribute('data-cat');
+            try {
+                var stored = localStorage.getItem('sp500_afcat_' + cat);
+                if (stored === 'open') details.open = true;
+                else if (stored === 'closed') details.open = false;
+            } catch(e) {}
+        });
+    }
+    document.querySelectorAll('.af-cat').forEach(function(details){
+        details.addEventListener('toggle', function(){
+            try { localStorage.setItem('sp500_afcat_' + details.getAttribute('data-cat'), details.open ? 'open' : 'closed'); } catch(e) {}
+        });
+    });
+    function updateAfGroupBadges() {
+        var counts = { comp: 0, gov: 0, lead: 0 };
+        Object.keys(AF_GROUPS).forEach(function(g){
+            AF_GROUPS[g].forEach(function(id){
+                var el = document.getElementById(id);
+                if (el && el.value) counts[g]++;
+            });
+        });
+        Object.keys(counts).forEach(function(g){
+            var badge = document.getElementById('af-cat-count-' + g);
+            if (badge) {
+                badge.textContent = counts[g];
+                badge.style.display = counts[g] ? 'inline-flex' : 'none';
+            }
+            // Auto-open any category holding an active filter so the active
+            // control stays visible; never force-close on clear.
+            if (counts[g] > 0) {
+                var details = document.querySelector('.af-cat[data-cat="' + g + '"]');
+                if (details && !details.open) details.open = true;
+            }
+        });
+    }
+
     function updateAfBadge() {
         var count = 0;
         var parts = [];
@@ -86,6 +130,7 @@
             if (count) toggle.classList.add('has-active');
             else toggle.classList.remove('has-active');
         }
+        updateAfGroupBadges();
     }
 
     function clearAdvancedFilters() {
@@ -424,8 +469,9 @@
         }
     };
 
-    document.addEventListener('DOMContentLoaded', function(){ updateAfBadge(); });
-    setTimeout(updateAfBadge, 600);
+    restoreAfGroupState();
+    document.addEventListener('DOMContentLoaded', function(){ restoreAfGroupState(); updateAfBadge(); });
+    setTimeout(function(){ restoreAfGroupState(); updateAfBadge(); }, 600);
 
     document.addEventListener('keydown', function(e){
         if (e.key === 'Escape') {
