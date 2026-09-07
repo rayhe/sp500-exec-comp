@@ -21,13 +21,14 @@
       "BX (Blackstone) and KKR are partnerships/alternative asset managers — no standard SCT. EDGAR filing verified, compensation comes from carried interest/distributions, not traditional salary/equity packages. AFL-CIO totals used.",
       "Data quality flags (per NEO record, audited 2026-09-05 over 6567 records): verified = components sum to stated filing total; recomputed = stated filing total replaced by component sum (filing total mis-parsed); recomputed_implausible_total = same, original parsed total was implausible; rounding = components close to but not exactly the stated total; computed = no filing total parsed, total computed from components; minor_gap = components materially do not sum to filing total (parser misattribution), filing total retained; filing_only = only total parsed, no component breakdown. Known noise: ~30 records carry trivial negative components (-1..-10, footnote artifacts, immaterial to totals); minor_gap backlog cleared 2026-09-05 (PEP/SW/STX/GRMN/COIN SCTs rebuilt from primary DEF 14A). SPG bonus column restored 2026-09-05 (13 records, gaps matched filing exactly); SLB SCT column-shift corrected 2026-09-05 (16 records rebuilt from primary DEF 14A: non_equity_incentive had carried pension values, pension_nqdc had carried all-other values).",
       "DEF 14A FY2025 enrichment run 2026-09-07: enriched SYK(2024+2025), DIS, INTC, PG, TXT, HOLX, CTRA, TSLA (10-K/A), TPL (10-K Part III) with 50 new verified rows; true negatives (no newer proxy): IPG, K, ANSS, PARA, DAY, HES, WBA, JNPR (all acquired/merged), LULU (FY2025 proxy not yet filed). PG fiscal years labeled 2025 = FY2025-26 (ended Jun 2026), consistent with existing PG 2024 = FY2024-25 convention.",
-      "Data quality audit 2026-09-07 over 6750 records: verified=6350, rounding=242, recomputed=122, recomputed_implausible_total=34, computed=1, component_mismatch=1 (WAB 2023 filing-side CHF-conversion artifact, documented in-record). Mega-cap cross-checks pass: META FY2025 NEOs total $113.4M, Nadella $96.5M, Cook $74.3M, Zuckerberg $25.1M, Huang $36.3M. Multi-year coverage 499/500: SOLV (spun off Apr 2024) has FY2024+2025 only, no standalone FY2023 SCT."
+      "Data quality audit 2026-09-07 over 6759 records: verified=6411, rounding=229, recomputed=118, recomputed_implausible_total=0, component_mismatch=1 (WAB 2023 filing-side CHF-conversion artifact, under review)",
+      "DEF 14A repair batch 2026-09-07 14:00: cleared the 34-row recomputed_implausible_total queue (JPM/BLK/IBM/DHI/ADSK/AME/TFC/PPL/IVZ/XYL/LH/DD/IPG/HBAN/CTAS/LW/POOL); 33 rows verified exact, XYL Toussaint 2025 rounding ($1), TFC Starnes phantom FY2024 row deleted and verified FY2023 row added; ticker HBANP->HBAN; CEO anchors fixed AME Puri->Zapico, PPL Bergstein->Sorgi (both were CFO/EVP mislabeled as CEO), DHI Romanowski total 25,765,719->25,146,069."
     ],
     "aggregate_stats": {
       "total_companies": 500,
       "companies_with_pay_ratio": 500,
       "median_ceo_pay": 17846881.0,
-      "mean_ceo_pay": 338523366.576,
+      "mean_ceo_pay": 338561872.688,
       "max_ceo_pay": 158359009867,
       "min_ceo_pay": 100000,
       "median_worker_pay": 81899.0,
@@ -39,14 +40,14 @@
         "median_ceo_pay": 17709804.5,
         "min": 1693133,
         "max": 164525721,
-        "mean": 19950110.65714286
+        "mean": 20143620.885714285
       },
       "Consumer Discretionary": {
         "count": 59,
-        "median_ceo_pay": 15931316,
-        "min": 0,
-        "max": 95801676,
-        "mean": 18062352.542372882
+        "median_ceo_pay": 16628568.0,
+        "min": 186326,
+        "max": 158359009867,
+        "mean": 2702102864.6949153
       },
       "Financials": {
         "count": 66,
@@ -57,17 +58,17 @@
       },
       "Information Technology": {
         "count": 81,
-        "median_ceo_pay": 21243485,
+        "median_ceo_pay": 20694772.0,
         "min": 1113417,
         "max": 96496790,
-        "mean": 23957415.38271605
+        "mean": 24563778.592592593
       },
       "Communication Services": {
         "count": 20,
         "median_ceo_pay": 22980235.5,
         "min": 274074,
         "max": 61922397,
-        "mean": 25501610.9
+        "mean": 25738038.85
       },
       "Real Estate": {
         "count": 29,
@@ -85,31 +86,31 @@
       },
       "Health Care": {
         "count": 61,
-        "median_ceo_pay": 18976195,
+        "median_ceo_pay": 18562794.0,
         "min": 550000,
         "max": 39959767,
-        "mean": 18657076.75409836
+        "mean": 18408261.04918033
       },
       "Consumer Staples": {
         "count": 34,
         "median_ceo_pay": 17369348.0,
         "min": 5695862,
         "max": 53577224,
-        "mean": 18913299.470588237
+        "mean": 18827032.588235293
       },
       "Materials": {
         "count": 27,
-        "median_ceo_pay": 14264065,
+        "median_ceo_pay": 14264065.0,
         "min": 3631262,
         "max": 32187200,
-        "mean": 15279379
+        "mean": 15279379.0
       },
       "Utilities": {
         "count": 31,
-        "median_ceo_pay": 13257022,
-        "min": 4625047,
+        "median_ceo_pay": 13257022.0,
+        "min": 6732386,
         "max": 30247878,
-        "mean": 15271776.161290323
+        "mean": 15524955.774193548
       }
     },
     "edgar_coverage": 500,
@@ -118,20 +119,20 @@
     "total_neo_records": 6759,
     "title_coverage": "6759/6759",
     "data_quality": {
-      "verified": 6290,
-      "recomputed": 122,
+      "verified": 6411,
+      "recomputed": 118,
       "incomplete_components": 0,
       "bloated_component": 0,
       "component_mismatch": 1,
-      "last_audit": "2026-09-06",
-      "rounding": 242,
-      "computed": 1,
-      "recomputed_implausible_total": 34,
+      "last_audit": "2026-09-07",
+      "rounding": 229,
+      "computed": 0,
+      "recomputed_implausible_total": 0,
       "filing_only": 0,
       "minor_gap": 0
     },
     "median_ceo_pay": 17846881.0,
-    "mean_ceo_pay": 338523366.576,
+    "mean_ceo_pay": 338561872.688,
     "max_ceo_pay": 158359009867,
     "min_ceo_pay": 100000,
     "say_on_pay_coverage": 498,
@@ -155,18 +156,18 @@
     "gender_coverage": {
       "female_ceos": 33,
       "male_ceos": 467,
-      "female_median_pay": 19506298,
-      "male_median_pay": 17774846,
-      "female_premium_pct": 9.7
+      "female_median_pay": 19506298.0,
+      "male_median_pay": 17700055.0,
+      "female_premium_pct": 10.2
     },
     "ceo_tenure_coverage": 500,
     "governance_coverage": 500,
     "board_independence_coverage": 500,
     "data_quality_detailed": {
-      "verified": 6378,
+      "verified": 6411,
       "recomputed": 118,
-      "rounding": 228,
-      "recomputed_implausible_total": 34,
+      "rounding": 229,
+      "recomputed_implausible_total": 0,
       "component_mismatch": 1
     },
     "companies_with_executives": 500,
@@ -177,7 +178,7 @@
     "total_executives": 6759,
     "board_independence_count": 500,
     "board_independence_full": 500,
-    "last_audit": "2026-09-06",
+    "last_audit": "2026-09-07",
     "companies_with_pay_ratio": 500,
     "enriched_count": 500,
     "multiyear_fill_20260902_1400": {
@@ -5207,18 +5208,15 @@
         },
         {
           "name": "Troy Rohrbaugh",
-          "title": "CEO, CIB",
+          "title": "Co-CEO, CIB",
           "year": 2025,
-          "salary": 0,
-          "bonus": 1000000,
-          "stock_awards": 10600000,
-          "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 13800000,
-          "all_other": 7218,
-          "total": 25407218,
-          "_original_total": 8676,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 1000000,
+          "bonus": 10600000,
+          "stock_awards": 13800000,
+          "pension_nqdc": 7218,
+          "all_other": 8676,
+          "total": 25415894,
+          "_total_source": "verified"
         },
         {
           "name": "Troy Rohrbaugh",
@@ -9822,14 +9820,13 @@
         {
           "name": "Robert L. Goldstein",
           "year": 2024,
-          "salary": 0,
-          "bonus": 750000,
-          "stock_awards": 4023000,
-          "option_awards": 8264643,
-          "total": 13037643,
-          "title": "President",
-          "_original_total": 67270,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 750000,
+          "bonus": 4023000,
+          "stock_awards": 8264643,
+          "total": 13104913,
+          "title": "Senior Managing Director and Chief Operating Officer",
+          "_total_source": "verified",
+          "all_other": 67270
         },
         {
           "name": "Robert L. Goldstein",
@@ -19471,25 +19468,23 @@
           "name": "Rebecca Pearce",
           "year": 2025,
           "salary": 508908,
-          "bonus": 508908,
-          "non_equity_incentive": 3962067,
-          "all_other": 421168,
-          "total": 5401051,
-          "title": "Chief Legal Officer and Corporate Secretary",
-          "_original_total": 84217,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 421168,
+          "all_other": 84217,
+          "total": 4976360,
+          "title": "Executive Vice President and Chief People Officer",
+          "_total_source": "verified",
+          "stock_awards": 3962067
         },
         {
           "name": "Rebecca Pearce",
           "year": 2024,
           "salary": 465521,
-          "bonus": 465521,
-          "non_equity_incentive": 2936488,
-          "all_other": 361241,
-          "total": 4228771,
-          "title": "Chief Legal Officer and Corporate Secretary",
-          "_original_total": 81024,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 361241,
+          "all_other": 81024,
+          "total": 3844274,
+          "title": "Executive Vice President and Chief People Officer",
+          "_total_source": "verified",
+          "stock_awards": 2936488
         },
         {
           "name": "Janesh Moorjani",
@@ -19544,7 +19539,7 @@
       "ticker": "DHI",
       "company_name": "DR Horton Inc",
       "ceo_name": "Paul J. Romanowski",
-      "total_compensation": 25765719,
+      "total_compensation": 25146069,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2025 — FY2024 CEO",
       "median_worker_pay": 125961,
@@ -19568,14 +19563,13 @@
           "name": "David V. Auld",
           "year": 2024,
           "salary": 700000,
-          "bonus": 700000,
-          "non_equity_incentive": 13773848,
-          "pension_nqdc": 3142380,
-          "all_other": 177167,
-          "total": 18493395,
-          "title": "Chairman",
-          "_original_total": 80350,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 3142380,
+          "pension_nqdc": 177167,
+          "all_other": 80350,
+          "total": 17873745,
+          "title": "Executive Chairman",
+          "_total_source": "verified",
+          "stock_awards": 13773848
         },
         {
           "name": "David V. Auld",
@@ -19605,14 +19599,13 @@
           "name": "Paul J. Romanowski",
           "year": 2024,
           "salary": 700000,
-          "bonus": 700000,
-          "non_equity_incentive": 19565399,
-          "pension_nqdc": 4713415,
-          "all_other": 86905,
-          "total": 25765719,
-          "title": "Chief Executive Officer Brad S",
-          "_original_total": 80350,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 4713415,
+          "pension_nqdc": 86905,
+          "all_other": 80350,
+          "total": 25146069,
+          "title": "President and Chief Executive Officer",
+          "_total_source": "verified",
+          "stock_awards": 19565399
         },
         {
           "name": "Paul J. Romanowski",
@@ -19642,14 +19635,13 @@
           "name": "Michael J. Murray",
           "year": 2024,
           "salary": 500000,
-          "bonus": 500000,
-          "non_equity_incentive": 15968950,
-          "pension_nqdc": 3927981,
-          "all_other": 73338,
-          "total": 20970269,
-          "title": "President and Chief Executive Officer",
-          "_original_total": 60350,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 3927981,
+          "pension_nqdc": 73338,
+          "all_other": 60350,
+          "total": 20530619,
+          "title": "Executive Vice President and Chief Operating Officer",
+          "_total_source": "verified",
+          "stock_awards": 15968950
         },
         {
           "name": "Michael J. Murray",
@@ -19679,14 +19671,13 @@
           "name": "Bill W. Wheat",
           "year": 2024,
           "salary": 500000,
-          "bonus": 500000,
-          "non_equity_incentive": 12393229,
-          "pension_nqdc": 3142380,
-          "all_other": 103994,
-          "total": 16639603,
-          "title": "Executive Vice President and Chief Operating Officer",
-          "_original_total": 60350,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 3142380,
+          "pension_nqdc": 103994,
+          "all_other": 60350,
+          "total": 16199953,
+          "title": "Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "stock_awards": 12393229
         },
         {
           "name": "Bill W. Wheat",
@@ -19904,17 +19895,18 @@
           "_total_source": "recomputed"
         },
         {
-          "name": "A. Robinson",
+          "name": "Anne Robinson",
           "year": 2025,
           "salary": 999500,
-          "bonus": 999500,
-          "option_awards": 7292774,
-          "non_equity_incentive": 2008338,
-          "pension_nqdc": 2068500,
-          "total": 13368612,
-          "title": "Senior Vice President, Software",
-          "_original_total": 70695,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 0,
+          "option_awards": 2008338,
+          "non_equity_incentive": 2068500,
+          "pension_nqdc": 16503,
+          "total": 12456310,
+          "title": "Senior VP & Chief Legal Officer",
+          "_total_source": "verified",
+          "stock_awards": 7292774,
+          "all_other": 70695
         }
       ],
       "filing_date": "2026-03-10",
@@ -42232,18 +42224,16 @@
         },
         {
           "name": "Mark S. Schroeder",
-          "title": "Executive Vice President",
+          "title": "Former Executive Vice President and President, Diagnostics and Chief Operations Officer",
           "year": 2025,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 607506,
-          "option_awards": 0,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 727399,
-          "total": 1334905,
-          "_original_total": 11187,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 748461,
+          "stock_awards": 2514961,
+          "option_awards": 607506,
+          "non_equity_incentive": 727399,
+          "pension_nqdc": 11187,
+          "all_other": 177643,
+          "total": 4787157,
+          "_total_source": "verified"
         }
       ],
       "neo_count": 5,
@@ -58039,15 +58029,16 @@
         {
           "name": "Ellen Johnson",
           "year": 2021,
-          "salary": 2021,
-          "bonus": 900000,
-          "stock_awards": 500000,
-          "option_awards": 1690815,
-          "pension_nqdc": 2225900,
-          "total": 5318736,
-          "title": "EVP",
-          "_original_total": 97724,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 900000,
+          "bonus": 500000,
+          "stock_awards": 1690815,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "total": 5414439,
+          "title": "EVP and Chief Financial Officer",
+          "_total_source": "verified",
+          "non_equity_incentive": 2225900,
+          "all_other": 97724
         },
         {
           "name": "Andrew Bonzani",
@@ -58064,14 +58055,15 @@
           "name": "Andrew Bonzani",
           "year": 2022,
           "salary": 900000,
-          "bonus": 900000,
-          "stock_awards": 650000,
-          "option_awards": 1526938,
-          "pension_nqdc": 2133249,
-          "total": 6110187,
-          "title": "EVP",
-          "_original_total": 87477,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 650000,
+          "stock_awards": 1526938,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "total": 5297664,
+          "title": "EVP and General Counsel",
+          "_total_source": "verified",
+          "non_equity_incentive": 2133249,
+          "all_other": 87477
         },
         {
           "name": "Andrew Bonzani",
@@ -58100,14 +58092,15 @@
           "name": "Christopher Carroll",
           "year": 2022,
           "salary": 700000,
-          "bonus": 700000,
-          "stock_awards": 250000,
-          "option_awards": 540773,
-          "pension_nqdc": 1018409,
-          "total": 3209182,
-          "title": "EVP, Controller and Chief Accounting Officer",
-          "_original_total": 65602,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 250000,
+          "stock_awards": 540773,
+          "option_awards": 0,
+          "pension_nqdc": 0,
+          "total": 2574784,
+          "title": "SVP, Controller and Chief Accounting Officer",
+          "_total_source": "verified",
+          "non_equity_incentive": 1018409,
+          "all_other": 65602
         },
         {
           "name": "Christopher F. Carroll",
@@ -63604,13 +63597,12 @@
           "name": "Antonella B. Franzen",
           "year": 2024,
           "salary": 564583,
-          "bonus": 564583,
-          "option_awards": 2301503,
-          "pension_nqdc": 783300,
-          "total": 4213969,
-          "title": "Senior Vice President and Chief Financial Officer since June",
-          "_original_total": 63069,
-          "_total_source": "recomputed_implausible_total"
+          "total": 3712455,
+          "title": "Senior Vice President, Chief Financial Officer",
+          "_total_source": "verified",
+          "stock_awards": 2301503,
+          "non_equity_incentive": 783300,
+          "all_other": 63069
         },
         {
           "name": "Jeroen P. Bloemhard",
@@ -63639,13 +63631,12 @@
           "name": "Erik T. Hoover",
           "year": 2024,
           "salary": 625000,
-          "bonus": 625000,
-          "option_awards": 1521646,
-          "pension_nqdc": 804281,
-          "total": 3575927,
-          "title": "Senior Vice President and General Counsel",
-          "_original_total": 88006,
-          "_total_source": "recomputed_implausible_total"
+          "total": 3038933,
+          "title": "Senior Vice President, General Counsel",
+          "_total_source": "verified",
+          "stock_awards": 1521646,
+          "non_equity_incentive": 804281,
+          "all_other": 88006
         },
         {
           "name": "Erik T. Hoover",
@@ -68513,8 +68504,8 @@
     {
       "ticker": "AME",
       "company_name": "AMETEK Inc",
-      "ceo_name": "Dalip M. Puri",
-      "total_compensation": 3554494,
+      "ceo_name": "David A. Zapico",
+      "total_compensation": 15578632,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2026 — FY2024 CEO",
       "median_worker_pay": 65294,
@@ -68584,16 +68575,15 @@
           "name": "Dalip M. Puri",
           "year": 2024,
           "salary": 572646,
-          "bonus": 572646,
-          "stock_awards": 100777,
-          "option_awards": 1555793,
-          "non_equity_incentive": 442478,
-          "pension_nqdc": 310099,
-          "all_other": 55,
-          "total": 3554494,
-          "title": "Chairman and Chief Executive Officer",
-          "_original_total": 90926,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 100777,
+          "stock_awards": 1555793,
+          "option_awards": 442478,
+          "non_equity_incentive": 310099,
+          "pension_nqdc": 55,
+          "all_other": 90926,
+          "total": 3072774,
+          "title": "Executive Vice President-Chief Financial Officer",
+          "_total_source": "verified"
         },
         {
           "name": "John W. Hardin",
@@ -71102,14 +71092,13 @@
           "name": "Michael B. Maguire",
           "year": 2024,
           "salary": 700000,
-          "bonus": 700000,
-          "non_equity_incentive": 5789664,
-          "pension_nqdc": 1746972,
-          "all_other": 31318,
-          "total": 8967954,
-          "title": "Chief Financial Officer",
-          "_original_total": 89081,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 1746972,
+          "pension_nqdc": 31318,
+          "all_other": 89081,
+          "total": 8357035,
+          "title": "Senior Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "stock_awards": 5789664
         },
         {
           "name": "Michael B. Maguire",
@@ -71147,20 +71136,6 @@
           "title": "Chief Financial Officer",
           "_original_total": 207396,
           "_total_source": "recomputed"
-        },
-        {
-          "name": "Clarke R. Starnes III",
-          "year": 2024,
-          "salary": 0,
-          "bonus": 750000,
-          "non_equity_incentive": 6412734,
-          "pension_nqdc": 2399440,
-          "all_other": 9160,
-          "total": 9571334,
-          "title": "Vice Chair, Wholesale Banking",
-          "_salary_note": "Not individually listed in 2024 SCT",
-          "_original_total": 98332,
-          "_total_source": "recomputed_implausible_total"
         },
         {
           "name": "Dontá L. Wilson",
@@ -71221,6 +71196,18 @@
           "title": "Executive Vice President and Chief Risk Officer For 2025, our NEOs also include",
           "_original_total": 221535,
           "_total_source": "recomputed"
+        },
+        {
+          "name": "Clarke R. Starnes III",
+          "year": 2023,
+          "title": "Vice Chair and Chief Risk Officer",
+          "salary": 760000,
+          "stock_awards": 2313815,
+          "non_equity_incentive": 1006175,
+          "pension_nqdc": 2405342,
+          "all_other": 19800,
+          "total": 6505132,
+          "_total_source": "verified"
         }
       ],
       "filing_date": "2026-03-16",
@@ -86359,8 +86346,8 @@
     {
       "ticker": "PPL",
       "company_name": "PPL Corp",
-      "ceo_name": "Joseph P. Bergstein, Jr",
-      "total_compensation": 4625047,
+      "ceo_name": "Vincent Sorgi",
+      "total_compensation": 12473615,
       "fiscal_year": 2024,
       "source": "SEC DEF 14A 2026 — FY2024 CEO",
       "median_worker_pay": 166915,
@@ -86418,17 +86405,16 @@
           "_total_source": "verified"
         },
         {
-          "name": "Joseph P. Bergstein, Jr",
+          "name": "Joseph P. Bergstein, Jr.",
           "year": 2024,
           "salary": 690763,
-          "bonus": 690763,
-          "non_equity_incentive": 1792117,
-          "pension_nqdc": 673367,
-          "all_other": 778037,
-          "total": 4625047,
-          "title": "President and Chief Executive Officer (CEO)",
-          "_original_total": 52608,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 673367,
+          "pension_nqdc": 778037,
+          "all_other": 52608,
+          "total": 3986892,
+          "title": "EVP and CFO",
+          "_total_source": "verified",
+          "stock_awards": 1792117
         },
         {
           "name": "Joseph P. Bergstein, Jr",
@@ -86480,14 +86466,13 @@
           "name": "Dean A. Del Vecchio",
           "year": 2024,
           "salary": 550000,
-          "bonus": 550000,
-          "stock_awards": 500000,
-          "non_equity_incentive": 2360112,
-          "pension_nqdc": 633276,
-          "total": 4593388,
-          "title": "Executive Vice President",
-          "_original_total": 57709,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 500000,
+          "stock_awards": 2360112,
+          "non_equity_incentive": 633276,
+          "total": 4101097,
+          "title": "EVP and CTIO",
+          "_total_source": "verified",
+          "all_other": 57709
         },
         {
           "name": "David J. Bonenberger",
@@ -86516,13 +86501,12 @@
           "name": "Francis X. Sullivan",
           "year": 2024,
           "salary": 680808,
-          "bonus": 680808,
-          "non_equity_incentive": 1768408,
-          "pension_nqdc": 664452,
-          "total": 3794476,
-          "title": "Executive Vice President and Chief Operating Officer (COO) - Utilities",
-          "_original_total": 69876,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 664452,
+          "total": 3183544,
+          "title": "Former EVP and COO",
+          "_total_source": "verified",
+          "stock_awards": 1768408,
+          "all_other": 69876
         },
         {
           "name": "Francis X. Sullivan",
@@ -87056,14 +87040,13 @@
         {
           "name": "Andrew T.S. Lo",
           "year": 2024,
-          "salary": 0,
-          "bonus": 500000,
-          "non_equity_incentive": 2616000,
-          "all_other": 2100000,
-          "total": 5216000,
-          "title": "Head of Asia Pacific",
-          "_original_total": 77818,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 500000,
+          "non_equity_incentive": 2100000,
+          "all_other": 77818,
+          "total": 5293818,
+          "title": "Senior Managing Director and Chief Executive Officer, Invesco Asia-Pacific",
+          "_total_source": "verified",
+          "stock_awards": 2616000
         },
         {
           "name": "Andrew T.S. Lo",
@@ -87090,13 +87073,12 @@
           "name": "Douglas J. Sharp",
           "year": 2024,
           "salary": 500000,
-          "bonus": 500000,
-          "non_equity_incentive": 2636761,
-          "all_other": 2100000,
-          "total": 5736761,
-          "title": "Senior Managing Director, Head of Americas",
-          "_original_total": 53610,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 2100000,
+          "all_other": 53610,
+          "total": 5290371,
+          "title": "Senior Managing Director, Head of the Americas and EMEA",
+          "_total_source": "verified",
+          "stock_awards": 2636761
         },
         {
           "name": "Tony L. Wong",
@@ -90527,18 +90509,15 @@
         },
         {
           "name": "William K. Grogan",
-          "title": "Executive Vice President",
+          "title": "EVP and CFO",
           "year": 2025,
           "salary": 748423,
-          "bonus": 748423,
-          "stock_awards": 0,
-          "option_awards": 1908026,
-          "non_equity_incentive": 562490,
-          "pension_nqdc": 0,
-          "all_other": 834678,
-          "total": 4802040,
-          "_original_total": 94986,
-          "_total_source": "recomputed_implausible_total"
+          "stock_awards": 1908026,
+          "option_awards": 562490,
+          "non_equity_incentive": 834678,
+          "all_other": 94986,
+          "total": 4148603,
+          "_total_source": "verified"
         },
         {
           "name": "Snehal Desai",
@@ -90601,33 +90580,29 @@
         },
         {
           "name": "Rodney O. Aulick",
-          "title": "SVP, Chief Legal Officer and Secretary",
+          "title": "EVP and President, WSS",
           "year": 2025,
           "salary": 577432,
-          "bonus": 577432,
-          "stock_awards": 300000,
-          "option_awards": 720898,
-          "non_equity_incentive": 212499,
-          "pension_nqdc": 0,
-          "all_other": 439316,
-          "total": 2827577,
-          "_original_total": 71172,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 300000,
+          "stock_awards": 720898,
+          "option_awards": 212499,
+          "non_equity_incentive": 439316,
+          "all_other": 71172,
+          "total": 2321317,
+          "_total_source": "verified"
         },
         {
           "name": "Claudia S. Toussaint",
-          "title": "SVP, Chief Human Resources Officer",
+          "title": "EVP, Chief People and Sustainability Officer",
           "year": 2025,
           "salary": 566252,
-          "bonus": 566252,
-          "stock_awards": 0,
-          "option_awards": 890236,
-          "non_equity_incentive": 262493,
-          "pension_nqdc": 0,
-          "all_other": 491175,
-          "total": 2776408,
-          "_original_total": 74020,
-          "_total_source": "recomputed_implausible_total"
+          "stock_awards": 890236,
+          "option_awards": 262493,
+          "non_equity_incentive": 491175,
+          "all_other": 74020,
+          "total": 2284175,
+          "_total_source": "rounding",
+          "_round_delta": 1
         }
       ],
       "neo_count": 5,
@@ -92678,7 +92653,7 @@
       }
     },
     {
-      "ticker": "HBANP",
+      "ticker": "HBAN",
       "company_name": "Huntington Bancshares Inc/OH",
       "ceo_name": "Stephen D. Steinour",
       "total_compensation": 10719994,
@@ -92738,14 +92713,13 @@
           "name": "Brant J. Standridge",
           "year": 2023,
           "salary": 744792,
-          "bonus": 744792,
-          "stock_awards": 1550000,
-          "option_awards": 1999986,
-          "pension_nqdc": 1250000,
-          "total": 6289570,
-          "title": "Executive Vice President",
-          "_original_total": 51954,
-          "_total_source": "recomputed_implausible_total"
+          "bonus": 1550000,
+          "stock_awards": 1999986,
+          "total": 5596732,
+          "title": "President, Consumer & Regional Banking, Senior Executive Vice President",
+          "_total_source": "verified",
+          "non_equity_incentive": 1250000,
+          "all_other": 51954
         },
         {
           "name": "Scott D. Kleinman",
@@ -98573,13 +98547,12 @@
           "name": "J. Michael Hansen",
           "year": 2024,
           "salary": 664117,
-          "bonus": 664117,
-          "option_awards": 1509471,
-          "all_other": 1184729,
-          "total": 4022434,
-          "title": "Chairman",
-          "_original_total": 81028,
-          "_total_source": "recomputed_implausible_total"
+          "all_other": 81028,
+          "total": 3439345,
+          "title": "Former Executive Vice President and Chief Financial Officer",
+          "_total_source": "verified",
+          "stock_awards": 1509471,
+          "non_equity_incentive": 1184729
         },
         {
           "name": "J. Michael Hansen",
@@ -98633,14 +98606,13 @@
           "name": "D. Brock Denton",
           "year": 2024,
           "salary": 538200,
-          "bonus": 538200,
-          "option_awards": 503320,
-          "non_equity_incentive": 502910,
-          "all_other": 853577,
-          "total": 2936207,
-          "title": "Senior Vice President, General Counsel and Secretary, 6800 Cintas Boulevard, P",
-          "_original_total": 52328,
-          "_total_source": "recomputed_implausible_total"
+          "option_awards": 502910,
+          "non_equity_incentive": 853577,
+          "all_other": 52328,
+          "total": 2450335,
+          "title": "Senior Vice President, General Counsel and Secretary",
+          "_total_source": "verified",
+          "stock_awards": 503320
         },
         {
           "name": "D. Brock Denton",
@@ -104580,19 +104552,15 @@
           "_total_source": "verified"
         },
         {
-          "name": "Marc P. J .H. Schroeder",
+          "name": "Marc P.J.H. Schroeder",
           "title": "President, International",
           "year": 2024,
-          "salary": 0,
-          "bonus": 0,
-          "stock_awards": 0,
-          "option_awards": 1217419,
-          "non_equity_incentive": 0,
-          "pension_nqdc": 0,
-          "all_other": 741122,
-          "total": 1958541,
-          "_original_total": 88804,
-          "_total_source": "recomputed_implausible_total"
+          "salary": 625108,
+          "stock_awards": 1217419,
+          "non_equity_incentive": 741122,
+          "all_other": 88804,
+          "total": 2672453,
+          "_total_source": "verified"
         },
         {
           "name": "Sylvia J. Wilks",
@@ -107520,13 +107488,12 @@
           "name": "Peter D. Arvan",
           "year": 2023,
           "salary": 800000,
-          "bonus": 800000,
-          "non_equity_incentive": 3500355,
-          "all_other": 1728760,
-          "total": 6829115,
-          "title": "President, Chief Executive Officer and Director",
-          "_original_total": 74373,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 1728760,
+          "all_other": 74373,
+          "total": 6103488,
+          "title": "President and Chief Executive Officer",
+          "_total_source": "verified",
+          "stock_awards": 3500355
         },
         {
           "name": "Melanie M. Hart",
@@ -107543,25 +107510,23 @@
           "name": "Melanie M. Hart",
           "year": 2024,
           "salary": 525000,
-          "bonus": 525000,
-          "non_equity_incentive": 800332,
-          "all_other": 262500,
-          "total": 2112832,
-          "title": "Senior Vice President, Chief Financial Officer and Treasurer",
-          "_original_total": 70642,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 262500,
+          "all_other": 70642,
+          "total": 1658474,
+          "title": "Senior Vice President, Chief Financial Officer, Treasurer",
+          "_total_source": "verified",
+          "stock_awards": 800332
         },
         {
           "name": "Melanie M. Hart",
           "year": 2023,
           "salary": 450000,
-          "bonus": 450000,
-          "non_equity_incentive": 1000817,
-          "all_other": 949928,
-          "total": 2850745,
-          "title": "Senior Vice President, Chief Financial Officer and Treasurer",
-          "_original_total": 99643,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 949928,
+          "all_other": 99643,
+          "total": 2500388,
+          "title": "Senior Vice President, Chief Financial Officer, Treasurer",
+          "_total_source": "verified",
+          "stock_awards": 1000817
         },
         {
           "name": "Jennifer M. Neil",
@@ -107578,13 +107543,12 @@
           "name": "Jennifer M. Neil",
           "year": 2024,
           "salary": 475000,
-          "bonus": 475000,
-          "non_equity_incentive": 600642,
-          "all_other": 213750,
-          "total": 1764392,
-          "title": "VP and General Counsel",
-          "_original_total": 84446,
-          "_total_source": "recomputed_implausible_total"
+          "non_equity_incentive": 213750,
+          "all_other": 84446,
+          "total": 1373838,
+          "title": "Senior Vice President, Secretary and Chief Legal Officer",
+          "_total_source": "verified",
+          "stock_awards": 600642
         },
         {
           "name": "Jennifer M. Neil",
