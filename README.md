@@ -8,7 +8,7 @@ A data-driven dashboard tracking executive compensation across all 500 S&P 500 c
 
 ### Data (`data/`)
 
-- **`compensation.json`** — All 500 S&P 500 companies with Named Executive Officer (NEO) compensation data. 500 enriched with full NEO breakdowns (salary, bonus, stock awards, option awards, non-equity incentive, pension, all other) parsed directly from DEF 14A summary compensation tables. Includes CEO name, gender, total compensation, median worker pay, pay ratio, sector, CIK, filing URL, and multi-year executive histories. 93.8% verified component-total consistency (6,207 of 6,617 records, 0 component mismatches; last audit 2026-09-06).
+- **`compensation.json`** — All 500 S&P 500 companies with Named Executive Officer (NEO) compensation data. 500 enriched with full NEO breakdowns (salary, bonus, stock awards, option awards, non-equity incentive, pension, all other) parsed directly from DEF 14A summary compensation tables. Includes CEO name, gender, total compensation, median worker pay, pay ratio, sector, CIK, filing URL, and multi-year executive histories. 93.9% verified component-total consistency (6,265 of 6,670 records, 1 component mismatch; last audit 2026-09-06).
 
 - **`peer-network.json`** — Compensation peer group network graph. 506 nodes (companies), 5,897 directed edges representing "Company A benchmarks compensation against Company B" relationships extracted from DEF 14A Compensation Discussion & Analysis sections. Includes in/out degree, market cap tier, and sector classification.
 
@@ -74,7 +74,7 @@ All compensation data sourced from primary filings:
 1. Baseline 500 companies from AFL-CIO Paywatch 2025 (CEO totals, median worker pay, pay ratios)
 2. Enriched 500/500 with full NEO breakdowns parsed from SEC EDGAR DEF 14A HTML filings via CIK lookup
 3. Peer network extracted from Compensation Discussion & Analysis sections citing benchmarking peers
-4. Component-total consistency verified: 93.8% verified (6,207 of 6,617 total NEO records), 0 component mismatches, multi-year coverage 499/500
+4. Component-total consistency verified: 93.9% verified (6,265 of 6,670 total NEO records), 1 component mismatch, multi-year coverage 499/500
 5. Governance Score (0-100) composite of five equal-weighted components, all normalized as cross-S&P-500 percentiles: Say-on-Pay approval, inverse CEO concentration, inverse CEO-to-worker pay ratio, C-suite team disclosure completeness, and board independence % (500/500 from primary DEF 14A filings). Mean of available components; null if fewer than 2. Grades: A≥80, B≥65, C≥50, D≥35, F<35.
 6. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
 
