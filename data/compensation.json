@@ -133,19 +133,18 @@
     "mean_ceo_pay": 21729823.356,
     "max_ceo_pay": 821090355,
     "min_ceo_pay": 0,
-    "say_on_pay_coverage": 497,
+    "say_on_pay_coverage": 498,
     "say_on_pay_true_negatives": {
-      "count": 3,
-      "verified": "2026-09-05",
+      "count": 2,
+      "verified": "2026-09-07",
       "companies": {
-        "BX": "Blackstone Inc. \u2014 zero DEF 14A in EDGAR 2007-2026 (722+ filings scanned); 10-K discloses Items 10-14 inline as a controlled company; no proxy solicitation and no advisory SoP vote.",
-        "KKR": "KKR & Co. Inc. \u2014 only 2026 proxy is 2026-02-27 DEF 14A for the 4/21/2026 special meeting (charter amendments); no annual-meeting advisory vote on executive compensation.",
-        "PARA": "Paramount Global \u2014 post-merger true negative; no 2026 SoP vote."
+        "BX": "Blackstone Inc. \u2014 zero DEF 14A in EDGAR 2007-2026 (722+ filings scanned); 2026 10-K states verbatim \"stockholders do not have an opportunity to provide a non-binding vote on the compensation of our named executive officers\"; no proxy solicitation and no advisory SoP vote.",
+        "KKR": "KKR & Co. Inc. \u2014 only 2026 proxy is 2026-02-27 DEF 14A for the 4/21/2026 special meeting (charter amendments); no annual-meeting advisory vote on executive compensation."
       }
     },
     "say_on_pay_stats": {
-      "count": 497,
-      "median_approval": 93.33,
+      "count": 498,
+      "median_approval": 93.39,
       "mean_approval": 90.3,
       "min_approval": 15.69,
       "max_approval": 100.0,
@@ -40877,6 +40876,14 @@
         "sources": [
           "table"
         ]
+      },
+      "say_on_pay": {
+        "approval_pct": 96.4,
+        "votes_for": 35520037,
+        "votes_against": 1309172,
+        "filing_date": "2023-05-10",
+        "source": "8-K Item 5.07: triennial say-on-pay vote (Item 3); frequency vote set every-three-years cycle, next frequency vote at 2029 annual meeting",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/813828/000081382823000017/para-20230508.htm"
       },
       "board_independence": {
         "independent_directors": 6,
@@ -112172,5 +112179,5 @@
       "median_worker_pay": 57243
     }
   ],
-  "last_updated": "2026-09-05T10:30:00-07:00"
+  "last_updated": "2026-09-07T03:32:31-07:00"
 }
