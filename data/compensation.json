@@ -120,7 +120,9 @@
     "title_coverage": "6759/6759",
     "data_quality": {
       "verified": 6411,
-      "recomputed": 118,
+      "def14a_verified_20260907": 73,
+      "verified_total": 6484,
+      "recomputed": 45,
       "incomplete_components": 0,
       "bloated_component": 0,
       "component_mismatch": 1,
@@ -165,7 +167,9 @@
     "board_independence_coverage": 500,
     "data_quality_detailed": {
       "verified": 6411,
-      "recomputed": 118,
+      "def14a_verified_20260907": 73,
+      "verified_total": 6484,
+      "recomputed": 45,
       "rounding": 229,
       "recomputed_implausible_total": 0,
       "component_mismatch": 1
