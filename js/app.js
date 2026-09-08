@@ -8536,7 +8536,18 @@ function setupDetailPanel(companies) {
                         });
                         _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _nDots + '</svg>';
                     }
-                    html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + '</td>';
+                    // Correction audit trail: surface stored _fix_note/_parse_note/_title_note
+                    // as a hover marker (tooltip), so the row's correction history is inspectable
+                    var _auditParts = [];
+                    if (exec._fix_note) _auditParts.push(String(exec._fix_note));
+                    if (exec._parse_note) _auditParts.push(String(exec._parse_note));
+                    if (exec._title_note) _auditParts.push(String(exec._title_note));
+                    var _auditHtml = '';
+                    if (_auditParts.length > 0) {
+                        var _auditEsc = _auditParts.join(' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        _auditHtml = ' <span class="neo-audit-note" title="' + _auditEsc + '" aria-label="Correction audit note">\uD83D\uDCDD</span>';
+                    }
+                    html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + _auditHtml + '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
                     if (yrHasBonus) html += '<td class="neo-num">' + (exec.bonus ? formatCompact(exec.bonus) : '—') + '</td>';

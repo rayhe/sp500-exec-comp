@@ -10088,6 +10088,16 @@ footer li::before {
 [data-theme="light"] .neo-dq-mismatch { background: #7c3aed; }
 [data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
 [data-theme="light"] .neo-dq-bloated { background: #dc2626; }
+/* Correction audit-trail marker: per-exec _fix_note/_parse_note/_title_note surfaced as hover tooltip (theme-agnostic) */
+.neo-audit-note {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.75em;
+    opacity: 0.7;
+    cursor: help;
+    vertical-align: middle;
+}
+.neo-audit-note:hover { opacity: 1; }
 
 
 /* === Compensation Profile Radar Chart === */
