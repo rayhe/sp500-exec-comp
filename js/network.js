@@ -4953,6 +4953,25 @@ function initNetwork(peerData) {
         html += '<div class="cf-row-total-label">' + (_cfNormMode === 'diff' ? 'Net' : 'Total') + '</div>';
         html += '</div>';
 
+        // Top-3 net-flow pairs driving a community's net balance (diff mode totals).
+        // Row perspective (isRow=true): net to each target c = out[i][c] - in[i][c].
+        // Column perspective: net from each source r = in[r][ci] - out[ci][r].
+        // Sorted by absolute net so the pairs that most drive the imbalance come first.
+        function _cfNetTop3(idx, isRow) {
+            var pairs = [];
+            for (var k = 0; k < N; k++) {
+                if (k === idx) continue;
+                var _net = isRow ? (flowMatrix[idx][k] - flowMatrix[k][idx]) : (flowMatrix[k][idx] - flowMatrix[idx][k]);
+                if (_net !== 0) pairs.push({ k: k, net: _net });
+            }
+            pairs.sort(function(a, b) { return Math.abs(b.net) - Math.abs(a.net); });
+            pairs = pairs.slice(0, 3);
+            if (!pairs.length) return '';
+            return pairs.map(function(p) {
+                return comms[p.k].label + ' ' + (p.net > 0 ? '+' : '') + p.net;
+            }).join(', ');
+        }
+
         comms.forEach(function(csRow, i) {
             var shortLabel = csRow.label.length > 8 ? csRow.label.substring(0, 7) + '\u2026' : csRow.label;
             html += '<div class="cf-row">';
@@ -5055,9 +5074,16 @@ function initNetwork(peerData) {
             else if (_cfNormMode === 'diff') {
                 var _nb = rowTotalsCross[i] - colTotalsCross[i];
                 rowTotalDisplay = (_nb > 0 ? '+' : '') + _nb;
-                if (_nb > 0) _rtStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net exporter: ' + _nb + ' more outbound than inbound cross-edges (excl. intra)"';
-                else if (_nb < 0) _rtStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net importer: ' + Math.abs(_nb) + ' more inbound than outbound cross-edges (excl. intra)"';
-                else _rtStyle = ' title="Balanced: equal outbound and inbound cross-edges (excl. intra)"';
+                var _nbTitle = _nb > 0
+                    ? 'Net exporter: ' + _nb + ' more outbound than inbound cross-edges (excl. intra)'
+                    : _nb < 0
+                        ? 'Net importer: ' + Math.abs(_nb) + ' more inbound than outbound cross-edges (excl. intra)'
+                        : 'Balanced: equal outbound and inbound cross-edges (excl. intra)';
+                var _rtTop = _cfNetTop3(i, true);
+                if (_rtTop) _nbTitle += '. Top net pairs: ' + _rtTop;
+                if (_nb > 0) _rtStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="' + _nbTitle + '"';
+                else if (_nb < 0) _rtStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="' + _nbTitle + '"';
+                else _rtStyle = ' title="' + _nbTitle + '"';
             } else { rowTotalDisplay = rowTotal; }
             html += '<div class="cf-cell cf-total"' + _rtStyle + '>' + rowTotalDisplay + '</div>';
             html += '</div>';
@@ -5073,10 +5099,16 @@ function initNetwork(peerData) {
             if (_cfNormMode === 'diff') {
                 var _cnb = colTotalsCross[_ci] - rowTotalsCross[_ci];
                 var _ctDisp = (_cnb > 0 ? '+' : '') + _cnb;
-                var _ctStyle = '';
-                if (_cnb > 0) _ctStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '" title="Net target: ' + _cnb + ' more inbound than outbound cross-edges (excl. intra)"';
-                else if (_cnb < 0) _ctStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '" title="Net source: ' + Math.abs(_cnb) + ' more outbound than inbound cross-edges (excl. intra)"';
-                else _ctStyle = ' title="Balanced: equal inbound and outbound cross-edges (excl. intra)"';
+                var _ctTitle = _cnb > 0
+                    ? 'Net target: ' + _cnb + ' more inbound than outbound cross-edges (excl. intra)'
+                    : _cnb < 0
+                        ? 'Net source: ' + Math.abs(_cnb) + ' more outbound than inbound cross-edges (excl. intra)'
+                        : 'Balanced: equal inbound and outbound cross-edges (excl. intra)';
+                var _ctTop = _cfNetTop3(_ci, false);
+                if (_ctTop) _ctTitle += '. Top net pairs: ' + _ctTop;
+                var _ctStyle = ' title="' + _ctTitle + '"';
+                if (_cnb > 0) _ctStyle = ' style="color:' + (dark ? '#34d399' : '#059669') + '"' + _ctStyle;
+                else if (_cnb < 0) _ctStyle = ' style="color:' + (dark ? '#ef4444' : '#dc2626') + '"' + _ctStyle;
                 html += '<div class="cf-cell cf-total"' + _ctStyle + '>' + _ctDisp + '</div>';
             } else {
                 var isCrossTotal = _cfNormMode === 'col';
