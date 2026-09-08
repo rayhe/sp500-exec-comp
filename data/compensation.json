@@ -5118,7 +5118,8 @@
         "independence_pct": 88.9,
         "chair_independent": false,
         "lead_independent_director": true
-      }
+      },
+      "notes": "FY2025 stock awards include a 3-year performance RSU (PRSU) target granted in a single year; FY2025 totals are not directly comparable to prior-year single-year equity grants."
     },
     {
       "ticker": "JPM",
@@ -52248,7 +52249,8 @@
         "lead_independent_director": true,
         "chair_independent": true,
         "independence_pct": 87.5
-      }
+      },
+      "notes": "FY2025 stock awards combine portions of three overlapping PSU cycles (FY2023-25, FY2024-26, FY2025-27); FY2025 totals are not directly comparable to prior-year single-year equity grants."
     },
     {
       "ticker": "UNP",

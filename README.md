@@ -77,6 +77,7 @@ All compensation data sourced from primary filings:
 4. Component-total consistency verified: 94.9% verified (6,411 of 6,759 total NEO records), 1 filing-side component mismatch (WAB 2023 CHF-conversion artifact, documented in-record), multi-year coverage 500/500 (SOLV FY2024–2025 rebuilt from primary DEF 14A)
 5. Governance Score (0-100) composite of five equal-weighted components, all normalized as cross-S&P-500 percentiles: Say-on-Pay approval, inverse CEO concentration, inverse CEO-to-worker pay ratio, C-suite team disclosure completeness, and board independence % (500/500 from primary DEF 14A filings). Mean of available components; null if fewer than 2. Grades: A≥80, B≥65, C≥50, D≥35, F<35.
 6. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
+7. Company-level comparability notes (rendered as a banner above the NEO table): multi-year equity grant structure for CSCO (3-year PRSU target in FY2025) and WDC (three overlapping PSU cycles in FY2025), Amazon's 2-3 year grant cycle, partnership/no-DEF-14A disclosure for BX and KKR, CEO succession timing for ORCL. Filing-side component anomalies (e.g., WAB 2023 CHF conversion) carry in-record explanations surfaced via the data-quality dot tooltip.
 
 ## License
 

@@ -8430,6 +8430,12 @@ function setupDetailPanel(companies) {
             }
             html += '</div>';
 
+            // Company-level comparability note (multi-year equity grants, filing quirks, etc.)
+            if (company.notes) {
+                var _noteEsc = String(company.notes).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                html += '<div class="neo-note-banner"><span class="neo-note-icon" aria-hidden="true">\u2139\uFE0F</span><span>' + _noteEsc + '</span></div>';
+            }
+
             // Year tabs (if multiple years available) + side-by-side toggle
             if (allYears.length > 1) {
                 html += '<div class="neo-year-tabs-wrap">';
@@ -8474,6 +8480,9 @@ function setupDetailPanel(companies) {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-recomputed" title="Total recomputed from components (original: ' + (exec._original_total ? formatCompact(exec._original_total) : 'N/A') + ')"></span>';
                     } else if (dqSrc === 'incomplete_components') {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-incomplete" title="Component breakdown incomplete — total from filing, missing equity/stock detail"></span>';
+                    } else if (dqSrc === 'component_mismatch') {
+                        var _mmNote = exec._note ? String(exec._note).replace(/"/g, '&quot;') : 'Components do not sum to filing-printed total';
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-mismatch" title="' + _mmNote + '"></span>';
                     } else if (dqSrc === 'bloated_component') {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-bloated" title="One component may have parsing error — total from filing retained"></span>';
                     }
