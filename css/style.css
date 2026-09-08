@@ -7494,6 +7494,12 @@ footer li::before {
     transition: opacity 0.15s;
 }
 .neo-filing-link:hover { opacity: 1; text-decoration: underline; }
+.neo-provenance {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.85;
+    white-space: nowrap;
+}
 .neo-note-banner {
     display: flex;
     align-items: flex-start;

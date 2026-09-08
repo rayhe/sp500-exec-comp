@@ -8428,6 +8428,11 @@ function setupDetailPanel(companies) {
                 var _flIs10K = /10-K/.test(company.source || '') || /10k\.htm/i.test(company.filing_url || '');
                 html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="' + (_flIs10K ? 'View 10-K (Part III Item 11 comp disclosure) on SEC EDGAR' : 'View DEF 14A proxy statement on SEC EDGAR') + '">📄 ' + (_flIs10K ? 'SEC 10-K' : 'SEC Filing') + '</a>';
             }
+            // Provenance: surface the (now-canonical) data_source so the primary-source claim is inspectable per company
+            if (company.data_source) {
+                var _dsEsc = String(company.data_source).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                html += ' <span class="neo-provenance" title="Compensation data provenance — primary source for this company">Data: ' + _dsEsc + '</span>';
+            }
             html += '</div>';
 
             // Company-level comparability note (multi-year equity grants, filing quirks, etc.)

@@ -614,7 +614,7 @@
         2024,
         2023
       ],
-      "data_source": "SEC DEF 14A 2026-01-26 verified",
+      "data_source": "SEC EDGAR DEF 14A",
       "say_on_pay": {
         "approval_pct": 88.64,
         "votes_for": 774932476,
@@ -660,7 +660,6 @@
           "stock_awards": 6219038,
           "option_awards": 1800027,
           "non_equity_incentive": 2154000,
-          "change_pension": 0,
           "all_other": 142678
         },
         {
@@ -684,7 +683,6 @@
           "stock_awards": 2529166,
           "option_awards": 0,
           "non_equity_incentive": 1374332,
-          "change_pension": 0,
           "all_other": 102994
         },
         {
@@ -1477,7 +1475,7 @@
         2024,
         2023
       ],
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "say_on_pay": {
         "approval_pct": 91.4,
         "votes_for": 8304055118,
@@ -2957,7 +2955,7 @@
       "median_worker_pay": 209583,
       "pay_ratio": 250,
       "sector": "Information Technology",
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "cik": "0000796343",
       "filing_date": "2026-02-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000043/adbe-20260227.htm",
@@ -4231,8 +4229,7 @@
           "total": 24488673,
           "_total_source": "verified",
           "stock_awards": 10500083,
-          "option_awards": 3500009,
-          "change_pension": 0
+          "option_awards": 3500009
         },
         {
           "name": "Kevin A. Lansberry",
@@ -4258,8 +4255,7 @@
           "total": 15829794,
           "_total_source": "verified",
           "stock_awards": 7606255,
-          "option_awards": 2350027,
-          "change_pension": 0
+          "option_awards": 2350027
         },
         {
           "name": "Horacio E. Gutierrez",
@@ -13380,7 +13376,7 @@
       ],
       "total_neo_compensation": 73862510,
       "proxy_fiscal_year": 2025,
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "ceo_gender": "M",
       "say_on_pay": {
         "approval_pct": 91.21,
@@ -25123,7 +25119,7 @@
         2024,
         2023
       ],
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "say_on_pay": {
         "approval_pct": 97.71,
         "votes_for": 206325467,
@@ -34060,7 +34056,7 @@
       "median_worker_pay": 62513,
       "pay_ratio": 343,
       "sector": "Industrials",
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "executives": [
         {
           "name": "Kevin M. Stein",
@@ -41460,7 +41456,7 @@
         2024,
         2023
       ],
-      "data_source": "def14a_manual",
+      "data_source": "SEC EDGAR DEF 14A",
       "ceo_gender": "M",
       "say_on_pay": {
         "approval_pct": 86.85,
@@ -43964,7 +43960,7 @@
         2024,
         2023
       ],
-      "data_source": "def14a_manual",
+      "data_source": "SEC EDGAR DEF 14A",
       "total_neo_compensation": 50137948,
       "ceo_gender": "M",
       "ceo_tenure": {
@@ -61496,7 +61492,7 @@
       "median_worker_pay": 57631,
       "pay_ratio": 276,
       "sector": "Consumer Discretionary",
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "cik": "0001174922",
       "filing_date": "2026-03-25",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/1174922/000119312526124077/d26334ddef14a.htm",
@@ -68284,7 +68280,7 @@
       "median_worker_pay": 169804,
       "pay_ratio": 87,
       "sector": "Energy",
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "cik": "0000858470",
       "executives": [
         {
@@ -74192,7 +74188,7 @@
       ],
       "total_neo_compensation": 17099755,
       "proxy_fiscal_year": 2025,
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "ceo_gender": "M",
       "ceo_tenure": {
         "year": 2007,
@@ -79902,8 +79898,7 @@
           "title": "CEO Mr",
           "_total_source": "verified",
           "bonus": 0,
-          "stock_awards": 8933289,
-          "change_pension": 0
+          "stock_awards": 8933289
         },
         {
           "name": "Carl Hess",
@@ -82134,8 +82129,7 @@
           "all_other": 201685,
           "total": 6770513,
           "_total_source": "verified",
-          "stock_awards": 5453713,
-          "change_pension": 0
+          "stock_awards": 5453713
         },
         {
           "name": "Gary Millerchip",
@@ -82148,8 +82142,7 @@
           "all_other": 82542,
           "total": 14279444,
           "_total_source": "verified",
-          "stock_awards": 9651671,
-          "change_pension": 0
+          "stock_awards": 9651671
         },
         {
           "name": "Russ D. Miller",
@@ -82201,8 +82194,7 @@
           "all_other": 331811,
           "total": 5389043,
           "_total_source": "verified",
-          "stock_awards": 4212982,
-          "change_pension": 0
+          "stock_awards": 4212982
         },
         {
           "name": "Javier Polit",
@@ -82227,8 +82219,7 @@
           "all_other": 75965,
           "total": 9812859,
           "_total_source": "verified",
-          "stock_awards": 6140740,
-          "change_pension": 0
+          "stock_awards": 6140740
         },
         {
           "name": "Richard A. Galanti",
@@ -88610,7 +88601,7 @@
       "median_worker_pay": 69508,
       "pay_ratio": 158,
       "sector": "Industrials",
-      "data_source": "def14a_manual",
+      "data_source": "SEC EDGAR DEF 14A",
       "cik": "0000049826",
       "filing_date": "2026-03-27",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/49826/000119312526127599/itw-20260325.htm",
@@ -97176,7 +97167,7 @@
       ],
       "total_neo_compensation": 21639379,
       "proxy_fiscal_year": 2025,
-      "data_source": "sec_edgar_def14a",
+      "data_source": "SEC EDGAR DEF 14A",
       "say_on_pay": {
         "approval_pct": 91.73,
         "votes_for": 208587202,
@@ -110630,7 +110621,7 @@
       "median_worker_pay": 42139,
       "pay_ratio": 49,
       "sector": "Industrials",
-      "data_source": "DEF 14A verified \u2014 full multi-year NEO table from 2025 proxy (Oct 24 2025)",
+      "data_source": "SEC EDGAR DEF 14A",
       "cik": "0000900075",
       "filing_date": "2025-10-24",
       "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm",
