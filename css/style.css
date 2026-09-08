@@ -7508,6 +7508,15 @@ footer li::before {
     border-radius: 6px;
 }
 .neo-note-icon { flex: 0 0 auto; }
+/* Mega-grant outlier explanation (red accent) + partnership comp-structure context (blue accent) */
+.neo-note-banner--grant {
+    background: rgba(239, 71, 111, 0.07);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+.neo-note-banner--struct {
+    background: rgba(96, 165, 250, 0.07);
+    border-color: rgba(96, 165, 250, 0.4);
+}
 .neo-years-available {
     font-size: 0.75rem;
     color: var(--text-muted);

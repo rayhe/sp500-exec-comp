@@ -8436,6 +8436,17 @@ function setupDetailPanel(companies) {
                 html += '<div class="neo-note-banner"><span class="neo-note-icon" aria-hidden="true">\u2139\uFE0F</span><span>' + _noteEsc + '</span></div>';
             }
 
+            // Front-loaded multi-year mega-grant explanation (e.g. WELL 2025 $821M CEO); verifies the dataset's most extreme pay figures
+            if (company._mega_grant_note) {
+                var _grantEsc = String(company._mega_grant_note).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                html += '<div class="neo-note-banner neo-note-banner--grant"><span class="neo-note-icon" aria-hidden="true">\u26A1</span><span>' + _grantEsc + '</span></div>';
+            }
+            // Partnership / carry-pool compensation structure context (BX, KKR); comp is not traditional salary/equity
+            if (company._partnership_note) {
+                var _partEsc = String(company._partnership_note).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                html += '<div class="neo-note-banner neo-note-banner--struct"><span class="neo-note-icon" aria-hidden="true">\u2696</span><span>' + _partEsc + '</span></div>';
+            }
+
             // Year tabs (if multiple years available) + side-by-side toggle
             if (allYears.length > 1) {
                 html += '<div class="neo-year-tabs-wrap">';
