@@ -8549,11 +8549,14 @@ function setupDetailPanel(companies) {
                         _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _nDots + '</svg>';
                     }
                     // Correction audit trail: surface stored _fix_note/_parse_note/_title_note
+                    // plus single-row annotations (_round_delta, _salary_note)
                     // as a hover marker (tooltip), so the row's correction history is inspectable
                     var _auditParts = [];
                     if (exec._fix_note) _auditParts.push(String(exec._fix_note));
                     if (exec._parse_note) _auditParts.push(String(exec._parse_note));
                     if (exec._title_note) _auditParts.push(String(exec._title_note));
+                    if (exec._round_delta != null) _auditParts.push('Rounding: component sum differs from filing-printed total by $' + Math.abs(exec._round_delta).toLocaleString() + ' (within filing rounding tolerance).');
+                    if (exec._salary_note) _auditParts.push(String(exec._salary_note));
                     var _auditHtml = '';
                     if (_auditParts.length > 0) {
                         var _auditEsc = _auditParts.join(' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

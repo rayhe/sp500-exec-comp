@@ -13439,7 +13439,6 @@
           "total": 28144215,
           "_original_total": 8000000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
           "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
         },
         {
@@ -13456,7 +13455,6 @@
           "total": 28378031,
           "_original_total": 8000000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
           "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
         },
         {
@@ -13486,7 +13484,6 @@
           "total": 9494210,
           "_original_total": 2250000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
           "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
         },
         {
@@ -13503,7 +13500,6 @@
           "total": 9463539,
           "_original_total": 2250000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/820027/000110465926032725/amp-20260429xdef14a.htm",
           "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
         },
         {
@@ -19762,7 +19758,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 23988586,
           "all_other": 601817,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19779,7 +19774,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 14827724,
           "all_other": 432161,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19796,7 +19790,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 11483809,
           "all_other": 541874,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19813,7 +19806,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 11514830,
           "all_other": 278515,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column. Total includes $3,543 Change in retention plan value sub-column (reconciles)."
         },
         {
@@ -19830,7 +19822,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 7599258,
           "all_other": 170435,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column. Total includes $14,178 Change in retention plan value (reconciles)."
         },
         {
@@ -19847,7 +19838,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 6704515,
           "all_other": 203369,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19864,7 +19854,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 10794920,
           "all_other": 188523,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19881,7 +19870,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 7043235,
           "all_other": 168516,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19898,7 +19886,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 5843417,
           "all_other": 241228,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19915,7 +19902,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 9835230,
           "all_other": 132470,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19932,7 +19918,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 5931188,
           "all_other": 154388,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
         },
         {
@@ -19949,7 +19934,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 4897686,
           "all_other": 196565,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000025/ibm-20260306.htm",
           "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column. Change in pension value printed N/A (not eligible) -> null."
         },
         {
@@ -28611,7 +28595,6 @@
           "_original_total": 20373964,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28628,7 +28611,6 @@
           "_original_total": 8250640,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28645,7 +28627,6 @@
           "_original_total": 7597619,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28662,7 +28643,6 @@
           "_original_total": 2727268,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28679,7 +28659,6 @@
           "_original_total": 7631875,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28709,7 +28688,6 @@
           "_original_total": 5196818,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28726,7 +28704,6 @@
           "_original_total": 6252557,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28756,7 +28733,6 @@
           "_original_total": 5662042,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28773,7 +28749,6 @@
           "_original_total": 5472142,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         },
         {
@@ -28816,7 +28791,6 @@
           "_original_total": 6491684,
           "_total_source": "DEF14A-verified 2026-09-07",
           "bonus": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1800/000130817926000064/abt-20260311.htm",
           "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
         }
       ],
@@ -30310,7 +30284,6 @@
           "total": 22352785,
           "_original_total": 6200000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
         },
         {
@@ -30327,7 +30300,6 @@
           "total": 19950306,
           "_original_total": 4410000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
         },
         {
@@ -30344,7 +30316,6 @@
           "total": 9165417,
           "_original_total": 4500070,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
         },
         {
@@ -30403,7 +30374,6 @@
           "total": 6485162,
           "_original_total": 3000176,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
         },
         {
@@ -30434,7 +30404,6 @@
           "total": 5909100,
           "_original_total": 1400000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/713676/000119312526102189/d62941ddef14a.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
         },
         {
@@ -32010,7 +31979,6 @@
           "stock_awards": 18448329,
           "non_equity_incentive": 6480000,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1300514/000130051426000031/lvs-20260401.htm",
           "_parse_note": "Our parse had $6.48M NEIP stuffed into all_other and the $3.18M all_other (incl. $977,560 security) used as total. LVS SCT has no pension column and no FY2025 option awards."
         },
         {
@@ -32049,7 +32017,6 @@
           "stock_awards": 4549971,
           "non_equity_incentive": 5400000,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1300514/000130051426000031/lvs-20260401.htm",
           "_parse_note": "Our parse had $6.48M NEIP stuffed into all_other and the $3.18M all_other (incl. $977,560 security) used as total. LVS SCT has no pension column and no FY2025 option awards."
         },
         {
@@ -32088,7 +32055,6 @@
           "stock_awards": 1910963,
           "non_equity_incentive": 1944000,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1300514/000130051426000031/lvs-20260401.htm",
           "_parse_note": "Our parse had $6.48M NEIP stuffed into all_other and the $3.18M all_other (incl. $977,560 security) used as total. LVS SCT has no pension column and no FY2025 option awards."
         },
         {
@@ -32127,7 +32093,6 @@
           "stock_awards": 2365969,
           "non_equity_incentive": 2457000,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1300514/000130051426000031/lvs-20260401.htm",
           "_parse_note": "Our parse had $6.48M NEIP stuffed into all_other and the $3.18M all_other (incl. $977,560 security) used as total. LVS SCT has no pension column and no FY2025 option awards."
         },
         {
@@ -56063,7 +56028,6 @@
           "stock_awards": 10159968,
           "non_equity_incentive": 2950000,
           "all_other": 25941,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
         },
         {
@@ -56080,7 +56044,6 @@
           "stock_awards": 8799948,
           "non_equity_incentive": 2000000,
           "all_other": 21032,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
         },
         {
@@ -56120,7 +56083,6 @@
           "bonus": null,
           "non_equity_incentive": 607326,
           "all_other": 28487,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
         },
         {
@@ -56137,7 +56099,6 @@
           "stock_awards": 1073309,
           "non_equity_incentive": 675000,
           "all_other": 93216,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity). $1 filing-side rounding discrepancy: components sum to 2,702,235 vs printed 2,702,236."
         },
         {
@@ -56174,7 +56135,6 @@
           "stock_awards": 6150316,
           "non_equity_incentive": 2091000,
           "all_other": 114499,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
         },
         {
@@ -56191,7 +56151,6 @@
           "stock_awards": 1800036,
           "non_equity_incentive": 1114300,
           "all_other": 67998,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
         },
         {
@@ -66045,7 +66004,6 @@
           "total": 22510196,
           "_original_total": 1721875,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
           "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
         },
         {
@@ -66062,7 +66020,6 @@
           "total": 15362827,
           "_original_total": 1009375,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
           "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
         },
         {
@@ -66093,7 +66050,6 @@
           "total": 8314573,
           "_original_total": 870000,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
           "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
         },
         {
@@ -66138,7 +66094,6 @@
           "total": 6626631,
           "_original_total": 614800,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
           "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
         },
         {
@@ -67390,7 +67345,6 @@
           "_original_total": 14131247,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -67407,7 +67361,6 @@
           "_original_total": 11982676,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -67424,7 +67377,6 @@
           "_original_total": 10348466,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -67469,7 +67421,6 @@
           "_original_total": 4649030,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -67486,7 +67437,6 @@
           "_original_total": 4274071,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -67503,7 +67453,6 @@
           "_original_total": 3235297,
           "_total_source": "DEF14A-verified 2026-09-07",
           "option_awards": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1047862/000104786226000078/ed-20260408.htm",
           "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
         },
         {
@@ -70245,7 +70194,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 7880872,
           "all_other": 385761,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
           "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
         },
         {
@@ -70286,7 +70234,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 1576174,
           "all_other": 283879,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
           "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
         },
         {
@@ -70327,7 +70274,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 985432,
           "all_other": 128941,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
           "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430."
         },
         {
@@ -70368,7 +70314,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 1576174,
           "all_other": 144051,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
           "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
         },
         {
@@ -70408,7 +70353,6 @@
           "_total_source": "DEF14A-verified 2026-09-07",
           "stock_awards": 1576174,
           "all_other": 115065,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591326000050/alb-20260323.htm",
           "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
         },
         {
@@ -76664,7 +76608,6 @@
           "total": 12904625,
           "_original_total": 6510494,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76681,7 +76624,6 @@
           "total": 6278835,
           "_original_total": 5988985,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76712,7 +76654,6 @@
           "total": 3307146,
           "_original_total": 1810170,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76729,7 +76670,6 @@
           "total": 2320822,
           "_original_total": 1485595,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76760,7 +76700,6 @@
           "total": 3535701,
           "_original_total": 2117090,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76777,7 +76716,6 @@
           "total": 1886514,
           "_original_total": 1744832,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76808,7 +76746,6 @@
           "total": 2463414,
           "_original_total": 1599183,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
         },
         {
@@ -76825,7 +76762,6 @@
           "total": 1913109,
           "_original_total": 1810469,
           "_total_source": "DEF14A-verified 2026-09-07",
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/715957/000119312526115180/d-20260319.htm",
           "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used). Name variant 'Ed Baine' does not appear in the filing; the FY2023 row belongs to the same 'Edward H. Baine' SCT block."
         },
         {
@@ -86134,7 +86070,6 @@
           "stock_awards": 7555373,
           "non_equity_incentive": 1983800,
           "all_other": 601536,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, NEIP into bonus-shaped slot, total grabbed from all_other. Bonus/Option/Pension are em-dash (null) for all FY2024 rows (APA grants no options in FY2024, has no US defined-benefit plan)."
         },
         {
@@ -86175,7 +86110,6 @@
           "stock_awards": 4299113,
           "non_equity_incentive": 1177200,
           "all_other": 331114,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, NEIP into bonus-shaped slot, total grabbed from all_other. Bonus/Option/Pension are em-dash (null) for all FY2024 rows (APA grants no options in FY2024, has no US defined-benefit plan)."
         },
         {
@@ -86228,7 +86162,6 @@
           "stock_awards": 1741482,
           "non_equity_incentive": 681250,
           "all_other": 238636,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, NEIP into bonus-shaped slot, total grabbed from all_other. Bonus/Option/Pension are em-dash (null) for all FY2024 rows (APA grants no options in FY2024, has no US defined-benefit plan)."
         },
         {
@@ -86280,7 +86213,6 @@
           "stock_awards": 2149518,
           "non_equity_incentive": 735750,
           "all_other": 266703,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/1841666/000119312526149453/apa-20260409.htm",
           "_parse_note": "Column-shift error: stock awards had landed in option_awards, NEIP into bonus-shaped slot, total grabbed from all_other. Bonus/Option/Pension are em-dash (null) for all FY2024 rows (APA grants no options in FY2024, has no US defined-benefit plan)."
         },
         {
@@ -97605,8 +97537,7 @@
           "pension_nqdc": 0,
           "all_other": 41516,
           "total": 5544670,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Joshua J. Viets",
@@ -97620,8 +97551,7 @@
           "pension_nqdc": 0,
           "all_other": 30272,
           "total": 4608711,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Joshua J. Viets",
@@ -97635,8 +97565,7 @@
           "pension_nqdc": 0,
           "all_other": 31364,
           "total": 3493808,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Chris Lacy",
@@ -97650,8 +97579,7 @@
           "pension_nqdc": 0,
           "all_other": 316378,
           "total": 3666146,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Chris Lacy",
@@ -97665,8 +97593,7 @@
           "pension_nqdc": 0,
           "all_other": 119520,
           "total": 2438110,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Daniel F. Turco",
@@ -97680,8 +97607,7 @@
           "pension_nqdc": 0,
           "all_other": 400049,
           "total": 5693774,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Brittany Raiford",
@@ -97695,8 +97621,7 @@
           "pension_nqdc": 0,
           "all_other": 38192,
           "total": 1406695,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Domenic J. Dell'Osso Jr",
@@ -97710,8 +97635,7 @@
           "pension_nqdc": 0,
           "all_other": 41316,
           "total": 9879106,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Domenic J. Dell'Osso Jr",
@@ -97725,8 +97649,7 @@
           "pension_nqdc": 0,
           "all_other": 31616,
           "total": 8974550,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Domenic J. Dell'Osso Jr",
@@ -97740,8 +97663,7 @@
           "pension_nqdc": 0,
           "all_other": 31480,
           "total": 7404561,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Mohit Singh",
@@ -97755,8 +97677,7 @@
           "pension_nqdc": 0,
           "all_other": 2432282,
           "total": 5862389,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Mohit Singh",
@@ -97770,8 +97691,7 @@
           "pension_nqdc": 0,
           "all_other": 30893,
           "total": 4189844,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Mohit Singh",
@@ -97785,8 +97705,7 @@
           "pension_nqdc": 0,
           "all_other": 44916,
           "total": 3336049,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/895126/000110465926048155/tm261495d1_def14a.htm"
+          "_total_source": "verified"
         }
       ],
       "neo_count": 6,
@@ -101320,7 +101239,6 @@
           "stock_awards": 3228516,
           "option_awards": null,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/84839/000008483926000014/rol-20260317.htm",
           "_parse_note": "Column-shift error: the SCT's single 'Equity Awards' column (RSA + PSU sub-columns) had been split into our bonus and all_other fields; Bonus is actually em-dash (null). No separate Stock Awards/Option Awards/Pension columns exist. stock_awards recorded = RSA + PSU sum. Equity Awards: RSA 2,170,350 + PSU 1,058,166."
         },
         {
@@ -101357,7 +101275,6 @@
           "stock_awards": 1048291,
           "option_awards": null,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/84839/000008483926000014/rol-20260317.htm",
           "_parse_note": "Column-shift error: the SCT's single 'Equity Awards' column (RSA + PSU sub-columns) had been split into our bonus and all_other fields; Bonus is actually em-dash (null). No separate Stock Awards/Option Awards/Pension columns exist. stock_awards recorded = RSA + PSU sum. Equity Awards: RSA 899,253 + PSU 149,038."
         },
         {
@@ -101394,7 +101311,6 @@
           "stock_awards": 5697083,
           "option_awards": null,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/84839/000008483926000014/rol-20260317.htm",
           "_parse_note": "Column-shift error: the SCT's single 'Equity Awards' column (RSA + PSU sub-columns) had been split into our bonus and all_other fields; Bonus is actually em-dash (null). No separate Stock Awards/Option Awards/Pension columns exist. stock_awards recorded = RSA + PSU sum. Equity Awards: RSA 4,176,900 + PSU 1,520,183."
         },
         {
@@ -101431,7 +101347,6 @@
           "stock_awards": 2268766,
           "option_awards": null,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/84839/000008483926000014/rol-20260317.htm",
           "_parse_note": "Column-shift error: the SCT's single 'Equity Awards' column (RSA + PSU sub-columns) had been split into our bonus and all_other fields; Bonus is actually em-dash (null). No separate Stock Awards/Option Awards/Pension columns exist. stock_awards recorded = RSA + PSU sum. Equity Awards: RSA 1,463,963 + PSU 804,803."
         },
         {
@@ -101468,7 +101383,6 @@
           "stock_awards": 761478,
           "option_awards": null,
           "pension_nqdc": null,
-          "_filing_url": "https://www.sec.gov/Archives/edgar/data/84839/000008483926000014/rol-20260317.htm",
           "_parse_note": "Column-shift error: the SCT's single 'Equity Awards' column (RSA + PSU sub-columns) had been split into our bonus and all_other fields; Bonus is actually em-dash (null). No separate Stock Awards/Option Awards/Pension columns exist. stock_awards recorded = RSA + PSU sum. Equity Awards: RSA 552,825 + PSU 208,653."
         },
         {
@@ -110638,8 +110552,7 @@
           "pension_nqdc": 0,
           "all_other": 432171,
           "total": 432172,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "A. Jayson Adair",
@@ -110653,8 +110566,7 @@
           "pension_nqdc": 0,
           "all_other": 845411,
           "total": 845412,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "A. Jayson Adair",
@@ -110668,8 +110580,7 @@
           "pension_nqdc": 0,
           "all_other": 384575,
           "total": 384576,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Jeffrey Liaw",
@@ -110683,8 +110594,7 @@
           "pension_nqdc": 0,
           "all_other": 79292,
           "total": 2072692,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Jeffrey Liaw",
@@ -110698,8 +110608,7 @@
           "pension_nqdc": 0,
           "all_other": 98940,
           "total": 2092340,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Jeffrey Liaw",
@@ -110713,8 +110622,7 @@
           "pension_nqdc": 0,
           "all_other": 9000,
           "total": 2009000,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Leah C. Stearns",
@@ -110728,8 +110636,7 @@
           "pension_nqdc": 0,
           "all_other": 11714,
           "total": 1056305,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Leah C. Stearns",
@@ -110743,8 +110650,7 @@
           "pension_nqdc": 0,
           "all_other": 12664,
           "total": 4301887,
-          "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm"
+          "_total_source": "verified"
         },
         {
           "name": "Leah C. Stearns",
@@ -110759,7 +110665,6 @@
           "all_other": 5295,
           "total": 9706972,
           "_total_source": "verified",
-          "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm",
           "_note": "SEC table shows 5,250 other + 9,706,972 total (45 diff) \u2014 adjusted other to 5,295 to reconcile; source total preserved"
         }
       ],
