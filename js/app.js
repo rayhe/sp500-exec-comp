@@ -8428,10 +8428,22 @@ function setupDetailPanel(companies) {
                 var _flIs10K = /10-K/.test(company.source || '') || /10k\.htm/i.test(company.filing_url || '');
                 html += ' <a class="neo-filing-link" href="' + company.filing_url + '" target="_blank" rel="noopener" title="' + (_flIs10K ? 'View 10-K (Part III Item 11 comp disclosure) on SEC EDGAR' : 'View DEF 14A proxy statement on SEC EDGAR') + '">📄 ' + (_flIs10K ? 'SEC 10-K' : 'SEC Filing') + '</a>';
             }
+            // CIK (digits-only verified): link the EDGAR company filing index so the full filing history is one click away
+            if (company.cik && /^[0-9]+$/.test(String(company.cik))) {
+                html += ' <a class="neo-filing-link" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=' + String(company.cik) + '&amp;dateb=&amp;owner=include&amp;count=40" target="_blank" rel="noopener" title="All SEC filings for this company on EDGAR (filing history, amendments, other forms)">🏛 All SEC Filings</a>';
+            }
             // Provenance: surface the (now-canonical) data_source so the primary-source claim is inspectable per company
             if (company.data_source) {
                 var _dsEsc = String(company.data_source).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                 html += ' <span class="neo-provenance" title="Compensation data provenance — primary source for this company">Data: ' + _dsEsc + '</span>';
+            }
+            // FY-range badge: fiscal years covered by this company's NEO records (closes the last orphan-key item from the 10:00 schema audit)
+            if (company.available_years && company.available_years.length) {
+                var _yrs = company.available_years.filter(function(y) { return /^\d{4}$/.test(String(y)); }).map(Number).sort(function(a, b) { return a - b; });
+                if (_yrs.length) {
+                    var _yrLabel = 'FY' + _yrs[0] + (_yrs[_yrs.length - 1] !== _yrs[0] ? '\u2013' + _yrs[_yrs.length - 1] : '');
+                    html += ' <span class="neo-badge" title="Fiscal years covered in this company\u2019s NEO records (' + _yrs.join(', ') + ')">' + _yrLabel + '</span>';
+                }
             }
             html += '</div>';
 
