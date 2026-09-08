@@ -15497,12 +15497,12 @@ function setupDualSparklineTooltips() {
             title: 'Governance Score Methodology',
             html: '<h4>Composite Score (0–100)</h4>' +
                 '<p>Compensation Governance Score measures how well a company governs executive pay. Five components, equal-weighted at <span class="method-pill">20% each</span>, renormalized if any component is missing (requires ≥2 components).</p>' +
-                '<div class="method-formula">GovScore = mean(SoP%ile, (100 − CEOConc%ile), (100 − PayRatio%ile), TeamComplete%, BoardIndep%ile)</div>' +
+                '<div class="method-formula">GovScore = mean(SoP%ile, InvConc%ile, InvRatio%ile, TeamComplete%, BoardIndep%ile)</div>' +
                 '<h4>Five Components</h4>' +
                 '<ol>' +
                 '<li><strong>Say-on-Pay Approval Percentile</strong> — Shareholder approval % from 8-K Item 5.07 filings, ranked across S&P 500. Higher approval → higher percentile → better governance.</li>' +
-                '<li><strong>Inverse CEO Concentration</strong> — CEO total pay as % of total NEO compensation. Lower concentration = more distributed pay = better. Inverted percentile: <code>100 − conc%ile</code>.</li>' +
-                '<li><strong>Inverse Pay Ratio</strong> — CEO-to-median-worker pay ratio. Lower ratio = better alignment. Inverted percentile: <code>100 − ratio%ile</code>.</li>' +
+                '<li><strong>Inverse CEO Concentration</strong> — CEO total pay as % of total NEO compensation. Lower concentration = more distributed pay = better. Inverted percentile via descending-sort rank: <code>(rank↓ / n) × 100</code>.</li>' +
+                '<li><strong>Inverse Pay Ratio</strong> — CEO-to-median-worker pay ratio. Lower ratio = better alignment. Inverted percentile via descending-sort rank: <code>(rank↓ / n) × 100</code>.</li>' +
                 '<li><strong>Team Disclosure Completeness</strong> — Count of C-suite roles (CEO, CFO, COO, GC/CLO, CTO, CHRO, CIO) present in NEO disclosure, scaled to 0–100: <code>roleCount / 7 × 100</code>.</li>' +
                 '<li><strong>Board Independence Percentile</strong> — % of board directors affirmed independent in the proxy (DEF 14A), ranked across S&P 500. Coverage 500/500 from primary filings. Higher independence → higher percentile → better oversight.</li>' +
                 '</ol>' +
@@ -15511,6 +15511,7 @@ function setupDualSparklineTooltips() {
                 '<h4>Letter Grades</h4>' +
                 '<p><span class="method-pill">A ≥80</span> <span class="method-pill">B ≥65</span> <span class="method-pill">C ≥50</span> <span class="method-pill">D ≥35</span> <span class="method-pill">F &lt;35</span></p>' +
                 '<p>Grade thresholds apply to the 0–100 composite, not raw percentiles.</p>' +
+                '<div class="method-note">Percentile convention: rank-based, (rank / n) × 100 with 1-based rank, rounded to the nearest integer. The two inverse components sort <em>descending</em>, which equals 100 − ascending%ile + 100/n (≈ ±0.2 pts on a ~500-company scale) — not exactly 100 − ascending%ile.</div>' +
                 '<div class="method-note">Primary sources: SEC DEF 14A Summary Compensation Table (SCT) for NEO totals and role inference, 8-K Item 5.07 for SoP approval %, proxy Item 402(u) for pay ratio and median worker pay. Governance score is a descriptive composite, not a causal claim about governance quality.</div>'
         },
         ger: {
