@@ -8465,6 +8465,11 @@ function setupDetailPanel(companies) {
                 var _partEsc = String(company._partnership_note).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                 html += '<div class="neo-note-banner neo-note-banner--struct"><span class="neo-note-icon" aria-hidden="true">\u2696</span><span>' + _partEsc + '</span></div>';
             }
+            // CEO-row reconciliation note (misattribution fix, CEO transition, FY refresh); documents top-level row corrections
+            if (company._ceo_row_note) {
+                var _ceoRowEsc = String(company._ceo_row_note).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                html += '<div class="neo-note-banner neo-note-banner--audit"><span class="neo-note-icon" aria-hidden="true">\uD83D\uDD0D</span><span>' + _ceoRowEsc + '</span></div>';
+            }
 
             // Year tabs (if multiple years available) + side-by-side toggle
             if (allYears.length > 1) {
