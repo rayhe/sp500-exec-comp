@@ -290,10 +290,12 @@
   },
   "five_year_trends": {
     "description": "Five-year CEO pay trajectory",
-    "s_and_p_500_5yr_increase": "26%",
+    "s_and_p_500_5yr_increase": "32%",
     "russell_3000_5yr_increase": "51%",
-    "period": "2020-2024",
-    "source": "Harvard Law School Forum - 2025 U.S. Compensation Post-Season Review"
+    "period": "2020-2025",
+    "source": "Site median CEO pay series (Equilar/AP annual medians, 2020-2025)",
+    "russell_3000_period": "2020-2024",
+    "russell_3000_source": "Harvard Law Forum 2025 post-season review"
   },
   "gender_trends": {
     "description": "Female CEO compensation trends in S&P 500",

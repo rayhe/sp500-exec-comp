@@ -3949,17 +3949,19 @@ function populateTrends(trends) {
         });
     }
 
-    // 4. Five-Year Growth: S&P 500 vs Russell 3000
+    // 4. Five-Year Growth: S&P 500 (site median series) with Russell 3000 context
     if (trends.five_year_trends) {
         var fyt = trends.five_year_trends;
-        var detail4 = 'S&P 500 CEO median pay rose ' + fyt.s_and_p_500_5yr_increase + ' over ' + fyt.period + '. ';
-        detail4 += 'Russell 3000 CEOs grew even faster at +' + fyt.russell_3000_5yr_increase.replace('+', '') + ' — smaller companies closing the gap.';
+        var detail4 = 'S&P 500 CEO median pay rose ' + fyt.s_and_p_500_5yr_increase + ' over ' + fyt.period + ' (site median series, Equilar/AP). ';
+        if (fyt.russell_3000_5yr_increase) {
+            detail4 += 'For context, the ' + (fyt.russell_3000_source || 'Harvard Law Forum') + ' put Russell 3000 CEO pay at +' + fyt.russell_3000_5yr_increase.replace('+', '') + ' over ' + (fyt.russell_3000_period || fyt.period) + ' — smaller companies closing the gap.';
+        }
         cards.push({
             icon: '📈',
             label: '5-Year Growth Gap',
-            value: 'S&P +' + fyt.s_and_p_500_5yr_increase + ' vs R3K +' + fyt.russell_3000_5yr_increase,
+            value: 'S&P +' + fyt.s_and_p_500_5yr_increase + ' (' + fyt.period + ')',
             detail: detail4,
-            source: fyt.source || 'Harvard Law Forum'
+            source: fyt.source || 'Site median series'
         });
     }
 
