@@ -11469,6 +11469,28 @@ body.light-mode .cross-sector-pair-select:focus {
     color: var(--text-muted);
 }
 
+.density-preset {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
+}
+.density-preset:hover {
+    color: #00b4d8;
+    border-color: rgba(0,180,216,0.45);
+    background: rgba(0,180,216,0.08);
+}
+.density-preset:focus-visible {
+    outline: 2px solid #00b4d8;
+    outline-offset: 1px;
+}
+
 /* === Community Detection Legend === */
 .community-toggle.active {
     background: rgba(191,239,69,0.15);

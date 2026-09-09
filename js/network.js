@@ -3581,6 +3581,30 @@ function initNetwork(peerData) {
         });
     }
 
+    // Density preset quick-jumps — thresholds are computed from the live in-degree
+    // distribution (the in-degree of the Nth-ranked node), never hardcoded, so they
+    // stay correct as data changes. Reaches cores the 0-25 slider cannot:
+    // Core 50 needs min-refs 21 and Core 100 needs min-refs 17 on current data.
+    var densityPresets = document.querySelectorAll('.density-preset');
+    if (densityPresets.length) {
+        densityPresets.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var target = parseInt(btn.getAttribute('data-core'), 10) || 0;
+                if (target <= 0 || target > nodes.length) return;
+                var ranked = nodes.slice().sort(function(a, b) { return (b.in_degree || 0) - (a.in_degree || 0); });
+                var threshold = ranked[target - 1].in_degree || 0;
+                // Extend the slider's visual range if the data-driven threshold exceeds it
+                if (densitySlider && threshold > parseInt(densitySlider.max, 10)) {
+                    densitySlider.max = threshold;
+                }
+                _setDensity(threshold);
+                if (typeof announce === 'function') {
+                    announce('Density preset: core ' + target + ' — showing ' + _densityVisible.size + ' of ' + nodes.length + ' companies with at least ' + threshold + ' peer references');
+                }
+            });
+        });
+    }
+
     // === Community Detection Toggle ===
     var communityToggle = document.getElementById('community-toggle');
     var communityLegendEl = document.getElementById('community-legend');
