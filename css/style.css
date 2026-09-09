@@ -1180,6 +1180,19 @@ header h1 {
     align-items: center;
     gap: 6px;
     height: 16px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.ngs-ddp-darling:hover {
+    background: rgba(255,255,255,0.06);
+}
+.ngs-ddp-darling:hover .ngs-ddp-darling-ticker {
+    color: #00b4d8;
+    text-decoration: underline;
+}
+.ngs-ddp-darling:focus-visible {
+    outline: 1px solid #00b4d8;
+    outline-offset: 1px;
 }
 .ngs-ddp-darling-rank {
     font-size: 0.6rem;
@@ -1201,11 +1214,15 @@ header h1 {
     width: 46px;
     flex-shrink: 0;
     font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
-    cursor: pointer;
 }
-.ngs-ddp-darling-ticker:hover {
-    color: #00b4d8;
-    text-decoration: underline;
+.ngs-ddp-darling-name {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
 }
 .ngs-ddp-darling-bar-track {
     flex: 1;
@@ -1281,8 +1298,18 @@ header h1 {
 [data-theme="light"] .ngs-ddp-darling-ticker {
     color: rgba(0,0,0,0.8);
 }
-[data-theme="light"] .ngs-ddp-darling-ticker:hover {
+[data-theme="light"] .ngs-ddp-darling:hover {
+    background: rgba(0,0,0,0.05);
+}
+[data-theme="light"] .ngs-ddp-darling:hover .ngs-ddp-darling-ticker {
     color: #0077b6;
+    text-decoration: underline;
+}
+[data-theme="light"] .ngs-ddp-darling:focus-visible {
+    outline-color: #0077b6;
+}
+[data-theme="light"] .ngs-ddp-darling-name {
+    color: rgba(0,0,0,0.55);
 }
 [data-theme="light"] .ngs-ddp-darling-count {
     color: rgba(0,0,0,0.55);

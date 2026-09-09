@@ -407,13 +407,13 @@ function initNetwork(peerData) {
         var maxBucket = 0;
         buckets.forEach(function(b) { if (b.count > maxBucket) maxBucket = b.count; });
 
-        // Top 8 most-selected companies (benchmark darlings)
+        // Top 10 most-selected companies (benchmark darlings)
         var sorted = nodes.slice().sort(function(a, b) { return (b.in_degree || 0) - (a.in_degree || 0); });
-        var top8 = sorted.slice(0, 8).map(function(n) {
-            return { ticker: n.ticker, sector: n.sector, inDeg: n.in_degree || 0 };
+        var top10 = sorted.slice(0, 10).map(function(n) {
+            return { ticker: n.ticker, name: n.name || n.ticker, sector: n.sector, inDeg: n.in_degree || 0 };
         });
 
-        return { inDegrees: inDegrees, median: median, p90: p90, p99: p99, maxDeg: maxDeg, buckets: buckets, maxBucket: maxBucket, top8: top8, total: total };
+        return { inDegrees: inDegrees, median: median, p90: p90, p99: p99, maxDeg: maxDeg, buckets: buckets, maxBucket: maxBucket, top10: top10, total: total };
     })();
 
     // Pre-compute clustering coefficient distribution data for the CC panel
@@ -561,6 +561,16 @@ function initNetwork(peerData) {
         renderCCDistPanel();
     }
 
+    // Escape HTML special chars in data-driven strings (company names contain & etc.)
+    function escapeHtml(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function renderDegreeDistPanel() {
         var existing = document.getElementById('ngs-degree-dist-panel');
         if (!degreeDistPanelOpen) {
@@ -616,12 +626,14 @@ function initNetwork(peerData) {
         html += '<div class="ngs-ddp-darlings-section">';
         html += '<div class="ngs-ddp-title">Benchmark Darlings <span class="ngs-ddp-subtitle">Most-selected peer companies</span></div>';
         html += '<div class="ngs-ddp-darlings">';
-        dd.top8.forEach(function(d, i) {
+        dd.top10.forEach(function(d, i) {
             var sectorColor = SECTOR_COLORS[d.sector] || '#94a3b8';
-            html += '<div class="ngs-ddp-darling">';
+            var rowTitle = 'Click to find ' + d.ticker + ' (' + d.name + ') in network';
+            html += '<div class="ngs-ddp-darling" role="button" tabindex="0" data-ticker="' + escapeHtml(d.ticker) + '" title="' + escapeHtml(rowTitle) + '">';
             html += '<span class="ngs-ddp-darling-rank">' + (i + 1) + '</span>';
             html += '<span class="ngs-ddp-darling-dot" style="background:' + sectorColor + '"></span>';
-            html += '<span class="ngs-ddp-darling-ticker">' + d.ticker + '</span>';
+            html += '<span class="ngs-ddp-darling-ticker">' + escapeHtml(d.ticker) + '</span>';
+            html += '<span class="ngs-ddp-darling-name">' + escapeHtml(d.name) + '</span>';
             html += '<span class="ngs-ddp-darling-bar-track">';
             html += '<span class="ngs-ddp-darling-bar" style="width:' + (dd.maxDeg > 0 ? (d.inDeg / dd.maxDeg * 100) : 0) + '%;background:' + sectorColor + '"></span>';
             html += '</span>';
@@ -631,27 +643,32 @@ function initNetwork(peerData) {
         html += '</div>';
 
         // Power law note
-        var topPct = dd.total > 0 ? ((dd.top8.length / dd.total) * 100).toFixed(1) : '0';
+        var topPct = dd.total > 0 ? ((dd.top10.length / dd.total) * 100).toFixed(1) : '0';
         var topDegSum = 0;
-        dd.top8.forEach(function(d) { topDegSum += d.inDeg; });
+        dd.top10.forEach(function(d) { topDegSum += d.inDeg; });
         var totalDegSum = 0;
         dd.inDegrees.forEach(function(d) { totalDegSum += d; });
         var topSharePct = totalDegSum > 0 ? ((topDegSum / totalDegSum) * 100).toFixed(0) : '0';
-        html += '<div class="ngs-ddp-note">Top ' + dd.top8.length + ' (' + topPct + '%) account for ' + topSharePct + '% of all peer selections — a power-law distribution typical of benchmark networks.</div>';
+        html += '<div class="ngs-ddp-note">Top ' + dd.top10.length + ' (' + topPct + '%) account for ' + topSharePct + '% of all peer selections — a power-law distribution typical of benchmark networks.</div>';
 
         html += '</div>';
         html += '</div>';
 
         panel.innerHTML = html;
 
-        // Make darling tickers clickable to find in network
-        panel.querySelectorAll('.ngs-ddp-darling-ticker').forEach(function(el) {
-            el.style.cursor = 'pointer';
-            el.title = 'Click to find in network';
-            el.addEventListener('click', function() {
-                var ticker = el.textContent;
-                if (typeof window.focusNetworkNode === 'function') {
-                    window.focusNetworkNode(ticker);
+        // Whole-row click + keyboard focus: find the darling node in the network
+        function focusDarling(el) {
+            var ticker = el.getAttribute('data-ticker');
+            if (ticker && typeof window.focusNetworkNode === 'function') {
+                window.focusNetworkNode(ticker);
+            }
+        }
+        panel.querySelectorAll('.ngs-ddp-darling').forEach(function(el) {
+            el.addEventListener('click', function() { focusDarling(el); });
+            el.addEventListener('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    focusDarling(el);
                 }
             });
         });
