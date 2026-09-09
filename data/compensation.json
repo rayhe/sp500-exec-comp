@@ -124,20 +124,20 @@
   "title_coverage": "6764/6764",
   "data_quality": {
    "verified": 6412,
-   "def14a_verified_20260907": 70,
-   "def14a_verified_20260908": 13,
-   "verified_total": 6528,
    "recomputed": 44,
-   "incomplete_components": 77,
-   "bloated_component": 52,
+   "incomplete_components": 65,
+   "bloated_component": 39,
    "component_mismatch": 1,
-   "last_audit": "2026-09-07",
+   "last_audit": "2026-09-09",
    "rounding": 62,
    "computed": 0,
    "recomputed_implausible_total": 0,
    "filing_only": 0,
    "minor_gap": 0,
-   "def14a_verified_20260909": 33
+   "def14a_verified_20260909": 58,
+   "verified_total": 6553,
+   "def14a_verified_20260907": 70,
+   "def14a_verified_20260908": 13
   },
   "median_ceo_pay": 17846881.0,
   "mean_ceo_pay": 338561872.688,
@@ -175,14 +175,14 @@
    "verified": 6412,
    "def14a_verified_20260907": 70,
    "def14a_verified_20260908": 13,
-   "verified_total": 6528,
+   "verified_total": 6553,
    "recomputed": 44,
-   "incomplete_components": 77,
-   "bloated_component": 52,
+   "incomplete_components": 65,
+   "bloated_component": 39,
    "rounding": 62,
    "recomputed_implausible_total": 0,
    "component_mismatch": 1,
-   "def14a_verified_20260909": 33
+   "def14a_verified_20260909": 58
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
@@ -192,7 +192,7 @@
   "total_executives": 6764,
   "board_independence_count": 500,
   "board_independence_full": 500,
-  "last_audit": "2026-09-07",
+  "last_audit": "2026-09-09",
   "companies_with_pay_ratio": 500,
   "enriched_count": 500,
   "multiyear_fill_20260902_1400": {
@@ -9009,7 +9009,7 @@
      "pension_nqdc": 0,
      "all_other": 292612,
      "total": 24589465,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 24589465,
      "_original_row": {
@@ -13485,7 +13485,7 @@
      "all_other": 729446,
      "total": 28144215,
      "_original_total": 8000000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
     },
     {
@@ -13501,7 +13501,7 @@
      "all_other": 824954,
      "total": 28378031,
      "_original_total": 8000000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
     },
     {
@@ -13531,7 +13531,7 @@
      "all_other": 199260,
      "total": 9494210,
      "_original_total": 2250000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
     },
     {
@@ -13547,7 +13547,7 @@
      "all_other": 183298,
      "total": 9463539,
      "_original_total": 2250000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Our parse had the $28M/$9.5M SCT totals themselves sitting in all_other. No Bonus column exists. Stock Awards cell holds two line-items (earned RSUs + target PSUs) that must be summed; values here are the summed totals."
     },
     {
@@ -18293,7 +18293,7 @@
      "non_equity_incentive": 0,
      "all_other": 3844259,
      "total": 19231325,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 19231325,
      "_original_row": {
@@ -19820,7 +19820,7 @@
      "total": 37989685,
      "title": "Chairman",
      "_original_total": 601817,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 23988586,
      "all_other": 601817,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19836,7 +19836,7 @@
      "total": 25143682,
      "title": "Chairman",
      "_original_total": 432161,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 14827724,
      "all_other": 432161,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19852,7 +19852,7 @@
      "total": 20398426,
      "title": "Chairman",
      "_original_total": 541874,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 11483809,
      "all_other": 541874,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19900,7 +19900,7 @@
      "total": 11691289,
      "title": "Senior Vice President and Chief Financial Officer",
      "_original_total": 203369,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 6704515,
      "all_other": 203369,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19916,7 +19916,7 @@
      "total": 17494094,
      "title": "Senior Vice President, Consulting",
      "_original_total": 188523,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 10794920,
      "all_other": 188523,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19932,7 +19932,7 @@
      "total": 12283398,
      "title": "Senior Vice President, Consulting",
      "_original_total": 168516,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 7043235,
      "all_other": 168516,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19948,7 +19948,7 @@
      "total": 10334314,
      "title": "Senior Vice President, Consulting",
      "_original_total": 241228,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 5843417,
      "all_other": 241228,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19964,7 +19964,7 @@
      "total": 16235775,
      "title": "Vice Chairman",
      "_original_total": 132470,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 9835230,
      "all_other": 132470,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19980,7 +19980,7 @@
      "total": 10811521,
      "title": "Vice Chairman",
      "_original_total": 154388,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 5931188,
      "all_other": 154388,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column."
@@ -19996,7 +19996,7 @@
      "total": 9537090,
      "title": "Vice Chairman",
      "_original_total": 196565,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 4897686,
      "all_other": 196565,
      "_parse_note": "Column-shift error in our data: stock awards had landed in option_awards, options in non_equity_incentive, NEIP in bonus, total grabbed from the All Other column. Change in pension value printed N/A (not eligible) -> null."
@@ -24340,11 +24340,15 @@
      "salary": 1560577,
      "stock_awards": 13830054,
      "non_equity_incentive": 3665025,
-     "pension_nqdc": 19262046,
+     "pension_nqdc": 0,
      "all_other": 206390,
      "total": 28223562,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $10,300,530 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 19,262,046 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 8,961,516 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $10,300,530; filing components now foot exactly to filing total 28,223,562; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 8961516,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Christopher C. Womack",
@@ -24353,11 +24357,15 @@
      "salary": 1490577,
      "stock_awards": 11725994,
      "non_equity_incentive": 3334500,
-     "pension_nqdc": 16742438,
+     "pension_nqdc": 0,
      "all_other": 191367,
      "total": 23885173,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $9,599,703 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 16,742,438 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 7,142,735 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $9,599,703; filing components now foot exactly to filing total 23,885,173; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 7142735,
+     "_accession": "0000092122-25-000036"
     },
     {
      "name": "Christopher C. Womack",
@@ -24366,11 +24374,15 @@
      "salary": 1245324,
      "stock_awards": 10009683,
      "non_equity_incentive": 2802760,
-     "pension_nqdc": 14167824,
+     "pension_nqdc": 0,
      "all_other": 110057,
      "total": 23520387,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,815,261 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 14,167,824 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 9,352,563 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,815,261; filing components now foot exactly to filing total 23,520,387; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 9352563,
+     "_accession": "0001308179-24-000515"
     },
     {
      "name": "David P. Poroch",
@@ -24379,11 +24391,15 @@
      "salary": 611411,
      "stock_awards": 1201257,
      "non_equity_incentive": 938606,
-     "pension_nqdc": 2800691,
+     "pension_nqdc": 0,
      "all_other": 49417,
      "total": 4018210,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,583,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 2,800,691 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,217,519 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $1,583,172; filing components now foot exactly to filing total 4,018,210; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 1217519,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Stanley W. Connally, Jr",
@@ -24392,11 +24408,15 @@
      "salary": 860451,
      "stock_awards": 2381706,
      "non_equity_incentive": 1401570,
-     "pension_nqdc": 4708934,
+     "pension_nqdc": 0,
      "all_other": 65207,
      "total": 6299709,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,118,159 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,708,934 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,590,775 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,118,159; filing components now foot exactly to filing total 6,299,709; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 1590775,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Stanley W. Connally, Jr",
@@ -24405,11 +24425,15 @@
      "salary": 812981,
      "stock_awards": 2181230,
      "non_equity_incentive": 1192369,
-     "pension_nqdc": 4244822,
+     "pension_nqdc": 0,
      "all_other": 58242,
      "total": 4577490,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,912,154 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,244,822 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 332,668 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,912,154; filing components now foot exactly to filing total 4,577,490; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 332668,
+     "_accession": "0000092122-25-000036"
     },
     {
      "name": "Kimberly S. Greene",
@@ -24418,11 +24442,15 @@
      "salary": 979732,
      "stock_awards": 2806852,
      "non_equity_incentive": 1808040,
-     "pension_nqdc": 5680055,
+     "pension_nqdc": 0,
      "all_other": 85431,
      "total": 7212073,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,148,037 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 5,680,055 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,532,018 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,148,037; filing components now foot exactly to filing total 7,212,073; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 1532018,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Kimberly S. Greene",
@@ -24431,11 +24459,15 @@
      "salary": 936524,
      "stock_awards": 2763957,
      "non_equity_incentive": 1691558,
-     "pension_nqdc": 5455924,
+     "pension_nqdc": 0,
      "all_other": 63885,
      "total": 6172564,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,739,284 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 5,455,924 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 716,640 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,739,284; filing components now foot exactly to filing total 6,172,564; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 716640,
+     "_accession": "0000092122-25-000036"
     },
     {
      "name": "Kimberly S. Greene",
@@ -24444,11 +24476,15 @@
      "salary": 890969,
      "stock_awards": 2568457,
      "non_equity_incentive": 1459677,
-     "pension_nqdc": 4976813,
+     "pension_nqdc": 0,
      "all_other": 57710,
      "total": 6053310,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,900,316 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,976,813 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,076,497 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,900,316; filing components now foot exactly to filing total 6,053,310; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 1076497,
+     "_accession": "0001308179-24-000515"
     },
     {
      "name": "J. Jeffrey Peoples",
@@ -24457,11 +24493,15 @@
      "salary": 851212,
      "stock_awards": 2454568,
      "non_equity_incentive": 1537920,
-     "pension_nqdc": 4915365,
+     "pension_nqdc": 0,
      "all_other": 71665,
      "total": 8720194,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,110,536 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,915,365 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 3,804,829 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $1,110,536; filing components now foot exactly to filing total 8,720,194; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 3804829,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Daniel S. Tucker",
@@ -24470,11 +24510,15 @@
      "salary": 747440,
      "stock_awards": 2488616,
      "non_equity_incentive": 1040081,
-     "pension_nqdc": 4397801,
+     "pension_nqdc": 0,
      "all_other": 121664,
      "total": 7801359,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $994,243 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,397,801 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 3,403,558 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $994,243; filing components now foot exactly to filing total 7,801,359; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 3403558,
+     "_accession": "0000092122-26-000028"
     },
     {
      "name": "Daniel S. Tucker",
@@ -24483,11 +24527,15 @@
      "salary": 829267,
      "stock_awards": 2451630,
      "non_equity_incentive": 1253960,
-     "pension_nqdc": 4586261,
+     "pension_nqdc": 0,
      "all_other": 51404,
      "total": 5208294,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,964,228 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,586,261 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 622,033 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,964,228; filing components now foot exactly to filing total 5,208,294; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 622033,
+     "_accession": "0000092122-25-000036"
     },
     {
      "name": "Daniel S. Tucker",
@@ -24496,11 +24544,15 @@
      "salary": 777767,
      "stock_awards": 2256706,
      "non_equity_incentive": 1058633,
-     "pension_nqdc": 4134363,
+     "pension_nqdc": 0,
      "all_other": 41257,
      "total": 5869882,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,398,844 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored pension_nqdc 4,134,363 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,735,519 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $2,398,844; filing components now foot exactly to filing total 5,869,882; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
+     "bonus": 0,
+     "option_awards": 0,
+     "pension_change": 1735519,
+     "_accession": "0001308179-24-000515"
     }
    ],
    "total_neo_compensation": 39843521,
@@ -28678,7 +28730,7 @@
      "all_other": 283392,
      "total": 23268171,
      "_original_total": 20373964,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28694,7 +28746,7 @@
      "all_other": 74418,
      "total": 9090636,
      "_original_total": 8250640,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28710,7 +28762,7 @@
      "all_other": 74748,
      "total": 8225746,
      "_original_total": 7597619,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28726,7 +28778,7 @@
      "all_other": 44083,
      "total": 3317182,
      "_original_total": 2727268,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28742,7 +28794,7 @@
      "all_other": 178953,
      "total": 8069724,
      "_original_total": 7631875,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28772,7 +28824,7 @@
      "all_other": 85380,
      "total": 5498436,
      "_original_total": 5196818,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28788,7 +28840,7 @@
      "all_other": 212501,
      "total": 6534285,
      "_original_total": 6252557,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28818,7 +28870,7 @@
      "all_other": 91977,
      "total": 5934830,
      "_original_total": 5662042,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28834,7 +28886,7 @@
      "all_other": 108443,
      "total": 6601667,
      "_original_total": 5472142,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     },
@@ -28878,7 +28930,7 @@
      "all_other": 228916,
      "total": 7420660,
      "_original_total": 6491684,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     }
@@ -30373,7 +30425,7 @@
      "all_other": 817320,
      "total": 22352785,
      "_original_total": 6200000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
     },
     {
@@ -30389,7 +30441,7 @@
      "all_other": 797603,
      "total": 19950306,
      "_original_total": 4410000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
     },
     {
@@ -30405,7 +30457,7 @@
      "all_other": 46117,
      "total": 9165417,
      "_original_total": 4500070,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
     },
     {
@@ -30465,7 +30517,7 @@
      "all_other": 23477,
      "total": 6485162,
      "_original_total": 3000176,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
     },
     {
@@ -30496,7 +30548,7 @@
      "all_other": 22343,
      "total": 5909100,
      "_original_total": 1400000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, total grabbed from a wrong column. PNC grants PSUs/RSUs only (no Option Awards column); stock_awards = filing's Total Stock Awards subtotal (Guild FY2023 includes $2,000,123 one-time Other award)."
     },
     {
@@ -32071,7 +32123,7 @@
      "total": 31109661,
      "title": "Chairman",
      "_original_total": 3181332,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 18448329,
      "non_equity_incentive": 6480000,
      "pension_nqdc": null,
@@ -32109,7 +32161,7 @@
      "total": 18292735,
      "title": "Chairman and CEO",
      "_original_total": 5842764,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 4549971,
      "non_equity_incentive": 5400000,
      "pension_nqdc": null,
@@ -32147,7 +32199,7 @@
      "total": 5225694,
      "title": "Executive Vice President and Chief Financial Officer",
      "_original_total": 170731,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1910963,
      "non_equity_incentive": 1944000,
      "pension_nqdc": null,
@@ -32185,7 +32237,7 @@
      "total": 6350695,
      "title": "General Counsel and Secretary",
      "_original_total": 227726,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 2365969,
      "non_equity_incentive": 2457000,
      "pension_nqdc": null,
@@ -42727,7 +42779,7 @@
      "pension_nqdc": 0,
      "all_other": 526983,
      "total": 6213513,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 6213513,
      "_original_row": {
@@ -42753,7 +42805,7 @@
      "pension_nqdc": 0,
      "all_other": 479749,
      "total": 5734020,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 5734020,
      "_original_row": {
@@ -42793,7 +42845,7 @@
      "pension_nqdc": 0,
      "all_other": 534358,
      "total": 5038171,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 5038171,
      "_original_row": {
@@ -42875,7 +42927,7 @@
      "pension_nqdc": 0,
      "all_other": 355096,
      "total": 4550251,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4550251,
      "_original_row": {
@@ -52686,7 +52738,7 @@
      "pension_nqdc": 571679,
      "all_other": 30414,
      "total": 2902287,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2902287,
      "_original_row": {
@@ -52781,7 +52833,7 @@
      "pension_nqdc": 920130,
      "all_other": 27189,
      "total": 3683610,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 3683610,
      "_original_row": {
@@ -53117,7 +53169,7 @@
      "pension_nqdc": 455,
      "all_other": 2395968,
      "total": 17449043,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 17449043,
      "_original_row": {
@@ -53143,7 +53195,7 @@
      "pension_nqdc": 36498,
      "all_other": 2932108,
      "total": 15496222,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 15496222,
      "_original_row": {
@@ -53183,7 +53235,7 @@
      "pension_nqdc": 11,
      "all_other": 889383,
      "total": 6736660,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 6736660,
      "_original_row": {
@@ -53209,7 +53261,7 @@
      "pension_nqdc": 984,
      "all_other": 1177179,
      "total": 5867278,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 5867278,
      "_original_row": {
@@ -53249,7 +53301,7 @@
      "pension_nqdc": 0,
      "all_other": 1183256,
      "total": 8107619,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 8107619,
      "_original_row": {
@@ -53275,7 +53327,7 @@
      "pension_nqdc": 27671,
      "all_other": 1725962,
      "total": 6689533,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 6689533,
      "_original_row": {
@@ -53899,34 +53951,46 @@
      "non_equity_incentive": 1852010,
      "pension_nqdc": 236700,
      "total": 17129140,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,653,113 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $3,653,113 short of filing total $17,129,140. parse dropped SAR Awards $3,311,861 and All Other Comp $341,251 entirely (BDX reports SARs in a separate column); also prior parse mislabeled components. Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 3311861,
+     "pension_change": 0,
+     "all_other": 341251,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Thomas E. Polen",
      "title": "Chief Executive Officerand President",
      "year": 2024,
-     "salary": 0,
-     "bonus": 9244553,
-     "stock_awards": 3993272,
-     "non_equity_incentive": 343669,
-     "pension_nqdc": 269760,
+     "salary": 1354813,
+     "bonus": 0,
+     "stock_awards": 9244553,
+     "non_equity_incentive": 2108539,
+     "pension_nqdc": 343669,
      "total": 17314606,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,463,352 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $3,463,352 short of filing total $17,314,606. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $3,993,272 and mislabeled non-equity incentive $2,108,539 as pension and pension $343,669 as all-other (all_other was missing $269,760). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 3993272,
+     "pension_change": 0,
+     "all_other": 269760,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Thomas E. Polen",
      "title": "Chief Executive Officerand President",
      "year": 2023,
-     "salary": 0,
-     "bonus": 9491982,
-     "stock_awards": 4044035,
-     "non_equity_incentive": 313046,
-     "pension_nqdc": 257125,
+     "salary": 1315625,
+     "bonus": 0,
+     "stock_awards": 9491982,
+     "non_equity_incentive": 1888125,
+     "pension_nqdc": 313046,
      "total": 17309938,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,203,750 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $3,203,750 short of filing total $17,309,938. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $4,044,035 and mislabeled non-equity incentive $1,888,125 as pension and pension $313,046 as all-other (all_other was missing $257,125). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 4044035,
+     "pension_change": 0,
+     "all_other": 257125,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Christopher J. DelOrefice",
@@ -53938,34 +54002,46 @@
      "non_equity_incentive": 722500,
      "pension_nqdc": 0,
      "total": 5877164,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,176,683 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,176,683 short of filing total $5,877,164. parse dropped SAR Awards $1,040,916 and All Other Comp $135,767 entirely (BDX reports SARs in a separate column); also prior parse mislabeled components. Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 1040916,
+     "pension_change": 0,
+     "all_other": 135767,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Christopher J. DelOrefice",
      "title": "Executive Vice Chief Financial Officer",
      "year": 2024,
-     "salary": 0,
-     "bonus": 2689582,
-     "stock_awards": 1161696,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 85576,
+     "salary": 785400,
+     "bonus": 0,
+     "stock_awards": 2689582,
+     "non_equity_incentive": 906400,
+     "pension_nqdc": 0,
      "total": 5628654,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,691,800 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,691,800 short of filing total $5,628,654. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $1,161,696 and mislabeled non-equity incentive $906,400 as pension and pension $0 as all-other (all_other was missing $85,576). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 1161696,
+     "pension_change": 0,
+     "all_other": 85576,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Christopher J. DelOrefice",
      "title": "Executive Vice Chief Financial Officer",
      "year": 2023,
-     "salary": 0,
-     "bonus": 2531331,
-     "stock_awards": 1078432,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 85455,
+     "salary": 736200,
+     "bonus": 0,
+     "stock_awards": 2531331,
+     "non_equity_incentive": 774972,
+     "pension_nqdc": 0,
      "total": 5206390,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,511,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,511,172 short of filing total $5,206,390. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $1,078,432 and mislabeled non-equity incentive $774,972 as pension and pension $0 as all-other (all_other was missing $85,455). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 1078432,
+     "pension_change": 0,
+     "all_other": 85455,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Richard E. Byrd",
@@ -53977,21 +54053,29 @@
      "non_equity_incentive": 592875,
      "pension_nqdc": 91833,
      "total": 3399056,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $530,567 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $530,567 short of filing total $3,399,056. parse dropped SAR Awards $473,139 and All Other Comp $57,429 entirely (BDX reports SARs in a separate column); also prior parse mislabeled components. Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 473139,
+     "pension_change": 0,
+     "all_other": 57429,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Richard E. Byrd",
      "title": "Executive Vice, President andPresident, InterventionalSegment",
      "year": 2024,
-     "salary": 0,
-     "bonus": 1176709,
-     "stock_awards": 508246,
-     "non_equity_incentive": 208723,
-     "pension_nqdc": 44835,
+     "salary": 681250,
+     "bonus": 0,
+     "stock_awards": 1176709,
+     "non_equity_incentive": 648900,
+     "pension_nqdc": 208723,
      "total": 3268663,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,330,150 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,330,150 short of filing total $3,268,663. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $508,246 and mislabeled non-equity incentive $648,900 as pension and pension $208,723 as all-other (all_other was missing $44,835). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 508246,
+     "pension_change": 0,
+     "all_other": 44835,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Michael C. Feld",
@@ -54003,8 +54087,12 @@
      "non_equity_incentive": 533588,
      "pension_nqdc": 0,
      "total": 4096356,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,146,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,146,172 short of filing total $4,096,356. parse dropped SAR Awards $544,118 and All Other Comp $602,054 entirely (BDX reports SARs in a separate column); also prior parse mislabeled components. Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 544118,
+     "pension_change": 0,
+     "all_other": 602054,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Michael D. Garrison",
@@ -54016,34 +54104,46 @@
      "non_equity_incentive": 533588,
      "pension_nqdc": 102800,
      "total": 3649040,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $602,306 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $602,306 short of filing total $3,649,040. parse dropped SAR Awards $544,118 and All Other Comp $58,188 entirely (BDX reports SARs in a separate column); also prior parse mislabeled components. Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 544118,
+     "pension_change": 0,
+     "all_other": 58188,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Michael D. Garrison",
      "title": "Executive Vice Presidentand President, MedicalEssentials and BioPharmaSystems Segments",
      "year": 2024,
-     "salary": 0,
-     "bonus": 1513105,
-     "stock_awards": 653450,
-     "non_equity_incentive": 122852,
-     "pension_nqdc": 45225,
+     "salary": 731250,
+     "bonus": 0,
+     "stock_awards": 1513105,
+     "non_equity_incentive": 556200,
+     "pension_nqdc": 122852,
      "total": 3622082,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,287,450 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,287,450 short of filing total $3,622,082. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $653,450 and mislabeled non-equity incentive $556,200 as pension and pension $122,852 as all-other (all_other was missing $45,225). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 653450,
+     "pension_change": 0,
+     "all_other": 45225,
+     "_accession": "000162828025057846"
     },
     {
      "name": "Michael D. Garrison",
      "title": "Executive Vice Presidentand President, MedicalEssentials and BioPharmaSystems Segments",
      "year": 2023,
-     "salary": 0,
-     "bonus": 1284490,
-     "stock_awards": 547135,
-     "non_equity_incentive": 93911,
-     "pension_nqdc": 454263,
+     "salary": 675000,
+     "bonus": 0,
+     "stock_awards": 1284490,
+     "non_equity_incentive": 599569,
+     "pension_nqdc": 93911,
      "total": 3654368,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,274,569 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "Stored comp sum was $1,274,569 short of filing total $3,654,368. column-shift parse error: salary was 0 and stock/SAR/pension columns were shifted left into bonus/stock_awards/non_equity_incentive; dropped SAR $547,135 and mislabeled non-equity incentive $599,569 as pension and pension $93,911 as all-other (all_other was missing $454,263). Re-extracted all 9 SCT columns from DEF 14A 000162828025057846; SAR mapped to option_awards, combined pension+NQDC column kept in pension_nqdc, components foot to filing total within $2.",
+     "option_awards": 547135,
+     "pension_change": 0,
+     "all_other": 454263,
+     "_accession": "000162828025057846"
     }
    ],
    "cik": "10795",
@@ -55180,7 +55280,7 @@
      "pension_nqdc": 0,
      "all_other": 83285,
      "total": 4074763,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4074763,
      "_original_row": {
@@ -55206,7 +55306,7 @@
      "pension_nqdc": 0,
      "all_other": 73748,
      "total": 2602432,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2602432,
      "_original_row": {
@@ -55245,7 +55345,7 @@
      "pension_nqdc": 5473,
      "all_other": 80199,
      "total": 3865171,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 3865171,
      "_original_row": {
@@ -55271,7 +55371,7 @@
      "pension_nqdc": 2940,
      "all_other": 66933,
      "total": 2398348,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2398348,
      "_original_row": {
@@ -55323,7 +55423,7 @@
      "pension_nqdc": 0,
      "all_other": 87919,
      "total": 3498204,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 3498204,
      "_original_row": {
@@ -55349,7 +55449,7 @@
      "pension_nqdc": 0,
      "all_other": 86635,
      "total": 2394452,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2394452,
      "_original_row": {
@@ -55827,7 +55927,7 @@
      "pension_nqdc": 0,
      "all_other": 207349,
      "total": 4205594,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4205594,
      "_original_row": {
@@ -55865,7 +55965,7 @@
      "pension_nqdc": 21132,
      "all_other": 149651,
      "total": 3283831,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 3283831,
      "_original_row": {
@@ -55891,7 +55991,7 @@
      "pension_nqdc": 99550,
      "all_other": 168151,
      "total": 2952667,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2952667,
      "_original_row": {
@@ -56134,7 +56234,7 @@
      "pension_nqdc": 76385,
      "all_other": 86811,
      "total": 4569642,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4569642,
      "_original_row": {
@@ -56172,7 +56272,7 @@
      "pension_nqdc": 21763,
      "all_other": 84602,
      "total": 4548136,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4548136,
      "_original_row": {
@@ -56199,7 +56299,7 @@
      "pension_nqdc": 20740,
      "all_other": 91436,
      "total": 4430295,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4430295,
      "_original_row": {
@@ -56236,7 +56336,7 @@
      "pension_nqdc": 32274,
      "all_other": 101743,
      "total": 4320879,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4320879,
      "_original_row": {
@@ -56263,7 +56363,7 @@
      "pension_nqdc": 34149,
      "all_other": 104545,
      "total": 4028240,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4028240,
      "_original_row": {
@@ -56580,7 +56680,7 @@
      "pension_nqdc": 240561,
      "total": 16966442,
      "_original_total": 2950000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "stock_awards": 10159968,
      "non_equity_incentive": 2950000,
@@ -56596,7 +56696,7 @@
      "pension_nqdc": 366643,
      "total": 14387659,
      "_original_total": 2000000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "stock_awards": 8799948,
      "non_equity_incentive": 2000000,
@@ -56636,7 +56736,7 @@
      "pension_nqdc": 167936,
      "total": 3173226,
      "_original_total": 607326,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "salary": 570000,
      "bonus": null,
      "non_equity_incentive": 607326,
@@ -56652,7 +56752,7 @@
      "pension_nqdc": 80693,
      "total": 2702236,
      "_original_total": 675000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "stock_awards": 1073309,
      "non_equity_incentive": 675000,
@@ -56690,7 +56790,7 @@
      "pension_nqdc": null,
      "total": 11405806,
      "_original_total": 2091000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "stock_awards": 6150316,
      "non_equity_incentive": 2091000,
@@ -56706,7 +56806,7 @@
      "pension_nqdc": null,
      "total": 4057301,
      "_original_total": 1114300,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "bonus": null,
      "stock_awards": 1800036,
      "non_equity_incentive": 1114300,
@@ -66589,7 +66689,7 @@
      "all_other": 6519,
      "total": 22510196,
      "_original_total": 1721875,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
     },
     {
@@ -66605,7 +66705,7 @@
      "all_other": 16559,
      "total": 15362827,
      "_original_total": 1009375,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
     },
     {
@@ -66637,7 +66737,7 @@
      "all_other": 6000,
      "total": 8314573,
      "_original_total": 870000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
     },
     {
@@ -66683,7 +66783,7 @@
      "all_other": 11000,
      "total": 6626631,
      "_original_total": 614800,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Triple-sub-column Stock Awards header (Annual / VCP II / Total) broke the original parser; stock_awards==all_other double-count confirmed. Real All Other values are tiny; no Option Awards or Pension columns exist. stock_awards = Total Stock Awards sub-column."
     },
     {
@@ -67937,7 +68037,7 @@
      "all_other": 102514,
      "total": 19989971,
      "_original_total": 14131247,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -67953,7 +68053,7 @@
      "all_other": 102905,
      "total": 14984213,
      "_original_total": 11982676,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -67969,7 +68069,7 @@
      "all_other": 79603,
      "total": 16176871,
      "_original_total": 10348466,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -68013,7 +68113,7 @@
      "all_other": 52962,
      "total": 6472909,
      "_original_total": 4649030,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -68029,7 +68129,7 @@
      "all_other": 54131,
      "total": 5341575,
      "_original_total": 4274071,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -68045,7 +68145,7 @@
      "all_other": 48537,
      "total": 4893992,
      "_original_total": 3235297,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "option_awards": null,
      "_parse_note": "Filing prints SEC Total WITH Change in Pension Value; our original parse took the 'SEC Total Without Change in Pension Value' supplemental column as the total and dropped pension entirely. No Option Awards column exists in this SCT."
     },
@@ -70788,7 +70888,7 @@
      "total": 14368498,
      "title": "Chairman and Chief Executive Officer",
      "_original_total": 385761,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 7880872,
      "all_other": 385761,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
@@ -70828,7 +70928,7 @@
      "total": 3463336,
      "title": "Chairman and Chief Executive Officer",
      "_original_total": 283879,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1576174,
      "all_other": 283879,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
@@ -70908,7 +71008,7 @@
      "total": 3434139,
      "title": "Executive Vice President",
      "_original_total": 144051,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1576174,
      "all_other": 144051,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
@@ -70947,7 +71047,7 @@
      "total": 3315087,
      "title": "Chief Commercial Officer",
      "_original_total": 115065,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1576174,
      "all_other": 115065,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column."
@@ -77241,7 +77341,7 @@
      "all_other": 166843,
      "total": 12904625,
      "_original_total": 6510494,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77257,7 +77357,7 @@
      "all_other": 189912,
      "total": 6278835,
      "_original_total": 5988985,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77287,7 +77387,7 @@
      "all_other": 102508,
      "total": 3307146,
      "_original_total": 1810170,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77303,7 +77403,7 @@
      "all_other": 204776,
      "total": 2320822,
      "_original_total": 1485595,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77333,7 +77433,7 @@
      "all_other": 54191,
      "total": 3535701,
      "_original_total": 2117090,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77349,7 +77449,7 @@
      "all_other": 39987,
      "total": 1886514,
      "_original_total": 1744832,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77379,7 +77479,7 @@
      "all_other": 37143,
      "total": 2463414,
      "_original_total": 1599183,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used)."
     },
     {
@@ -77395,7 +77495,7 @@
      "all_other": 38583,
      "total": 1913109,
      "_original_total": 1810469,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "_parse_note": "Column-shift error: stock awards had landed in bonus, NEIP in stock_awards, pension in non_equity_incentive, all_other in pension, and total grabbed from a wrong column. Dominion SCT has blank Bonus cells and NO Option Awards column (no options granted); filing_total is the SEC Total column (non-SEC Realized Pay column not used). Name variant 'Ed Baine' does not appear in the filing; the FY2023 row belongs to the same 'Edward H. Baine' SCT block."
     },
     {
@@ -86744,7 +86844,7 @@
      "total": 11440709,
      "title": "CEO ● Juliet S",
      "_original_total": 601536,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 7555373,
      "non_equity_incentive": 1983800,
      "all_other": 601536,
@@ -86784,7 +86884,7 @@
      "total": 6707427,
      "title": "Chief Executive Officer",
      "_original_total": 331114,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 4299113,
      "non_equity_incentive": 1177200,
      "all_other": 331114,
@@ -86836,7 +86936,7 @@
      "total": 3286368,
      "title": "Executive Vice President and Chief Financial Officer",
      "_original_total": 238636,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1741482,
      "non_equity_incentive": 681250,
      "all_other": 238636,
@@ -86887,7 +86987,7 @@
      "total": 3826971,
      "title": "Executive Vice President",
      "_original_total": 266703,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 2149518,
      "non_equity_incentive": 735750,
      "all_other": 266703,
@@ -89052,7 +89152,7 @@
      "pension_nqdc": 53671,
      "all_other": 500747,
      "total": 4964632,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4964632,
      "_original_row": {
@@ -89078,7 +89178,7 @@
      "pension_nqdc": 26767,
      "all_other": 474059,
      "total": 4508378,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 4508378,
      "_original_row": {
@@ -89118,7 +89218,7 @@
      "pension_nqdc": 0,
      "all_other": 438363,
      "total": 2700718,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2700718,
      "_original_row": {
@@ -89158,7 +89258,7 @@
      "pension_nqdc": 991,
      "all_other": 171772,
      "total": 2885017,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2885017,
      "_original_row": {
@@ -89184,7 +89284,7 @@
      "pension_nqdc": 7625,
      "all_other": 168789,
      "total": 2687484,
-     "_total_source": "DEF14A-verified 2026-09-09",
+     "_total_source": "def14a_verified_20260909",
      "_parse_note": "Column-shift rebuild from primary DEF 14A (2026-09-09): stored row had SCT columns misassigned (all_other carried the filing total); all components re-extracted and footed to filing total.",
      "_original_total": 2687484,
      "_original_row": {
@@ -102000,7 +102100,7 @@
      "total": 6946207,
      "title": "Chairman",
      "_original_total": 1669972,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 3228516,
      "option_awards": null,
      "pension_nqdc": null,
@@ -102036,7 +102136,7 @@
      "total": 1755998,
      "title": "Chairman",
      "_original_total": 275000,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 1048291,
      "option_awards": null,
      "pension_nqdc": null,
@@ -102072,7 +102172,7 @@
      "total": 8236749,
      "title": "President and Chief Executive Officer",
      "_original_total": 1457775,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 5697083,
      "option_awards": null,
      "pension_nqdc": null,
@@ -102108,7 +102208,7 @@
      "total": 3711485,
      "title": "Executive Vice President and Chief Financial Officer of Rollins",
      "_original_total": 678900,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 2268766,
      "option_awards": null,
      "pension_nqdc": null,
@@ -102144,7 +102244,7 @@
      "total": 1737004,
      "title": "General Counsel and Corporate Secretary",
      "_original_total": 387113,
-     "_total_source": "DEF14A-verified 2026-09-07",
+     "_total_source": "def14a_verified_20260907",
      "stock_awards": 761478,
      "option_awards": null,
      "pension_nqdc": null,
@@ -102852,7 +102952,7 @@
      "non_equity_incentive": 0,
      "all_other": 374794,
      "total": 8952500,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 3825395
     },
     {
@@ -102864,7 +102964,7 @@
      "non_equity_incentive": 0,
      "all_other": 308832,
      "total": 4098854,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 1340240
     },
     {
@@ -102876,7 +102976,7 @@
      "non_equity_incentive": 0,
      "all_other": 252760,
      "total": 3897321,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 940667
     },
     {
@@ -102888,7 +102988,7 @@
      "non_equity_incentive": 0,
      "all_other": 6012,
      "total": 54089,
-     "_total_source": "DEF14A-verified 2026-09-08"
+     "_total_source": "def14a_verified_20260908"
     },
     {
      "name": "Juan C. Andrade",
@@ -102899,7 +102999,7 @@
      "non_equity_incentive": 0,
      "all_other": 689079,
      "total": 7939305,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 3000113,
      "_original_total": 7250226,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102913,7 +103013,7 @@
      "non_equity_incentive": 0,
      "all_other": 656485,
      "total": 9909531,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 2376523,
      "_original_total": 9253046,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102927,7 +103027,7 @@
      "non_equity_incentive": 0,
      "all_other": 369563,
      "total": 6445543,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 2500200,
      "_original_total": 6075980,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102941,7 +103041,7 @@
      "non_equity_incentive": 0,
      "all_other": 387666,
      "total": 4236245,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 1370171,
      "_original_total": 3848579,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102955,7 +103055,7 @@
      "non_equity_incentive": 0,
      "all_other": 374403,
      "total": 4516888,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 1181570,
      "_original_total": 4142485,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102969,7 +103069,7 @@
      "non_equity_incentive": 0,
      "all_other": 172826,
      "total": 3696473,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 1438015,
      "pension_nqdc": 51650,
      "_original_total": 7392946,
@@ -102984,7 +103084,7 @@
      "non_equity_incentive": 0,
      "all_other": 233325,
      "total": 2953867,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 544271,
      "_original_total": 2720542,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -102998,7 +103098,7 @@
      "non_equity_incentive": 0,
      "all_other": 240006,
      "total": 2762784,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 777095,
      "_original_total": 2522778,
      "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
@@ -103012,7 +103112,7 @@
      "non_equity_incentive": 0,
      "all_other": 19025,
      "total": 2199794,
-     "_total_source": "DEF14A-verified 2026-09-08",
+     "_total_source": "def14a_verified_20260908",
      "bonus": 2100000
     }
    ],
