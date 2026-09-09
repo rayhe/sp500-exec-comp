@@ -127,11 +127,11 @@
    "def14a_verified_20260908": 13,
    "verified_total": 6495,
    "recomputed": 44,
-   "incomplete_components": 17,
-   "bloated_component": 6,
+   "incomplete_components": 77,
+   "bloated_component": 85,
    "component_mismatch": 1,
    "last_audit": "2026-09-07",
-   "rounding": 201,
+   "rounding": 62,
    "computed": 0,
    "recomputed_implausible_total": 0,
    "filing_only": 0,
@@ -175,9 +175,9 @@
    "def14a_verified_20260908": 13,
    "verified_total": 6495,
    "recomputed": 44,
-   "incomplete_components": 17,
-   "bloated_component": 6,
-   "rounding": 201,
+   "incomplete_components": 77,
+   "bloated_component": 85,
+   "rounding": 62,
    "recomputed_implausible_total": 0,
    "component_mismatch": 1
   },
@@ -4250,7 +4250,8 @@
      "pension_nqdc": 971726,
      "all_other": 91682,
      "total": 4573861,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,765,732 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Horacio E. Gutierrez",
@@ -7833,7 +7834,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 1706590,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $849,106 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Nicole Anasenes",
@@ -9004,7 +9006,8 @@
      "pension_nqdc": 292612,
      "all_other": 24589465,
      "total": 24589465,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $16,880,746 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Ernesto Torres Cant\u00fa",
@@ -13452,7 +13455,8 @@
      "pension_nqdc": 2186112,
      "all_other": 642356,
      "total": 30828468,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $9,500,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "James M Cracchiolo",
@@ -13497,7 +13501,8 @@
      "pension_nqdc": 1018877,
      "all_other": 185706,
      "total": 10079583,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $2,500,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Walter S Berman",
@@ -13542,7 +13547,8 @@
      "pension_nqdc": 533514,
      "all_other": 280697,
      "total": 8789211,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $2,150,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Joseph E Sweeney",
@@ -13555,7 +13561,8 @@
      "pension_nqdc": 544812,
      "all_other": 136121,
      "total": 6655933,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,500,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "William Davies",
@@ -13568,7 +13575,8 @@
      "pension_nqdc": 8200,
      "all_other": 35286,
      "total": 4318739,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $496,496 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "cik": "0000820027",
@@ -18271,7 +18279,8 @@
      "non_equity_incentive": 0,
      "all_other": 19231325,
      "total": 19231325,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $15,387,067 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Aneel Bhusri",
@@ -24307,7 +24316,8 @@
      "pension_nqdc": 19262046,
      "all_other": 206390,
      "total": 28223562,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $10,300,530 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Christopher C. Womack",
@@ -24319,7 +24329,8 @@
      "pension_nqdc": 16742438,
      "all_other": 191367,
      "total": 23885173,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $9,599,703 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Christopher C. Womack",
@@ -24331,7 +24342,8 @@
      "pension_nqdc": 14167824,
      "all_other": 110057,
      "total": 23520387,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,815,261 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "David P. Poroch",
@@ -24343,7 +24355,8 @@
      "pension_nqdc": 2800691,
      "all_other": 49417,
      "total": 4018210,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,583,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Stanley W. Connally, Jr",
@@ -24355,7 +24368,8 @@
      "pension_nqdc": 4708934,
      "all_other": 65207,
      "total": 6299709,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,118,159 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Stanley W. Connally, Jr",
@@ -24367,7 +24381,8 @@
      "pension_nqdc": 4244822,
      "all_other": 58242,
      "total": 4577490,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,912,154 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kimberly S. Greene",
@@ -24379,7 +24394,8 @@
      "pension_nqdc": 5680055,
      "all_other": 85431,
      "total": 7212073,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,148,037 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kimberly S. Greene",
@@ -24391,7 +24407,8 @@
      "pension_nqdc": 5455924,
      "all_other": 63885,
      "total": 6172564,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,739,284 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kimberly S. Greene",
@@ -24403,7 +24420,8 @@
      "pension_nqdc": 4976813,
      "all_other": 57710,
      "total": 6053310,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,900,316 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "J. Jeffrey Peoples",
@@ -24415,7 +24433,8 @@
      "pension_nqdc": 4915365,
      "all_other": 71665,
      "total": 8720194,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,110,536 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Daniel S. Tucker",
@@ -24427,7 +24446,8 @@
      "pension_nqdc": 4397801,
      "all_other": 121664,
      "total": 7801359,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $994,243 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Daniel S. Tucker",
@@ -24439,7 +24459,8 @@
      "pension_nqdc": 4586261,
      "all_other": 51404,
      "total": 5208294,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,964,228 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Daniel S. Tucker",
@@ -24451,7 +24472,8 @@
      "pension_nqdc": 4134363,
      "all_other": 41257,
      "total": 5869882,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,398,844 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "total_neo_compensation": 39843521,
@@ -25334,7 +25356,8 @@
      "salary": 750000,
      "bonus": 6410596,
      "total": 6410596,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $750,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "John Gibbons",
@@ -28599,7 +28622,8 @@
      "pension_nqdc": 24198660,
      "all_other": 959798,
      "total": 23173052,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $23,029,964 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert B. Ford",
@@ -28612,7 +28636,8 @@
      "pension_nqdc": 22777075,
      "all_other": 618998,
      "total": 22591322,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $21,620,035 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert B. Ford",
@@ -28705,7 +28730,8 @@
      "pension_nqdc": 6558461,
      "all_other": 130047,
      "total": 6444774,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $6,405,550 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Lisa D. Earnhardt",
@@ -28750,7 +28776,8 @@
      "pension_nqdc": 5789762,
      "all_other": 157015,
      "total": 5789762,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $5,558,418 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Daniel G. Salvadori",
@@ -28795,7 +28822,8 @@
      "pension_nqdc": 6995583,
      "all_other": 653224,
      "total": 6576450,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $6,234,877 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Hubert L. Allen",
@@ -28808,7 +28836,8 @@
      "pension_nqdc": 7981335,
      "all_other": 540170,
      "total": 7527867,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $7,190,466 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Hubert L. Allen",
@@ -30301,7 +30330,8 @@
      "pension_nqdc": 0,
      "all_other": 1332676,
      "total": 17500184,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $11,832,676 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "William S. Demchak",
@@ -30363,7 +30393,8 @@
      "pension_nqdc": 0,
      "all_other": 53367,
      "total": 2300000,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,048,004 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert Q. Reilly",
@@ -30377,7 +30408,8 @@
      "pension_nqdc": 0,
      "all_other": 45317,
      "total": 2187500,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,063,860 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Mark Wiedman",
@@ -30421,7 +30453,8 @@
      "pension_nqdc": 0,
      "all_other": 46181,
      "total": 2400000,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $322,810 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Deborah Guild",
@@ -30481,7 +30514,8 @@
      "pension_nqdc": 0,
      "all_other": 272939,
      "total": 5355213,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $972,939 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "E William Parsley, III",
@@ -37086,7 +37120,8 @@
      "non_equity_incentive": 0,
      "all_other": 0,
      "total": 9023201,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,693,778 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kenneth J. Fasola",
@@ -37098,7 +37133,8 @@
      "non_equity_incentive": 0,
      "all_other": 0,
      "total": 10616034,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $2,572,324 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Sarah M. London",
@@ -42664,7 +42700,8 @@
      "pension_nqdc": 526983,
      "all_other": 6213513,
      "total": 6213513,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $5,363,513 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Max K. Brod\u00e9n",
@@ -42678,7 +42715,8 @@
      "pension_nqdc": 479749,
      "all_other": 5734020,
      "total": 5734020,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,984,020 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Bradley E. Dyslin",
@@ -42706,7 +42744,8 @@
      "pension_nqdc": 534358,
      "all_other": 5038171,
      "total": 5038171,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,338,171 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Bradley E. Dyslin",
@@ -42776,7 +42815,8 @@
      "pension_nqdc": 355096,
      "all_other": 4550251,
      "total": 4550251,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,800,251 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Audrey Boone Tillman",
@@ -45861,7 +45901,8 @@
      "pension_change": 0,
      "all_other": 22500,
      "total": 2647462,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $825,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Andrew J. \u201cRandy\u201d Paine III",
@@ -45945,7 +45986,8 @@
      "pension_change": 0,
      "all_other": 22500,
      "total": 3132476,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $910,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Mo Ramani",
@@ -52407,7 +52449,8 @@
      "option_awards": 0,
      "pension_nqdc": 9000130,
      "total": 6000003,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,475,127 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "V. James Vena",
@@ -52461,7 +52504,8 @@
      "non_equity_incentive": 0,
      "all_other": 34712,
      "total": 4772428,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $681,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Jennifer L. Hamann",
@@ -52556,7 +52600,8 @@
      "non_equity_incentive": 0,
      "all_other": 23678,
      "total": 3794731,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $546,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kenny G. Rocker",
@@ -52570,7 +52615,8 @@
      "pension_nqdc": 30414,
      "all_other": 2902287,
      "total": 2902287,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,402,287 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Rahul Jalali",
@@ -52596,7 +52642,8 @@
      "non_equity_incentive": 0,
      "all_other": 50985,
      "total": 2543476,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $543,333 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Rahul Jalali",
@@ -52609,7 +52656,8 @@
      "non_equity_incentive": 0,
      "all_other": 49123,
      "total": 1924011,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $509,583 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Elizabeth F. Whited",
@@ -52636,7 +52684,8 @@
      "non_equity_incentive": 0,
      "all_other": 36061,
      "total": 6510188,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $841,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Elizabeth F. Whited",
@@ -52650,7 +52699,8 @@
      "pension_nqdc": 27189,
      "all_other": 3683610,
      "total": 3683610,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,039,255 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "cik": "100885",
@@ -52974,7 +53024,8 @@
      "pension_nqdc": 2395968,
      "all_other": 17449043,
      "total": 17449043,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $16,149,043 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Pat Gallagher",
@@ -52988,7 +53039,8 @@
      "pension_nqdc": 2932108,
      "all_other": 15496222,
      "total": 15496222,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $14,196,222 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Doug Howell",
@@ -53016,7 +53068,8 @@
      "pension_nqdc": 889383,
      "all_other": 6736660,
      "total": 6736660,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $5,786,660 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Doug Howell",
@@ -53030,7 +53083,8 @@
      "pension_nqdc": 1177179,
      "all_other": 5867278,
      "total": 5867278,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,917,278 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Tom Gallagher",
@@ -53058,7 +53112,8 @@
      "pension_nqdc": 1183256,
      "all_other": 8107619,
      "total": 8107619,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $6,982,620 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Tom Gallagher",
@@ -53072,7 +53127,8 @@
      "pension_nqdc": 1725962,
      "all_other": 6689533,
      "total": 6689533,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $5,689,533 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Patrick Gallagher",
@@ -53684,7 +53740,8 @@
      "non_equity_incentive": 1852010,
      "pension_nqdc": 236700,
      "total": 17129140,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,653,113 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Thomas E. Polen",
@@ -53696,7 +53753,8 @@
      "non_equity_incentive": 343669,
      "pension_nqdc": 269760,
      "total": 17314606,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,463,352 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Thomas E. Polen",
@@ -53708,7 +53766,8 @@
      "non_equity_incentive": 313046,
      "pension_nqdc": 257125,
      "total": 17309938,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,203,750 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Christopher J. DelOrefice",
@@ -53720,7 +53779,8 @@
      "non_equity_incentive": 722500,
      "pension_nqdc": 0,
      "total": 5877164,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,176,683 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Christopher J. DelOrefice",
@@ -53732,7 +53792,8 @@
      "non_equity_incentive": 0,
      "pension_nqdc": 85576,
      "total": 5628654,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,691,800 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Christopher J. DelOrefice",
@@ -53744,7 +53805,8 @@
      "non_equity_incentive": 0,
      "pension_nqdc": 85455,
      "total": 5206390,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,511,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Richard E. Byrd",
@@ -53756,7 +53818,8 @@
      "non_equity_incentive": 592875,
      "pension_nqdc": 91833,
      "total": 3399056,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $530,567 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Richard E. Byrd",
@@ -53768,7 +53831,8 @@
      "non_equity_incentive": 208723,
      "pension_nqdc": 44835,
      "total": 3268663,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,330,150 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael C. Feld",
@@ -53780,7 +53844,8 @@
      "non_equity_incentive": 533588,
      "pension_nqdc": 0,
      "total": 4096356,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,146,172 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael D. Garrison",
@@ -53792,7 +53857,8 @@
      "non_equity_incentive": 533588,
      "pension_nqdc": 102800,
      "total": 3649040,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $602,306 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael D. Garrison",
@@ -53804,7 +53870,8 @@
      "non_equity_incentive": 122852,
      "pension_nqdc": 45225,
      "total": 3622082,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,287,450 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael D. Garrison",
@@ -53816,7 +53883,8 @@
      "non_equity_incentive": 93911,
      "pension_nqdc": 454263,
      "total": 3654368,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,274,569 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "cik": "10795",
@@ -54419,7 +54487,8 @@
      "option_awards": 398450,
      "non_equity_incentive": 3024611,
      "total": 3024611,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,365,188 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert J. Polzer",
@@ -54444,7 +54513,8 @@
      "option_awards": 123934,
      "non_equity_incentive": 2973038,
      "total": 2973038,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,313,038 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert J. Polzer",
@@ -54456,7 +54526,8 @@
      "option_awards": 62539,
      "non_equity_incentive": 2440473,
      "total": 2440473,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,865,473 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Roxanne Lagano",
@@ -54481,7 +54552,8 @@
      "option_awards": 117268,
      "non_equity_incentive": 2615155,
      "total": 2615155,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,994,322 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "cik": "1555280",
@@ -54949,7 +55021,8 @@
      "pension_nqdc": 83285,
      "all_other": 4074763,
      "total": 4074763,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,299,259 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Enrique N. Mayor-Mora",
@@ -54962,7 +55035,8 @@
      "pension_nqdc": 73748,
      "all_other": 2602432,
      "total": 2602432,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,853,474 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Charles Joseph Wilson",
@@ -54988,7 +55062,8 @@
      "pension_nqdc": 80199,
      "all_other": 3865171,
      "total": 3865171,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,170,047 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Charles Joseph Wilson",
@@ -55001,7 +55076,8 @@
      "pension_nqdc": 66933,
      "all_other": 2398348,
      "total": 2398348,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,758,478 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Diane L. Cafritz",
@@ -55040,7 +55116,8 @@
      "pension_nqdc": 87919,
      "all_other": 3498204,
      "total": 3498204,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,872,757 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Shamim Mohammad",
@@ -55053,7 +55130,8 @@
      "pension_nqdc": 86635,
      "all_other": 2394452,
      "total": 2394452,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,790,415 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "William D. Nash",
@@ -55518,7 +55596,8 @@
      "pension_nqdc": 207349,
      "all_other": 4205594,
      "total": 4205594,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,620,979 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Tana K. Cashion",
@@ -55542,7 +55621,8 @@
      "pension_nqdc": 149651,
      "all_other": 3283831,
      "total": 3283831,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,818,600 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Tana K. Cashion",
@@ -55554,7 +55634,8 @@
      "pension_nqdc": 168151,
      "all_other": 2952667,
      "total": 2952667,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,505,744 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "John D. Raines",
@@ -55783,7 +55864,8 @@
      "pension_nqdc": 86811,
      "all_other": 4569642,
      "total": 4569642,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,807,334 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Torkel Rhenman",
@@ -55807,7 +55889,8 @@
      "pension_nqdc": 84602,
      "all_other": 4548136,
      "total": 4548136,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,748,136 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Torkel Rhenman",
@@ -55820,7 +55903,8 @@
      "pension_nqdc": 91436,
      "all_other": 4430295,
      "total": 4430295,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,632,020 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Jeffrey Kaplan",
@@ -55844,7 +55928,8 @@
      "pension_nqdc": 101743,
      "all_other": 4320879,
      "total": 4320879,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,559,362 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Jeffrey Kaplan",
@@ -55857,7 +55942,8 @@
      "pension_nqdc": 104545,
      "all_other": 4028240,
      "total": 4028240,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,294,240 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael McMurray",
@@ -56008,7 +56094,8 @@
      "stock_awards": 0,
      "all_other": 7600140,
      "total": 13675877,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $4,518,683 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael Balmuth",
@@ -56043,7 +56130,8 @@
      "stock_awards": 0,
      "all_other": 4200155,
      "total": 7901379,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $2,504,974 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael J. Hartshorn",
@@ -56053,7 +56141,8 @@
      "stock_awards": 0,
      "all_other": 4000132,
      "total": 8209261,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $3,041,629 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Karen Fleming",
@@ -56076,7 +56165,8 @@
      "stock_awards": 0,
      "all_other": 1500171,
      "total": 3381720,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,067,549 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Adam Orvos",
@@ -56086,7 +56176,8 @@
      "stock_awards": 0,
      "all_other": 2000121,
      "total": 4103872,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,309,063 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "cik": "745732",
@@ -56200,7 +56291,8 @@
      "option_awards": 1599972,
      "pension_nqdc": 399956,
      "total": 1350000,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,212,428 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Richard Steele",
@@ -56242,7 +56334,8 @@
      "option_awards": 239808,
      "pension_nqdc": 60021,
      "total": 500000,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $262,299 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael West",
@@ -56252,7 +56345,8 @@
      "non_equity_incentive": 2800074,
      "all_other": 700031,
      "total": 5799776,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,549,671 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael West",
@@ -56294,7 +56388,8 @@
      "non_equity_incentive": 2800074,
      "all_other": 700031,
      "total": 5420280,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,414,406 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Stephen Tulenko",
@@ -66791,7 +66886,8 @@
      "pension_nqdc": 0,
      "all_other": 6000,
      "total": 4353084,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $500,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Adam Karon",
@@ -66877,7 +66973,8 @@
      "pension_nqdc": 0,
      "all_other": 6000,
      "total": 4130849,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $480,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 5,
@@ -67852,7 +67949,8 @@
      "pension_nqdc": 688213,
      "total": 2962636,
      "title": "Senior Vice President & President, Kellanova Europe",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $569,737 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Shumit Kapoor",
@@ -67887,7 +67985,8 @@
      "pension_nqdc": 1167693,
      "total": 3862888,
      "title": "Vice Chairman",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $790,978 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Gary Pilnick",
@@ -68087,7 +68186,8 @@
      "pension_nqdc": 0,
      "all_other": 166625,
      "total": 4340453,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $2,060,632 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Julia A. Houston",
@@ -71580,7 +71680,8 @@
      "option_awards": 2414006,
      "all_other": 1739813,
      "title": "President and CEO, EIX",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,833,493 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Pedro J. Pizarro",
@@ -71593,7 +71694,8 @@
      "option_awards": 2327506,
      "all_other": 78913,
      "title": "President and CEO, EIX",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,273,266 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Pedro J. Pizarro",
@@ -71606,7 +71708,8 @@
      "option_awards": 2275001,
      "all_other": 29800,
      "title": "President and CEO, EIX",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,496,259 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Maria Rigatti",
@@ -71650,7 +71753,8 @@
      "option_awards": 510137,
      "all_other": 19800,
      "title": "EVP",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,126,459 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Chonda J. Nwamu",
@@ -71663,7 +71767,8 @@
      "option_awards": 616006,
      "all_other": 530940,
      "title": "EVP",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $892,778 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Steven D. Powell",
@@ -71676,7 +71781,8 @@
      "option_awards": 642819,
      "all_other": 1530232,
      "title": "President and CEO, SCE",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,480,316 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Steven D. Powell",
@@ -71689,7 +71795,8 @@
      "option_awards": 500510,
      "all_other": 71674,
      "title": "President and CEO, SCE",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $524,552 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Steven D. Powell",
@@ -71702,7 +71809,8 @@
      "option_awards": 464761,
      "all_other": 23225,
      "title": "President and CEO, SCE",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $818,479 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Jill C. Anderson",
@@ -71715,7 +71823,8 @@
      "option_awards": 269504,
      "all_other": 1420620,
      "title": "SVP, General Counsel and Chief Compliance Officer",
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,491,293 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 5,
@@ -80086,7 +80195,8 @@
      "all_other": 128839,
      "total": 3791626,
      "title": "CFO Pursuant to an offer letter dated as of August 26, 2021, Mr",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,599,704 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Julie Gebauer",
@@ -80118,7 +80228,8 @@
      "all_other": 211358,
      "total": 3389859,
      "title": "President, HWC Ms",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,499,548 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Lucy Clarke",
@@ -80152,7 +80263,8 @@
      "all_other": 71088,
      "total": 2826608,
      "title": "General Counsel Pursuant to an employment agreement dated as of February 25, 2015, Mr",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,171,133 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Matthew Furman",
@@ -80163,7 +80275,8 @@
      "all_other": 66199,
      "total": 2744039,
      "title": "General Counsel Pursuant to an employment agreement dated as of February 25, 2015, Mr",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,139,184 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Matthew Furman",
@@ -80174,7 +80287,8 @@
      "all_other": 112164,
      "total": 2530004,
      "title": "General Counsel Pursuant to an employment agreement dated as of February 25, 2015, Mr",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $884,903 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 5,
@@ -83408,7 +83522,8 @@
      "pension_nqdc": 31499,
      "all_other": 0,
      "total": 3782497,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $650,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Nick Daffan",
@@ -83450,7 +83565,8 @@
      "pension_nqdc": 27045,
      "all_other": 0,
      "total": 3268031,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $535,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Kathy Card Beckles",
@@ -83492,7 +83608,8 @@
      "pension_nqdc": 23734,
      "all_other": 0,
      "total": 2714784,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $505,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Sunita Holzer",
@@ -83534,7 +83651,8 @@
      "pension_nqdc": 24062,
      "all_other": 0,
      "total": 2600051,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $540,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 5,
@@ -83815,7 +83933,8 @@
      "all_other": 37867,
      "total": 11933534,
      "title": "Chair, President and CEO (former)",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,511,539 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Brian X. Tierney",
@@ -84334,7 +84453,8 @@
      "non_equity_incentive": 1034821,
      "pension_nqdc": 0,
      "total": 4384479,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $480,917 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Mr. Voskuil",
@@ -84392,7 +84512,8 @@
      "non_equity_incentive": 1034821,
      "pension_nqdc": 0,
      "total": 4327358,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $464,112 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Mr. Raup",
@@ -88598,7 +88719,8 @@
      "pension_nqdc": 500747,
      "all_other": 4964632,
      "total": 4964632,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,122,779 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Xia Liu",
@@ -88612,7 +88734,8 @@
      "pension_nqdc": 474059,
      "all_other": 4508378,
      "total": 4508378,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,705,152 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Michael W. Hooper",
@@ -88640,7 +88763,8 @@
      "pension_nqdc": 438363,
      "all_other": 2700718,
      "total": 2700718,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,174,946 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Margaret C. Kelsey",
@@ -88668,7 +88792,8 @@
      "pension_nqdc": 171772,
      "all_other": 2885017,
      "total": 2885017,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,244,352 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Margaret C. Kelsey",
@@ -88682,7 +88807,8 @@
      "pension_nqdc": 168789,
      "all_other": 2687484,
      "total": 2687484,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,076,213 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Robert M. Garvin",
@@ -95901,7 +96027,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 1063974,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $488,974 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Daniel Guglielmone",
@@ -95915,7 +96042,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 989990,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $264,990 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Dawn M. Becker",
@@ -101737,7 +101865,8 @@
      "pension_nqdc": 0,
      "all_other": 47823,
      "total": 3076648,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $862,500 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Barb M. Pak",
@@ -101779,7 +101908,8 @@
      "pension_nqdc": 0,
      "all_other": 35655,
      "total": 1684537,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $650,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Rylan K. Burns",
@@ -101849,7 +101979,8 @@
      "pension_nqdc": 0,
      "all_other": 44170,
      "total": 1288332,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $495,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 4,
@@ -103025,7 +103156,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 3000075,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $773,013 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "F. Philip Snow",
@@ -103039,7 +103171,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 2500089,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $746,231 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Helen L. Shan",
@@ -103067,7 +103200,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 875027,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $523,212 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Helen L. Shan",
@@ -103081,7 +103215,8 @@
      "pension_nqdc": 0,
      "all_other": 0,
      "total": 825072,
-     "_total_source": "rounding"
+     "_total_source": "bloated_component",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $498,226 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Goran Skoko",
@@ -105135,7 +105270,8 @@
      "pension_nqdc": 0,
      "all_other": 156600,
      "total": 2027044,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $600,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     }
    ],
    "neo_count": 5,
@@ -105540,7 +105676,8 @@
      "pension_nqdc": 0,
      "total": 3229307,
      "title": "Executive Vice President and Chief Strategy Officer",
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $410,633 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Raja Sundararajan",
@@ -108595,7 +108732,8 @@
      "pension_nqdc": 0,
      "all_other": 324094,
      "total": 602730,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $278,636 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Stephen Cohen",
@@ -111090,7 +111228,8 @@
      "pension_nqdc": 0,
      "all_other": 3223,
      "total": 3115507,
-     "_total_source": "rounding"
+     "_total_source": "incomplete_components",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $750,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
     },
     {
      "name": "Max H. Tunnicliff",
