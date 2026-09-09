@@ -27,6 +27,7 @@ LABEL_TO_KEY = {
     "verified": "verified",
     "DEF14A-verified 2026-09-07": "def14a_verified_20260907",
     "DEF14A-verified 2026-09-08": "def14a_verified_20260908",
+    "DEF14A-verified 2026-09-09": "def14a_verified_20260909",
     "recomputed": "recomputed",
     "rounding": "rounding",
     "incomplete_components": "incomplete_components",
@@ -93,11 +94,12 @@ def main():
                     f"({label})={src_counts.get(label, 0)}",
                     failures,
                 )
-        # verified_total convention: verified + both DEF14A buckets
+        # verified_total convention: verified + all DEF14A buckets
         want_vt = (
             src_counts.get("verified", 0)
             + src_counts.get("DEF14A-verified 2026-09-07", 0)
             + src_counts.get("DEF14A-verified 2026-09-08", 0)
+            + src_counts.get("DEF14A-verified 2026-09-09", 0)
         )
         if block.get("verified_total") != want_vt:
             fail(
