@@ -69,6 +69,7 @@ function initNetwork(peerData) {
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
     var communityMode = false;  // when true, nodes colored by Louvain community
     var gerThreshold = 0; // min GER score for node visibility (0 = show all)
+    var densityMinDegree = 0; // min in-degree (incoming peer references) for node visibility (0 = show all)
     var searchFocusedNode = null; // node focused by search — gets pulsing ring + neighbor highlight
     var searchFocusedTime = 0;   // timestamp when search focus was set (for pulse animation)
     var _hoveredCommunityId = null; // community id hovered in legend — highlights community nodes on graph
@@ -87,6 +88,16 @@ function initNetwork(peerData) {
 
     var nodeMap = {};
     nodes.forEach(function(n) { nodeMap[n.ticker] = n; });
+
+    // Density-filtered visible node set — rebuilt whenever densityMinDegree changes
+    var _densityVisible = new Set();
+    function _rebuildDensityVisible() {
+        _densityVisible = new Set();
+        nodes.forEach(function(n) {
+            if ((n.in_degree || 0) >= densityMinDegree) _densityVisible.add(n.ticker);
+        });
+    }
+    _rebuildDensityVisible();
 
     // Precompute adjacency for fast hover lookups
     var adjacency = {};
@@ -812,8 +823,14 @@ function initNetwork(peerData) {
     }
 
     function getFilteredEdges() {
-        if (currentFilter === 'all') return allEdges;
-        return allEdges.filter(function(e) { return e.group_type === currentFilter; });
+        var base = (currentFilter === 'all') ? allEdges : allEdges.filter(function(e) { return e.group_type === currentFilter; });
+        if (densityMinDegree <= 0) return base;
+        // Density filter — drop edges touching companies below the min peer-reference threshold
+        return base.filter(function(e) {
+            var s = (e.source && typeof e.source === 'object') ? e.source.ticker : e.source;
+            var t = (e.target && typeof e.target === 'object') ? e.target.ticker : e.target;
+            return _densityVisible.has(s) && _densityVisible.has(t);
+        });
     }
 
     // Quadtree for fast mouse hit detection
@@ -834,12 +851,14 @@ function initNetwork(peerData) {
         quadtree.visit(function(quad, x0, y0, x1, y1) {
             if (quad.data) {
                 var d = quad.data;
-                var r = getRadius(d) / transform.k + 4;
-                var dx = px - d.x, dy = py - d.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < r && dist < closestDist) {
-                    closest = d;
-                    closestDist = dist;
+                if (_densityVisible.has(d.ticker)) {
+                    var r = getRadius(d) / transform.k + 4;
+                    var dx = px - d.x, dy = py - d.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < r && dist < closestDist) {
+                        closest = d;
+                        closestDist = dist;
+                    }
                 }
             }
             // Prune: skip quadrant if too far
@@ -1322,6 +1341,7 @@ function initNetwork(peerData) {
 
         // Nodes
         nodes.forEach(function(d) {
+            if (!_densityVisible.has(d.ticker)) return; // density filter — skip decluttered nodes
             var r = getRadius(d);
             var color = getNodeColor(d.ticker, d.sector);
             var alpha = 0.85;
@@ -1457,6 +1477,7 @@ function initNetwork(peerData) {
                 // Compute sector centroids from current node positions
                 var _cSums = {};
                 nodes.forEach(function(n) {
+                    if (!_densityVisible.has(n.ticker)) return;
                     if (!n.sector) return;
                     // When filtering by sector, only compute centroid for the active sector
                     if (_showFilteredSectorLabel && n.sector !== activeLegendSector) return;
@@ -1516,6 +1537,7 @@ function initNetwork(peerData) {
                 // Compute centroids for each community
                 var _commSums = {};
                 nodes.forEach(function(n) {
+                    if (!_densityVisible.has(n.ticker)) return;
                     var cid = communityOf[n.ticker];
                     if (cid == null) return;
                     if (!_commSums[cid]) _commSums[cid] = { x: 0, y: 0, c: 0 };
@@ -3063,6 +3085,11 @@ function initNetwork(peerData) {
     }
 
     function selectSearchNode(node) {
+        // If the density filter hides this node, clear it so the focused company becomes visible
+        if (densityMinDegree > 0 && !_densityVisible.has(node.ticker) && typeof _setDensity === 'function') {
+            _setDensity(0);
+            if (typeof announce === 'function') announce('Density filter cleared to show ' + node.ticker);
+        }
         searchInput.value = node.ticker + ' — ' + node.name;
         searchResults.classList.remove('visible');
 
@@ -3501,6 +3528,54 @@ function initNetwork(peerData) {
                     announce('Network filtered to ' + count + ' companies with GER score ' + gerThreshold + ' or above');
                 } else {
                     announce('Network filter cleared — showing all companies');
+                }
+            }
+        });
+    }
+
+    // Network density control — min in-degree slider: declutter the graph to its most-referenced core
+    var densitySlider = document.getElementById('density-slider');
+    var densityValueEl = document.getElementById('density-value');
+    var densityCountEl = document.getElementById('density-count');
+
+    function _updateDensityUI() {
+        if (densityValueEl) densityValueEl.textContent = densityMinDegree;
+        if (densityCountEl) {
+            densityCountEl.textContent = densityMinDegree === 0 ? '' : '(' + _densityVisible.size + ' of ' + nodes.length + ')';
+        }
+    }
+
+    function _applyDensity() {
+        _rebuildDensityVisible();
+        _updateDensityUI();
+        // Clear hover/focus state if the focused node is now filtered out
+        if (hoveredNode && !_densityVisible.has(hoveredNode.ticker)) {
+            hoveredNode = null;
+            if (typeof hideTooltip === 'function') hideTooltip();
+        }
+        if (searchFocusedNode && !_densityVisible.has(searchFocusedNode.ticker)) {
+            searchFocusedNode = null;
+        }
+        draw();
+    }
+
+    function _setDensity(v) {
+        densityMinDegree = v;
+        if (densitySlider) densitySlider.value = v;
+        _applyDensity();
+    }
+
+    if (densitySlider) {
+        densitySlider.addEventListener('input', function() {
+            densityMinDegree = parseInt(this.value, 10) || 0;
+            _applyDensity();
+        });
+        densitySlider.addEventListener('change', function() {
+            if (typeof announce === 'function') {
+                if (densityMinDegree > 0) {
+                    announce('Graph density reduced — showing ' + _densityVisible.size + ' of ' + nodes.length + ' companies with at least ' + densityMinDegree + ' peer references');
+                } else {
+                    announce('Density filter cleared — showing all ' + nodes.length + ' companies');
                 }
             }
         });

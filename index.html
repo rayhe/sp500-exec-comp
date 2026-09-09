@@ -126,6 +126,12 @@
             <button class="control-btn active" data-filter="all">All Peers</button>
             <button class="control-btn" data-filter="primary">Primary Only</button>
             <button class="control-btn" data-filter="secondary">Secondary Only</button>
+            <div class="density-control" id="density-control" title="Declutter the graph: show only companies referenced as a peer by at least N others">
+                <label for="density-slider">Min refs</label>
+                <input type="range" class="density-slider" id="density-slider" min="0" max="25" value="0" step="1" aria-label="Minimum incoming peer references to display a company">
+                <span class="density-value" id="density-value">0</span>
+                <span class="density-count" id="density-count"></span>
+            </div>
             <div class="network-overflow-wrapper">
                 <button class="control-btn overflow-toggle" id="network-overflow-toggle" aria-expanded="false" aria-controls="network-overflow-menu" title="More network view options">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>

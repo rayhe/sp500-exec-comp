@@ -11429,6 +11429,42 @@ body.light-mode .cross-sector-pair-select:focus {
     color: var(--text-muted);
 }
 
+/* Network density control — min peer-reference slider in the graph control row */
+.density-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg-secondary);
+    white-space: nowrap;
+}
+
+.density-control label {
+    font-weight: 500;
+}
+
+.density-slider {
+    width: 100px;
+    accent-color: #00b4d8;
+    cursor: pointer;
+}
+
+.density-value {
+    font-weight: 700;
+    min-width: 18px;
+    text-align: right;
+    color: var(--text-main);
+}
+
+.density-count {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
 /* === Community Detection Legend === */
 .community-toggle.active {
     background: rgba(191,239,69,0.15);
