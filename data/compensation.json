@@ -29,7 +29,8 @@
       "DEF 14A column-shift rebuild 2026-09-09: 33 rows (AJG/KMX/LYB/WEC/DVN/AFL/UNP/C/WDAY) had SCT columns misassigned with all_other carrying the filing total; all components re-extracted from the primary DEF 14A and footed to the filing-printed total (stored totals were already correct). New audit label 'DEF14A-verified 2026-09-09'.",
       "DEF 14A anomaly repair 2026-09-09 22:00 PT: reconciled 8 companies\u2019 full SCTs against primary filings (FDS, MCO, ZTS column-shift rebuilds; JPM Pinto 2025 shift; BLK Fink/Kapito 2024 shifts; BA Ortberg 2024 / Malave 2025 shifts; GE Ghai 2024 missing all_other; DIS Lansberry 2024 missing stock/options, Gutierrez/Schake 2022 rebuilds). Added 10 missing NEO rows present in the same SCTs (FDS McLoughlin 2025, JPM Erdoes 2025, BLK Small 2024/2023, Kushel 2025/2024/2023, GE Culp 2025/2024/2023). Filing totals retained verbatim; non-footing rows labeled per taxonomy (FDS Shan 2023: components over printed total by $30,936, filing-side anomaly; FDS Snow 2025 / Shan 2025 / Skoko 2025, MCO Steele 2024 / Tulenko 2025: $1 rounding). Company FY NEO sums recomputed for the 8 companies; metadata buckets rebuilt by recount over 6774 records.",
       "CEO-anchor re-verification 2026-09-10 02:00 PT: 30 companies had stored total_compensation not matching the anchor-year CEO's verified SCT row (19 stale totals, D doubling, WELL/STE/LKQ stale total + paired ratio, 8 CEO-transition judgments). All corrected to the anchor-year (or newest verified, where the named CEO has no anchor-year row) SCT total; WELL/STE/LKQ ratios recomputed from corrected totals. TMUS ceo_name corrected Ulf Ewaldsson -> Srinivasan Gopalan per 2026 DEF 14A (CEO since 2025-11-01; Ewaldsson terminated 2025-12-01); ratio -> filed FY2025 499:1, median $76,141. LH rebuilt: 9 corrupt rows replaced with 14 DEF 14A rows (2026 proxy SCT for Schechter/Wang/Bailey/Caveney/Schroeder + 2025 proxy SCT for Eisenberg/Graham 2024); total 5,129,781 -> 19,327,354 (pairs with filed ratio 337). WSM 2023/2024 'Director' rows -> Laura Alber. PEG 'Chair of the Board' rows -> Ralph A. LaRossa; phantom 2023 LaRossa row (10,925,666) deleted. Record count 6774 -> 6778.",
-      "Bloated-bucket elimination 2026-09-10 06:00 PT: re-verified 25 NEO rows against primary DEF 14A SCTs (GEN FY2026 VCP-II sub-column misalignment, UNP 2026/2025 column shifts, K continuation-row misalignment, UNP Jalali 2025 missing all_other, K Pilnick 2021/2023 missing components). 23 rows corrected and labeled def14a_verified_20260910; SBUX Kelly 2024 (+$141,986) and FDS Shan 2023 (+$30,936) confirmed as genuine filing-side arithmetic inconsistencies (values match filing verbatim) and relabeled component_mismatch. Company FY NEO sums recomputed for GEN ($32,919,447 -> $25,589,710) and K ($40,959,207 -> $41,112,104). bloated_component bucket now 0. Fresh recount over 6778 records: verified_total=6638 (97.9%)."
+      "Bloated-bucket elimination 2026-09-10 06:00 PT: re-verified 25 NEO rows against primary DEF 14A SCTs (GEN FY2026 VCP-II sub-column misalignment, UNP 2026/2025 column shifts, K continuation-row misalignment, UNP Jalali 2025 missing all_other, K Pilnick 2021/2023 missing components). 23 rows corrected and labeled def14a_verified_20260910; SBUX Kelly 2024 (+$141,986) and FDS Shan 2023 (+$30,936) confirmed as genuine filing-side arithmetic inconsistencies (values match filing verbatim) and relabeled component_mismatch. Company FY NEO sums recomputed for GEN ($32,919,447 -> $25,589,710) and K ($40,959,207 -> $41,112,104). bloated_component bucket now 0. Fresh recount over 6778 records: verified_total=6638 (97.9%).",
+      "Rounding-bucket re-verification 2026-09-10 10:00 PT: the 6 largest-delta rounding rows (CDNS Cunningham 2024 +$20,000 / 2023 -$25,000, TSCO Lawton 2024 +$4,000, TSCO Mills 2024 -$500, RF Turner 2023 +$5,060, RF Keenan 2023 +$1,180) were re-verified against fresh primary DEF 14A SCTs; all components and totals match the filings verbatim, so the gaps are genuine filing-side arithmetic inconsistencies - relabeled component_mismatch (precedent: SBUX Kelly / FDS Shan). Filing totals retained verbatim. Buckets now: rounding 50, component_mismatch 10; verified_total unchanged 6682/6778 (98.58%)."
     ],
     "aggregate_stats": {
       "total_companies": 500,
@@ -127,21 +128,15 @@
     "title_coverage": "6778/6778",
     "data_quality": {
       "verified": 6307,
-      "def14a_verified_20260907": 64,
-      "def14a_verified_20260908": 13,
+      "component_mismatch": 10,
       "def14a_verified_20260909": 217,
+      "def14a_verified_20260910": 81,
+      "def14a_verified_20260907": 64,
+      "rounding": 50,
       "recomputed": 36,
-      "incomplete_components": 0,
-      "bloated_component": 0,
-      "rounding": 56,
-      "recomputed_implausible_total": 0,
-      "component_mismatch": 4,
-      "computed": 0,
-      "filing_only": 0,
-      "minor_gap": 0,
+      "def14a_verified_20260908": 13,
       "verified_total": 6682,
-      "last_audit": "2026-09-10",
-      "def14a_verified_20260910": 81
+      "last_audit": "2026-09-10"
     },
     "median_ceo_pay": 17759221.5,
     "mean_ceo_pay": 336923582.304,
@@ -177,21 +172,15 @@
     "board_independence_coverage": 500,
     "data_quality_detailed": {
       "verified": 6307,
-      "def14a_verified_20260907": 64,
-      "def14a_verified_20260908": 13,
+      "component_mismatch": 10,
       "def14a_verified_20260909": 217,
+      "def14a_verified_20260910": 81,
+      "def14a_verified_20260907": 64,
+      "rounding": 50,
       "recomputed": 36,
-      "incomplete_components": 0,
-      "bloated_component": 0,
-      "rounding": 56,
-      "recomputed_implausible_total": 0,
-      "component_mismatch": 4,
-      "computed": 0,
-      "filing_only": 0,
-      "minor_gap": 0,
+      "def14a_verified_20260908": 13,
       "verified_total": 6682,
-      "last_audit": "2026-09-10",
-      "def14a_verified_20260910": 81
+      "last_audit": "2026-09-10"
     },
     "companies_with_executives": 500,
     "board_independence_any": 500,
@@ -42992,9 +42981,11 @@
           "non_equity_incentive": 496452,
           "all_other": 11946,
           "total": 5323116,
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $20,000 of filing total $5,323,116; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $5,343,116 vs filing-printed total $5,323,116 (gap $+20,000); identical in the latest DEF 14A SCT (d932644ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         },
         {
           "name": "Paul Cunningham",
@@ -43006,9 +42997,11 @@
           "non_equity_incentive": 594990,
           "all_other": 11222,
           "total": 4930300,
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $25,000 of filing total $4,930,300; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $4,905,300 vs filing-printed total $4,930,300 (gap $-25,000); identical in the latest DEF 14A SCT (d932644ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         }
       ],
       "neo_count": 4,
@@ -85799,9 +85792,11 @@
           "all_other": 43879,
           "total": 11773463,
           "title": "President, Chief Executive Officer, and Director",
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $4,000 of filing total $11,773,463; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $11,777,463 vs filing-printed total $11,773,463 (gap $+4,000); identical in the latest DEF 14A SCT (d16327ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         },
         {
           "name": "Harry A. Lawton III",
@@ -85873,9 +85868,11 @@
           "all_other": 43308,
           "total": 2459917,
           "title": "Executive Vice President \u2013 Chief Technology, Digital Commerce, and Strategy Officer",
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $500 of filing total $2,459,917; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $2,459,417 vs filing-printed total $2,459,917 (gap $-500); identical in the latest DEF 14A SCT (d16327ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         },
         {
           "name": "Robert D. Mills",
@@ -92388,9 +92385,11 @@
           "all_other": 330753,
           "total": 9217718,
           "title": "President and Chief Executive Officer",
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $5,060 of filing total $9,217,718; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $9,222,778 vs filing-printed total $9,217,718 (gap $+5,060); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error. The SCT \"Total Without\" column ($9,192,557 = total minus $25,161 pension) foots consistently.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         },
         {
           "name": "David J. Turner, Jr",
@@ -92495,9 +92494,11 @@
           "all_other": 110803,
           "total": 2701572,
           "title": "Chief Administrative Officer",
-          "_total_source": "rounding",
+          "_total_source": "component_mismatch",
           "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $1,180 of filing total $2,701,572; queued for filing re-verification.",
-          "_relabel_note_20260909": true
+          "_relabel_note_20260909": true,
+          "_note": "Filing-printed components sum to $2,702,752 vs filing-printed total $2,701,572 (gap $+1,180); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
+          "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy"
         },
         {
           "name": "Russell K. Zusi",
