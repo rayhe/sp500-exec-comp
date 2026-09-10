@@ -6102,8 +6102,15 @@ function initNetwork(peerData) {
     }
 
     function mmGetPos(event) {
+        // Normalize by the displayed size: the mobile CSS override forces the canvas to
+        // render at 96x66 CSS px while mmPanTo maps in the 160x110 logical space.
+        // Without this, mobile taps land on the wrong world point (the right/bottom
+        // ~40% of the mini-map maps outside the graph extent).
         var r = mmCanvas.getBoundingClientRect();
-        return { x: event.clientX - r.left, y: event.clientY - r.top };
+        return {
+            x: (event.clientX - r.left) * (MM_W / r.width),
+            y: (event.clientY - r.top) * (MM_H / r.height)
+        };
     }
 
     mmCanvas.addEventListener('mousedown', function(event) {
@@ -6132,9 +6139,13 @@ function initNetwork(peerData) {
 
     // Touch event handlers for mobile mini-map interaction
     function mmGetTouchPos(event) {
+        // Same display-size normalization as mmGetPos (mobile CSS override, see above).
         var touch = event.touches[0] || event.changedTouches[0];
         var r = mmCanvas.getBoundingClientRect();
-        return { x: touch.clientX - r.left, y: touch.clientY - r.top };
+        return {
+            x: (touch.clientX - r.left) * (MM_W / r.width),
+            y: (touch.clientY - r.top) * (MM_H / r.height)
+        };
     }
 
     mmCanvas.addEventListener('touchstart', function(event) {
@@ -6168,6 +6179,10 @@ function initNetwork(peerData) {
     });
 
     mmCanvas.style.cursor = 'crosshair';
+
+    // Expose the mini-map's purpose to assistive tech (it is a tap-to-pan control)
+    mmCanvas.setAttribute('role', 'img');
+    mmCanvas.setAttribute('aria-label', 'Network overview map. Tap or drag to center the main graph view on that location.');
 
     // === Path Finder ===
     // BFS shortest path between two companies (treating edges as undirected)
