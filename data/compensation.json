@@ -123,10 +123,10 @@
   "total_neo_records": 6764,
   "title_coverage": "6764/6764",
   "data_quality": {
-   "verified": 6412,
+   "verified": 6394,
    "recomputed": 44,
-   "incomplete_components": 65,
-   "bloated_component": 39,
+   "incomplete_components": 53,
+   "bloated_component": 17,
    "component_mismatch": 1,
    "last_audit": "2026-09-09",
    "rounding": 62,
@@ -134,8 +134,8 @@
    "recomputed_implausible_total": 0,
    "filing_only": 0,
    "minor_gap": 0,
-   "def14a_verified_20260909": 58,
-   "verified_total": 6553,
+   "def14a_verified_20260909": 110,
+   "verified_total": 6587,
    "def14a_verified_20260907": 70,
    "def14a_verified_20260908": 13
   },
@@ -172,17 +172,18 @@
   "governance_coverage": 500,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 6412,
+   "verified": 6394,
    "def14a_verified_20260907": 70,
    "def14a_verified_20260908": 13,
-   "verified_total": 6553,
+   "verified_total": 6587,
    "recomputed": 44,
-   "incomplete_components": 65,
-   "bloated_component": 39,
+   "incomplete_components": 53,
+   "bloated_component": 17,
    "rounding": 62,
    "recomputed_implausible_total": 0,
    "component_mismatch": 1,
-   "def14a_verified_20260909": 58
+   "def14a_verified_20260909": 110,
+   "last_audit": "2026-09-09"
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
@@ -540,7 +541,7 @@
      "_total_source": "bloated_component",
      "pension_nqdc": 0,
      "_note": "SEC total 3,562,568 does not equal sum of components 3,704,554 diff 141,986 – preserving filing verbatim",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $3,704,554 exceeds filing total $3,562,568 by $141,986; a component is likely mis-parsed; filing total retained; queued for filing re-verification.",
+     "_parse_note": "Filing-verbatim 2026-09-09: primary DEF 14A SCT prints components summing to $3,704,554 against a printed total of $3,562,568 (diff $141,986); the filing itself does not foot. No footnote explains the gap; values retained as printed, not invented.",
      "_relabel_note_20260909": true
     },
     {
@@ -617,7 +618,7 @@
    "cik": "0000829224",
    "filing_date": "2026-01-26",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/829224/000121390026007780/ea0270973-01.htm",
-   "total_neo_compensation": 111932379,
+   "total_neo_compensation": 84547353,
    "neo_count": 7,
    "proxy_fiscal_year": 2025,
    "available_years": [
@@ -7629,16 +7630,17 @@
      "name": "Ajei Gopal",
      "title": "President and Chief Executive Officer",
      "year": 2024,
-     "salary": 0,
-     "bonus": 850000,
+     "salary": 850000,
+     "bonus": 0,
      "stock_awards": 29379507,
      "option_awards": 0,
      "non_equity_incentive": 2550000,
      "pension_nqdc": 0,
      "all_other": 31148,
      "total": 32810655,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total)."
+     "_total_source": "def14a_verified_20260909",
+     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Ajei Gopal",
@@ -7646,27 +7648,29 @@
      "year": 2023,
      "salary": 850000,
      "bonus": 0,
-     "stock_awards": 0,
+     "stock_awards": 21312677,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 2402483,
      "pension_nqdc": 0,
-     "all_other": 21312677,
-     "total": 22162677,
-     "_total_source": "verified"
+     "all_other": 68631,
+     "total": 24633791,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Ajei Gopal",
      "title": "President and Chief Executive Officer",
      "year": 2022,
      "salary": 843750,
-     "bonus": 0,
-     "stock_awards": 312609,
+     "bonus": 312609,
+     "stock_awards": 18915491,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 1771876,
      "pension_nqdc": 0,
-     "all_other": 18915491,
-     "total": 20071850,
-     "_total_source": "verified"
+     "all_other": 28772,
+     "total": 21872498,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Rachel Pyles",
@@ -7680,36 +7684,39 @@
      "pension_nqdc": 0,
      "all_other": 26194,
      "total": 5035339,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Rachel Pyles",
      "title": "Chief Financial Officer and Senior Vice President of Finance",
      "year": 2023,
      "salary": 234168,
-     "bonus": 0,
-     "stock_awards": 55147,
+     "bonus": 55147,
+     "stock_awards": 2378479,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 198559,
      "pension_nqdc": 0,
-     "all_other": 2378479,
-     "total": 2667794,
-     "_total_source": "verified"
+     "all_other": 6600,
+     "total": 2872953,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Shane Emswiler",
      "title": "Senior Vice President, Products",
      "year": 2024,
-     "salary": 0,
-     "bonus": 403454,
+     "salary": 403454,
+     "bonus": 0,
      "stock_awards": 7184661,
      "option_awards": 0,
      "non_equity_incentive": 605184,
      "pension_nqdc": 0,
      "all_other": 13513,
      "total": 8206812,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total)."
+     "_total_source": "def14a_verified_20260909",
+     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Shane Emswiler",
@@ -7717,128 +7724,136 @@
      "year": 2023,
      "salary": 400556,
      "bonus": 0,
-     "stock_awards": 0,
+     "stock_awards": 5950946,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 566078,
      "pension_nqdc": 0,
-     "all_other": 5950946,
-     "total": 6351502,
-     "_total_source": "verified"
+     "all_other": 13050,
+     "total": 6930630,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Shane Emswiler",
      "title": "Senior Vice President, Products",
      "year": 2022,
      "salary": 388851,
-     "bonus": 0,
-     "stock_awards": 120447,
+     "bonus": 120447,
+     "stock_awards": 4784231,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 360100,
      "pension_nqdc": 0,
-     "all_other": 4784231,
-     "total": 5293529,
-     "_total_source": "verified"
+     "all_other": 11987,
+     "total": 5665616,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Walt Hearn",
      "title": "Senior Vice President, Worldwide Sales and Customer Excellence",
      "year": 2024,
-     "salary": 0,
-     "bonus": 385000,
+     "salary": 385000,
+     "bonus": 0,
      "stock_awards": 6043199,
      "option_awards": 0,
      "non_equity_incentive": 577500,
      "pension_nqdc": 0,
      "all_other": 13513,
      "total": 7019212,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total)."
+     "_total_source": "def14a_verified_20260909",
+     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Walt Hearn",
      "title": "Senior Vice President, Worldwide Sales and Customer Excellence",
      "year": 2023,
      "salary": 376369,
-     "bonus": 0,
-     "stock_awards": 28797,
+     "bonus": 28797,
+     "stock_awards": 4596757,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 498010,
      "pension_nqdc": 0,
-     "all_other": 4596757,
-     "total": 5001923,
-     "_total_source": "verified"
+     "all_other": 28221,
+     "total": 5528154,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Walt Hearn",
      "title": "Senior Vice President, Worldwide Sales and Customer Excellence",
      "year": 2022,
      "salary": 340000,
-     "bonus": 0,
-     "stock_awards": 391908,
+     "bonus": 391908,
+     "stock_awards": 4162380,
      "option_awards": 0,
      "non_equity_incentive": 0,
      "pension_nqdc": 0,
-     "all_other": 4162380,
-     "total": 4894288,
-     "_total_source": "verified"
+     "all_other": 20391,
+     "total": 4914679,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Janet Lee",
      "title": "Senior Vice President, General Counsel and Secretary",
      "year": 2024,
-     "salary": 0,
-     "bonus": 386250,
+     "salary": 386250,
+     "bonus": 0,
      "stock_awards": 4909886,
      "option_awards": 0,
      "non_equity_incentive": 579376,
      "pension_nqdc": 0,
      "all_other": 31148,
      "total": 5906660,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total)."
+     "_total_source": "def14a_verified_20260909",
+     "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Janet Lee",
      "title": "Senior Vice President, General Counsel and Secretary",
      "year": 2023,
      "salary": 383476,
-     "bonus": 0,
-     "stock_awards": 29054,
+     "bonus": 29054,
+     "stock_awards": 2954208,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 507438,
      "pension_nqdc": 0,
-     "all_other": 2954208,
-     "total": 3366738,
-     "_total_source": "verified"
+     "all_other": 29835,
+     "total": 3904011,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Janet Lee",
      "title": "Senior Vice President, General Counsel and Secretary",
      "year": 2022,
      "salary": 368509,
-     "bonus": 0,
-     "stock_awards": 91316,
+     "bonus": 91316,
+     "stock_awards": 2231789,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 273010,
      "pension_nqdc": 0,
-     "all_other": 2231789,
-     "total": 2691614,
-     "_total_source": "verified"
+     "all_other": 28772,
+     "total": 2993396,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Nicole Anasenes",
      "title": "Senior Vice President and Chief Financial Officer",
      "year": 2024,
-     "salary": 0,
-     "bonus": 2555696,
-     "stock_awards": 0,
+     "salary": 255569,
+     "bonus": 0,
+     "stock_awards": 1706590,
      "option_awards": 0,
      "non_equity_incentive": 0,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 1706590,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $849,106 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "all_other": 21596,
+     "total": 1983755,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Nicole Anasenes",
@@ -7846,27 +7861,29 @@
      "year": 2023,
      "salary": 466498,
      "bonus": 0,
-     "stock_awards": 0,
+     "stock_awards": 6301065,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 659267,
      "pension_nqdc": 0,
-     "all_other": 6301065,
-     "total": 6767563,
-     "_total_source": "verified"
+     "all_other": 29835,
+     "total": 7456665,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     },
     {
      "name": "Nicole Anasenes",
      "title": "Senior Vice President and Chief Financial Officer",
      "year": 2022,
      "salary": 452865,
-     "bonus": 0,
-     "stock_awards": 140275,
+     "bonus": 140275,
+     "stock_awards": 4190965,
      "option_awards": 0,
-     "non_equity_incentive": 0,
+     "non_equity_incentive": 419381,
      "pension_nqdc": 0,
-     "all_other": 4190965,
-     "total": 4784105,
-     "_total_source": "verified"
+     "all_other": 28772,
+     "total": 5232258,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: full SCT row rebuilt from primary DEF 14A (salary/bonus/stock/NEIP/all-other re-bucketed, NEIP restored, total corrected)."
     }
    ],
    "filing_date": "2025-04-29",
@@ -7877,7 +7894,7 @@
     2023,
     2022
    ],
-   "total_neo_compensation": 60685268,
+   "total_neo_compensation": 60962433,
    "proxy_fiscal_year": 2024,
    "ceo_gender": "M",
    "say_on_pay": {
@@ -25433,10 +25450,11 @@
      "title": "Head of Financial Institutions Group",
      "year": 2025,
      "salary": 750000,
-     "bonus": 6410596,
+     "bonus": 0,
      "total": 6410596,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $750,000 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: Gibbons 2025 bonus held the filing total; restored $5,660,596 stock award, bonus 0; total unchanged.",
+     "stock_awards": 5660596
     },
     {
      "name": "John Gibbons",
@@ -25487,7 +25505,7 @@
      "_total_source": "verified"
     }
    ],
-   "total_neo_compensation": 48176599,
+   "total_neo_compensation": 173934691,
    "neo_count": 9,
    "proxy_fiscal_year": 2025,
    "available_years": [
@@ -28698,11 +28716,11 @@
      "stock_awards": 8787378,
      "option_awards": 8788430,
      "non_equity_incentive": 1968750,
-     "pension_nqdc": 24198660,
+     "pension_nqdc": 2194304,
      "all_other": 959798,
-     "total": 23173052,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $23,029,964 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 24198660,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Robert B. Ford",
@@ -28712,11 +28730,11 @@
      "stock_awards": 8226593,
      "option_awards": 8227441,
      "non_equity_incentive": 2861250,
-     "pension_nqdc": 22777075,
+     "pension_nqdc": 1342793,
      "all_other": 618998,
-     "total": 22591322,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $21,620,035 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 22777075,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Robert B. Ford",
@@ -28806,11 +28824,11 @@
      "stock_awards": 2016528,
      "option_awards": 2016819,
      "non_equity_incentive": 1249200,
-     "pension_nqdc": 6558461,
+     "pension_nqdc": 266598,
      "all_other": 130047,
-     "total": 6444774,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $6,405,550 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 6558461,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Lisa D. Earnhardt",
@@ -28852,11 +28870,11 @@
      "stock_awards": 1833239,
      "option_awards": 1833495,
      "non_equity_incentive": 855400,
-     "pension_nqdc": 5789762,
+     "pension_nqdc": 231344,
      "all_other": 157015,
      "total": 5789762,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $5,558,418 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Daniel G. Salvadori",
@@ -28898,11 +28916,11 @@
      "stock_awards": 2095392,
      "option_awards": 2095609,
      "non_equity_incentive": 447500,
-     "pension_nqdc": 6995583,
+     "pension_nqdc": 1179839,
      "all_other": 653224,
-     "total": 6576450,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $6,234,877 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 6995583,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Hubert L. Allen",
@@ -28912,11 +28930,11 @@
      "stock_awards": 2095365,
      "option_awards": 2095609,
      "non_equity_incentive": 1094700,
-     "pension_nqdc": 7981335,
+     "pension_nqdc": 1244337,
      "all_other": 540170,
-     "total": 7527867,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $7,190,466 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 7981335,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension_nqdc column held the SEC filing total; restored actual pension value and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Hubert L. Allen",
@@ -28935,7 +28953,7 @@
      "_parse_note": "Our recomputed totals (~2x filing) appear to double-count equity; components were right but pension was dropped and a separate SEC Total vs Total Without Change in Pension Value pair exists in the filing. Filing_total is the SEC Total."
     }
    ],
-   "total_neo_compensation": 58149365,
+   "total_neo_compensation": 61490555,
    "neo_count": 6,
    "proxy_fiscal_year": 2025,
    "available_years": [
@@ -30406,11 +30424,11 @@
      "stock_awards": 17500184,
      "option_awards": 0,
      "non_equity_incentive": 9200000,
-     "pension_nqdc": 0,
-     "all_other": 1332676,
-     "total": 17500184,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $11,832,676 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "pension_nqdc": 1332676,
+     "all_other": 170221,
+     "total": 29503081,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored)."
     },
     {
      "name": "William S. Demchak",
@@ -30464,31 +30482,31 @@
      "name": "Robert Q. Reilly",
      "title": "and CFO",
      "year": 2024,
-     "salary": 0,
-     "bonus": 2887690,
-     "stock_awards": 0,
+     "salary": 700000,
+     "bonus": 0,
+     "stock_awards": 2887690,
      "option_awards": 0,
-     "non_equity_incentive": 406947,
-     "pension_nqdc": 0,
+     "non_equity_incentive": 2300000,
+     "pension_nqdc": 406947,
      "all_other": 53367,
-     "total": 2300000,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,048,004 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 6348004,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored)."
     },
     {
      "name": "Robert Q. Reilly",
      "title": "and CFO",
      "year": 2023,
-     "salary": 0,
-     "bonus": 2750146,
-     "stock_awards": 0,
+     "salary": 700000,
+     "bonus": 0,
+     "stock_awards": 2750146,
      "option_awards": 0,
-     "non_equity_incentive": 455897,
-     "pension_nqdc": 0,
+     "non_equity_incentive": 2187500,
+     "pension_nqdc": 455897,
      "all_other": 45317,
-     "total": 2187500,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,063,860 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 6138860,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored)."
     },
     {
      "name": "Mark Wiedman",
@@ -30524,16 +30542,16 @@
      "name": "Deborah Guild",
      "title": "Exec. VP, Head of Technology",
      "year": 2024,
-     "salary": 0,
-     "bonus": 2000098,
-     "stock_awards": 0,
+     "salary": 600000,
+     "bonus": 0,
+     "stock_awards": 2000098,
      "option_awards": 0,
-     "non_equity_incentive": 30911,
-     "pension_nqdc": 0,
+     "non_equity_incentive": 2400000,
+     "pension_nqdc": 30911,
      "all_other": 46181,
-     "total": 2400000,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $322,810 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "total": 5077190,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored)."
     },
     {
      "name": "Deborah Guild",
@@ -30569,16 +30587,16 @@
      "name": "Alexander E. C. Overstrom",
      "title": "VP and Head of Technology",
      "year": 2024,
-     "salary": 0,
-     "bonus": 2100124,
-     "stock_awards": 0,
+     "salary": 690000,
+     "bonus": 0,
+     "stock_awards": 2100124,
      "option_awards": 0,
-     "non_equity_incentive": 26854,
-     "pension_nqdc": 0,
+     "non_equity_incentive": 2300000,
+     "pension_nqdc": 26854,
      "all_other": 31736,
-     "total": 2300000,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $2,158,714 vs filing total $2,300,000 (missing $141,286); total retained from filing; queued for filing re-verification.",
+     "total": 5148714,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored).",
      "_relabel_note_20260909": true
     },
     {
@@ -30590,11 +30608,11 @@
      "stock_awards": 5355213,
      "option_awards": 0,
      "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 272939,
-     "total": 5355213,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $972,939 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "pension_nqdc": 272939,
+     "all_other": 2181143,
+     "total": 8509295,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: SCT column-shift repair from primary DEF 14A (salary/stock/NEIP/pension/all-other re-bucketed, SEC total restored)."
     },
     {
      "name": "E William Parsley, III",
@@ -30631,7 +30649,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 27169189,
+   "total_neo_compensation": 69451492,
    "proxy_fiscal_year": 2025,
    "ceo_gender": "M",
    "ceo_tenure": {
@@ -44696,14 +44714,15 @@
      "name": "Michael Hsing",
      "year": 2023,
      "salary": 822877,
-     "bonus": 822877,
-     "non_equity_incentive": 12311787,
-     "all_other": 1508805,
-     "total": 14645492,
+     "bonus": 0,
+     "non_equity_incentive": 1508805,
+     "all_other": 0,
+     "total": 14643469,
      "title": "Chairman of the Board, President and Chief Executive Officer",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $15,466,346 exceeds filing total $14,645,492 by $820,854; a component is likely mis-parsed; filing total retained; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: 2023 row had salary duplicated into bonus and stock/NEIP shifted one column; re-bucketed from primary DEF 14A SCT.",
+     "_relabel_note_20260909": true,
+     "stock_awards": 12311787
     },
     {
      "name": "Bernie Blegen",
@@ -44720,14 +44739,15 @@
      "name": "Bernie Blegen",
      "year": 2023,
      "salary": 400054,
-     "bonus": 400054,
-     "non_equity_incentive": 3486353,
-     "all_other": 733537,
-     "total": 4621967,
+     "bonus": 0,
+     "non_equity_incentive": 733537,
+     "all_other": 0,
+     "total": 4619944,
      "title": "Executive Vice President, Chief Financial Officer",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $5,019,998 exceeds filing total $4,621,967 by $398,031; a component is likely mis-parsed; filing total retained; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: 2023 row had salary duplicated into bonus and stock/NEIP shifted one column; re-bucketed from primary DEF 14A SCT.",
+     "_relabel_note_20260909": true,
+     "stock_awards": 3486353
     },
     {
      "name": "Deming Xiao",
@@ -72107,157 +72127,159 @@
      "year": 2025,
      "salary": 1417041,
      "non_equity_incentive": 1606926,
-     "total": 12711066,
+     "total": 16544559,
      "pension_nqdc": 2124680,
      "stock_awards": 7242093,
      "option_awards": 2414006,
      "all_other": 1739813,
      "title": "President and CEO, EIX",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $3,833,493 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Pedro J. Pizarro",
      "year": 2024,
      "salary": 1400000,
      "non_equity_incentive": 1795500,
-     "total": 12536305,
+     "total": 13809571,
      "pension_nqdc": 1225053,
      "stock_awards": 6982599,
      "option_awards": 2327506,
      "all_other": 78913,
      "title": "President and CEO, EIX",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,273,266 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Pedro J. Pizarro",
      "year": 2023,
      "salary": 1396538,
      "non_equity_incentive": 1849365,
-     "total": 12384852,
+     "total": 14881111,
      "pension_nqdc": 2505218,
      "stock_awards": 6825189,
      "option_awards": 2275001,
      "all_other": 29800,
      "title": "President and CEO, EIX",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,496,259 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Maria Rigatti",
      "year": 2025,
      "salary": 842603,
      "non_equity_incentive": 1211410,
-     "total": 4646405,
-     "pension_nqdc": 0,
+     "total": 5040685,
+     "pension_nqdc": 394280,
      "stock_awards": 1928573,
      "option_awards": 642819,
      "all_other": 21000,
      "title": "EVP",
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
+     "_total_source": "def14a_verified_20260909",
+     "_fix_note": "2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total).",
+     "_parse_note": "DEF14A 2026-09-09: pension value was dropped (row was internally consistent against the Adjusted Total); restored pension and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Maria Rigatti",
      "year": 2024,
      "salary": 796557,
      "non_equity_incentive": 742900,
-     "total": 3760299,
-     "pension_nqdc": 0,
+     "total": 4497132,
+     "pension_nqdc": 736833,
      "stock_awards": 1650138,
      "option_awards": 550004,
      "all_other": 20700,
      "title": "EVP",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "_original_pension": {
       "pension_nqdc": 736833
      },
-     "_parse_note": "Pension artifact removed 2026-09-09: all other components sum to the filing's stated SCT total ($3,760,299, residual $0); stored pension $736,833 was a parse artifact (grabbed from outside the SCT row). Set to $0; original in _original_pension."
+     "_parse_note": "DEF14A 2026-09-09: pension value was dropped (row was internally consistent against the Adjusted Total); restored pension and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Maria Rigatti",
      "year": 2023,
      "salary": 765962,
      "non_equity_incentive": 741549,
-     "total": 3570759,
+     "total": 4697218,
      "pension_nqdc": 1129358,
      "stock_awards": 1530412,
      "option_awards": 510137,
      "all_other": 19800,
      "title": "EVP",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,126,459 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: pension value was dropped (row was internally consistent against the Adjusted Total); restored pension and SEC total from primary DEF 14A SCT."
     },
     {
      "name": "Chonda J. Nwamu",
      "year": 2025,
      "salary": 544973,
      "non_equity_incentive": 635541,
-     "total": 5089514,
+     "total": 5110736,
      "pension_nqdc": 21222,
      "stock_awards": 1848054,
      "option_awards": 616006,
      "all_other": 530940,
      "title": "EVP",
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $892,778 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: $914,000 bonus missing and 'Adjusted Total' stored as total; restored bonus and SEC total from primary DEF 14A SCT.",
+     "bonus": 914000
     },
     {
      "name": "Steven D. Powell",
      "year": 2025,
      "salary": 838164,
      "non_equity_incentive": 628872,
-     "total": 4067653,
+     "total": 6547969,
      "pension_nqdc": 979309,
      "stock_awards": 1928573,
      "option_awards": 642819,
      "all_other": 1530232,
      "title": "President and CEO, SCE",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,480,316 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Steven D. Powell",
      "year": 2024,
      "salary": 763689,
      "non_equity_incentive": 634865,
-     "total": 3426266,
+     "total": 3950818,
      "pension_nqdc": 478489,
      "stock_awards": 1501591,
      "option_awards": 500510,
      "all_other": 71674,
      "title": "President and CEO, SCE",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $524,552 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Steven D. Powell",
      "year": 2023,
      "salary": 707500,
      "non_equity_incentive": 594683,
-     "total": 3185650,
+     "total": 4004129,
      "pension_nqdc": 819612,
      "stock_awards": 1394348,
      "option_awards": 464761,
      "all_other": 23225,
      "title": "President and CEO, SCE",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $818,479 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     },
     {
      "name": "Jill C. Anderson",
      "year": 2025,
      "salary": 552603,
      "non_equity_incentive": 346981,
-     "total": 2019718,
+     "total": 3511011,
      "pension_nqdc": 112673,
      "stock_awards": 808630,
      "option_awards": 269504,
      "all_other": 1420620,
      "title": "SVP, General Counsel and Chief Compliance Officer",
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,491,293 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: stored 'Adjusted Total' replaced with SEC filing total from primary DEF 14A SCT (components already correct)."
     }
    ],
    "neo_count": 5,
@@ -72266,7 +72288,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 19722870,
+   "total_neo_compensation": 36754960,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 99.38,
@@ -84841,12 +84863,13 @@
      "non_equity_incentive": 2934176,
      "pension_nqdc": 2569968,
      "total": 15654209,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $15,160,836 vs filing total $15,654,209 (missing $493,373); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 493373
     },
     {
-     "name": "Chairman of the Board",
+     "name": "Michele Buck",
      "title": "Chairman of the Board, President and CEO",
      "year": 2022,
      "salary": 1300000,
@@ -84856,9 +84879,10 @@
      "non_equity_incentive": 4160000,
      "pension_nqdc": 0,
      "total": 13550049,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $13,159,321 vs filing total $13,550,049 (missing $390,728); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: name was the title 'Chairman of the Board'; corrected to Michele Buck; All Other Compensation restored from 2025 proxy SCT.",
+     "_relabel_note_20260909": true,
+     "all_other": 390728
     },
     {
      "name": "Mr. Voskuil",
@@ -84886,8 +84910,9 @@
      "non_equity_incentive": 1034821,
      "pension_nqdc": 0,
      "total": 4384479,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $480,917 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "all_other": 480917
     },
     {
      "name": "Mr. Voskuil",
@@ -84900,9 +84925,10 @@
      "non_equity_incentive": 1500000,
      "pension_nqdc": 0,
      "total": 4705503,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,277,770 vs filing total $4,705,503 (missing $427,733); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 427733
     },
     {
      "name": "Mr. Bhatia",
@@ -84930,9 +84956,10 @@
      "non_equity_incentive": 182630,
      "pension_nqdc": 0,
      "total": 9172868,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $9,144,983 vs filing total $9,172,868 (missing $27,885); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 27885
     },
     {
      "name": "Mr. Raup",
@@ -84945,8 +84972,9 @@
      "non_equity_incentive": 1034821,
      "pension_nqdc": 0,
      "total": 4327358,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $464,112 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "all_other": 464112
     },
     {
      "name": "Mr. Raup",
@@ -84959,9 +84987,10 @@
      "non_equity_incentive": 1350000,
      "pension_nqdc": 0,
      "total": 4469728,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,087,148 vs filing total $4,469,728 (missing $382,580); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 382580
     },
     {
      "name": "Ms. Riggs",
@@ -84974,9 +85003,10 @@
      "non_equity_incentive": 1034821,
      "pension_nqdc": 88839,
      "total": 4339671,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $3,952,085 vs filing total $4,339,671 (missing $387,586); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 387586
     },
     {
      "name": "Ms. Riggs",
@@ -84989,9 +85019,10 @@
      "non_equity_incentive": 1350000,
      "pension_nqdc": 0,
      "total": 4425635,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,087,148 vs filing total $4,425,635 (missing $338,487); total retained from filing; queued for filing re-verification.",
-     "_relabel_note_20260909": true
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "DEF14A 2026-09-09: All Other Compensation column was dropped by the parser; restored from primary DEF 14A SCT (2026 proxy for 2023, 2025 proxy for 2022).",
+     "_relabel_note_20260909": true,
+     "all_other": 338487
     },
     {
      "name": "Mr. Tanner",
