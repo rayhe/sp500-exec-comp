@@ -28,6 +28,7 @@ LABEL_TO_KEY = {
     "DEF14A-verified 2026-09-07": "def14a_verified_20260907",
     "DEF14A-verified 2026-09-08": "def14a_verified_20260908",
     "DEF14A-verified 2026-09-09": "def14a_verified_20260909",
+    "DEF14A-verified 2026-09-10": "def14a_verified_20260910",
     "recomputed": "recomputed",
     "rounding": "rounding",
     "incomplete_components": "incomplete_components",
@@ -36,6 +37,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260907": "def14a_verified_20260907",
     "def14a_verified_20260908": "def14a_verified_20260908",
     "def14a_verified_20260909": "def14a_verified_20260909",
+    "def14a_verified_20260910": "def14a_verified_20260910",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
