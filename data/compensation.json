@@ -1,7 +1,7 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "500 companies, 6764 NEO records, 500 companies enriched",
+  "description": "500 companies, 6774 NEO records, 500 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -26,7 +26,8 @@
    "DEF 14A enrichment sweep COMPLETE 2026-09-08: all 500 companies covered. 497 via DEF 14A; 3 true negatives with verified alternative primary filings: BX (no DEF 14A on record per EDGAR submissions API; NEOs from 10-K SCT), KKR (2026-02-27 DEF 14A is a special-meeting proxy with no comp tables; NEOs from 10-K SCT), ERIE (controlled company, files DEF 14C information statements). Re-parsed BX (15 rows), KKR (16 rows), ERIE (14 rows) from the latest filings: zero discrepancies against existing data; all 45 rows component-total cross-foot verified. Company-level notes render as banner in the NEO detail panel.",
    "Pension-artifact repair 2026-09-09 06:00 PT: 43 NEO rows (C, CI, AFL, UNP, KMX, DVN, LYB, MTCH, KR, EIX, ES, ULTA, WEC) had a pension/NQDC value that was provably a parse artifact — all other components summed exactly to the filing's stated SCT total, so the stored pension (grabbed from outside the SCT row) was set to $0 with the original preserved in _original_pension and an audit _parse_note; rows now verify and are labeled 'verified'. 3 DEF14A-verified rows with small unexplained residual deltas (IBM Kavanaugh 2025 +$3,543 / 2024 +$14,178, ALB Anderson 2024 -$90) relabeled to 'rounding' per taxonomy, DEF14A-repair provenance kept in _parse_note. Fresh bucket recount over 6764 records: verified=6446, rounding=190, recomputed=44, DEF14A-verified 2026-09-07=70, DEF14A-verified 2026-09-08=13, component_mismatch=1. 180 rows still do not foot (143 rounding, 34 verified-labeled, 1 recomputed, 1 DEF14A-verified, 1 component_mismatch) and are queued in hidden_files/pension_repair_20260909/reparse_queue_20260909.json for filing re-verification; dominant signatures: all_other==total column misassignment (33 rows: AJG, KMX, LYB, WEC, DVN, AFL, UNP, C, WDAY) and missing/extra components (SO/EIX pension over-parse, BDX missing options, HSY missing bonus).",
    "Data-quality relabel 2026-09-09 06:00 PT (part 2): 34 rows labeled 'verified' did not foot. Relabeled by delta signature so UI dots render honestly: 17 -> 'incomplete_components' (components under total by >$25K: UNP Vena 2024 -$1.33M, NEE Ketchum 2023 -$1.57M, AKAM Karon 2023 -$550K, etc.; breakdown incomplete, filing total retained), 6 -> 'bloated_component' (components over total by >$25K: GEN Pilette 2026 +$1.97M, MPWR Hsing 2023 +$821K, etc.; a component likely mis-parsed, filing total retained), 11 -> 'rounding' (|delta| <= $25K). Provenance in per-row _parse_note. Taxonomy extension: incomplete_components = breakdown incomplete, total from filing; bloated_component = a component likely mis-parsed, filing total retained. Final buckets over 6764 records: verified=6412, rounding=201, recomputed=44, DEF14A-verified 2026-09-07=70, DEF14A-verified 2026-09-08=13, incomplete_components=17, bloated_component=6, component_mismatch=1. No 'verified' row now mismatches its components (asserted). 180 non-footing rows remain queued for filing re-verification (hidden_files/pension_repair_20260909/reparse_queue_20260909.json).",
-   "DEF 14A column-shift rebuild 2026-09-09: 33 rows (AJG/KMX/LYB/WEC/DVN/AFL/UNP/C/WDAY) had SCT columns misassigned with all_other carrying the filing total; all components re-extracted from the primary DEF 14A and footed to the filing-printed total (stored totals were already correct). New audit label 'DEF14A-verified 2026-09-09'."
+   "DEF 14A column-shift rebuild 2026-09-09: 33 rows (AJG/KMX/LYB/WEC/DVN/AFL/UNP/C/WDAY) had SCT columns misassigned with all_other carrying the filing total; all components re-extracted from the primary DEF 14A and footed to the filing-printed total (stored totals were already correct). New audit label 'DEF14A-verified 2026-09-09'.",
+   "DEF 14A anomaly repair 2026-09-09 22:00 PT: reconciled 8 companies’ full SCTs against primary filings (FDS, MCO, ZTS column-shift rebuilds; JPM Pinto 2025 shift; BLK Fink/Kapito 2024 shifts; BA Ortberg 2024 / Malave 2025 shifts; GE Ghai 2024 missing all_other; DIS Lansberry 2024 missing stock/options, Gutierrez/Schake 2022 rebuilds). Added 10 missing NEO rows present in the same SCTs (FDS McLoughlin 2025, JPM Erdoes 2025, BLK Small 2024/2023, Kushel 2025/2024/2023, GE Culp 2025/2024/2023). Filing totals retained verbatim; non-footing rows labeled per taxonomy (FDS Shan 2023: components over printed total by $30,936, filing-side anomaly; FDS Snow 2025 / Shan 2025 / Skoko 2025, MCO Steele 2024 / Tulenko 2025: $1 rounding). Company FY NEO sums recomputed for the 8 companies; metadata buckets rebuilt by recount over 6774 records."
   ],
   "aggregate_stats": {
    "total_companies": 500,
@@ -119,25 +120,25 @@
   },
   "edgar_coverage": 500,
   "total_companies": 500,
-  "last_updated": "2026-09-08",
-  "total_neo_records": 6764,
-  "title_coverage": "6764/6764",
+  "last_updated": "2026-09-09",
+  "total_neo_records": 6774,
+  "title_coverage": "6774/6774",
   "data_quality": {
-   "verified": 6394,
-   "recomputed": 44,
-   "incomplete_components": 53,
-   "bloated_component": 17,
-   "component_mismatch": 1,
-   "last_audit": "2026-09-09",
-   "rounding": 62,
-   "computed": 0,
+   "verified": 6326,
+   "def14a_verified_20260907": 64,
+   "def14a_verified_20260908": 13,
+   "def14a_verified_20260909": 217,
+   "recomputed": 39,
+   "incomplete_components": 50,
+   "bloated_component": 8,
+   "rounding": 56,
    "recomputed_implausible_total": 0,
+   "component_mismatch": 1,
+   "computed": 0,
    "filing_only": 0,
    "minor_gap": 0,
-   "def14a_verified_20260909": 110,
-   "verified_total": 6587,
-   "def14a_verified_20260907": 70,
-   "def14a_verified_20260908": 13
+   "verified_total": 6620,
+   "last_audit": "2026-09-09"
   },
   "median_ceo_pay": 17846881.0,
   "mean_ceo_pay": 338561872.688,
@@ -172,17 +173,20 @@
   "governance_coverage": 500,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 6394,
-   "def14a_verified_20260907": 70,
+   "verified": 6326,
+   "def14a_verified_20260907": 64,
    "def14a_verified_20260908": 13,
-   "verified_total": 6587,
-   "recomputed": 44,
-   "incomplete_components": 53,
-   "bloated_component": 17,
-   "rounding": 62,
+   "def14a_verified_20260909": 217,
+   "recomputed": 39,
+   "incomplete_components": 50,
+   "bloated_component": 8,
+   "rounding": 56,
    "recomputed_implausible_total": 0,
    "component_mismatch": 1,
-   "def14a_verified_20260909": 110,
+   "computed": 0,
+   "filing_only": 0,
+   "minor_gap": 0,
+   "verified_total": 6620,
    "last_audit": "2026-09-09"
   },
   "companies_with_executives": 500,
@@ -190,7 +194,7 @@
   "median_worker_pay": 81899.0,
   "median_pay_ratio": 199,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 6764,
+  "total_executives": 6774,
   "board_independence_count": 500,
   "board_independence_full": 500,
   "last_audit": "2026-09-09",
@@ -668,11 +672,14 @@
      "year": 2025,
      "salary": 955000,
      "total": 11270743,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 6219038,
      "option_awards": 1800027,
      "non_equity_incentive": 2154000,
-     "all_other": 142678
+     "all_other": 142678,
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $11,270,743 retained verbatim."
     },
     {
      "name": "Rahul Ghai",
@@ -680,10 +687,14 @@
      "year": 2024,
      "salary": 916042,
      "total": 9608159,
-     "_total_source": "recomputed",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 5265201,
      "option_awards": 1427982,
-     "non_equity_incentive": 1887000
+     "non_equity_incentive": 1887000,
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "all_other": 111934,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $9,608,159 retained verbatim."
     },
     {
      "name": "Rahul Ghai",
@@ -691,99 +702,161 @@
      "year": 2023,
      "salary": 900000,
      "total": 4906492,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 2529166,
      "option_awards": 0,
      "non_equity_incentive": 1374332,
-     "all_other": 102994
+     "all_other": 102994,
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $4,906,492 retained verbatim."
     },
     {
      "name": "Russell Stokes",
      "title": "SVP, Former CEO Engines & Services",
      "year": 2025,
      "salary": 1400000,
-     "bonus": 6307750,
-     "stock_awards": 1500036,
-     "option_awards": 2408000,
-     "non_equity_incentive": 1545493,
+     "bonus": 0,
+     "stock_awards": 6307750,
+     "option_awards": 1500036,
+     "non_equity_incentive": 2408000,
      "all_other": 161963,
      "total": 13323242,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 1545493,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $13,323,242 retained verbatim."
     },
     {
      "name": "Russell Stokes",
      "title": "SVP, Former CEO Engines & Services",
      "year": 2024,
      "salary": 1400000,
-     "bonus": 5971540,
-     "stock_awards": 2347391,
-     "option_awards": 2226000,
-     "non_equity_incentive": 3788,
+     "bonus": 0,
+     "stock_awards": 5971540,
+     "option_awards": 2347391,
+     "non_equity_incentive": 2226000,
      "all_other": 138645,
      "total": 12087364,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 3788,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $12,087,364 retained verbatim."
     },
     {
      "name": "Russell Stokes",
      "title": "SVP, Former CEO Engines & Services",
      "year": 2023,
      "salary": 1400000,
-     "bonus": 1745057,
-     "stock_awards": 1499995,
-     "option_awards": 2086000,
-     "non_equity_incentive": 1414057,
+     "bonus": 0,
+     "stock_awards": 1745057,
+     "option_awards": 1499995,
+     "non_equity_incentive": 2086000,
      "all_other": 115832,
      "total": 8260941,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 1414057,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $8,260,941 retained verbatim."
     },
     {
      "name": "Mohamed Ali",
-     "title": "SVP CEO Engines Services",
+     "title": "SVP, CEO Engines & Services",
      "year": 2025,
      "salary": 790890,
-     "bonus": 3188483,
-     "stock_awards": 1079984,
-     "option_awards": 1504000,
-     "non_equity_incentive": 661283,
+     "bonus": 0,
+     "stock_awards": 3188483,
+     "option_awards": 1079984,
+     "non_equity_incentive": 1504000,
      "all_other": 60952,
      "total": 7285592,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 661283,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $7,285,592 retained verbatim."
     },
     {
      "name": "John Phillips III",
-     "title": "SVP Secretary",
+     "title": "SVP and General Counsel & Secretary",
      "year": 2025,
      "salary": 800000,
      "total": 5909018,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 2439369,
      "option_awards": 1050009,
      "non_equity_incentive": 1504000,
-     "all_other": 115640
+     "all_other": 115640,
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $5,909,018 retained verbatim."
     },
     {
      "name": "John Phillips III",
-     "title": "SVP Secretary",
+     "title": "SVP and General Counsel & Secretary",
      "year": 2024,
      "salary": 800000,
      "total": 5770306,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 2433881,
      "option_awards": 1066821,
      "non_equity_incentive": 1400000,
-     "all_other": 69604
+     "all_other": 69604,
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $5,770,306 retained verbatim."
+    },
+    {
+     "name": "H. Lawrence Culp, Jr",
+     "title": "Chairman and Chief Executive Officer",
+     "year": 2025,
+     "salary": 2000000,
+     "bonus": 0,
+     "stock_awards": 27564925,
+     "option_awards": 4575005,
+     "non_equity_incentive": 7520000,
+     "pension_nqdc": 3213268,
+     "all_other": 742962,
+     "total": 45616160,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $45,616,160 retained verbatim."
+    },
+    {
+     "name": "H. Lawrence Culp, Jr",
+     "title": "Chairman and Chief Executive Officer",
+     "year": 2024,
+     "salary": 2250000,
+     "bonus": 0,
+     "stock_awards": 78281883,
+     "option_awards": 0,
+     "non_equity_incentive": 6781250,
+     "pension_nqdc": 1325765,
+     "all_other": 315688,
+     "total": 88954586,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $88,954,586 retained verbatim."
+    },
+    {
+     "name": "H. Lawrence Culp, Jr",
+     "title": "Chairman and Chief Executive Officer",
+     "year": 2023,
+     "salary": 2500000,
+     "bonus": 0,
+     "stock_awards": 4999987,
+     "option_awards": 0,
+     "non_equity_incentive": 5625000,
+     "pension_nqdc": 1002278,
+     "all_other": 571020,
+     "total": 14698285,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ge-20260312.htm). Filing total $14,698,285 retained verbatim."
     }
    ],
    "cik": "0000040545",
    "filing_date": "2026-03-12",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/40545/000004054526000018/ge-20260312.htm",
-   "total_neo_compensation": 27465829,
+   "total_neo_compensation": 116420415,
    "neo_count": 4,
    "proxy_fiscal_year": 2025,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "ceo_gender": "M",
@@ -4226,13 +4299,14 @@
      "pension_nqdc": 495142,
      "all_other": 2145767,
      "total": 41114015,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 18253079,
-     "option_awards": 12000027
+     "option_awards": 12000027,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $41,114,015 retained verbatim."
     },
     {
      "name": "Hugh F. Johnston",
-     "title": "Chief Financial Officer",
+     "title": "Senior Executive Vice President and Chief Financial Officer",
      "year": 2024,
      "salary": 1653846,
      "bonus": 3000000,
@@ -4240,13 +4314,14 @@
      "pension_nqdc": 0,
      "all_other": 84735,
      "total": 24488673,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 10500083,
-     "option_awards": 3500009
+     "option_awards": 3500009,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $24,488,673 retained verbatim."
     },
     {
      "name": "Kevin A. Lansberry",
-     "title": "Interim Chief Financial Officer",
+     "title": "Former Interim Chief Financial Officer",
      "year": 2024,
      "salary": 826721,
      "bonus": 0,
@@ -4254,12 +4329,14 @@
      "pension_nqdc": 971726,
      "all_other": 91682,
      "total": 4573861,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,765,732 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $4,573,861 retained verbatim.",
+     "stock_awards": 1236011,
+     "option_awards": 529721
     },
     {
      "name": "Horacio E. Gutierrez",
-     "title": "Senior Executive Vice Chief Legal and Compliance Officer",
+     "title": "Senior Executive Vice President, Chief Legal and Compliance Officer",
      "year": 2024,
      "salary": 1457500,
      "bonus": 0,
@@ -4267,26 +4344,29 @@
      "pension_nqdc": 0,
      "all_other": 106012,
      "total": 15829794,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 7606255,
-     "option_awards": 2350027
+     "option_awards": 2350027,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $15,829,794 retained verbatim."
     },
     {
      "name": "Horacio E. Gutierrez",
-     "title": "Senior Executive Vice Chief Legal and Compliance Officer",
+     "title": "Senior Executive Vice President, Chief Legal and Compliance Officer",
      "year": 2022,
-     "salary": 2000000,
-     "bonus": 5951801,
-     "non_equity_incentive": 0,
+     "salary": 870000,
+     "bonus": 2000000,
+     "non_equity_incentive": 3783000,
      "pension_nqdc": 0,
-     "all_other": 15198008,
-     "total": 23149809,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
+     "all_other": 93194,
+     "total": 15198008,
+     "_total_source": "def14a_verified_20260909",
+     "stock_awards": 5951801,
+     "option_awards": 2500013,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $15,198,008 retained verbatim. Supersedes prior note: 2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
     },
     {
      "name": "Sonia L. Coleman",
-     "title": "Executive Vice President and Chief Human Resources Officer",
+     "title": "Senior Executive Vice President and Chief Human Resources Officer",
      "year": 2024,
      "salary": 881250,
      "bonus": 0,
@@ -4294,9 +4374,10 @@
      "pension_nqdc": 415283,
      "all_other": 28354,
      "total": 7562440,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 3178176,
-     "option_awards": 1059377
+     "option_awards": 1059377,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $7,562,440 retained verbatim."
     },
     {
      "name": "Kristina K. Schake",
@@ -4308,22 +4389,25 @@
      "pension_nqdc": 0,
      "all_other": 95515,
      "total": 6428675,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260909",
      "stock_awards": 2862606,
-     "option_awards": 953004
+     "option_awards": 953004,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $6,428,675 retained verbatim."
     },
     {
      "name": "Kristina K. Schake",
      "title": "Senior Executive Vice President and Chief Communications Officer",
      "year": 2022,
-     "salary": 1500000,
-     "bonus": 2132366,
-     "non_equity_incentive": 0,
+     "salary": 361250,
+     "bonus": 1500000,
+     "non_equity_incentive": 1320000,
      "pension_nqdc": 0,
-     "all_other": 6232347,
-     "total": 9864713,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
+     "all_other": 5444,
+     "total": 6232347,
+     "_total_source": "def14a_verified_20260909",
+     "stock_awards": 2132366,
+     "option_awards": 913287,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $6,232,347 retained verbatim. Supersedes prior note: 2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
     },
     {
      "name": "Robert A. Iger",
@@ -4335,7 +4419,10 @@
      "all_other": 2478333,
      "total": 31587166,
      "title": "Chief Executive Officer; Former Executive Chairman",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $31,587,166 retained verbatim."
     },
     {
      "name": "Robert A. Iger",
@@ -4347,7 +4434,10 @@
      "all_other": 2466520,
      "total": 14998299,
      "title": "Chief Executive Officer; Former Executive Chairman",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $14,998,299 retained verbatim."
     },
     {
      "name": "Kevin A. Lansberry",
@@ -4360,7 +4450,9 @@
      "all_other": 96049,
      "total": 4006917,
      "title": "Former Interim Chief Financial Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $4,006,917 retained verbatim."
     },
     {
      "name": "Horacio E. Gutierrez",
@@ -4372,7 +4464,10 @@
      "all_other": 123073,
      "total": 11652435,
      "title": "Senior Executive Vice President, Chief Legal and Compliance Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $11,652,435 retained verbatim."
     },
     {
      "name": "Sonia L. Coleman",
@@ -4385,7 +4480,9 @@
      "all_other": 25277,
      "total": 4032073,
      "title": "Senior Executive Vice President and Chief Human Resources Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $4,032,073 retained verbatim."
     },
     {
      "name": "Kristina K. Schake",
@@ -4397,7 +4494,10 @@
      "all_other": 114188,
      "total": 3972071,
      "title": "Senior Executive Vice President and Chief Communications Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $3,972,071 retained verbatim."
     },
     {
      "name": "Robert A. Iger",
@@ -4409,7 +4509,10 @@
      "non_equity_incentive": 7250000,
      "all_other": 2592511,
      "total": 45842574,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $45,842,574 retained verbatim."
     },
     {
      "name": "Hugh F. Johnston",
@@ -4421,7 +4524,10 @@
      "non_equity_incentive": 5800000,
      "all_other": 118292,
      "total": 20168775,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $20,168,775 retained verbatim."
     },
     {
      "name": "Horacio E. Gutierrez",
@@ -4433,7 +4539,10 @@
      "non_equity_incentive": 4480000,
      "all_other": 127574,
      "total": 16286239,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $16,286,239 retained verbatim."
     },
     {
      "name": "Sonia L. Coleman",
@@ -4446,7 +4555,9 @@
      "pension_nqdc": 98924,
      "all_other": 42867,
      "total": 7374471,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $7,374,471 retained verbatim."
     },
     {
      "name": "Kristina K. Schake",
@@ -4458,20 +4569,23 @@
      "non_equity_incentive": 1800000,
      "all_other": 84002,
      "total": 6157209,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (dis-20260122.htm); FY2024 DEF 14A SCT (dis-20250123.htm) for pre-2023 rows. Filing total $6,157,209 retained verbatim."
     }
    ],
    "cik": "0001744489",
    "filing_date": "2026-01-22",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/1744489/000174448926000013/dis-20260122.htm",
    "total_neo_compensation": 95829268,
-   "neo_count": 6,
+   "neo_count": 5,
    "proxy_fiscal_year": 2025,
    "available_years": [
-    2025,
-    2024,
+    2022,
     2023,
-    2022
+    2024,
+    2025
    ],
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "say_on_pay": {
@@ -5163,8 +5277,8 @@
      "pension_nqdc": 44872,
      "all_other": 1587852,
      "total": 40632724,
-     "_total_source": "verified",
-     "_fix_note": "2026-09-03: components rebuilt from primary DEF 14A SCT (pension conflict resolved)"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $40,632,724 retained verbatim. Supersedes prior note: 2026-09-03: components rebuilt from primary DEF 14A SCT (pension conflict resolved)"
     },
     {
      "name": "James Dimon",
@@ -5178,7 +5292,8 @@
      "pension_nqdc": 50826,
      "all_other": 1632636,
      "total": 37683462,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $37,683,462 retained verbatim."
     },
     {
      "name": "James Dimon",
@@ -5192,7 +5307,8 @@
      "pension_nqdc": 40185,
      "all_other": 1420074,
      "total": 35960259,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $35,960,259 retained verbatim."
     },
     {
      "name": "Mary Callahan Erdoes",
@@ -5206,7 +5322,8 @@
      "pension_nqdc": 19779,
      "all_other": 37181,
      "total": 27806960,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $27,806,960 retained verbatim."
     },
     {
      "name": "Mary Callahan Erdoes",
@@ -5220,11 +5337,12 @@
      "pension_nqdc": 29183,
      "all_other": 5000,
      "total": 26134183,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $26,134,183 retained verbatim."
     },
     {
      "name": "Troy Rohrbaugh",
-     "title": "Co-CEO, CIB",
+     "title": "Co-CEO, Commercial & Investment Bank",
      "year": 2025,
      "salary": 1000000,
      "bonus": 10600000,
@@ -5232,11 +5350,14 @@
      "pension_nqdc": 7218,
      "all_other": 8676,
      "total": 25415894,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $25,415,894 retained verbatim."
     },
     {
      "name": "Troy Rohrbaugh",
-     "title": "CEO, CIB",
+     "title": "Co-CEO, CIB",
      "year": 2024,
      "salary": 1000000,
      "bonus": 9200000,
@@ -5246,11 +5367,12 @@
      "pension_nqdc": 4530,
      "all_other": 5373,
      "total": 23559903,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $23,559,903 retained verbatim."
     },
     {
      "name": "Douglas Petno",
-     "title": "CEO, CIB",
+     "title": "Co-CEO, Commercial & Investment Bank",
      "year": 2025,
      "salary": 1000000,
      "bonus": 10600000,
@@ -5260,7 +5382,8 @@
      "pension_nqdc": 41597,
      "all_other": 31825,
      "total": 23073422,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $23,073,422 retained verbatim."
     },
     {
      "name": "Jeremy Barnum",
@@ -5274,7 +5397,8 @@
      "pension_nqdc": 17926,
      "all_other": 0,
      "total": 18212926,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $18,212,926 retained verbatim."
     },
     {
      "name": "Jeremy Barnum",
@@ -5288,7 +5412,8 @@
      "pension_nqdc": 10582,
      "all_other": 5000,
      "total": 16095582,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $16,095,582 retained verbatim."
     },
     {
      "name": "Jeremy Barnum",
@@ -5302,22 +5427,24 @@
      "pension_nqdc": 16257,
      "all_other": 5000,
      "total": 13221257,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $13,221,257 retained verbatim."
     },
     {
      "name": "Daniel Pinto",
-     "title": "President and Chief Operating Officer",
+     "title": "Vice Chair; Former President and COO",
      "year": 2025,
-     "salary": 0,
-     "bonus": 1500000,
-     "stock_awards": 5000000,
+     "salary": 1500000,
+     "bonus": 5000000,
+     "stock_awards": 25000000,
      "option_awards": 0,
      "non_equity_incentive": 0,
-     "pension_nqdc": 25000000,
-     "all_other": 0,
-     "total": 31500000,
+     "pension_nqdc": 0,
+     "all_other": 116871,
+     "total": 31616871,
      "_original_total": 116871,
-     "_total_source": "recomputed"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $31,616,871 retained verbatim."
     },
     {
      "name": "Daniel Pinto",
@@ -5331,7 +5458,8 @@
      "pension_nqdc": 0,
      "all_other": 72089,
      "total": 30072089,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $30,072,089 retained verbatim."
     },
     {
      "name": "Daniel Pinto",
@@ -5345,16 +5473,32 @@
      "pension_nqdc": 0,
      "all_other": 97037,
      "total": 28597037,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $28,597,037 retained verbatim."
+    },
+    {
+     "name": "Mary Callahan Erdoes",
+     "title": "CEO, Asset & Wealth Management",
+     "year": 2025,
+     "salary": 1000000,
+     "bonus": 12000000,
+     "stock_awards": 16500000,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 28934,
+     "all_other": 0,
+     "total": 29528934,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (jpm-20260402.htm). Filing total $29,528,934 retained verbatim."
     }
    ],
    "total_neo_compensation": 135217996,
    "neo_count": 5,
    "proxy_fiscal_year": 2025,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
    "say_on_pay": {
     "approval_pct": 92.35,
@@ -9795,7 +9939,7 @@
    "ticker": "BLK",
    "company_name": "Blackrock Inc",
    "ceo_name": "Laurence D. Fink",
-   "total_compensation": 30217603,
+   "total_compensation": 30768546,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 — FY2024 CEO",
    "median_worker_pay": 172264,
@@ -9812,19 +9956,27 @@
      "all_other": 1081885,
      "total": 37749569,
      "title": "Chairman and Chief Executive Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $37,749,569 retained verbatim."
     },
     {
      "name": "Laurence D. Fink",
      "year": 2024,
-     "salary": 0,
-     "bonus": 1500000,
-     "stock_awards": 10567500,
-     "option_awards": 18150103,
-     "total": 30217603,
+     "salary": 1500000,
+     "bonus": 10567500,
+     "stock_awards": 18150103,
+     "option_awards": 0,
+     "total": 30768546,
      "title": "Chairman and Chief Executive Officer",
      "_original_total": 550943,
-     "_total_source": "recomputed"
+     "_total_source": "def14a_verified_20260909",
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 550943,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $30,768,546 retained verbatim."
     },
     {
      "name": "Laurence D. Fink",
@@ -9835,7 +9987,11 @@
      "all_other": 1089500,
      "total": 26939474,
      "title": "Chairman and Chief Executive Officer",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $26,939,474 retained verbatim."
     },
     {
      "name": "Robert S. Kapito",
@@ -9846,19 +10002,27 @@
      "all_other": 392500,
      "total": 25742506,
      "title": "President",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $25,742,506 retained verbatim."
     },
     {
      "name": "Robert S. Kapito",
      "year": 2024,
-     "salary": 0,
-     "bonus": 1250000,
-     "stock_awards": 6700000,
-     "option_awards": 13299637,
-     "total": 21249637,
+     "salary": 1250000,
+     "bonus": 6700000,
+     "stock_awards": 13299637,
+     "option_awards": 0,
+     "total": 21783374,
      "title": "President",
      "_original_total": 533737,
-     "_total_source": "recomputed"
+     "_total_source": "def14a_verified_20260909",
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 533737,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $21,783,374 retained verbatim."
     },
     {
      "name": "Robert S. Kapito",
@@ -9869,7 +10033,11 @@
      "all_other": 398399,
      "total": 19548685,
      "title": "President",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $19,548,685 retained verbatim."
     },
     {
      "name": "Robert L. Goldstein",
@@ -9879,8 +10047,12 @@
      "stock_awards": 9746734,
      "all_other": 62355,
      "total": 15560939,
-     "title": "President",
-     "_total_source": "verified"
+     "title": "Senior Managing Director and Chief Operating Officer",
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $15,560,939 retained verbatim."
     },
     {
      "name": "Robert L. Goldstein",
@@ -9890,8 +10062,12 @@
      "stock_awards": 8264643,
      "total": 13104913,
      "title": "Senior Managing Director and Chief Operating Officer",
-     "_total_source": "verified",
-     "all_other": 67270
+     "_total_source": "def14a_verified_20260909",
+     "all_other": 67270,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $13,104,913 retained verbatim."
     },
     {
      "name": "Robert L. Goldstein",
@@ -9902,8 +10078,11 @@
      "option_awards": 8500029,
      "all_other": 50435,
      "total": 19135144,
-     "title": "President",
-     "_total_source": "verified"
+     "title": "Senior Managing Director and Chief Operating Officer",
+     "_total_source": "def14a_verified_20260909",
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $19,135,144 retained verbatim."
     },
     {
      "name": "Martin S. Small",
@@ -9913,19 +10092,98 @@
      "stock_awards": 7874937,
      "all_other": 22500,
      "total": 13649287,
-     "title": "Chief Operating Officer",
-     "_total_source": "verified"
+     "title": "Senior Managing Director, Chief Financial Officer and Global Head of Corporate Strategy",
+     "_total_source": "def14a_verified_20260909",
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $13,649,287 retained verbatim."
+    },
+    {
+     "name": "Martin S. Small",
+     "title": "Senior Managing Director, Chief Financial Officer and Global Head of Corporate Strategy",
+     "year": 2024,
+     "salary": 750000,
+     "bonus": 3375000,
+     "stock_awards": 5325766,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 29150,
+     "total": 9479916,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $9,479,916 retained verbatim."
+    },
+    {
+     "name": "Martin S. Small",
+     "title": "Senior Managing Director, Chief Financial Officer and Global Head of Corporate Strategy",
+     "year": 2023,
+     "salary": 500000,
+     "bonus": 2175000,
+     "stock_awards": 3625062,
+     "option_awards": 6500030,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 14150,
+     "total": 12814242,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $12,814,242 retained verbatim."
+    },
+    {
+     "name": "J. Richard Kushel",
+     "title": "Senior Managing Director and Head of the Portfolio Management Group",
+     "year": 2025,
+     "salary": 750000,
+     "bonus": 3375000,
+     "stock_awards": 6824612,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 63855,
+     "total": 11013467,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $11,013,467 retained verbatim."
+    },
+    {
+     "name": "J. Richard Kushel",
+     "title": "Senior Managing Director and Head of the Portfolio Management Group",
+     "year": 2024,
+     "salary": 750000,
+     "bonus": 3175000,
+     "stock_awards": 6075064,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 68770,
+     "total": 10068834,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $10,068,834 retained verbatim."
+    },
+    {
+     "name": "J. Richard Kushel",
+     "title": "Senior Managing Director and Head of the Portfolio Management Group",
+     "year": 2023,
+     "salary": 500000,
+     "bonus": 2525000,
+     "stock_awards": 5099626,
+     "option_awards": 7499956,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 52685,
+     "total": 15677267,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (ny-20260410.htm). Filing total $15,677,267 retained verbatim."
     }
    ],
    "filing_date": "2026-04-10",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/2012383/000130817926000262/ny-20260410.htm",
-   "neo_count": 4,
+   "neo_count": 5,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
-   "total_neo_compensation": 64504883,
+   "total_neo_compensation": 85205583,
    "proxy_fiscal_year": 2025,
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "ceo_gender": "M",
@@ -47304,7 +47562,7 @@
    "ticker": "BA",
    "company_name": "Boeing Co/The",
    "ceo_name": "Robert K. Ortberg",
-   "total_compensation": 17774846,
+   "total_compensation": 18388629,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 — FY2024 CEO",
    "median_worker_pay": 106624,
@@ -47317,15 +47575,17 @@
      "name": "Robert K. Ortberg",
      "title": "President and Chief Executive Officer",
      "year": 2025,
-     "salary": 1500000,
+     "salary": 1125000,
      "bonus": 0,
-     "stock_awards": 7874818,
-     "option_awards": 9624959,
-     "non_equity_incentive": 3930000,
+     "stock_awards": 10999903,
+     "option_awards": 8999958,
+     "non_equity_incentive": 0,
      "pension_change": 0,
-     "all_other": 651612,
-     "total": 23581389,
-     "_total_source": "verified"
+     "all_other": 1276097,
+     "total": 22400958,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $22,400,958 retained verbatim."
     },
     {
      "name": "Robert K. Ortberg",
@@ -47333,14 +47593,16 @@
      "year": 2024,
      "salary": 525000,
      "bonus": 1250000,
-     "stock_awards": 0,
-     "option_awards": 7999900,
-     "non_equity_incentive": 7999946,
+     "stock_awards": 7999900,
+     "option_awards": 7999946,
+     "non_equity_incentive": 0,
      "pension_change": 0,
-     "all_other": 0,
-     "total": 17774846,
+     "all_other": 613783,
+     "total": 18388629,
      "_original_total": 613783,
-     "_total_source": "recomputed"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $18,388,629 retained verbatim."
     },
     {
      "name": "Jesus Malave, Jr",
@@ -47348,28 +47610,29 @@
      "year": 2025,
      "salary": 399808,
      "bonus": 8500000,
-     "stock_awards": 0,
-     "option_awards": 4999976,
-     "non_equity_incentive": 4499911,
-     "all_other": 0,
-     "total": 18399695,
-     "_total_source": "verified",
+     "stock_awards": 4999976,
+     "option_awards": 4499911,
+     "non_equity_incentive": 1650600,
+     "all_other": 132706,
+     "total": 20183001,
+     "_total_source": "def14a_verified_20260909",
      "pension_nqdc": 0,
-     "_fix_note": "2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $20,183,001 retained verbatim. Supersedes prior note: 2026-09-04: zeroed duplicated/misattributed pension_nqdc (remaining components sum exactly to filing total)."
     },
     {
      "name": "Stephanie F. Pope",
      "title": "President and Chief Executive Officer, Commercial Airplanes",
      "year": 2025,
-     "salary": 1200000,
+     "salary": 1325769,
      "bonus": 0,
-     "stock_awards": 4499949,
-     "option_awards": 5499977,
-     "non_equity_incentive": 2625240,
-     "all_other": 416699,
-     "total": 14381826,
-     "_total_source": "verified",
-     "pension_nqdc": 139961
+     "stock_awards": 8699482,
+     "option_awards": 0,
+     "non_equity_incentive": 1740000,
+     "all_other": 113300,
+     "total": 11878551,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $11,878,551 retained verbatim."
     },
     {
      "name": "Stephanie F. Pope",
@@ -47383,67 +47646,74 @@
      "pension_change": 0,
      "all_other": 891052,
      "total": 9961291,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $9,961,291 retained verbatim."
     },
     {
      "name": "Stephanie F. Pope",
      "title": "President and Chief Executive Officer, Commercial Airplanes",
      "year": 2023,
-     "salary": 959231,
+     "salary": 1057692,
      "bonus": 0,
-     "stock_awards": 6437750,
+     "stock_awards": 9999909,
      "option_awards": 0,
-     "non_equity_incentive": 1368500,
-     "all_other": 772022,
-     "total": 9656223,
-     "_total_source": "verified",
-     "pension_nqdc": 118720
+     "non_equity_incentive": 1567000,
+     "all_other": 134900,
+     "total": 12759501,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $12,759,501 retained verbatim."
     },
     {
      "name": "Brett C. Gerry",
      "title": "Chief Legal Officer",
      "year": 2025,
-     "salary": 955154,
+     "salary": 829500,
      "bonus": 0,
-     "stock_awards": 2024848,
-     "option_awards": 2474974,
-     "non_equity_incentive": 1257600,
-     "all_other": 167429,
-     "total": 6952290,
-     "_total_source": "verified",
-     "pension_nqdc": 72285
+     "stock_awards": 2399838,
+     "option_awards": 1199965,
+     "non_equity_incentive": 1226000,
+     "all_other": 15000,
+     "total": 5670303,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $5,670,303 retained verbatim."
     },
     {
      "name": "Brett C. Gerry",
      "title": "Chief Legal Officer",
      "year": 2024,
-     "salary": 900000,
+     "salary": 795000,
      "bonus": 0,
-     "stock_awards": 3116479,
+     "stock_awards": 0,
      "option_awards": 0,
-     "non_equity_incentive": 171000,
+     "non_equity_incentive": 1085000,
      "pension_change": 0,
-     "all_other": 225198,
-     "total": 4412677,
-     "_total_source": "verified"
+     "all_other": 42000,
+     "total": 1922000,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $1,922,000 retained verbatim."
     },
     {
      "name": "Brett C. Gerry",
      "title": "Chief Legal Officer",
      "year": 2023,
-     "salary": 900000,
+     "salary": 765000,
      "bonus": 0,
-     "stock_awards": 6437750,
+     "stock_awards": 2399964,
      "option_awards": 0,
-     "non_equity_incentive": 850500,
-     "all_other": 304729,
-     "total": 8561479,
-     "_total_source": "verified",
-     "pension_nqdc": 68500
+     "non_equity_incentive": 1085000,
+     "all_other": 15000,
+     "total": 4264964,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $4,264,964 retained verbatim."
     },
     {
      "name": "Jeffrey S. Shockey",
-     "title": "Executive Vice President of Government Operations, Global Public Policy and Corporate Strategy",
+     "title": "Executive Vice President of Government Operations, Global Public Policy & Corporate Strategy",
      "year": 2025,
      "salary": 651846,
      "bonus": 0,
@@ -47453,7 +47723,9 @@
      "pension_change": 0,
      "all_other": 69900,
      "total": 6485026,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $6,485,026 retained verbatim."
     },
     {
      "name": "Brian J. West",
@@ -47467,7 +47739,9 @@
      "pension_change": 0,
      "all_other": 211205,
      "total": 8747949,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $8,747,949 retained verbatim."
     },
     {
      "name": "Brian J. West",
@@ -47481,7 +47755,9 @@
      "pension_change": 0,
      "all_other": 302808,
      "total": 6186430,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $6,186,430 retained verbatim."
     },
     {
      "name": "Brian J. West",
@@ -47495,18 +47771,20 @@
      "pension_change": 0,
      "all_other": 488638,
      "total": 11941638,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (d39411ddef14a.htm). Filing total $11,941,638 retained verbatim."
     }
    ],
    "filing_date": "2026-03-06",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/12927/000119312526096787/d39411ddef14a.htm",
-   "neo_count": 6,
+   "neo_count": 4,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
-   "total_neo_compensation": 38335244,
+   "total_neo_compensation": 36458350,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 89.7,
@@ -54661,7 +54939,7 @@
    "ticker": "ZTS",
    "company_name": "Zoetis Inc",
    "ceo_name": "Kristin C. Peck",
-   "total_compensation": 33113520,
+   "total_compensation": 17111520,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 — FY2024 CEO",
    "median_worker_pay": 79134,
@@ -54674,177 +54952,207 @@
      "title": "Chief Executive Officer",
      "year": 2025,
      "salary": 1350000,
-     "bonus": 10218583,
-     "stock_awards": 3406229,
-     "option_awards": 2187000,
-     "non_equity_incentive": 1884697,
-     "all_other": 19046509,
-     "total": 38093018,
-     "_total_source": "rounding"
+     "bonus": 0,
+     "stock_awards": 10218583,
+     "option_awards": 3406229,
+     "non_equity_incentive": 2187000,
+     "all_other": 1884697,
+     "total": 19046509,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $19,046,509 retained verbatim."
     },
     {
      "name": "Kristin C. Peck",
      "title": "Chief Executive Officer",
      "year": 2024,
-     "salary": 9562347,
-     "bonus": 3187500,
-     "stock_awards": 2730000,
-     "option_awards": 426913,
-     "non_equity_incentive": 17206760,
-     "total": 33113520,
-     "_total_source": "rounding"
+     "salary": 1350000,
+     "bonus": 0,
+     "stock_awards": 8992340,
+     "option_awards": 2997562,
+     "non_equity_incentive": 2062500,
+     "total": 17111520,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "all_other": 1709118,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $17,111,520 retained verbatim."
     },
     {
      "name": "Kristin C. Peck",
      "title": "Chief Executive Officer",
      "year": 2023,
-     "salary": 8774860,
-     "bonus": 2924967,
-     "stock_awards": 2106000,
-     "option_awards": 232026,
-     "non_equity_incentive": 15237853,
-     "total": 29275706,
-     "_total_source": "rounding"
+     "salary": 1200000,
+     "bonus": 0,
+     "stock_awards": 9487340,
+     "option_awards": 3162542,
+     "non_equity_incentive": 2062500,
+     "total": 17596522,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "all_other": 1684140,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $17,596,522 retained verbatim."
     },
     {
      "name": "Wetteny Joseph",
-     "title": "Executive Vice Chief Financial Officer",
+     "title": "Executive Vice President and Chief Financial Officer",
      "year": 2025,
-     "salary": 800000,
-     "bonus": 2849611,
-     "stock_awards": 949961,
-     "option_awards": 832000,
-     "non_equity_incentive": 164941,
-     "all_other": 5596513,
-     "total": 11193026,
-     "_total_source": "rounding"
+     "salary": 850000,
+     "bonus": 0,
+     "stock_awards": 3562500,
+     "option_awards": 1187500,
+     "non_equity_incentive": 975000,
+     "all_other": 114900,
+     "total": 6689900,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $6,689,900 retained verbatim."
     },
     {
      "name": "Wetteny Joseph",
-     "title": "Executive Vice Chief Financial Officer",
+     "title": "Executive Vice President and Chief Financial Officer",
      "year": 2024,
-     "salary": 2390440,
-     "bonus": 796875,
-     "stock_awards": 997500,
-     "option_awards": 154646,
-     "non_equity_incentive": 5089461,
-     "total": 9428922,
-     "_total_source": "rounding"
+     "salary": 781250,
+     "bonus": 0,
+     "stock_awards": 3037500,
+     "option_awards": 1012500,
+     "non_equity_incentive": 900000,
+     "total": 5820150,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "all_other": 88900,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $5,820,150 retained verbatim."
     },
     {
      "name": "Wetteny Joseph",
-     "title": "Executive Vice Chief Financial Officer",
+     "title": "Executive Vice President and Chief Financial Officer",
      "year": 2023,
-     "salary": 1987233,
-     "bonus": 662460,
-     "stock_awards": 763425,
-     "option_awards": 109654,
-     "non_equity_incentive": 4247772,
-     "total": 7770544,
-     "_total_source": "rounding"
+     "salary": 600000,
+     "bonus": 0,
+     "stock_awards": 2812500,
+     "option_awards": 937500,
+     "non_equity_incentive": 600000,
+     "total": 5025900,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "all_other": 75900,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $5,025,900 retained verbatim."
     },
     {
      "name": "Jamie Brannan",
      "title": "EVP and Chief Commercial Officer",
      "year": 2025,
-     "salary": 720000,
-     "bonus": 1673899,
-     "stock_awards": 557994,
-     "option_awards": 673920,
-     "non_equity_incentive": 348528,
-     "all_other": 3974341,
-     "total": 7948682,
-     "_total_source": "rounding"
+     "salary": 675000,
+     "bonus": 0,
+     "stock_awards": 1050000,
+     "option_awards": 350000,
+     "non_equity_incentive": 765000,
+     "all_other": 96900,
+     "total": 2936900,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $2,936,900 retained verbatim."
     },
     {
      "name": "Jamie Brannan",
      "title": "EVP and Chief Commercial Officer",
      "year": 2024,
-     "salary": 910910,
-     "bonus": 303705,
-     "stock_awards": 752123,
-     "option_awards": 398450,
-     "non_equity_incentive": 3024611,
+     "salary": 659423,
+     "bonus": 0,
+     "stock_awards": 910910,
+     "option_awards": 303705,
+     "non_equity_incentive": 752123,
      "total": 3024611,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,365,188 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $3,024,611 retained verbatim.",
+     "pension_nqdc": 0,
+     "all_other": 398450
     },
     {
      "name": "Robert J. Polzer",
      "title": "President of Research and Development",
      "year": 2025,
-     "salary": 710000,
-     "bonus": 1666255,
-     "stock_awards": 555461,
-     "option_awards": 590720,
-     "non_equity_incentive": 144721,
-     "all_other": 3667157,
-     "total": 7334314,
-     "_total_source": "rounding"
+     "salary": 675000,
+     "bonus": 0,
+     "stock_awards": 1237500,
+     "option_awards": 412500,
+     "non_equity_incentive": 765000,
+     "all_other": 115400,
+     "total": 3205400,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $3,205,400 retained verbatim."
     },
     {
      "name": "Robert J. Polzer",
      "title": "President of Research and Development",
      "year": 2024,
-     "salary": 1087447,
-     "bonus": 362457,
-     "stock_awards": 739200,
-     "option_awards": 123934,
-     "non_equity_incentive": 2973038,
+     "salary": 660000,
+     "bonus": 0,
+     "stock_awards": 1087447,
+     "option_awards": 362457,
+     "non_equity_incentive": 739200,
      "total": 2973038,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $2,313,038 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $2,973,038 retained verbatim.",
+     "pension_nqdc": 0,
+     "all_other": 123934
     },
     {
      "name": "Robert J. Polzer",
      "title": "President of Research and Development",
      "year": 2023,
-     "salary": 948488,
-     "bonus": 316246,
-     "stock_awards": 538200,
-     "option_awards": 62539,
-     "non_equity_incentive": 2440473,
+     "salary": 575000,
+     "bonus": 0,
+     "stock_awards": 948488,
+     "option_awards": 316246,
+     "non_equity_incentive": 538200,
      "total": 2440473,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,865,473 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $2,440,473 retained verbatim.",
+     "pension_nqdc": 0,
+     "all_other": 62539
     },
     {
      "name": "Roxanne Lagano",
      "title": "EVP, General Counsel and Corporate Secretary",
      "year": 2025,
-     "salary": 700000,
-     "bonus": 1042198,
-     "stock_awards": 347495,
-     "option_awards": 604800,
-     "non_equity_incentive": 130787,
-     "all_other": 2825280,
-     "total": 5650560,
-     "_total_source": "rounding"
+     "salary": 650000,
+     "bonus": 0,
+     "stock_awards": 1012500,
+     "option_awards": 337500,
+     "non_equity_incentive": 740000,
+     "all_other": 106900,
+     "total": 2846900,
+     "_total_source": "def14a_verified_20260909",
+     "pension_nqdc": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $2,846,900 retained verbatim."
     },
     {
      "name": "Roxanne Lagano",
      "title": "EVP, General Counsel and Corporate Secretary",
      "year": 2024,
-     "salary": 937202,
-     "bonus": 312477,
-     "stock_awards": 627375,
-     "option_awards": 117268,
-     "non_equity_incentive": 2615155,
+     "salary": 620833,
+     "bonus": 0,
+     "stock_awards": 937202,
+     "option_awards": 312477,
+     "non_equity_incentive": 627375,
      "total": 2615155,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,994,322 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (zts-20260406.htm). Filing total $2,615,155 retained verbatim.",
+     "pension_nqdc": 0,
+     "all_other": 117268
     }
    ],
    "cik": "1555280",
    "filing_date": "2026-04-08",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/1555280/000155528026000015/zts-20260406.htm",
-   "total_neo_compensation": 51155246,
+   "total_neo_compensation": 31544474,
    "neo_count": 5,
    "proxy_fiscal_year": 2025,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
    "say_on_pay": {
     "approval_pct": 85.57,
@@ -56682,50 +56990,54 @@
    "executives": [
     {
      "name": "Robert Fauber",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2025,
      "salary": 1100000,
      "stock_awards": 11359903,
-     "non_equity_incentive": 2840080,
-     "all_other": 2226000,
-     "total": 17525983,
-     "_total_source": "verified"
+     "non_equity_incentive": 2226000,
+     "all_other": 42212,
+     "total": 18082565,
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "option_awards": 2840080,
+     "pension_nqdc": 514370,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $18,082,565 retained verbatim."
     },
     {
      "name": "Robert Fauber",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2024,
      "salary": 1050000,
      "option_awards": 2539972,
      "pension_nqdc": 240561,
      "total": 16966442,
      "_original_total": 2950000,
-     "_total_source": "def14a_verified_20260907",
-     "bonus": null,
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
      "stock_awards": 10159968,
      "non_equity_incentive": 2950000,
      "all_other": 25941,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $16,966,442 retained verbatim."
     },
     {
      "name": "Robert Fauber",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2023,
      "salary": 1000000,
      "option_awards": 2200036,
      "pension_nqdc": 366643,
      "total": 14387659,
      "_original_total": 2000000,
-     "_total_source": "def14a_verified_20260907",
-     "bonus": null,
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
      "stock_awards": 8799948,
      "non_equity_incentive": 2000000,
      "all_other": 21032,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $14,387,659 retained verbatim."
     },
     {
      "name": "Noémie Heuland",
-     "title": "Senior Vice Chief Financial Officer",
+     "title": "Senior Vice President and Chief Financial Officer",
      "year": 2025,
      "salary": 750000,
      "stock_awards": 2839591,
@@ -56734,18 +57046,24 @@
      "pension_nqdc": 0,
      "all_other": 94500,
      "total": 5444111,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $5,444,111 retained verbatim."
     },
     {
      "name": "Noémie Heuland",
-     "title": "Senior Vice Chief Financial Officer",
+     "title": "Senior Vice President and Chief Financial Officer",
      "year": 2024,
      "salary": 562500,
-     "option_awards": 1599972,
-     "pension_nqdc": 399956,
-     "total": 1350000,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $1,212,428 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "option_awards": 399956,
+     "pension_nqdc": 0,
+     "total": 4046465,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $4,046,465 retained verbatim.",
+     "bonus": 0,
+     "stock_awards": 1599972,
+     "non_equity_incentive": 1350000,
+     "all_other": 134037
     },
     {
      "name": "Richard Steele",
@@ -56756,12 +57074,12 @@
      "pension_nqdc": 167936,
      "total": 3173226,
      "_original_total": 607326,
-     "_total_source": "def14a_verified_20260907",
+     "_total_source": "def14a_verified_20260909",
      "salary": 570000,
-     "bonus": null,
+     "bonus": 0,
      "non_equity_incentive": 607326,
      "all_other": 28487,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $3,173,226 retained verbatim."
     },
     {
      "name": "Richard Steele",
@@ -56772,34 +57090,42 @@
      "pension_nqdc": 80693,
      "total": 2702236,
      "_original_total": 675000,
-     "_total_source": "def14a_verified_20260907",
-     "bonus": null,
+     "_total_source": "rounding",
+     "bonus": 0,
      "stock_awards": 1073309,
      "non_equity_incentive": 675000,
      "all_other": 93216,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity). $1 filing-side rounding discrepancy: components sum to 2,702,235 vs printed 2,702,236."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $2,702,236 retained verbatim. Components foot within $1 (rounding)."
     },
     {
      "name": "Richard Steele",
      "title": "Senior Vice President and General Counsel",
      "year": 2023,
      "salary": 462470,
-     "option_awards": 239808,
-     "pension_nqdc": 60021,
-     "total": 500000,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $262,299 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "option_awards": 60021,
+     "pension_nqdc": 112256,
+     "total": 1409163,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $1,409,163 retained verbatim.",
+     "bonus": 0,
+     "stock_awards": 239808,
+     "non_equity_incentive": 500000,
+     "all_other": 34608
     },
     {
      "name": "Michael West",
      "title": "President of Moody’s Ratings",
      "year": 2025,
-     "stock_awards": 750000,
-     "non_equity_incentive": 2800074,
-     "all_other": 700031,
+     "stock_awards": 2800074,
+     "non_equity_incentive": 1296203,
+     "all_other": 253468,
      "total": 5799776,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,549,671 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $5,799,776 retained verbatim.",
+     "salary": 750000,
+     "bonus": 0,
+     "option_awards": 700031,
+     "pension_nqdc": 0
     },
     {
      "name": "Michael West",
@@ -56807,15 +57133,15 @@
      "year": 2024,
      "salary": 700000,
      "option_awards": 2349991,
-     "pension_nqdc": null,
+     "pension_nqdc": 0,
      "total": 11405806,
      "_original_total": 2091000,
-     "_total_source": "def14a_verified_20260907",
-     "bonus": null,
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
      "stock_awards": 6150316,
      "non_equity_incentive": 2091000,
      "all_other": 114499,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $11,405,806 retained verbatim."
     },
     {
      "name": "Michael West",
@@ -56823,30 +57149,34 @@
      "year": 2023,
      "salary": 625000,
      "option_awards": 449967,
-     "pension_nqdc": null,
+     "pension_nqdc": 0,
      "total": 4057301,
      "_original_total": 1114300,
-     "_total_source": "def14a_verified_20260907",
-     "bonus": null,
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
      "stock_awards": 1800036,
      "non_equity_incentive": 1114300,
      "all_other": 67998,
-     "_parse_note": "Column-shift error: stock awards had landed in option_awards, options in non_equity_incentive, total grabbed from NEIP. Moody's SCT has NO Bonus column (annual incentive in Non-Equity)."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $4,057,301 retained verbatim."
     },
     {
      "name": "Stephen Tulenko",
-     "title": "President of Moody’s Analytics",
+     "title": "Former President of Moody’s Analytics",
      "year": 2025,
-     "stock_awards": 505769,
-     "non_equity_incentive": 2800074,
-     "all_other": 700031,
+     "stock_awards": 2800074,
+     "non_equity_incentive": 0,
+     "all_other": 855676,
      "total": 5420280,
-     "_total_source": "incomplete_components",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $1,414,406 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_total_source": "rounding",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $5,420,280 retained verbatim. Components foot within $1 (rounding).",
+     "salary": 505769,
+     "bonus": 0,
+     "option_awards": 700031,
+     "pension_nqdc": 558729
     },
     {
      "name": "Stephen Tulenko",
-     "title": "President of Moody’s Analytics",
+     "title": "Former President of Moody’s Analytics",
      "year": 2024,
      "salary": 700000,
      "stock_awards": 9500128,
@@ -56855,11 +57185,13 @@
      "pension_nqdc": 190568,
      "all_other": 14022,
      "total": 15654619,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $15,654,619 retained verbatim."
     },
     {
      "name": "Stephen Tulenko",
-     "title": "President of Moody’s Analytics",
+     "title": "Former President of Moody’s Analytics",
      "year": 2023,
      "salary": 625000,
      "stock_awards": 1879775,
@@ -56868,19 +57200,21 @@
      "pension_nqdc": 357432,
      "all_other": 12962,
      "total": 4321206,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260909",
+     "bonus": 0,
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $4,321,206 retained verbatim."
     }
    ],
    "cik": "1059556",
    "filing_date": "2026-03-04",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/1059556/000105955626000019/mco-20260304.htm",
-   "total_neo_compensation": 41808192,
+   "total_neo_compensation": 50775568,
    "neo_count": 5,
    "proxy_fiscal_year": 2025,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
    "say_on_pay": {
     "approval_pct": 96.6,
@@ -103638,7 +103972,7 @@
    "ticker": "FDS",
    "company_name": "FactSet Research Systems Inc",
    "ceo_name": "F. Philip Snow",
-   "total_compensation": 3000075,
+   "total_compensation": 7584472,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2025 — FY2024 CEO",
    "median_worker_pay": 17171,
@@ -103651,105 +103985,108 @@
    "executives": [
     {
      "name": "F. Philip Snow",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2025,
-     "salary": 0,
-     "bonus": 775000,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
+     "salary": 775000,
+     "bonus": 0,
+     "stock_awards": 3750162,
+     "option_awards": 3750093,
+     "non_equity_incentive": 1171376,
      "pension_nqdc": 0,
-     "all_other": 3750162,
-     "total": 4525162,
-     "_total_source": "verified"
+     "all_other": 14300,
+     "total": 9460930,
+     "_total_source": "rounding",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $9,460,930 retained verbatim. Components foot within $1 (rounding)."
     },
     {
      "name": "F. Philip Snow",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2024,
      "salary": 773077,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 3000011,
+     "stock_awards": 3000011,
+     "option_awards": 3000075,
+     "non_equity_incentive": 798146,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 3000075,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $773,013 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "all_other": 13163,
+     "total": 7584472,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $7,584,472 retained verbatim."
     },
     {
      "name": "F. Philip Snow",
-     "title": "Chief Executive Officer",
+     "title": "President and Chief Executive Officer",
      "year": 2023,
      "salary": 746154,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 2500166,
+     "stock_awards": 2500166,
+     "option_awards": 2500089,
+     "non_equity_incentive": 1102406,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 2500089,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $746,231 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "all_other": 13200,
+     "total": 6862015,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $6,862,015 retained verbatim."
     },
     {
      "name": "Helen L. Shan",
-     "title": "Chief Financial Officer",
+     "title": "Executive Vice President, Chief Financial Officer",
      "year": 2025,
-     "salary": 0,
-     "bonus": 570961,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
+     "salary": 570961,
+     "bonus": 0,
+     "stock_awards": 2403341,
+     "option_awards": 900022,
+     "non_equity_incentive": 633851,
      "pension_nqdc": 0,
-     "all_other": 2403341,
-     "total": 2974302,
-     "_total_source": "verified"
+     "all_other": 14000,
+     "total": 4522176,
+     "_total_source": "rounding",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $4,522,176 retained verbatim. Components foot within $1 (rounding)."
     },
     {
      "name": "Helen L. Shan",
-     "title": "Chief Financial Officer",
+     "title": "Executive Vice President, Chief Financial Officer",
      "year": 2024,
      "salary": 523077,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 875162,
+     "stock_awards": 875162,
+     "option_awards": 875027,
+     "non_equity_incentive": 419943,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 875027,
-     "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $523,212 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "all_other": 13800,
+     "total": 2707009,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,707,009 retained verbatim."
     },
     {
      "name": "Helen L. Shan",
-     "title": "Chief Financial Officer",
+     "title": "Executive Vice President, Chief Financial Officer",
      "year": 2023,
      "salary": 498077,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 825221,
+     "stock_awards": 825221,
+     "option_awards": 825072,
+     "non_equity_incentive": 607150,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 825072,
+     "all_other": 13200,
+     "total": 2737784,
      "_total_source": "bloated_component",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $498,226 (exceeds the $25K taxonomy threshold); queued for filing re-verification."
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,737,784 retained verbatim. Filing-side anomaly: components over printed total by $30,936; no correction invented."
     },
     {
      "name": "Goran Skoko",
      "title": "Executive Vice President, Chief Revenue Officer, Managing Director EMEA and Asia Pacific",
      "year": 2025,
-     "salary": 0,
-     "bonus": 586960,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
+     "salary": 586960,
+     "bonus": 0,
+     "stock_awards": 650224,
+     "option_awards": 650060,
+     "non_equity_incentive": 800072,
      "pension_nqdc": 0,
-     "all_other": 650224,
-     "total": 1237184,
-     "_total_source": "verified"
+     "all_other": 48274,
+     "total": 2735591,
+     "_total_source": "rounding",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,735,591 retained verbatim. Components foot within $1 (rounding)."
     },
     {
      "name": "Goran Skoko",
@@ -103757,13 +104094,14 @@
      "year": 2024,
      "salary": 543132,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 575374,
+     "stock_awards": 575374,
+     "option_awards": 575086,
+     "non_equity_incentive": 530757,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 1118506,
-     "_total_source": "rounding"
+     "all_other": 177903,
+     "total": 2402252,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,402,252 retained verbatim."
     },
     {
      "name": "Goran Skoko",
@@ -103771,27 +104109,29 @@
      "year": 2023,
      "salary": 423077,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 500033,
+     "stock_awards": 500033,
+     "option_awards": 500093,
+     "non_equity_incentive": 374238,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 923110,
-     "_total_source": "rounding"
+     "all_other": 1244078,
+     "total": 3041519,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $3,041,519 retained verbatim."
     },
     {
      "name": "Katherine M. Stepp",
      "title": "Executive Vice President, Chief Technology Officer",
      "year": 2025,
-     "salary": 0,
-     "bonus": 438789,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
+     "salary": 438789,
+     "bonus": 0,
+     "stock_awards": 475404,
+     "option_awards": 475034,
+     "non_equity_incentive": 447539,
      "pension_nqdc": 0,
-     "all_other": 475404,
-     "total": 914193,
-     "_total_source": "verified"
+     "all_other": 353056,
+     "total": 2189822,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,189,822 retained verbatim."
     },
     {
      "name": "Katherine M. Stepp",
@@ -103799,22 +104139,38 @@
      "year": 2024,
      "salary": 421154,
      "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 400001,
+     "stock_awards": 400001,
+     "option_awards": 400054,
+     "non_equity_incentive": 325795,
      "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 821155,
-     "_total_source": "verified"
+     "all_other": 462184,
+     "total": 2009188,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $2,009,188 retained verbatim."
+    },
+    {
+     "name": "Christopher McLoughlin",
+     "title": "Executive Vice President, Chief Legal Officer and Corporate Secretary",
+     "year": 2025,
+     "salary": 354466,
+     "bonus": 350000,
+     "stock_awards": 1844268,
+     "option_awards": 343782,
+     "non_equity_incentive": 366034,
+     "pension_nqdc": 0,
+     "all_other": 14000,
+     "total": 3272550,
+     "_total_source": "def14a_verified_20260909",
+     "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (fds-20251027.htm). Filing total $3,272,550 retained verbatim."
     }
    ],
    "neo_count": 4,
    "available_years": [
-    2025,
+    2023,
     2024,
-    2023
+    2025
    ],
-   "total_neo_compensation": 5814763,
+   "total_neo_compensation": 14702921,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 95.58,
