@@ -10105,6 +10105,7 @@ footer li::before {
 .neo-dq-mismatch { background: #9d4edd; }
 .neo-dq-incomplete { background: #fb923c; }
 .neo-dq-bloated { background: #ef476f; }
+.neo-dq-rounding { background: #8ecae6; }
 .neo-dq-summary {
     font-size: 0.72rem;
     opacity: 0.85;
@@ -10125,6 +10126,7 @@ footer li::before {
 [data-theme="light"] .neo-dq-mismatch { background: #7c3aed; }
 [data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
 [data-theme="light"] .neo-dq-bloated { background: #dc2626; }
+[data-theme="light"] .neo-dq-rounding { background: #0284c7; }
 /* Correction audit-trail marker: per-exec _fix_note/_parse_note/_title_note surfaced as hover tooltip (theme-agnostic) */
 .neo-audit-note {
     display: inline-block;

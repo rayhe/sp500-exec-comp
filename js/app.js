@@ -1294,6 +1294,22 @@ function populateMetrics(comp, trends) {
         }
     }
 
+    // === Data Verification Metric Card ===
+    // Pct of NEO rows verified against primary DEF 14A SCTs (metadata guard
+    // recounts these counts on every commit)
+    var verEl = document.getElementById('metric-verified');
+    var verSubEl = document.getElementById('metric-verified-sub');
+    if (verEl) {
+        var dq = comp.metadata && comp.metadata.data_quality_detailed;
+        if (dq && dq.verified_total != null) {
+            var totalRows = comp.companies.reduce(function(a, c) { return a + (c.executives ? c.executives.length : 0); }, 0);
+            var verPct = totalRows > 0 ? 100 * dq.verified_total / totalRows : 0;
+            animateMetricValue(verEl, verPct, function(v) { return v.toFixed(1) + '%'; }, 900);
+            verEl.className = 'metric-value' + (verPct >= 95 ? ' positive' : '');
+            if (verSubEl) verSubEl.textContent = dq.verified_total.toLocaleString('en-US') + '/' + totalRows.toLocaleString('en-US') + ' rows verified';
+        }
+    }
+
     // === Interactive Metric Cards ===
     // Each metric card becomes a navigation entry point into the data
     var metricCards = document.querySelectorAll('.metric-card');
@@ -2624,16 +2640,21 @@ function populateInsights(comp, trends, sectorFilter) {
     })();
 
     // 15. Data Quality insight card
+    // Verified = 'verified' plus all DEF14A-verified re-verification passes —
+    // same convention as metadata.verified_total (guard-checked by
+    // scripts/check_metadata_consistency.py)
+    function _dqIsVerified(src) { return src === 'verified' || (src && src.indexOf('def14a_verified') === 0); }
     (function() {
-        var verified = 0, recomputed = 0, incomplete = 0, bloated = 0, filingOnly = 0, totalRecs = 0;
+        var verified = 0, recomputed = 0, incomplete = 0, bloated = 0, filingOnly = 0, rounding = 0, totalRecs = 0;
         companies.forEach(function(c) {
             (c.executives || []).forEach(function(e) {
                 totalRecs++;
                 var src = e._total_source || 'verified';
-                if (src === 'verified') verified++;
+                if (_dqIsVerified(src)) verified++;
                 else if (src === 'recomputed' || src === 'recomputed_implausible_total' || src === 'computed') recomputed++;
                 else if (src === 'incomplete_components') incomplete++;
                 else if (src === 'bloated_component') bloated++;
+                else if (src === 'rounding') rounding++;
                 else if (src === 'filing_only') filingOnly++;
             });
         });
@@ -2642,7 +2663,7 @@ function populateInsights(comp, trends, sectorFilter) {
         companies.forEach(function(c) {
             (c.executives || []).forEach(function(e) {
                 var src = e._total_source || 'verified';
-                if (src !== 'verified' && src !== 'rounding' && src !== 'minor_gap' && src !== 'component_mismatch') {
+                if (!_dqIsVerified(src) && src !== 'rounding' && src !== 'minor_gap' && src !== 'component_mismatch') {
                     affectedCos.add(c.ticker);
                 }
             });
@@ -2657,6 +2678,7 @@ function populateInsights(comp, trends, sectorFilter) {
                     (recomputed > 0 ? recomputed + ' had totals recomputed from components. ' : '') +
                     (incomplete > 0 ? incomplete + ' have incomplete component breakdown (total from filing). ' : '') +
                     (bloated > 0 ? bloated + ' flagged for potential parsing artifacts. ' : '') +
+                    (rounding > 0 ? rounding + ' stored verbatim with filing-side rounding gaps. ' : '') +
                     affectedCos.size + ' companies have at least one data quality note.',
                 _tickers: []
             });
@@ -8520,6 +8542,10 @@ function setupDetailPanel(companies) {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-mismatch" title="' + _mmNote + '"></span>';
                     } else if (dqSrc === 'bloated_component') {
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-bloated" title="One component may have parsing error — total from filing retained"></span>';
+                    } else if (dqSrc === 'rounding') {
+                        var _rdComps = (exec.salary || 0) + (exec.bonus || 0) + (exec.stock_awards || 0) + (exec.option_awards || 0) + (exec.non_equity_incentive || 0) + ((exec.pension_nqdc || exec.pension_change) || 0) + (exec.all_other || 0);
+                        var _rdDelta = Math.round(Math.abs(_rdComps - (exec.total || 0)));
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-rounding" title="Rounding gap of $' + _rdDelta.toLocaleString('en-US') + ' between components and filing-printed total — values match filing verbatim"></span>';
                     }
                     html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + ' data-sort-salary="' + (exec.salary || 0) + '" data-sort-bonus="' + (exec.bonus || 0) + '" data-sort-stock="' + (exec.stock_awards || 0) + '" data-sort-option="' + (exec.option_awards || 0) + '" data-sort-incentive="' + (exec.non_equity_incentive || 0) + '" data-sort-pension="' + ((exec.pension_nqdc || exec.pension_change) || 0) + '" data-sort-other="' + (exec.all_other || 0) + '" data-sort-total="' + (exec.total || 0) + '">';
                     // Inline sparkline for this exec's multi-year trend
@@ -8623,26 +8649,28 @@ function setupDetailPanel(companies) {
             html += '</div>'; // neo-year-panels wrapper
 
             // Data quality summary for this company's exec records
-            var dqCounts = { verified: 0, recomputed: 0, incomplete: 0, bloated: 0, other: 0 };
+            var dqCounts = { verified: 0, recomputed: 0, incomplete: 0, bloated: 0, rounding: 0, other: 0 };
             company.executives.forEach(function(e) {
                 var src = e._total_source || 'verified';
                 if (src === 'verified') dqCounts.verified++;
                 else if (src === 'recomputed' || src === 'recomputed_implausible_total' || src === 'computed') dqCounts.recomputed++;
                 else if (src === 'incomplete_components') dqCounts.incomplete++;
                 else if (src === 'bloated_component') dqCounts.bloated++;
+                else if (src === 'rounding') dqCounts.rounding++;
                 else dqCounts.other++;
             });
             var dqTotal = company.executives.length;
-            var dqHasIssues = dqCounts.recomputed > 0 || dqCounts.incomplete > 0 || dqCounts.bloated > 0;
+            var dqHasIssues = dqCounts.recomputed > 0 || dqCounts.incomplete > 0 || dqCounts.bloated > 0 || dqCounts.rounding > 0;
 
             html += '<div class="neo-source">';
             html += 'Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '');
             if (dqHasIssues) {
-                html += ' · <span class="neo-dq-summary" title="Data quality: ' + dqCounts.verified + ' verified, ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged">';
+                html += ' · <span class="neo-dq-summary" title="Data quality: ' + dqCounts.verified + ' verified, ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged, ' + dqCounts.rounding + ' rounding gaps">';
                 html += '<span class="neo-dq-dot neo-dq-verified"></span>' + dqCounts.verified;
                 if (dqCounts.recomputed > 0) html += ' <span class="neo-dq-dot neo-dq-recomputed"></span>' + dqCounts.recomputed + ' recomputed';
                 if (dqCounts.incomplete > 0) html += ' <span class="neo-dq-dot neo-dq-incomplete"></span>' + dqCounts.incomplete + ' incomplete';
                 if (dqCounts.bloated > 0) html += ' <span class="neo-dq-dot neo-dq-bloated"></span>' + dqCounts.bloated + ' flagged';
+                if (dqCounts.rounding > 0) html += ' <span class="neo-dq-dot neo-dq-rounding"></span>' + dqCounts.rounding + ' rounding';
                 html += '</span>';
             }
             html += '</div>';
@@ -15562,6 +15590,20 @@ function setupDualSparklineTooltips() {
                 '<p>Grade thresholds apply to the 0–100 composite, not raw percentiles.</p>' +
                 '<div class="method-note">Percentile convention: rank-based, (rank / n) × 100 with 1-based rank, rounded to the nearest integer. The two inverse components sort <em>descending</em>, which equals 100 − ascending%ile + 100/n (≈ ±0.2 pts on a ~500-company scale) — not exactly 100 − ascending%ile.</div>' +
                 '<div class="method-note">Primary sources: SEC DEF 14A Summary Compensation Table (SCT) for NEO totals and role inference, 8-K Item 5.07 for SoP approval %, proxy Item 402(u) for pay ratio and median worker pay. Governance score is a descriptive composite, not a causal claim about governance quality.</div>'
+        },
+        dataq: {
+            title: 'Data Verification Methodology',
+            html: '<h4>Primary Source: SEC DEF 14A</h4>' +
+                '<p>Every NEO compensation row traces to the company\'s DEF 14A proxy filing Summary Compensation Table (SCT), parsed and hand-verified. Each row carries a verification label describing its audit state:</p>' +
+                '<ol>' +
+                '<li><strong>verified</strong> — Stored components and total match the filing SCT verbatim. Includes rows re-verified in dedicated audit passes (<code>def14a_verified_YYYYMMDD</code> labels).</li>' +
+                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 246 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
+                '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
+                '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
+                '</ol>' +
+                '<h4>Coverage (last audit 2026-09-10)</h4>' +
+                '<p>6,682 of 6,778 NEO rows verified (98.6%): 50 rounding, 36 recomputed, 10 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>' +
+                '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
             title: 'Governance Erosion Risk (GER) Methodology',
