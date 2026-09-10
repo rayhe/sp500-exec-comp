@@ -75,12 +75,12 @@ Every NEO row in `data/compensation.json` carries a `_total_source` label descri
 
 | Label | Meaning | Rows |
 |---|---|---|
-| `verified` | Components and total match the filing SCT verbatim. Includes `def14a_verified_YYYYMMDD` re-verification passes | 6,682 (98.6%) |
+| `verified` | Components and total match the filing SCT verbatim. Includes `def14a_verified_YYYYMMDD` re-verification passes | 6,715 (99.1%) |
 | `rounding` | Components don't foot the printed total by a small gap; stored verbatim | 50 |
 | `recomputed` | Filing total missing/implausible; total recomputed from components | 36 |
 | `component_mismatch` | The filing's own components don't sum to its printed total; stored verbatim, flagged | 10 |
 
-Taxonomy decision (2026-09-10): 246 `verified` rows carry $1–$2 deltas between summed components and the printed total (e.g., NVDA/UBER/SOLV FY2025–2026). This is the filer's own rounded-dollar arithmetic, not a parse error, so they stay `verified` — relabeling would cut headline coverage from 98.6% to 95.0% for zero information gain.
+Taxonomy decision (2026-09-10): 246 `verified` rows carry $1–$2 deltas between summed components and the printed total (e.g., NVDA/UBER/SOLV FY2025–2026). This is the filer's own rounded-dollar arithmetic, not a parse error, so they stay `verified` — relabeling would cut headline coverage from 99.1% to 95.4% for zero information gain.
 
 `scripts/check_metadata_consistency.py` (pre-commit hook) asserts every metadata count equals an independent recount of stored records, so stale counts can never be committed.
 
@@ -89,7 +89,7 @@ Taxonomy decision (2026-09-10): 246 `verified` rows carry $1–$2 deltas between
 1. Baseline 500 companies from AFL-CIO Paywatch 2025 (CEO totals, median worker pay, pay ratios)
 2. Enriched 500/500 with full NEO breakdowns parsed from SEC EDGAR primary filings via CIK lookup (497 DEF 14A; BX/KKR 10-K SCT, ERIE DEF 14C — sweep complete 2026-09-08)
 3. Peer network extracted from Compensation Discussion & Analysis sections citing benchmarking peers
-4. Component-total consistency verified: 98.6% verified (6,682 of 6,778 total NEO records), 50 rounding-gap rows, 36 recomputed, 10 filing-side component mismatches (WAB 2023 CHF-conversion artifact; SBUX Kelly 2024 +$141,986; FDS Shan 2023 +$30,936; CDNS Cunningham/Scannell; TSCO Lawton/Mills; RF Turner/Keenan — all documented in-record, values match filings verbatim), multi-year coverage 500/500 (GE CEO H. Lawrence Culp Jr. history 2023-2025 restored from primary DEF 14A)
+4. Component-total consistency verified: 99.1% verified (6,715 of 6,778 total NEO records), 50 rounding-gap rows, 0 recomputed (36-row bucket eliminated 2026-09-10 via primary DEF 14A re-verification), 13 filing-side component mismatches (WAB 2023 CHF-conversion artifact; SBUX Kelly 2024 +$141,986; FDS Shan 2023 +$30,936; CDNS Cunningham/Scannell; TSCO Lawton/Mills; RF Turner/Keenan; KR Sargent 2025 Δ$291; KR Foley 2024 Δ$30; MOS Swager 2024 printed total omits All Other — all documented in-record, values match filings verbatim). XYL name-corruption repair: stored "Snehal Desai" 2023/2024 rows were mislabeled (name appears 0x in any XYL DEF 14A) — now William K. Grogan 2023 and Hayati Yarkadas 2024 per the 2025-proxy SCT. Multi-year coverage 500/500 (GE CEO H. Lawrence Culp Jr. history 2023-2025 restored from primary DEF 14A)
 5. Governance Score (0-100) composite of five equal-weighted components, all normalized as cross-S&P-500 percentiles: Say-on-Pay approval, inverse CEO concentration, inverse CEO-to-worker pay ratio, C-suite team disclosure completeness, and board independence % (500/500 from primary DEF 14A filings). Mean of available components; null if fewer than 2. Grades: A≥80, B≥65, C≥50, D≥35, F<35.
 6. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
 7. Company-level comparability notes (rendered as a banner above the NEO table): multi-year equity grant structure for CSCO (3-year PRSU target in FY2025) and WDC (three overlapping PSU cycles in FY2025), Amazon's 2-3 year grant cycle, partnership/no-DEF-14A disclosure for BX and KKR, CEO succession timing for ORCL. Filing-side component anomalies (e.g., WAB 2023 CHF conversion) carry in-record explanations surfaced via the data-quality dot tooltip.
