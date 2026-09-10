@@ -7099,7 +7099,7 @@ function setupDetailPanel(companies) {
             // Sentence 1: Core position — who, how much, rank, sector context
             var ceoFirst = (company.ceo_name || '').split(/\s+/)[0] || 'The CEO';
             var compStr = formatCurrency(company.total_compensation);
-            var fy = company.proxy_fiscal_year || '';
+            var fy = company.fiscal_year || '';
             var pctileDesc = '';
             if (company._compPercentile >= 99) pctileDesc = 'placing in the top 1%';
             else if (company._compPercentile >= 95) pctileDesc = 'placing in the top 5%';
@@ -7404,7 +7404,7 @@ function setupDetailPanel(companies) {
 
         // Total NEO compensation stat
         if (company.total_neo_compensation) {
-            html += '<div class="detail-stat"><div class="detail-stat-label">Total NEO Comp</div><div class="detail-stat-value">' + formatCurrency(company.total_neo_compensation) + '</div><div class="detail-stat-sub">' + (company.neo_count || '—') + ' Named Executives, FY' + (company.proxy_fiscal_year || '') + '</div></div>';
+            html += '<div class="detail-stat"><div class="detail-stat-label">Total NEO Comp</div><div class="detail-stat-value">' + formatCurrency(company.total_neo_compensation) + '</div><div class="detail-stat-sub">' + (company.neo_count || '—') + ' Named Executives, FY' + (company.fiscal_year || '') + '</div></div>';
         }
 
         // CEO Pay Concentration — CEO comp as % of total NEO compensation
