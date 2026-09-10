@@ -2023,6 +2023,12 @@ header h1 {
     color: #ffd166;
     font-weight: 600;
 }
+.pf-density-note {
+    font-style: italic;
+    color: var(--text-muted);
+    cursor: help;
+}
+[data-theme="light"] .pf-density-note { color: #6b7280; }
 [data-theme="light"] .path-edge-arrow.path-edge-mutual { color: #d97706; }
 [data-theme="light"] .path-mutual-badge { color: #b45309; }
 

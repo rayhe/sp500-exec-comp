@@ -3558,8 +3558,33 @@ function initNetwork(peerData) {
     function _updateDensityUI() {
         if (densityValueEl) densityValueEl.textContent = densityMinDegree;
         if (densityCountEl) {
-            densityCountEl.textContent = densityMinDegree === 0 ? '' : '(' + _densityVisible.size + ' of ' + nodes.length + ')';
+            var _pathThrough = _pathNodesBelowDensity();
+            if (densityMinDegree === 0) {
+                densityCountEl.textContent = '';
+                densityCountEl.title = '';
+            } else if (_pathThrough > 0) {
+                densityCountEl.textContent = '(' + _densityVisible.size + ' of ' + nodes.length + ' · +' + _pathThrough + ' path)';
+                densityCountEl.title = _pathThrough + ' path-finder ' + (_pathThrough === 1 ? 'node is' : 'nodes are') +
+                    ' below the density threshold but still shown — the active path is kept visible through the filter';
+            } else {
+                densityCountEl.textContent = '(' + _densityVisible.size + ' of ' + nodes.length + ')';
+                densityCountEl.title = '';
+            }
         }
+    }
+
+    // Path finder vs density filter: the path result is an explicit query answer, so it is
+    // NOT cleared when the density slider hides path nodes (unlike transient search focus,
+    // which is). This helper counts how many active path nodes sit below the current
+    // threshold so the UI can say so instead of silently contradicting the node count.
+    function _pathNodesBelowDensity() {
+        if (!activePath || !activePath.nodes || activePath.nodes.length < 2) return 0;
+        if (densityMinDegree <= 0) return 0;
+        var hidden = 0;
+        activePath.nodes.forEach(function(t) {
+            if (!_densityVisible.has(t)) hidden++;
+        });
+        return hidden;
     }
 
     function _applyDensity() {
@@ -3590,7 +3615,12 @@ function initNetwork(peerData) {
         densitySlider.addEventListener('change', function() {
             if (typeof announce === 'function') {
                 if (densityMinDegree > 0) {
-                    announce('Graph density reduced — showing ' + _densityVisible.size + ' of ' + nodes.length + ' companies with at least ' + densityMinDegree + ' peer references');
+                    var _msg = 'Graph density reduced — showing ' + _densityVisible.size + ' of ' + nodes.length + ' companies with at least ' + densityMinDegree + ' peer references';
+                    var _phc = _pathNodesBelowDensity();
+                    if (_phc > 0) {
+                        _msg += '; the active path is still shown through the filter (' + _phc + ' path ' + (_phc === 1 ? 'node' : 'nodes') + ' below threshold)';
+                    }
+                    announce(_msg);
                 } else {
                     announce('Density filter cleared — showing all ' + nodes.length + ' companies');
                 }
@@ -6390,6 +6420,12 @@ function initNetwork(peerData) {
         });
         if (mutualCount > 0) {
             html += ' · <span class="path-mutual-badge">' + mutualCount + ' mutual ⇄</span>';
+        }
+        var _phc = _pathNodesBelowDensity();
+        if (_phc > 0) {
+            html += ' · <span class="pf-density-note" title="The density filter hides ' + _phc + ' of these ' + pathResult.nodes.length +
+                ' path companies, but the path result is kept visible through the filter">' +
+                _phc + ' of ' + pathResult.nodes.length + ' path nodes below density threshold — shown through filter</span>';
         }
         html += '</div>';
 
