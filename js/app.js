@@ -15924,8 +15924,8 @@ function setupDualSparklineTooltips() {
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
-                '<h4>Coverage (last audit 2026-09-10)</h4>' +
-                '<p>6,682 of 6,778 NEO rows verified (98.6%): 50 rounding, 36 recomputed, 10 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>' +
+                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-10)</h4>' +
+                '<p>6,718 of 6,781 NEO rows verified (99.1%): 50 rounding, 0 recomputed, 13 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
@@ -15952,6 +15952,22 @@ function setupDualSparklineTooltips() {
         }
     };
 
+    // Data Verification coverage paragraph, computed from the loaded dataset at
+    // modal-open time. Uses the guard-checked metadata buckets (the same
+    // convention as the metric card), so the modal stays truthful across
+    // re-verification runs without a code change. Returns null when the data
+    // isn't loaded yet — the static fallback text above is then kept.
+    function _dataqCoverageHtml() {
+        var dq = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata.data_quality_detailed : null;
+        var total = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata.total_neo_records : null;
+        if (!dq || dq.verified_total == null || !total) return null;
+        var pct = (100 * dq.verified_total / total).toFixed(1);
+        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-10') + ')</h4>' +
+            '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
+            ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + dq.recomputed + ' recomputed, ' +
+            dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
+    }
+
     function openMethodologyModal(method) {
         var content = METHODOLOGY_CONTENT[method];
         if (!content) return;
@@ -15961,6 +15977,14 @@ function setupDualSparklineTooltips() {
         if (!overlay || !titleEl || !bodyEl) return;
         titleEl.textContent = content.title;
         bodyEl.innerHTML = content.html;
+        // Data Verification modal: render the Coverage block from live data so the
+        // modal can never contradict the metric card (the hardcoded text went stale
+        // within 24h of being written). Buckets come from guard-checked metadata.
+        if (method === 'dataq') {
+            var covBlock = document.getElementById('dataq-coverage-block');
+            var covHtml = _dataqCoverageHtml();
+            if (covBlock && covHtml) covBlock.innerHTML = covHtml;
+        }
         overlay.hidden = false;
         // Focus close button for accessibility
         var closeBtn = document.getElementById('methodology-modal-close');
