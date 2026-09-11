@@ -77,8 +77,8 @@ Every NEO row in `data/compensation.json` carries a `_total_source` label descri
 |---|---|---|
 | `verified` | Components and total match the filing SCT verbatim. Includes `def14a_verified_YYYYMMDD` re-verification passes | 6,715 (99.1%) |
 | `rounding` | Components don't foot the printed total by a small gap; stored verbatim | 50 |
-| `recomputed` | Filing total missing/implausible; total recomputed from components | 36 |
-| `component_mismatch` | The filing's own components don't sum to its printed total; stored verbatim, flagged | 10 |
+| `recomputed` | Filing total missing/implausible; total recomputed from components | 0 (36-row bucket eliminated 2026-09-10) |
+| `component_mismatch` | The filing's own components don't sum to its printed total; stored verbatim, flagged | 13 |
 
 Taxonomy decision (2026-09-10): 246 `verified` rows carry $1–$2 deltas between summed components and the printed total (e.g., NVDA/UBER/SOLV FY2025–2026). This is the filer's own rounded-dollar arithmetic, not a parse error, so they stay `verified` — relabeling would cut headline coverage from 99.1% to 95.4% for zero information gain.
 
@@ -93,6 +93,7 @@ Taxonomy decision (2026-09-10): 246 `verified` rows carry $1–$2 deltas between
 5. Governance Score (0-100) composite of five equal-weighted components, all normalized as cross-S&P-500 percentiles: Say-on-Pay approval, inverse CEO concentration, inverse CEO-to-worker pay ratio, C-suite team disclosure completeness, and board independence % (500/500 from primary DEF 14A filings). Mean of available components; null if fewer than 2. Grades: A≥80, B≥65, C≥50, D≥35, F<35.
 6. Continuous panel-evaluated iteration loop (5-critic panel: data richness, visual design, interactivity, network graph quality, analytical depth)
 7. Company-level comparability notes (rendered as a banner above the NEO table): multi-year equity grant structure for CSCO (3-year PRSU target in FY2025) and WDC (three overlapping PSU cycles in FY2025), Amazon's 2-3 year grant cycle, partnership/no-DEF-14A disclosure for BX and KKR, CEO succession timing for ORCL. Filing-side component anomalies (e.g., WAB 2023 CHF conversion) carry in-record explanations surfaced via the data-quality dot tooltip.
+8. Grant-year smoothing toggle (2026-09-10): companies with structurally lumpy multi-year equity grants are flagged `_multi_year_equity` in the data (AMZN — grants every 2-3 years; CSCO — 3-year PRSU in a single year; WELL — front-loaded $813.2M mega-grant FY2025; TSLA — multi-year performance packages granted years apart), each with an in-record `_multi_year_equity_basis` evidence note. Expanding the company row shows a "Smooth equity grants" toggle; when on, each NEO's stock + option awards are spread evenly across that NEO's own available fiscal years (the filing's SCT window, typically 3 years) and added back to as-filed cash comp, producing annualized totals for apples-to-apples comparison. As-filed figures remain the default; smoothed figures are clearly badged and never replace stored data. NEOs with a single fiscal year on record show — (nothing to smooth).
 
 ## License
 

@@ -5241,7 +5241,9 @@
         "chair_independent": false,
         "lead_independent_director": true
       },
-      "notes": "FY2025 stock awards include a 3-year performance RSU (PRSU) target granted in a single year; FY2025 totals are not directly comparable to prior-year single-year equity grants."
+      "notes": "FY2025 stock awards include a 3-year performance RSU (PRSU) target granted in a single year; FY2025 totals are not directly comparable to prior-year single-year equity grants.",
+      "_multi_year_equity": true,
+      "_multi_year_equity_basis": "FY2025 stock awards include a 3-year performance RSU (PRSU) target granted in a single year (company comparability note)."
     },
     {
       "ticker": "JPM",
@@ -39156,7 +39158,9 @@
         "independent_directors": 8,
         "independence_pct": 88.9,
         "chair_independent": false
-      }
+      },
+      "_multi_year_equity": true,
+      "_multi_year_equity_basis": "Shankh Mitra received $813.2M in stock awards in FY2025 (60x FY2024), a front-loaded multi-year mega-grant verified against the DEF 14A filed 2026-04-10 (see mega-grant note)."
     },
     {
       "ticker": "LOW",
@@ -112777,7 +112781,9 @@
         "votes_against": 470466853,
         "filing_date": "2026-05-22",
         "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926065717/tm2614288d1_8k.htm"
-      }
+      },
+      "_multi_year_equity": true,
+      "_multi_year_equity_basis": "Amazon grants stock awards every 2-3 years with no annual equity in off years (company comparability note; 2024 includes large multi-year RSU grants)."
     },
     {
       "ticker": "APO",
@@ -114001,7 +114007,9 @@
         "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465925090866/tm252289-12_def14a.htm"
       },
       "pay_ratio": 0,
-      "median_worker_pay": 57243
+      "median_worker_pay": 57243,
+      "_multi_year_equity": true,
+      "_multi_year_equity_basis": "Tesla CEO equity awards are multi-year performance packages granted years apart: stored SCT shows $0 stock/option awards FY2022-2024 and a $158.4B stock award in FY2025."
     }
   ],
   "last_updated": "2026-09-09"

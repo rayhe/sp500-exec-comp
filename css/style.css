@@ -7560,6 +7560,42 @@ footer li::before {
     background: rgba(45, 212, 191, 0.07);
     border-color: rgba(45, 212, 191, 0.4);
 }
+/* Grant-year smoothing banner (green accent — annualized, not filing-printed figures) */
+.neo-note-banner--smooth {
+    background: rgba(6, 214, 160, 0.07);
+    border-color: rgba(6, 214, 160, 0.4);
+}
+/* Grant smoothing toggle button (mirrors .neo-compare-years-btn treatment) */
+.neo-smooth-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-left: 0.25rem;
+}
+.neo-smooth-btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    border-style: solid;
+}
+.neo-smooth-btn.active {
+    color: var(--positive);
+    border-color: var(--positive);
+    border-style: solid;
+    background: rgba(6, 214, 160, 0.08);
+}
+/* Smoothed values are pre-rendered but hidden until the toggle turns on */
+.neo-smoothed-total { display: none; color: var(--positive); font-weight: 600; }
+.neo-smooth-mode .neo-smoothed-total { display: inline; }
+.neo-smooth-mode .neo-filed-total { display: none; }
+/* In smoothing mode the FY total row and YoY line show the smoothed sums */
+.neo-smooth-mode .neo-total-row .neo-smoothed-total,
+.neo-smooth-mode .neo-yoy .neo-smoothed-total { font-weight: 700; }
 .neo-years-available {
     font-size: 0.75rem;
     color: var(--text-muted);

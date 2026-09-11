@@ -8433,6 +8433,46 @@ function setupDetailPanel(companies) {
             allYears.sort(function(a,b) { return b - a; });
             var latestYear = allYears[0];
 
+            // Multi-year equity grant smoothing (AMZN/TSLA-style lumpy grants).
+            // For companies flagged _multi_year_equity, pre-compute per-NEO smoothed totals:
+            // each NEO's stock+option awards are spread evenly across that NEO's own
+            // available fiscal years (the filing's SCT window), then added back to the
+            // as-filed non-equity components. Single-year NEOs have nothing to smooth.
+            // Keyed normName|year -> { smoothed, avgEquity, years, singleYear }.
+            var grantSmoothMap = {};
+            if (company._multi_year_equity) {
+                var _gsByName = {};
+                company.executives.forEach(function(e) {
+                    var k = (e.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                    if (!k) return;
+                    if (!_gsByName[k]) _gsByName[k] = [];
+                    _gsByName[k].push(e);
+                });
+                Object.keys(_gsByName).forEach(function(k) {
+                    var rows = _gsByName[k];
+                    if (rows.length < 2) {
+                        // Single fiscal year on record: smoothing not applicable.
+                        rows.forEach(function(e) {
+                            grantSmoothMap[k + '|' + e.year] = { smoothed: e.total || 0, avgEquity: 0, years: 1, singleYear: true };
+                        });
+                        return;
+                    }
+                    var eqSum = 0;
+                    rows.forEach(function(e) { eqSum += (e.stock_awards || 0) + (e.option_awards || 0); });
+                    var avgEq = eqSum / rows.length;
+                    rows.forEach(function(e) {
+                        var eq = (e.stock_awards || 0) + (e.option_awards || 0);
+                        grantSmoothMap[k + '|' + e.year] = {
+                            smoothed: Math.round((e.total || 0) - eq + avgEq),
+                            avgEquity: Math.round(avgEq),
+                            years: rows.length,
+                            singleYear: false
+                        };
+                    });
+                });
+            }
+            var hasGrantSmoothing = !!company._multi_year_equity;
+
             // Pre-compute per-executive compensation trend across all available years
             var execTrendMap = {};
             company.executives.forEach(function(e) {
@@ -8469,7 +8509,17 @@ function setupDetailPanel(companies) {
                     html += ' <span class="neo-badge" title="Fiscal years covered in this company\u2019s NEO records (' + _yrs.join(', ') + ')">' + _yrLabel + '</span>';
                 }
             }
+            // Multi-year equity grant smoothing toggle (only for flagged lumpy-grant companies)
+            if (hasGrantSmoothing) {
+                html += ' <button class="neo-smooth-btn" data-action="toggle-smooth" title="Spread each NEO\u2019s stock + option awards evenly across that NEO\u2019s available fiscal years, for apples-to-apples comparison across grant years" aria-pressed="false">\u{1F4CA} Smooth equity grants</button>';
+            }
             html += '</div>';
+
+            // Smoothing method banner (hidden until the toggle is ON)
+            if (hasGrantSmoothing) {
+                var _gsBasis = company._multi_year_equity_basis ? String(company._multi_year_equity_basis).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;') : '';
+                html += '<div class="neo-note-banner neo-note-banner--smooth neo-smooth-banner" style="display:none" role="note"><span class="neo-note-icon" aria-hidden="true">\u{1F4CA}</span><span><strong>Grant-year smoothing ON.</strong> Stock + option awards are spread evenly across each NEO\u2019s available fiscal years, then added back to as-filed cash comp. Smoothed figures are annualized for comparability; they are not the filing-printed totals. NEOs with a single fiscal year on record show \u2014. Basis: ' + _gsBasis + '</span></div>';
+            }
 
             // Company-level comparability note (multi-year equity grants, filing quirks, etc.)
             if (company.notes) {
@@ -8512,6 +8562,8 @@ function setupDetailPanel(companies) {
             allYears.forEach(function(yr, yrIdx) {
                 var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
                 var yrTotal = 0;
+                var yrSmoothTotal = 0; // grant-year smoothed FY sum (only meaningful when hasGrantSmoothing)
+                var yrSmoothApplies = false; // true once any NEO in this FY has multi-year smoothing
 
                 html += '<div class="neo-year-panel" data-year="' + yr + '"' + (yrIdx > 0 ? ' style="display:none"' : '') + '>';
                 html += '<div class="neo-table-wrap"><table class="neo-table">';
@@ -8530,6 +8582,15 @@ function setupDetailPanel(companies) {
                 yrExecs.forEach(function(exec) {
                     var total = exec.total || 0;
                     yrTotal += total;
+                    // Grant-year smoothed total for this NEO (pre-computed above)
+                    var _gsKey = ((exec.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + exec.year;
+                    var _gs = hasGrantSmoothing ? grantSmoothMap[_gsKey] : null;
+                    if (_gs && !_gs.singleYear) {
+                        yrSmoothTotal += _gs.smoothed;
+                        yrSmoothApplies = true;
+                    } else {
+                        yrSmoothTotal += total; // single-year NEO: smoothing is identity
+                    }
                     var isCeo = exec.title && (/chief executive/i.test(exec.title) || /\bceo\b/i.test(exec.title));
                     var dqSrc = exec._total_source || 'verified';
                     var dqDotHtml = '';
@@ -8604,7 +8665,15 @@ function setupDetailPanel(companies) {
                     html += '<td class="neo-num">' + (exec.non_equity_incentive ? formatCompact(exec.non_equity_incentive) : '—') + '</td>';
                     if (yrHasPension) html += '<td class="neo-num">' + ((exec.pension_nqdc || exec.pension_change) ? formatCompact(exec.pension_nqdc || exec.pension_change) : '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.all_other ? formatCompact(exec.all_other) : '—') + '</td>';
-                    html += '<td class="neo-num neo-total">' + formatCompact(total) + dqDotHtml;
+                    html += '<td class="neo-num neo-total"><span class="neo-filed-total">' + formatCompact(total) + '</span>';
+                    if (_gs && hasGrantSmoothing) {
+                        if (_gs.singleYear) {
+                            html += '<span class="neo-smoothed-total" title="Single fiscal year on record \u2014 nothing to smooth">\u2014</span>';
+                        } else {
+                            html += '<span class="neo-smoothed-total" title="Smoothed: ' + formatCurrency(_gs.smoothed) + ' (avg equity ' + formatCurrency(_gs.avgEquity) + '/yr over ' + _gs.years + ' FYs)">' + formatCompact(_gs.smoothed) + '</span>';
+                        }
+                    }
+                    html += dqDotHtml;
                     // Role benchmark context badge
                     if (_roleBenchmarks && total > 0) {
                         var _execRole = classifyExecRole(exec.title);
@@ -8622,9 +8691,13 @@ function setupDetailPanel(companies) {
                     html += '</tr>';
                 });
 
-                // Total row
+                // Total row (as-filed + smoothed FY sums, swapped by the toggle)
                 html += '<tr class="neo-total-row"><td colspan="' + (neoCols + 1) + '" class="neo-total-label">Total NEO Compensation</td>';
-                html += '<td class="neo-num neo-total">' + formatCurrency(yrTotal) + '</td></tr>';
+                html += '<td class="neo-num neo-total"><span class="neo-filed-total">' + formatCurrency(yrTotal) + '</span>';
+                if (hasGrantSmoothing) {
+                    html += '<span class="neo-smoothed-total" title="Smoothed FY total: each NEO\u2019s equity averaged over that NEO\u2019s fiscal years">' + formatCurrency(yrSmoothTotal) + '</span>';
+                }
+                html += '</td></tr>';
 
                 html += '</tbody></table></div>';
 
@@ -8634,12 +8707,25 @@ function setupDetailPanel(companies) {
                     var nextYr = allYears[nextYrIdx];
                     var nextYrExecs = company.executives.filter(function(e) { return e.year === nextYr; });
                     var nextYrTotal = 0;
-                    nextYrExecs.forEach(function(e) { nextYrTotal += (e.total || 0); });
+                    var nextYrSmoothTotal = 0;
+                    nextYrExecs.forEach(function(e) {
+                        nextYrTotal += (e.total || 0);
+                        var _ngsKey = ((e.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + e.year;
+                        var _ngs = hasGrantSmoothing ? grantSmoothMap[_ngsKey] : null;
+                        nextYrSmoothTotal += (_ngs && !_ngs.singleYear) ? _ngs.smoothed : (e.total || 0);
+                    });
                     if (nextYrTotal > 0) {
                         var yoyChange = ((yrTotal - nextYrTotal) / nextYrTotal * 100).toFixed(1);
                         var yoySign = parseFloat(yoyChange) >= 0 ? '+' : '';
                         var yoyCls = parseFloat(yoyChange) >= 0 ? 'positive' : 'negative';
-                        html += '<div class="neo-yoy"><span class="neo-yoy-label">vs FY' + nextYr + ':</span> ' + formatCurrency(nextYrTotal) + ' <span class="' + yoyCls + '">(' + yoySign + yoyChange + '% YoY)</span></div>';
+                        html += '<div class="neo-yoy"><span class="neo-yoy-label">vs FY' + nextYr + ':</span> <span class="neo-filed-total">' + formatCurrency(nextYrTotal) + ' <span class="' + yoyCls + '">(' + yoySign + yoyChange + '% YoY)</span></span>';
+                        if (hasGrantSmoothing) {
+                            var yoySmoothChange = nextYrSmoothTotal > 0 ? ((yrSmoothTotal - nextYrSmoothTotal) / nextYrSmoothTotal * 100).toFixed(1) : '0.0';
+                            var yoySmoothSign = parseFloat(yoySmoothChange) >= 0 ? '+' : '';
+                            var yoySmoothCls = parseFloat(yoySmoothChange) >= 0 ? 'positive' : 'negative';
+                            html += '<span class="neo-smoothed-total" title="YoY on grant-year-smoothed totals">' + formatCurrency(nextYrSmoothTotal) + ' <span class="' + yoySmoothCls + '">(' + yoySmoothSign + yoySmoothChange + '% YoY smoothed)</span></span>';
+                        }
+                        html += '</div>';
                     }
                 }
 
@@ -9310,6 +9396,22 @@ function setupDetailPanel(companies) {
                 var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
                 tabs[next].click();
                 tabs[next].focus();
+            });
+        });
+
+        detailRow.querySelectorAll('[data-action="toggle-smooth"]').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var section = btn.closest('.neo-section');
+                if (!section) return;
+                var isSmooth = section.classList.toggle('neo-smooth-mode');
+                btn.classList.toggle('active', isSmooth);
+                btn.innerHTML = isSmooth ? '✓ Smoothing on' : '📊 Smooth equity grants';
+                btn.setAttribute('aria-pressed', isSmooth ? 'true' : 'false');
+                // Show/hide the smoothing method banner
+                section.querySelectorAll('.neo-smooth-banner').forEach(function(b) {
+                    b.style.display = isSmooth ? '' : 'none';
+                });
             });
         });
 
