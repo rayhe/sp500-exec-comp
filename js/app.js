@@ -7705,6 +7705,45 @@ function setupDetailPanel(companies) {
             }
         }
 
+            // Multi-year equity grant smoothing (AMZN/TSLA-style lumpy grants).
+            // For companies flagged _multi_year_equity, pre-compute per-NEO smoothed totals:
+            // each NEO's stock+option awards are spread evenly across that NEO's own
+            // available fiscal years (the filing's SCT window), then added back to the
+            // as-filed non-equity components. Single-year NEOs have nothing to smooth.
+            // Keyed normName|year -> { smoothed, avgEquity, years, singleYear }.
+            var grantSmoothMap = {};
+            if (company._multi_year_equity) {
+                var _gsByName = {};
+                company.executives.forEach(function(e) {
+                    var k = (e.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                    if (!k) return;
+                    if (!_gsByName[k]) _gsByName[k] = [];
+                    _gsByName[k].push(e);
+                });
+                Object.keys(_gsByName).forEach(function(k) {
+                    var rows = _gsByName[k];
+                    if (rows.length < 2) {
+                        // Single fiscal year on record: smoothing not applicable.
+                        rows.forEach(function(e) {
+                            grantSmoothMap[k + '|' + e.year] = { smoothed: e.total || 0, avgEquity: 0, years: 1, singleYear: true };
+                        });
+                        return;
+                    }
+                    var eqSum = 0;
+                    rows.forEach(function(e) { eqSum += (e.stock_awards || 0) + (e.option_awards || 0); });
+                    var avgEq = eqSum / rows.length;
+                    rows.forEach(function(e) {
+                        var eq = (e.stock_awards || 0) + (e.option_awards || 0);
+                        grantSmoothMap[k + '|' + e.year] = {
+                            smoothed: Math.round((e.total || 0) - eq + avgEq),
+                            avgEquity: Math.round(avgEq),
+                            years: rows.length,
+                            singleYear: false
+                        };
+                    });
+                });
+            }
+            var hasGrantSmoothing = !!company._multi_year_equity;
         // Multi-Year CEO Pay Composition Evolution — 100%-stacked bars showing how pay mix shifted across fiscal years
         if (company.executives && company.executives.length > 0) {
             var _ceYears = [];
@@ -7750,9 +7789,36 @@ function setupDetailPanel(companies) {
                                 segTotal += v;
                             }
                         });
+                        // Grant-year smoothed variant (lumpy-grant companies): replace the stock+option
+                        // segments with the CEO's averaged equity across their own available fiscal years.
+                        var segsSmooth = segs;
+                        var totalSmooth = segTotal;
+                        var _ceSmoothYears = null;
+                        if (hasGrantSmoothing) {
+                            var _ceGsKey = ((ceo.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + yr;
+                            var _ceGs = grantSmoothMap[_ceGsKey] || null;
+                            if (_ceGs && !_ceGs.singleYear) {
+                                segsSmooth = [];
+                                totalSmooth = 0;
+                                _ceCompKeys.forEach(function(ck) {
+                                    if (ck.key === 'stock_awards' || ck.key === 'option_awards') return;
+                                    var sv = ceo[ck.key] || 0;
+                                    if (sv > 0) {
+                                        segsSmooth.push({ label: ck.label, value: sv, color: ck.color });
+                                        totalSmooth += sv;
+                                    }
+                                });
+                                if (_ceGs.avgEquity > 0) {
+                                    segsSmooth.push({ label: 'Equity (avg)', value: _ceGs.avgEquity, color: '#5eead4', smoothedEquity: true, smoothYears: _ceGs.years });
+                                    totalSmooth += _ceGs.avgEquity;
+                                }
+                                _ceSmoothYears = _ceGs.years;
+                            }
+                        }
                         if (segTotal > 0) {
                             segs.forEach(function(s) { s.pct = s.value / segTotal * 100; });
-                            _ceData.push({ year: yr, name: ceo.name || company.ceo_name, segments: segs, total: segTotal });
+                            segsSmooth.forEach(function(s) { s.pct = s.value / totalSmooth * 100; });
+                            _ceData.push({ year: yr, name: ceo.name || company.ceo_name, segments: segs, total: segTotal, segmentsSmooth: segsSmooth, totalSmooth: totalSmooth, smoothYears: _ceSmoothYears });
                         }
                     }
                 });
@@ -7784,47 +7850,114 @@ function setupDetailPanel(companies) {
                         }
                     }
 
+                    // Smoothed shift summary (lumpy-grant companies): same computation over the
+                    // smoothed segments so the toggle shows the grant-year-smoothed mix shift.
+                    var _ceShiftTextSmooth = '';
+                    if (hasGrantSmoothing) {
+                        var _ceSmoothLabels = [];
+                        _ceData.forEach(function(d) {
+                            d.segmentsSmooth.forEach(function(s) {
+                                if (_ceSmoothLabels.indexOf(s.label) < 0) _ceSmoothLabels.push(s.label);
+                            });
+                        });
+                        var _ceShiftsS = [];
+                        _ceSmoothLabels.forEach(function(lbl) {
+                            var fSeg = _ceFirst.segmentsSmooth.find(function(s) { return s.label === lbl; });
+                            var lSeg = _ceLast.segmentsSmooth.find(function(s) { return s.label === lbl; });
+                            var dS = (lSeg ? lSeg.pct : 0) - (fSeg ? fSeg.pct : 0);
+                            if (Math.abs(dS) >= 1) {
+                                _ceShiftsS.push({ label: lbl, delta: dS });
+                            }
+                        });
+                        _ceShiftsS.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
+                        if (_ceShiftsS.length > 0) {
+                            var t0 = _ceShiftsS[0];
+                            _ceShiftTextSmooth = t0.label + ' ' + (t0.delta > 0 ? '+' : '') + t0.delta.toFixed(1) + 'pp';
+                            if (_ceShiftsS.length > 1) {
+                                var t1 = _ceShiftsS[1];
+                                _ceShiftTextSmooth += ', ' + t1.label + ' ' + (t1.delta > 0 ? '+' : '') + t1.delta.toFixed(1) + 'pp';
+                            }
+                        }
+                    }
+
+                    // Row renderer shared by the as-filed and grant-year-smoothed bar variants
+                    function _ceRowHtml(d, useSmooth) {
+                        var _sg = useSmooth ? d.segmentsSmooth : d.segments;
+                        var _tt = useSmooth ? d.totalSmooth : d.total;
+                        var r = '';
+                        r += '<div class="comp-evo-row">';
+                        r += '<div class="comp-evo-year">FY' + d.year + '</div>';
+                        r += '<div class="comp-evo-bar-track">';
+                        _sg.forEach(function(seg) {
+                            if (seg.pct < 0.5) return;
+                            var _sTip = seg.label + ': ' + formatCurrency(seg.value) + ' (' + seg.pct.toFixed(1) + '%)' + (seg.smoothedEquity ? ' — stock+option awards averaged over ' + seg.smoothYears + ' FYs' : '');
+                            r += '<div class="comp-evo-seg" style="width:' + seg.pct.toFixed(1) + '%;background:' + seg.color + '" title="' + _sTip + '">';
+                            if (seg.pct >= 10) {
+                                r += '<span class="comp-evo-seg-label">' + Math.round(seg.pct) + '%</span>';
+                            }
+                            r += '</div>';
+                        });
+                        r += '</div>';
+                        r += '<div class="comp-evo-total">' + formatCompact(_tt) + '</div>';
+                        r += '</div>';
+                        return r;
+                    }
+
+                    // Legend renderer: filed order via _ceCompKeys; smoothed order collapses equity into "Equity (avg)"
+                    var _ceCompKeysSmooth = [
+                        { label: 'Salary', color: '#06d6a0' },
+                        { label: 'Equity (avg)', color: '#5eead4' },
+                        { label: 'Incentive', color: '#a78bfa' },
+                        { label: 'Bonus', color: '#8b5cf6' },
+                        { label: 'Pension', color: '#fb923c' },
+                        { label: 'Other', color: '#ffd166' }
+                    ];
+                    function _ceLegendHtml(useSmooth) {
+                        var _ceLegendLabels = {};
+                        _ceData.forEach(function(d) {
+                            (useSmooth ? d.segmentsSmooth : d.segments).forEach(function(s) { _ceLegendLabels[s.label] = s.color; });
+                        });
+                        var lh = '<div class="comp-evo-legend' + (useSmooth ? ' comp-evo-smoothed' : ' comp-evo-filed') + '">';
+                        (useSmooth ? _ceCompKeysSmooth : _ceCompKeys).forEach(function(ck) {
+                            if (_ceLegendLabels[ck.label]) {
+                                lh += '<span class="comp-evo-leg-item"><span class="comp-evo-leg-dot" style="background:' + ck.color + '"></span>' + ck.label + '</span>';
+                            }
+                        });
+                        lh += '</div>';
+                        return lh;
+                    }
+
                     html += '<div class="comp-evo-section">';
                     html += '<div class="comp-evo-header">';
                     html += '<span class="comp-evo-title">Pay Mix Evolution</span>';
                     if (_ceShiftText) {
-                        html += '<span class="comp-evo-shift" title="Biggest composition shift from FY' + _ceFirst.year + ' to FY' + _ceLast.year + '">' + _ceShiftText + '</span>';
+                        html += '<span class="comp-evo-shift comp-evo-filed" title="Biggest composition shift from FY' + _ceFirst.year + ' to FY' + _ceLast.year + '">' + _ceShiftText + '</span>';
+                    }
+                    if (hasGrantSmoothing && _ceShiftTextSmooth) {
+                        html += '<span class="comp-evo-shift comp-evo-smoothed" title="Biggest composition shift on the grant-year-smoothed mix, FY' + _ceFirst.year + ' to FY' + _ceLast.year + '">' + _ceShiftTextSmooth + '</span>';
                     }
                     html += '</div>';
 
                     // Render 100%-stacked bars for each year
-                    html += '<div class="comp-evo-bars">';
-                    _ceData.forEach(function(d, idx) {
-                        html += '<div class="comp-evo-row">';
-                        html += '<div class="comp-evo-year">FY' + d.year + '</div>';
-                        html += '<div class="comp-evo-bar-track">';
-                        d.segments.forEach(function(seg) {
-                            if (seg.pct < 0.5) return;
-                            html += '<div class="comp-evo-seg" style="width:' + seg.pct.toFixed(1) + '%;background:' + seg.color + '" title="' + seg.label + ': ' + formatCurrency(seg.value) + ' (' + seg.pct.toFixed(1) + '%)">';
-                            if (seg.pct >= 10) {
-                                html += '<span class="comp-evo-seg-label">' + Math.round(seg.pct) + '%</span>';
-                            }
-                            html += '</div>';
+                    html += '<div class="comp-evo-bars comp-evo-filed">';
+                    _ceData.forEach(function(d) {
+                        html += _ceRowHtml(d, false);
+                    });
+                    html += '</div>';
+                    if (hasGrantSmoothing) {
+                        html += '<div class="comp-evo-bars comp-evo-smoothed" title="Grant-year smoothed: stock + option awards averaged across each CEO\u2019s available fiscal years">';
+                        _ceData.forEach(function(d) {
+                            html += _ceRowHtml(d, true);
                         });
                         html += '</div>';
-                        html += '<div class="comp-evo-total">' + formatCompact(d.total) + '</div>';
-                        html += '</div>';
-                    });
-                    html += '</div>';
+                    }
 
                     // Compact legend — only show components present in any year
-                    var _ceLegendLabels = {};
-                    _ceData.forEach(function(d) {
-                        d.segments.forEach(function(s) { _ceLegendLabels[s.label] = s.color; });
-                    });
-                    html += '<div class="comp-evo-legend">';
-                    _ceCompKeys.forEach(function(ck) {
-                        if (_ceLegendLabels[ck.label]) {
-                            html += '<span class="comp-evo-leg-item"><span class="comp-evo-leg-dot" style="background:' + ck.color + '"></span>' + ck.label + '</span>';
-                        }
-                    });
-                    html += '</div>';
-                    html += '</div>';
+                    html += _ceLegendHtml(false);
+                    if (hasGrantSmoothing) {
+                        html += _ceLegendHtml(true);
+                    }
+                    html += '</div>'; // comp-evo-section
                 }
             }
         }
@@ -7837,6 +7970,7 @@ function setupDetailPanel(companies) {
 
             if (_trendYears.length >= 2) {
                 var ceoTrendData = [];
+                var ceoTrendDataSmooth = [];
                 _trendYears.forEach(function(yr) {
                     var yrExecs = company.executives.filter(function(e) { return e.year === yr; });
                     var ceoCand = yrExecs.find(function(e) {
@@ -7847,6 +7981,14 @@ function setupDetailPanel(companies) {
                     }
                     if (ceoCand && ceoCand.total > 0) {
                         ceoTrendData.push({ year: yr, total: ceoCand.total, name: ceoCand.name || company.ceo_name });
+                        // Grant-year smoothed variant: this CEO's equity averaged across their SCT years.
+                        var _smTotal = ceoCand.total;
+                        if (hasGrantSmoothing) {
+                            var _tdGsKey = ((ceoCand.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + yr;
+                            var _tdGs = grantSmoothMap[_tdGsKey] || null;
+                            if (_tdGs && !_tdGs.singleYear) _smTotal = _tdGs.smoothed;
+                        }
+                        ceoTrendDataSmooth.push({ year: yr, total: _smTotal, name: ceoCand.name || company.ceo_name });
                     }
                 });
 
@@ -7903,36 +8045,47 @@ function setupDetailPanel(companies) {
                     if (_hasTransition) {
                         html += '<span class="ceo-trend-transition-badge" title="CEO changed during this period">\u21C4 CEO Transition</span>';
                     }
-                    html += '<span class="ceo-trend-mini-change ' + overallCls + '" title="FY' + firstTrend.year + ' to FY' + lastTrend.year + '">' + overallSign + overallAbsStr + ' over ' + ceoTrendData.length + ' years</span>';
+                    html += '<span class="ceo-trend-mini-change ceo-trend-filed ' + overallCls + '" title="FY' + firstTrend.year + ' to FY' + lastTrend.year + '">' + overallSign + overallAbsStr + ' over ' + ceoTrendData.length + ' years</span>';
+                    if (hasGrantSmoothing) {
+                        var _smFirst = ceoTrendDataSmooth[0];
+                        var _smLast = ceoTrendDataSmooth[ceoTrendDataSmooth.length - 1];
+                        var _smPct = _smFirst.total > 0 ? ((_smLast.total - _smFirst.total) / _smFirst.total * 100) : 0;
+                        var _smAbs = Math.abs(_smPct) >= 100 ? Math.round(Math.abs(_smPct)) + '%' : Math.abs(_smPct).toFixed(1) + '%';
+                        var _smCls = _smPct >= 0 ? 'positive' : 'negative';
+                        var _smSign = _smPct >= 0 ? '+' : '\u2212';
+                        html += '<span class="ceo-trend-mini-change ceo-trend-smoothed ' + _smCls + '" title="Grant-year smoothed change, FY' + _smFirst.year + ' to FY' + _smLast.year + ': equity averaged across each CEO\u2019s fiscal years">' + _smSign + _smAbs + ' over ' + ceoTrendDataSmooth.length + ' years (smoothed)</span>';
+                    }
                     html += '</div>';
 
-                    html += '<div class="ceo-trend-mini-bars">';
-                    ceoTrendData.forEach(function(d, i) {
-                        var barH = maxTrend > 0 ? Math.max(8, Math.round(d.total / maxTrend * 64)) : 8;
-                        var isLatest = (i === ceoTrendData.length - 1);
-                        var isTransitionPoint = _transitionIndices.indexOf(i) >= 0;
-                        var isOutgoingCeo = _hasTransition && _ceoSegments[i] < _ceoSegments[ceoTrendData.length - 1];
+                    // Column renderer shared by the as-filed and grant-year-smoothed bar variants
+                    function _renderCeoTrendCols(_td, _mx) {
+                        var ch = '';
+                        _td.forEach(function(d, i) {
+                            var barH = _mx > 0 ? Math.max(8, Math.round(d.total / _mx * 64)) : 8;
+                            var isLatest = (i === _td.length - 1);
+                            var isTransitionPoint = _transitionIndices.indexOf(i) >= 0;
+                            var isOutgoingCeo = _hasTransition && _ceoSegments[i] < _ceoSegments[_td.length - 1];
 
-                        // Insert transition divider before this bar
-                        if (isTransitionPoint) {
-                            html += '<div class="ceo-trend-divider" title="CEO changed: ' + (ceoTrendData[i - 1].name || '').replace(/"/g, '&quot;') + ' \u2192 ' + (d.name || '').replace(/"/g, '&quot;') + '">';
-                            html += '<div class="ceo-trend-divider-line"></div>';
-                            html += '<div class="ceo-trend-divider-label">\u2192</div>';
-                            html += '</div>';
-                        }
+                            // Insert transition divider before this bar
+                            if (isTransitionPoint) {
+                                ch += '<div class="ceo-trend-divider" title="CEO changed: ' + (_td[i - 1].name || '').replace(/"/g, '&quot;') + ' \u2192 ' + (d.name || '').replace(/"/g, '&quot;') + '">';
+                                ch += '<div class="ceo-trend-divider-line"></div>';
+                                ch += '<div class="ceo-trend-divider-label">\u2192</div>';
+                                ch += '</div>';
+                            }
 
-                        html += '<div class="ceo-trend-mini-col' + (isTransitionPoint ? ' ceo-trend-new-ceo' : '') + '">';
-                        html += '<div class="ceo-trend-mini-val">' + formatCurrency(d.total) + '</div>';
+                            ch += '<div class="ceo-trend-mini-col' + (isTransitionPoint ? ' ceo-trend-new-ceo' : '') + '">';
+                            ch += '<div class="ceo-trend-mini-val">' + formatCurrency(d.total) + '</div>';
 
                         // YoY change label between bars
                         if (i > 0) {
-                            var prev = ceoTrendData[i - 1];
-                            var yoyPct = ((d.total - prev.total) / prev.total * 100);
+                            var prev = _td[i - 1];
+                            var yoyPct = prev.total > 0 ? ((d.total - prev.total) / prev.total * 100) : 0;
                             var yoyCls = yoyPct >= 0 ? 'positive' : 'negative';
                             var yoyAbsStr = Math.abs(yoyPct) >= 100 ? Math.round(Math.abs(yoyPct)) + '%' : Math.abs(yoyPct).toFixed(1) + '%';
-                            html += '<div class="ceo-trend-mini-yoy ' + yoyCls + '">' + (yoyPct >= 0 ? '\u25B2' : '\u25BC') + ' ' + (yoyPct >= 0 ? '+' : '\u2212') + yoyAbsStr + '</div>';
+                            ch += '<div class="ceo-trend-mini-yoy ' + yoyCls + '">' + (yoyPct >= 0 ? '\u25B2' : '\u25BC') + ' ' + (yoyPct >= 0 ? '+' : '\u2212') + yoyAbsStr + '</div>';
                         } else {
-                            html += '<div class="ceo-trend-mini-yoy">\u00A0</div>';
+                            ch += '<div class="ceo-trend-mini-yoy">\u00A0</div>';
                         }
 
                         // Bar: outgoing CEO gets muted color, current CEO gets accent
@@ -7942,8 +8095,8 @@ function setupDetailPanel(companies) {
                         } else if (!isLatest && !_hasTransition) {
                             barStyle += ';opacity:0.55';
                         }
-                        html += '<div class="ceo-trend-mini-bar" style="' + barStyle + '" title="' + (d.name || '') + ' FY' + d.year + ': ' + formatCurrency(d.total) + '"></div>';
-                        html += '<div class="ceo-trend-mini-year">FY' + d.year + '</div>';
+                        ch += '<div class="ceo-trend-mini-bar" style="' + barStyle + '" title="' + (d.name || '') + ' FY' + d.year + ': ' + formatCurrency(d.total) + '"></div>';
+                        ch += '<div class="ceo-trend-mini-year">FY' + d.year + '</div>';
 
                         // Show CEO last name label when transition exists
                         if (_hasTransition) {
@@ -7951,15 +8104,26 @@ function setupDetailPanel(companies) {
                             // Show name on first bar, at each transition point, and if name differs from previous
                             if (i === 0 || isTransitionPoint) _showName = true;
                             if (_showName) {
-                                html += '<div class="ceo-trend-name-label' + (isOutgoingCeo ? ' ceo-outgoing' : '') + '">' + _shortCeoName(d.name) + '</div>';
+                                ch += '<div class="ceo-trend-name-label' + (isOutgoingCeo ? ' ceo-outgoing' : '') + '">' + _shortCeoName(d.name) + '</div>';
                             } else {
-                                html += '<div class="ceo-trend-name-label">\u00A0</div>'; // spacer for alignment
+                                ch += '<div class="ceo-trend-name-label">\u00A0</div>'; // spacer for alignment
                             }
                         }
 
-                        html += '</div>';
+                        ch += '</div>';
                     });
+                    return ch;
+                    }
+
+                    var maxTrendSmooth = hasGrantSmoothing ? Math.max.apply(null, ceoTrendDataSmooth.map(function(d) { return d.total; })) : 0;
+                    html += '<div class="ceo-trend-mini-bars ceo-trend-filed">';
+                    html += _renderCeoTrendCols(ceoTrendData, maxTrend);
                     html += '</div>';
+                    if (hasGrantSmoothing) {
+                        html += '<div class="ceo-trend-mini-bars ceo-trend-smoothed" title="Grant-year smoothed: stock + option awards averaged across each CEO\u2019s available fiscal years">';
+                        html += _renderCeoTrendCols(ceoTrendDataSmooth, maxTrendSmooth);
+                        html += '</div>';
+                    }
                     html += '</div>';
                 }
             }
@@ -8433,45 +8597,6 @@ function setupDetailPanel(companies) {
             allYears.sort(function(a,b) { return b - a; });
             var latestYear = allYears[0];
 
-            // Multi-year equity grant smoothing (AMZN/TSLA-style lumpy grants).
-            // For companies flagged _multi_year_equity, pre-compute per-NEO smoothed totals:
-            // each NEO's stock+option awards are spread evenly across that NEO's own
-            // available fiscal years (the filing's SCT window), then added back to the
-            // as-filed non-equity components. Single-year NEOs have nothing to smooth.
-            // Keyed normName|year -> { smoothed, avgEquity, years, singleYear }.
-            var grantSmoothMap = {};
-            if (company._multi_year_equity) {
-                var _gsByName = {};
-                company.executives.forEach(function(e) {
-                    var k = (e.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
-                    if (!k) return;
-                    if (!_gsByName[k]) _gsByName[k] = [];
-                    _gsByName[k].push(e);
-                });
-                Object.keys(_gsByName).forEach(function(k) {
-                    var rows = _gsByName[k];
-                    if (rows.length < 2) {
-                        // Single fiscal year on record: smoothing not applicable.
-                        rows.forEach(function(e) {
-                            grantSmoothMap[k + '|' + e.year] = { smoothed: e.total || 0, avgEquity: 0, years: 1, singleYear: true };
-                        });
-                        return;
-                    }
-                    var eqSum = 0;
-                    rows.forEach(function(e) { eqSum += (e.stock_awards || 0) + (e.option_awards || 0); });
-                    var avgEq = eqSum / rows.length;
-                    rows.forEach(function(e) {
-                        var eq = (e.stock_awards || 0) + (e.option_awards || 0);
-                        grantSmoothMap[k + '|' + e.year] = {
-                            smoothed: Math.round((e.total || 0) - eq + avgEq),
-                            avgEquity: Math.round(avgEq),
-                            years: rows.length,
-                            singleYear: false
-                        };
-                    });
-                });
-            }
-            var hasGrantSmoothing = !!company._multi_year_equity;
 
             // Pre-compute per-executive compensation trend across all available years
             var execTrendMap = {};
@@ -8511,14 +8636,14 @@ function setupDetailPanel(companies) {
             }
             // Multi-year equity grant smoothing toggle (only for flagged lumpy-grant companies)
             if (hasGrantSmoothing) {
-                html += ' <button class="neo-smooth-btn" data-action="toggle-smooth" title="Spread each NEO\u2019s stock + option awards evenly across that NEO\u2019s available fiscal years, for apples-to-apples comparison across grant years" aria-pressed="false">\u{1F4CA} Smooth equity grants</button>';
+                html += ' <button class="neo-smooth-btn" data-action="toggle-smooth" title="Spread each NEO\u2019s stock + option awards evenly across that NEO\u2019s available fiscal years, for apples-to-apples comparison across grant years \u2014 applies to the NEO tables, trend sparklines, Pay Mix Evolution, and CEO Pay Trend" aria-pressed="false">\u{1F4CA} Smooth equity grants</button>';
             }
             html += '</div>';
 
             // Smoothing method banner (hidden until the toggle is ON)
             if (hasGrantSmoothing) {
                 var _gsBasis = company._multi_year_equity_basis ? String(company._multi_year_equity_basis).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;') : '';
-                html += '<div class="neo-note-banner neo-note-banner--smooth neo-smooth-banner" style="display:none" role="note"><span class="neo-note-icon" aria-hidden="true">\u{1F4CA}</span><span><strong>Grant-year smoothing ON.</strong> Stock + option awards are spread evenly across each NEO\u2019s available fiscal years, then added back to as-filed cash comp. Smoothed figures are annualized for comparability; they are not the filing-printed totals. NEOs with a single fiscal year on record show \u2014. Basis: ' + _gsBasis + '</span></div>';
+                html += '<div class="neo-note-banner neo-note-banner--smooth neo-smooth-banner" style="display:none" role="note"><span class="neo-note-icon" aria-hidden="true">\u{1F4CA}</span><span><strong>Grant-year smoothing ON.</strong> Stock + option awards are spread evenly across each NEO\u2019s available fiscal years, then added back to as-filed cash comp. Smoothed figures are annualized for comparability; they are not the filing-printed totals. The NEO tables, trend sparklines, Pay Mix Evolution, and CEO Pay Trend all switch to the smoothed view. NEOs with a single fiscal year on record show \u2014. Basis: ' + _gsBasis + '</span></div>';
             }
 
             // Company-level comparability note (multi-year equity grants, filing quirks, etc.)
@@ -9438,7 +9563,9 @@ function setupDetailPanel(companies) {
         detailRow.querySelectorAll('[data-action="toggle-smooth"]').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                var section = btn.closest('.neo-section');
+                // Scope to the whole detail panel so the NEO tables, trend sparklines,
+                // Pay Mix Evolution, and CEO Pay Trend charts all swap together.
+                var section = btn.closest('.detail-panel');
                 if (!section) return;
                 var isSmooth = section.classList.toggle('neo-smooth-mode');
                 btn.classList.toggle('active', isSmooth);

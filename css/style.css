@@ -7601,6 +7601,22 @@ footer li::before {
 .neo-spark-smoothed { display: none; }
 .neo-smooth-mode .neo-spark-smoothed { display: inline; }
 .neo-smooth-mode .neo-spark-filed { display: none; }
+/* Pay Mix Evolution + CEO Pay Trend: grant-year-smoothed variants are pre-rendered
+   but hidden until the smoothing toggle turns on, then swap with the as-filed
+   variants (no re-render). The toggle class now lives on .detail-panel so every
+   section of the detail view swaps together. */
+.comp-evo-smoothed,
+.ceo-trend-smoothed { display: none; }
+
+/* Restore each smoothed variant's natural layout when smoothing is on */
+.neo-smooth-mode .comp-evo-bars.comp-evo-smoothed { display: flex; }
+.neo-smooth-mode .comp-evo-legend.comp-evo-smoothed { display: flex; }
+.neo-smooth-mode .comp-evo-shift.comp-evo-smoothed { display: inline; }
+.neo-smooth-mode .ceo-trend-mini-bars.ceo-trend-smoothed { display: flex; }
+.neo-smooth-mode .ceo-trend-mini-change.ceo-trend-smoothed { display: inline; }
+
+.neo-smooth-mode .comp-evo-filed,
+.neo-smooth-mode .ceo-trend-filed { display: none; }
 .neo-years-available {
     font-size: 0.75rem;
     color: var(--text-muted);
