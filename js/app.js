@@ -3877,7 +3877,7 @@ function populateInsights(comp, trends, sectorFilter) {
     });
 }
 
-function populateTrends(trends) {
+function populateTrends(trends, companies) {
     var grid = document.getElementById('trends-grid');
     if (!grid || !trends) return;
 
@@ -11004,7 +11004,7 @@ function setupDualSparklineTooltips() {
     window._refreshInsights = function(sector) {
         populateInsights(data.comp, data.trends, sector || null);
     };
-    populateTrends(data.trends);
+    populateTrends(data.trends, companies);
     buildSectorChips(companies);
     buildRoleChips(companies);
     renderTable(companies);
