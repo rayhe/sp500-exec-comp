@@ -7596,6 +7596,11 @@ footer li::before {
 /* In smoothing mode the FY total row and YoY line show the smoothed sums */
 .neo-smooth-mode .neo-total-row .neo-smoothed-total,
 .neo-smooth-mode .neo-yoy .neo-smoothed-total { font-weight: 700; }
+/* Per-NEO trend sparklines: smoothed series is pre-rendered but hidden until
+   the toggle turns on, then swaps with the as-filed series (no re-render) */
+.neo-spark-smoothed { display: none; }
+.neo-smooth-mode .neo-spark-smoothed { display: inline; }
+.neo-smooth-mode .neo-spark-filed { display: none; }
 .neo-years-available {
     font-size: 0.75rem;
     color: var(--text-muted);

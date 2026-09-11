@@ -8640,7 +8640,43 @@ function setupDetailPanel(companies) {
                             _nDots += '<circle class="neo-spark-dot" cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="1" fill="' + _nColor + '" data-idx="' + di + '"/>';
                             _nDots += '<circle class="neo-spark-dot-hit" cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="6" fill="transparent" data-idx="' + di + '" data-year="' + d.year + '" data-total="' + d.total + '" data-name="' + (exec.name || '').replace(/"/g, '&quot;') + '" data-ticker="' + ticker + '"' + _yoyAttr + '/>';
                         });
-                        _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _nDots + '</svg>';
+                        // Grant-year-smoothed series for lumpy-grant companies: each year's
+                        // stock+option awards are spread across this NEO's own fiscal years,
+                        // matching the smoothed Total cells above. Swapped in via CSS when
+                        // the smoothing toggle is on — no re-render needed.
+                        var _nSmoothG = '';
+                        if (hasGrantSmoothing) {
+                            var _smVals = [];
+                            var _smOk = true;
+                            _execTrend.forEach(function(d) {
+                                var _sm = grantSmoothMap[_execNormName + '|' + d.year];
+                                if (!_sm || _sm.singleYear) { _smOk = false; return; }
+                                _smVals.push(_sm.smoothed);
+                            });
+                            if (_smOk && _smVals.length >= 2) {
+                                var _smMin = Math.min.apply(null, _smVals);
+                                var _smMax = Math.max.apply(null, _smVals);
+                                var _smRng = _smMax - _smMin || 1;
+                                var _smUp = _smVals[_smVals.length - 1] >= _smVals[0];
+                                var _smCol = _smUp ? 'var(--positive)' : 'var(--negative)';
+                                var _smFill = _smUp ? 'rgba(6,214,160,0.15)' : 'rgba(239,71,111,0.15)';
+                                var _smPts = [];
+                                var _smDots = '';
+                                _execTrend.forEach(function(d, di) {
+                                    var sx2 = _nSpP + di / (_execTrend.length - 1) * (_nSpW - _nSpP * 2);
+                                    var sy2 = _nSpP + (1 - (_smVals[di] - _smMin) / _smRng) * (_nSpH - _nSpP * 2);
+                                    _smPts.push(sx2.toFixed(1) + ',' + sy2.toFixed(1));
+                                    var _pV = di > 0 ? _smVals[di - 1] : null;
+                                    var _pYoy = (_pV != null && _pV > 0) ? ' data-yoy="' + (((_smVals[di] - _pV) / _pV) * 100).toFixed(1) + '"' : ' data-yoy=""';
+                                    _smDots += '<circle class="neo-spark-dot" cx="' + sx2.toFixed(1) + '" cy="' + sy2.toFixed(1) + '" r="1" fill="' + _smCol + '" data-idx="' + di + '"/>';
+                                    _smDots += '<circle class="neo-spark-dot-hit neo-spark-dot-hit-smooth" cx="' + sx2.toFixed(1) + '" cy="' + sy2.toFixed(1) + '" r="6" fill="transparent" data-idx="' + di + '" data-year="' + d.year + '" data-total="' + Math.round(_smVals[di]) + '" data-name="' + (exec.name || '').replace(/"/g, '&quot;') + '" data-ticker="' + ticker + '"' + _pYoy + '/>';
+                                });
+                                var _smLine = _smPts.join(' ');
+                                var _smArea = _smPts[0].split(',')[0] + ',' + (_nSpH - _nSpP) + ' ' + _smLine + ' ' + _smPts[_smPts.length - 1].split(',')[0] + ',' + (_nSpH - _nSpP);
+                                _nSmoothG = '<g class="neo-spark-smoothed"><polygon points="' + _smArea + '" fill="' + _smFill + '"/><polyline points="' + _smLine + '" fill="none" stroke="' + _smCol + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _smDots + '</g>';
+                            }
+                        }
+                        _neoSparkHtml = '<svg class="neo-spark-svg" width="' + _nSpW + '" height="' + _nSpH + '" viewBox="0 0 ' + _nSpW + ' ' + _nSpH + '" aria-hidden="true"><g class="neo-spark-filed"><polygon points="' + _nArea + '" fill="' + _nFill + '"/><polyline points="' + _nLine + '" fill="none" stroke="' + _nColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + _nDots + '</g>' + _nSmoothG + '</svg>';
                     }
                     // Correction audit trail: surface stored _fix_note/_parse_note/_title_note
                     // plus single-row annotations (_round_delta, _salary_note)
@@ -10698,9 +10734,13 @@ function setupNeoSparklineTooltips() {
         var yoyPct = hit.getAttribute('data-yoy');
         var execName = hit.getAttribute('data-name');
         var ticker = hit.getAttribute('data-ticker');
+        var _isSmoothHit = hit.classList && hit.classList.contains('neo-spark-dot-hit-smooth');
 
         var html = '<div class="neo-sparkline-tip-year">FY' + year + '</div>';
-        html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">Total Comp</span><span class="neo-sparkline-tip-val neo-sparkline-tip-accent">' + formatCurrency(total) + '</span></div>';
+        html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">' + (_isSmoothHit ? 'Smoothed Comp' : 'Total Comp') + '</span><span class="neo-sparkline-tip-val neo-sparkline-tip-accent">' + formatCurrency(total) + '</span></div>';
+        if (_isSmoothHit) {
+            html += '<div class="neo-sparkline-tip-row"><span class="neo-sparkline-tip-label">Basis</span><span class="neo-sparkline-tip-val">Grant-year smoothed</span></div>';
+        }
         if (yoyPct !== '') {
             var pctNum = parseFloat(yoyPct);
             var pctCls = pctNum >= 0 ? 'positive' : 'negative';
@@ -10738,7 +10778,10 @@ function setupNeoSparklineTooltips() {
         }
 
         var idx = parseInt(hit.getAttribute('data-idx'));
-        var visibleDots = svgEl ? svgEl.querySelectorAll('.neo-spark-dot') : [];
+        // Select the dot in the same series group as the hovered hit area:
+        // the grant-year-smoothed group when smooth mode shows it, else as-filed.
+        var _dotsSel = _isSmoothHit ? '.neo-spark-smoothed .neo-spark-dot' : '.neo-spark-filed .neo-spark-dot';
+        var visibleDots = svgEl ? svgEl.querySelectorAll(_dotsSel) : [];
         if (activeDot) activeDot.setAttribute('r', '1');
         if (visibleDots[idx]) {
             activeDot = visibleDots[idx];
