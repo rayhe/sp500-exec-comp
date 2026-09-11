@@ -392,7 +392,7 @@ function drawSectorChart(trends, companies) {
         : [];
 
     if (data.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No sector data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No sector data available</p>';
         return;
     }
 
@@ -896,7 +896,7 @@ function drawTrendChart(trends) {
         ? trends.pay_ratio_trend.data : [];
 
     if (ceoData.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No trend data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No trend data available</p>';
         return;
     }
 
@@ -918,7 +918,7 @@ function drawTrendChart(trends) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var bgColor = dark ? 'rgba(15,15,26,0.8)' : 'rgba(255,255,255,0.85)';
     var dotStroke = dark ? '#0f0f1a' : '#fff';
 
@@ -1544,7 +1544,7 @@ function drawRatioChart(companies) {
     var withRatio = companies.filter(function(c) { return c.pay_ratio != null; });
 
     if (withRatio.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No pay ratio data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No pay ratio data available</p>';
         return;
     }
 
@@ -1877,7 +1877,7 @@ function drawTop10Chart(companies, mode) {
     // Get and sort data
     var filtered = sectorFilteredCompanies.filter(cfg.filter);
     if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available' + (sectorName ? ' for ' + sectorName : '') + '</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No data available' + (sectorName ? ' for ' + sectorName : '') + '</p>';
         return;
     }
     filtered.sort(cfg.sort);
@@ -2138,7 +2138,7 @@ function drawCompDistChart(companies) {
 
     var withComp = companies.filter(function(c) { return c.total_compensation > 0; });
     if (withComp.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No compensation data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No compensation data available</p>';
         return;
     }
 
@@ -2371,7 +2371,7 @@ function drawCompDistChart(companies) {
         .attr('text-anchor', 'middle')
         .attr('font-weight', hasSectorOverlay ? '400' : '600')
         .attr('font-size', hasSectorOverlay ? '9px' : null)
-        .attr('fill', hasSectorOverlay ? (typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa') : null)
+        .attr('fill', hasSectorOverlay ? ('#71717a') : null)
         .text(function(b) { return b.count; })
         .attr('opacity', function(b) {
             if (hasSectorOverlay) return 0.6;
@@ -2489,11 +2489,11 @@ function drawCompDistChart(companies) {
             svg.append('line')
                 .attr('x1', sp500MedX).attr('x2', sp500MedX)
                 .attr('y1', 0).attr('y2', h)
-                .attr('stroke', typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa')
+                .attr('stroke', '#71717a')
                 .attr('stroke-width', 1).attr('stroke-dasharray', '4,4').attr('opacity', 0.5);
             svg.append('text')
                 .attr('x', sp500MedX + 5).attr('y', 10)
-                .attr('fill', typeof isDarkTheme === 'function' && isDarkTheme() ? '#71717a' : '#a1a1aa')
+                .attr('fill', '#71717a')
                 .attr('font-size', '8px').attr('font-weight', '400').attr('opacity', 0.6)
                 .text('S&P 500 Med: ' + fmtCurr(medianComp));
         }
@@ -2610,7 +2610,7 @@ function drawCompositionChart(trends) {
     container.innerHTML = '';
     var compComp = trends.compensation_composition;
     if (!compComp || !compComp.s_and_p_500) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No composition data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No composition data</p>';
         return;
     }
 
@@ -2756,7 +2756,15 @@ function drawCompositionChart(trends) {
         })
         .attr('text-anchor', 'middle')
         .attr('dy', '0.35em')
-        .attr('fill', '#fff')
+        .attr('fill', function(d) {
+            // Luminance-aware label color: white bold text on the light
+            // component palette (e.g. #ffd166 gold, #06d6a0 mint) reads at
+            // ~1.4-1.9:1; flip to near-black on light segments.
+            var c = d3.color(d.data.color);
+            if (!c) return '#fff';
+            var y = (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+            return y > 0.45 ? '#18181b' : '#fff';
+        })
         .attr('font-size', function(d) { return d.data.pct >= 15 ? '12px' : '10px'; })
         .attr('font-weight', '700')
         .attr('font-family', "'SF Mono', 'Fira Code', monospace")
@@ -3010,7 +3018,7 @@ function drawScatterChart(companies) {
     });
 
     if (pts.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No data available for this axis combination</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No data available for this axis combination</p>';
         return;
     }
 
@@ -3137,7 +3145,7 @@ function drawScatterChart(companies) {
     var medX = d3.median(pts, function(d) { return xMetric.get(d); });
     var medY = d3.median(pts, function(d) { return yMetric.get(d); });
 
-    var sp500LineColor = hasSectorOverlay ? (dark ? '#52525b' : '#a1a1aa') : '#00b4d8';
+    var sp500LineColor = hasSectorOverlay ? (dark ? '#52525b' : '#71717a') : '#00b4d8';
     var sp500LineOpacity = hasSectorOverlay ? 0.35 : 0.5;
     var sp500TextOpacity = hasSectorOverlay ? 0.45 : 0.7;
 
@@ -3712,7 +3720,7 @@ function drawScatterChart(companies) {
                     .attr('class', 'regression-line regression-line-sp500')
                     .attr('x1', x(clipped.x1)).attr('y1', yScale(clipped.y1))
                     .attr('x2', x(clipped.x2)).attr('y2', yScale(clipped.y2))
-                    .attr('stroke', dark ? '#52525b' : '#a1a1aa')
+                    .attr('stroke', dark ? '#52525b' : '#71717a')
                     .attr('stroke-width', 1.5)
                     .attr('stroke-dasharray', '8,6')
                     .attr('opacity', 0.3)
@@ -4065,7 +4073,7 @@ function drawScatterChart(companies) {
         if (maxShow < commsSorted.length) {
             commLegendGroup.append('text')
                 .attr('x', legX + 4).attr('y', 0)
-                .attr('fill', dark ? '#71717a' : '#9ca3af')
+                .attr('fill', '#71717a')
                 .attr('font-size', '8px').attr('font-weight', '400')
                 .text('+' + (commsSorted.length - maxShow) + ' more');
         }
@@ -4114,7 +4122,7 @@ function drawScatterChart(companies) {
 
         statsGroup.append('text')
             .attr('x', -152).attr('y', 58)
-            .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
+            .attr('fill', '#71717a').attr('font-size', '9px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text('vs Index: ' + vsXSign + vsXStr + ' X, ' + vsYSign + vsYStr + ' Y · r=' + correlation.toFixed(2) + ' R\u00B2=' + rSquared.toFixed(2));
     } else {
@@ -4156,7 +4164,7 @@ function drawScatterChart(companies) {
             else slopeStr = slope.toExponential(1);
             statsGroup.append('text')
                 .attr('x', -132).attr('y', 46)
-                .attr('fill', dark ? '#71717a' : '#9ca3af').attr('font-size', '9px')
+                .attr('fill', '#71717a').attr('font-size', '9px')
                 .attr('font-family', 'Inter, system-ui, sans-serif')
                 .text('slope: ' + slopeStr + ' · ' + xMetric.shortLabel + ' \u2192 ' + yMetric.shortLabel);
 
@@ -4164,7 +4172,7 @@ function drawScatterChart(companies) {
             if (showCIInfo) {
                 statsGroup.append('text')
                     .attr('x', -132).attr('y', 60)
-                    .attr('fill', dark ? '#52525b' : '#a1a1aa').attr('font-size', '8px')
+                    .attr('fill', dark ? '#52525b' : '#71717a').attr('font-size', '8px')
                     .attr('font-family', 'Inter, system-ui, sans-serif')
                     .text('Shaded area = 95% confidence interval');
             }
@@ -4254,7 +4262,7 @@ function drawScatterChart(companies) {
         .attr('class', 'scatter-brush-hint')
         .attr('x', w / 2).attr('y', h + 66)
         .attr('text-anchor', 'middle')
-        .attr('fill', dark ? '#52525b' : '#a1a1aa')
+        .attr('fill', dark ? '#52525b' : '#71717a')
         .attr('font-size', '9px')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .attr('pointer-events', 'none')
@@ -4627,7 +4635,7 @@ function drawLorenzChart(companies) {
 
     var withComp = companies.filter(function(c) { return c.total_compensation > 0; });
     if (withComp.length < 5) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for Lorenz curve</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient data for Lorenz curve</p>';
         return;
     }
 
@@ -4751,7 +4759,7 @@ function drawLorenzChart(companies) {
     svg.append('line')
         .attr('x1', x(0)).attr('y1', y(0))
         .attr('x2', x(1)).attr('y2', y(1))
-        .attr('stroke', dark ? '#4b5563' : '#d1d5db')
+        .attr('stroke', dark ? '#4b5563' : '#9ca3af')
         .attr('stroke-width', 1.5)
         .attr('stroke-dasharray', '6,4')
         .attr('opacity', 0.8);
@@ -4760,7 +4768,7 @@ function drawLorenzChart(companies) {
     svg.append('text')
         .attr('x', x(0.52)).attr('y', y(0.55))
         .attr('transform', 'rotate(-42,' + x(0.52) + ',' + y(0.55) + ')')
-        .attr('fill', dark ? '#6b7280' : '#9ca3af')
+        .attr('fill', '#6b7280')
         .attr('font-size', '9px')
         .attr('font-style', 'italic')
         .text('Perfect equality');
@@ -4790,7 +4798,7 @@ function drawLorenzChart(companies) {
             .datum(lorenzPoints)
             .attr('d', lorenzLine)
             .attr('fill', 'none')
-            .attr('stroke', dark ? '#52525b' : '#a1a1aa')
+            .attr('stroke', dark ? '#52525b' : '#71717a')
             .attr('stroke-width', 1.5)
             .attr('stroke-dasharray', '4,3')
             .attr('opacity', 0.5);
@@ -4924,7 +4932,7 @@ function drawLorenzChart(companies) {
         svg.append('text')
             .attr('x', badgeX).attr('y', 30)
             .attr('text-anchor', 'end')
-            .attr('fill', dark ? '#71717a' : '#a1a1aa')
+            .attr('fill', '#71717a')
             .attr('font-size', '10px')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text('S&P 500: ' + gini.toFixed(3));
@@ -4952,11 +4960,11 @@ function drawLorenzChart(companies) {
         var legY = h - 24;
         svg.append('line')
             .attr('x1', 6).attr('x2', 26).attr('y1', legY).attr('y2', legY)
-            .attr('stroke', dark ? '#52525b' : '#a1a1aa').attr('stroke-width', 1.5)
+            .attr('stroke', dark ? '#52525b' : '#71717a').attr('stroke-width', 1.5)
             .attr('stroke-dasharray', '4,3').attr('opacity', 0.5);
         svg.append('text')
             .attr('x', 30).attr('y', legY + 4)
-            .attr('fill', dark ? '#71717a' : '#a1a1aa').attr('font-size', '9px')
+            .attr('fill', '#71717a').attr('font-size', '9px')
             .text('S&P 500');
         svg.append('line')
             .attr('x1', 80).attr('x2', 100).attr('y1', legY).attr('y2', legY)
@@ -5117,7 +5125,7 @@ function drawLorenzChart(companies) {
     // Interactive hover overlay
     var hoverLine = svg.append('line')
         .attr('y1', 0).attr('y2', h)
-        .attr('stroke', dark ? '#6b7280' : '#9ca3af')
+        .attr('stroke', '#6b7280')
         .attr('stroke-width', 0.8)
         .attr('stroke-dasharray', '3,3')
         .attr('opacity', 0);
@@ -5131,7 +5139,7 @@ function drawLorenzChart(companies) {
 
     var hoverDotEq = svg.append('circle')
         .attr('r', 3)
-        .attr('fill', dark ? '#4b5563' : '#d1d5db')
+        .attr('fill', dark ? '#4b5563' : '#9ca3af')
         .attr('stroke', dark ? '#18181b' : '#fff')
         .attr('stroke-width', 1.5)
         .attr('opacity', 0);
@@ -5141,7 +5149,7 @@ function drawLorenzChart(companies) {
     if (hasSectorOverlay) {
         hoverDotRef = svg.append('circle')
             .attr('r', 3)
-            .attr('fill', dark ? '#52525b' : '#a1a1aa')
+            .attr('fill', dark ? '#52525b' : '#71717a')
             .attr('stroke', dark ? '#18181b' : '#fff')
             .attr('stroke-width', 1)
             .attr('opacity', 0);
@@ -5531,7 +5539,7 @@ function drawCeoCfoChart(companies) {
     });
 
     if (withPremium.length < 10) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient CEO-CFO data for chart</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient CEO-CFO data for chart</p>';
         return;
     }
 
@@ -5734,7 +5742,7 @@ function drawConcDistChart(companies) {
 
     var withConc = companies.filter(function(c) { return c._ceoConcPct != null; });
     if (withConc.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No concentration data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No concentration data available</p>';
         return;
     }
 
@@ -6207,7 +6215,7 @@ function drawSopDistChart(companies) {
 
     var withSop = companies.filter(function(c) { return c._sopApproval != null; });
     if (withSop.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No say-on-pay data available yet</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No say-on-pay data available yet</p>';
         return;
     }
 
@@ -6362,7 +6370,7 @@ function drawSopScatterChart(companies) {
     });
 
     if (withBoth.length < 5) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient say-on-pay data for scatter plot</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient say-on-pay data for scatter plot</p>';
         return;
     }
 
@@ -6868,7 +6876,7 @@ function drawCorrelationMatrix(companies) {
         : companies;
 
     if (filteredCompanies.length < 15) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for correlation analysis (' + filteredCompanies.length + ' companies)</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient data for correlation analysis (' + filteredCompanies.length + ' companies)</p>';
         return;
     }
 
@@ -7002,7 +7010,7 @@ function drawCorrelationMatrix(companies) {
     };
 
     var textColor = function(r) {
-        if (r == null) return dark ? '#71717a' : '#a1a1aa';
+        if (r == null) return '#71717a';
         var abs = Math.abs(r);
         if (abs > 0.5) return '#fff';
         return dark ? '#e4e4e7' : '#27272a';
@@ -7087,7 +7095,7 @@ function drawCorrelationMatrix(companies) {
                     .attr('x', cx + cellSize / 2)
                     .attr('y', cy + cellSize / 2 + labelYOffset)
                     .attr('text-anchor', 'middle')
-                    .attr('fill', isDiagonal ? (dark ? '#71717a' : '#a1a1aa') : textColor(r))
+                    .attr('fill', isDiagonal ? ('#71717a') : textColor(r))
                     .attr('font-size', cellSize > 55 ? '0.78rem' : '0.65rem')
                     .attr('font-weight', '600')
                     .text(label);
@@ -7111,7 +7119,7 @@ function drawCorrelationMatrix(companies) {
                     var deltaStr = deltaSign + Math.abs(delta).toFixed(2);
                     var deltaColor;
                     if (Math.abs(delta) < 0.05) {
-                        deltaColor = dark ? '#71717a' : '#a1a1aa'; // negligible
+                        deltaColor = '#71717a'; // negligible
                     } else if (Math.abs(delta) >= 0.15) {
                         deltaColor = delta > 0 ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626'); // large divergence
                     } else {
@@ -7544,7 +7552,7 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
         .attr('x', innerW / 2)
         .attr('y', innerH + 34)
         .attr('text-anchor', 'middle')
-        .attr('fill', dark ? '#71717a' : '#a1a1aa')
+        .attr('fill', '#71717a')
         .attr('font-size', '0.7rem')
         .text('Pearson r');
 
@@ -7611,7 +7619,7 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
             g.append('text')
                 .attr('x', xScale(0) + 10)
                 .attr('y', y + barH / 2 + 4)
-                .attr('fill', dark ? '#71717a' : '#a1a1aa')
+                .attr('fill', '#71717a')
                 .attr('font-size', '0.68rem')
                 .attr('font-style', 'italic')
                 .text('n/a (n=' + d.n + ')');
@@ -7667,7 +7675,7 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
             .html(function() {
                 var txt = (d.r >= 0 ? '+' : '') + d.r.toFixed(2);
                 if (stars) txt += ' <tspan fill="' + (dark ? '#fbbf24' : '#d97706') + '" font-weight="700">' + stars + '</tspan>';
-                txt += ' <tspan fill="' + (dark ? '#71717a' : '#a1a1aa') + '" font-size="0.6rem">n=' + d.n + '</tspan>';
+                txt += ' <tspan fill="' + ('#71717a') + '" font-size="0.6rem">n=' + d.n + '</tspan>';
                 return txt;
             });
 
@@ -7796,7 +7804,7 @@ function drawQuartileComposition(companies) {
     var ceoRows = _extractCeoRows(pool);
 
     if (ceoRows.length < 8) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">' +
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">' +
             (sector ? 'Not enough ' + sector + ' companies with component data (need \u22658, have ' + ceoRows.length + ')' : 'Insufficient component data') + '</p>';
         return;
     }
@@ -7824,7 +7832,7 @@ function drawQuartileComposition(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var ghostStroke = dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
     var ghostFill = dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
 
@@ -8144,7 +8152,7 @@ function drawGovDistChart(companies) {
 
     var withGov = companies.filter(function(c) { return c._govScore != null; });
     if (withGov.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No governance score data available</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No governance score data available</p>';
         return;
     }
 
@@ -8315,7 +8323,7 @@ function drawSectorGovChart(companies) {
 
     var withGov = companies.filter(function(c) { return c._govScore != null && c.sector; });
     if (withGov.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient governance data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient governance data</p>';
         return;
     }
 
@@ -8524,7 +8532,7 @@ function drawGovQuartileComp(companies) {
     });
 
     if (ceoRows.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient governance + compensation data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient governance + compensation data</p>';
         return;
     }
 
@@ -8578,7 +8586,7 @@ function drawGovQuartileComp(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
 
     var margin = { top: 16, right: 90, bottom: 40, left: 220 };
     var cw = container.clientWidth || 700;
@@ -8794,7 +8802,7 @@ function drawGovPayScatter(companies) {
     });
 
     if (withBoth.length < 10) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient governance + compensation data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient governance + compensation data</p>';
         return;
     }
 
@@ -8808,7 +8816,7 @@ function drawGovPayScatter(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
     var cw = container.clientWidth || 700;
@@ -9195,7 +9203,7 @@ function drawPayAnomalyChart(companies) {
     });
 
     if (withData.length < 50) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data for anomaly detection</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient data for anomaly detection</p>';
         return;
     }
 
@@ -9279,13 +9287,13 @@ function drawPayAnomalyChart(companies) {
     }
 
     if (displayData.length === 0) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">No anomaly data for this sector</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No anomaly data for this sector</p>';
         return;
     }
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var sectorColor = _anomalySectorFilter && typeof getSectorColor === 'function' ? getSectorColor(_anomalySectorFilter) : null;
 
     var cw = container.clientWidth || 700;
@@ -9658,7 +9666,7 @@ function drawPayAnomalyChart(companies) {
                         .attr('text-anchor', 'middle')
                         .attr('font-size', '6px')
                         .attr('font-weight', '500')
-                        .attr('fill', dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)')
+                        .attr('fill', dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.55)')
                         .style('pointer-events', 'none')
                         .text("'" + String(p.year).slice(-2));
                 });
@@ -9961,7 +9969,7 @@ function drawTenurePayGrowthChart(companies) {
     });
 
     if (eligible.length < (sectorFilter ? 5 : 20)) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + pay growth data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient tenure + pay growth data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
         return;
     }
 
@@ -10005,7 +10013,7 @@ function drawTenurePayGrowthChart(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
     var bgPanel = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
 
@@ -10378,7 +10386,7 @@ function drawTenureGovCrossTab(companies) {
     });
     var minThreshold = sectorFilter ? 5 : 20;
     if (eligible.length < minThreshold) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient tenure + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient tenure + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
         return;
     }
 
@@ -10838,7 +10846,7 @@ function drawGERChart(companies) {
 
     var showCount = Math.min(25, eligible.length);
     if (showCount < 3) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
         return;
     }
     var top = eligible.slice(0, showCount);
@@ -11905,7 +11913,7 @@ function drawVolatilityDistChart(companies) {
 
     var withVol = companies.filter(function(c) { return c._ceoVolatility != null; });
     if (withVol.length < 10) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient volatility data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient volatility data</p>';
         return;
     }
 
@@ -12149,7 +12157,7 @@ function drawVolatilitySectorChart(companies) {
 
     var withVol = companies.filter(function(c) { return c._ceoVolatility != null && c.sector; });
     if (withVol.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient data</p>';
         return;
     }
 
@@ -12433,7 +12441,7 @@ function drawVolatilityTenureChart(companies) {
     });
 
     if (eligible.length < (sectorFilter ? 5 : 20)) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient volatility + tenure data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient volatility + tenure data' + (sectorFilter ? ' for ' + sectorFilter : '') + '</p>';
         return;
     }
 
@@ -12470,7 +12478,7 @@ function drawVolatilityTenureChart(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
     var gridColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
     var cw = container.clientWidth || 700;
@@ -12832,7 +12840,7 @@ function drawVolGovCrossTab(companies) {
     });
     var minThreshold = sectorFilter ? 5 : 20;
     if (eligible.length < minThreshold) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient volatility + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient volatility + governance data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
         return;
     }
 
@@ -13262,7 +13270,7 @@ function drawSopVolCrossTab(companies) {
     });
     var minThreshold = sectorFilter ? 5 : 20;
     if (eligible.length < minThreshold) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient SoP + volatility data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient SoP + volatility data (' + eligible.length + ' companies' + (sectorFilter ? ' in ' + sectorFilter : '') + ')</p>';
         return;
     }
 
@@ -13634,7 +13642,7 @@ function drawSopTierComp(companies) {
     });
 
     if (ceoRows.length < 20) {
-        container.innerHTML = '<p style="color:#a1a1aa;padding:40px;text-align:center;">Insufficient SoP + compensation data</p>';
+        container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">Insufficient SoP + compensation data</p>';
         return;
     }
 
@@ -13689,7 +13697,7 @@ function drawSopTierComp(companies) {
 
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
-    var mutedColor = dark ? '#6b7280' : '#9ca3af';
+    var mutedColor = '#6b7280';
 
     var margin = { top: 16, right: 90, bottom: 60, left: 260 };
     var cw = container.clientWidth || 700;

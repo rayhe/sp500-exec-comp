@@ -121,6 +121,22 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
     --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
 }
+
+/* Light-theme contrast audit 2026-09-11: muted gray text rendered at #a1a1aa
+   (2.56:1 on white) with no light-theme override. Bump to #6b7280 (4.83:1),
+   matching --text-muted. Crosstab finding spans get theme-token semantic colors. */
+[data-theme="light"] .ger-heatmap-legend,
+[data-theme="light"] .reach-peers-count,
+[data-theme="light"] .top10-mode-btn,
+[data-theme="light"] .trend-overlay-btn,
+[data-theme="light"] .sop-dist-bar-label,
+[data-theme="light"] .corr-col-hdr,
+[data-theme="light"] .corr-row-hdr {
+    color: #6b7280;
+}
+[data-theme="light"] .crosstab-finding.warning { color: #d97706; }
+[data-theme="light"] .crosstab-finding.positive { color: #059669; }
+[data-theme="light"] .crosstab-finding.neutral { color: #6b7280; }
 [data-theme="light"] header {
     backdrop-filter: blur(12px);
     background: rgba(255,255,255,0.92);
@@ -792,7 +808,7 @@ header h1 {
     color: #1a1a2e;
 }
 [data-theme="light"] .eq-dual-trend-years {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 /* === Sections === */
@@ -1706,7 +1722,7 @@ header h1 {
     text-align: center;
     font-style: italic;
 }
-[data-theme="light"] .tooltip .tt-hint { border-top-color: rgba(0,0,0,0.08); color: #9ca3af; }
+[data-theme="light"] .tooltip .tt-hint { border-top-color: rgba(0,0,0,0.08); color: #6b7280; }
 
 /* Tooltip Path Actions */
 .tooltip .tt-path-actions {
@@ -1908,7 +1924,7 @@ header h1 {
     margin-left: 4px;
 }
 [data-theme="light"] .comp-heatmap-sector-note {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 /* PageRank centrality heatmap */
@@ -3691,7 +3707,7 @@ tbody tr:last-child td { border-bottom: none; }
     color: #6b7280;
 }
 [data-theme="light"] .ceo-trend-name-label.ceo-outgoing {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 /* Print: CEO Pay Trend */
@@ -3886,7 +3902,7 @@ tbody tr:last-child td { border-bottom: none; }
 }
 [data-theme="light"] .wf-transition-old { color: #6b7280; }
 [data-theme="light"] .wf-transition-new { color: #1a1a2e; }
-[data-theme="light"] .wf-transition-arrow { color: #9ca3af; }
+[data-theme="light"] .wf-transition-arrow { color: #6b7280; }
 /* Waterfall CEO name in start/end bar labels */
 .wf-ceo-name {
     display: block;
@@ -3899,7 +3915,7 @@ tbody tr:last-child td { border-bottom: none; }
     text-overflow: ellipsis;
 }
 [data-theme="light"] .wf-ceo-name {
-    color: #9ca3af;
+    color: #6b7280;
 }
 .wf-row-transition {
     height: 34px;
@@ -9284,7 +9300,7 @@ footer li::before {
     background: rgba(0,0,0,0.03);
 }
 [data-theme="light"] .role-chips::before {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 /* Mobile: hide role chips label, smaller chips */
@@ -9356,7 +9372,7 @@ footer li::before {
     color: rgba(0,0,0,0.7);
 }
 [data-theme="light"] .tc-dot:not(.tc-filled) .tc-dot-label {
-    color: #9ca3af;
+    color: #6b7280;
 }
 [data-theme="light"] .tc-dot:not(.tc-filled) {
     border-color: rgba(0,0,0,0.12);
@@ -9683,7 +9699,7 @@ footer li::before {
     box-shadow: 0 0 4px rgba(0,0,0,0.15);
 }
 [data-theme="light"] .cb-pos-rank { color: #374151; }
-[data-theme="light"] .cb-pos-of { color: #9ca3af; }
+[data-theme="light"] .cb-pos-of { color: #6b7280; }
 .cb-stats {
     display: flex;
     flex-wrap: wrap;
@@ -9773,8 +9789,8 @@ footer li::before {
 [data-theme="light"] .cb-bridge-bar-wrap { background: rgba(0,0,0,0.06); }
 [data-theme="light"] .cb-bridge-bar { opacity: 0.55; }
 [data-theme="light"] .cb-bridge-count { color: #1a1a2e; }
-[data-theme="light"] .cb-bridge-dir { color: #9ca3af; }
-[data-theme="light"] .cb-bridge-more { color: #9ca3af; }
+[data-theme="light"] .cb-bridge-dir { color: #6b7280; }
+[data-theme="light"] .cb-bridge-more { color: #6b7280; }
 
 /* Expandable bridge row wrapper */
 .cb-bridge-wrap {
@@ -9880,7 +9896,7 @@ footer li::before {
 [data-theme="light"] .cb-bridge-expandable:hover {
     background: rgba(124,58,237,0.06);
 }
-[data-theme="light"] .cb-bridge-chevron { color: #9ca3af; }
+[data-theme="light"] .cb-bridge-chevron { color: #6b7280; }
 [data-theme="light"] .cb-bridge-open .cb-bridge-chevron { color: #7c3aed; }
 [data-theme="light"] .cb-bridge-detail { border-left-color: rgba(124,58,237,0.15); }
 [data-theme="light"] .cb-detail-label { color: #6b7280; }
@@ -10656,7 +10672,7 @@ footer li::before {
 :root[data-theme="light"] .cs-edge-bar { background: rgba(0, 0, 0, 0.06); }
 :root[data-theme="light"] .cs-edge-labels { color: #6b7280; }
 :root[data-theme="light"] .cs-node-role { color: #6b7280; }
-:root[data-theme="light"] .cs-node-degree { color: #9ca3af; }
+:root[data-theme="light"] .cs-node-degree { color: #6b7280; }
 :root[data-theme="light"] .cs-node-list { border-top-color: rgba(0, 0, 0, 0.08); }
 :root[data-theme="light"] .cs-bridge-pill { background: rgba(167, 139, 250, 0.12); }
 /* Compensation stats in cluster panel */
@@ -13525,7 +13541,7 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #3f3f46;
 }
 [data-theme="light"] .scatter-community-label-dismiss {
-    color: #a1a1aa;
+    color: #6b7280;
 }
 [data-theme="light"] .scatter-community-label-dismiss:hover {
     color: #27272a;
