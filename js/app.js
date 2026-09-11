@@ -8160,31 +8160,8 @@ function setupDetailPanel(companies) {
                         { key: 'all_other', label: 'Other', color: '#ffd166' }
                     ];
 
-                    // Compute component deltas
-                    var _wfDeltas = [];
-                    _wfComponents.forEach(function(comp) {
-                        var v1 = _wfCeo1[comp.key] || 0;
-                        var v2 = _wfCeo2[comp.key] || 0;
-                        var delta = v1 - v2;
-                        if (Math.abs(delta) > 0) {
-                            _wfDeltas.push({ label: comp.label, delta: delta, color: comp.color, prev: v2, curr: v1 });
-                        }
-                    });
-
-                    // Sort by absolute magnitude descending so biggest drivers show first
-                    _wfDeltas.sort(function(a,b) { return Math.abs(b.delta) - Math.abs(a.delta); });
-
-                    if (_wfDeltas.length > 0) {
-                        var _wfPrevTotal = _wfCeo2.total;
-                        var _wfCurrTotal = _wfCeo1.total;
-                        var _wfNetChange = _wfCurrTotal - _wfPrevTotal;
-                        var _wfPctChange = _wfPrevTotal > 0 ? (_wfNetChange / _wfPrevTotal * 100) : 0;
-
-                        // Chart dimensions
-                        var _wfBarH = 22;
-                        var _wfGap = 6;
-                        var _wfLabelW = 75;
-                        var _wfValueW = 85;
+                    // CEO-transition detection + compact-name helpers, hoisted so the shared
+                    // waterfall renderer below can use them for both the filed and smoothed variants
                         // Detect CEO transition early — needed for height calc below
                         var _wfName1 = (_wfCeo1.name || '').trim();
                         var _wfName2 = (_wfCeo2.name || '').trim();
@@ -8197,37 +8174,6 @@ function setupDetailPanel(companies) {
                         }
                         var _wfIsCeoTransition = _wfName1 && _wfName2 && _wfNormName(_wfName1) !== _wfNormName(_wfName2);
 
-                        var _wfRowCount = _wfDeltas.length + 2; // start + deltas + end
-                        // Add extra height for start/end rows if CEO transition (two-line labels)
-                        var _wfTransitionExtra = _wfIsCeoTransition ? 24 : 0;
-                        var _wfChartH = _wfRowCount * (_wfBarH + _wfGap) + 8 + _wfTransitionExtra;
-
-                        // Find the range for scaling — need to track cumulative running total
-                        var _wfRunning = _wfPrevTotal;
-                        var _wfMinX = _wfPrevTotal;
-                        var _wfMaxX = _wfPrevTotal;
-                        _wfDeltas.forEach(function(d) {
-                            var oldRunning = _wfRunning;
-                            _wfRunning += d.delta;
-                            _wfMinX = Math.min(_wfMinX, Math.min(oldRunning, _wfRunning));
-                            _wfMaxX = Math.max(_wfMaxX, Math.max(oldRunning, _wfRunning));
-                        });
-                        _wfMinX = Math.min(_wfMinX, _wfCurrTotal);
-                        _wfMaxX = Math.max(_wfMaxX, _wfCurrTotal);
-
-                        // Add some padding to range
-                        var _wfRange = _wfMaxX - _wfMinX;
-                        var _wfPadding = _wfRange * 0.08;
-                        var _wfScaleMin = Math.max(0, _wfMinX - _wfPadding);
-                        var _wfScaleMax = _wfMaxX + _wfPadding;
-                        var _wfScaleRange = _wfScaleMax - _wfScaleMin;
-
-                        function _wfX(val) { return _wfScaleRange > 0 ? ((val - _wfScaleMin) / _wfScaleRange * 100) : 50; }
-
-                        var _wfChangeCls = _wfNetChange >= 0 ? 'positive' : 'negative';
-                        var _wfChangeSign = _wfNetChange >= 0 ? '+' : '\u2212';
-                        var _wfPctStr = Math.abs(_wfPctChange) >= 100 ? Math.round(Math.abs(_wfPctChange)) + '%' : Math.abs(_wfPctChange).toFixed(1) + '%';
-
                         // Short first name + last name for compact display
                         function _wfShortName(n) {
                             var parts = n.split(/\s+/).filter(function(p) { return p.length > 0; });
@@ -8236,92 +8182,197 @@ function setupDetailPanel(companies) {
                             return parts[0] + ' ' + parts[parts.length - 1];
                         }
 
-                        html += '<div class="yoy-waterfall-section">';
-                        html += '<div class="yoy-waterfall-header">';
-                        html += '<span class="yoy-waterfall-title">Compensation Change Drivers</span>';
-                        html += '<span class="yoy-waterfall-sub">FY' + _wfYr2 + ' → FY' + _wfYr1 + ' · Net ' + _wfChangeSign + formatCurrency(Math.abs(_wfNetChange)) + ' (' + _wfChangeSign + _wfPctStr + ')</span>';
-                        html += '</div>';
-
-                        // CEO transition warning banner
-                        if (_wfIsCeoTransition) {
-                            html += '<div class="wf-transition-banner">';
-                            html += '<span class="wf-transition-icon">⚠</span>';
-                            html += '<span class="wf-transition-text">';
-                            html += '<strong>CEO transition</strong> — comparing ';
-                            html += '<span class="wf-transition-name wf-transition-old">' + _wfShortName(_wfName2) + '</span>';
-                            html += ' <span class="wf-transition-arrow">→</span> ';
-                            html += '<span class="wf-transition-name wf-transition-new">' + _wfShortName(_wfName1) + '</span>';
-                            html += '. Pay change reflects different executives, not a raise or cut.';
-                            html += '</span>';
-                            html += '</div>';
-                        }
-
-                        html += '<div class="yoy-waterfall-chart" style="height:' + _wfChartH + 'px">';
-
-                        var _wfY = 4;
-                        // Starting total bar — include CEO name if transition
-                        var _wfStartX = _wfX(0);
-                        var _wfStartW = _wfX(_wfPrevTotal) - _wfStartX;
-                        var _wfStartLabel = 'FY' + _wfYr2 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName2) + '</span>' : '');
-                        var _wfTransRowCls = _wfIsCeoTransition ? ' wf-row-transition' : '';
-                        html += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
-                        html += '<span class="wf-label">' + _wfStartLabel + '</span>';
-                        html += '<div class="wf-bar-area">';
-                        html += '<div class="wf-bar wf-bar-total" style="left:' + _wfStartX.toFixed(1) + '%;width:' + _wfStartW.toFixed(1) + '%" title="FY' + _wfYr2 + ' Total: ' + formatCurrency(_wfPrevTotal) + '"></div>';
-                        html += '</div>';
-                        html += '<span class="wf-value">' + formatCurrency(_wfPrevTotal) + '</span>';
-                        html += '</div>';
-
-                        // Component delta bars
-                        _wfRunning = _wfPrevTotal;
-                        _wfDeltas.forEach(function(d) {
-                            _wfY += _wfBarH + _wfGap;
-                            var barStart, barEnd;
-                            if (d.delta >= 0) {
-                                barStart = _wfRunning;
-                                barEnd = _wfRunning + d.delta;
-                            } else {
-                                barStart = _wfRunning + d.delta;
-                                barEnd = _wfRunning;
+                    // Shared waterfall renderer: builds the 'Compensation Change Drivers' section
+                    // for a CEO pair (ceo1 = current FY, ceo2 = prior FY) across a component list.
+                    // Returns '' when no component moved. Filed and smoothed variants render
+                    // byte-identically apart from the variant class on the section wrapper.
+                    function _wfRenderSection(_wfCeo1, _wfCeo2, _wfComponents, _wfSectionCls) {
+                        var out = '';
+                        // Compute component deltas
+                        var _wfDeltas = [];
+                        _wfComponents.forEach(function(comp) {
+                            var v1 = _wfCeo1[comp.key] || 0;
+                            var v2 = _wfCeo2[comp.key] || 0;
+                            var delta = v1 - v2;
+                            if (Math.abs(delta) > 0) {
+                                _wfDeltas.push({ label: comp.label, delta: delta, color: comp.color, prev: v2, curr: v1 });
                             }
-                            var leftPct = _wfX(barStart);
-                            var rightPct = _wfX(barEnd);
-                            var widthPct = rightPct - leftPct;
-                            var barCls = d.delta >= 0 ? 'wf-bar-up' : 'wf-bar-down';
-                            var deltaSign = d.delta >= 0 ? '+' : '\u2212';
-                            var deltaPctOfTotal = _wfPrevTotal > 0 ? Math.abs(d.delta) / _wfPrevTotal * 100 : 0;
-                            var deltaPctStr = deltaPctOfTotal >= 100 ? Math.round(deltaPctOfTotal) + '%' : deltaPctOfTotal.toFixed(1) + '%';
-                            var tipText = d.label + ': ' + formatCurrency(d.prev) + ' → ' + formatCurrency(d.curr) + ' (' + deltaSign + formatCurrency(Math.abs(d.delta)) + ')';
-
-                            // Connector line from running total
-                            var connX = _wfX(_wfRunning);
-                            html += '<div class="wf-row" style="top:' + _wfY + 'px">';
-                            html += '<span class="wf-label">' + d.label + '</span>';
-                            html += '<div class="wf-bar-area">';
-                            html += '<div class="wf-connector" style="left:' + connX.toFixed(1) + '%"></div>';
-                            html += '<div class="wf-bar ' + barCls + '" style="left:' + leftPct.toFixed(1) + '%;width:' + Math.max(0.5, widthPct).toFixed(1) + '%" title="' + tipText + '"></div>';
-                            html += '</div>';
-                            html += '<span class="wf-value ' + (d.delta >= 0 ? 'positive' : 'negative') + '">' + deltaSign + formatCurrency(Math.abs(d.delta)) + '</span>';
-                            html += '</div>';
-
-                            _wfRunning += d.delta;
                         });
 
-                        // Ending total bar — include CEO name if transition
-                        _wfY += _wfBarH + _wfGap;
-                        var _wfEndX = _wfX(0);
-                        var _wfEndW = _wfX(_wfCurrTotal) - _wfEndX;
-                        var _wfEndLabel = 'FY' + _wfYr1 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName1) + '</span>' : '');
-                        html += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
-                        html += '<span class="wf-label">' + _wfEndLabel + '</span>';
-                        html += '<div class="wf-bar-area">';
-                        html += '<div class="wf-bar wf-bar-total wf-bar-end" style="left:' + _wfEndX.toFixed(1) + '%;width:' + _wfEndW.toFixed(1) + '%" title="FY' + _wfYr1 + ' Total: ' + formatCurrency(_wfCurrTotal) + '"></div>';
-                        html += '</div>';
-                        html += '<span class="wf-value">' + formatCurrency(_wfCurrTotal) + '</span>';
-                        html += '</div>';
+                        // Sort by absolute magnitude descending so biggest drivers show first
+                        _wfDeltas.sort(function(a,b) { return Math.abs(b.delta) - Math.abs(a.delta); });
 
-                        html += '</div>'; // yoy-waterfall-chart
-                        html += '</div>'; // yoy-waterfall-section
+                        if (_wfDeltas.length > 0) {
+                            var _wfPrevTotal = _wfCeo2.total;
+                            var _wfCurrTotal = _wfCeo1.total;
+                            var _wfNetChange = _wfCurrTotal - _wfPrevTotal;
+                            var _wfPctChange = _wfPrevTotal > 0 ? (_wfNetChange / _wfPrevTotal * 100) : 0;
+
+                            // Chart dimensions
+                            var _wfBarH = 22;
+                            var _wfGap = 6;
+                            var _wfLabelW = 75;
+                            var _wfValueW = 85;
+
+                            var _wfRowCount = _wfDeltas.length + 2; // start + deltas + end
+                            // Add extra height for start/end rows if CEO transition (two-line labels)
+                            var _wfTransitionExtra = _wfIsCeoTransition ? 24 : 0;
+                            var _wfChartH = _wfRowCount * (_wfBarH + _wfGap) + 8 + _wfTransitionExtra;
+
+                            // Find the range for scaling — need to track cumulative running total
+                            var _wfRunning = _wfPrevTotal;
+                            var _wfMinX = _wfPrevTotal;
+                            var _wfMaxX = _wfPrevTotal;
+                            _wfDeltas.forEach(function(d) {
+                                var oldRunning = _wfRunning;
+                                _wfRunning += d.delta;
+                                _wfMinX = Math.min(_wfMinX, Math.min(oldRunning, _wfRunning));
+                                _wfMaxX = Math.max(_wfMaxX, Math.max(oldRunning, _wfRunning));
+                            });
+                            _wfMinX = Math.min(_wfMinX, _wfCurrTotal);
+                            _wfMaxX = Math.max(_wfMaxX, _wfCurrTotal);
+
+                            // Add some padding to range
+                            var _wfRange = _wfMaxX - _wfMinX;
+                            var _wfPadding = _wfRange * 0.08;
+                            var _wfScaleMin = Math.max(0, _wfMinX - _wfPadding);
+                            var _wfScaleMax = _wfMaxX + _wfPadding;
+                            var _wfScaleRange = _wfScaleMax - _wfScaleMin;
+
+                            function _wfX(val) { return _wfScaleRange > 0 ? ((val - _wfScaleMin) / _wfScaleRange * 100) : 50; }
+
+                            var _wfChangeCls = _wfNetChange >= 0 ? 'positive' : 'negative';
+                            var _wfChangeSign = _wfNetChange >= 0 ? '+' : '\u2212';
+                            var _wfPctStr = Math.abs(_wfPctChange) >= 100 ? Math.round(Math.abs(_wfPctChange)) + '%' : Math.abs(_wfPctChange).toFixed(1) + '%';
+
+
+                            out += '<div class="yoy-waterfall-section ' + _wfSectionCls + '">';
+                            out += '<div class="yoy-waterfall-header">';
+                            out += '<span class="yoy-waterfall-title">Compensation Change Drivers</span>';
+                            out += '<span class="yoy-waterfall-sub">FY' + _wfYr2 + ' → FY' + _wfYr1 + ' · Net ' + _wfChangeSign + formatCurrency(Math.abs(_wfNetChange)) + ' (' + _wfChangeSign + _wfPctStr + ')</span>';
+                            out += '</div>';
+
+                            // CEO transition warning banner
+                            if (_wfIsCeoTransition) {
+                                out += '<div class="wf-transition-banner">';
+                                out += '<span class="wf-transition-icon">⚠</span>';
+                                out += '<span class="wf-transition-text">';
+                                out += '<strong>CEO transition</strong> — comparing ';
+                                out += '<span class="wf-transition-name wf-transition-old">' + _wfShortName(_wfName2) + '</span>';
+                                out += ' <span class="wf-transition-arrow">→</span> ';
+                                out += '<span class="wf-transition-name wf-transition-new">' + _wfShortName(_wfName1) + '</span>';
+                                out += '. Pay change reflects different executives, not a raise or cut.';
+                                out += '</span>';
+                                out += '</div>';
+                            }
+
+                            out += '<div class="yoy-waterfall-chart" style="height:' + _wfChartH + 'px">';
+
+                            var _wfY = 4;
+                            // Starting total bar — include CEO name if transition
+                            var _wfStartX = _wfX(0);
+                            var _wfStartW = _wfX(_wfPrevTotal) - _wfStartX;
+                            var _wfStartLabel = 'FY' + _wfYr2 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName2) + '</span>' : '');
+                            var _wfTransRowCls = _wfIsCeoTransition ? ' wf-row-transition' : '';
+                            out += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
+                            out += '<span class="wf-label">' + _wfStartLabel + '</span>';
+                            out += '<div class="wf-bar-area">';
+                            out += '<div class="wf-bar wf-bar-total" style="left:' + _wfStartX.toFixed(1) + '%;width:' + _wfStartW.toFixed(1) + '%" title="FY' + _wfYr2 + ' Total: ' + formatCurrency(_wfPrevTotal) + '"></div>';
+                            out += '</div>';
+                            out += '<span class="wf-value">' + formatCurrency(_wfPrevTotal) + '</span>';
+                            out += '</div>';
+
+                            // Component delta bars
+                            _wfRunning = _wfPrevTotal;
+                            _wfDeltas.forEach(function(d) {
+                                _wfY += _wfBarH + _wfGap;
+                                var barStart, barEnd;
+                                if (d.delta >= 0) {
+                                    barStart = _wfRunning;
+                                    barEnd = _wfRunning + d.delta;
+                                } else {
+                                    barStart = _wfRunning + d.delta;
+                                    barEnd = _wfRunning;
+                                }
+                                var leftPct = _wfX(barStart);
+                                var rightPct = _wfX(barEnd);
+                                var widthPct = rightPct - leftPct;
+                                var barCls = d.delta >= 0 ? 'wf-bar-up' : 'wf-bar-down';
+                                var deltaSign = d.delta >= 0 ? '+' : '\u2212';
+                                var deltaPctOfTotal = _wfPrevTotal > 0 ? Math.abs(d.delta) / _wfPrevTotal * 100 : 0;
+                                var deltaPctStr = deltaPctOfTotal >= 100 ? Math.round(deltaPctOfTotal) + '%' : deltaPctOfTotal.toFixed(1) + '%';
+                                var tipText = d.label + ': ' + formatCurrency(d.prev) + ' → ' + formatCurrency(d.curr) + ' (' + deltaSign + formatCurrency(Math.abs(d.delta)) + ')';
+
+                                // Connector line from running total
+                                var connX = _wfX(_wfRunning);
+                                out += '<div class="wf-row" style="top:' + _wfY + 'px">';
+                                out += '<span class="wf-label">' + d.label + '</span>';
+                                out += '<div class="wf-bar-area">';
+                                out += '<div class="wf-connector" style="left:' + connX.toFixed(1) + '%"></div>';
+                                out += '<div class="wf-bar ' + barCls + '" style="left:' + leftPct.toFixed(1) + '%;width:' + Math.max(0.5, widthPct).toFixed(1) + '%" title="' + tipText + '"></div>';
+                                out += '</div>';
+                                out += '<span class="wf-value ' + (d.delta >= 0 ? 'positive' : 'negative') + '">' + deltaSign + formatCurrency(Math.abs(d.delta)) + '</span>';
+                                out += '</div>';
+
+                                _wfRunning += d.delta;
+                            });
+
+                            // Ending total bar — include CEO name if transition
+                            _wfY += _wfBarH + _wfGap;
+                            var _wfEndX = _wfX(0);
+                            var _wfEndW = _wfX(_wfCurrTotal) - _wfEndX;
+                            var _wfEndLabel = 'FY' + _wfYr1 + (_wfIsCeoTransition ? ' <span class="wf-ceo-name">' + _wfShortName(_wfName1) + '</span>' : '');
+                            out += '<div class="wf-row' + _wfTransRowCls + '" style="top:' + _wfY + 'px">';
+                            out += '<span class="wf-label">' + _wfEndLabel + '</span>';
+                            out += '<div class="wf-bar-area">';
+                            out += '<div class="wf-bar wf-bar-total wf-bar-end" style="left:' + _wfEndX.toFixed(1) + '%;width:' + _wfEndW.toFixed(1) + '%" title="FY' + _wfYr1 + ' Total: ' + formatCurrency(_wfCurrTotal) + '"></div>';
+                            out += '</div>';
+                            out += '<span class="wf-value">' + formatCurrency(_wfCurrTotal) + '</span>';
+                            out += '</div>';
+
+                            out += '</div>'; // yoy-waterfall-chart
+                            out += '</div>'; // yoy-waterfall-section
+                        }
+                        return out;
+                    }
+
+                    // Smoothed CEO-year object for the waterfall: stock + option awards are folded
+                    // into the NEO's grant-year-averaged equity (placed in the stock_awards slot,
+                    // rendered as 'Equity (avg)'); total is the smoothed total. Cash components
+                    // stay as-filed, so this mirrors the Pay Mix Evolution smoothed variant.
+                    function _wfSmoothCeo(ceo, gs) {
+                        var c = {};
+                        Object.keys(ceo).forEach(function(k) { c[k] = ceo[k]; });
+                        c.stock_awards = gs.avgEquity;
+                        c.option_awards = 0;
+                        c.total = gs.smoothed;
+                        return c;
+                    }
+
+                    html += _wfRenderSection(_wfCeo1, _wfCeo2, _wfComponents, 'yoy-waterfall-filed');
+
+                    // Grant-year smoothed variant (lumpy-grant companies only): the waterfall
+                    // shows deltas of smoothed totals, with equity folded into 'Equity (avg)'.
+                    // Rendered only when both CEO fiscal years have multi-year grant data AND
+                    // smoothing actually changes a CEO-year total (skips the no-op case, e.g.
+                    // a CEO with no equity awards whose smoothed totals equal the filed ones).
+                    if (hasGrantSmoothing) {
+                        var _wfGsKey1 = ((_wfCeo1.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + _wfYr1;
+                        var _wfGsKey2 = ((_wfCeo2.name || '').trim().toLowerCase().replace(/\s+/g, ' ')) + '|' + _wfYr2;
+                        var _wfGs1 = grantSmoothMap[_wfGsKey1] || null;
+                        var _wfGs2 = grantSmoothMap[_wfGsKey2] || null;
+                        if (_wfGs1 && _wfGs2 && !_wfGs1.singleYear && !_wfGs2.singleYear &&
+                            (_wfGs1.smoothed !== _wfCeo1.total || _wfGs2.smoothed !== _wfCeo2.total)) {
+                            var _wfComponentsSmooth = [
+                                { key: 'salary', label: 'Salary', color: '#06d6a0' },
+                                { key: 'stock_awards', label: 'Equity (avg)', color: '#5eead4' },
+                                { key: 'bonus', label: 'Bonus', color: '#8b5cf6' },
+                                { key: 'non_equity_incentive', label: 'Incentive', color: '#a78bfa' },
+                                { key: 'pension_nqdc', label: 'Pension', color: '#fb923c' },
+                                { key: 'all_other', label: 'Other', color: '#ffd166' }
+                            ];
+                            html += _wfRenderSection(_wfSmoothCeo(_wfCeo1, _wfGs1), _wfSmoothCeo(_wfCeo2, _wfGs2), _wfComponentsSmooth, 'yoy-waterfall-smoothed');
+                        }
                     }
                 }
             }
@@ -8636,14 +8687,14 @@ function setupDetailPanel(companies) {
             }
             // Multi-year equity grant smoothing toggle (only for flagged lumpy-grant companies)
             if (hasGrantSmoothing) {
-                html += ' <button class="neo-smooth-btn" data-action="toggle-smooth" title="Spread each NEO\u2019s stock + option awards evenly across that NEO\u2019s available fiscal years, for apples-to-apples comparison across grant years \u2014 applies to the NEO tables, trend sparklines, Pay Mix Evolution, and CEO Pay Trend" aria-pressed="false">\u{1F4CA} Smooth equity grants</button>';
+                html += ' <button class="neo-smooth-btn" data-action="toggle-smooth" title="Spread each NEO\u2019s stock + option awards evenly across that NEO\u2019s available fiscal years, for apples-to-apples comparison across grant years \u2014 applies to the NEO tables, trend sparklines, Pay Mix Evolution, CEO Pay Trend, and YoY Component Waterfall" aria-pressed="false">\u{1F4CA} Smooth equity grants</button>';
             }
             html += '</div>';
 
             // Smoothing method banner (hidden until the toggle is ON)
             if (hasGrantSmoothing) {
                 var _gsBasis = company._multi_year_equity_basis ? String(company._multi_year_equity_basis).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;') : '';
-                html += '<div class="neo-note-banner neo-note-banner--smooth neo-smooth-banner" style="display:none" role="note"><span class="neo-note-icon" aria-hidden="true">\u{1F4CA}</span><span><strong>Grant-year smoothing ON.</strong> Stock + option awards are spread evenly across each NEO\u2019s available fiscal years, then added back to as-filed cash comp. Smoothed figures are annualized for comparability; they are not the filing-printed totals. The NEO tables, trend sparklines, Pay Mix Evolution, and CEO Pay Trend all switch to the smoothed view. NEOs with a single fiscal year on record show \u2014. Basis: ' + _gsBasis + '</span></div>';
+                html += '<div class="neo-note-banner neo-note-banner--smooth neo-smooth-banner" style="display:none" role="note"><span class="neo-note-icon" aria-hidden="true">\u{1F4CA}</span><span><strong>Grant-year smoothing ON.</strong> Stock + option awards are spread evenly across each NEO\u2019s available fiscal years, then added back to as-filed cash comp. Smoothed figures are annualized for comparability; they are not the filing-printed totals. The NEO tables, trend sparklines, Pay Mix Evolution, CEO Pay Trend, and YoY Component Waterfall all switch to the smoothed view. NEOs with a single fiscal year on record show \u2014. Basis: ' + _gsBasis + '</span></div>';
             }
 
             // Company-level comparability note (multi-year equity grants, filing quirks, etc.)
@@ -9564,7 +9615,7 @@ function setupDetailPanel(companies) {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 // Scope to the whole detail panel so the NEO tables, trend sparklines,
-                // Pay Mix Evolution, and CEO Pay Trend charts all swap together.
+                // Pay Mix Evolution, CEO Pay Trend, and YoY Component Waterfall charts all swap together.
                 var section = btn.closest('.detail-panel');
                 if (!section) return;
                 var isSmooth = section.classList.toggle('neo-smooth-mode');

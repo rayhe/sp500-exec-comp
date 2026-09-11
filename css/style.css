@@ -7616,7 +7616,15 @@ footer li::before {
 .neo-smooth-mode .ceo-trend-mini-change.ceo-trend-smoothed { display: inline; }
 
 .neo-smooth-mode .comp-evo-filed,
-.neo-smooth-mode .ceo-trend-filed { display: none; }
+.neo-smooth-mode .ceo-trend-filed,
+.neo-smooth-mode .yoy-waterfall-filed { display: none; }
+
+/* YoY Component Waterfall: the grant-year-smoothed variant is pre-rendered but
+   hidden until the smoothing toggle turns on, then swaps with the as-filed
+   variant (no re-render). The section is a block-level div, so block restores
+   its natural layout. */
+.yoy-waterfall-smoothed { display: none; }
+.neo-smooth-mode .yoy-waterfall-smoothed { display: block; }
 .neo-years-available {
     font-size: 0.75rem;
     color: var(--text-muted);
