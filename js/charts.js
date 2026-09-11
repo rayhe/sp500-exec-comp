@@ -3471,23 +3471,23 @@ function drawScatterChart(companies) {
             // Background pill
             var domBbox = domTextNode.node().getBBox();
             var dpx = 10, dpy = 4;
-            var pillFill = dark ? 'rgba(0,180,216,0.06)' : 'rgba(0,180,216,0.05)';
-            var pillStroke = dark ? 'rgba(0,180,216,0.15)' : 'rgba(0,180,216,0.12)';
+            var pillFill = dark ? 'rgba(0,180,216,0.06)' : 'rgba(0,180,216,0.08)';
+            var pillStroke = dark ? 'rgba(0,180,216,0.15)' : 'rgba(0,180,216,0.32)';
             if (hasSectorOverlay) {
                 // Extract sector color for pill
                 var cMatch = sectorColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
                 if (cMatch) {
                     var sr = parseInt(cMatch[1], 16), sg = parseInt(cMatch[2], 16), sb = parseInt(cMatch[3], 16);
-                    pillFill = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.06' : '0.05') + ')';
-                    pillStroke = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.15' : '0.12') + ')';
+                    pillFill = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.06' : '0.08') + ')';
+                    pillStroke = 'rgba(' + sr + ',' + sg + ',' + sb + ',' + (dark ? '0.15' : '0.32') + ')';
                 }
             } else if (_hasCommFilter && _commCrosshairColor) {
                 var ccMatch = _commCrosshairColor.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
                 if (ccMatch) {
                     var cHex = ccMatch[1].length === 3 ? ccMatch[1][0]+ccMatch[1][0]+ccMatch[1][1]+ccMatch[1][1]+ccMatch[1][2]+ccMatch[1][2] : ccMatch[1];
                     var cr = parseInt(cHex.substring(0,2),16), cg = parseInt(cHex.substring(2,4),16), cb = parseInt(cHex.substring(4,6),16);
-                    pillFill = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.06' : '0.05') + ')';
-                    pillStroke = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.15' : '0.12') + ')';
+                    pillFill = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.06' : '0.08') + ')';
+                    pillStroke = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (dark ? '0.15' : '0.32') + ')';
                 }
             }
             domG.insert('rect', 'text')
