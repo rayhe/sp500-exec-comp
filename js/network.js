@@ -1280,6 +1280,9 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
         } else {
+            // Default edge colors — overridden below when path-finder or high-contrast is active
+            var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
+            var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
 
