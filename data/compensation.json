@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "S&P 500 Executive Compensation Data",
-    "description": "500 companies, 6778 NEO records, 500 companies enriched",
+    "description": "500 companies, 6781 NEO records, 500 companies enriched",
     "sources": [
       "SEC EDGAR DEF 14A Proxy Statements (primary)",
       "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -124,10 +124,10 @@
     "edgar_coverage": 500,
     "total_companies": 500,
     "last_updated": "2026-09-10",
-    "total_neo_records": 6778,
-    "title_coverage": "6778/6778",
+    "total_neo_records": 6781,
+    "title_coverage": "6781/6781",
     "data_quality": {
-      "verified": 6307,
+      "verified": 6310,
       "component_mismatch": 13,
       "def14a_verified_20260909": 217,
       "def14a_verified_20260910": 114,
@@ -135,7 +135,7 @@
       "rounding": 50,
       "recomputed": 0,
       "def14a_verified_20260908": 13,
-      "verified_total": 6715,
+      "verified_total": 6718,
       "last_audit": "2026-09-10"
     },
     "median_ceo_pay": 17759221.5,
@@ -171,7 +171,7 @@
     "governance_coverage": 500,
     "board_independence_coverage": 500,
     "data_quality_detailed": {
-      "verified": 6307,
+      "verified": 6310,
       "component_mismatch": 13,
       "def14a_verified_20260909": 217,
       "def14a_verified_20260910": 114,
@@ -179,7 +179,7 @@
       "rounding": 50,
       "recomputed": 0,
       "def14a_verified_20260908": 13,
-      "verified_total": 6715,
+      "verified_total": 6718,
       "last_audit": "2026-09-10"
     },
     "companies_with_executives": 500,
@@ -187,7 +187,7 @@
     "median_worker_pay": 81899.0,
     "median_pay_ratio": 199,
     "last_verified": "2026-09-01T09:08:43Z",
-    "total_executives": 6778,
+    "total_executives": 6781,
     "board_independence_count": 500,
     "board_independence_full": 500,
     "last_audit": "2026-09-09",
@@ -64937,7 +64937,8 @@
         "independence_pct": 81.8,
         "chair_independent": false,
         "lead_independent_director": true
-      }
+      },
+      "notes": "Pay ratio 136:1 is the FY2024 filed ratio (2025 DEF 14A, https://www.sec.gov/Archives/edgar/data/1666700/000119312525071813/d862604ddef14a.htm), computed on Edward D. Breen - FY2024 principal executive officer ($15,680,270) - vs median employee pay $115,630. The company headline CEO is Lori D. Koch (became CEO June 2025); her FY2024 SCT total is $12,568,683 (CFO year), which would imply ~109:1 against the same median. The 2026 DEF 14A discloses the FY2025 ratio as 189:1 on Ms. Koch."
     },
     {
       "ticker": "PKG",
@@ -72419,15 +72420,16 @@
           "bonus": null,
           "non_equity_incentive": 2650167,
           "pension_nqdc": null,
-          "all_other": 236035,
-          "total": 12037646,
+          "all_other": 599979,
+          "total": 12401590,
           "title": "Chairman and Chief Executive Officer",
           "_original_total": 599979,
           "_total_source": "def14a_verified_20260910",
           "stock_awards": 6843578,
           "option_awards": null,
           "pension_change": 1107866,
-          "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: the 2025 proxy restates 2023 All Other Compensation upward (Rogers 236035 -> 599979, total 12037646 -> 12401590); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification."
+          "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: the 2025 proxy restates 2023 All Other Compensation upward (Rogers 236035 -> 599979, total 12037646 -> 12401590); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification.",
+          "_restate_note_20260910": "Restatement adopted from 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/92230/000119312526107144/d12240ddef14a.htm): 2023 All Other $236,035 -> $599,979, total $12,037,646 -> $12,401,590. Filing components foot exactly (1200000+6843578+2650167+1107866+599979=12401590). Restatements adopted per GEN Derse/Ko precedent; the earlier contemporaneous 2024-proxy values are preserved in _original_total."
         },
         {
           "name": "Michael B. Maguire",
@@ -72552,15 +72554,16 @@
           "bonus": null,
           "non_equity_incentive": 1668600,
           "pension_nqdc": null,
-          "all_other": 19800,
-          "total": 6519275,
+          "all_other": 221535,
+          "total": 6721010,
           "title": "Executive Vice President and Chief Risk Officer For 2025, our NEOs also include",
           "_original_total": 221535,
           "_total_source": "def14a_verified_20260910",
           "stock_awards": 3328958,
           "option_awards": null,
           "pension_change": 701917,
-          "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: 2025 proxy restates 2023 All Other upward (Cummins 19800 -> 221535, total 6519275 -> 6721010); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification."
+          "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: 2025 proxy restates 2023 All Other upward (Cummins 19800 -> 221535, total 6519275 -> 6721010); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification.",
+          "_restate_note_20260910": "Restatement adopted from 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/92230/000119312526107144/d12240ddef14a.htm): 2023 All Other $19,800 -> $221,535, total $6,519,275 -> $6,721,010. Filing components foot exactly (800000+3328958+1668600+701917+221535=6721010). Restatements adopted per GEN Derse/Ko precedent; the earlier contemporaneous 2024-proxy values are preserved in _original_total."
         },
         {
           "name": "Clarke R. Starnes III",
@@ -92187,15 +92190,57 @@
           "total": 2284175,
           "_total_source": "rounding",
           "_round_delta": 1
+        },
+        {
+          "name": "William K. Grogan",
+          "year": 2024,
+          "title": "SVP and CFO",
+          "salary": 725000,
+          "bonus": null,
+          "stock_awards": 1710453,
+          "option_awards": 500018,
+          "non_equity_incentive": 916273,
+          "all_other": 98476,
+          "total": 3950221,
+          "_total_source": "verified",
+          "_note": "Row re-added 2026-09-10 from 2025 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1524472/000095017025047304/xyl-20250328.htm) after the column-shift repair dropped the continuation row; values cross-checked verbatim vs the 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1524472/000110465926036678/xyl-20260514xdef14a.htm). $1 filer rounding: components sum 3,950,220 vs printed 3,950,221 (stays 'verified' per 2026-09-10 $1-$2 taxonomy decision)."
+        },
+        {
+          "name": "Meredith Emmerich",
+          "year": 2024,
+          "title": "SVP and President, AW",
+          "salary": 80481,
+          "bonus": 1050000,
+          "stock_awards": 499998,
+          "option_awards": 1300004,
+          "non_equity_incentive": null,
+          "all_other": 2414,
+          "total": 2932897,
+          "_total_source": "verified",
+          "_note": "Row added 2026-09-10 from 2025 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1524472/000095017025047304/xyl-20250328.htm): Ms. Emmerich joined the Company on October 21, 2024; $1,050,000 bonus is a sign-on cash award, $499,998 stock + $1,300,004 options are one-time make-whole awards to offset forfeited near-term awards; not eligible for 2024 AIP. Components foot exactly to printed total (80481+1050000+499998+1300004+2414=2932897)."
+        },
+        {
+          "name": "Rodney O. Aulick",
+          "year": 2024,
+          "title": "SVP and President, WSS",
+          "salary": 546202,
+          "bonus": 375000,
+          "stock_awards": 726859,
+          "option_awards": 212511,
+          "non_equity_incentive": 528649,
+          "all_other": 75275,
+          "total": 2464495,
+          "_total_source": "verified",
+          "_note": "Row re-added 2026-09-10 from 2025 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1524472/000095017025047304/xyl-20250328.htm) after the column-shift repair dropped the continuation row; values cross-checked verbatim vs the 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1524472/000110465926036678/xyl-20260514xdef14a.htm). $1 filer rounding: components sum 2,464,496 vs printed 2,464,495 (stays 'verified' per 2026-09-10 $1-$2 taxonomy decision)."
         }
       ],
-      "neo_count": 2,
+      "neo_count": 5,
       "available_years": [
         2025,
         2024,
         2023
       ],
-      "total_neo_compensation": 13263425,
+      "total_neo_compensation": 22611038,
       "proxy_fiscal_year": 2025,
       "ceo_gender": "M",
       "ceo_tenure": {
