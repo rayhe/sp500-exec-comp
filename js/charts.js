@@ -387,6 +387,7 @@ window.highlightSectorBar = function(sectorName) {
 function drawSectorChart(trends, companies) {
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var container = document.getElementById('sector-chart');
+    container.innerHTML = ''; // clear the boot skeleton placeholder before appending the svg
     var data = trends.median_pay_by_sector_sp500_fy2024 && trends.median_pay_by_sector_sp500_fy2024.data
         ? trends.median_pay_by_sector_sp500_fy2024.data.filter(function(d) { return d.median_pay; })
         : [];
@@ -888,6 +889,7 @@ function drawSectorChart(trends, companies) {
 /* --- Trend Line Chart --- */
 function drawTrendChart(trends) {
     var container = document.getElementById('trend-chart');
+    container.innerHTML = ''; // clear the boot skeleton placeholder before appending the svg
     var ceoData = trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data
         ? trends.median_ceo_pay_by_year.data : [];
     var workerData = trends.median_worker_pay_by_year && trends.median_worker_pay_by_year.data
@@ -1541,6 +1543,7 @@ function drawTrendChart(trends) {
 /* --- Pay Ratio Distribution (Histogram) --- */
 function drawRatioChart(companies) {
     var container = document.getElementById('ratio-chart');
+    container.innerHTML = ''; // clear the boot skeleton placeholder before appending the svg
     var withRatio = companies.filter(function(c) { return c.pay_ratio != null; });
 
     if (withRatio.length === 0) {
