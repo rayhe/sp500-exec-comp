@@ -15925,7 +15925,7 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-10)</h4>' +
-                '<p>6,718 of 6,781 NEO rows verified (99.1%): 50 rounding, 0 recomputed, 13 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>6,737 of 6,781 NEO rows verified (99.4%): 24 rounding, 0 recomputed, 20 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
@@ -15962,9 +15962,10 @@ function setupDualSparklineTooltips() {
         var total = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata.total_neo_records : null;
         if (!dq || dq.verified_total == null || !total) return null;
         var pct = (100 * dq.verified_total / total).toFixed(1);
+        var recomp = (dq.recomputed == null ? 0 : dq.recomputed);
         return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-10') + ')</h4>' +
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
-            ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + dq.recomputed + ' recomputed, ' +
+            ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
     }
 
