@@ -15925,7 +15925,7 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-10)</h4>' +
-                '<p>6,737 of 6,781 NEO rows verified (99.4%): 24 rounding, 0 recomputed, 20 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>6,761 of 6,781 NEO rows verified (99.7%): 0 rounding, 0 recomputed, 20 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {

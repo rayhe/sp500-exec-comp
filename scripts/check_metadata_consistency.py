@@ -21,6 +21,8 @@ kill the recurring stale-copy class (2026-09-11 18:11 batch left README at
 99.1%/6,718 for ~80 min; 22:00 batch left the README audit trail missing)
 by refusing commits whose static copy contradicts the JSON it commits.
 History: 2026-09-12 (this run) added section 4.
+History: 2026-09-12 11:30 PT run added the def14a_verified_20260912 label
+(rounding-bucket collapse: 24 rows re-verified vs primary DEF 14A SCTs).
 """
 import json
 import os
@@ -46,6 +48,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260908": "def14a_verified_20260908",
     "def14a_verified_20260909": "def14a_verified_20260909",
     "def14a_verified_20260910": "def14a_verified_20260910",
+    "def14a_verified_20260912": "def14a_verified_20260912",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
