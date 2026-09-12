@@ -7700,7 +7700,12 @@ function setupDetailPanel(companies) {
                     biSub += ' \u00b7 Non-independent chair';
                     if (bi.lead_independent_director === true) biSub += ' (lead independent director)';
                 }
-                var biLink = company.filing_url ? ' <a href="' + company.filing_url + '" target="_blank" rel="noopener" class="detail-stat-source" title="Source DEF 14A filing">DEF 14A↗</a>' : '';
+                var _biSrc = company.source || '';
+                var _biIs10K = /10-K/.test(_biSrc) || /10k\.htm/i.test(company.filing_url || '');
+                var _biIs14C = /DEF 14C/.test(_biSrc);
+                var _biLbl = _biIs10K ? 'SEC 10-K↗' : (_biIs14C ? 'DEF 14C↗' : 'DEF 14A↗');
+                var _biTitle = 'Source ' + (_biIs10K ? '10-K filing' : (_biIs14C ? 'DEF 14C filing' : 'DEF 14A filing'));
+                var biLink = company.filing_url ? ' <a href="' + company.filing_url + '" target="_blank" rel="noopener" class="detail-stat-source" title="' + _biTitle + '">' + _biLbl + '</a>' : '';
                 html += '<div class="detail-stat"><div class="detail-stat-label" title="' + biTip + '">Board Independence' + biLink + '</div><div class="detail-stat-value ' + biCls + '">' + biPct.toFixed(1) + '%</div>' + distBar(biPct, '0%', '100%') + '<div class="detail-stat-sub">' + biSub + '</div></div>';
             }
         }
