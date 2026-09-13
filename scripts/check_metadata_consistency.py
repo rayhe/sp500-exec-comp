@@ -23,6 +23,9 @@ by refusing commits whose static copy contradicts the JSON it commits.
 History: 2026-09-12 (this run) added section 4.
 History: 2026-09-12 11:30 PT run added the def14a_verified_20260912 label
 (rounding-bucket collapse: 24 rows re-verified vs primary DEF 14A SCTs).
+History: 2026-09-12 18:00 PT run added section 5 (company-aggregate recount)
+after finding DQ row repairs (PNC Parsley, LULU Frank) left company-level
+total_neo_compensation stale by +3.57M / -4.41M.
 """
 import json
 import os
@@ -203,6 +206,35 @@ def main():
         dq.get("component_mismatch"),
         failures,
     )
+
+    # 5. company-level aggregate recount: total_neo_compensation must equal
+    #    the sum of exec totals for the company's primary fiscal_year, and
+    #    neo_count must equal the number of exec records for that year.
+    #    History: the 2026-09-12 10:00 DQ batch repaired exec rows
+    #    (PNC Parsley 5,311,019 -> 8,881,019; LULU Frank 8,814,478 ->
+    #    4,407,239) without refreshing these aggregates, leaving stale
+    #    company totals on the live site until this section was added.
+    for c in companies:
+        fy = c.get("fiscal_year")
+        if not fy:
+            continue
+        rows = [e for e in c.get("executives", []) if e.get("year") == fy]
+        want_total = sum((e.get("total") or 0) for e in rows)
+        stored_total = c.get("total_neo_compensation")
+        if stored_total is not None and stored_total != want_total:
+            fail(
+                f"{c.get('ticker')}: total_neo_compensation={stored_total:,} != "
+                f"sum of FY{fy} exec totals {want_total:,} — refresh the "
+                f"company aggregate after any exec-row repair",
+                failures,
+            )
+        stored_count = c.get("neo_count")
+        if stored_count is not None and stored_count != len(rows):
+            fail(
+                f"{c.get('ticker')}: neo_count={stored_count} != "
+                f"{len(rows)} exec records for FY{fy}",
+                failures,
+            )
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
