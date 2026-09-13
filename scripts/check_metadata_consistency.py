@@ -30,6 +30,10 @@ History: 2026-09-12 22:00 PT run added section 6 (CEO name/total pairing)
 after finding MAA paired successor-CEO A. Bradley Hill's name with
 predecessor H. E. Bolton Jr.'s FY2024 SCT total $8,445,660 (no such SCT row
 exists); repaired to Hill's verified 2025 SCT total $5,453,480.
+History: 2026-09-13 02:00 PT run added section 7 (NEO name/title hygiene)
+after repairing 12 name rows + REGN ceo_name + 151 title rows carrying
+parser artifacts (" Board co-Chair" footnote suffix, " East/West Region"
+labels, title stray-comma class " and, "/"Vice, President"/"Senior, Vice").
 """
 import json
 import os
@@ -271,6 +275,44 @@ def main():
                 f"must be a real SCT row for the named person",
                 failures,
             )
+
+    # 7. NEO name/title hygiene: the 2026-09-13 02:00 PT batch repaired three
+    #    parser-artifact classes (REGN " Board co-Chair" footnote suffix in
+    #    names + ceo_name, REG " East/West Region" labels in names, and the
+    #    title stray-comma class " and, " / "Vice, President" / "Senior,
+    #    Vice"). None of these strings can occur in a genuine SCT name or
+    #    title, so any recurrence is a parser regression - fail the commit.
+    #    History: 2026-09-13 02:00 PT run added section 7 after repairing
+    #    12 name rows + 1 ceo_name + 151 title rows across the full file.
+    NAME_SUFFIX_ARTIFACTS = (" Board co-Chair", " East Region", " West Region")
+    TITLE_COMMA_ARTIFACTS = (" and, ", "Vice, President", "Senior, Vice")
+    for c in companies:
+        cn = c.get("ceo_name") or ""
+        for suf in NAME_SUFFIX_ARTIFACTS:
+            if cn.endswith(suf):
+                fail(
+                    f"{c.get('ticker')}: ceo_name={cn!r} carries parser "
+                    f"artifact suffix {suf!r} (section 7)",
+                    failures,
+                )
+        for e in c.get("executives", []):
+            nm = e.get("name") or ""
+            for suf in NAME_SUFFIX_ARTIFACTS:
+                if nm.endswith(suf):
+                    fail(
+                        f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} "
+                        f"carries parser artifact suffix {suf!r} (section 7)",
+                        failures,
+                    )
+            ti = e.get("title") or ""
+            for pat in TITLE_COMMA_ARTIFACTS:
+                if pat in ti:
+                    fail(
+                        f"{c.get('ticker')} {e.get('year')} "
+                        f"{nm!r}: title={ti!r} carries stray-comma artifact "
+                        f"{pat!r} (section 7)",
+                        failures,
+                    )
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
