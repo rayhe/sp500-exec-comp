@@ -26,9 +26,14 @@ History: 2026-09-12 11:30 PT run added the def14a_verified_20260912 label
 History: 2026-09-12 18:00 PT run added section 5 (company-aggregate recount)
 after finding DQ row repairs (PNC Parsley, LULU Frank) left company-level
 total_neo_compensation stale by +3.57M / -4.41M.
+History: 2026-09-12 22:00 PT run added section 6 (CEO name/total pairing)
+after finding MAA paired successor-CEO A. Bradley Hill's name with
+predecessor H. E. Bolton Jr.'s FY2024 SCT total $8,445,660 (no such SCT row
+exists); repaired to Hill's verified 2025 SCT total $5,453,480.
 """
 import json
 import os
+import re
 import sys
 from collections import Counter
 
@@ -233,6 +238,37 @@ def main():
             fail(
                 f"{c.get('ticker')}: neo_count={stored_count} != "
                 f"{len(rows)} exec records for FY{fy}",
+                failures,
+            )
+
+    # 6. CEO name/total pairing: the displayed (ceo_name, total_compensation)
+    #    pair must correspond to a real SCT row for the named person (any
+    #    available year — CEO transitions legitimately pair the current CEO
+    #    with their latest SCT total, e.g. TMUS/SWKS/CCI FY2025 rows).
+    #    Last-name fuzzy match tolerates middle-initial variants
+    #    ("David Gitlin" vs "David L. Gitlin", CARR).
+    def _last(n):
+        n = re.sub(r"\b(jr|sr|ii|iii|iv)\b\.?", "", (n or "").lower()).strip()
+        parts = re.findall(r"[a-z]+", n)
+        return parts[-1] if parts else ""
+
+    for c in companies:
+        cname = c.get("ceo_name")
+        stored = c.get("total_compensation")
+        if not cname or stored is None:
+            continue
+        cl = _last(cname)
+        paired = [
+            e for e in c.get("executives", [])
+            if e.get("total") == stored
+            and cl
+            and (cl in _last(e.get("name")) or _last(e.get("name")) in cl)
+        ]
+        if not paired:
+            fail(
+                f"{c.get('ticker')}: no SCT row pairs ceo_name={cname!r} "
+                f"with total_compensation={stored:,} — the displayed CEO pay "
+                f"must be a real SCT row for the named person",
                 failures,
             )
 
