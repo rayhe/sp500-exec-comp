@@ -10,8 +10,20 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <!-- d3 CDN fallback chain: jsdelivr -> unpkg -> cdnjs (pinned 7.9.0, latest d3 7.x).
+         document.write is safe here: these execute synchronously during <head>
+         parsing, so d3 is guaranteed present before the body scripts run. -->
+    <script>window.d3||document.write('<script src="https:\/\/unpkg.com\/d3@7"><\/script>')</script>
+    <script>window.d3||document.write('<script src="https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/d3\/7.9.0\/d3.min.js"><\/script>')</script>
 </head>
 <body>
+    <script>
+    // d3 total-outage banner: every CDN in the <head> fallback chain failed.
+    // Runs synchronously during parsing, so the banner lands above the header.
+    if (!window.d3) {
+        document.write('<div class="d3-fallback-banner" role="alert"><strong>Charts unavailable.</strong> The chart library (d3.js) could not be loaded. Check your connection, then reload the page.</div>');
+    }
+    </script>
     <a href="#metrics-strip" class="skip-to-content">Skip to main content</a>
     <header>
         <div class="header-inner">

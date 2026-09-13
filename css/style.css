@@ -13822,6 +13822,24 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #dc2626;
 }
 
+/* d3 CDN total-outage banner (injected by the inline <body> script when every
+   d3 CDN in the <head> fallback chain fails). Theme-aware via CSS vars. */
+.d3-fallback-banner {
+    margin: 12px auto;
+    max-width: 860px;
+    padding: 14px 18px;
+    background: var(--bg-surface);
+    border: 1px solid var(--warning);
+    border-left: 4px solid var(--warning);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.d3-fallback-banner strong {
+    color: var(--warning);
+}
+
 .methodology-modal-overlay {
     position: fixed;
     inset: 0;
