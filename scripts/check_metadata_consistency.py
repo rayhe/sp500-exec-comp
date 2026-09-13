@@ -350,7 +350,19 @@ def main():
     #    footnote-digit name class (MLM "Petro 7"), the residual "Executive
     #    Vice, " stray-comma class (22 rows), and the missing-space title joins
     #    ("FinancialOfficer", "andPresident", ...) after repairing 9 + 22 + 46 rows.
+    #    History: 2026-09-13 10:00 PT run extended section 7 with the org-label
+    #    name class (LHX "Missile Solutions" / "Mission Systems" / "Spectrum
+    #    Dominance" were division labels parsed as NEO names; repaired to the
+    #    real NEOs) plus a warning-class tripwire for All Other Compensation
+    #    subtables masquerading as SCT rows (APH 2025/2023: salary collapsed to
+    #    benefits-scale dollars while the same person's adjacent-year SCT total
+    #    is >10x larger). The tripwire is a warning, not a failure: genuine
+    #    stubs (EG Andrade 2025 partial-year) and genuine $0-comp years (TSLA
+    #    Musk 2022-2024) share the salary/total shape but are confirmed in
+    #    their filings, so a hard fail would reject truth.
     NAME_SUFFIX_ARTIFACTS = (" Board co-Chair", " East Region", " West Region")
+    ORG_LABEL_ARTIFACTS = ("Missile Solutions", "Mission Systems",
+                           "Spectrum Dominance")
     TITLE_COMMA_ARTIFACTS = (" and, ", "Vice, President", "Senior, Vice",
                              "Executive Vice, ", "Chief, Executive")
     # comma directly followed by an uppercase letter with no space: no genuine
@@ -387,6 +399,12 @@ def main():
                 f"after-comma artifact (section 7)",
                 failures,
             )
+        if cn in ORG_LABEL_ARTIFACTS:
+            fail(
+                f"{c.get('ticker')}: ceo_name={cn!r} is a division/org label, "
+                f"not a person (section 7)",
+                failures,
+            )
         for e in c.get("executives", []):
             nm = e.get("name") or ""
             for suf in NAME_SUFFIX_ARTIFACTS:
@@ -396,6 +414,12 @@ def main():
                         f"carries parser artifact suffix {suf!r} (section 7)",
                         failures,
                     )
+            if nm in ORG_LABEL_ARTIFACTS:
+                fail(
+                    f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} is a "
+                    f"division/org label, not a person (section 7)",
+                    failures,
+                )
             if NAME_FOOTNOTE_DIGITS.search(nm):
                 fail(
                     f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} "
@@ -426,6 +450,38 @@ def main():
                     f"artifact: title={ti!r} (section 7)",
                     failures,
                 )
+
+    # 7b. All-Other-Compensation-subtable tripwire (warning only): an SCT row
+    #     whose salary and total are both stub-scale while the same person has
+    #     another year at the same company with a >10x larger SCT total is the
+    #     signature of the 2026-09-13 APH corruption (footnote subtable parsed
+    #     as SCT rows). Genuine partial-year stubs (EG Andrade 2025) have no
+    #     adjacent full year to trip the >10x clause, and genuine $0-comp
+    #     years (TSLA Musk 2022-2024) are the expected residual hits — both
+    #     confirmed in their filings, so this stays a warning, not a failure.
+    person_totals = {}
+    for c in companies:
+        for e in c.get("executives", []):
+            person_totals.setdefault((c.get("ticker"), e.get("name")), []).append(
+                e.get("total") or 0
+            )
+    for c in companies:
+        for e in c.get("executives", []):
+            sal = e.get("salary") or 0
+            tot = e.get("total") or 0
+            if sal < 25000 and tot < 250000:
+                others = [
+                    t for t in person_totals[(c.get("ticker"), e.get("name"))]
+                    if t > 10 * tot and t > 0
+                ]
+                if others:
+                    print(
+                        f"  warning: {c.get('ticker')} {e.get('year')} "
+                        f"{e.get('name')!r}: stub-scale salary ${sal:,} / "
+                        f"total ${tot:,} with a >10x larger SCT total "
+                        f"(${max(others):,}) in another year — possible All "
+                        f"Other Compensation subtable parsed as SCT row (7b)"
+                    )
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
