@@ -34,6 +34,15 @@ History: 2026-09-13 02:00 PT run added section 7 (NEO name/title hygiene)
 after repairing 12 name rows + REGN ceo_name + 151 title rows carrying
 parser artifacts (" Board co-Chair" footnote suffix, " East/West Region"
 labels, title stray-comma class " and, "/"Vice, President"/"Senior, Vice").
+History: 2026-09-13 06:00 PT run added section 6b (CEO title-awareness) after
+re-pairing 4 CEO anchors whose section-6 name/total pairing was satisfied by
+the wrong person's SCT row (NKE Friend/CFO, GE Stokes/segment "Former CEO",
+HOLX Oberton/CFO, PSA Boyle/COO); extended section 7 with the trailing
+footnote-digit name class (MLM x9), the residual "Executive Vice, " comma
+class (22 rows), missing-space title joins (46 + 31 rows), the general
+',[A-Z]' missing-space-after-comma rule (caught PNW 'Guldner,Former' and AIZ
+'Luthi,Former'), and the split-name reassembly class (PNW 'Andrew D'/Cooper,
+COF 'Matthew W'/Cooper).
 """
 import json
 import os
@@ -276,6 +285,59 @@ def main():
                 failures,
             )
 
+    # 6b. CEO title-awareness: the paired SCT row's title must not indicate a
+    #     non-CEO role. History: 2026-09-13 06:00 PT batch found four anchors
+    #     paired with the wrong person's SCT total that section 6 could not catch:
+    #     NKE Matthew Friend ("Executive Vice President and Chief Financial
+    #     Officer"), GE Russell Stokes ("SVP, Former CEO Engines & Services" - a
+    #     segment title), HOLX Karleen Oberton ("Chief Financial Officer"), PSA
+    #     Thomas S. Boyle ("Chief Operating Officer"). A C-suite title that is not
+    #     CEO, or a "Former CEO <segment>" title, fails the commit. A paired title
+    #     with no CEO token at all (e.g. "President", "Chairman" - legitimate at
+    #     some companies) is printed as a warning for human review but does not
+    #     fail, since the top job is not always titled CEO.
+    NON_CEO_CX = re.compile(
+        r"chief (financial|operating|legal|accounting|investment|commercial|people|"
+        r"technology|marketing|administrative|strategy|risk|information|"
+        r"human resources) officer",
+        re.I,
+    )
+    SEGMENT_FORMER_CEO = re.compile(r"\bformer ceo [a-z]", re.I)
+    CEO_TOKEN = re.compile(r"chief executive officer|\bceo\b", re.I)
+    for c in companies:
+        cname = c.get("ceo_name")
+        stored = c.get("total_compensation")
+        if not cname or stored is None:
+            continue
+        cl = _last(cname)
+        paired = [
+            e for e in c.get("executives", [])
+            if e.get("total") == stored
+            and cl
+            and (cl in _last(e.get("name")) or _last(e.get("name")) in cl)
+        ]
+        for e in paired:
+            t = e.get("title") or ""
+            if NON_CEO_CX.search(t):
+                fail(
+                    f"{c.get('ticker')}: CEO-paired row {e.get('name')!r} "
+                    f"({e.get('year')}) has non-CEO C-suite title {t!r} — the "
+                    f"headline CEO pay must belong to the company CEO (6b)",
+                    failures,
+                )
+            elif SEGMENT_FORMER_CEO.search(t):
+                fail(
+                    f"{c.get('ticker')}: CEO-paired row {e.get('name')!r} "
+                    f"({e.get('year')}) has segment-qualified title {t!r} — "
+                    f"\"Former CEO <segment>\" is not the company CEO (6b)",
+                    failures,
+                )
+            elif not CEO_TOKEN.search(t):
+                print(
+                    f"  warning: {c.get('ticker')}: CEO-paired row "
+                    f"{e.get('name')!r} ({e.get('year')}) title {t!r} carries no "
+                    f"CEO token — human review advised (6b)"
+                )
     # 7. NEO name/title hygiene: the 2026-09-13 02:00 PT batch repaired three
     #    parser-artifact classes (REGN " Board co-Chair" footnote suffix in
     #    names + ceo_name, REG " East/West Region" labels in names, and the
@@ -284,8 +346,26 @@ def main():
     #    title, so any recurrence is a parser regression - fail the commit.
     #    History: 2026-09-13 02:00 PT run added section 7 after repairing
     #    12 name rows + 1 ceo_name + 151 title rows across the full file.
+    #    History: 2026-09-13 06:00 PT run extended section 7 with the trailing
+    #    footnote-digit name class (MLM "Petro 7"), the residual "Executive
+    #    Vice, " stray-comma class (22 rows), and the missing-space title joins
+    #    ("FinancialOfficer", "andPresident", ...) after repairing 9 + 22 + 46 rows.
     NAME_SUFFIX_ARTIFACTS = (" Board co-Chair", " East Region", " West Region")
-    TITLE_COMMA_ARTIFACTS = (" and, ", "Vice, President", "Senior, Vice")
+    TITLE_COMMA_ARTIFACTS = (" and, ", "Vice, President", "Senior, Vice",
+                             "Executive Vice, ", "Chief, Executive")
+    # comma directly followed by an uppercase letter with no space: no genuine
+    # SCT name/title is typeset this way. Catches 'Guldner,Former' (PNW) and
+    # the ',Alphabet'/ ',Google' / ',Chief' joins.
+    MISSING_SPACE_AFTER_COMMA = re.compile(r",[A-Z]")
+    NAME_FOOTNOTE_DIGITS = re.compile(r" \d+(, \d+)*$")
+    TITLE_MISSING_SPACE = (
+        "FinancialOfficer", "ExecutiveOfficer", "VicePresident", "andPresident",
+        "Presidentand", "CommercialOfficer", "Presidentof", "andAdministrative",
+        "Officerand", "andCEO", "andTechnology", "andGeneral", "andBest",
+        "ChiefRevenue", "ChiefInvestment", "MedicalEssentials", "BioPharmaSystems",
+        "InterventionalSegment", "PresidentInternational", "andSupply",
+        "ChainSolutions", "asof July",
+    )
     for c in companies:
         cn = c.get("ceo_name") or ""
         for suf in NAME_SUFFIX_ARTIFACTS:
@@ -295,6 +375,18 @@ def main():
                     f"artifact suffix {suf!r} (section 7)",
                     failures,
                 )
+        if NAME_FOOTNOTE_DIGITS.search(cn):
+            fail(
+                f"{c.get('ticker')}: ceo_name={cn!r} carries trailing SCT "
+                f"footnote digit(s) (section 7)",
+                failures,
+            )
+        if MISSING_SPACE_AFTER_COMMA.search(cn):
+            fail(
+                f"{c.get('ticker')}: ceo_name={cn!r} carries missing-space-"
+                f"after-comma artifact (section 7)",
+                failures,
+            )
         for e in c.get("executives", []):
             nm = e.get("name") or ""
             for suf in NAME_SUFFIX_ARTIFACTS:
@@ -304,6 +396,12 @@ def main():
                         f"carries parser artifact suffix {suf!r} (section 7)",
                         failures,
                     )
+            if NAME_FOOTNOTE_DIGITS.search(nm):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} "
+                    f"carries trailing SCT footnote digit(s) (section 7)",
+                    failures,
+                )
             ti = e.get("title") or ""
             for pat in TITLE_COMMA_ARTIFACTS:
                 if pat in ti:
@@ -313,6 +411,21 @@ def main():
                         f"{pat!r} (section 7)",
                         failures,
                     )
+            for pat in TITLE_MISSING_SPACE:
+                if pat in ti:
+                    fail(
+                        f"{c.get('ticker')} {e.get('year')} "
+                        f"{nm!r}: title={ti!r} carries missing-space artifact "
+                        f"{pat!r} (section 7)",
+                        failures,
+                    )
+            if MISSING_SPACE_AFTER_COMMA.search(nm) or MISSING_SPACE_AFTER_COMMA.search(ti):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')} "
+                    f"{nm!r}: name/title carries missing-space-after-comma "
+                    f"artifact: title={ti!r} (section 7)",
+                    failures,
+                )
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
