@@ -15925,11 +15925,11 @@ function setupDualSparklineTooltips() {
                 '<p>Every NEO compensation row traces to the company\'s DEF 14A proxy filing Summary Compensation Table (SCT), parsed and hand-verified. Each row carries a verification label describing its audit state:</p>' +
                 '<ol>' +
                 '<li><strong>verified</strong> — Stored components and total match the filing SCT verbatim. Includes rows re-verified in dedicated audit passes (<code>def14a_verified_YYYYMMDD</code> labels).</li>' +
-                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 246 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
+                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 273 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
-                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-10)</h4>' +
+                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-12)</h4>' +
                 '<p>6,762 of 6,783 NEO rows verified (99.7%): 0 rounding, 0 recomputed, 21 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
@@ -15968,7 +15968,7 @@ function setupDualSparklineTooltips() {
         if (!dq || dq.verified_total == null || !total) return null;
         var pct = (100 * dq.verified_total / total).toFixed(1);
         var recomp = (dq.recomputed == null ? 0 : dq.recomputed);
-        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-10') + ')</h4>' +
+        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-12') + ')</h4>' +
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
             ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';

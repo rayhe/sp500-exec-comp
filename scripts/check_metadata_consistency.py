@@ -43,6 +43,13 @@ class (22 rows), missing-space title joins (46 + 31 rows), the general
 ',[A-Z]' missing-space-after-comma rule (caught PNW 'Guldner,Former' and AIZ
 'Luthi,Former'), and the split-name reassembly class (PNW 'Andrew D'/Cooper,
 COF 'Matthew W'/Cooper).
+History: 2026-09-13 15:30 PT run added section 4b (dataq-modal truthfulness)
+after finding the Data Verification methodology modal's hand-typed $1-$2
+taxonomy count (246, two recounts stale vs README's 273) and the Coverage
+static fallback's audit date (2026-09-10 vs metadata 2026-09-12) had drifted
+past the section-4 headline checks. The section-4b recount uses the
+8-component set (pension_change included — 21 rows store pension there); a
+7-component recount silently returns 272.
 """
 import json
 import os
@@ -146,6 +153,80 @@ def check_static_copy(n, vt, rounding, recomputed, mismatch, failures):
                 )
 
 
+# -- Section 4b: dataq-modal truthfulness ------------------------------------
+# The Data Verification methodology modal (js/app.js) hand-types two values
+# the section-4 headline checks do not cover: the taxonomy-decision count of
+# verified-family rows whose components foot within $1-$2, and the "last
+# audit" date in the Coverage static fallback / live-render default. Both
+# drifted undetected (2026-09-13 15:30 run: modal said 246 rows, README said
+# 273 — two recounts stale; static fallback said "last audit 2026-09-10"
+# while metadata said 2026-09-12).
+#
+# The $1-$2 recount MUST use the 8-component set: pension values live in
+# either pension_nqdc or pension_change (never both; 21 rows use
+# pension_change). A 7-component recount silently returns 272 instead of 273
+# — the exact trap the 15:30 run fell into before checking the key set.
+COMP_FIELDS_8 = [
+    "salary", "bonus", "stock_awards", "option_awards",
+    "non_equity_incentive", "pension_nqdc", "pension_change", "all_other",
+]
+
+
+def _int_or_zero(v):
+    return v if isinstance(v, int) and not isinstance(v, bool) else 0
+
+
+def recount_small_delta_rows(companies):
+    n12 = 0
+    for c in companies:
+        for r in c.get("executives", []):
+            src = r.get("_total_source", "")
+            if src != "verified" and not src.startswith("def14a_verified"):
+                continue
+            s = sum(_int_or_zero(r.get(k)) for k in COMP_FIELDS_8)
+            if abs(s - _int_or_zero(r.get("total"))) in (1, 2):
+                n12 += 1
+    return n12
+
+
+def check_dataq_modal_truthfulness(companies, meta, failures):
+    n12 = recount_small_delta_rows(companies)
+    last_audit = meta.get("data_quality", {}).get("last_audit")
+    if not last_audit:
+        fail("dataq-modal truthfulness: metadata.data_quality.last_audit missing", failures)
+        return
+    checks = {
+        # README taxonomy-decision line (en dash U+2013 between $1 and $2)
+        "README.md": [f"{n12} `verified` rows carry $1\u2013$2 deltas"],
+        "js/app.js": [
+            # modal taxonomy copy (HTML-escaped en dash)
+            f"{n12} <em>verified</em> rows carry $1&ndash;$2 deltas",
+            # static fallback header shown before data loads
+            f"Coverage (last audit {last_audit})",
+            # live-render default used when dq.last_audit is absent
+            f"|| '{last_audit}'",
+        ],
+    }
+    repo_root = os.path.join(HERE, "..")
+    for fname, patterns in checks.items():
+        path = os.path.join(repo_root, fname)
+        try:
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
+        except OSError as e:
+            fail(f"dataq-modal truthfulness: cannot read {fname}: {e}", failures)
+            continue
+        for pat in patterns:
+            if pat not in text:
+                fail(
+                    f"dataq-modal drift in {fname}: expected {pat!r} "
+                    f"(from live JSON: {n12} $1-$2 verified rows, "
+                    f"last_audit {last_audit}) not found — sync the modal "
+                    f"copy to the JSON values before committing",
+                    failures,
+                )
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -224,6 +305,10 @@ def main():
         dq.get("component_mismatch"),
         failures,
     )
+
+    # 4b. dataq-modal truthfulness: the methodology modal's hand-typed
+    #     taxonomy-decision count and audit date must match the live JSON
+    check_dataq_modal_truthfulness(companies, meta, failures)
 
     # 5. company-level aggregate recount: total_neo_compensation must equal
     #    the sum of exec totals for the company's primary fiscal_year, and
