@@ -5220,6 +5220,7 @@ function drawLorenzChart(companies) {
 function drawGenderPayChart(trends) {
     var container = document.getElementById('gender-pay-chart');
     if (!container || !trends || !trends.gender_trends || !trends.gender_trends.data || trends.gender_trends.data.length === 0) return;
+    container.innerHTML = ''; // clear the container before appending the svg (last of the 33 draw functions to do so)
 
     var dark = typeof isDarkTheme === 'function' && isDarkTheme();
     var data = trends.gender_trends.data;
