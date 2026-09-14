@@ -52,8 +52,8 @@ past the section-4 headline checks. The section-4b recount uses the
 History: 2026-09-14 03:30 PT run extended section 4 (taxonomy-header row
 count) after finding the README Data Verification Taxonomy header said
 "(as of the 2026-09-12 audit: 6,781 rows)" while the JSON had 6,785 rows
-(+1 CBRE 2026-09-13 06:00, +2 ABNB Mertz 2026-09-13 18:00, net of the
-name-variant merges); the table's bucket cells were current, only the
+(+1 CBRE 2026-09-13 06:00, +1 LHX Rambeau 2023 restore 10:00, +2 ABNB Mertz
+2026-09-13 18:00); the table's bucket cells were current, only the
 header count was stale — a blind spot the headline-pattern checks did
 not cover. The header now asserts the live count.
 """
