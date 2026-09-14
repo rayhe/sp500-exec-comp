@@ -535,6 +535,33 @@ def main():
                     f"artifact: title={ti!r} (section 7)",
                     failures,
                 )
+            # unbalanced parens in a NAME can never be genuine SCT text -
+            # the 2026-09-13 22:00 PT batch repaired the INVH dangling-paren
+            # split class (16 rows: name="Dallas B. Tanner (",
+            # "Charles D. Young (Former"). Fail the commit on recurrence.
+            if nm.count("(") != nm.count(")"):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} "
+                    f"has unbalanced parentheses - dangling-paren split "
+                    f"artifact (section 7)",
+                    failures,
+                )
+            # unbalanced parens in a TITLE are warning-only: TAP 2025
+            # "CEO of our Company (currently" is a genuine truncation whose
+            # full wording needs the filing to repair, so a hard fail would
+            # block the commit on an unrepaired-but-known row.
+            if ti.count("(") != ti.count(")"):
+                print(
+                    f"  warning: {c.get('ticker')} {e.get('year')} "
+                    f"{nm!r}: title={ti!r} has unbalanced parentheses - "
+                    f"truncation artifact, verify wording vs DEF 14A (7)"
+                )
+        if cn.count("(") != cn.count(")"):
+            fail(
+                f"{c.get('ticker')}: ceo_name={cn!r} has unbalanced "
+                f"parentheses (section 7)",
+                failures,
+            )
 
     # 7b. All-Other-Compensation-subtable tripwire (warning only): an SCT row
     #     whose salary and total are both stub-scale while the same person has
@@ -607,6 +634,50 @@ def main():
                     f"${bonus:,} and total ${tot:,} ~= 2x all_other "
                     f"${ao:,} — salary-drop column-shift signature (8); "
                     f"verify vs DEF 14A SCT before repair"
+                )
+
+    # 9. Pension-drop tripwire (warning only): the 2026-09-13 22:00 PT
+    #    batch found a second systematic parse-error class - the "Change in
+    #    Pension Value and NQDC Earnings" column is dropped (0/None) while
+    #    the stored total is the filing's printed total, so the total
+    #    exceeds the captured components by exactly the pension value.
+    #    Signature on full 7-component rows: gap = total - sum(components) >
+    #    $1,000 with pension_nqdc in (0, None). 20 rows / 4 tickers /
+    #    $45.9M missing pension (SO 13, TFC 3, PPL 1, AME 3); the SO rows
+    #    carry def14a_verified_20260909 totals so the gap is definitively
+    #    the pension column. Warning-only: the gap is arithmetic, the
+    #    filing SCT must confirm the pension cell before repair. Row list
+    #    + filing URLs in the goal hidden_files review queue
+    #    (pension_drop_review_queue_20260913_2200.md). TFC/PPL rows also
+    #    have bonus=None, so the verifier must confirm pension-vs-bonus.
+    #    9b covers the residual footing anomalies on full rows (both
+    #    directions, >$1,000, excluding adjudicated component_mismatch
+    #    rows): none unadjudicated as of 2026-09-13 22:00 PT.
+    _COMP_KEYS = ("salary", "bonus", "stock_awards", "option_awards",
+                  "non_equity_incentive", "pension_nqdc", "all_other")
+    for c in companies:
+        for e in c.get("executives", []):
+            if not all(k in e for k in _COMP_KEYS):
+                continue
+            if e.get("_total_source") == "component_mismatch":
+                continue
+            foot = sum(e.get(k) or 0 for k in _COMP_KEYS)
+            gap = (e.get("total") or 0) - foot
+            pen = e.get("pension_nqdc")
+            if gap > 1000 and pen in (0, None):
+                print(
+                    f"  warning: {c.get('ticker')} {e.get('year')} "
+                    f"{e.get('name')!r}: total ${e.get('total'):,} exceeds "
+                    f"components by ${gap:,} with pension "
+                    f"{pen} - dropped pension-column signature (9); verify "
+                    f"vs DEF 14A SCT before repair"
+                )
+            elif abs(gap) > 1000:
+                print(
+                    f"  warning: {c.get('ticker')} {e.get('year')} "
+                    f"{e.get('name')!r}: total ${e.get('total'):,} does not "
+                    f"foot to components (gap ${gap:,}) - anomaly for "
+                    f"filing review (9b)"
                 )
 
     if failures:
