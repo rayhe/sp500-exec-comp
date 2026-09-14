@@ -568,6 +568,47 @@ def main():
                         f"Other Compensation subtable parsed as SCT row (7b)"
                     )
 
+    # 8. Salary-drop column-shift tripwire (warning only): the 2026-09-13
+    #    18:00 PT ABNB repair exposed a systematic parse error — the salary
+    #    cell of an older-year SCT row is dropped, every component shifts one
+    #    column left (bonus<-stock, stock<-options, options<-non-equity,
+    #    non-equity<-all-other), the filing's printed total lands in
+    #    all_other, and the stored total is recomputed at ~2x the filing
+    #    total. Signature: salary == 0, bonus > 0, all_other > 0, and the
+    #    doubling gap |total - 2*all_other| is salary-plausible (<10% of
+    #    total). A 2026-09-13 scan found 161 rows / 41 tickers / ~$1.237B
+    #    phantom compensation sharing the exact signature (CMI Rumsey 2024:
+    #    stored $42.2M vs inferred filing total $21.9M = stored all_other;
+    #    inferred salaries plausible for all 161, zero always-zero-salary
+    #    persons). Warning-only, not a failure: each hit needs its DEF 14A
+    #    SCT re-read before repair — the inferred values are arithmetic, not
+    #    filing-verbatim. Full row list + inferred values + per-ticker
+    #    inflation in the goal hidden_files review queue
+    #    (column_shift_review_queue_20260913_1800.md). Company-level
+    #    total_neo_compensation for affected tickers is inflated wherever
+    #    the corrupted year is the anchor fiscal year; section 5 cannot see
+    #    it because the aggregate faithfully sums the corrupted rows.
+    for c in companies:
+        for e in c.get("executives", []):
+            sal = e.get("salary") or 0
+            bonus = e.get("bonus") or 0
+            ao = e.get("all_other") or 0
+            tot = e.get("total") or 0
+            if (
+                sal == 0
+                and bonus > 0
+                and ao > 0
+                and tot > 0
+                and abs(tot - 2 * ao) <= 0.10 * tot
+            ):
+                print(
+                    f"  warning: {c.get('ticker')} {e.get('year')} "
+                    f"{e.get('name')!r}: salary $0 with bonus "
+                    f"${bonus:,} and total ${tot:,} ~= 2x all_other "
+                    f"${ao:,} — salary-drop column-shift signature (8); "
+                    f"verify vs DEF 14A SCT before repair"
+                )
+
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
         for m in failures:
