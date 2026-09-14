@@ -71,7 +71,7 @@ All compensation data sourced from primary filings:
 
 ## Data Verification Taxonomy
 
-Every NEO row in `data/compensation.json` carries a `_total_source` label describing its audit state, assigned against the primary DEF 14A Summary Compensation Table. Buckets (as of the 2026-09-12 audit: 6,781 rows):
+Every NEO row in `data/compensation.json` carries a `_total_source` label describing its audit state, assigned against the primary DEF 14A Summary Compensation Table. Buckets (as of 2026-09-14: 6,785 rows):
 
 | Label | Meaning | Rows |
 |---|---|---|

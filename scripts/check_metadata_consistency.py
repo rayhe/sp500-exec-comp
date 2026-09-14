@@ -49,7 +49,13 @@ taxonomy count (246, two recounts stale vs README's 273) and the Coverage
 static fallback's audit date (2026-09-10 vs metadata 2026-09-12) had drifted
 past the section-4 headline checks. The section-4b recount uses the
 8-component set (pension_change included — 21 rows store pension there); a
-7-component recount silently returns 272.
+History: 2026-09-14 03:30 PT run extended section 4 (taxonomy-header row
+count) after finding the README Data Verification Taxonomy header said
+"(as of the 2026-09-12 audit: 6,781 rows)" while the JSON had 6,785 rows
+(+1 CBRE 2026-09-13 06:00, +2 ABNB Mertz 2026-09-13 18:00, net of the
+name-variant merges); the table's bucket cells were current, only the
+header count was stale — a blind spot the headline-pattern checks did
+not cover. The header now asserts the live count.
 """
 import json
 import os
@@ -124,6 +130,11 @@ def check_static_copy(n, vt, rounding, recomputed, mismatch, failures):
             f"({fmt(vt)} of {fmt(n)} total NEO records), {rounding} rounding-gap rows, "
             f"{recomputed} recomputed",
             f"{mismatch} filing-side component mismatches",
+            # taxonomy table header carries the live row count, not a date-frozen
+            # one (2026-09-14: header said 6,781 rows while JSON had 6,785;
+            # the audit-trail sentences above legitimately keep old counts as
+            # history, but the header must track the current row count).
+            f"{fmt(n)} rows):",
         ],
         "index.html": [
             f"{fmt(n)} Named Executive Officer records",
