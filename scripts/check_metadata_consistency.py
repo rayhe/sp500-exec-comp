@@ -968,7 +968,7 @@ def main():
     #     different people), or a parser misattribution to the wrong
     #     company. Screen found 13 collisions; each was triaged via the
     #     browser path against primary sources on 2026-09-14:
-    #     LEGIT transitions (7): ashkenazi 2024 GOOGL/LLY (LLY->GOOGL CFO,
+    #     LEGIT transitions (6): ashkenazi 2024 GOOGL/LLY (LLY->GOOGL CFO,
     #     GOOGL SCT title carries "as of July"), delorefice 2025 BDX/ULTA
     #     (BDX EVP&CFO -> ULTA CFO effective 2025-12-05, ULTA 8-K), knight
     #     2025 BAX/SOLV (BAX COO -> SOLV CCO effective 2025-11-10), woods

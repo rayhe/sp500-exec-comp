@@ -15934,6 +15934,9 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
                 '<p id="dataq-payratio-counts">As of the 2026-09-14 screen: 343 of 499 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 33 cluster near 2x, 10 near 0.5x, 113 differ otherwise. (TSLA excluded: no disclosed ratio.)</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
+                '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
+                '<p id="dataq-transitions-counts">As of the 2026-09-14 screen: 13 (name, fiscal year) tuples appear as NEO rows at two different companies; all 13 triaged (6 genuine mid-year executive transitions, 2 same-name coincidences, 1 queued for DEF 14A re-read).</p>' +
+                '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Two collisions are same-name coincidences: Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people. The one suspicious pair (Celeste Burgoyne, LULU/WSM) is queued for a DEF 14A name-column re-read. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
@@ -16003,6 +16006,37 @@ function setupDualSparklineTooltips() {
             ' cluster near 2x, ' + half + ' near 0.5x, ' + other + ' differ otherwise.';
     }
 
+    // Data Verification modal: executive-transition collision count, computed
+    // from the loaded dataset at modal-open time. Mirrors guard section 12 of
+    // scripts/check_metadata_consistency.py (normalized (name, fiscal year)
+    // -> company tickers; a tuple appearing at 2+ companies is a collision),
+    // so the modal stays truthful if the dataset ever gains a new collision.
+    // Returns null when the data isn't loaded yet; the static fallback text
+    // above is then kept.
+    function _dataqTransitionsHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos) return null;
+        var seen = {};
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            var ex = c.executives || [];
+            for (var j = 0; j < ex.length; j++) {
+                var e = ex[j];
+                var nm = (e.name || '').toLowerCase().replace(/[^a-z ]/g, '').trim();
+                var yr = e.year;
+                if (!nm || yr == null) continue;
+                var key = nm + '|' + yr;
+                if (!seen[key]) seen[key] = {};
+                seen[key][c.ticker] = true;
+            }
+        }
+        var n = 0;
+        for (var k in seen) {
+            if (Object.keys(seen[k]).length >= 2) n++;
+        }
+        return 'Live screen: ' + n + ' (name, fiscal year) tuples appear as NEO rows at two or more companies; the triage breakdown above covers all of them.';
+    }
+
     function openMethodologyModal(method) {
         var content = METHODOLOGY_CONTENT[method];
         if (!content) return;
@@ -16022,6 +16056,9 @@ function setupDualSparklineTooltips() {
             var prCounts = document.getElementById('dataq-payratio-counts');
             var prHtml = _dataqPayRatioHtml();
             if (prCounts && prHtml) prCounts.innerHTML = prHtml;
+            var trCounts = document.getElementById('dataq-transitions-counts');
+            var trHtml = _dataqTransitionsHtml();
+            if (trCounts && trHtml) trCounts.innerHTML = trHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility
