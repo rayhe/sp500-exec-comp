@@ -66,6 +66,14 @@ SNOW, SPOT, XYZ; all out_degree 0). Index-membership drift also confirmed:
 DDOG joined the S&P 500 in July 2025 yet is absent from the 500-company
 list — a company-list refresh vs current index membership is queued (needs
 EDGAR), not attempted here.
+History: 2026-09-14 10:00 PT run added section 11 (CEO-anchor transition
+tripwire + pay-ratio methodology screen) after a normalized CEO-anchor
+screen found 493/500 anchors clean but 7 companies where ceo_name is the
+current post-2024-transition CEO while fiscal_year=2024 rows cover the
+prior CEO and total_compensation matches no 2024 row (TMUS, NKE, SWKS, CCI,
+PSA, MAA — queued for DEF 14A re-read), plus a pay-ratio recompute screen
+showing 157/500 deviations as a methodology class (transition-year CEO-pay
+figures and pension-swing years, spot-verified CMG/MO), not a parse class.
 """
 import json
 import os
@@ -857,6 +865,100 @@ def main():
     if unknown_extra:
         fail(f"peer nodes not matching any company and not in PEER_ONLY "
              f"allowlist: {unknown_extra} (10)", failures)
+
+    # 11. CEO-anchor transition tripwire + pay-ratio methodology screen
+    #     (2026-09-14 10:00 PT run, warning-only). company.ceo_name is
+    #     AFL-CIO's CURRENT-CEO name while fiscal_year/total_compensation
+    #     come from the anchor-year DEF 14A: at CEO transitions the anchor
+    #     fields describe two different people. Match rule: strip
+    #     punctuation, drop middle initials and suffixes (jr/sr/ii/iii/
+    #     iv/v), then require same last name AND (same first name OR same
+    #     first initial) — this absorbs the AMZN 'Andy Jassy' vs 'Andrew R.
+    #     Jassy' nickname variant (totals byte-identical, no action).
+    #     A company trips when NO anchor-year exec row matches ceo_name by
+    #     that rule AND no anchor-year row's total equals
+    #     company.total_compensation. KNOWN_ANCHOR_TRANSITIONS are the six
+    #     adjudicated 2026-09-14 cases (TMUS, NKE, SWKS, CCI, PSA, MAA) with
+    #     per-company questions in the goal hidden_files review queue
+    #     (ceo_anchor_transition_queue_20260914_1000.md); any NEW trip is a
+    #     regression signal for the next EDGAR-connected run. The
+    #     pay-ratio half of section 11 is a summary-only screen: recompute
+    #     total_compensation/median_worker_pay vs company.pay_ratio (3%
+    #     tolerance). Deviations are a METHODOLOGY class, not a parse
+    #     class — disclosed ratios use the pay-ratio table's CEO-pay figure
+    #     (transition-year year-end CEO, annualized comp, pension-swing
+    #     years), spot-verified CMG (disclosed ratio uses Boatwright's
+    #     ~$19.1M, not Niccol's $37.5M SCT total) and MO (2026 DEF 14A:
+    #     annualized $24.58M -> 147:1; stored ct $53.6M is the 2024 SCT
+    #     total). 33 companies cluster at implied/reported ~1.9-2.0x, 10
+    #     at ~0.4-0.6x. Do NOT "repair" by overwriting disclosed ratios;
+    #     the UI renders pay_ratio as-disclosed (never recomputes), which
+    #     is the correct behavior. Emits one summary warning, not one per
+    #     company, so the actionable tripwires stay readable.
+    def _anchor_key(name):
+        parts = [p for p in re.sub(r"[^a-z ]", " ", (name or "").lower())
+                 .split()
+                 if p not in ("jr", "sr", "ii", "iii", "iv", "v")
+                 and len(p) > 1]
+        if not parts:
+            return ("", "")
+        return (parts[0], parts[-1])
+
+    def _anchor_match(row_name, ceo_name):
+        rf, rl = _anchor_key(row_name)
+        cf, cl = _anchor_key(ceo_name)
+        return bool(rl and rl == cl and rf and (rf == cf or rf[0] == cf[0]))
+
+    KNOWN_ANCHOR_TRANSITIONS = {"TMUS", "NKE", "SWKS", "CCI", "PSA", "MAA"}
+    anchor_trips = []
+    for c in companies:
+        ceo = c.get("ceo_name")
+        fy = c.get("fiscal_year")
+        ct = c.get("total_compensation")
+        if not ceo or fy is None or ct is None:
+            continue
+        rows = [e for e in c.get("executives", [])
+                if e.get("year") == fy]
+        name_hit = any(_anchor_match(e.get("name"), ceo) for e in rows)
+        total_hit = any(e.get("total") == ct for e in rows)
+        if not name_hit and not total_hit:
+            anchor_trips.append(c.get("ticker"))
+    for t in sorted(anchor_trips):
+        known = "known" if t in KNOWN_ANCHOR_TRANSITIONS else "NEW"
+        print(f"  warning: {t} CEO-anchor transition ({known}, 11): "
+              f"ceo_name has no anchor-year SCT row and "
+              f"total_compensation matches no anchor-year row — see "
+              f"ceo_anchor_transition_queue_20260914_1000.md; do not "
+              f"repair offline")
+    new_trips = sorted(set(anchor_trips) - KNOWN_ANCHOR_TRANSITIONS)
+    if new_trips:
+        fail(f"new CEO-anchor transitions not in the 2026-09-14 allowlist: "
+             f"{new_trips} (11)", failures)
+
+    pr_within = pr_2x = pr_half = pr_other = 0
+    for c in companies:
+        pr = c.get("pay_ratio")
+        mw = c.get("median_worker_pay")
+        ct = c.get("total_compensation")
+        if pr in (None, 0) or mw in (None, 0) or ct is None:
+            continue
+        implied = ct / mw
+        r = implied / pr
+        if abs(r - 1) <= max(2 / pr, 0.03):
+            pr_within += 1
+        elif 1.9 <= r <= 2.1:
+            pr_2x += 1
+        elif 0.4 <= r <= 0.6:
+            pr_half += 1
+        else:
+            pr_other += 1
+    if pr_2x + pr_half + pr_other:
+        print(f"  warning: pay-ratio methodology screen (11): "
+              f"{pr_within}/500 foot within tolerance; {pr_2x} cluster "
+              f"~2x, {pr_half} ~0.5x, {pr_other} other — methodology "
+              f"class (transition-year CEO-pay figures, pension-swing "
+              f"years; spot-verified CMG/MO), not a parse class; UI "
+              f"renders disclosed ratios as-is (correct); do not overwrite")
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
