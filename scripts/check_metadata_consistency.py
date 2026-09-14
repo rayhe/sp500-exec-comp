@@ -960,6 +960,73 @@ def main():
               f"years; spot-verified CMG/MO), not a parse class; UI "
               f"renders disclosed ratios as-is (correct); do not overwrite")
 
+    # 12. Cross-company same-year exec-name collision tripwire
+    #     (2026-09-14 14:00 PT run). A normalized (name, fiscal year) tuple
+    #     appearing as an NEO row at two different S&P 500 companies is
+    #     either a genuine mid-year executive transition (both SCTs
+    #     legitimately list the person), a same-name coincidence (two
+    #     different people), or a parser misattribution to the wrong
+    #     company. Screen found 13 collisions; each was triaged via the
+    #     browser path against primary sources on 2026-09-14:
+    #     LEGIT transitions (7): ashkenazi 2024 GOOGL/LLY (LLY->GOOGL CFO,
+    #     GOOGL SCT title carries "as of July"), delorefice 2025 BDX/ULTA
+    #     (BDX EVP&CFO -> ULTA CFO effective 2025-12-05, ULTA 8-K), knight
+    #     2025 BAX/SOLV (BAX COO -> SOLV CCO effective 2025-11-10), woods
+    #     2025 CFG/STT (Citizens Vice Chair&CFO -> STT CFO, joined late Aug
+    #     2025), nudi 2025 GIS/MAS (GIS -> Masco President & CEO), sennesael
+    #     2025 SWKS/WDC (SWKS -> WDC CFO; both SCTs carry "Former" at the
+    #     old company). NAME COINCIDENCES (2, benign — rows live inside
+    #     their own company, no cross-linking): hanson 2024/2025 CEG/SOLV
+    #     (CEG's Bryan Hanson = 30yr nuclear veteran per Constellation's
+    #     leadership page; SOLV's = ex-Zimmer Biomet medtech CEO), murphy
+    #     2023-2025 KO/PGR (KO President & CFO vs PGR Claims President).
+    #     SUSPICIOUS (1, queued for DEF 14A re-read, not repairable
+    #     offline): burgoyne 2023/2024 LULU/WSM — the lululemon Burgoyne was
+    #     LULU President Americas & Global Guest Innovation 2006-2025
+    #     (joins Vail Resorts Jan 2026), so WSM's "EVP, Chief Talent
+    #     Officer" rows cannot be the same person; WSM 2023 SCT parsed only
+    #     4 rows (thin). See exec_collision_queue_20260914_1400.md (also
+    #     queues the CFG 2025 woods title mismatch: stored "EVP and Head
+    #     of Commercial Banking" vs his actual Citizens Vice Chair & CFO
+    #     role). Any collision NOT in KNOWN_COLLISIONS fails as a
+    #     regression signal; the guard never merges or reassigns rows.
+    def _coll_key(name):
+        return re.sub(r"[^a-z ]", "", (name or "").lower()).strip()
+
+    KNOWN_COLLISIONS = {
+        ("anat ashkenazi", 2024, "GOOGL", "LLY"),
+        ("bryan c hanson", 2024, "CEG", "SOLV"),
+        ("bryan c hanson", 2025, "CEG", "SOLV"),
+        ("celeste burgoyne", 2023, "LULU", "WSM"),
+        ("celeste burgoyne", 2024, "LULU", "WSM"),
+        ("christopher j delorefice", 2025, "BDX", "ULTA"),
+        ("heather knight", 2025, "BAX", "SOLV"),
+        ("john f woods", 2025, "CFG", "STT"),
+        ("john murphy", 2023, "KO", "PGR"),
+        ("john murphy", 2024, "KO", "PGR"),
+        ("john murphy", 2025, "KO", "PGR"),
+        ("jonathon j nudi", 2025, "GIS", "MAS"),
+        ("kris sennesael", 2025, "SWKS", "WDC"),
+    }
+    _person_year = {}
+    for c in companies:
+        for e in c.get("executives", []):
+            nm = _coll_key(e.get("name"))
+            yr = e.get("year")
+            if nm and yr:
+                _person_year.setdefault((nm, yr), set()).add(c.get("ticker"))
+    for (nm, yr), tickers in sorted(_person_year.items()):
+        if len(tickers) < 2:
+            continue
+        key = (nm, yr) + tuple(sorted(tickers))
+        tag = "known" if key in KNOWN_COLLISIONS else "NEW"
+        print(f"  warning: cross-company exec-name collision ({tag}, 12): "
+              f"{nm!r} year {yr} at {sorted(tickers)} — see "
+              f"exec_collision_queue_20260914_1400.md; do not merge rows")
+        if key not in KNOWN_COLLISIONS:
+            fail(f"new exec-name collision not in the 2026-09-14 allowlist: "
+                 f"{nm!r} {yr} {sorted(tickers)} (12)", failures)
+
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
         for m in failures:
