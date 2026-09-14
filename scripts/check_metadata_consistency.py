@@ -56,6 +56,16 @@ count) after finding the README Data Verification Taxonomy header said
 2026-09-13 18:00); the table's bucket cells were current, only the
 header count was stale — a blind spot the headline-pattern checks did
 not cover. The header now asserts the live count.
+History: 2026-09-14 07:30 PT run added section 10 (peer-network <-> company
+coverage) after the first-ever cross-check of data/peer-network.json against
+the 500 companies: 0 dangling edges, degrees recount-exact, 0 self-loops, 0
+duplicate edges — but AOS and CPRT have no network node (no extractable DEF
+14A peer-group disclosure in the 2026-07-19 network build) and 8 nodes are
+non-S&P companies cited as benchmarking peers (DDOG, MRVL, PINS, RBLX, SNAP,
+SNOW, SPOT, XYZ; all out_degree 0). Index-membership drift also confirmed:
+DDOG joined the S&P 500 in July 2025 yet is absent from the 500-company
+list — a company-list refresh vs current index membership is queued (needs
+EDGAR), not attempted here.
 """
 import json
 import os
@@ -65,6 +75,7 @@ from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(HERE, "..", "data", "compensation.json")
+PEER_JSON_PATH = os.path.join(HERE, "..", "data", "peer-network.json")
 
 # record-level _total_source label -> metadata data_quality key
 LABEL_TO_KEY = {
@@ -764,6 +775,88 @@ def main():
                     f"foot to components (gap ${gap:,}) - anomaly for "
                     f"filing review (9b)"
                 )
+
+    # 10. Peer-network <-> company-list coverage (2026-09-14 07:30 PT run):
+    #     first-ever cross-check of data/peer-network.json against the 500
+    #     companies. Hard invariants (fail): metadata node_count/edge_count
+    #     == actual counts; every edge source/target resolves to a node
+    #     ticker; per-node in_degree/out_degree recount-exact. Warning-only
+    #     hygiene: no self-loops, no duplicate (source,target,year,
+    #     group_type) edges. Coverage: every company should have a network
+    #     node. KNOWN_COVERAGE_GAPS are warning-tracked (no extractable DEF
+    #     14A peer-group disclosure in the 2026-07-19 network build; both
+    #     still render their company pages, the network search just finds
+    #     no node — no crash). Any NEW missing company fails (regression).
+    #     Nodes not matching any company must be in PEER_ONLY_NODES
+    #     (non-S&P companies cited as benchmarking peers, all out_degree
+    #     0); unknown non-company nodes fail. Index-membership drift
+    #     (DDOG in S&P 500 since Jul 2025, absent from the 500-company
+    #     list) is a queued company-list refresh, not a section-10
+    #     failure — do not "fix" it by hand-editing either list.
+    KNOWN_COVERAGE_GAPS = {"AOS", "CPRT"}
+    PEER_ONLY_NODES = {"DDOG", "MRVL", "PINS", "RBLX", "SNAP", "SNOW",
+                       "SPOT", "XYZ"}
+    with open(PEER_JSON_PATH, encoding="utf-8") as f:
+        peer = json.load(f)
+    pnodes = peer.get("nodes", [])
+    pedges = peer.get("edges", [])
+    pmeta = peer.get("metadata", {})
+    if pmeta.get("node_count") != len(pnodes):
+        fail(f"peer node_count={pmeta.get('node_count')} != {len(pnodes)}",
+             failures)
+    if pmeta.get("edge_count") != len(pedges):
+        fail(f"peer edge_count={pmeta.get('edge_count')} != {len(pedges)}",
+             failures)
+    ptickers = set(n.get("ticker") for n in pnodes)
+    if len(ptickers) != len(pnodes):
+        fail("peer nodes contain duplicate tickers", failures)
+    dangling = [e for e in pedges
+                if e.get("source") not in ptickers
+                or e.get("target") not in ptickers]
+    if dangling:
+        fail(f"{len(dangling)} peer edges reference missing nodes "
+             f"(e.g. {dangling[0].get('source')}->{dangling[0].get('target')})",
+             failures)
+    indeg = Counter(e.get("target") for e in pedges)
+    outdeg = Counter(e.get("source") for e in pedges)
+    for pnode in pnodes:
+        t = pnode.get("ticker")
+        if pnode.get("in_degree") != indeg.get(t, 0):
+            fail(f"peer node {t} in_degree={n.get('in_degree')} != recount "
+                 f"{indeg.get(t, 0)}", failures)
+        if pnode.get("out_degree") != outdeg.get(t, 0):
+            fail(f"peer node {t} out_degree={n.get('out_degree')} != recount "
+                 f"{outdeg.get(t, 0)}", failures)
+    selfloops = [e for e in pedges if e.get("source") == e.get("target")]
+    if selfloops:
+        print(f"  warning: {len(selfloops)} peer self-loop edges "
+              f"(e.g. {selfloops[0].get('source')}) - (10)")
+    seen_edges = set()
+    dup_edges = 0
+    for e in pedges:
+        k = (e.get("source"), e.get("target"), e.get("year"),
+             e.get("group_type"))
+        if k in seen_edges:
+            dup_edges += 1
+        seen_edges.add(k)
+    if dup_edges:
+        print(f"  warning: {dup_edges} duplicate peer edges "
+              f"(same source/target/year/group_type) - (10)")
+    ctickers = set(c.get("ticker") for c in companies)
+    missing_nodes = sorted(ctickers - ptickers)
+    for t in missing_nodes:
+        if t in KNOWN_COVERAGE_GAPS:
+            print(f"  warning: {t} is an S&P 500 company with no peer-network "
+                  f"node (known coverage gap, 10); network search finds no "
+                  f"node — do not fabricate edges without a DEF 14A peer "
+                  f"group re-read")
+        else:
+            fail(f"company {t} has no peer-network node (new coverage gap, "
+                 f"10)", failures)
+    unknown_extra = sorted(ptickers - ctickers - PEER_ONLY_NODES)
+    if unknown_extra:
+        fail(f"peer nodes not matching any company and not in PEER_ONLY "
+             f"allowlist: {unknown_extra} (10)", failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
