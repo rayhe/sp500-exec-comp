@@ -463,8 +463,21 @@ def main():
         "InterventionalSegment", "PresidentInternational", "andSupply",
         "ChainSolutions", "asof July",
     )
+    # percentage bleed: a pct figure followed by a name fragment can never be
+    # a genuine SCT title (ORLY 'Chief Executive Officer 100 % Brent G').
+    TITLE_PERCENT_BLEED = re.compile(r"\d+\s*%\s+[A-Za-z]")
+    # committee-code bleed: 'EC (Chair)'-style codes come from the
+    # board-committee table, never an SCT title cell (PPL 2023-2025).
+    TITLE_COMMITTEE_BLEED = re.compile(r"\b[A-Z]{2,5}\s*\(Chair\)")
+    # division labels parsed as NEO names that cannot be resolved offline;
+    # warning-only (7d). The LHX class above stays a hard fail.
+    ORG_LABEL_UNRESOLVED = ("Behavioral Health", "Flat Roll Steel")
     for c in companies:
         cn = c.get("ceo_name") or ""
+        # distinct person-name set for the 7c embedded-name bleed check
+        company_person_names = {
+            e.get("name") for e in c.get("executives", []) if e.get("name")
+        }
         for suf in NAME_SUFFIX_ARTIFACTS:
             if cn.endswith(suf):
                 fail(
@@ -555,6 +568,67 @@ def main():
                     f"  warning: {c.get('ticker')} {e.get('year')} "
                     f"{nm!r}: title={ti!r} has unbalanced parentheses - "
                     f"truncation artifact, verify wording vs DEF 14A (7)"
+                )
+            # 7c. title-bleed artifacts (fail): the 2026-09-14 02:00 PT batch
+            #     repaired three title-cell bleed classes. None can occur in a
+            #     genuine SCT title cell, so any recurrence is a parser
+            #     regression - fail the commit.
+            #     (a) honorific suffix ': Mr' (UHS 10 rows, footnote artifact);
+            #     (b) percentage + name-fragment bleed, e.g. 'Chief Executive
+            #         Officer 100 % Brent G' (ORLY);
+            #     (c) another NEO's name embedded in the title, e.g. BG 2025
+            #         'Chief Executive Officer, and John Neppl, Chief
+            #         Financial Officer' (GPC 2025 same class).
+            if ti.endswith((": Mr", ": Ms", ": Mrs", ": Dr")):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')} "
+                    f"{nm!r}: title={ti!r} carries honorific-suffix bleed "
+                    f"artifact (section 7c)",
+                    failures,
+                )
+            if TITLE_PERCENT_BLEED.search(ti):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')} "
+                    f"{nm!r}: title={ti!r} carries percentage/name-fragment "
+                    f"bleed artifact (section 7c)",
+                    failures,
+                )
+            # committee-membership bleed: board-committee codes like
+            # 'EC (Chair), PCC, SC (Chair)' (PPL Sorgi 2023-2025, repaired
+            # 2026-09-14 02:00) come from the committee table, never an SCT
+            # title cell.
+            if TITLE_COMMITTEE_BLEED.search(ti):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')} "
+                    f"{nm!r}: title={ti!r} carries board-committee "
+                    f"membership bleed artifact (section 7c)",
+                    failures,
+                )
+            for other in company_person_names:
+                if (not other or other == nm
+                        or other in ORG_LABEL_ARTIFACTS
+                        or other in ORG_LABEL_UNRESOLVED):
+                    continue
+                if re.search(r"(?<![A-Za-z.])" + re.escape(other)
+                             + r"(?![A-Za-z.])", ti, re.I):
+                    fail(
+                        f"{c.get('ticker')} {e.get('year')} "
+                        f"{nm!r}: title={ti!r} embeds another NEO's name "
+                        f"{other!r} - title-bleed artifact (section 7c)",
+                        failures,
+                    )
+                    break
+        # 7d. unresolved org-label names (warning only): division labels
+        #     parsed as NEO names whose real person cannot be recovered
+        #     offline. UHS 2023 'Behavioral Health' and STLD 2023 'Flat Roll
+        #     Steel' are queued for the next EDGAR run; the LHX class
+        #     (repaired 2026-09-13 10:00) stays a hard fail in ORG_LABEL_ARTIFACTS.
+        for e in c.get("executives", []):
+            if (e.get("name") or "") in ORG_LABEL_UNRESOLVED:
+                print(
+                    f"  warning: {c.get('ticker')} {e.get('year')}: exec "
+                    f"name={e.get('name')!r} is a division label, not a "
+                    f"person - real NEO name needs DEF 14A re-read (7d)"
                 )
         if cn.count("(") != cn.count(")"):
             fail(
