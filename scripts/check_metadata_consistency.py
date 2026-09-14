@@ -72,7 +72,7 @@ screen found 493/500 anchors clean but 7 companies where ceo_name is the
 current post-2024-transition CEO while fiscal_year=2024 rows cover the
 prior CEO and total_compensation matches no 2024 row (TMUS, NKE, SWKS, CCI,
 PSA, MAA — queued for DEF 14A re-read), plus a pay-ratio recompute screen
-showing 157/500 deviations as a methodology class (transition-year CEO-pay
+showing 156/499 deviations as a methodology class (transition-year CEO-pay
 figures and pension-swing years, spot-verified CMG/MO), not a parse class.
 """
 import json
@@ -954,7 +954,7 @@ def main():
             pr_other += 1
     if pr_2x + pr_half + pr_other:
         print(f"  warning: pay-ratio methodology screen (11): "
-              f"{pr_within}/500 foot within tolerance; {pr_2x} cluster "
+              f"{pr_within}/{pr_within + pr_2x + pr_half + pr_other} screened foot within tolerance; {pr_2x} cluster "
               f"~2x, {pr_half} ~0.5x, {pr_other} other — methodology "
               f"class (transition-year CEO-pay figures, pension-swing "
               f"years; spot-verified CMG/MO), not a parse class; UI "

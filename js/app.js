@@ -15931,6 +15931,9 @@ function setupDualSparklineTooltips() {
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-12)</h4>' +
                 '<p>6,764 of 6,785 NEO rows verified (99.7%): 0 rounding, 0 recomputed, 21 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
+                '<p id="dataq-payratio-counts">As of the 2026-09-14 screen: 343 of 499 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 33 cluster near 2x, 10 near 0.5x, 113 differ otherwise. (TSLA excluded: no disclosed ratio.)</p>' +
+                '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
@@ -15974,6 +15977,32 @@ function setupDualSparklineTooltips() {
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
     }
 
+    // Data Verification modal: pay-ratio methodology counts, computed from the
+    // loaded dataset at modal-open time. Mirrors guard section 11 of
+    // scripts/check_metadata_consistency.py exactly (same 3% tolerance rule:
+    // |implied/reported - 1| <= max(2/pay_ratio, 0.03)), so the modal stays
+    // truthful across re-verification runs. Returns null when the data isn't
+    // loaded yet — the static fallback text above is then kept.
+    function _dataqPayRatioHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos) return null;
+        var within = 0, twox = 0, half = 0, other = 0;
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            var pr = c.pay_ratio, mw = c.median_worker_pay, ct = c.total_compensation;
+            if (pr == null || pr === 0 || mw == null || mw === 0 || ct == null) continue;
+            var r = (ct / mw) / pr;
+            if (Math.abs(r - 1) <= Math.max(2 / pr, 0.03)) within++;
+            else if (r >= 1.9 && r <= 2.1) twox++;
+            else if (r >= 0.4 && r <= 0.6) half++;
+            else other++;
+        }
+        var n = within + twox + half + other;
+        return 'Live screen: ' + within + ' of ' + n + ' screened companies\' disclosed ratios match ' +
+            '<code>total_compensation / median_worker_pay</code> within 3% tolerance; ' + twox +
+            ' cluster near 2x, ' + half + ' near 0.5x, ' + other + ' differ otherwise.';
+    }
+
     function openMethodologyModal(method) {
         var content = METHODOLOGY_CONTENT[method];
         if (!content) return;
@@ -15990,6 +16019,9 @@ function setupDualSparklineTooltips() {
             var covBlock = document.getElementById('dataq-coverage-block');
             var covHtml = _dataqCoverageHtml();
             if (covBlock && covHtml) covBlock.innerHTML = covHtml;
+            var prCounts = document.getElementById('dataq-payratio-counts');
+            var prHtml = _dataqPayRatioHtml();
+            if (prCounts && prHtml) prCounts.innerHTML = prHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility
