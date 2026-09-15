@@ -84,6 +84,14 @@ found bullet-bleed and mid-phrase-truncation classes section 7 missed:
 repaired COR/ROST/SHW trailing markers mechanically (8 rows, base titles
 verified via browser path), queued DOC/ALLE/APA/DPZ/VST (+UHS, STLD
 already queued) for EDGAR re-reads.
+History: 2026-09-15 07:30 PT run added section 4d (dataq-modal live-block
+fallback truthfulness) after finding the pay-ratio, executive-transitions,
+and title-artifacts static fallbacks were the last hand-typed headline
+copies with no guard coverage: all three recount-exact today (pay ratio
+343/499/33/10/113, 13 collision tuples, 27 rows at 8 companies), and any
+future EDGAR batch that moves one of those numbers will now trip the
+pre-commit hook until the fallback is re-synced. KNOWN_TITLE_ARTIFACTS
+hoisted to module level for the 4d titles recount.
 """
 import json
 import os
@@ -285,6 +293,117 @@ def check_dataq_modal_truthfulness(companies, meta, failures):
                 )
 
 
+# -- Section 4d: dataq-modal live-block fallback truthfulness ----------------
+# The Data Verification methodology modal's pay-ratio, executive-
+# transitions, and title-artifacts blocks are live-computed at modal-open
+# time, but each ships a hand-typed static fallback ("As of the 2026-09-14
+# screen: ...") shown before the data loads. Sections 4/4b/4c guard every
+# other hand-typed headline on the site, but nothing asserted these three
+# fallbacks: any EDGAR batch that legitimately moved the numbers (a title
+# repair shrinking the 27-row queue, a new (name, year) tuple, a changed
+# pay ratio) would leave the pre-load copy stale with no tripwire.
+# This section recounts each block with the exact rule its live-computing
+# function mirrors (pay ratio: guard section 11's 3%-tolerance rule;
+# transitions: section 12's normalized (name, year) -> tickers screen;
+# titles: rows whose (ticker, title) is in the section-13 allowlist) and
+# fails the commit if the fallback phrases no longer carry those numbers.
+# The triage breakdowns (6 transitions / 5 coincidences / 2 suspicious)
+# are human judgment and are not recounted; only the tuple total is.
+def check_dataq_modal_live_blocks(companies, failures):
+    # pay-ratio distribution (mirrors _dataqPayRatioHtml and section 11)
+    within = twox = half = other = 0
+    for c in companies:
+        pr = c.get("pay_ratio")
+        mw = c.get("median_worker_pay")
+        ct = c.get("total_compensation")
+        if pr in (None, 0) or mw in (None, 0) or ct is None:
+            continue
+        r = (ct / mw) / pr
+        if abs(r - 1) <= max(2 / pr, 0.03):
+            within += 1
+        elif 1.9 <= r <= 2.1:
+            twox += 1
+        elif 0.4 <= r <= 0.6:
+            half += 1
+        else:
+            other += 1
+    pr_n = within + twox + half + other
+
+    # exec-name collision tuples (mirrors section 12's screen)
+    def _coll_key(name):
+        return re.sub(r"[^a-z ]", "", (name or "").lower()).strip()
+
+    _person_year = {}
+    for c in companies:
+        for e in c.get("executives", []):
+            nm = _coll_key(e.get("name"))
+            yr = e.get("year")
+            if nm and yr:
+                _person_year.setdefault((nm, yr), set()).add(c.get("ticker"))
+    n_coll = sum(1 for tickers in _person_year.values() if len(tickers) > 1)
+
+    # title-artifact queue rows (rows whose (ticker, title) is allowlisted)
+    n_art = 0
+    art_cos = set()
+    for c in companies:
+        for e in c.get("executives", []):
+            key = (c.get("ticker"), (e.get("title") or "").strip())
+            if key in KNOWN_TITLE_ARTIFACTS:
+                n_art += 1
+                art_cos.add(c.get("ticker"))
+
+    checks = [
+        # pay-ratio fallback (JS-escaped apostrophe avoided in patterns)
+        (f"{within} of {pr_n} screened companies",
+         f"pay ratio within={within} of {pr_n}"),
+        (f"{twox} cluster near 2x, {half} near 0.5x, {other} differ otherwise",
+         f"pay ratio classes {twox}/{half}/{other}"),
+        # transitions fallback
+        (f"{n_coll} (name, fiscal year) tuples appear",
+         f"transitions {n_coll} tuples"),
+        (f"all {n_coll} triaged by tuple",
+         f"transitions triage count {n_coll}"),
+        # title-artifacts fallback
+        (f"leaving {n_art} rows at {len(art_cos)} companies shown exactly as parsed",
+         f"title artifacts {n_art} rows at {len(art_cos)} companies"),
+    ]
+    path = os.path.join(os.path.join(HERE, ".."), "js", "app.js")
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        fail(f"dataq-modal 4d: cannot read js/app.js: {e}", failures)
+        return
+    for pat, label in checks:
+        if pat not in text:
+            fail(
+                f"dataq-modal 4d drift: expected {label} ({pat!r}) in "
+                f"js/app.js static fallback: recount from live JSON "
+                f"(pay ratio {within}/{pr_n}, {twox}/{half}/{other}; "
+                f"transitions {n_coll} tuples; titles {n_art} rows at "
+                f"{len(art_cos)} companies) disagrees with the hand-typed "
+                f"fallback; sync the fallback before committing",
+                failures,
+            )
+
+
+# Section-13 title-artifact allowlist, hoisted to module level so section 4d
+# can recount the title-artifacts fallback's queued rows and companies.
+KNOWN_TITLE_ARTIFACTS = {
+    ("DOC", "Chief Development Officer and Head of Lab ● Tracy A"),
+    ("DOC", "President and Chief Executive Officer ● Kelvin O"),
+    ("DOC", "Chief Investment Officer ● Scott R"),
+    ("DOC", "Chief Financial Officer ● Adam G"),
+    ("ALLE", "President and Chief Executive Officer of A"),
+    ("APA", "CEO ● Juliet S"),
+    ("DPZ", "CEO of D"),
+    ("VST", "President and Chief Executive Officer of V"),
+    ("TAP", "CEO of our Company (currently"),
+    ("UHS", "Executive Vice President and President of our"),
+    ("STLD", "Chair of the Board During"),
+}
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -367,6 +486,10 @@ def main():
     # 4b. dataq-modal truthfulness: the methodology modal's hand-typed
     #     taxonomy-decision count and audit date must match the live JSON
     check_dataq_modal_truthfulness(companies, meta, failures)
+
+    # 4d. dataq-modal live-block fallbacks: the pay-ratio, transitions, and
+    #     title-artifacts static fallbacks must carry the live recounts
+    check_dataq_modal_live_blocks(companies, failures)
 
     # 4c. metadata.description self-consistency: the JSON's own headline copy
     check_json_description(n, meta, failures)
@@ -1103,19 +1226,6 @@ def main():
     _TITLE_FRAG = re.compile(
         r"(?i)\b(of|the|and|or|to|in|during|for|our|a|an|&)$")
     _TITLE_OF_LETTER = re.compile(r"\bof [A-Z]$")
-    KNOWN_TITLE_ARTIFACTS = {
-        ("DOC", "Chief Development Officer and Head of Lab ● Tracy A"),
-        ("DOC", "President and Chief Executive Officer ● Kelvin O"),
-        ("DOC", "Chief Investment Officer ● Scott R"),
-        ("DOC", "Chief Financial Officer ● Adam G"),
-        ("ALLE", "President and Chief Executive Officer of A"),
-        ("APA", "CEO ● Juliet S"),
-        ("DPZ", "CEO of D"),
-        ("VST", "President and Chief Executive Officer of V"),
-        ("TAP", "CEO of our Company (currently"),
-        ("UHS", "Executive Vice President and President of our"),
-        ("STLD", "Chair of the Board During"),
-    }
     for c in companies:
         for e in c.get("executives", []):
             t = (e.get("title") or "").strip()
