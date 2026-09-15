@@ -74,6 +74,16 @@ prior CEO and total_compensation matches no 2024 row (TMUS, NKE, SWKS, CCI,
 PSA, MAA — queued for DEF 14A re-read), plus a pay-ratio recompute screen
 showing 156/499 deviations as a methodology class (transition-year CEO-pay
 figures and pension-swing years, spot-verified CMG/MO), not a parse class.
+History: 2026-09-14 14:00 PT run added section 12 (cross-company exec-name
+collision tripwire) after a normalized (name, year) screen found 13
+collisions across companies: 6 legit mid-year transitions, 2 same-name
+coincidences, 1 suspicious (LULU/WSM Burgoyne, queued for DEF 14A
+re-read). History: 2026-09-14 18:00 PT run added section 13
+(title footnote-bleed/truncation tripwire) after a title-artifact screen
+found bullet-bleed and mid-phrase-truncation classes section 7 missed:
+repaired COR/ROST/SHW trailing markers mechanically (8 rows, base titles
+verified via browser path), queued DOC/ALLE/APA/DPZ/VST (+UHS, STLD
+already queued) for EDGAR re-reads.
 """
 import json
 import os
@@ -1026,6 +1036,66 @@ def main():
         if key not in KNOWN_COLLISIONS:
             fail(f"new exec-name collision not in the 2026-09-14 allowlist: "
                  f"{nm!r} {yr} {sorted(tickers)} (12)", failures)
+
+    # 13. Title footnote-bleed / truncation tripwire (2026-09-14 18:00 PT).
+    #     A full-file title scan found two artifact classes section 7 did
+    #     not cover: (a) footnote markers bled into the title cell
+    #     (bullets like "●" plus the next NEO's name fragment, or trailing
+    #     "*" footnote markers), and (b) mid-phrase truncation ("... of A",
+    #     "... of D", "... of V", "Chair of the Board During"). The
+    #     trailing-*/** subclass was repaired mechanically in this batch
+    #     (COR Executive Chairman, ROST CFO, SHW SVP-Finance & CFO; base
+    #     titles verified against primary sources via the browser path,
+    #     8 rows). The rest need DEF 14A SCT re-reads (VM egress dead since
+    #     2026-09-12 ~18:00 PT) and are queued in
+    #     title_bleed_truncation_queue_20260914_1800.md: DOC (4 titles, 10
+    #     rows — bullet bleed of the next row's first name; the SCT name
+    #     column may be row-shifted too), ALLE ("President and Chief
+    #     Executive Officer of A"), APA ("CEO ● Juliet S"), DPZ ("CEO of
+    #     D"), VST ("President and Chief Executive Officer of V"), TAP
+    #     ("CEO of our Company (currently" — unbalanced paren, mid-phrase
+    #     truncation), UHS
+    #     ("Executive Vice President and President of our" — also in the
+    #     name-ambiguity queue as an org-label name row), STLD ("Chair of
+    #     the Board During" x3 — also in the name-ambiguity queue). Any
+    #     title NOT in KNOWN_TITLE_ARTIFACTS failing this screen is a new
+    #     artifact class regression and fails hard.
+    _TITLE_MARKER = re.compile(r"[●†‡#§]|\*{1,2}$")
+    _TITLE_FRAG = re.compile(
+        r"(?i)\b(of|the|and|or|to|in|during|for|our|a|an|&)$")
+    _TITLE_OF_LETTER = re.compile(r"\bof [A-Z]$")
+    KNOWN_TITLE_ARTIFACTS = {
+        ("DOC", "Chief Development Officer and Head of Lab ● Tracy A"),
+        ("DOC", "President and Chief Executive Officer ● Kelvin O"),
+        ("DOC", "Chief Investment Officer ● Scott R"),
+        ("DOC", "Chief Financial Officer ● Adam G"),
+        ("ALLE", "President and Chief Executive Officer of A"),
+        ("APA", "CEO ● Juliet S"),
+        ("DPZ", "CEO of D"),
+        ("VST", "President and Chief Executive Officer of V"),
+        ("TAP", "CEO of our Company (currently"),
+        ("UHS", "Executive Vice President and President of our"),
+        ("STLD", "Chair of the Board During"),
+    }
+    for c in companies:
+        for e in c.get("executives", []):
+            t = (e.get("title") or "").strip()
+            if not t:
+                continue
+            if not (_TITLE_MARKER.search(t) or _TITLE_FRAG.search(t)
+                    or _TITLE_OF_LETTER.search(t)
+                    or t.count("(") != t.count(")")):
+                continue
+            key = (c.get("ticker"), t)
+            tag = "known" if key in KNOWN_TITLE_ARTIFACTS else "NEW"
+            print(f"  warning: title footnote-bleed/truncation ({tag}, 13): "
+                  f"{c.get('ticker')} {e.get('name')} {e.get('year')} "
+                  f"title={t!r} — see "
+                  f"title_bleed_truncation_queue_20260914_1800.md; do not "
+                  f"repair offline")
+            if key not in KNOWN_TITLE_ARTIFACTS:
+                fail(f"new title artifact not in the 2026-09-14 allowlist: "
+                     f"{c.get('ticker')} {t!r} (13)", failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")

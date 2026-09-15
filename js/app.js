@@ -15937,6 +15937,9 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
                 '<p id="dataq-transitions-counts">As of the 2026-09-14 screen: 13 (name, fiscal year) tuples appear as NEO rows at two different companies; all 13 triaged (6 genuine mid-year executive transitions, 2 same-name coincidences, 1 queued for DEF 14A re-read).</p>' +
                 '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Two collisions are same-name coincidences: Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people. The one suspicious pair (Celeste Burgoyne, LULU/WSM) is queued for a DEF 14A name-column re-read. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
+                '<div id="dataq-titles-block"><h4>Title artifacts</h4>' +
+                '<p id="dataq-titles-counts">As of the 2026-09-14 screen: 35 NEO rows at 11 companies carry parser artifacts in their titles — footnote-bullet bleed (a marker plus the next executive\'s name, e.g. DOC\'s "Chief Development Officer and Head of Lab") or mid-phrase truncation (e.g. DPZ\'s "CEO of D", TAP\'s "CEO of our Company (currently"). 8 rows (COR, ROST, SHW) were repaired by stripping a stray footnote marker; 27 rows are queued for a DEF 14A title-column re-read and are shown exactly as parsed until then.</p>' +
+                '<p>Affected titles are displayed with their artifacts intact rather than silently "fixed": a truncated title like ALLE\'s "President and Chief Executive Officer of A" is a parsing question, not a data error in the numbers, and overwriting it offline would invent filing text. Guard section 13 of <code>scripts/check_metadata_consistency.py</code> trips on any new title artifact.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
         ger: {
@@ -16037,6 +16040,36 @@ function setupDualSparklineTooltips() {
         return 'Live screen: ' + n + ' (name, fiscal year) tuples appear as NEO rows at two or more companies; the triage breakdown above covers all of them.';
     }
 
+    // Data Verification modal: title-artifact row count, computed from the
+    // loaded dataset at modal-open time. Mirrors guard section 13 of
+    // scripts/check_metadata_consistency.py (footnote/bleed markers, trailing
+    // asterisks, dangling-phrase or lone-letter truncations), so the modal
+    // stays truthful if the dataset ever gains or clears an artifact title.
+    // Returns null when the data isn't loaded yet; the static fallback text
+    // above is then kept.
+    function _dataqTitleArtifactsHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos) return null;
+        var rows = 0, tickers = {};
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            var ex = c.executives || [];
+            for (var j = 0; j < ex.length; j++) {
+                var t = (ex[j].title || '').trim();
+                if (!t) continue;
+                if (/[●†‡#§]|\*{1,2}$/.test(t) ||
+                    /\b(of|the|and|or|to|in|during|for|our|a|an|&)$/i.test(t) ||
+                    /\bof [A-Z]$/.test(t) ||
+                    (t.split('(').length !== t.split(')').length)) {
+                    rows++;
+                    tickers[c.ticker] = true;
+                }
+            }
+        }
+        return 'Live screen: ' + rows + ' NEO rows at ' + Object.keys(tickers).length +
+               ' companies carry title artifacts; the triage breakdown above covers all of them.';
+    }
+
     function openMethodologyModal(method) {
         var content = METHODOLOGY_CONTENT[method];
         if (!content) return;
@@ -16059,6 +16092,9 @@ function setupDualSparklineTooltips() {
             var trCounts = document.getElementById('dataq-transitions-counts');
             var trHtml = _dataqTransitionsHtml();
             if (trCounts && trHtml) trCounts.innerHTML = trHtml;
+            var tiCounts = document.getElementById('dataq-titles-counts');
+            var tiHtml = _dataqTitleArtifactsHtml();
+            if (tiCounts && tiHtml) tiCounts.innerHTML = tiHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility
