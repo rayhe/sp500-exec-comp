@@ -97,6 +97,15 @@ History: 2026-09-15 10:00 PT run repaired the DOC/APA bullet-bleed titles
 tuples from KNOWN_TITLE_ARTIFACTS; the 4d titles fallback now recounts 14
 rows at 6 companies (ALLE, DPZ, VST, TAP, UHS, STLD) and the js/app.js
 fallback copy was re-synced to match.
+History: 2026-09-15 12:00 PT run repaired the ALLE/DPZ/VST/STLD title
+truncations (12 rows; exact SCT principal-position wording verified
+verbatim in the 2026 proxy/DEF 14A filings via the browser path, all 36
+stored totals matched) and removed their 4 tuples from
+KNOWN_TITLE_ARTIFACTS; the 4d titles fallback now recounts 2 rows at 2
+companies (TAP, UHS) and the js/app.js fallback copy was re-synced to
+match. TAP stays queued (parenthetical tail not exposed verbatim in any
+indexed primary source); UHS stays queued in the name-ambiguity queue
+(org-label name row).
 """
 import json
 import os
@@ -396,15 +405,18 @@ def check_dataq_modal_live_blocks(companies, failures):
 # can recount the title-artifacts fallback's queued rows and companies.
 # History: 2026-09-15 10:00 PT removed the 5 repaired tuples (DOC x4, APA x1;
 # 13 rows) after base titles were verified via the browser path (Healthpeak
-# IR for DOC, SEC Form 4 for APA) and the bullet-bleed stripped. Remaining
-# queue: ALLE, DPZ, VST, TAP, UHS, STLD (14 rows at 6 companies).
+# IR for DOC, SEC Form 4 for APA) and the bullet-bleed stripped.
+# History: 2026-09-15 12:00 PT removed the 4 repaired tuples (ALLE, DPZ, VST,
+# STLD; 12 rows) after the exact SCT principal-position wording was verified
+# verbatim in the 2026 proxy/DEF 14A filings via the browser path (all 36
+# stored totals matched the filings). Remaining queue: TAP ("CEO of our
+# Company (currently" -- parenthetical tail not exposed verbatim in any
+# indexed primary source, do not guess) and UHS ("Executive Vice President
+# and President of our" -- org-label name row, belongs to the
+# name-ambiguity queue). 2 rows at 2 companies.
 KNOWN_TITLE_ARTIFACTS = {
-    ("ALLE", "President and Chief Executive Officer of A"),
-    ("DPZ", "CEO of D"),
-    ("VST", "President and Chief Executive Officer of V"),
     ("TAP", "CEO of our Company (currently"),
     ("UHS", "Executive Vice President and President of our"),
-    ("STLD", "Chair of the Board During"),
 }
 
 
@@ -1217,19 +1229,23 @@ def main():
     #     via the browser path -- Healthpeak IR for DOC, SEC Form 4 for APA;
     #     the bleed chain Brinker<-Moses<-Mabry<-Bohn<-Porter proved
     #     title-cell contamination only, no name-column row shift).
+    #     The truncation subclass was repaired 2026-09-15 12:00 PT (ALLE x3
+    #     rows "President and CEO", DPZ x3 "Chief Executive Officer", VST x3
+    #     "President and Chief Executive Officer", STLD x3 "Chairman and
+    #     Chief Executive Officer"; exact SCT principal-position wording
+    #     verified verbatim in the 2026 proxy/DEF 14A filings via the browser
+    #     path, all 36 stored totals matched the filings).
     #     The rest need DEF 14A SCT re-reads (VM egress dead since
     #     2026-09-12 ~18:00 PT) and are queued in
-    #     title_bleed_truncation_queue_20260914_1800.md: ALLE ("President and
-    #     Chief Executive Officer of A"), DPZ ("CEO of D"), VST ("President
-    #     and Chief Executive Officer of V"), TAP ("CEO of our Company
-    #     (currently" -- unbalanced paren, mid-phrase truncation; Goyal
-    #     became President and CEO effective 2025-10-01 per Molson Coors IR,
-    #     so the parenthetical tail is likely a transition-date qualifier),
-    #     UHS ("Executive Vice President and President of our" -- also in
-    #     the name-ambiguity queue as an org-label name row), STLD ("Chair
-    #     of the Board During" x3 -- also in the name-ambiguity queue). Any
-    #     title NOT in KNOWN_TITLE_ARTIFACTS failing this screen is a new
-    #     artifact class regression and fails hard.
+    #     title_bleed_truncation_queue_20260914_1800.md: TAP ("CEO of our
+    #     Company (currently" -- unbalanced paren, mid-phrase truncation;
+    #     Goyal became President and CEO effective 2025-10-01 per Molson
+    #     Coors IR, so the parenthetical tail is likely a transition-date
+    #     qualifier, but no indexed primary source exposes it verbatim --
+    #     do not guess), UHS ("Executive Vice President and President of
+    #     our" -- also in the name-ambiguity queue as an org-label name
+    #     row). Any title NOT in KNOWN_TITLE_ARTIFACTS failing this screen
+    #     is a new artifact class regression and fails hard.
     _TITLE_MARKER = re.compile(r"[●†‡#§]|\*{1,2}$")
     _TITLE_FRAG = re.compile(
         r"(?i)\b(of|the|and|or|to|in|during|for|our|a|an|&)$")
