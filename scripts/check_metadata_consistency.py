@@ -756,28 +756,46 @@ def main():
     #    the stored total is the filing's printed total, so the total
     #    exceeds the captured components by exactly the pension value.
     #    Signature on full 7-component rows: gap = total - sum(components) >
-    #    $1,000 with pension_nqdc in (0, None). 20 rows / 4 tickers /
-    #    $45.9M missing pension (SO 13, TFC 3, PPL 1, AME 3); the SO rows
-    #    carry def14a_verified_20260909 totals so the gap is definitively
-    #    the pension column. Warning-only: the gap is arithmetic, the
-    #    filing SCT must confirm the pension cell before repair. Row list
-    #    + filing URLs in the goal hidden_files review queue
-    #    (pension_drop_review_queue_20260913_2200.md). TFC/PPL rows also
-    #    have bonus=None, so the verifier must confirm pension-vs-bonus.
-    #    9b covers the residual footing anomalies on full rows (both
-    #    directions, >$1,000, excluding adjudicated component_mismatch
-    #    rows): none unadjudicated as of 2026-09-13 22:00 PT.
+    #    $1,000 with the EFFECTIVE pension (pension_nqdc or pension_change,
+    #    see _eff_pension) in (0, None). Warning-only: the gap is
+    #    arithmetic, the filing SCT must confirm the pension cell before
+    #    repair.
+    #    History: 2026-09-14 22:00 PT correction - the original 7-component
+    #    rule preferred pension_nqdc alone and ignored pension_change, so it
+    #    false-flagged 20 rows (SO 13, TFC 3, PPL 1, AME 3) whose pension
+    #    lives in pension_change and had been repaired/re-verified
+    #    2026-09-09/09-10 (all foot exactly; the $45,892,455 "missing
+    #    pension" queue total was phantom). The pension-aware rule fires on
+    #    ZERO rows; the old queue file is retired (kept for audit trail in
+    #    the goal hidden_files). Genuine drops still trip: both pension keys
+    #    0/None with gap > $1,000. 9b covers the residual footing anomalies
+    #    on full rows (both directions, >$1,000, excluding adjudicated
+    #    component_mismatch rows): none unadjudicated as of 2026-09-14
+    #    22:00 PT.
     _COMP_KEYS = ("salary", "bonus", "stock_awards", "option_awards",
                   "non_equity_incentive", "pension_nqdc", "all_other")
+    _NON_PEN_KEYS = ("salary", "bonus", "stock_awards", "option_awards",
+                     "non_equity_incentive", "all_other")
+
+    def _eff_pension(e):
+        # Pension lives in either pension_nqdc or pension_change, never
+        # both (see the section-4b recount note): Southern-style rows carry
+        # 0 in pension_nqdc (the filing states no above-market NQDC
+        # earnings) with the SCT column-(f) value in pension_change.
+        pn, pc = e.get("pension_nqdc"), e.get("pension_change")
+        if pn == 0 and (pc or 0) > 0:
+            return pc
+        return pn if pn is not None else pc
+
     for c in companies:
         for e in c.get("executives", []):
             if not all(k in e for k in _COMP_KEYS):
                 continue
             if e.get("_total_source") == "component_mismatch":
                 continue
-            foot = sum(e.get(k) or 0 for k in _COMP_KEYS)
+            foot = sum(e.get(k) or 0 for k in _NON_PEN_KEYS) + (_eff_pension(e) or 0)
             gap = (e.get("total") or 0) - foot
-            pen = e.get("pension_nqdc")
+            pen = _eff_pension(e)
             if gap > 1000 and pen in (0, None):
                 print(
                     f"  warning: {c.get('ticker')} {e.get('year')} "
