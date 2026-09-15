@@ -7097,15 +7097,54 @@ function initNetwork(peerData) {
         if (!pfToggle || !pfBar) return false;
         pfToggle.classList.add('active');
         pfBar.classList.add('visible');
-        pfFromTicker = fromTicker;
-        pfToTicker = toTicker;
-        if (pfFromInput) pfFromInput.value = fromTicker;
-        if (pfToInput) pfToInput.value = toTicker;
+        // Coverage-gap check: the caller may pass a ticker for an S&P 500
+        // company with no peer-network node (guard section 10
+        // KNOWN_COVERAGE_GAPS: AOS, CPRT - no extractable DEF 14A peer-group
+        // disclosure). Resolve only tickers present in nodeMap so the Go
+        // button cannot fire a BFS from a phantom node, and explain the gap
+        // instead of pfExecute's generic "no path found" - the same silent-miss
+        // class as the search-input no-node fixes.
+        var missing = [];
+        [fromTicker, toTicker].forEach(function(t) {
+            if (t && !nodeMap[t]) {
+                var comp = (typeof compData !== 'undefined' && compData && compData.companies) ?
+                    compData.companies.find(function(c) { return c.ticker === t; }) : null;
+                missing.push({ ticker: t, name: comp ? comp.company_name : null, known: !!comp });
+            }
+        });
+        pfFromTicker = (fromTicker && nodeMap[fromTicker]) ? fromTicker : null;
+        pfToTicker = (toTicker && nodeMap[toTicker]) ? toTicker : null;
+        if (pfFromInput) pfFromInput.value = fromTicker || '';
+        if (pfToInput) pfToInput.value = toTicker || '';
         pfUpdateGoState();
-        pfExecute();
+        if (missing.length > 0) {
+            // Clear any stale path highlight, then show the explanation where
+            // the path result would normally render (reuses .path-no-result).
+            activePath = null;
+            window._activePathFinderNodes = null;
+            if (typeof window._redrawScatterForPathOverlay === 'function') window._redrawScatterForPathOverlay();
+            var msg = missing.map(function(m) {
+                var label = '<strong>' + m.ticker + '</strong>' + (m.name ? ' (' + m.name + ')' : '');
+                return m.known
+                    ? label + ' is not in the peer network: no extractable peer-group disclosure in its DEF 14A'
+                    : label + ' was not found in the dataset';
+            }).join(' and ') + '. No peer path can be computed.';
+            if (pfResult) {
+                pfResult.innerHTML = '<div class="path-no-result">' + msg + '</div>';
+                pfResult.classList.add('visible');
+            }
+            if (typeof announce === 'function') {
+                announce(missing.map(function(m) { return m.ticker; }).join(' and ') + ': no peer path can be computed.');
+            }
+            draw();
+        } else {
+            pfExecute();
+        }
         // Scroll to network section
         var section = document.getElementById('peer-network-section');
         if (section) section.scrollIntoView({ behavior: (typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth'), block: 'start' });
-        return true;
+        // Array of missing tickers (truthy) when the coverage gap fired, so
+        // callers can announce accurately; boolean true on the normal path.
+        return missing.length > 0 ? missing.map(function(m) { return m.ticker; }) : true;
     };
 }

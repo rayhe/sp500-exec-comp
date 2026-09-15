@@ -14975,8 +14975,12 @@ function setupDualSparklineTooltips() {
         var fromTicker = compareSet[0];
         var toTicker = compareSet[compareSet.length - 1]; // first and last — natural bookends
         if (typeof window.findNetworkPath === 'function') {
-            window.findNetworkPath(fromTicker, toTicker);
-            announce('Finding peer network path from ' + fromTicker + ' to ' + toTicker);
+            var pfRes = window.findNetworkPath(fromTicker, toTicker);
+            // findNetworkPath announces the coverage-gap case itself; only
+            // announce the normal path here.
+            if (!Array.isArray(pfRes)) {
+                announce('Finding peer network path from ' + fromTicker + ' to ' + toTicker);
+            }
         }
     });
 
