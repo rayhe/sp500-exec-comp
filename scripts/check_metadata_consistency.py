@@ -92,6 +92,11 @@ copies with no guard coverage: all three recount-exact today (pay ratio
 future EDGAR batch that moves one of those numbers will now trip the
 pre-commit hook until the fallback is re-synced. KNOWN_TITLE_ARTIFACTS
 hoisted to module level for the 4d titles recount.
+History: 2026-09-15 10:00 PT run repaired the DOC/APA bullet-bleed titles
+(13 rows; base titles verified via the browser path) and removed their 5
+tuples from KNOWN_TITLE_ARTIFACTS; the 4d titles fallback now recounts 14
+rows at 6 companies (ALLE, DPZ, VST, TAP, UHS, STLD) and the js/app.js
+fallback copy was re-synced to match.
 """
 import json
 import os
@@ -389,13 +394,12 @@ def check_dataq_modal_live_blocks(companies, failures):
 
 # Section-13 title-artifact allowlist, hoisted to module level so section 4d
 # can recount the title-artifacts fallback's queued rows and companies.
+# History: 2026-09-15 10:00 PT removed the 5 repaired tuples (DOC x4, APA x1;
+# 13 rows) after base titles were verified via the browser path (Healthpeak
+# IR for DOC, SEC Form 4 for APA) and the bullet-bleed stripped. Remaining
+# queue: ALLE, DPZ, VST, TAP, UHS, STLD (14 rows at 6 companies).
 KNOWN_TITLE_ARTIFACTS = {
-    ("DOC", "Chief Development Officer and Head of Lab ● Tracy A"),
-    ("DOC", "President and Chief Executive Officer ● Kelvin O"),
-    ("DOC", "Chief Investment Officer ● Scott R"),
-    ("DOC", "Chief Financial Officer ● Adam G"),
     ("ALLE", "President and Chief Executive Officer of A"),
-    ("APA", "CEO ● Juliet S"),
     ("DPZ", "CEO of D"),
     ("VST", "President and Chief Executive Officer of V"),
     ("TAP", "CEO of our Company (currently"),
@@ -1205,21 +1209,25 @@ def main():
     #     (bullets like "●" plus the next NEO's name fragment, or trailing
     #     "*" footnote markers), and (b) mid-phrase truncation ("... of A",
     #     "... of D", "... of V", "Chair of the Board During"). The
-    #     trailing-*/** subclass was repaired mechanically in this batch
+    #     trailing-*/** subclass was repaired mechanically on 2026-09-14
     #     (COR Executive Chairman, ROST CFO, SHW SVP-Finance & CFO; base
     #     titles verified against primary sources via the browser path,
-    #     8 rows). The rest need DEF 14A SCT re-reads (VM egress dead since
+    #     8 rows). The bullet-bleed subclass was repaired 2026-09-15 10:00 PT
+    #     (DOC x10 rows across 4 titles, APA x3 rows; base titles verified
+    #     via the browser path -- Healthpeak IR for DOC, SEC Form 4 for APA;
+    #     the bleed chain Brinker<-Moses<-Mabry<-Bohn<-Porter proved
+    #     title-cell contamination only, no name-column row shift).
+    #     The rest need DEF 14A SCT re-reads (VM egress dead since
     #     2026-09-12 ~18:00 PT) and are queued in
-    #     title_bleed_truncation_queue_20260914_1800.md: DOC (4 titles, 10
-    #     rows — bullet bleed of the next row's first name; the SCT name
-    #     column may be row-shifted too), ALLE ("President and Chief
-    #     Executive Officer of A"), APA ("CEO ● Juliet S"), DPZ ("CEO of
-    #     D"), VST ("President and Chief Executive Officer of V"), TAP
-    #     ("CEO of our Company (currently" — unbalanced paren, mid-phrase
-    #     truncation), UHS
-    #     ("Executive Vice President and President of our" — also in the
-    #     name-ambiguity queue as an org-label name row), STLD ("Chair of
-    #     the Board During" x3 — also in the name-ambiguity queue). Any
+    #     title_bleed_truncation_queue_20260914_1800.md: ALLE ("President and
+    #     Chief Executive Officer of A"), DPZ ("CEO of D"), VST ("President
+    #     and Chief Executive Officer of V"), TAP ("CEO of our Company
+    #     (currently" -- unbalanced paren, mid-phrase truncation; Goyal
+    #     became President and CEO effective 2025-10-01 per Molson Coors IR,
+    #     so the parenthetical tail is likely a transition-date qualifier),
+    #     UHS ("Executive Vice President and President of our" -- also in
+    #     the name-ambiguity queue as an org-label name row), STLD ("Chair
+    #     of the Board During" x3 -- also in the name-ambiguity queue). Any
     #     title NOT in KNOWN_TITLE_ARTIFACTS failing this screen is a new
     #     artifact class regression and fails hard.
     _TITLE_MARKER = re.compile(r"[●†‡#§]|\*{1,2}$")
