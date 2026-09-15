@@ -122,6 +122,18 @@ expected phrase made singular/plural-aware, js/app.js fallback re-synced
 (33->34 repaired), side finding logged: UHS FY2023 has 3 rows vs 4 in
 FY2024/2025 - Edward H. Sim's FY2023 row was dropped by the parser, queued
 for the EDGAR re-read.
+History: 2026-09-15 15:30 PT run added section 14 (name-ambiguity
+resolution regression) after deleting 5 stale same-person duplicate rows
+proven via primary sources: OKE 'Walter S. Hulse' 2023/2024/2025 (ONEOK's
+own site: Walter S. Hulse III) and DRI 'Raj Vennam' 2023/2024 (Darden 2020
+announcement "Rajesh (Raj) Vennam", Form 4 "Vennam Rajesh"); canonical
+'III'/'Rajesh' rows kept, OKE/DRI FY2024 aggregates re-anchored
+(total_neo $33.7M->$27.7M / $23.6M->$19.7M, neo_count 5->4 / 4->3). The
+deleted name forms fail if reintroduced; AJG's adjudicated-distinct pair
+(Patrick M. Gallagher EVP/COO since 2024 vs J. Patrick Gallagher Jr.
+Chairman/CEO) fails if merged; new same-ticker same-year name-prefix pairs
+warn for triage (STLD Barry/Barry T. known, queued for EDGAR pass).
+Headline buckets 99.7% (6,759/6,780).
 """
 import json
 import os
@@ -436,6 +448,110 @@ def check_dataq_modal_live_blocks(companies, failures):
 KNOWN_TITLE_ARTIFACTS = {
     ("TAP", "CEO of our Company (currently"),
 }
+
+
+# Section-14 name-ambiguity resolution guard (2026-09-15 15:30 PT).
+# Two same-person duplicate families were proven via primary sources and
+# deleted: OKE 'Walter S. Hulse' 2023/2024/2025 (stale doubles of
+# 'Walter S. Hulse, III' - ONEOK's own management page styles him
+# "Walter S. Hulse III", 2019 SEC-filed annual-report exhibit signed
+# "/s/ Walter S. Hulse III") and DRI 'Raj Vennam' 2023/2024 (stale doubles
+# of 'Rajesh Vennam' - Darden's 2020 announcement "Rajesh (Raj) Vennam",
+# Form 4 "Vennam Rajesh"). The deleted name forms must never reappear for
+# those tickers (fail). AJG's 'Pat Gallagher' vs 'Patrick Gallagher' pair
+# was adjudicated DISTINCT persons (Patrick M. Gallagher EVP/COO since
+# 2024 per AJG's own 2023 announcement; J. Patrick Gallagher Jr.
+# Chairman/CEO) - both 2025 rows must survive; a future merge is a fail.
+# The class screen is warning-only: same ticker + same year, one
+# normalized name a strict prefix of the other, or same last name with a
+# first-token prefix / middle-token difference (suffix, nickname, and
+# dropped-middle-initial double-count signatures). The STLD pair is known
+# (one Barry T. Schneider per the 2025 DEF 14A bio; stale 'Barry Schneider'
+# SVP rows need the EDGAR pass); anything NEW warns for triage, never
+# auto-merges (section 12's rule: rows are never merged by a guard).
+RESOLVED_DUPLICATE_NAMES = {
+    ("OKE", "Walter S. Hulse"),
+    ("DRI", "Raj Vennam"),
+}
+ADJUDICATED_DISTINCT_NAME_PAIRS = {
+    ("AJG", "Pat Gallagher", "Patrick Gallagher"),
+}
+KNOWN_NAME_PREFIX_PAIRS = {
+    ("STLD", "Barry Schneider", "Barry T. Schneider"),
+}
+
+
+def _norm_name(n):
+    n = (n or "").lower()
+    n = re.sub(r"[^a-z ]", " ", n)
+    return re.sub(r"\s+", " ", n).strip()
+
+
+def check_name_ambiguity(companies, failures):
+    # deleted stale forms must not reappear
+    for ticker, dead_name in sorted(RESOLVED_DUPLICATE_NAMES):
+        for c in companies:
+            if c.get("ticker") != ticker:
+                continue
+            for e in c.get("executives", []):
+                if e.get("name") == dead_name:
+                    fail(
+                        f"resolved duplicate name reappeared ({ticker} "
+                        f"{dead_name!r} {e.get('year')}) - the 2026-09-15 "
+                        f"15:30 PT batch deleted this stale same-person "
+                        f"double; do not reintroduce (14)",
+                        failures,
+                    )
+    # adjudicated-distinct pairs must keep both rows
+    for ticker, na, nb in sorted(ADJUDICATED_DISTINCT_NAME_PAIRS):
+        names = {e.get("name") for c in companies
+                 if c.get("ticker") == ticker
+                 for e in c.get("executives", [])}
+        for want in (na, nb):
+            if want not in names:
+                fail(
+                    f"adjudicated-distinct person row missing ({ticker} "
+                    f"{want!r}) - AJG 'Pat Gallagher' (J. Patrick Gallagher "
+                    f"Jr., Chairman/CEO) and 'Patrick Gallagher' (Patrick M. "
+                    f"Gallagher, EVP/COO since 2024) are different people; "
+                    f"do not merge (14)",
+                    failures,
+                )
+    # warning-only class screen
+    for c in companies:
+        by_year = {}
+        for e in c.get("executives", []):
+            by_year.setdefault(e.get("year"), {})[_norm_name(
+                e.get("name"))] = e.get("name")
+        for yr in sorted(by_year):
+            keys = sorted(k for k in by_year[yr] if k)
+            for i in range(len(keys)):
+                for j in range(i + 1, len(keys)):
+                    a, b = keys[i], keys[j]
+                    if a == b:
+                        continue
+                    ta, tb = a.split(), b.split()
+                    prefix = a.startswith(b) or b.startswith(a)
+                    first_tok = (ta[-1] == tb[-1] and ta[0] != tb[0]
+                                 and (ta[0].startswith(tb[0])
+                                      or tb[0].startswith(ta[0]))
+                                 and min(len(ta[0]), len(tb[0])) >= 3)
+                    mid_tok = (len(ta) != len(tb) and ta[0] == tb[0]
+                               and ta[-1] == tb[-1]
+                               and abs(len(ta) - len(tb)) <= 2)
+                    if not (prefix or first_tok or mid_tok):
+                        continue
+                    na, nb = by_year[yr][a], by_year[yr][b]
+                    pair = (c.get("ticker"),) + tuple(sorted((na, nb)))
+                    if pair in {(t,) + tuple(sorted((x, y)))
+                                for t, x, y in ADJUDICATED_DISTINCT_NAME_PAIRS}:
+                        continue
+                    tag = "known" if pair in KNOWN_NAME_PREFIX_PAIRS else "NEW"
+                    print(
+                        f"  warning: same-ticker same-year name-prefix pair "
+                        f"({tag}, 14): {c.get('ticker')} {yr} "
+                        f"{na!r} vs {nb!r} - triage via primary sources; "
+                        f"never auto-merge")
 
 
 def main():
@@ -1294,6 +1410,12 @@ def main():
             if key not in KNOWN_TITLE_ARTIFACTS:
                 fail(f"new title artifact not in the 2026-09-14 allowlist: "
                      f"{c.get('ticker')} {t!r} (13)", failures)
+
+    # 14. Name-ambiguity resolution regression (2026-09-15 15:30 PT):
+    #     deleted stale same-person name forms must not reappear, the AJG
+    #     adjudicated-distinct pair must keep both rows, and new
+    #     same-ticker same-year name-prefix pairs warn for triage.
+    check_name_ambiguity(companies, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
