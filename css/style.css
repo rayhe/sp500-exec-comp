@@ -1447,6 +1447,24 @@ header h1 {
     white-space: nowrap;
     flex-shrink: 0;
 }
+/* Explanatory row for an S&P 500 company with no network node (AOS, CPRT):
+   not selectable, so no pointer cursor and no hover highlight. */
+.network-search-result.network-search-no-node {
+    cursor: default;
+}
+.network-search-result.network-search-no-node:hover {
+    background: transparent;
+}
+.network-search-result .nsr-no-node-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 10px;
+    white-space: normal;
+    max-width: 260px;
+}
+[data-theme="light"] .network-search-result.network-search-no-node:hover {
+    background: transparent;
+}
 
 #network-graph {
     background: var(--bg-secondary);

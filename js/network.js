@@ -3104,6 +3104,24 @@ function initNetwork(peerData) {
         searchResults.classList.add('visible');
     }
 
+    // Renders an explanatory, non-selectable row when the query names an S&P 500
+    // company that has no node in the peer network (guard section 10
+    // KNOWN_COVERAGE_GAPS: AOS, CPRT (no extractable DEF 14A peer-group
+    // disclosure in the network build). Documents the data-scope gap instead
+    // of closing the dropdown silently.
+    function renderNoNodeRow(company) {
+        searchResults.innerHTML = '';
+        activeIdx = -1;
+        var div = document.createElement('div');
+        div.className = 'network-search-result network-search-no-node';
+        div.innerHTML =
+            '<span class="nsr-ticker">' + company.ticker + '</span>' +
+            '<span class="nsr-name">' + (company.company_name || '') + '</span>' +
+            '<span class="nsr-no-node-note">Not in the peer network: no extractable peer-group disclosure in its DEF 14A</span>';
+        searchResults.appendChild(div);
+        searchResults.classList.add('visible');
+    }
+
     function selectSearchNode(node) {
         // If the density filter hides this node, clear it so the focused company becomes visible
         if (densityMinDegree > 0 && !_densityVisible.has(node.ticker) && typeof _setDensity === 'function') {
@@ -3235,11 +3253,24 @@ function initNetwork(peerData) {
                 // Alphabetical by ticker
                 return at < bt ? -1 : at > bt ? 1 : 0;
             });
+            // Zero node matches: the query may name an S&P 500 company with no
+            // network node (guard section 10 KNOWN_COVERAGE_GAPS: AOS, CPRT).
+            // Explain instead of closing the dropdown silently.
+            if (matches.length === 0 && typeof nodeMap !== 'undefined') {
+                var up = q.toUpperCase().replace(/[^A-Z.]/g, '');
+                var comp = (typeof compData !== 'undefined' && compData && compData.companies) ?
+                    compData.companies.find(function(c) { return c.ticker === up; }) : null;
+                if (comp && !nodeMap[up]) {
+                    renderNoNodeRow(comp);
+                    return;
+                }
+            }
             renderSearchResults(matches.slice(0, 8));
         });
 
         searchInput.addEventListener('keydown', function(e) {
-            var items = searchResults.querySelectorAll('.network-search-result');
+            // Skip the non-selectable no-node row in keyboard nav
+            var items = searchResults.querySelectorAll('.network-search-result:not(.network-search-no-node)');
             if (items.length === 0) return;
 
             if (e.key === 'ArrowDown') {
