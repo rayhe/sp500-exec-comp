@@ -193,6 +193,24 @@ def check_static_copy(n, vt, rounding, recomputed, mismatch, failures):
                 )
 
 
+# -- Section 4c: metadata.description self-consistency ----------------------------
+# metadata.description is itself hand-typed headline copy living INSIDE the
+# JSON ("500 companies, 6783 NEO records, 500 companies enriched"). It
+# drifted to 6783 while the live count was 6785 — section 4 checks README,
+# index.html, and js/app.js, but nobody checked the JSON's own headline.
+# The description uses the raw integer (no thousands separator), unlike the
+# comma-formatted copies elsewhere, so the pattern is f"{n} NEO records".
+def check_json_description(n, meta, failures):
+    desc = meta.get("description", "")
+    want = f"{n} NEO records"
+    if want not in desc:
+        fail(
+            f"metadata.description drift: expected {want!r} (live recount {n}) "
+            f"in description {desc!r} -- sync the JSON's own headline copy",
+            failures,
+        )
+
+
 # -- Section 4b: dataq-modal truthfulness ------------------------------------
 # The Data Verification methodology modal (js/app.js) hand-types two values
 # the section-4 headline checks do not cover: the taxonomy-decision count of
@@ -349,6 +367,9 @@ def main():
     # 4b. dataq-modal truthfulness: the methodology modal's hand-typed
     #     taxonomy-decision count and audit date must match the live JSON
     check_dataq_modal_truthfulness(companies, meta, failures)
+
+    # 4c. metadata.description self-consistency: the JSON's own headline copy
+    check_json_description(n, meta, failures)
 
     # 5. company-level aggregate recount: total_neo_compensation must equal
     #    the sum of exec totals for the company's primary fiscal_year, and
