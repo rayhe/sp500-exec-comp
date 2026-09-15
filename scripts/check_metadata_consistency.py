@@ -106,6 +106,22 @@ companies (TAP, UHS) and the js/app.js fallback copy was re-synced to
 match. TAP stays queued (parenthetical tail not exposed verbatim in any
 indexed primary source); UHS stays queued in the name-ambiguity queue
 (org-label name row).
+History: 2026-09-15 14:00 PT run repaired the last 2 org-label name rows via
+the browser path - UHS 2023 'Behavioral Health' -> Matthew J. Peterson (SCT
+name+title cell split; person verified via SEC Form 4 officer signature,
+Becker's 2023-05-19, and the stored 2024/2025 rows) and STLD 2023 'Flat Roll
+Steel' -> Christopher A. Graham (2026 STLD proxy CD&A NEO list names him
+'Senior Vice President, Flat Roll Steel Group'; steeldynamics.com bio and
+the stored 2025 row confirm); titles rejoined from the split fragments, all
+numbers asserted unchanged. TAP Goyal 2025 'CEO of our Company (currently'
+gained an in-record note documenting the truncation and the verified role
+history (CSO 2019-Sep 30, 2025; President/CEO since Oct 1, 2025) - still
+queued, no guessing. ORG_LABEL_UNRESOLVED emptied (tripwire kept), UHS tuple
+removed from KNOWN_TITLE_ARTIFACTS (now 1 row at 1 company), section-4d
+expected phrase made singular/plural-aware, js/app.js fallback re-synced
+(33->34 repaired), side finding logged: UHS FY2023 has 3 rows vs 4 in
+FY2024/2025 - Edward H. Sim's FY2023 row was dropped by the parser, queued
+for the EDGAR re-read.
 """
 import json
 import os
@@ -377,8 +393,11 @@ def check_dataq_modal_live_blocks(companies, failures):
          f"transitions {n_coll} tuples"),
         (f"all {n_coll} triaged by tuple",
          f"transitions triage count {n_coll}"),
-        # title-artifacts fallback
-        (f"leaving {n_art} rows at {len(art_cos)} companies shown exactly as parsed",
+        # title-artifacts fallback (singular/plural-aware since 2026-09-15
+        # 14:00 PT, when the queue fell to 1 row at 1 company)
+        (f"leaving {n_art} row{'s' if n_art != 1 else ''} at "
+         f"{len(art_cos)} compan{'ies' if len(art_cos) != 1 else 'y'} "
+         f"shown exactly as parsed",
          f"title artifacts {n_art} rows at {len(art_cos)} companies"),
     ]
     path = os.path.join(os.path.join(HERE, ".."), "js", "app.js")
@@ -416,7 +435,6 @@ def check_dataq_modal_live_blocks(companies, failures):
 # name-ambiguity queue). 2 rows at 2 companies.
 KNOWN_TITLE_ARTIFACTS = {
     ("TAP", "CEO of our Company (currently"),
-    ("UHS", "Executive Vice President and President of our"),
 }
 
 
@@ -670,8 +688,12 @@ def main():
     # board-committee table, never an SCT title cell (PPL 2023-2025).
     TITLE_COMMITTEE_BLEED = re.compile(r"\b[A-Z]{2,5}\s*\(Chair\)")
     # division labels parsed as NEO names that cannot be resolved offline;
-    # warning-only (7d). The LHX class above stays a hard fail.
-    ORG_LABEL_UNRESOLVED = ("Behavioral Health", "Flat Roll Steel")
+    # warning-only (7d). The LHX class above stays a hard fail. Both known
+    # members (UHS 2023 'Behavioral Health', STLD 2023 'Flat Roll Steel')
+    # were resolved 2026-09-15 14:00 PT via the browser path (Peterson/Graham
+    # verified against SEC Form 4, Becker's, the STLD proxy NEO list, and the
+    # company bios); the tuple is kept as the tripwire for future classes.
+    ORG_LABEL_UNRESOLVED = ()
     for c in companies:
         cn = c.get("ceo_name") or ""
         # distinct person-name set for the 7c embedded-name bleed check
@@ -820,9 +842,12 @@ def main():
                     break
         # 7d. unresolved org-label names (warning only): division labels
         #     parsed as NEO names whose real person cannot be recovered
-        #     offline. UHS 2023 'Behavioral Health' and STLD 2023 'Flat Roll
-        #     Steel' are queued for the next EDGAR run; the LHX class
-        #     (repaired 2026-09-13 10:00) stays a hard fail in ORG_LABEL_ARTIFACTS.
+        #     offline. 2026-09-15 14:00 PT: the queue is empty - UHS 2023
+        #     'Behavioral Health' -> Matthew J. Peterson and STLD 2023
+        #     'Flat Roll Steel' -> Christopher A. Graham, both verified via
+        #     the browser path (no EDGAR re-read needed). The LHX class
+        #     (repaired 2026-09-13 10:00) stays a hard fail in
+        #     ORG_LABEL_ARTIFACTS.
         for e in c.get("executives", []):
             if (e.get("name") or "") in ORG_LABEL_UNRESOLVED:
                 print(
