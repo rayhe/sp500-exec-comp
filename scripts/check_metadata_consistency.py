@@ -516,6 +516,89 @@ def _norm_name(n):
     return re.sub(r"\s+", " ", n).strip()
 
 
+# Section-15 title all-caps styling screen (2026-09-15 19:30 PT).
+# A fresh offline screen found 41 NEO rows whose title is all-caps (every
+# alpha character uppercase, >=4 alpha chars so plain 'CEO'/'CFO'/'COO' are
+# out of scope). The pattern is stable across years per person (systematic,
+# not random parse noise). Two sub-classes, locked separately:
+#   (a) TITLE_ALLCAPS_ABBREV (14 tuples, 33 rows, 13 companies): standard
+#       corporate title abbreviations ('SVP, COO', 'CEO, AWM', 'EVP & CFO',
+#       'CHRO', 'CEO PMI U', ...). Companies print these abbreviated forms
+#       in their SCTs as a matter of convention; treated as as-disclosed,
+#       no repair. Locked so a parser change cannot silently introduce
+#       more.
+#   (b) TITLE_ALLCAPS_FULLPHRASE_QUEUED (3 tuples, 8 rows, 2 companies):
+#       full title phrases in all caps while sibling NEOs at the same
+#       company extract in Title Case - AFL 'EXECUTIVE VICE PRESIDENT'
+#       (Dyslin 2023-2025), MHK 'PRESIDENT AND CHIEF OPERATING OFFICER'
+#       (De Cock 2023-2025), MHK 'PRESIDENT' (Vandini 2024-2025). The
+#       company's own primary sources style Dyslin's title in Title Case
+#       (SEC Form 4 "Executive Vice President"; 2026 proxy bio "Executive
+#       Vice President, Global Chief Investment Officer, Aflac"), so the
+#       caps are likely an extraction artifact - but the SCT title cell
+#       itself is unverified (VM egress down since 2026-09-12 ~16:20 PT)
+#       and the as-disclosed rule forbids re-casing on a hunch. Queued for
+#       the EDGAR title-column re-read
+#       (title_allcaps_queue_20260915_1930.md); warn, do not fail, do not
+#       repair offline.
+# Any all-caps title outside both sets is a new styling regression and
+# fails hard. Recounts are asserted exact so a future repair of any of
+# these rows forces the allowlist update.
+TITLE_ALLCAPS_ABBREV = {
+    ("AAPL", "SVP, COO"),
+    ("JPM", "CEO, AWM"),
+    ("PEP", "CEO, EMEA"),
+    ("CAT", "CHRO"),
+    ("GD", "SVP, CFO"),
+    ("PM", "CEO PMI U"),
+    ("DOV", "SVP & CHRO"),
+    ("DOW", "EVP, R&D"),
+    ("CCI", "EVP & CTRO"),
+    ("ECL", "CHAIRMAN"),
+    ("AES", "EVP & CFO"),
+    ("AES", "EVP & COO"),
+    ("WAT", "SVP & CFO"),
+    ("ESS", "CIO AND EVP"),
+}
+TITLE_ALLCAPS_FULLPHRASE_QUEUED = {
+    ("AFL", "EXECUTIVE VICE PRESIDENT"),
+    ("MHK", "PRESIDENT AND CHIEF OPERATING OFFICER"),
+    ("MHK", "PRESIDENT"),
+}
+
+
+def _is_allcaps_title(t):
+    alpha = [ch for ch in t if ch.isalpha()]
+    return len(alpha) >= 4 and all(ch.isupper() for ch in alpha)
+
+
+def check_title_allcaps(companies, failures):
+    n_abbrev = n_full = 0
+    for c in companies:
+        for e in c.get("executives", []):
+            t = (e.get("title") or "").strip()
+            if not t or not _is_allcaps_title(t):
+                continue
+            key = (c.get("ticker"), t)
+            if key in TITLE_ALLCAPS_ABBREV:
+                n_abbrev += 1
+                continue
+            if key in TITLE_ALLCAPS_FULLPHRASE_QUEUED:
+                n_full += 1
+                print(f"  warning: all-caps full-phrase title (queued, "
+                      f"15): {c.get('ticker')} {e.get('name')} "
+                      f"{e.get('year')} title={t!r} — see "
+                      f"title_allcaps_queue_20260915_1930.md; do not "
+                      f"re-case offline")
+                continue
+            fail(f"new all-caps title not in the 2026-09-15 allowlists: "
+                 f"{c.get('ticker')} {e.get('name')} {e.get('year')} "
+                 f"title={t!r} (15)", failures)
+    if n_abbrev != 33 or n_full != 8:
+        fail(f"all-caps title recount drift: abbrev {n_abbrev} (want 33), "
+             f"full-phrase {n_full} (want 8) (15)", failures)
+
+
 def check_name_ambiguity(companies, failures):
     # deleted stale forms must not reappear
     for ticker, dead_name in sorted(RESOLVED_DUPLICATE_NAMES):
@@ -1505,6 +1588,13 @@ def main():
     #     adjudicated-distinct pair must keep both rows, and new
     #     same-ticker same-year name-prefix pairs warn for triage.
     check_name_ambiguity(companies, failures)
+
+    # 15. Title all-caps styling screen (2026-09-15 19:30 PT): all-caps
+    #     titles must be in TITLE_ALLCAPS_ABBREV (filing-conventional
+    #     abbreviations, locked) or TITLE_ALLCAPS_FULLPHRASE_QUEUED (8 rows
+    #     at AFL/MHK queued for the EDGAR title-column re-read); new
+    #     instances fail, recounts asserted exact.
+    check_title_allcaps(companies, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
