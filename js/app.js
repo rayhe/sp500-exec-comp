@@ -15942,7 +15942,7 @@ function setupDualSparklineTooltips() {
                 '<p id="dataq-transitions-counts">As of the 2026-09-14 screen: 13 (name, fiscal year) tuples appear as NEO rows at two different companies; all 13 triaged by tuple: 6 genuine mid-year executive transitions, 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR), 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
                 '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Two collisions are same-name coincidences: Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people. The one suspicious pair (Celeste Burgoyne, LULU/WSM) is queued for a DEF 14A name-column re-read. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
                 '<div id="dataq-titles-block"><h4>Title artifacts</h4>' +
-                '<p id="dataq-titles-counts">As of the 2026-09-14 screen: 35 NEO rows at 11 companies carried parser artifacts in their titles — footnote-bullet bleed (a marker plus the next executive\'s name, e.g. DOC\'s "Chief Development Officer and Head of Lab") or mid-phrase truncation (e.g. TAP\'s \"CEO of our Company (currently\", UHS\'s \"Executive Vice President and President of our\"). 8 rows (COR, ROST, SHW) were repaired 2026-09-14, 13 more (DOC, APA) 2026-09-15 by stripping the bled footnote fragments, 12 more (ALLE, DPZ, VST, STLD) 2026-09-15 by restoring filing-verbatim SCT principal-position wording, and 2 more (UHS, STLD) 2026-09-15 by restoring the real NEO names (division labels parsed as names: UHS 2023 \'Behavioral Health\' -> Matthew J. Peterson, STLD 2023 \'Flat Roll Steel\' -> Christopher A. Graham) and rejoining the split title cells, with names and base titles verified against primary company and SEC sources, leaving 1 row at 1 company shown exactly as parsed until a DEF 14A title-column re-read (TAP\'s \"CEO of our Company (currently\").</p>' +
+                '<p id="dataq-titles-counts">As of the 2026-09-14 screen: 35 NEO rows at 11 companies carried parser artifacts in their titles \u2014 footnote-bullet bleed (a marker plus the next executive\'s name, e.g. DOC\'s "Chief Development Officer and Head of Lab") or mid-phrase truncation (e.g. TAP\'s \"CEO of our Company (currently\", UHS\'s \"Executive Vice President and President of our\"). A 2026-09-15 screen found a second class at 9 more companies: name/title cell-boundary splits (FFIV\'s "Cooper Werner VP" / "and Executive Chief Financial Officer", JBHT\'s "Brad DelcoCFO" / "and EVP"), leading-"and" title fragments (PNC\'s "and CFO", EXPE\'s "and Secretary", LEN\'s "and President"), a dangling-comma truncation (COF\'s "General Counsel and Corporate Secretary; President, "), a document-heading bleed (MET\'s "EVP and Head of GTO 2025 Total Compensation:"), and role fragments merged into names (MTD\'s "Richard Wong Head of Asia and Pacific", GNRC\'s "Raj Kanuru VP"). 8 rows (COR, ROST, SHW) were repaired 2026-09-14, 13 more (DOC, APA) 2026-09-15 by stripping the bled footnote fragments, 12 more (ALLE, DPZ, VST, STLD) 2026-09-15 by restoring filing-verbatim SCT principal-position wording, 1 more (UHS) 2026-09-15 by restoring the real NEO name (division label parsed as name: UHS 2023 \'Behavioral Health\' -> Matthew J. Peterson) and rejoining the split title cells, and 8 more (MET, LEN, MTD, GNRC) 2026-09-15 by stripping heading/comma/name-fragment artifacts (all numeric fields asserted byte-identical), with names and base titles verified against primary company and SEC sources, leaving 19 rows at 7 companies shown exactly as parsed until DEF 14A title-column re-reads (TAP, COF, FFIV, JBHT, PNC, EXPE, LEN).</p>' +
                 '<p>Affected titles are displayed with their artifacts intact rather than silently "fixed": a truncated title like ALLE\'s "President and Chief Executive Officer of A" is a parsing question, not a data error in the numbers, and overwriting it offline would invent filing text. Guard section 13 of <code>scripts/check_metadata_consistency.py</code> trips on any new title artifact.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
@@ -16047,10 +16047,11 @@ function setupDualSparklineTooltips() {
     // Data Verification modal: title-artifact row count, computed from the
     // loaded dataset at modal-open time. Mirrors guard section 13 of
     // scripts/check_metadata_consistency.py (footnote/bleed markers, trailing
-    // asterisks, dangling-phrase or lone-letter truncations), so the modal
-    // stays truthful if the dataset ever gains or clears an artifact title.
-    // Returns null when the data isn't loaded yet; the static fallback text
-    // above is then kept.
+    // asterisks, dangling-phrase or lone-letter truncations, dangling
+    // punctuation, 'Total Compensation' heading bleed, leading-'and'
+    // fragments), so the modal stays truthful if the dataset ever gains or
+    // clears an artifact title. Returns null when the data isn't loaded yet;
+    // the static fallback text above is then kept.
     function _dataqTitleArtifactsHtml() {
         var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
         if (!cos) return null;
@@ -16064,6 +16065,9 @@ function setupDualSparklineTooltips() {
                 if (/[●†‡#§]|\*{1,2}$/.test(t) ||
                     /\b(of|the|and|or|to|in|during|for|our|a|an|&)$/i.test(t) ||
                     /\bof [A-Z]$/.test(t) ||
+                    /[,;:]\s*$/.test(t) ||
+                    /total compensation/i.test(t) ||
+                    /^and\b/i.test(t) ||
                     (t.split('(').length !== t.split(')').length)) {
                     rows++;
                     tickers[c.ticker] = true;
@@ -16073,7 +16077,7 @@ function setupDualSparklineTooltips() {
         var nCos = Object.keys(tickers).length;
         return 'Live screen: ' + rows + ' NEO row' + (rows === 1 ? '' : 's') + ' at ' + nCos +
                ' compan' + (nCos === 1 ? 'y' : 'ies') +
-               ' still carry title artifacts; the 34 repaired since the 2026-09-14 screen are documented in the breakdown above.';
+               ' still carry title artifacts; the 42 repaired since the 2026-09-14 screen are documented in the breakdown above.';
     }
 
     function openMethodologyModal(method) {

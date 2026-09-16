@@ -133,6 +133,22 @@ deleted name forms fail if reintroduced; AJG's adjudicated-distinct pair
 (Patrick M. Gallagher EVP/COO since 2024 vs J. Patrick Gallagher Jr.
 Chairman/CEO) fails if merged; new same-ticker same-year name-prefix pairs
 warn for triage (STLD Barry/Barry T. known, queued for EDGAR pass).
+History: 2026-09-15 18:00 PT run repaired 8 title-split/name-fragment rows
+offline (MET Bill Pappas 2023-2025 heading-bleed '...GTO 2025 Total
+Compensation:' -> 'EVP and Head of GTO'; LEN Sustana 2024 dangling comma ->
+'Former Vice President'; MTD 'Richard Wong Head of Asia and Pacific'
+2023-2025 -> name 'Richard Wong'; GNRC 'Raj Kanuru VP' 2025 -> name 'Raj
+Kanuru'; all numeric fields asserted byte-identical) and queued 20 rows at
+8 companies for the EDGAR title-column pass (COF Cooper 2024/2025 dangling
+'President, ' clause; FFIV/JBHT name-title split fragments; PNC/EXPE/LEN
+leading-'and' titles; MTD/GNRC full title wording). Section 7 gained
+NAME_ROLE_FRAGMENT (hard fail on recurrence - zero remain) and
+NAME_TITLE_GLUE (fail on new instances, warn on the 5 known FFIV/JBHT
+tuples); section 13 gained dangling-punctuation, 'Total Compensation'
+heading-bleed, and leading-'and' title screens with 8 queued tuples added
+to KNOWN_TITLE_ARTIFACTS (now 9 tuples: 17 rows at 7 companies); the
+dataq modal titles block and its live mirror were re-synced (34->41
+repaired).
 Headline buckets 99.7% (6,759/6,780).
 """
 import json
@@ -445,8 +461,21 @@ def check_dataq_modal_live_blocks(companies, failures):
 # indexed primary source, do not guess) and UHS ("Executive Vice President
 # and President of our" -- org-label name row, belongs to the
 # name-ambiguity queue). 2 rows at 2 companies.
+# History: 2026-09-15 18:00 PT added 8 queued tuples from the title-split
+# batch (COF dangling-comma clause; FFIV/JBHT name-title split fragments;
+# PNC/EXPE/LEN leading-'and' titles) - all need DEF 14A title-column
+# re-reads (VM egress still down), do not guess filing text. 9 tuples: 17
+# rows at 7 companies.
 KNOWN_TITLE_ARTIFACTS = {
     ("TAP", "CEO of our Company (currently"),
+    ("COF", "General Counsel and Corporate Secretary; President,"),
+    ("FFIV", "and Executive Chief Financial Officer"),
+    ("FFIV", "and Executive Chief Marketing Officer"),
+    ("JBHT", "and EVP"),
+    ("JBHT", "and EVP (partial year); CAO"),
+    ("PNC", "and CFO"),
+    ("EXPE", "and Secretary"),
+    ("LEN", "and President"),
 }
 
 
@@ -810,6 +839,31 @@ def main():
     # verified against SEC Form 4, Becker's, the STLD proxy NEO list, and the
     # company bios); the tuple is kept as the tripwire for future classes.
     ORG_LABEL_UNRESOLVED = ()
+    # History: 2026-09-15 18:00 PT added NAME_ROLE_FRAGMENT after repairing
+    # the 3 MTD rows ('Richard Wong Head of Asia and Pacific' -> 'Richard
+    # Wong'). Role language merged into the name field can never be part of
+    # a genuine SCT name - hard fail on any recurrence.
+    NAME_ROLE_FRAGMENT = re.compile(
+        r"\b(Head of|President of|CEO of|CFO of|COO of|CTO of|"
+        r"and (CEO|CFO|COO|CTO|CHRO|CLO|GC|VP))\b")
+    # History: 2026-09-15 18:00 PT added NAME_TITLE_GLUE after repairing
+    # GNRC 2025 ('Raj Kanuru VP' -> 'Raj Kanuru'). A name field ending in a
+    # title token ('Cooper Werner VP', 'Frank PelzerFormer VP',
+    # 'Brad DelcoCFO', 'John KuhlowCFO, CAO') means the title was split
+    # across the name/title cell boundary. The 5 known FFIV/JBHT tuples need
+    # DEF 14A re-reads for the exact split point - warning-only until
+    # repaired; anything NEW fails. (The ', [A-Z]{2,4}$' branch excludes
+    # legitimate suffixes: Jr./Sr./II/III/IV/V.)
+    NAME_TITLE_GLUE = re.compile(
+        r"\b(VP|CFO|CEO|COO|CTO|CAO|CIO|CHRO|GC|CLO|Former)\s*$|"
+        r",\s*(?!(II|III|IV|V|Jr\.?|Sr\.?)$)[A-Z]{2,4}$")
+    KNOWN_NAME_TITLE_GLUE = {
+        ("FFIV", "Cooper Werner VP"),
+        ("FFIV", "John Maddison VP"),
+        ("FFIV", "Frank PelzerFormer VP"),
+        ("JBHT", "Brad DelcoCFO"),
+        ("JBHT", "John KuhlowCFO, CAO"),
+    }
     for c in companies:
         cn = c.get("ceo_name") or ""
         # distinct person-name set for the 7c embedded-name bleed check
@@ -862,6 +916,26 @@ def main():
                     f"carries trailing SCT footnote digit(s) (section 7)",
                     failures,
                 )
+            if NAME_ROLE_FRAGMENT.search(nm):
+                fail(
+                    f"{c.get('ticker')} {e.get('year')}: exec name={nm!r} "
+                    f"carries a role fragment (section 7) - the 2026-09-15 "
+                    f"18:00 PT batch repaired the MTD class offline; nothing "
+                    f"genuine can match",
+                    failures,
+                )
+            if NAME_TITLE_GLUE.search(nm):
+                key = (c.get("ticker"), nm)
+                tag = "known" if key in KNOWN_NAME_TITLE_GLUE else "NEW"
+                print(f"  warning: name/title cell-boundary split ({tag}, "
+                      f"7): {c.get('ticker')} {e.get('year')} name={nm!r} - "
+                      f"see title_split_artifact_queue_20260915_1800.md")
+                if key not in KNOWN_NAME_TITLE_GLUE:
+                    fail(
+                        f"new name/title-glue artifact: {c.get('ticker')} "
+                        f"{nm!r} (section 7)",
+                        failures,
+                    )
             ti = e.get("title") or ""
             for pat in TITLE_COMMA_ARTIFACTS:
                 if pat in ti:
@@ -1391,6 +1465,18 @@ def main():
     _TITLE_FRAG = re.compile(
         r"(?i)\b(of|the|and|or|to|in|during|for|our|a|an|&)$")
     _TITLE_OF_LETTER = re.compile(r"\bof [A-Z]$")
+    # dangling punctuation: the title cell was truncated mid-clause leaving
+    # a trailing comma/semicolon/colon (LEN 'Former Vice President,',
+    # COF '...President, ', MET '...GTO 2025 Total Compensation:').
+    _TITLE_DANGLING = re.compile(r"[,;:]\s*$")
+    # document-heading bleed: a section heading captured into the title
+    # cell (MET 'EVP and Head of GTO 2025 Total Compensation:').
+    _TITLE_HEADING_BLEED = re.compile(r"(?i)total compensation")
+    # leading-'and' fragment: the title's first clause was merged into the
+    # name cell ('Cooper Werner VP' / 'and Executive Chief Financial
+    # Officer'), or dropped entirely (PNC 'and CFO', EXPE 'and Secretary',
+    # LEN 'and President'). No genuine SCT title starts with 'and'.
+    _TITLE_LEADING_AND = re.compile(r"(?i)^and\b")
     for c in companies:
         for e in c.get("executives", []):
             t = (e.get("title") or "").strip()
@@ -1398,7 +1484,10 @@ def main():
                 continue
             if not (_TITLE_MARKER.search(t) or _TITLE_FRAG.search(t)
                     or _TITLE_OF_LETTER.search(t)
-                    or t.count("(") != t.count(")")):
+                    or t.count("(") != t.count(")")
+                    or _TITLE_DANGLING.search(t)
+                    or _TITLE_HEADING_BLEED.search(t)
+                    or _TITLE_LEADING_AND.search(t)):
                 continue
             key = (c.get("ticker"), t)
             tag = "known" if key in KNOWN_TITLE_ARTIFACTS else "NEW"
