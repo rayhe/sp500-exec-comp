@@ -149,6 +149,19 @@ heading-bleed, and leading-'and' title screens with 8 queued tuples added
 to KNOWN_TITLE_ARTIFACTS (now 9 tuples: 17 rows at 7 companies); the
 dataq modal titles block and its live mirror were re-synced (34->41
 repaired).
+History: 2026-09-15 22:00 PT run repaired the 8 queued all-caps full-phrase
+title rows via the EDGAR title-column re-read (egress recovered): AFL
+Bradley E. Dyslin 2023-2025 'EXECUTIVE VICE PRESIDENT' -> 'Executive Vice
+President, Global Chief Investment Officer; President, Aflac Global
+Investments' (DEF 14A 2026-03-19 acc. 000162828026019621, filed Title Case
+- caps were an extraction artifact); MHK Paul F. De Cock 2023-2025
+'PRESIDENT AND CHIEF OPERATING OFFICER' -> 'President and Chief Operating
+Officer; Former President - Flooring North America'; MHK Mauro Vandini
+2024-2025 'PRESIDENT' -> 'President - Global Ceramic' (fn 4: appointed
+President, Global Ceramic 2024-09-15) (DEF 14A 2026-04-03 acc.
+000110465926039491); all numeric fields asserted byte-identical. Section 15
+TITLE_ALLCAPS_FULLPHRASE_QUEUED drained to empty (n_full asserted 0), the
+33 abbreviation rows stay locked as filing-conventional.
 Headline buckets 99.7% (6,759/6,780).
 """
 import json
@@ -461,22 +474,20 @@ def check_dataq_modal_live_blocks(companies, failures):
 # indexed primary source, do not guess) and UHS ("Executive Vice President
 # and President of our" -- org-label name row, belongs to the
 # name-ambiguity queue). 2 rows at 2 companies.
-# History: 2026-09-15 18:00 PT added 8 queued tuples from the title-split
-# batch (COF dangling-comma clause; FFIV/JBHT name-title split fragments;
-# PNC/EXPE/LEN leading-'and' titles) - all need DEF 14A title-column
-# re-reads (VM egress still down), do not guess filing text. 9 tuples: 17
-# rows at 7 companies.
-KNOWN_TITLE_ARTIFACTS = {
-    ("TAP", "CEO of our Company (currently"),
-    ("COF", "General Counsel and Corporate Secretary; President,"),
-    ("FFIV", "and Executive Chief Financial Officer"),
-    ("FFIV", "and Executive Chief Marketing Officer"),
-    ("JBHT", "and EVP"),
-    ("JBHT", "and EVP (partial year); CAO"),
-    ("PNC", "and CFO"),
-    ("EXPE", "and Secretary"),
-    ("LEN", "and President"),
-}
+# History: 2026-09-15 22:00 PT drained all 9 queued tuples (19 rows at 7
+# companies: TAP Goyal, COF Cooper x2, FFIV Werner/Maddison/Pelzer x5,
+# JBHT Delco/Kuhlow x4, PNC Reilly x3, EXPE Dzielak x3, LEN Jaffe 2023)
+# after every title cell was verified verbatim in the filed DEF 14A SCTs
+# (VM egress recovered; User-Agent Kit/1.0). The same pass also repaired
+# adjacent finds outside the queue: COF LaPrade 2023-2025 name/title glue
+# (name 'Frank G. LaPrade, III', title restored as filed), LEN Jaffe
+# 2024/2025 + Bessette 2023-2025 split-title rows, and the STLD
+# 'Barry Schneider' 2023/2024 phantom rows (re-attributed to Glenn A.
+# Pushis, Senior Vice President - see section 14). All 29 rows' numeric
+# fields asserted byte-identical. 0 queued rows: the static fallback must
+# now say "0 rows at 0 companies" and the guard fails on ANY title artifact
+# match - the allowlist is empty by design, not by omission.
+KNOWN_TITLE_ARTIFACTS = set()
 
 
 # Section-14 name-ambiguity resolution guard (2026-09-15 15:30 PT).
@@ -494,10 +505,18 @@ KNOWN_TITLE_ARTIFACTS = {
 # The class screen is warning-only: same ticker + same year, one
 # normalized name a strict prefix of the other, or same last name with a
 # first-token prefix / middle-token difference (suffix, nickname, and
-# dropped-middle-initial double-count signatures). The STLD pair is known
-# (one Barry T. Schneider per the 2025 DEF 14A bio; stale 'Barry Schneider'
-# SVP rows need the EDGAR pass); anything NEW warns for triage, never
-# auto-merges (section 12's rule: rows are never merged by a guard).
+# dropped-middle-initial double-count signatures). The STLD pair was
+# resolved 2026-09-15 22:00 PT: the stored 'Barry Schneider' 2023/2024
+# 'SVP, Steel Operations' rows were Glenn A. Pushis's 2025-DEF-14A SCT rows
+# (acc. 0001558370-25-002901, totals match to the dollar; 'SVP, Steel
+# Operations' appears nowhere as a title in either filing; the 2026 filing
+# bio: "Barry T. Schneider has been our President and Chief Operating
+# Officer since March 2023" - one Barry Schneider exists). Both rows were
+# re-attributed to 'Glenn A. Pushis', title 'Senior Vice President' as
+# filed; numeric fields byte-identical. The pair is removed from the known
+# set so any 'Barry Schneider' reappearance warns as NEW; anything NEW
+# warns for triage, never auto-merges (section 12's rule: rows are never
+# merged by a guard).
 RESOLVED_DUPLICATE_NAMES = {
     ("OKE", "Walter S. Hulse"),
     ("DRI", "Raj Vennam"),
@@ -505,9 +524,7 @@ RESOLVED_DUPLICATE_NAMES = {
 ADJUDICATED_DISTINCT_NAME_PAIRS = {
     ("AJG", "Pat Gallagher", "Patrick Gallagher"),
 }
-KNOWN_NAME_PREFIX_PAIRS = {
-    ("STLD", "Barry Schneider", "Barry T. Schneider"),
-}
+KNOWN_NAME_PREFIX_PAIRS = set()
 
 
 def _norm_name(n):
@@ -541,6 +558,17 @@ def _norm_name(n):
 #       the EDGAR title-column re-read
 #       (title_allcaps_queue_20260915_1930.md); warn, do not fail, do not
 #       repair offline.
+#   Update 2026-09-15 22:00 PT: EDGAR re-read complete (egress recovered).
+#   Filed SCT title cells are Title Case, not all caps - the caps were an
+#   extraction artifact. Repaired: AFL Dyslin 2023-2025 ->
+#   "Executive Vice President, Global Chief Investment Officer; President,
+#   Aflac Global Investments" (DEF 14A 2026-03-19 acc. 000162828026019621);
+#   MHK De Cock 2023-2025 -> "President and Chief Operating Officer;
+#   Former President - Flooring North America"; MHK Vandini 2024-2025 ->
+#   "President - Global Ceramic" (fn 4: appointed President, Global Ceramic
+#   2024-09-15) (DEF 14A 2026-04-03 acc. 000110465926039491). Queue EMPTY:
+#   n_full asserted 0; any all-caps title outside the abbrev allowlist is
+#   a new styling regression and fails hard.
 # Any all-caps title outside both sets is a new styling regression and
 # fails hard. Recounts are asserted exact so a future repair of any of
 # these rows forces the allowlist update.
@@ -560,11 +588,9 @@ TITLE_ALLCAPS_ABBREV = {
     ("WAT", "SVP & CFO"),
     ("ESS", "CIO AND EVP"),
 }
-TITLE_ALLCAPS_FULLPHRASE_QUEUED = {
-    ("AFL", "EXECUTIVE VICE PRESIDENT"),
-    ("MHK", "PRESIDENT AND CHIEF OPERATING OFFICER"),
-    ("MHK", "PRESIDENT"),
-}
+# Repaired 2026-09-15 22:00 PT via EDGAR re-read - empty. Kept as a named
+# set so the section-15 screen still references the drained queue.
+TITLE_ALLCAPS_FULLPHRASE_QUEUED = set()
 
 
 def _is_allcaps_title(t):
@@ -587,16 +613,17 @@ def check_title_allcaps(companies, failures):
                 n_full += 1
                 print(f"  warning: all-caps full-phrase title (queued, "
                       f"15): {c.get('ticker')} {e.get('name')} "
-                      f"{e.get('year')} title={t!r} — see "
-                      f"title_allcaps_queue_20260915_1930.md; do not "
-                      f"re-case offline")
+                      f"{e.get('year')} title={t!r} - the 2026-09-15 "
+                      f"22:00 PT EDGAR repair drained this queue; "
+                      f"unexpected recurrence")
                 continue
             fail(f"new all-caps title not in the 2026-09-15 allowlists: "
                  f"{c.get('ticker')} {e.get('name')} {e.get('year')} "
                  f"title={t!r} (15)", failures)
-    if n_abbrev != 33 or n_full != 8:
+    if n_abbrev != 33 or n_full != 0:
         fail(f"all-caps title recount drift: abbrev {n_abbrev} (want 33), "
-             f"full-phrase {n_full} (want 8) (15)", failures)
+             f"full-phrase {n_full} (want 0 - queue drained 2026-09-15 "
+             f"22:00 PT) (15)", failures)
 
 
 def check_name_ambiguity(companies, failures):
@@ -933,20 +960,17 @@ def main():
     # GNRC 2025 ('Raj Kanuru VP' -> 'Raj Kanuru'). A name field ending in a
     # title token ('Cooper Werner VP', 'Frank PelzerFormer VP',
     # 'Brad DelcoCFO', 'John KuhlowCFO, CAO') means the title was split
-    # across the name/title cell boundary. The 5 known FFIV/JBHT tuples need
-    # DEF 14A re-reads for the exact split point - warning-only until
-    # repaired; anything NEW fails. (The ', [A-Z]{2,4}$' branch excludes
-    # legitimate suffixes: Jr./Sr./II/III/IV/V.)
+    # across the name/title cell boundary.
+    # History: 2026-09-15 22:00 PT drained the 5 known FFIV/JBHT tuples
+    # after DEF 14A SCT re-reads pinned the exact split points (VM egress
+    # recovered). Names and titles rejoined as filed ('Cooper Werner',
+    # 'John Maddison', 'Frank Pelzer', 'Brad Delco', 'John Kuhlow'); all
+    # numeric fields asserted byte-identical. The allowlist is empty by
+    # design: any name/title-glue match now fails the commit.
     NAME_TITLE_GLUE = re.compile(
         r"\b(VP|CFO|CEO|COO|CTO|CAO|CIO|CHRO|GC|CLO|Former)\s*$|"
         r",\s*(?!(II|III|IV|V|Jr\.?|Sr\.?)$)[A-Z]{2,4}$")
-    KNOWN_NAME_TITLE_GLUE = {
-        ("FFIV", "Cooper Werner VP"),
-        ("FFIV", "John Maddison VP"),
-        ("FFIV", "Frank PelzerFormer VP"),
-        ("JBHT", "Brad DelcoCFO"),
-        ("JBHT", "John KuhlowCFO, CAO"),
-    }
+    KNOWN_NAME_TITLE_GLUE = set()
     for c in companies:
         cn = c.get("ceo_name") or ""
         # distinct person-name set for the 7c embedded-name bleed check
@@ -1589,11 +1613,12 @@ def main():
     #     same-ticker same-year name-prefix pairs warn for triage.
     check_name_ambiguity(companies, failures)
 
-    # 15. Title all-caps styling screen (2026-09-15 19:30 PT): all-caps
-    #     titles must be in TITLE_ALLCAPS_ABBREV (filing-conventional
-    #     abbreviations, locked) or TITLE_ALLCAPS_FULLPHRASE_QUEUED (8 rows
-    #     at AFL/MHK queued for the EDGAR title-column re-read); new
-    #     instances fail, recounts asserted exact.
+    # 15. Title all-caps styling screen (2026-09-15 19:30 PT; queue drained
+    #     2026-09-15 22:00 PT): all-caps titles must be in
+    #     TITLE_ALLCAPS_ABBREV (filing-conventional abbreviations, locked);
+    #     the 8-row AFL/MHK full-phrase queue was repaired via the EDGAR
+    #     title-column re-read (filed Title Case, not all caps) and now
+    #     asserts 0. New instances fail, recounts asserted exact.
     check_title_allcaps(companies, failures)
 
     if failures:
