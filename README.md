@@ -81,7 +81,7 @@ Every NEO row in `data/compensation.json` carries a `_total_source` label descri
 | `recomputed` | Filing total missing/implausible; total recomputed from components | 0 (36-row bucket eliminated 2026-09-10) |
 | `component_mismatch` | The filing's own components don't sum to its printed total; stored verbatim, flagged | 21 |
 
-Taxonomy decision (2026-09-10): 274 `verified` rows carry $1–$2 deltas between summed components and the printed total (e.g., NVDA/UBER/SOLV FY2025–2026). This is the filer's own rounded-dollar arithmetic, not a parse error, so they stay `verified` — relabeling would cut headline coverage from 99.7% to 95.7% for zero information gain.
+Taxonomy decision (2026-09-10): 275 `verified` rows carry $1–$2 deltas between summed components and the printed total (e.g., NVDA/UBER/SOLV FY2025–2026). This is the filer's own rounded-dollar arithmetic, not a parse error, so they stay `verified` — relabeling would cut headline coverage from 99.7% to 95.7% for zero information gain.
 
 `scripts/check_metadata_consistency.py` (pre-commit hook) asserts every metadata count equals an independent recount of stored records, so stale counts can never be committed.
 
