@@ -3075,6 +3075,76 @@ thead th:nth-child(5),
 thead th:nth-child(7),
 thead th:nth-child(8) { text-align: right; }
 
+/* === Sticky identity columns on the main data table ===
+   Freeze #, Ticker, and Company while horizontally scrolling the 18-column
+   #comp-table. Fixed column widths keep the cumulative `left` offsets exact;
+   the corner cells (already sticky-top via thead th) gain the higher z-index
+   implicitly since thead th z-index (10) beats tbody sticky cells (6).
+   Opaque backgrounds are required so scrolled content cannot show through;
+   hover/selected states are reproduced with layered translucent gradients over
+   the same solid base so the tint matches non-frozen cells exactly. */
+#comp-table thead th:nth-child(-n+3),
+#comp-table tbody td:nth-child(-n+3) {
+    position: sticky;
+}
+#comp-table thead th:nth-child(1),
+#comp-table tbody td:nth-child(1) {
+    left: 0;
+    width: 84px;
+    min-width: 84px;
+    max-width: 84px;
+}
+#comp-table thead th:nth-child(2),
+#comp-table tbody td:nth-child(2) {
+    left: 84px;
+    width: 76px;
+    min-width: 76px;
+    max-width: 76px;
+}
+#comp-table thead th:nth-child(3),
+#comp-table tbody td:nth-child(3) {
+    left: 160px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    border-right: 1px solid var(--border-hover);
+}
+#comp-table tbody td:nth-child(-n+3) {
+    background: var(--bg-secondary);
+    z-index: 6;
+}
+#comp-table td:nth-child(3) .company {
+    display: inline-block;
+    max-width: 172px; /* 200px column minus 2x14px cell padding */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+#comp-table tbody tr:hover td:nth-child(-n+3) {
+    background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), var(--bg-secondary);
+}
+#comp-table tbody tr.selected td:nth-child(-n+3) {
+    background: linear-gradient(rgba(0, 180, 216, 0.06), rgba(0, 180, 216, 0.06)), var(--bg-secondary);
+}
+[data-theme="light"] #comp-table tbody tr:hover td:nth-child(-n+3) {
+    background: linear-gradient(rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.03)), var(--bg-secondary);
+}
+[data-theme="light"] #comp-table tbody tr.selected td:nth-child(-n+3) {
+    background: linear-gradient(rgba(0, 119, 182, 0.06), rgba(0, 119, 182, 0.06)), var(--bg-secondary);
+}
+
+/* On narrow screens keep the frozen pane narrower so scrollable columns remain reachable */
+@media (max-width: 768px) {
+    #comp-table thead th:nth-child(3),
+    #comp-table tbody td:nth-child(3) {
+        width: 140px;
+        min-width: 140px;
+        max-width: 140px;
+    }
+    #comp-table td:nth-child(3) .company { max-width: 112px; } /* 140px minus 2x14px padding */
+}
+
 tbody td {
     padding: 10px 14px;
     border-bottom: 1px solid var(--border);
@@ -6815,6 +6885,16 @@ footer li::before {
         border-bottom: 1px solid #ddd !important;
         color: #111 !important;
     }
+    /* Frozen identity columns: disable in print so full company names print */
+    #comp-table thead th:nth-child(-n+3),
+    #comp-table tbody td:nth-child(-n+3) {
+        position: static !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        border-right: none !important;
+    }
+    #comp-table td:nth-child(3) .company { max-width: none !important; }
     tbody tr:hover { background: transparent !important; }
     tbody tr.selected { background: transparent !important; }
     .detail-row { display: none !important; }

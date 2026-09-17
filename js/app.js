@@ -6523,7 +6523,7 @@ function renderTable(companies, options) {
 
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
-            '<td><span class="company">' + c.company_name + '</span></td>' +
+            '<td><span class="company" title="' + String(c.company_name || '').replace(/"/g, '&quot;') + '">' + c.company_name + '</span></td>' +
             '<td>' + nameCellHtml + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
