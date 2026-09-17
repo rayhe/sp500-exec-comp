@@ -1358,7 +1358,13 @@ function populateMetrics(comp, trends) {
         { cta: 'View ' + topTicker + ' details →', action: function() { if (window.findCompanyInTable) window.findCompanyInTable(topTicker); } },
         { cta: 'View composition →', action: function() { scrollToSectionById('composition-section'); } },
         { cta: 'Sort by SoP approval →', action: function() { sortTableByKey('_sopApproval', 'asc'); } },
-        { cta: 'View trends →', action: function() { scrollToSectionById('trends-section'); } }
+        { cta: 'View trends →', action: function() { scrollToSectionById('trends-section'); } },
+        // Data Verification card: whole-card CTA opens the same data-quality
+        // methodology modal the card's old nested ⓘ button opened. The nested
+        // <button> was removed from the label (button inside role="button" is an
+        // a11y violation); the card itself is now the entry point like the
+        // other seven cards.
+        { cta: 'How verification works →', action: function() { if (typeof window.openMethodologyModal === 'function') window.openMethodologyModal('dataq'); } }
     ];
 
     metricCards.forEach(function(card, i) {
@@ -16150,6 +16156,11 @@ function setupDualSparklineTooltips() {
         document.body.style.overflow = 'hidden';
         if (typeof announce === 'function') announce(content.title + ' opened');
     }
+
+    // Exposed on window so the Data Verification metric card's card-level CTA
+    // (wired in the metrics-strip init earlier in this file, outside this IIFE)
+    // can open the same methodology modal the card's old nested info button opened.
+    window.openMethodologyModal = openMethodologyModal;
 
     function closeMethodologyModal() {
         var overlay = document.getElementById('methodology-modal-overlay');
