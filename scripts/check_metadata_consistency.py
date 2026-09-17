@@ -192,6 +192,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260910": "def14a_verified_20260910",
     "def14a_verified_20260912": "def14a_verified_20260912",
     "def14a_verified_20260916": "def14a_verified_20260916",
+    "def14a_verified_20260917": "def14a_verified_20260917",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
@@ -541,7 +542,7 @@ def _norm_name(n):
 # not random parse noise). Two sub-classes, locked separately:
 #   (a) TITLE_ALLCAPS_ABBREV (14 tuples, 33 rows, 13 companies): standard
 #       corporate title abbreviations ('SVP, COO', 'CEO, AWM', 'EVP & CFO',
-#       'CHRO', 'CEO PMI U', ...). Companies print these abbreviated forms
+#       'CHRO', 'CEO PMI U.S.', ...). Companies print these abbreviated forms
 #       in their SCTs as a matter of convention; treated as as-disclosed,
 #       no repair. Locked so a parser change cannot silently introduce
 #       more.
@@ -579,7 +580,7 @@ TITLE_ALLCAPS_ABBREV = {
     ("PEP", "CEO, EMEA"),
     ("CAT", "CHRO"),
     ("GD", "SVP, CFO"),
-    ("PM", "CEO PMI U"),
+    ("PM", "CEO PMI U.S."),
     ("DOV", "SVP & CHRO"),
     ("DOW", "EVP, R&D"),
     ("CCI", "EVP & CTRO"),
