@@ -1210,7 +1210,44 @@ async function loadData() {
     compData = comp;
     trendsData = trends;
     peerData = peer;
+    renderFooterVintage(comp);
     return { comp, trends, peer };
+}
+
+// === Footer Data Vintage ===
+// The footer previously hard-coded "Data collected August 2026" and drifted
+// stale as DQ batches kept rewriting the data. Render it live from the
+// guard-checked metadata counts so it can never drift again. Uses
+// textContent only (never innerHTML) so data-derived values stay inert.
+// If metadata is absent, the static HTML fallback text stays as-is.
+function renderFooterVintage(comp) {
+    var el = document.getElementById('footer-data-vintage');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var dq = md.data_quality_detailed || {};
+    var total = (typeof md.total_neo_records === 'number') ? md.total_neo_records : 0;
+    var verified = (typeof dq.verified_total === 'number') ? dq.verified_total : null;
+    var parts = [];
+    if (typeof md.data_collected === 'string' && md.data_collected) {
+        // "2026-09-10" -> "Sep 10, 2026"; fall back to the raw string if unparseable
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(md.data_collected);
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var label = md.data_collected;
+        if (m) {
+            var mi = parseInt(m[2], 10);
+            if (mi >= 1 && mi <= 12) label = months[mi - 1] + ' ' + parseInt(m[3], 10) + ', ' + m[1];
+        }
+        parts.push('Data collected ' + label);
+    }
+    if (total > 0) {
+        var countStr = total.toLocaleString('en-US') + ' NEO records';
+        if (verified != null) {
+            // Same verified/rows convention as the Data Verification metric card
+            countStr += ' · ' + (100 * verified / total).toFixed(1) + '% DEF 14A-verified';
+        }
+        parts.push(countStr);
+    }
+    if (parts.length) el.textContent = 'Built with D3.js · ' + parts.join(' · ');
 }
 
 function populateMetrics(comp, trends) {
