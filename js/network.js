@@ -529,13 +529,16 @@ function initNetwork(peerData) {
 
         var html = '';
         stats.forEach(function(s) {
+            // Escape title/id: titles are partly derived from peer-network.json
+            // metadata (which DQ batches rewrite), so never interpolate raw.
+            var escTitle = escapeHtml(s.title || '');
             if (s.clickable) {
-                html += '<span class="ngs-stat ngs-stat-clickable' + (s.panelOpen ? ' ngs-stat-active' : '') + '" id="' + s.id + '" title="' + s.title + '" role="button" tabindex="0">';
+                html += '<span class="ngs-stat ngs-stat-clickable' + (s.panelOpen ? ' ngs-stat-active' : '') + '" id="' + escapeHtml(s.id) + '" title="' + escTitle + '" role="button" tabindex="0">';
                 html += '<span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span>';
                 html += '<span class="ngs-expand-icon">' + (s.panelOpen ? '▾' : '▸') + '</span>';
                 html += '</span>';
             } else {
-                html += '<span class="ngs-stat"' + (s.title ? ' title="' + s.title + '"' : '') + '><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
+                html += '<span class="ngs-stat"' + (escTitle ? ' title="' + escTitle + '"' : '') + '><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
             }
         });
         el.innerHTML = html;
