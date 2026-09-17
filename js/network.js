@@ -491,6 +491,26 @@ function initNetwork(peerData) {
 
         function fmt(n) { return n.toLocaleString(); }
 
+        // Peer-data vintage (truthfulness): the peer edges were extracted from a
+        // fixed DEF 14A batch that is older than the compensation dataset.
+        // Rendered from the loaded peer-network.json metadata so the label
+        // can never go stale; omitted entirely when metadata is absent.
+        var _pnMeta = (typeof peerData !== 'undefined' && peerData && peerData.metadata) ? peerData.metadata : {};
+        var _pnUpdated = _pnMeta.last_updated || '';
+        var _pnMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var _pnMonthsLong = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var _pnShort = '', _pnLong = '';
+        var _pnM = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(_pnUpdated));
+        if (_pnM) {
+            var _pnMi = parseInt(_pnM[2], 10) - 1;
+            _pnShort = _pnMonths[_pnMi] + ' ' + _pnM[1];
+            _pnLong = _pnMonthsLong[_pnMi] + ' ' + parseInt(_pnM[3], 10) + ', ' + _pnM[1];
+        }
+        var _pnFilingCount = '';
+        if (_pnMeta.sources && _pnMeta.sources.length) {
+            var _pnSrcM = /(\d[\d,]*)\s+DEF 14A/i.exec(String(_pnMeta.sources[0]));
+            if (_pnSrcM) _pnFilingCount = _pnSrcM[1] + ' ';
+        }
         var stats = [
             { label: 'Nodes', value: fmt(totalNodes) },
             { label: 'Edges', value: fmt(totalEdges) },
@@ -499,6 +519,13 @@ function initNetwork(peerData) {
             { label: 'Mutual Pairs', value: fmt(mutualPairs) },
             { label: 'Avg Degree', value: avgDegree.toFixed(1), clickable: true, id: 'ngs-avg-degree', panelOpen: degreeDistPanelOpen, title: 'Click to explore degree distribution' }
         ];
+        if (_pnShort) {
+            stats.push({
+                label: 'Peer Data',
+                value: _pnShort,
+                title: 'Peer relationships extracted from ' + _pnFilingCount + 'DEF 14A proxy statements; last extracted ' + _pnLong + '. Peer groups disclosed after this date are not reflected.'
+            });
+        }
 
         var html = '';
         stats.forEach(function(s) {
@@ -508,7 +535,7 @@ function initNetwork(peerData) {
                 html += '<span class="ngs-expand-icon">' + (s.panelOpen ? '▾' : '▸') + '</span>';
                 html += '</span>';
             } else {
-                html += '<span class="ngs-stat"><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
+                html += '<span class="ngs-stat"' + (s.title ? ' title="' + s.title + '"' : '') + '><span class="ngs-label">' + s.label + '</span> <span class="ngs-value">' + s.value + '</span></span>';
             }
         });
         el.innerHTML = html;
