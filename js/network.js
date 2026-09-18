@@ -2333,7 +2333,7 @@ function initNetwork(peerData) {
         var peerStats = _peerCompStats(d.ticker);
         var inboundStats = _peerCompStatsInbound(d.ticker);
 
-        var html = '<div class="tt-title">' + d.ticker + ' — ' + d.name + '</div>';
+        var html = '<div class="tt-title">' + d.ticker + ' — ' + escapeHtml(d.name) + '</div>';
 
         // Compensation section — CEO pay + peer comparison
         if (comp && comp.total != null && comp.total > 0) {
@@ -2506,7 +2506,7 @@ function initNetwork(peerData) {
         var comp = _compLookup[ticker];
         if (!comp) return;
         var n = nodeMap[ticker];
-        var html = '<div class="tt-title">' + ticker + (n ? ' — ' + n.name : '') + '</div>';
+        var html = '<div class="tt-title">' + ticker + (n ? ' — ' + escapeHtml(n.name) : '') + '</div>';
         html += '<div class="tt-comp-section">';
         if (comp.ceo) {
             html += '<div class="tt-comp-ceo" style="margin-bottom:4px;font-weight:600">' + comp.ceo + '</div>';
@@ -3122,7 +3122,7 @@ function initNetwork(peerData) {
             var dotHtml = '<span class="nsr-dot" style="background:' + dotColor + '"></span>';
             div.innerHTML = dotHtml +
                 '<span class="nsr-ticker">' + n.ticker + '</span>' +
-                '<span class="nsr-name">' + n.name + '</span>' +
+                '<span class="nsr-name">' + escapeHtml(n.name) + '</span>' +
                 payHtml +
                 '<span class="nsr-sector">' + (n.sector || '') + '</span>';
             div.addEventListener('mousedown', function(e) {
@@ -3816,7 +3816,7 @@ function initNetwork(peerData) {
                     .replace('Real Estate', 'Real Est');
                 return shortName + ' ' + s.count;
             }).join(', ');
-            html += '<span class="community-legend-item" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ') + '">';
+            html += '<span class="community-legend-item" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + escapeHtml(cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ')) + '">';
             html += '<span class="legend-dot" style="background:' + cs.color + '"></span>';
             html += '<span class="community-legend-label">' + cs.label + '</span>';
             html += '<span class="community-legend-size">' + cs.size + '</span>';
@@ -3969,7 +3969,7 @@ function initNetwork(peerData) {
             var pct = (sec.count / cs.size * 100).toFixed(0);
             html += '<div class="comm-tip-sector">';
             html += '<span class="comm-tip-sector-dot" style="background:' + secColor + '"></span>';
-            html += '<span class="comm-tip-sector-name">' + sec.name + '</span>';
+            html += '<span class="comm-tip-sector-name">' + escapeHtml(sec.name) + '</span>';
             html += '<span class="comm-tip-sector-count">' + sec.count + ' (' + pct + '%)</span>';
             html += '</div>';
         }
@@ -6356,7 +6356,7 @@ function initNetwork(peerData) {
             }
             div.innerHTML = dotHtml +
                 '<span class="nsr-ticker">' + n.ticker + '</span>' +
-                '<span class="nsr-name">' + n.name + '</span>' +
+                '<span class="nsr-name">' + escapeHtml(n.name) + '</span>' +
                 payHtml +
                 '<span class="nsr-sector">' + (n.sector || '') + '</span>';
             div.addEventListener('mousedown', function(e) {
@@ -6479,7 +6479,7 @@ function initNetwork(peerData) {
             html += '<span class="pnc-dot" style="background:' + color + '"></span>';
             html += ticker;
             html += compBadge;
-            html += '<span class="pnc-name">' + name + '</span>';
+            html += '<span class="pnc-name">' + escapeHtml(name) + '</span>';
             html += '</span>';
 
             if (idx < pathResult.edges.length) {
@@ -7154,7 +7154,7 @@ function initNetwork(peerData) {
             window._activePathFinderNodes = null;
             if (typeof window._redrawScatterForPathOverlay === 'function') window._redrawScatterForPathOverlay();
             var msg = missing.map(function(m) {
-                var label = '<strong>' + m.ticker + '</strong>' + (m.name ? ' (' + m.name + ')' : '');
+                var label = '<strong>' + m.ticker + '</strong>' + (m.name ? ' (' + escapeHtml(m.name) + ')' : '');
                 return m.known
                     ? label + ' is not in the peer network: no extractable peer-group disclosure in its DEF 14A'
                     : label + ' was not found in the dataset';
