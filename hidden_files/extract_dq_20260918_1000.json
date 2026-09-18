@@ -1,0 +1,1950 @@
+{
+ "batch": "dq_20260918_1000",
+ "companies": {
+  "ENPH": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1463101/000146310126000026/enph-20260401.htm",
+   "accession": "0001463101-26-000026",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Badrinarayanan Kothandaraman",
+     "title": "President and CEO",
+     "years": {
+      "2025": {
+       "salary": 450000,
+       "bonus": null,
+       "stock_awards": 8844624,
+       "non_equity_incentive": 306752,
+       "all_other": 582,
+       "total": 9601958
+      },
+      "2024": {
+       "salary": 450000,
+       "bonus": null,
+       "stock_awards": 12156580,
+       "non_equity_incentive": 22843,
+       "all_other": 582,
+       "total": 12630005
+      },
+      "2023": {
+       "salary": 450000,
+       "bonus": null,
+       "stock_awards": 18804672,
+       "non_equity_incentive": 270750,
+       "all_other": 2112,
+       "total": 19527534
+      }
+     }
+    },
+    {
+     "name": "Mandy Yang",
+     "title": "EVP and CFO",
+     "years": {
+      "2025": {
+       "salary": 367500,
+       "bonus": null,
+       "stock_awards": 4717133,
+       "non_equity_incentive": 205160,
+       "all_other": 3582,
+       "total": 5293375
+      },
+      "2024": {
+       "salary": 367500,
+       "bonus": null,
+       "stock_awards": 6321421,
+       "non_equity_incentive": 16128,
+       "all_other": 3582,
+       "total": 6708631
+      },
+      "2023": {
+       "salary": 363125,
+       "bonus": null,
+       "stock_awards": 6111519,
+       "non_equity_incentive": 16128,
+       "all_other": 4920,
+       "total": 6495692
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no Option Awards and no pension column."
+   ]
+  },
+  "SMCI": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000008/smci-20260303.htm",
+   "accession": "0001375365-26-000008",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Charles Liang",
+     "title": "President, Chief Executive Officer and Chairman of the Board",
+     "years": {
+      "2025": {
+       "salary": 1,
+       "bonus": null,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": null,
+       "all_other": 441,
+       "total": 442
+      },
+      "2024": {
+       "salary": 1,
+       "bonus": null,
+       "stock_awards": null,
+       "option_awards": 28094976,
+       "non_equity_incentive": null,
+       "all_other": 250,
+       "total": 28095227
+      },
+      "2023": {
+       "salary": 1,
+       "bonus": null,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": null,
+       "all_other": null,
+       "total": 1
+      }
+     }
+    },
+    {
+     "name": "David Weigand",
+     "title": "Senior Vice President, Chief Financial Officer and Chief Compliance Officer",
+     "years": {
+      "2025": {
+       "salary": 557958,
+       "bonus": 180979,
+       "stock_awards": 1166317,
+       "option_awards": null,
+       "non_equity_incentive": 55638,
+       "all_other": 441,
+       "total": 1961333
+      },
+      "2024": {
+       "salary": 540505,
+       "bonus": 191245,
+       "stock_awards": 3456617,
+       "option_awards": 5254101,
+       "non_equity_incentive": 110060,
+       "all_other": 250,
+       "total": 9552778
+      },
+      "2023": {
+       "salary": 522151,
+       "bonus": 148568,
+       "stock_awards": 1021243,
+       "option_awards": null,
+       "non_equity_incentive": 167127,
+       "all_other": null,
+       "total": 1859089
+      }
+     }
+    },
+    {
+     "name": "Don Clegg",
+     "title": "Senior Vice President, Worldwide Sales",
+     "years": {
+      "2025": {
+       "salary": 426474,
+       "bonus": 109384,
+       "stock_awards": 661883,
+       "option_awards": null,
+       "non_equity_incentive": 139534,
+       "all_other": 441,
+       "total": 1337716
+      },
+      "2024": {
+       "salary": 448722,
+       "bonus": 112817,
+       "stock_awards": 2295602,
+       "option_awards": 2624889,
+       "non_equity_incentive": 277510,
+       "all_other": 250,
+       "total": 5759790
+      },
+      "2023": {
+       "salary": 449469,
+       "bonus": 88888,
+       "stock_awards": 331660,
+       "option_awards": null,
+       "non_equity_incentive": 157923,
+       "all_other": null,
+       "total": 1027940
+      }
+     }
+    },
+    {
+     "name": "George Kao",
+     "title": "Former Senior Vice President, Operations",
+     "years": {
+      "2025": {
+       "salary": 417823,
+       "bonus": 69822,
+       "stock_awards": 813363,
+       "option_awards": 510915,
+       "non_equity_incentive": 58851,
+       "all_other": 541,
+       "total": 1871315
+      },
+      "2024": {
+       "salary": 407691,
+       "bonus": 68823,
+       "stock_awards": 343181,
+       "option_awards": null,
+       "non_equity_incentive": 88751,
+       "all_other": 250,
+       "total": 908696
+      },
+      "2023": {
+       "salary": 394813,
+       "bonus": 14362,
+       "stock_awards": 322566,
+       "option_awards": 269815,
+       "non_equity_incentive": null,
+       "all_other": null,
+       "total": 1001556
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no pension column."
+   ]
+  },
+  "ROP": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/882835/000119312526145481/d204543ddef14a.htm",
+   "accession": "0001193125-26-145481",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "L. Neil Hunn",
+     "title": "President and Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 1000000,
+       "stock_awards": 17533527,
+       "option_awards": 5098979,
+       "non_equity_incentive": 2096000,
+       "all_other": 477259,
+       "total": 26205765
+      },
+      "2024": {
+       "salary": 1000000,
+       "stock_awards": 15023657,
+       "option_awards": 4847184,
+       "non_equity_incentive": 2282000,
+       "all_other": 533781,
+       "total": 23686622
+      },
+      "2023": {
+       "salary": 1000000,
+       "stock_awards": 13982907,
+       "option_awards": 4632002,
+       "non_equity_incentive": 21168465,
+       "all_other": 512211,
+       "total": 41295585
+      }
+     }
+    },
+    {
+     "name": "Jason P. Conley",
+     "title": "Executive Vice President and Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 745000,
+       "stock_awards": 6232167,
+       "option_awards": 1812368,
+       "non_equity_incentive": 975950,
+       "all_other": 184243,
+       "total": 9949728
+      },
+      "2024": {
+       "salary": 710000,
+       "stock_awards": 4649142,
+       "option_awards": 1499975,
+       "non_equity_incentive": 1012638,
+       "all_other": 165304,
+       "total": 8037059
+      },
+      "2023": {
+       "salary": 675000,
+       "stock_awards": 3773437,
+       "option_awards": 1250053,
+       "non_equity_incentive": 843750,
+       "all_other": 149571,
+       "total": 6691811
+      }
+     }
+    },
+    {
+     "name": "John K. Stipancich",
+     "title": "Executive Vice President, General Counsel and Corporate Secretary",
+     "years": {
+      "2025": {
+       "salary": 865000,
+       "stock_awards": 5759149,
+       "option_awards": 1674885,
+       "non_equity_incentive": 1133150,
+       "all_other": 106272,
+       "total": 9538456
+      },
+      "2024": {
+       "salary": 835000,
+       "stock_awards": 4338897,
+       "option_awards": 1399988,
+       "non_equity_incentive": 1190919,
+       "all_other": 172125,
+       "total": 7936929
+      },
+      "2023": {
+       "salary": 800000,
+       "stock_awards": 3471648,
+       "option_awards": 1150007,
+       "non_equity_incentive": 1000000,
+       "all_other": 163687,
+       "total": 6585342
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no Bonus column and no pension column; header reads 'Total Compensation ($)'."
+   ]
+  },
+  "MET": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921926000026/met-20260429.htm",
+   "accession": "0001099219-26-000026",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "pension_nqdc",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Michel A. Khalaf",
+     "title": "President and CEO",
+     "years": {
+      "2025": {
+       "salary": 1500000,
+       "stock_awards": 14797601,
+       "option_awards": null,
+       "non_equity_incentive": 4600000,
+       "pension_nqdc": 1095186,
+       "all_other": 371486,
+       "total": 22364273
+      },
+      "2024": {
+       "salary": 1500000,
+       "stock_awards": 11590462,
+       "option_awards": 1672128,
+       "non_equity_incentive": 4600000,
+       "pension_nqdc": 636545,
+       "all_other": 322044,
+       "total": 20321179
+      },
+      "2023": {
+       "salary": 1475000,
+       "stock_awards": 11285532,
+       "option_awards": 1597381,
+       "non_equity_incentive": 4800000,
+       "pension_nqdc": 1088180,
+       "all_other": 279916,
+       "total": 20526009
+      }
+     }
+    },
+    {
+     "name": "John D. McCallion",
+     "title": "EVP, CFO of MetLife, Inc., and Head of MIM",
+     "years": {
+      "2025": {
+       "salary": 1046250,
+       "stock_awards": 5055050,
+       "option_awards": null,
+       "non_equity_incentive": 2600000,
+       "pension_nqdc": 535623,
+       "all_other": 180489,
+       "total": 9417412
+      },
+      "2024": {
+       "salary": 1012500,
+       "stock_awards": 3863550,
+       "option_awards": 557376,
+       "non_equity_incentive": 2600000,
+       "pension_nqdc": 290485,
+       "all_other": 171646,
+       "total": 8495557
+      },
+      "2023": {
+       "salary": 980000,
+       "stock_awards": 4414433,
+       "option_awards": 528784,
+       "non_equity_incentive": 2700000,
+       "pension_nqdc": 460687,
+       "all_other": 189425,
+       "total": 9273329
+      }
+     }
+    },
+    {
+     "name": "Bill Pappas",
+     "title": "EVP and Head of GTO",
+     "years": {
+      "2025": {
+       "salary": 963750,
+       "stock_awards": 4365808,
+       "option_awards": null,
+       "non_equity_incentive": 2100000,
+       "pension_nqdc": 367298,
+       "all_other": 122550,
+       "total": 7919406
+      },
+      "2024": {
+       "salary": 930625,
+       "stock_awards": 3322679,
+       "option_awards": 479349,
+       "non_equity_incentive": 2100000,
+       "pension_nqdc": 286343,
+       "all_other": 125225,
+       "total": 7244221
+      },
+      "2023": {
+       "salary": 901250,
+       "stock_awards": 3624013,
+       "option_awards": 448921,
+       "non_equity_incentive": 2200000,
+       "pension_nqdc": 343987,
+       "all_other": 128050,
+       "total": 7646221
+      }
+     }
+    },
+    {
+     "name": "Ramy Tadros",
+     "title": "Regional President, U.S. Business, and Head of MLH",
+     "years": {
+      "2025": {
+       "salary": 941250,
+       "stock_awards": 4365808,
+       "option_awards": null,
+       "non_equity_incentive": 2100000,
+       "pension_nqdc": 393642,
+       "all_other": 121650,
+       "total": 7922350
+      },
+      "2024": {
+       "salary": 907500,
+       "stock_awards": 3338083,
+       "option_awards": 481576,
+       "non_equity_incentive": 2100000,
+       "pension_nqdc": 230028,
+       "all_other": 124300,
+       "total": 7181487
+      },
+      "2023": {
+       "salary": 876250,
+       "stock_awards": 3643454,
+       "option_awards": 451678,
+       "non_equity_incentive": 2200000,
+       "pension_nqdc": 360686,
+       "all_other": 127050,
+       "total": 7659118
+      }
+     }
+    },
+    {
+     "name": "Marlene Debel",
+     "title": "EVP, CRO of MetLife, Inc., and Head of MII",
+     "years": {
+      "2025": {
+       "salary": 842500,
+       "stock_awards": 3216919,
+       "option_awards": null,
+       "non_equity_incentive": 2000000,
+       "pension_nqdc": 395915,
+       "all_other": 138394,
+       "total": 6593728
+      },
+      "2024": {
+       "salary": 815000,
+       "stock_awards": 2125006,
+       "option_awards": 306558,
+       "non_equity_incentive": 2000000,
+       "pension_nqdc": 271475,
+       "all_other": 122796,
+       "total": 5640835
+      },
+      "2023": {
+       "salary": 747917,
+       "stock_awards": 2514875,
+       "option_awards": 291935,
+       "non_equity_incentive": 1800000,
+       "pension_nqdc": 270014,
+       "all_other": 102129,
+       "total": 5726870
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no Bonus column."
+   ]
+  },
+  "DLR": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1297996/000130817926000296/dlr015307-def14a.htm",
+   "accession": "0001308179-26-000296",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Andrew P. Power",
+     "title": "President & Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 978846,
+       "bonus": null,
+       "stock_awards": 14174684,
+       "non_equity_incentive": 3700000,
+       "all_other": 2217967,
+       "total": 21071498
+      },
+      "2024": {
+       "salary": 879231,
+       "bonus": null,
+       "stock_awards": 11214278,
+       "non_equity_incentive": 2857500,
+       "all_other": 1303105,
+       "total": 16254113
+      },
+      "2023": {
+       "salary": 802308,
+       "bonus": 200000,
+       "stock_awards": 8952335,
+       "non_equity_incentive": 1610000,
+       "all_other": 790917,
+       "total": 12355560
+      }
+     }
+    },
+    {
+     "name": "Matthew Mercier",
+     "title": "Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 594711,
+       "bonus": null,
+       "stock_awards": 3899846,
+       "non_equity_incentive": 1065000,
+       "all_other": 379730,
+       "total": 5939288
+      },
+      "2024": {
+       "salary": 549038,
+       "bonus": null,
+       "stock_awards": 2363356,
+       "non_equity_incentive": 908500,
+       "all_other": 112249,
+       "total": 3933143
+      },
+      "2023": {
+       "salary": 444519,
+       "bonus": null,
+       "stock_awards": 1499823,
+       "non_equity_incentive": 486563,
+       "all_other": 73131,
+       "total": 2504036
+      }
+     }
+    },
+    {
+     "name": "Jeannie Lee",
+     "title": "Executive Vice President, General Counsel and Secretary",
+     "years": {
+      "2025": {
+       "salary": 494712,
+       "bonus": null,
+       "stock_awards": 2115922,
+       "non_equity_incentive": 850000,
+       "all_other": 296563,
+       "total": 3757196
+      },
+      "2024": {
+       "salary": 464615,
+       "bonus": null,
+       "stock_awards": 1759343,
+       "non_equity_incentive": 750500,
+       "all_other": 180772,
+       "total": 3155231
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Andrew P. Power 2025: components sum 21,071,497 vs printed total 21,071,498 (delta -1); kept verbatim",
+    "Andrew P. Power 2024: components sum 16,254,114 vs printed total 16,254,113 (delta +1); kept verbatim",
+    "Matthew Mercier 2025: components sum 5,939,287 vs printed total 5,939,288 (delta -1); kept verbatim",
+    "Jeannie Lee 2025: components sum 3,757,197 vs printed total 3,757,196 (delta +1); kept verbatim",
+    "Jeannie Lee 2024: components sum 3,155,230 vs printed total 3,155,231 (delta -1); kept verbatim",
+    "SCT Bonus column cells are blank (not dashes) for 2025/2024 rows; extracted as null."
+   ]
+  },
+  "WYNN": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1174922/000119312526124077/d26334ddef14a.htm",
+   "accession": "0001193125-26-124077",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "CRAIG S. BILLINGS",
+     "title": "Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 2000000,
+       "stock_awards": 9624110,
+       "non_equity_incentive": 3433750,
+       "all_other": 33041,
+       "total": 15090901
+      },
+      "2024": {
+       "salary": 2000000,
+       "stock_awards": 11213595,
+       "non_equity_incentive": 2687500,
+       "all_other": 30221,
+       "total": 15931316
+      },
+      "2023": {
+       "salary": 1900962,
+       "stock_awards": 11483057,
+       "non_equity_incentive": 2750000,
+       "all_other": 18615,
+       "total": 16152634
+      }
+     }
+    },
+    {
+     "name": "JULIE M. CAMERON-DOE",
+     "title": "Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 950000,
+       "stock_awards": 2251089,
+       "non_equity_incentive": 1304825,
+       "all_other": 23473,
+       "total": 4529387
+      },
+      "2024": {
+       "salary": 950000,
+       "stock_awards": 2749989,
+       "non_equity_incentive": 1021250,
+       "all_other": 20936,
+       "total": 4742175
+      },
+      "2023": {
+       "salary": 922500,
+       "stock_awards": 2712319,
+       "non_equity_incentive": 1045000,
+       "all_other": 13633,
+       "total": 4693452
+      }
+     }
+    },
+    {
+     "name": "JACQUI KRUM",
+     "title": "Executive Vice President, General Counsel and Secretary",
+     "years": {
+      "2025": {
+       "salary": 825000,
+       "stock_awards": 1635700,
+       "non_equity_incentive": 1133138,
+       "all_other": 23974,
+       "total": 3617812
+      },
+      "2024": {
+       "salary": 543654,
+       "stock_awards": 1978796,
+       "non_equity_incentive": 619446,
+       "all_other": 153115,
+       "total": 3295011
+      }
+     }
+    }
+   ],
+   "notes": [
+    "JACQUI KRUM 2023: all-dash row excluded (not NEO that year)",
+    "Filing prints NEO names/titles in ALL CAPS; kept verbatim. Footnote markers (5)/(6) stripped from names."
+   ]
+  },
+  "TRGP": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1389170/000119312526126280/trgp-20260326.htm",
+   "accession": "0001193125-26-126280",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Matthew J. Meloy",
+     "title": "Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 1170667,
+       "bonus": 3990000,
+       "stock_awards": 16275993,
+       "all_other": 34048,
+       "total": 21470708
+      },
+      "2024": {
+       "salary": 1017500,
+       "bonus": 3584000,
+       "stock_awards": 10881532,
+       "all_other": 32761,
+       "total": 15515793
+      },
+      "2023": {
+       "salary": 970475,
+       "bonus": 2327100,
+       "stock_awards": 10864516,
+       "all_other": 29539,
+       "total": 14191630
+      }
+     }
+    },
+    {
+     "name": "Jennifer R. Kneale",
+     "title": "President",
+     "years": {
+      "2025": {
+       "salary": 759167,
+       "bonus": 1841000,
+       "stock_awards": 6282374,
+       "all_other": 31906,
+       "total": 8914447
+      },
+      "2024": {
+       "salary": 665000,
+       "bonus": 1700000,
+       "stock_awards": 3945028,
+       "all_other": 31027,
+       "total": 6341055
+      },
+      "2023": {
+       "salary": 629167,
+       "bonus": 1071600,
+       "stock_awards": 3939761,
+       "all_other": 29539,
+       "total": 5670067
+      }
+     }
+    },
+    {
+     "name": "Patrick J. McDonie",
+     "title": "President – Gathering and Processing",
+     "years": {
+      "2025": {
+       "salary": 670833,
+       "bonus": 1283000,
+       "stock_awards": 4323531,
+       "all_other": 31402,
+       "total": 6308766
+      },
+      "2024": {
+       "salary": 644167,
+       "bonus": 1300000,
+       "stock_awards": 2805944,
+       "all_other": 30876,
+       "total": 4780987
+      },
+      "2023": {
+       "salary": 602500,
+       "bonus": 830300,
+       "stock_awards": 2755784,
+       "all_other": 29539,
+       "total": 4218123
+      }
+     }
+    },
+    {
+     "name": "D. Scott Pryor",
+     "title": "President – Logistics and Transportation",
+     "years": {
+      "2025": {
+       "salary": 670833,
+       "bonus": 1283000,
+       "stock_awards": 4323531,
+       "all_other": 31402,
+       "total": 6308766
+      },
+      "2024": {
+       "salary": 644167,
+       "bonus": 1300000,
+       "stock_awards": 2805944,
+       "all_other": 30876,
+       "total": 4780987
+      },
+      "2023": {
+       "salary": 602500,
+       "bonus": 830300,
+       "stock_awards": 2755784,
+       "all_other": 29539,
+       "total": 4218123
+      }
+     }
+    },
+    {
+     "name": "Robert M. Muraro",
+     "title": "Chief Commercial Officer",
+     "years": {
+      "2025": {
+       "salary": 670833,
+       "bonus": 1283000,
+       "stock_awards": 4323531,
+       "all_other": 31402,
+       "total": 6308766
+      },
+      "2024": {
+       "salary": 644167,
+       "bonus": 1300000,
+       "stock_awards": 2805944,
+       "all_other": 30876,
+       "total": 4780987
+      },
+      "2023": {
+       "salary": 602500,
+       "bonus": 830300,
+       "stock_awards": 2755784,
+       "all_other": 29539,
+       "total": 4218123
+      }
+     }
+    },
+    {
+     "name": "William A. Byers",
+     "title": "Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 616667,
+       "bonus": 1188000,
+       "stock_awards": 3532369,
+       "all_other": 31150,
+       "total": 5368186
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no Option Awards, no Non-Equity Incentive, and no pension column; annual incentive reported under 'Bonus (1)'."
+   ]
+  },
+  "GEN": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/849399/000114036126029830/ny20070898x1_def14a.htm",
+   "accession": "0001140361-26-029830",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Vincent Pilette",
+     "title": "Chief Executive Officer",
+     "years": {
+      "2026": {
+       "salary": 986538,
+       "bonus": null,
+       "stock_awards": 80495844,
+       "non_equity_incentive": 2025000,
+       "all_other": 74926,
+       "total": 83582308
+      },
+      "2025": {
+       "salary": 950000,
+       "bonus": null,
+       "stock_awards": 19831802,
+       "non_equity_incentive": 1721875,
+       "all_other": 6519,
+       "total": 22510196
+      },
+      "2024": {
+       "salary": 950000,
+       "bonus": null,
+       "stock_awards": 13386893,
+       "non_equity_incentive": 1009375,
+       "all_other": 16559,
+       "total": 15362827
+      }
+     }
+    },
+    {
+     "name": "Natalie M. Derse",
+     "title": "Chief Financial Officer",
+     "years": {
+      "2026": {
+       "salary": 636538,
+       "bonus": null,
+       "stock_awards": 20847605,
+       "non_equity_incentive": 877500,
+       "all_other": 6404,
+       "total": 22368047
+      },
+      "2025": {
+       "salary": 600000,
+       "bonus": null,
+       "stock_awards": 6838573,
+       "non_equity_incentive": 870000,
+       "all_other": 6000,
+       "total": 8314573
+      },
+      "2024": {
+       "salary": 586538,
+       "bonus": null,
+       "stock_awards": 4697160,
+       "non_equity_incentive": 510000,
+       "all_other": 6404,
+       "total": 5800102
+      }
+     }
+    },
+    {
+     "name": "Bryan S. Ko",
+     "title": "Chief Operating Officer, Chief Legal Officer, and Secretary",
+     "years": {
+      "2026": {
+       "salary": 581154,
+       "bonus": null,
+       "stock_awards": 20485803,
+       "non_equity_incentive": 810000,
+       "all_other": 63565,
+       "total": 21940522
+      },
+      "2025": {
+       "salary": 530000,
+       "bonus": null,
+       "stock_awards": 5470831,
+       "non_equity_incentive": 614800,
+       "all_other": 11000,
+       "total": 6626631
+      },
+      "2024": {
+       "salary": 530000,
+       "bonus": null,
+       "stock_awards": 3522881,
+       "non_equity_incentive": 360400,
+       "all_other": 13500,
+       "total": 4426781
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT splits Stock Awards into Annual / VCP II / Total sub-columns; stock_awards = Total sub-column. Pilette 2026 includes a $50,103,805 VCP II grant (total stock $80,495,844). Fiscal years 2026/2025/2024."
+   ]
+  },
+  "CTRA": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/858470/000085847026000078/cog-20251231.htm",
+   "accession": "0000858470-26-000078",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "pension_nqdc",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Thomas E. Jorden",
+     "title": "Chairman, Chief Executive Officer and President",
+     "years": {
+      "2025": {
+       "salary": 1200000,
+       "bonus": null,
+       "stock_awards": 11354687,
+       "option_awards": null,
+       "non_equity_incentive": 2600000,
+       "pension_nqdc": null,
+       "all_other": 441850,
+       "total": 15596537
+      },
+      "2024": {
+       "salary": 1198558,
+       "bonus": null,
+       "stock_awards": 10628850,
+       "option_awards": null,
+       "non_equity_incentive": 2500000,
+       "pension_nqdc": null,
+       "all_other": 421552,
+       "total": 14748960
+      },
+      "2023": {
+       "salary": 1125000,
+       "bonus": null,
+       "stock_awards": 11071724,
+       "option_awards": null,
+       "non_equity_incentive": 2000000,
+       "pension_nqdc": null,
+       "all_other": 351129,
+       "total": 14547853
+      }
+     }
+    },
+    {
+     "name": "Shannon E. Young III",
+     "title": "Executive Vice President and Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 669231,
+       "bonus": null,
+       "stock_awards": 4128983,
+       "option_awards": null,
+       "non_equity_incentive": 1200000,
+       "pension_nqdc": null,
+       "all_other": 252180,
+       "total": 6250394
+      },
+      "2024": {
+       "salary": 640193,
+       "bonus": null,
+       "stock_awards": 3985847,
+       "option_awards": null,
+       "non_equity_incentive": 1100000,
+       "pension_nqdc": null,
+       "all_other": 213476,
+       "total": 5939516
+      },
+      "2023": {
+       "salary": 290923,
+       "bonus": 100000,
+       "stock_awards": 4579816,
+       "option_awards": null,
+       "non_equity_incentive": 780000,
+       "pension_nqdc": null,
+       "all_other": 60214,
+       "total": 5810953
+      }
+     }
+    },
+    {
+     "name": "Stephen P. Bell",
+     "title": "Executive Vice President—Business Development",
+     "years": {
+      "2025": {
+       "salary": 629231,
+       "bonus": null,
+       "stock_awards": 4645113,
+       "option_awards": null,
+       "non_equity_incentive": 635000,
+       "pension_nqdc": null,
+       "all_other": 211677,
+       "total": 6121021
+      },
+      "2024": {
+       "salary": 600577,
+       "bonus": null,
+       "stock_awards": 4783017,
+       "option_awards": null,
+       "non_equity_incentive": 920000,
+       "pension_nqdc": null,
+       "all_other": 219378,
+       "total": 6522972
+      },
+      "2023": {
+       "salary": 577692,
+       "bonus": null,
+       "stock_awards": 3321502,
+       "option_awards": null,
+       "non_equity_incentive": 840000,
+       "pension_nqdc": null,
+       "all_other": 200636,
+       "total": 4939830
+      }
+     }
+    },
+    {
+     "name": "Michael D. DeShazer",
+     "title": "Executive Vice President—Operations",
+     "years": {
+      "2025": {
+       "salary": 518462,
+       "bonus": null,
+       "stock_awards": 2838716,
+       "option_awards": null,
+       "non_equity_incentive": 875000,
+       "pension_nqdc": null,
+       "all_other": 225078,
+       "total": 4457256
+      },
+      "2024": {
+       "salary": 458421,
+       "bonus": null,
+       "stock_awards": 1700665,
+       "option_awards": null,
+       "non_equity_incentive": 940000,
+       "pension_nqdc": null,
+       "all_other": 185601,
+       "total": 3284687
+      }
+     }
+    },
+    {
+     "name": "Blake A. Sirgo",
+     "title": "Executive Vice President—Business Units",
+     "years": {
+      "2025": {
+       "salary": 518462,
+       "bonus": null,
+       "stock_awards": 2838716,
+       "option_awards": null,
+       "non_equity_incentive": 848000,
+       "pension_nqdc": null,
+       "all_other": 211685,
+       "total": 4416863
+      },
+      "2024": {
+       "salary": 467308,
+       "bonus": null,
+       "stock_awards": 1700665,
+       "option_awards": null,
+       "non_equity_incentive": 900000,
+       "pension_nqdc": null,
+       "all_other": 172332,
+       "total": 3240305
+      },
+      "2023": {
+       "salary": 452769,
+       "bonus": null,
+       "stock_awards": 1494694,
+       "option_awards": null,
+       "non_equity_incentive": 630000,
+       "pension_nqdc": null,
+       "all_other": 160124,
+       "total": 2737587
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Footnote marker (4) stripped from DeShazer/Sirgo names."
+   ]
+  },
+  "VRSN": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1014473/000101447326000013/vrsn-20260409.htm",
+   "accession": "0001014473-26-000013",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "D. James Bidzos",
+     "title": "Executive Chairman, President and Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 950000,
+       "stock_awards": 12999929,
+       "non_equity_incentive": 1586025,
+       "all_other": 720,
+       "total": 15536674
+      },
+      "2024": {
+       "salary": 950000,
+       "stock_awards": 11732383,
+       "non_equity_incentive": 1372275,
+       "all_other": 720,
+       "total": 14055378
+      },
+      "2023": {
+       "salary": 950000,
+       "stock_awards": 9999781,
+       "non_equity_incentive": 1265400,
+       "all_other": 30720,
+       "total": 12245901
+      }
+     }
+    },
+    {
+     "name": "John D. Calys",
+     "title": "Executive Vice President, Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 450760,
+       "stock_awards": 2499488,
+       "non_equity_incentive": 434933,
+       "all_other": 12405,
+       "total": 3397586
+      }
+     }
+    },
+    {
+     "name": "George E. Kilguss, III",
+     "title": "Former Executive Vice President, Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 325649,
+       "stock_awards": 3501613,
+       "non_equity_incentive": null,
+       "all_other": 112050,
+       "total": 3939312
+      },
+      "2024": {
+       "salary": 555000,
+       "stock_awards": 3501619,
+       "non_equity_incentive": 534465,
+       "all_other": 12220,
+       "total": 4603304
+      },
+      "2023": {
+       "salary": 554231,
+       "stock_awards": 3199862,
+       "non_equity_incentive": 492840,
+       "all_other": 11970,
+       "total": 4258903
+      }
+     }
+    },
+    {
+     "name": "Danny R. McPherson",
+     "title": "Executive Vice President, Technology and Chief Security Officer",
+     "years": {
+      "2025": {
+       "salary": 571437,
+       "stock_awards": 4399438,
+       "non_equity_incentive": 639335,
+       "all_other": 12470,
+       "total": 5622680
+      },
+      "2024": {
+       "salary": 555000,
+       "stock_awards": 3501619,
+       "non_equity_incentive": 534465,
+       "all_other": 12220,
+       "total": 4603304
+      },
+      "2023": {
+       "salary": 554231,
+       "stock_awards": 3199862,
+       "non_equity_incentive": 492840,
+       "all_other": 11970,
+       "total": 4258903
+      }
+     }
+    },
+    {
+     "name": "Thomas C. Indelicarto",
+     "title": "Executive Vice President, General Counsel and Secretary",
+     "years": {
+      "2025": {
+       "salary": 571437,
+       "stock_awards": 3699852,
+       "non_equity_incentive": 639335,
+       "all_other": 720,
+       "total": 4911344
+      },
+      "2024": {
+       "salary": 555000,
+       "stock_awards": 3501619,
+       "non_equity_incentive": 534465,
+       "all_other": 720,
+       "total": 4591804
+      },
+      "2023": {
+       "salary": 548846,
+       "stock_awards": 3199862,
+       "non_equity_incentive": 492840,
+       "all_other": 720,
+       "total": 4242268
+      }
+     }
+    }
+   ],
+   "notes": [
+    "SCT has no Bonus and no Option Awards column. Footnote marker (6) stripped from Kilguss name."
+   ]
+  },
+  "FRT": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/34903/000119312526127642/d33770ddef14a.htm",
+   "accession": "0001193125-26-127642",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Donald C. Wood (PEO)",
+     "title": "Chief Executive Officer and President",
+     "years": {
+      "2025": {
+       "salary": 1000000,
+       "bonus": null,
+       "stock_awards": 7554434,
+       "non_equity_incentive": 1350000,
+       "all_other": 24712,
+       "total": 9929147
+      },
+      "2024": {
+       "salary": 1000000,
+       "bonus": null,
+       "stock_awards": 6946529,
+       "non_equity_incentive": 1265625,
+       "all_other": 28376,
+       "total": 9240530
+      },
+      "2023": {
+       "salary": 1000000,
+       "bonus": null,
+       "stock_awards": 6502565,
+       "non_equity_incentive": 1406250,
+       "all_other": 33005,
+       "total": 8941820
+      }
+     }
+    },
+    {
+     "name": "Daniel Guglielmone (PFO)",
+     "title": "Executive Vice President-Chief Financial Officer & Treasurer",
+     "years": {
+      "2025": {
+       "salary": 650000,
+       "bonus": null,
+       "stock_awards": 1762056,
+       "non_equity_incentive": 877500,
+       "all_other": 13118,
+       "total": 3302674
+      },
+      "2024": {
+       "salary": 575000,
+       "bonus": null,
+       "stock_awards": 1063974,
+       "non_equity_incentive": 646875,
+       "all_other": 13340,
+       "total": 2299188
+      },
+      "2023": {
+       "salary": 575000,
+       "bonus": 150000,
+       "stock_awards": 989990,
+       "non_equity_incentive": 718750,
+       "all_other": 12389,
+       "total": 2446128
+      }
+     }
+    },
+    {
+     "name": "Dawn M. Becker",
+     "title": "Executive Vice President-Chief Legal Officer & Secretary",
+     "years": {
+      "2025": {
+       "salary": 575000,
+       "bonus": null,
+       "stock_awards": 1368720,
+       "non_equity_incentive": 517500,
+       "all_other": 14391,
+       "total": 2475611
+      },
+      "2024": {
+       "salary": 575000,
+       "bonus": null,
+       "stock_awards": 1279594,
+       "non_equity_incentive": 485156,
+       "all_other": 18868,
+       "total": 2358619
+      },
+      "2023": {
+       "salary": 575000,
+       "bonus": null,
+       "stock_awards": 1205597,
+       "non_equity_incentive": 539063,
+       "all_other": 17644,
+       "total": 2337304
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Donald C. Wood (PEO) 2025: components sum 9,929,146 vs printed total 9,929,147 (delta -1); kept verbatim",
+    "Daniel Guglielmone (PFO) 2024: components sum 2,299,189 vs printed total 2,299,188 (delta +1); kept verbatim",
+    "Daniel Guglielmone (PFO) 2023: components sum 2,446,129 vs printed total 2,446,128 (delta +1); kept verbatim",
+    "Dawn M. Becker 2024: components sum 2,358,618 vs printed total 2,358,619 (delta -1); kept verbatim",
+    "Name cells print '(PEO)'/'(PFO)' designations; kept verbatim in name."
+   ]
+  },
+  "TPL": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1811074/000181107426000018/tpl-20251231.htm",
+   "accession": "0001811074-26-000018",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "non_equity_incentive",
+    "pension_nqdc",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Tyler Glover",
+     "title": "President and Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 850000,
+       "stock_awards": 5026856,
+       "non_equity_incentive": 1150050,
+       "pension_nqdc": 10210,
+       "all_other": 35400,
+       "total": 7072516
+      },
+      "2024": {
+       "salary": 850000,
+       "stock_awards": 4756794,
+       "non_equity_incentive": 1771181,
+       "pension_nqdc": null,
+       "all_other": 35100,
+       "total": 7413075
+      },
+      "2023": {
+       "salary": 850000,
+       "stock_awards": 3771255,
+       "non_equity_incentive": 1412785,
+       "pension_nqdc": 40477,
+       "all_other": 34200,
+       "total": 6108717
+      }
+     }
+    },
+    {
+     "name": "Chris Steddum",
+     "title": "Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 545000,
+       "stock_awards": 2459499,
+       "non_equity_incentive": 670350,
+       "pension_nqdc": 6023,
+       "all_other": 21000,
+       "total": 3701872
+      },
+      "2024": {
+       "salary": 525000,
+       "stock_awards": 2595979,
+       "non_equity_incentive": 895062,
+       "pension_nqdc": 13148,
+       "all_other": 20700,
+       "total": 4049889
+      },
+      "2023": {
+       "salary": 500000,
+       "stock_awards": 1806913,
+       "non_equity_incentive": 679950,
+       "pension_nqdc": 26724,
+       "all_other": 19800,
+       "total": 3033387
+      }
+     }
+    },
+    {
+     "name": "Micheal W. Dobbs",
+     "title": "Senior Vice President, Secretary and General Counsel",
+     "years": {
+      "2025": {
+       "salary": 455000,
+       "stock_awards": 1409746,
+       "non_equity_incentive": 447720,
+       "pension_nqdc": 10719,
+       "all_other": 20763,
+       "total": 2343948
+      },
+      "2024": {
+       "salary": 440000,
+       "stock_awards": 1508069,
+       "non_equity_incentive": 625123,
+       "pension_nqdc": 23226,
+       "all_other": 20700,
+       "total": 2617118
+      },
+      "2023": {
+       "salary": 420000,
+       "stock_awards": 1166994,
+       "non_equity_incentive": 475965,
+       "pension_nqdc": 31869,
+       "all_other": 19800,
+       "total": 2114628
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Filing spells 'Micheal W. Dobbs' (sic); kept verbatim."
+   ]
+  },
+  "CPRT": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312525249664/d84887ddef14a.htm",
+   "accession": "0001193125-25-249664",
+   "sct_columns": [
+    "salary",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "A. Jayson Adair",
+     "title": "Executive Chairman",
+     "years": {
+      "2025": {
+       "salary": 1,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": null,
+       "all_other": 432171,
+       "total": 432172
+      },
+      "2024": {
+       "salary": 1,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": null,
+       "all_other": 845411,
+       "total": 845412
+      },
+      "2023": {
+       "salary": 1,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": null,
+       "all_other": 384575,
+       "total": 384576
+      }
+     }
+    },
+    {
+     "name": "Jeffrey Liaw",
+     "title": "Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 900000,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": 1093400,
+       "all_other": 79292,
+       "total": 2072692
+      },
+      "2024": {
+       "salary": 900000,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": 1093400,
+       "all_other": 98940,
+       "total": 2092340
+      },
+      "2023": {
+       "salary": 900000,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": 1100000,
+       "all_other": 9000,
+       "total": 2009000
+      }
+     }
+    },
+    {
+     "name": "Leah C. Stearns",
+     "title": "Senior Vice President and Chief Financial Officer",
+     "years": {
+      "2025": {
+       "salary": 580591,
+       "stock_awards": null,
+       "option_awards": null,
+       "non_equity_incentive": 464000,
+       "all_other": 11714,
+       "total": 1056305
+      },
+      "2024": {
+       "salary": 563327,
+       "stock_awards": null,
+       "option_awards": 3275415,
+       "non_equity_incentive": 450481,
+       "all_other": 12664,
+       "total": 4301887
+      },
+      "2023": {
+       "salary": 349039,
+       "stock_awards": 3942000,
+       "option_awards": 5110638,
+       "non_equity_incentive": 300000,
+       "all_other": 5250,
+       "total": 9706972
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Leah C. Stearns 2023: components sum 9,706,927 vs printed total 9,706,972 (delta -45); kept verbatim",
+    "SCT header uses 'Fiscal Year'; has no Bonus and no pension column. Adair salary is $1 (symbolic)."
+   ]
+  },
+  "CARR": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1783180/000178318026000016/carr-20260303.htm",
+   "accession": "0001783180-26-000016",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "pension_nqdc",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "David L. Gitlin",
+     "title": "Chairman & Chief Executive Officer",
+     "years": {
+      "2025": {
+       "salary": 1500000,
+       "bonus": null,
+       "stock_awards": 5634548,
+       "option_awards": 5747165,
+       "non_equity_incentive": 1023750,
+       "pension_nqdc": 237661,
+       "all_other": 819789,
+       "total": 14962913
+      },
+      "2024": {
+       "salary": 1475000,
+       "bonus": null,
+       "stock_awards": 31188838,
+       "option_awards": 29602373,
+       "non_equity_incentive": 2362500,
+       "pension_nqdc": 179400,
+       "all_other": 926134,
+       "total": 65734245
+      },
+      "2023": {
+       "salary": 1387500,
+       "bonus": null,
+       "stock_awards": 6127211,
+       "option_awards": 5894030,
+       "non_equity_incentive": 3503500,
+       "pension_nqdc": 36319,
+       "all_other": 746640,
+       "total": 17695200
+      }
+     }
+    },
+    {
+     "name": "Patrick Goris",
+     "title": "EVP, Chief Financial & Strategy Officer",
+     "years": {
+      "2025": {
+       "salary": 887500,
+       "bonus": null,
+       "stock_awards": 1704746,
+       "option_awards": 1738679,
+       "non_equity_incentive": 351000,
+       "pension_nqdc": null,
+       "all_other": 206362,
+       "total": 4888287
+      },
+      "2024": {
+       "salary": 837500,
+       "bonus": null,
+       "stock_awards": 4229042,
+       "option_awards": 3637525,
+       "non_equity_incentive": 879750,
+       "pension_nqdc": null,
+       "all_other": 235859,
+       "total": 9819676
+      },
+      "2023": {
+       "salary": 790000,
+       "bonus": null,
+       "stock_awards": 2747681,
+       "option_awards": 2643095,
+       "non_equity_incentive": 1144000,
+       "pension_nqdc": null,
+       "all_other": 183765,
+       "total": 7508541
+      }
+     }
+    },
+    {
+     "name": "Michael L. Gierges",
+     "title": "President, CSAME",
+     "years": {
+      "2025": {
+       "salary": 530303,
+       "bonus": 1610000,
+       "stock_awards": 1788273,
+       "option_awards": 1804119,
+       "non_equity_incentive": 346500,
+       "pension_nqdc": null,
+       "all_other": 980626,
+       "total": 7059821
+      }
+     }
+    },
+    {
+     "name": "Gaurang Pandya",
+     "title": "President, CSA",
+     "years": {
+      "2025": {
+       "salary": 737500,
+       "bonus": null,
+       "stock_awards": 1171973,
+       "option_awards": 1195325,
+       "non_equity_incentive": 202500,
+       "pension_nqdc": null,
+       "all_other": 128107,
+       "total": 3435405
+      },
+      "2024": {
+       "salary": 700000,
+       "bonus": null,
+       "stock_awards": 1113197,
+       "option_awards": 1090253,
+       "non_equity_incentive": 652050,
+       "pension_nqdc": null,
+       "all_other": 125783,
+       "total": 3681283
+      }
+     }
+    },
+    {
+     "name": "Edward Dryden",
+     "title": "President, CST",
+     "years": {
+      "2025": {
+       "salary": 672500,
+       "bonus": null,
+       "stock_awards": 1002905,
+       "option_awards": 1022984,
+       "non_equity_incentive": 416160,
+       "pension_nqdc": null,
+       "all_other": 111846,
+       "total": 3226395
+      }
+     }
+    }
+   ],
+   "notes": []
+  },
+  "IPG": {
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/51644/000119312524094907/d496315ddef14a.htm",
+   "accession": "0001193125-24-094907",
+   "sct_columns": [
+    "salary",
+    "bonus",
+    "stock_awards",
+    "option_awards",
+    "non_equity_incentive",
+    "pension_nqdc",
+    "all_other",
+    "total"
+   ],
+   "neos": [
+    {
+     "name": "Philippe Krakowsky",
+     "title": "Chief Executive Officer",
+     "years": {
+      "2023": {
+       "salary": 1500000,
+       "bonus": 0,
+       "stock_awards": 6663055,
+       "option_awards": 0,
+       "non_equity_incentive": 6055600,
+       "pension_nqdc": 38695,
+       "all_other": 184010,
+       "total": 14441360
+      },
+      "2022": {
+       "salary": 1500000,
+       "bonus": 0,
+       "stock_awards": 5726089,
+       "option_awards": 0,
+       "non_equity_incentive": 5801165,
+       "pension_nqdc": 0,
+       "all_other": 182188,
+       "total": 13209442
+      },
+      "2021": {
+       "salary": 1500000,
+       "bonus": 2000000,
+       "stock_awards": 6295623,
+       "option_awards": 985000,
+       "non_equity_incentive": 6404500,
+       "pension_nqdc": 0,
+       "all_other": 186524,
+       "total": 17371647
+      }
+     }
+    },
+    {
+     "name": "Ellen Johnson",
+     "title": "EVP and Chief Financial Officer",
+     "years": {
+      "2023": {
+       "salary": 1000000,
+       "bonus": 0,
+       "stock_awards": 2220996,
+       "option_awards": 0,
+       "non_equity_incentive": 1875000,
+       "pension_nqdc": 0,
+       "all_other": 114263,
+       "total": 5210259
+      },
+      "2022": {
+       "salary": 900000,
+       "bonus": 650000,
+       "stock_awards": 1749634,
+       "option_awards": 0,
+       "non_equity_incentive": 2253833,
+       "pension_nqdc": 0,
+       "all_other": 103627,
+       "total": 5657094
+      },
+      "2021": {
+       "salary": 900000,
+       "bonus": 500000,
+       "stock_awards": 1690815,
+       "option_awards": 0,
+       "non_equity_incentive": 2225900,
+       "pension_nqdc": 0,
+       "all_other": 97724,
+       "total": 5414439
+      }
+     }
+    },
+    {
+     "name": "Andrew Bonzani",
+     "title": "EVP and General Counsel",
+     "years": {
+      "2023": {
+       "salary": 900000,
+       "bonus": 0,
+       "stock_awards": 1522978,
+       "option_awards": 0,
+       "non_equity_incentive": 1580000,
+       "pension_nqdc": 0,
+       "all_other": 105702,
+       "total": 4108680
+      },
+      "2022": {
+       "salary": 900000,
+       "bonus": 650000,
+       "stock_awards": 1526938,
+       "option_awards": 0,
+       "non_equity_incentive": 2133249,
+       "pension_nqdc": 0,
+       "all_other": 87477,
+       "total": 5297664
+      },
+      "2021": {
+       "salary": 900000,
+       "bonus": 600000,
+       "stock_awards": 1546919,
+       "option_awards": 0,
+       "non_equity_incentive": 2018416,
+       "pension_nqdc": 0,
+       "all_other": 82174,
+       "total": 5147509
+      }
+     }
+    },
+    {
+     "name": "Christopher Carroll",
+     "title": "SVP, Controller and Chief Accounting Officer",
+     "years": {
+      "2023": {
+       "salary": 700000,
+       "bonus": 0,
+       "stock_awards": 539388,
+       "option_awards": 0,
+       "non_equity_incentive": 690000,
+       "pension_nqdc": 0,
+       "all_other": 83671,
+       "total": 2013059
+      },
+      "2022": {
+       "salary": 700000,
+       "bonus": 250000,
+       "stock_awards": 540773,
+       "option_awards": 0,
+       "non_equity_incentive": 1018409,
+       "pension_nqdc": 0,
+       "all_other": 65602,
+       "total": 2574784
+      },
+      "2021": {
+       "salary": 668750,
+       "bonus": 200000,
+       "stock_awards": 539614,
+       "option_awards": 0,
+       "non_equity_incentive": 1080098,
+       "pension_nqdc": 0,
+       "all_other": 66388,
+       "total": 2554850
+      }
+     }
+    }
+   ],
+   "notes": [
+    "Latest DEF 14A on EDGAR is the 2024 proxy (accession 0001193125-24-094907); no 2025 proxy filed (Omnicom acquisition). Years 2023/2022/2021."
+   ]
+  }
+ }
+}
