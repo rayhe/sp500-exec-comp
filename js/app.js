@@ -707,6 +707,16 @@ var REALIZED_COMP_NOTES = {
     'TSLA': "Tesla's 10-K/A (Amendment No. 1, FY2025, filed 2026-04-30) says the $158.4B is a grant-date accounting figure. The $132.3B 2025 CEO Performance Award and the $26.1B 2025 CEO Interim Award were both forfeited in full in April 2026. Per the filing: 'using the Total CEO realized compensation for 2025, such ratio was 0.00:1.'"
 };
 
+/* Filing-verbatim realized-comp footnote for any displayed headline figure that is
+   a grant-date accounting value with a materially different realized figure in the
+   same filing (e.g. TSLA's $158.4B / 2,522,203:1, realized $0 / 0.00:1). Returns the
+   span HTML or an empty string when no note exists. Same escaped-content contract
+   as MISSING_DATA_REASONS: notes are static filing-verbatim strings. */
+function realizedFootnoteHtml(ticker) {
+    var n = REALIZED_COMP_NOTES[ticker];
+    return n ? ' <span class="insight-footnote">' + n + '</span>' : '';
+}
+
 /* Pre-compute aspirational benchmarking score: how much each company's selected peer
    group median exceeds its own CEO pay. Positive = aspirational (selects higher-paid peers),
    negative = paying above self-selected peers. Requires peerData to be loaded.
@@ -1764,10 +1774,8 @@ function populateInsights(comp, trends, sectorFilter) {
 
     // Filing-verbatim realized-comp footnote for a headline figure (e.g. TSLA's
     // $158.4B / 2,522,203:1, realized $0). Empty string when no note exists.
-    function realizedNote(ticker) {
-        var n = REALIZED_COMP_NOTES[ticker];
-        return n ? ' <span class="insight-footnote">' + n + '</span>' : '';
-    }
+    // Shared file-scope helper (defined next to REALIZED_COMP_NOTES).
+    function realizedNote(ticker) { return realizedFootnoteHtml(ticker); }
 
     // 1. Pay Concentration — top 10 CEOs share of total
     var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
@@ -7442,6 +7450,10 @@ function setupDetailPanel(companies) {
             if (sentences.length > 0) {
                 html += '<div class="detail-profile-summary" aria-label="Compensation profile summary">';
                 html += '<p>' + sentences.join(' ') + '</p>';
+                // Filing-verbatim realized-comp footnote (e.g. TSLA): the summary's
+                // headline figures are grant-date accounting values; the filing's
+                // own realized framing is appended when a note exists for the ticker.
+                html += realizedFootnoteHtml(ticker);
                 html += '</div>';
             }
         })();
