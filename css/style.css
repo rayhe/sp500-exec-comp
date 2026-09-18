@@ -524,6 +524,16 @@ header h1 {
     line-height: 1.45;
 }
 
+.insight-footnote {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
 .insight-spark-wrap {
     margin-top: 6px;
     color: var(--text-secondary);

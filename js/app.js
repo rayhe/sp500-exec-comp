@@ -699,6 +699,14 @@ var MISSING_DATA_REASONS = {
     'SW':   'Smurfit WestRock formed via merger in July 2024 — no FY2024 pay ratio disclosed.'
 };
 
+/* Filing-verbatim realized-compensation footnotes for headline insight cards.
+   Keys are tickers whose displayed figures are grant-date accounting values with
+   a materially different realized figure disclosed in the same filing, so the
+   headline cards cannot be misread as take-home pay. */
+var REALIZED_COMP_NOTES = {
+    'TSLA': "Tesla's 10-K/A (Amendment No. 1, FY2025, filed 2026-04-30) says the $158.4B is a grant-date accounting figure. The $132.3B 2025 CEO Performance Award and the $26.1B 2025 CEO Interim Award were both forfeited in full in April 2026. Per the filing: 'using the Total CEO realized compensation for 2025, such ratio was 0.00:1.'"
+};
+
 /* Pre-compute aspirational benchmarking score: how much each company's selected peer
    group median exceeds its own CEO pay. Positive = aspirational (selects higher-paid peers),
    negative = paying above self-selected peers. Requires peerData to be loaded.
@@ -1754,6 +1762,13 @@ function populateInsights(comp, trends, sectorFilter) {
 
     var insights = [];
 
+    // Filing-verbatim realized-comp footnote for a headline figure (e.g. TSLA's
+    // $158.4B / 2,522,203:1, realized $0). Empty string when no note exists.
+    function realizedNote(ticker) {
+        var n = REALIZED_COMP_NOTES[ticker];
+        return n ? ' <span class="insight-footnote">' + n + '</span>' : '';
+    }
+
     // 1. Pay Concentration — top 10 CEOs share of total
     var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
     var totalAllPay = companies.reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
@@ -1775,7 +1790,7 @@ function populateInsights(comp, trends, sectorFilter) {
             icon: '💰',
             label: '$50M+ Club',
             value: over50M.length + (over50M.length === 1 ? ' company' : ' companies'),
-            detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' : '.'),
+            detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' + realizedNote(sorted[0].ticker) : '.'),
             _tickers: sorted[0] ? [sorted[0].ticker] : []
         });
     } else {
@@ -1796,7 +1811,7 @@ function populateInsights(comp, trends, sectorFilter) {
         icon: '⚖️',
         label: 'Extreme Ratios',
         value: extremeRatio.length + ' above 1,000:1',
-        detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' : ''),
+        detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' + realizedNote(maxRatioComp.ticker) : ''),
         _tickers: maxRatioComp ? [maxRatioComp.ticker] : []
     });
 
