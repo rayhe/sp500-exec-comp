@@ -13073,6 +13073,13 @@ function setupDualSparklineTooltips() {
 
                 var globalRb = _roleBenchmarks && _roleBenchmarks[role] ? _roleBenchmarks[role] : null;
                 var topStr = data.topEarner ? ('. Highest: ' + data.topEarner.name + ' (' + data.topEarner.ticker + ') ' + formatCompact(data.topEarner.total)) : '';
+                // (REALIZED_COMP_NOTES contract; same filing-verbatim caveat as the Highest Paid CEO
+                // metric card and the role-benchmark Highest Paid cell. The heatmap's "Highest:"
+                // string lives inside a title tooltip, so the full note is appended as plain text;
+                // the composed title is quote-escaped at both render sites below.)
+                if (data.topEarner && REALIZED_COMP_NOTES[data.topEarner.ticker]) {
+                    topStr += ' ' + REALIZED_COMP_NOTES[data.topEarner.ticker];
+                }
 
                 if (_roleSectorDeltaMode && globalRb && globalRb.median > 0) {
                     // Delta mode: show ±% vs S&P 500 role median with diverging green/red color
