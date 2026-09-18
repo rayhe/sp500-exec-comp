@@ -212,7 +212,7 @@ for ticker in ext:
             repaired += 1
         if e["title"] != n["title"]:
             e["_repair_note_20260918_1000"] = (
-                e.get("_repair_note_20260918_1000", "") +
+                (e.get("_repair_note_20260918_1000", "") + "; " if e.get("_repair_note_20260918_1000") else "") +
                 f"{NOTE}: title -> SCT-verbatim '{n['title']}' (was '{e['title']}')").strip()
             e["title"] = n["title"]
             repaired += 1
