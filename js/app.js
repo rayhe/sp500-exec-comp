@@ -696,8 +696,7 @@ function computeRadarPercentiles(companies) {
 var MISSING_DATA_REASONS = {
     'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
     'GEV':  'GE Vernova spun off from GE in April 2024 — no full-year proxy data available for FY2024.',
-    'SW':   'Smurfit WestRock formed via merger in July 2024 — no FY2024 pay ratio disclosed.',
-    'TSLA': 'Tesla reports $0 CEO compensation (Elon Musk). Pay ratio not computed by Tesla in proxy filings.'
+    'SW':   'Smurfit WestRock formed via merger in July 2024 — no FY2024 pay ratio disclosed.'
 };
 
 /* Pre-compute aspirational benchmarking score: how much each company's selected peer
@@ -15979,7 +15978,7 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-12)</h4>' +
                 '<p>6,764 of 6,785 NEO rows verified (99.7%): 0 rounding, 0 recomputed, 21 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-09-17 screen: 378 of 499 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 17 cluster near 2x, 9 near 0.5x, 95 differ otherwise. (TSLA excluded: no disclosed ratio.)</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-09-17 screen: 379 of 500 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 17 cluster near 2x, 9 near 0.5x, 95 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
                 '<p id="dataq-transitions-counts">As of the 2026-09-14 screen: 13 (name, fiscal year) tuples appear as NEO rows at two different companies; all 13 triaged by tuple: 6 genuine mid-year executive transitions, 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR), 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
