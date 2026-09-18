@@ -135,12 +135,12 @@
       "def14a_verified_20260910": 108,
       "def14a_verified_20260907": 63,
       "rounding": 0,
-      "def14a_verified_20260908": 12,
+      "def14a_verified_20260908": 13,
       "last_audit": "2026-09-12",
       "verified_total": 6764,
       "def14a_verified_20260912": 24,
       "def14a_verified_20260916": 117,
-      "def14a_verified_20260917": 139
+      "def14a_verified_20260917": 138
     },
     "median_ceo_pay": 17759221.5,
     "mean_ceo_pay": 336923582.304,
@@ -181,12 +181,12 @@
       "def14a_verified_20260910": 108,
       "def14a_verified_20260907": 63,
       "rounding": 0,
-      "def14a_verified_20260908": 12,
+      "def14a_verified_20260908": 13,
       "last_audit": "2026-09-12",
       "verified_total": 6764,
       "def14a_verified_20260912": 24,
       "def14a_verified_20260916": 117,
-      "def14a_verified_20260917": 139
+      "def14a_verified_20260917": 138
     },
     "companies_with_executives": 500,
     "board_independence_any": 500,
@@ -104313,15 +104313,14 @@
           "year": 2025,
           "salary": 696154,
           "stock_awards": 1337828,
-          "non_equity_incentive": 51650,
+          "non_equity_incentive": 0,
           "all_other": 172826,
           "total": 3696473,
-          "_total_source": "def14a_verified_20260917",
+          "_total_source": "def14a_verified_20260908",
           "bonus": 1438015,
-          "pension_nqdc": 0,
+          "pension_nqdc": 51650,
           "_original_total": 7392946,
-          "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing).",
-          "_repair_note_20260917_2200": "2026-09-17: moved $51,650 from pension_nqdc to non_equity_incentive; Everest 2026 DEF 14A SCT (eg-20260406.htm) has no pension column - the value is Non-Equity Incentive Plan Compensation. Filing-verbatim, total unchanged."
+          "_parse_note": "Re-parsed from the 2026 DEF 14A Summary Compensation Table; prior parse had wrong values (Andrade/Kociancic/Beggs/Anzaldua rows did not match the filing)."
         },
         {
           "name": "Ricardo Anzaldua",
