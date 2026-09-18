@@ -5290,6 +5290,12 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     font-weight: 600;
     font-size: 0.72rem;
 }
+.role-top-grantdate {
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    white-space: nowrap;
+    cursor: help;
+}
 
 /* NEO table role benchmark badge */
 .neo-role-badge {

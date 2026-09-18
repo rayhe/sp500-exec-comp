@@ -1257,6 +1257,18 @@ async function loadData() {
 // guard-checked metadata counts so it can never drift again. Uses
 // textContent only (never innerHTML) so data-derived values stay inert.
 // If metadata is absent, the static HTML fallback text stays as-is.
+// "Last repair" discloses metadata.last_updated, the cadence of the daily
+// DQ repair batches, alongside the data_collected snapshot date.
+function footerDateLabel(ymd) {
+    // "2026-09-18" -> "Sep 18, 2026"; fall back to the raw string if unparseable
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if (m) {
+        var mi = parseInt(m[2], 10);
+        if (mi >= 1 && mi <= 12) return months[mi - 1] + ' ' + parseInt(m[3], 10) + ', ' + m[1];
+    }
+    return ymd;
+}
 function renderFooterVintage(comp) {
     var el = document.getElementById('footer-data-vintage');
     if (!el) return;
@@ -1266,15 +1278,10 @@ function renderFooterVintage(comp) {
     var verified = (typeof dq.verified_total === 'number') ? dq.verified_total : null;
     var parts = [];
     if (typeof md.data_collected === 'string' && md.data_collected) {
-        // "2026-09-10" -> "Sep 10, 2026"; fall back to the raw string if unparseable
-        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(md.data_collected);
-        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        var label = md.data_collected;
-        if (m) {
-            var mi = parseInt(m[2], 10);
-            if (mi >= 1 && mi <= 12) label = months[mi - 1] + ' ' + parseInt(m[3], 10) + ', ' + m[1];
-        }
-        parts.push('Data collected ' + label);
+        parts.push('Data collected ' + footerDateLabel(md.data_collected));
+    }
+    if (typeof md.last_updated === 'string' && md.last_updated) {
+        parts.push('Last repair ' + footerDateLabel(md.last_updated));
     }
     if (total > 0) {
         var countStr = total.toLocaleString('en-US') + ' NEO records';
@@ -1825,7 +1832,7 @@ function populateInsights(comp, trends, sectorFilter) {
             icon: '💰',
             label: 'Highest Paid',
             value: sorted[0] ? formatCurrency(sorted[0].total_compensation) : '—',
-            detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' : 'No compensation data available.',
+            detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' + (sorted[0] ? realizedNote(sorted[0].ticker) : '') : 'No compensation data available.',
             _tickers: sorted[0] ? [sorted[0].ticker] : []
         });
     }
@@ -12948,7 +12955,15 @@ function setupDualSparklineTooltips() {
             html += '<td class="role-num">' + formatCompact(rb.p25) + '</td>';
             html += '<td class="role-num">' + formatCompact(rb.p75) + '</td>';
             html += '<td class="role-num">' + vsCeo + '</td>';
-            html += '<td class="role-top-earner">' + topName + (topTicker ? ' <span class="role-top-ticker">(' + topTicker + ')</span>' : '') + ' <span class="role-top-val">' + topVal + '</span></td>';
+            var topCellHtml = topName + (topTicker ? ' <span class="role-top-ticker">(' + topTicker + ')</span>' : '') + ' <span class="role-top-val">' + topVal + '</span>';
+            // Grant-date caveat for headline figures that are grant-date accounting
+            // values with a materially different realized figure in the same filing
+            // (REALIZED_COMP_NOTES contract; same marker as the Highest Paid CEO
+            // metric card). Non-note tickers render byte-identical to before.
+            if (topTicker && REALIZED_COMP_NOTES[topTicker]) {
+                topCellHtml += ' <span class="role-top-grantdate" title="' + REALIZED_COMP_NOTES[topTicker].replace(/"/g, '&quot;') + '">&#183; grant-date figure</span>';
+            }
+            html += '<td class="role-top-earner">' + topCellHtml + '</td>';
             html += '</tr>';
         });
         html += '</tbody></table></div>';
