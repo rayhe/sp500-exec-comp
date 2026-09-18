@@ -717,6 +717,26 @@ function realizedFootnoteHtml(ticker) {
     return n ? ' <span class="insight-footnote">' + n + '</span>' : '';
 }
 
+/* Annotate the Highest Paid CEO metric-card subline for tickers whose headline
+   figure is a grant-date accounting value with a materially different realized
+   figure in the same filing (REALIZED_COMP_NOTES contract). Appends a visible
+   "· grant-date figure" marker and exposes the full filing-verbatim note as a
+   hover tooltip; the card itself remains a CTA into the company detail panel,
+   which carries the same note in full. Non-note tickers render byte-identical
+   (no marker, no title attribute). */
+function renderHighestPaidName(ceoName, ticker) {
+    var el = document.getElementById('metric-highest-name');
+    if (!el) return;
+    el.textContent = ceoName + ' \u2014 ' + ticker;
+    var note = REALIZED_COMP_NOTES[ticker];
+    if (note) {
+        el.textContent += ' \u00b7 grant-date figure';
+        el.title = note;
+    } else {
+        el.removeAttribute('title');
+    }
+}
+
 /* Pre-compute aspirational benchmarking score: how much each company's selected peer
    group median exceeds its own CEO pay. Positive = aspirational (selects higher-paid peers),
    negative = paying above self-selected peers. Requires peerData to be loaded.
@@ -1302,7 +1322,7 @@ function populateMetrics(comp, trends) {
     var top = sorted[0];
     var highestEl = document.getElementById('metric-highest');
     animateMetricValue(highestEl, top.total_compensation, formatCurrency, 1000);
-    document.getElementById('metric-highest-name').textContent = top.ceo_name + ' \u2014 ' + top.ticker;
+    renderHighestPaidName(top.ceo_name, top.ticker);
 
     // Dynamic metrics from trends.json
     var stockPctEl = document.getElementById('metric-stock-pct');
@@ -1519,9 +1539,8 @@ function setupReactiveMetrics(companies, comp, trends) {
         // 4. Highest CEO
         if (sTop) {
             var he = document.getElementById('metric-highest');
-            var hn = document.getElementById('metric-highest-name');
             if (he) animateMetricValue(he, sTop.total_compensation, formatCurrency, 600);
-            if (hn) hn.textContent = sTop.ceo_name + ' \u2014 ' + sTop.ticker;
+            renderHighestPaidName(sTop.ceo_name, sTop.ticker);
             if (labels[3]) labels[3].innerHTML = short + ' Highest CEO';
         }
 
@@ -1593,9 +1612,8 @@ function _restoreDefaultMetrics(strip) {
     if (wd) wd.textContent = 'S&P 500 median employee';
 
     var he = document.getElementById('metric-highest');
-    var hn = document.getElementById('metric-highest-name');
     if (he && _sp500Metrics.topComp) animateMetricValue(he, _sp500Metrics.topComp, formatCurrency, 600);
-    if (hn) hn.textContent = _sp500Metrics.topCeo + ' \u2014 ' + _sp500Metrics.topTicker;
+    renderHighestPaidName(_sp500Metrics.topCeo, _sp500Metrics.topTicker);
 
     var se = document.getElementById('metric-stock-pct');
     var ss = document.getElementById('metric-stock-sub');
