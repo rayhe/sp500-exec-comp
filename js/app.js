@@ -4500,14 +4500,10 @@ function renderCompDistSummary(companies) {
         var dimStyle = isDimmed ? 'opacity:0.3;' : '';
         var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
         html += '<span class="comp-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.label + ': ' + b.count + ' companies — click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByCompBracket(' + b.min + ',' + maxVal + ',\'' + b.label.replace("'","\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
-        html += '<span class="comp-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="comp-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
-        html += '</span>';
-    });
-    html += '</span>';
-    html += '<span class="comp-dist-bracket-labels">';
-    brackets.forEach(function(b) {
+        html += '<span class="comp-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="comp-dist-bracket-label">' + b.label + '</span>';
+        html += '</span>';
     });
     html += '</span>';
     html += '</span>';
@@ -4597,14 +4593,10 @@ function renderYoYSortSummary(companies) {
         var dimStyle = isDimmed ? 'opacity:0.3;' : '';
         var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
         html += '<span class="yoy-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.label + ': ' + b.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByYoYBucket(' + bMinStr + ',' + bMaxStr + ',\'' + b.label.replace(/'/g, "\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
-        html += '<span class="yoy-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="yoy-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
-        html += '</span>';
-    });
-    html += '</span>';
-    html += '<span class="yoy-dist-bracket-labels">';
-    yoyBuckets.forEach(function(b) {
+        html += '<span class="yoy-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="yoy-dist-bracket-label">' + b.label + '</span>';
+        html += '</span>';
     });
     html += '</span>';
     html += '</span>';
