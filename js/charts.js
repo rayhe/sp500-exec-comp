@@ -8592,12 +8592,18 @@ function drawGovQuartileComp(companies) {
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
     var mutedColor = '#6b7280';
 
-    var margin = { top: 16, right: 90, bottom: 40, left: 220 };
     var cw = container.clientWidth || 700;
+    // Compact layout on narrow screens (phones): shrink the label gutter and
+    // drop the bar floor so the SVG can never force page-level horizontal scroll.
+    var narrow = cw < 560;
+    var margin = narrow
+        ? { top: 12, right: 50, bottom: 32, left: 140 }
+        : { top: 16, right: 90, bottom: 40, left: 220 };
     var w = cw - margin.left - margin.right;
-    if (w < 200) w = 200;
-    var barH = 36;
-    var barGap = 14;
+    var minBarW = narrow ? 80 : 200;
+    if (w < minBarW) w = minBarW;
+    var barH = narrow ? 28 : 36;
+    var barGap = narrow ? 12 : 14;
     var h = quartiles.length * (barH + barGap) - barGap;
 
     var svg = d3.select(container).append('svg')
@@ -8622,24 +8628,26 @@ function drawGovQuartileComp(companies) {
 
         g.append('text')
             .attr('x', -8)
-            .attr('y', by + barH / 2 - 6)
+            .attr('y', by + barH / 2 + (narrow ? 0 : -6))
             .attr('dy', '0.35em')
             .attr('text-anchor', 'end')
             .attr('fill', textColor)
-            .attr('font-size', '0.78rem')
+            .attr('font-size', narrow ? '0.7rem' : '0.78rem')
             .attr('font-weight', '600')
             .attr('font-family', 'Inter, system-ui, sans-serif')
             .text(labelLine1);
 
-        g.append('text')
-            .attr('x', -8)
-            .attr('y', by + barH / 2 + 8)
-            .attr('dy', '0.35em')
-            .attr('text-anchor', 'end')
-            .attr('fill', mutedColor)
-            .attr('font-size', '0.65rem')
-            .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text(labelLine2);
+        if (!narrow) {
+            g.append('text')
+                .attr('x', -8)
+                .attr('y', by + barH / 2 + 8)
+                .attr('dy', '0.35em')
+                .attr('text-anchor', 'end')
+                .attr('fill', mutedColor)
+                .attr('font-size', '0.65rem')
+                .attr('font-family', 'Inter, system-ui, sans-serif')
+                .text(labelLine2);
+        }
 
         var segDelay = qi * 200;
         componentKeys.forEach(function(key, ki) {
@@ -13703,12 +13711,19 @@ function drawSopTierComp(companies) {
     var textColor = dark ? '#e4e4e7' : '#1a1a2e';
     var mutedColor = '#6b7280';
 
-    var margin = { top: 16, right: 90, bottom: 60, left: 260 };
     var cw = container.clientWidth || 700;
+    // Compact layout on narrow screens (phones): shrink the label gutter,
+    // shorten tier labels, and drop the bar floor so the SVG can never
+    // force page-level horizontal scroll.
+    var narrow = cw < 560;
+    var margin = narrow
+        ? { top: 12, right: 50, bottom: 40, left: 150 }
+        : { top: 16, right: 90, bottom: 60, left: 260 };
     var w = cw - margin.left - margin.right;
-    if (w < 200) w = 200;
-    var barH = 36;
-    var barGap = 14;
+    var minBarW = narrow ? 80 : 200;
+    if (w < minBarW) w = minBarW;
+    var barH = narrow ? 28 : 36;
+    var barGap = narrow ? 12 : 14;
     var h = tiers.length * (barH + barGap) - barGap;
 
     var svg = d3.select(container).append('svg')
@@ -13735,8 +13750,10 @@ function drawSopTierComp(companies) {
         var by = ti * (barH + barGap);
         var cumX = 0;
 
-        // Label: tier name + count + median pay
-        var labelLine1 = t.label + '  (' + t.rows.length + ' companies)';
+        // Label: tier name + count + median pay (single compact line on narrow)
+        var labelLine1 = narrow
+            ? t.label.replace(' Approval', '') + ' (' + t.rows.length + ')'
+            : t.label + '  (' + t.rows.length + ' companies)';
         var labelLine2 = 'SoP ' + t.sopMin.toFixed(0) + '\u2013' + t.sopMax.toFixed(0) + '% | Median Pay ' + fmtCurr(t.medianTotal);
 
         // Colored dot for tier
