@@ -1089,7 +1089,7 @@ function computePageRank(companies) {
         else if (pr.percentile >= 75) c._pageRankLabel = 'P75';
         else if (pr.percentile >= 50) c._pageRankLabel = 'P50';
         else if (pr.percentile >= 25) c._pageRankLabel = 'P25';
-        else c._pageRankLabel = '<P25';
+        else c._pageRankLabel = 'P<25';
     });
 
     // Expose globally for network.js heatmap
@@ -5179,7 +5179,7 @@ function renderPercentileSortSummary(companies) {
         { label: 'P90+', min: 90, max: 101, cls: 'pctile-top', count: 0, comps: [], color: '#ffd166', tag: 'Top Decile' },
         { label: 'P75–89', min: 75, max: 90, cls: 'pctile-high', count: 0, comps: [], color: '#00b4d8', tag: 'Upper Quartile' },
         { label: 'P25–74', min: 25, max: 75, cls: 'pctile-mid', count: 0, comps: [], color: '#a1a1aa', tag: 'Middle Half' },
-        { label: '<P25', min: 0, max: 25, cls: 'pctile-low', count: 0, comps: [], color: '#a78bfa', tag: 'Lower Quartile' }
+        { label: 'P<25', min: 0, max: 25, cls: 'pctile-low', count: 0, comps: [], color: '#a78bfa', tag: 'Lower Quartile' }
     ];
 
     withData.forEach(function(c) {

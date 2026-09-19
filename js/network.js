@@ -2443,7 +2443,7 @@ function initNetwork(peerData) {
             var _prData = window._pageRankLookup[d.ticker];
             var _prPct = Math.round(_prData.percentile);
             var _prScore = Math.round(_prData.score * 10000);
-            var _prTier = _prPct >= 99 ? 'P99' : _prPct >= 95 ? 'P95' : _prPct >= 90 ? 'P90' : _prPct >= 75 ? 'P75' : _prPct >= 50 ? 'P50' : _prPct >= 25 ? 'P25' : '<P25';
+            var _prTier = _prPct >= 99 ? 'P99' : _prPct >= 95 ? 'P95' : _prPct >= 90 ? 'P90' : _prPct >= 75 ? 'P75' : _prPct >= 50 ? 'P50' : _prPct >= 25 ? 'P25' : 'P<25';
             var _prCls = _prPct >= 95 ? 'tt-pr-high' : _prPct >= 75 ? 'tt-pr-mid' : 'tt-pr-low';
             html += '<div class="tt-row"><span class="tt-label">PageRank</span><span class="tt-value ' + _prCls + '">' + _prTier + ' <span class="tt-pr-score">(' + _prScore + ')</span></span></div>';
         }
