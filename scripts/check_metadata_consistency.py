@@ -161,7 +161,7 @@ Officer; Former President - Flooring North America'; MHK Mauro Vandini
 President, Global Ceramic 2024-09-15) (DEF 14A 2026-04-03 acc.
 000110465926039491); all numeric fields asserted byte-identical. Section 15
 TITLE_ALLCAPS_FULLPHRASE_QUEUED drained to empty (n_full asserted 0), the
-33 abbreviation rows stay locked as filing-conventional.
+34 abbreviation rows stay locked as filing-conventional.
 Headline buckets 99.7% (6,759/6,780).
 """
 import json
@@ -541,7 +541,7 @@ def _norm_name(n):
 # alpha character uppercase, >=4 alpha chars so plain 'CEO'/'CFO'/'COO' are
 # out of scope). The pattern is stable across years per person (systematic,
 # not random parse noise). Two sub-classes, locked separately:
-#   (a) TITLE_ALLCAPS_ABBREV (14 tuples, 33 rows, 13 companies): standard
+#   (a) TITLE_ALLCAPS_ABBREV (14 tuples, 34 rows, 13 companies): standard
 #       corporate title abbreviations ('SVP, COO', 'CEO, AWM', 'EVP & CFO',
 #       'CHRO', 'CEO PMI U.S.', ...). Companies print these abbreviated forms
 #       in their SCTs as a matter of convention; treated as as-disclosed,
@@ -623,8 +623,8 @@ def check_title_allcaps(companies, failures):
             fail(f"new all-caps title not in the 2026-09-15 allowlists: "
                  f"{c.get('ticker')} {e.get('name')} {e.get('year')} "
                  f"title={t!r} (15)", failures)
-    if n_abbrev != 33 or n_full != 0:
-        fail(f"all-caps title recount drift: abbrev {n_abbrev} (want 33), "
+    if n_abbrev != 34 or n_full != 0:
+        fail(f"all-caps title recount drift: abbrev {n_abbrev} (want 34), "
              f"full-phrase {n_full} (want 0 - queue drained 2026-09-15 "
              f"22:00 PT) (15)", failures)
 
