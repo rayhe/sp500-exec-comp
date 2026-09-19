@@ -16022,7 +16022,7 @@ function setupDualSparklineTooltips() {
                 '<p>Every NEO compensation row traces to the company\'s DEF 14A proxy filing Summary Compensation Table (SCT), parsed and hand-verified. Each row carries a verification label describing its audit state:</p>' +
                 '<ol>' +
                 '<li><strong>verified</strong> — Stored components and total match the filing SCT verbatim. Includes rows re-verified in dedicated audit passes (<code>def14a_verified_YYYYMMDD</code> labels).</li>' +
-                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 312 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
+                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 314 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
