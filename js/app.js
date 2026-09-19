@@ -2063,15 +2063,12 @@ function populateInsights(comp, trends, sectorFilter) {
                     var maxTenureBracket = Math.max.apply(null, tenureBrackets.map(function(b) { return b.count; }));
                     var tHtml = '<div class="tenure-dist-histogram"><div class="tenure-dist-bars">';
                     tenureBrackets.forEach(function(b) {
-                        var barH = maxTenureBracket > 0 ? Math.max(3, Math.round(b.count / maxTenureBracket * 24)) : 3;
+                        var barH = maxTenureBracket > 0 ? Math.max(3, Math.round(b.count / maxTenureBracket * 26)) : 3;
                         tHtml += '<span class="tenure-dist-bar-group clickable-bar" title="' + b.tag + ': ' + b.count + ' companies" onclick="filterByTenureQuartile(' + b.min + ',' + b.max + ',\'' + b.tag.replace(/'/g, "\\'") + '\',\'' + b.tagShort.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">';
-                        tHtml += '<span class="tenure-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';"></span>';
                         tHtml += '<span class="tenure-dist-bar-label">' + b.count + '</span>';
-                        tHtml += '</span>';
-                    });
-                    tHtml += '</div><div class="tenure-dist-bracket-labels">';
-                    tenureBrackets.forEach(function(b) {
+                        tHtml += '<span class="tenure-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';"></span>';
                         tHtml += '<span class="tenure-dist-bracket-label">' + b.label + '</span>';
+                        tHtml += '</span>';
                     });
                     tHtml += '</div></div>';
                     return tHtml;
