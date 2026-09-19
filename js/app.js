@@ -4770,15 +4770,10 @@ function renderRatioSortSummary(companies) {
         var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
         var maxStr = b.max === Infinity ? 'Infinity' : b.max;
         html += '<span class="ratio-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.tag + ' (' + b.label + ':1): ' + b.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByRatioBucket(' + b.min + ',' + maxStr + ')" style="cursor:pointer;' + activeOutline + '">';
-        html += '<span class="ratio-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="ratio-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
-        html += '</span>';
-    });
-    html += '</span>';
-    html += '<span class="ratio-dist-bracket-labels">';
-    buckets.forEach(function(b) {
-        if (b.count === 0) return;
+        html += '<span class="ratio-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
         html += '<span class="ratio-dist-bracket-label">' + b.label + '</span>';
+        html += '</span>';
     });
     html += '</span>';
     html += '</span>';

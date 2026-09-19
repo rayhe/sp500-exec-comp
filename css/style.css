@@ -2566,6 +2566,52 @@ header h1 {
     font-style: italic;
 }
 
+/* Pay ratio distribution summary — inline mini histogram */
+.ratio-dist-histogram {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+}
+.ratio-dist-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 6px;
+}
+.ratio-dist-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+.ratio-dist-bar-group.clickable-bar {
+    cursor: pointer;
+}
+.ratio-dist-bar {
+    width: 32px;
+    border-radius: 2px 2px 0 0;
+    min-height: 3px;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.ratio-dist-bar-group:hover .ratio-dist-bar {
+    opacity: 0.8;
+    transform: scaleY(1.15);
+}
+.ratio-dist-bar-label {
+    font-size: 0.62rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1;
+}
+.ratio-dist-bracket-label {
+    font-size: 0.52rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    line-height: 1;
+    white-space: nowrap;
+}
+
 /* YoY distribution histogram in sort summary */
 .yoy-dist-histogram {
     display: inline-flex;
@@ -5754,6 +5800,11 @@ footer li::before {
     .yoy-dist-bars { gap: 4px; }
     .yoy-dist-bar-label { font-size: 0.5rem; }
     .yoy-dist-histogram .summary-stat-label { display: none; }
+    .ratio-dist-bar { width: 28px; }
+    .ratio-dist-bracket-label { font-size: 0.45rem; white-space: nowrap; }
+    .ratio-dist-bars { gap: 4px; }
+    .ratio-dist-bar-label { font-size: 0.55rem; }
+    .ratio-dist-histogram .summary-stat-label { display: none; }
     .pctile-dist-bar { width: 20px; }
     .pctile-dist-bracket-label { width: 20px; font-size: 0.48rem; }
     .pctile-dist-bars { gap: 3px; height: 22px; }
@@ -9270,6 +9321,28 @@ footer li::before {
     .comp-dist-bracket-label {
         font-size: 0.45rem;
         white-space: nowrap;
+    }
+    .ratio-dist-bar-group.clickable-bar {
+        padding: 6px 4px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    .ratio-dist-bars {
+        gap: 4px;
+    }
+    .ratio-dist-bar {
+        width: 28px;
+    }
+    .ratio-dist-bar-label {
+        font-size: 0.55rem;
+    }
+    .ratio-dist-bracket-label {
+        font-size: 0.45rem;
+        white-space: nowrap;
+    }
+    .ratio-dist-bar-group.clickable-bar:active .ratio-dist-bar {
+        opacity: 0.65;
+        transform: scaleY(1.1);
     }
 
     .conc-dist-bar-group {
