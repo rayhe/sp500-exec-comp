@@ -12881,6 +12881,16 @@ function setupDualSparklineTooltips() {
         ROLE_ORDER.forEach(function(role) {
             if (_roleBenchmarks[role] && _roleBenchmarks[role].median > maxMedian) maxMedian = _roleBenchmarks[role].median;
         });
+        // Scale the track to the largest P75, not the largest median: P75 always
+        // exceeds its own median (e.g. CEO P75 $21.9M > CEO median $14.6M), so a
+        // maxMedian scale lets every IQR bar overflow its track (page-level
+        // horizontal scroll at desktop width). One shared 0..maxP75 scale keeps
+        // the median bars and IQR bands aligned and inside the track.
+        var maxP75 = 0;
+        ROLE_ORDER.forEach(function(role) {
+            if (_roleBenchmarks[role] && _roleBenchmarks[role].p75 > maxP75) maxP75 = _roleBenchmarks[role].p75;
+        });
+        if (!(maxP75 > 0)) maxP75 = maxMedian;
 
         var html = '<div class="role-chart-container">';
 
@@ -12889,7 +12899,7 @@ function setupDualSparklineTooltips() {
         ROLE_ORDER.forEach(function(role) {
             var rb = _roleBenchmarks[role];
             if (!rb || role === 'Other') return; // Skip 'Other' in bars, show in table below
-            var barW = maxMedian > 0 ? (rb.median / maxMedian * 100) : 0;
+            var barW = maxP75 > 0 ? (rb.median / maxP75 * 100) : 0;
             var vsCeo = ceoMedian > 0 ? (rb.median / ceoMedian * 100).toFixed(0) : '—';
             var color = ROLE_COLORS[role] || '#94a3b8';
             var tooltip = role + ': Median ' + formatCurrency(rb.median) + ' (' + rb.count + ' execs across S&P 500). ' + vsCeo + '% of CEO median.';
@@ -12901,8 +12911,8 @@ function setupDualSparklineTooltips() {
             html += '</div>';
             html += '<div class="role-bar-track">';
             // IQR range bar (P25-P75)
-            var iqrLeft = maxMedian > 0 ? (rb.p25 / maxMedian * 100) : 0;
-            var iqrWidth = maxMedian > 0 ? ((rb.p75 - rb.p25) / maxMedian * 100) : 0;
+            var iqrLeft = maxP75 > 0 ? (rb.p25 / maxP75 * 100) : 0;
+            var iqrWidth = maxP75 > 0 ? ((rb.p75 - rb.p25) / maxP75 * 100) : 0;
             html += '<div class="role-bar-iqr" style="left:' + iqrLeft.toFixed(1) + '%;width:' + iqrWidth.toFixed(1) + '%;background:' + hexToRgba(color, 0.18) + ';border:1px solid ' + hexToRgba(color, 0.35) + '" title="P25–P75: ' + formatCompact(rb.p25) + ' – ' + formatCompact(rb.p75) + '"></div>';
             // Median bar
             html += '<div class="role-bar-fill" style="width:' + barW.toFixed(1) + '%;background:' + color + '"></div>';

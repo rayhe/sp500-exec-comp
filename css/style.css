@@ -11760,6 +11760,17 @@ body.light-mode .cross-sector-pair-select:focus {
     outline-offset: 1px;
 }
 
+/* Narrow screens: shrink the density slider so the control fits its row
+   instead of forcing page-level horizontal scroll. */
+@media (max-width: 600px) {
+    .density-control {
+        max-width: 100%;
+    }
+    .density-slider {
+        width: 64px;
+    }
+}
+
 /* === Community Detection Legend === */
 .community-toggle.active {
     background: rgba(191,239,69,0.15);

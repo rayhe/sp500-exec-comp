@@ -6984,10 +6984,13 @@ function drawCorrelationMatrix(companies) {
     var w = labelW + cellSize * n;
     var h = labelH + cellSize * n;
     var totalW = w + 80; // extra for color legend
+    // Never render wider than the container: the viewBox scales the matrix
+    // (legend included) down instead of forcing page-level horizontal scroll.
+    var svgW = Math.min(totalW, fullW);
 
     var svg = d3.select(container)
         .append('svg')
-        .attr('width', totalW)
+        .attr('width', svgW)
         .attr('height', h + 10)
         .attr('viewBox', '0 0 ' + totalW + ' ' + (h + 10))
         .attr('role', 'img')
@@ -7840,12 +7843,18 @@ function drawQuartileComposition(companies) {
     var ghostStroke = dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
     var ghostFill = dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
 
-    var margin = { top: 16, right: 90, bottom: 24, left: 200 };
-    var cw = container.clientWidth;
+    var cw = container.clientWidth || 700;
+    // Compact layout on narrow screens (phones): shrink the label gutters and
+    // drop the bar floor so the SVG can never force page-level horizontal scroll.
+    var narrow = cw < 560;
+    var margin = narrow
+        ? { top: 12, right: 56, bottom: 24, left: 120 }
+        : { top: 16, right: 90, bottom: 24, left: 200 };
     var w = cw - margin.left - margin.right;
-    if (w < 200) w = 200;
-    var barH = sector && overallQuartiles ? 42 : 36; // taller bars when ghost bars shown
-    var barGap = 14;
+    var minBarW = narrow ? 80 : 200;
+    if (w < minBarW) w = minBarW;
+    var barH = narrow ? 28 : (sector && overallQuartiles ? 42 : 36); // taller bars when ghost bars shown
+    var barGap = narrow ? 12 : 14;
     var h = quartiles.length * (barH + barGap) - barGap;
 
     var svg = d3.select(container).append('svg')
@@ -7895,10 +7904,10 @@ function drawQuartileComposition(companies) {
             .attr('dy', '0.35em')
             .attr('text-anchor', 'end')
             .attr('fill', textColor)
-            .attr('font-size', '0.78rem')
+            .attr('font-size', narrow ? '0.7rem' : '0.78rem')
             .attr('font-weight', '600')
             .attr('font-family', 'Inter, system-ui, sans-serif')
-            .text(q.label + ' \u2014 ' + q.desc + ' (median ' + medStr + ')');
+            .text(narrow ? q.label + ' \u00b7 ' + q.desc : q.label + ' \u2014 ' + q.desc + ' (median ' + medStr + ')');
 
         // Stacked segments (with animated entry)
         var segDelay = qi * 200; // stagger per quartile
