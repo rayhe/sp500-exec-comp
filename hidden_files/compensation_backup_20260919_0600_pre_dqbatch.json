@@ -32,8 +32,7 @@
    "Bloated-bucket elimination 2026-09-10 06:00 PT: re-verified 25 NEO rows against primary DEF 14A SCTs (GEN FY2026 VCP-II sub-column misalignment, UNP 2026/2025 column shifts, K continuation-row misalignment, UNP Jalali 2025 missing all_other, K Pilnick 2021/2023 missing components). 23 rows corrected and labeled def14a_verified_20260910; SBUX Kelly 2024 (+$141,986) and FDS Shan 2023 (+$30,936) confirmed as genuine filing-side arithmetic inconsistencies (values match filing verbatim) and relabeled component_mismatch. Company FY NEO sums recomputed for GEN ($32,919,447 -> $25,589,710) and K ($40,959,207 -> $41,112,104). bloated_component bucket now 0. Fresh recount over 6778 records: verified_total=6638 (97.9%).",
    "Rounding-bucket re-verification 2026-09-10 10:00 PT: the 6 largest-delta rounding rows (CDNS Cunningham 2024 +$20,000 / 2023 -$25,000, TSCO Lawton 2024 +$4,000, TSCO Mills 2024 -$500, RF Turner 2023 +$5,060, RF Keenan 2023 +$1,180) were re-verified against fresh primary DEF 14A SCTs; all components and totals match the filings verbatim, so the gaps are genuine filing-side arithmetic inconsistencies - relabeled component_mismatch (precedent: SBUX Kelly / FDS Shan). Filing totals retained verbatim. Buckets now: rounding 50, component_mismatch 10; verified_total unchanged 6682/6778 (98.58%).",
    "DEF 14A company-stat repair 2026-09-11 10:00 PT: UNP total_neo_compensation 43,460,309 -> 39,707,000 and FRT 12,663,122 -> 13,898,336 (recomputed from fiscal-year rows; the Sep-10 row corrections had left the company-level sums stale). ALB Anderson 2024 relabeled rounding -> component_mismatch (filing-side $90 arithmetic error confirmed on earlier DEF14A verification). Rounding-bucket re-verification batch 2: 6 rows (GPN Bready 2025 +$2,000, EMN Killian 2025 -$200, NI Birmingham 2024 +$49, TAP Maciolek 2024 +$30, TAP St. Jacques 2024 -$22, DRI Vennam 2023 -$10) re-verified against fresh primary DEF 14A SCTs \u2014 all components and totals match filings verbatim; genuine filing-side arithmetic inconsistencies, relabeled component_mismatch per 2026-09-10 precedent. Rounding bucket 49->43, component_mismatch 14->20; verified_total 6718/6781 (99.07%).",
-   "DEF 14A DQ batch 2026-09-11 18:00 PT: 23 records filing-verified and repaired. KR (13 records): parser had dropped the blank Bonus cell, shifting Stock->Bonus/Options->Stock/NonEq->Options/AllOther->NonEq, and captured the printed Total into All Other on Kennerley 2025, Massa 2025, McMullen 2024/2023 (e.g., McMullen FY2024 CEO total 30,521,333 -> 15,631,028); all corrected vs the 2026 proxy SCT, components foot exactly; KR company stats recomputed (total_neo 55,146,948 -> 40,256,643). COST Polit 2025: dropped $3,670,902 RSU stock-award column restored, total 3,837,307 -> 7,508,209. IVZ Sharp 2025: dropped $3,297,095 stock-award column restored, total 3,358,554 -> 6,655,649. IBM Kavanaugh 2025/2024: 'Change in Retention Plan Value' sub-column ($3,543/$14,178) folded into pension_nqdc; both now foot exactly. ED (6 records): relabeled rounding -> verified after row-level filing confirmation. Rounding bucket 43->24, verified_total 6718->6737 (99.34%). Sargent 2025 ($291) and Foley 2024 ($30) remain component_mismatch (filing-side arithmetic, previously documented).",
-   "DQ batch 2026-09-19 06:00 PT: re-verified the 5 remaining 8-component sum-flag rows lacking an explanatory note (NEE Sieving 2023, APH Lampo 2023, KR Sargent 2025, KR Foley 2024, ALB Anderson 2024) against fresh FY2025 DEF 14A SCTs; all 5 components and totals match the filings verbatim (filing-side arithmetic quirks $50,001 / $63,000 / $291 / $30 / $90), documented in per-row _reverify_20260919_0600 notes. Guard screens clean: 0 header-sentence name flags; 2 CEO-anchor flags were false positives (stored total_compensation is proxy_fiscal_year, not fiscal_year)."
+   "DEF 14A DQ batch 2026-09-11 18:00 PT: 23 records filing-verified and repaired. KR (13 records): parser had dropped the blank Bonus cell, shifting Stock->Bonus/Options->Stock/NonEq->Options/AllOther->NonEq, and captured the printed Total into All Other on Kennerley 2025, Massa 2025, McMullen 2024/2023 (e.g., McMullen FY2024 CEO total 30,521,333 -> 15,631,028); all corrected vs the 2026 proxy SCT, components foot exactly; KR company stats recomputed (total_neo 55,146,948 -> 40,256,643). COST Polit 2025: dropped $3,670,902 RSU stock-award column restored, total 3,837,307 -> 7,508,209. IVZ Sharp 2025: dropped $3,297,095 stock-award column restored, total 3,358,554 -> 6,655,649. IBM Kavanaugh 2025/2024: 'Change in Retention Plan Value' sub-column ($3,543/$14,178) folded into pension_nqdc; both now foot exactly. ED (6 records): relabeled rounding -> verified after row-level filing confirmation. Rounding bucket 43->24, verified_total 6718->6737 (99.34%). Sargent 2025 ($291) and Foley 2024 ($30) remain component_mismatch (filing-side arithmetic, previously documented)."
   ],
   "aggregate_stats": {
    "total_companies": 500,
@@ -33593,8 +33592,7 @@
      "total": 6772178,
      "_total_source": "component_mismatch",
      "_accession": "",
-     "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 6,722,177 vs printed total 6,772,178), kept verbatim",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $6,722,177 vs filing-printed total $6,772,178 (gap $50,001); filing-side arithmetic quirk, total retained verbatim."
+     "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 6,722,177 vs printed total 6,772,178), kept verbatim"
     },
     {
      "name": "Terrell Kirk Crews II",
@@ -56154,8 +56152,7 @@
      "_fix_note": "2026-09-13 10:00 PT: re-extracted from the APH 2026 DEF 14A Summary Compensation Table (filed 2026-04-08) verbatim; supersedes the 2026-09-04 note. The prior parse had read the All Other Compensation footnote table as SCT rows (salary = life-insurance imputed comp, total = all-other total) on the 2025/2023 rows, and mislabeled the option grants as stock_awards (Amphenol grants options only; the SCT Stock Awards column is n/a). Filing-side arithmetic error on this row: printed components sum to $3,778,717 but the filing prints total $3,715,717 (delta $63,000, filer-side); stored verbatim.",
      "bonus": 0,
      "stock_awards": 0,
-     "all_other": 114786,
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT (Amphenol grants options; Stock Awards column n/a): filing-printed components sum to $3,778,717 vs filing-printed total $3,715,717 (gap $63,000); filing-side arithmetic quirk, total retained verbatim."
+     "all_other": 114786
     },
     {
      "name": "L. Walter",
@@ -66102,8 +66099,7 @@
      "all_other": 62016,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm. 2026 proxy SCT (fiscal 2025). Filing components foot to 14,037,899 but printed total is 14,037,608 (\u0394291, filer-side arithmetic inconsistency). Stored row was also misaligned (bonus/stock/total columns shifted). Do NOT correct; reported verbatim.",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_name_note_20260913_2200": "Interim-modifier name-leak repair 2026-09-13 22:00 PT: \"Interim\" moved from name to title. Component values and the component_mismatch adjudication (filer-side -$291, verified 2026-09-10 and 2026-09-12) unchanged.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $14,037,899 vs filing-printed total $14,037,608 (gap $291); filing-side arithmetic quirk, total retained verbatim."
+     "_name_note_20260913_2200": "Interim-modifier name-leak repair 2026-09-13 22:00 PT: \"Interim\" moved from name to title. Component values and the component_mismatch adjudication (filer-side -$291, verified 2026-09-10 and 2026-09-12) unchanged."
     },
     {
      "name": "David J.C. Kennerley",
@@ -66284,8 +66280,7 @@
      "_total_source": "component_mismatch",
      "pension_change": 0,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/56873/000110465925049009/tm252618d1_def14a.htm. 2025 proxy SCT (fiscal 2024); identical numbers confirmed in the 2026 proxy's 2024 column. Components foot to 4,039,420 but printed total is 4,039,390 (\u039430, filer-side inconsistency, stable across both proxies). Stored row misaligned (all_other stored as printed total). Do NOT correct; reported verbatim.",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $4,039,420 vs filing-printed total $4,039,390 (gap $30); filing-side arithmetic quirk, total retained verbatim."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "W. Rodney McMullen",
@@ -72858,8 +72853,7 @@
      "stock_awards": 985432,
      "all_other": 128941,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430. Relabeled DEF14A-verified 2026-09-07 -> rounding 2026-09-09: residual delta $-90 remains unexplained after DEF 14A repair; components close to but not exactly the stated total. | Relabeled rounding -> component_mismatch 2026-09-11: filing-side $90 arithmetic error confirmed (components 2,440,520 vs printed 2,440,430; filing values match verbatim), per CDNS/TSCO/RF 2026-09-10 precedent.",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $2,440,520 vs filing-printed total $2,440,430 (gap $90); filing-side arithmetic quirk, total retained verbatim."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "Mark R. Mummert",
