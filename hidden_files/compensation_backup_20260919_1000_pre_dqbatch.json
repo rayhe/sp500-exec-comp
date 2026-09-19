@@ -130,7 +130,7 @@
   "total_neo_records": 6866,
   "title_coverage": "6866/6866",
   "data_quality": {
-   "verified": 5921,
+   "verified": 5935,
    "component_mismatch": 28,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260910": 106,
@@ -139,11 +139,11 @@
    "def14a_verified_20260908": 12,
    "last_audit": "2026-09-19",
    "verified_total": 6838,
-   "def14a_verified_20260912": 23,
+   "def14a_verified_20260912": 24,
    "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 136,
+   "def14a_verified_20260917": 139,
    "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 51
+   "def14a_verified_20260919": 33
   },
   "median_ceo_pay": 17759221.5,
   "mean_ceo_pay": 336923582.304,
@@ -178,7 +178,7 @@
   "governance_coverage": 500,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 5921,
+   "verified": 5935,
    "component_mismatch": 28,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260910": 106,
@@ -187,11 +187,11 @@
    "def14a_verified_20260908": 12,
    "last_audit": "2026-09-19",
    "verified_total": 6838,
-   "def14a_verified_20260912": 23,
+   "def14a_verified_20260912": 24,
    "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 136,
+   "def14a_verified_20260917": 139,
    "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 51
+   "def14a_verified_20260919": 33
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
@@ -40548,10 +40548,8 @@
      "pension_nqdc": 313608,
      "all_other": 0,
      "total": 3359741,
-     "_total_source": "def14a_verified_20260919",
-     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-130309) genuinely shows pension-change $313,608 with NEIP '-' (BKR SCT has no options column)"
+     "_total_source": "def14a_verified_20260917",
+     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim."
     },
     {
      "name": "Georgia Magno",
@@ -40565,10 +40563,8 @@
      "pension_nqdc": 215678,
      "all_other": 0,
      "total": 2917089,
-     "_total_source": "def14a_verified_20260919",
-     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-130309) genuinely shows pension-change $215,678 with NEIP '-' (BKR SCT has no options column)"
+     "_total_source": "def14a_verified_20260917",
+     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim."
     },
     {
      "name": "Nancy Buese",
@@ -46074,32 +46070,24 @@
      "year": 2023,
      "salary": 1256921,
      "stock_awards": 5326178,
-     "option_awards": 0,
-     "pension_nqdc": 0,
-     "all_other": 311636,
-     "total": 8461833,
-     "title": "Board Chair and Chief Executive Officer",
-     "_total_source": "def14a_verified_20260919",
-     "bonus": 0,
-     "non_equity_incentive": 1567098,
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2026 DEF 14A SCT has NO Option Awards column; old parse filed NEIP->option_awards, All-Other->pension_nqdc, Total->all_other and recomputed the total (roughly doubling it); now filing-verbatim; title -> SCT-verbatim 'Board Chair and Chief Executive Officer' (was 'Chair')"
+     "option_awards": 1567098,
+     "pension_nqdc": 311636,
+     "all_other": 8461833,
+     "total": 16923666,
+     "title": "Chair",
+     "_total_source": "verified"
     },
     {
      "name": "David V. Elkins",
      "year": 2023,
      "salary": 1106176,
      "stock_awards": 4882143,
-     "option_awards": 0,
-     "pension_nqdc": 0,
-     "all_other": 311663,
-     "total": 7166300,
-     "title": "EVP and Chief Financial Officer",
-     "_total_source": "def14a_verified_20260919",
-     "bonus": 0,
-     "non_equity_incentive": 866318,
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2026 DEF 14A SCT has NO Option Awards column; old parse filed NEIP->option_awards, All-Other->pension_nqdc, Total->all_other and recomputed the total (roughly doubling it); now filing-verbatim; title -> SCT-verbatim 'EVP and Chief Financial Officer' (was 'Chair and Chief Executive Officer')"
+     "option_awards": 866318,
+     "pension_nqdc": 311663,
+     "all_other": 7166300,
+     "total": 14332600,
+     "title": "Chair and Chief Executive Officer",
+     "_total_source": "verified"
     },
     {
      "name": "Cristian Massacesi",
@@ -46107,47 +46095,37 @@
      "salary": 388462,
      "bonus": 1125000,
      "stock_awards": 7853994,
-     "option_awards": 0,
-     "pension_nqdc": 0,
-     "all_other": 44618,
-     "total": 10072950,
-     "title": "EVP, Chief Medical Officer, Head of Development",
-     "_total_source": "def14a_verified_20260919",
-     "non_equity_incentive": 660876,
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2026 DEF 14A SCT has NO Option Awards column; old parse filed NEIP->option_awards, All-Other->pension_nqdc, Total->all_other and recomputed the total (roughly doubling it); now filing-verbatim; title -> SCT-verbatim 'EVP, Chief Medical Officer, Head of Development' (was 'EVP and Chief Financial Officer')"
+     "option_awards": 660876,
+     "pension_nqdc": 44618,
+     "all_other": 10072950,
+     "total": 20145900,
+     "title": "EVP and Chief Financial Officer",
+     "_total_source": "verified"
     },
     {
      "name": "Adam Lenkowsky",
      "year": 2025,
      "salary": 1131731,
      "stock_awards": 6136800,
-     "option_awards": 0,
-     "non_equity_incentive": 1794732,
-     "pension_nqdc": 27060,
-     "all_other": 250029,
-     "total": 9340352,
-     "title": "EVP, Chief Commercialization Officer",
-     "_total_source": "def14a_verified_20260919",
-     "bonus": 0,
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2026 DEF 14A SCT has NO Option Awards column; old parse filed NEIP->option_awards, All-Other->pension_nqdc, Total->all_other and recomputed the total (roughly doubling it); now filing-verbatim; title -> SCT-verbatim 'EVP, Chief Commercialization Officer' (was 'EVP and Chief Medical Officer, Head of Development')"
+     "option_awards": 1794732,
+     "non_equity_incentive": 27060,
+     "pension_nqdc": 250029,
+     "all_other": 9340352,
+     "total": 18680704,
+     "title": "EVP and Chief Medical Officer, Head of Development",
+     "_total_source": "verified"
     },
     {
      "name": "Greg Meyers",
      "year": 2025,
      "salary": 1072692,
      "stock_awards": 4209168,
-     "option_awards": 0,
-     "pension_nqdc": 0,
-     "all_other": 230277,
-     "total": 7181173,
-     "title": "EVP, Chief Digital and Technology Officer",
-     "_total_source": "def14a_verified_20260919",
-     "bonus": 0,
-     "non_equity_incentive": 1669036,
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2026 DEF 14A SCT has NO Option Awards column; old parse filed NEIP->option_awards, All-Other->pension_nqdc, Total->all_other and recomputed the total (roughly doubling it); now filing-verbatim; title -> SCT-verbatim 'EVP, Chief Digital and Technology Officer' (was 'EVP and Chief Commercialization Officer')"
+     "option_awards": 1669036,
+     "pension_nqdc": 230277,
+     "all_other": 7181173,
+     "total": 14362346,
+     "title": "EVP and Chief Commercialization Officer",
+     "_total_source": "verified"
     },
     {
      "salary": 1586346,
@@ -46256,7 +46234,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 67986217,
+   "total_neo_compensation": 94580692,
    "proxy_fiscal_year": 2025,
    "ceo_gender": "M",
    "ceo_tenure": {
@@ -58007,15 +57985,13 @@
      "non_equity_incentive": 0,
      "all_other": 855676,
      "total": 5420280,
-     "_total_source": "def14a_verified_20260919",
+     "_total_source": "def14a_verified_20260912",
      "_parse_note": "2026-09-09: rebuilt from FY2025 DEF 14A SCT (mco-20260304.htm). Filing total $5,420,280 retained verbatim. Components foot within $1 (rounding).",
      "salary": 505769,
      "bonus": 0,
      "option_awards": 700031,
      "pension_nqdc": 558729,
-     "_reverify_20260912_1000": "Independent re-verification 2026-09-12 10:00 PT vs primary DEF 14A SCT (acc 0001059556-26-000019); components + total match filing verbatim; delta is genuine filing-side rounding; rounding classification confirmed.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001059556-26-000019) genuinely shows pension-change $558,729 with NEIP '-' (Former President of Moody's Analytics, departed); $1 filing-side rounding gap (components sum 5,420,279 vs printed 5,420,280)"
+     "_reverify_20260912_1000": "Independent re-verification 2026-09-12 10:00 PT vs primary DEF 14A SCT (acc 0001059556-26-000019); components + total match filing verbatim; delta is genuine filing-side rounding; rounding classification confirmed."
     },
     {
      "name": "Stephen Tulenko",
@@ -60202,7 +60178,7 @@
     },
     {
      "name": "Blake D. Moret",
-     "title": "President & Chief Executive Officer",
+     "title": "President &, Chief Executive Officer",
      "year": 2024,
      "salary": 1210456,
      "bonus": 0,
@@ -60212,9 +60188,7 @@
      "pension_nqdc": 4196718,
      "all_other": 23283,
      "total": 16430804,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001308179-25-000665) genuinely shows pension-change $4,196,718 with NEIP=0 (Moret is a 41-yr pension participant; fn 5: discount-rate 5.10% vs 6.10% prior year; all ROK NEOs show NEIP=0 for FY2024); title -> SCT-verbatim 'President & Chief Executive Officer' (was 'President &, Chief Executive Officer')"
+     "_total_source": "verified"
     },
     {
      "name": "Blake D. Moret",
@@ -66315,24 +66289,22 @@
     },
     {
      "name": "W. Rodney McMullen",
-     "title": "Former Chairman and Chief Executive Officer",
+     "title": "Chairman and Chief Executive Officer",
      "year": 2025,
      "salary": 124314,
      "bonus": 0,
      "stock_awards": 0,
      "option_awards": 0,
      "total": 843061,
-     "_total_source": "def14a_verified_20260919",
+     "_total_source": "verified",
      "non_equity_incentive": 0,
      "pension_nqdc": 562587,
      "all_other": 156160,
-     "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension/NQDC $562,587 (incl. $227,673 preferential NQDC earnings per fn 2) with no NEIP/equity (resigned 2025-03-02); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')"
+     "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total."
     },
     {
      "name": "W. Rodney McMullen",
-     "title": "Former Chairman and Chief Executive Officer",
+     "title": "Chairman and Chief Executive Officer",
      "year": 2024,
      "salary": 1433913,
      "bonus": 0,
@@ -66342,13 +66314,11 @@
      "pension_nqdc": 206800,
      "all_other": 740723,
      "total": 15631028,
-     "_total_source": "def14a_verified_20260919",
+     "_total_source": "verified",
      "_original_pension": {
       "pension_nqdc": 740723
      },
-     "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension-change $206,800 with NEIP=0 (stable across 2025 and 2026 proxies); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')"
+     "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total."
     },
     {
      "name": "W. Rodney McMullen",
@@ -73992,9 +73962,7 @@
      "all_other": 6188702,
      "total": 6693120,
      "title": "Former Vice Chair and Chief Operating Officer",
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-107144) genuinely shows pension-change $449,453 with NEIP '-' (resigned 2025-01-13; $6,188,702 severance in All Other)"
+     "_total_source": "def14a_verified_20260917"
     },
     {
      "name": "Hugh S. Cummins III",
@@ -85017,7 +84985,7 @@
     },
     {
      "name": "Richard A. Galanti",
-     "title": "Former Executive Vice President",
+     "title": "Executive Vice President",
      "year": 2025,
      "salary": 502079,
      "bonus": 0,
@@ -85025,12 +84993,10 @@
      "pension_nqdc": 594005,
      "all_other": 148054,
      "total": 6504736,
-     "_total_source": "def14a_verified_20260919",
+     "_total_source": "verified",
      "stock_awards": 5260598,
      "option_awards": 0,
-     "_fix_note": "2026-09-03: components rebuilt from primary DEF 14A SCT (pension conflict resolved)",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2025 DEF 14A SCT (acc. 0000909832-25-000159) genuinely shows pension/NQDC $594,005 with NEIP '-' (post-retirement; COST SCT has no options column); title -> SCT-verbatim 'Former Executive Vice President' (was 'Executive Vice President')"
+     "_fix_note": "2026-09-03: components rebuilt from primary DEF 14A SCT (pension conflict resolved)"
     },
     {
      "name": "Richard A. Galanti",
@@ -96333,17 +96299,15 @@
      "name": "Alok Maskara",
      "title": "President and Chief Executive Officer",
      "year": 2023,
-     "salary": 1064750,
+     "salary": 0,
      "bonus": 0,
      "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 2729934,
-     "pension_nqdc": 0,
-     "all_other": 1188979,
-     "total": 4983663,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2023 SCT rows carry '-' in the Stock/Option columns; old parse misaligned the row (NEIP->option_awards, pension->neip, all_other->pension, total->all_other, total recomputed); now filing-verbatim"
+     "option_awards": 2729934,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 1188979,
+     "all_other": 4983663,
+     "total": 8902576,
+     "_total_source": "verified"
     },
     {
      "name": "Michael P. Quenzer",
@@ -96419,17 +96383,15 @@
      "name": "Joseph F. Nassab",
      "title": "Executive Vice President and President, Building Climate Solutions",
      "year": 2023,
-     "salary": 531250,
+     "salary": 0,
      "bonus": 0,
      "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 873893,
-     "pension_nqdc": 0,
-     "all_other": 184994,
-     "total": 1590137,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2023 SCT rows carry '-' in the Stock/Option columns; old parse misaligned the row (NEIP->option_awards, pension->neip, all_other->pension, total->all_other, total recomputed); now filing-verbatim"
+     "option_awards": 873893,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 184994,
+     "all_other": 1590137,
+     "total": 2649024,
+     "_total_source": "verified"
     },
     {
      "name": "Daniel M. Sessa",
@@ -96463,17 +96425,15 @@
      "name": "Daniel M. Sessa",
      "title": "Executive Vice President, Chief Human Resources Officer",
      "year": 2023,
-     "salary": 566250,
+     "salary": 0,
      "bonus": 0,
      "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 907387,
-     "pension_nqdc": 253146,
-     "all_other": 49800,
-     "total": 1776583,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: column-shift repair - 2023 SCT rows carry '-' in the Stock/Option columns; old parse misaligned the row (NEIP->option_awards, pension->neip, all_other->pension, total->all_other, total recomputed); now filing-verbatim"
+     "option_awards": 907387,
+     "non_equity_incentive": 253146,
+     "pension_nqdc": 49800,
+     "all_other": 1776583,
+     "total": 2986916,
+     "_total_source": "verified"
     }
    ],
    "neo_count": 4,
@@ -100680,7 +100640,7 @@
     },
     {
      "name": "Mark R. George",
-     "title": "President & Chief Executive Officer",
+     "title": "Executive Officer",
      "year": 2023,
      "salary": 675000,
      "bonus": 0,
@@ -100690,9 +100650,7 @@
      "pension_nqdc": 183588,
      "all_other": 106792,
      "total": 3366246,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-127620) genuinely shows pension-change $183,588 with NEIP=0 (both NSC NEOs show NEIP=0 for FY2023); title -> SCT-verbatim 'President & Chief Executive Officer' (was 'Executive Officer')"
+     "_total_source": "verified"
     },
     {
      "name": "Jason A. Zampi",
@@ -100780,7 +100738,7 @@
     },
     {
      "name": "Claude E. Elkins",
-     "title": "Executive Vice President & Chief Commercial Officer",
+     "title": "Chief Commercial Officer",
      "year": 2023,
      "salary": 600000,
      "bonus": 0,
@@ -100790,9 +100748,7 @@
      "pension_nqdc": 1284444,
      "all_other": 74217,
      "total": 3959635,
-     "_total_source": "def14a_verified_20260919",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-127620) genuinely shows pension-change $1,284,444 with NEIP=0 (both NSC NEOs show NEIP=0 for FY2023); title -> SCT-verbatim 'Executive Vice President & Chief Commercial Officer' (was 'Chief Commercial Officer')"
+     "_total_source": "verified"
     },
     {
      "name": "Anil Bhatt",
