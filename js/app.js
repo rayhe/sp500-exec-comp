@@ -7060,12 +7060,17 @@ function renderPvpSection(ticker) {
         + '<th>Company TSR</th><th>Peer TSR' + (peer2 ? ' <span class="pvp-peer2-hint">(two series)</span>' : '') + '</th>'
         + '<th>' + pvpEsc(niLabel) + '</th><th>' + pvpEsc(csmLabel) + '</th></tr></thead><tbody>';
     years.forEach(function(y) {
-        var peoPay = y.peo.map(function(p) {
+        // Filter non-serving PEOs: the extraction carries the window's full PEO
+        // list on every year row, so non-serving PEOs (e.g. PG's David S. Taylor
+        // in 2023-2026, AMZN's Jeffrey P. Bezos) arrive with null values and would
+        // render as dead "Name: —" lines. Per-column filters handle the TSLA
+        // case where the filing reports a cap but no SCT.
+        var peoPay = y.peo.filter(function(p) { return p.cap != null; }).map(function(p) {
             return '<span class="pvp-peo-line">' + pvpEsc(p.name) + ': <b>' + pvpMoney(p.cap) + '</b></span>';
-        }).join('');
-        var peoSct = y.peo.map(function(p) {
+        }).join('') || '&mdash;';
+        var peoSct = y.peo.filter(function(p) { return p.sct != null; }).map(function(p) {
             return '<span class="pvp-peo-line">' + pvpEsc(p.name) + ': ' + pvpMoney(p.sct) + '</span>';
-        }).join('');
+        }).join('') || '&mdash;';
         var peerCell = pvpNum(y.peer_tsr);
         if (peer2) {
             var lbl = c.peer_labels || {};
