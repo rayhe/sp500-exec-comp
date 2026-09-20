@@ -14499,3 +14499,97 @@ body.light-mode .cross-sector-pair-select:focus {
 .neo-footnote .neo-footnote-mark {
     margin-right: 4px;
 }
+
+/* Pay vs Performance (SEC Item 402(v)) pilot section */
+.pvp-section {
+    margin-top: 22px;
+    padding: 16px 18px;
+    border: 1px solid rgba(0, 180, 216, 0.25);
+    border-radius: 10px;
+    background: rgba(0, 180, 216, 0.04);
+}
+.pvp-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+.pvp-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+.pvp-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(0, 180, 216, 0.15);
+    color: #67e8f9;
+    border: 1px solid rgba(0, 180, 216, 0.35);
+    white-space: nowrap;
+}
+.pvp-sub {
+    font-size: 0.78rem;
+    color: #a1a1aa;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+.pvp-sub a {
+    color: #67e8f9;
+}
+.pvp-table-wrap {
+    overflow-x: auto;
+}
+.pvp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+.pvp-table th {
+    text-align: right;
+    font-weight: 600;
+    color: #a1a1aa;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+}
+.pvp-table th:first-child {
+    text-align: left;
+}
+.pvp-table td {
+    text-align: right;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+.pvp-table td:first-child {
+    text-align: left;
+}
+.pvp-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+.pvp-year {
+    font-weight: 700;
+}
+.pvp-peo-line {
+    display: block;
+    line-height: 1.5;
+}
+.pvp-peer2-hint {
+    font-weight: 400;
+    font-size: 0.7rem;
+}
+.pvp-flag {
+    color: #fbbf24;
+    cursor: help;
+}
+.pvp-notes {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    line-height: 1.5;
+}
+.pvp-notes div {
+    margin-top: 3px;
+}

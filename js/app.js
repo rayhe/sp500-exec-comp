@@ -99,6 +99,7 @@ function getSectorColor(s) { return SECTOR_COLORS_APP[s] || '#94a3b8'; }
 let compData = null;
 let trendsData = null;
 let peerData = null;
+let pvpData = null;
 
 /* Pre-compute CEO compensation year-over-year change for each company.
    Sets c._ceoYoY = { pct, fromYear, toYear, fromComp, toComp } or null. */
@@ -1239,14 +1240,16 @@ function csvEscape(val) {
 }
 
 async function loadData() {
-    const [comp, trends, peer] = await Promise.all([
+    const [comp, trends, peer, pvp] = await Promise.all([
         fetch('data/compensation.json').then(r => r.json()),
         fetch('data/trends.json').then(r => r.json()),
-        fetch('data/peer-network.json').then(r => r.json())
+        fetch('data/peer-network.json').then(r => r.json()),
+        fetch('data/pay_vs_performance.json').then(r => r.json()).catch(() => null)
     ]);
     compData = comp;
     trendsData = trends;
     peerData = peer;
+    pvpData = pvp;
     renderFooterVintage(comp);
     return { comp, trends, peer };
 }
@@ -7011,6 +7014,74 @@ function getPeerInfo(ticker) {
     return { selectedBy: selectedBy, selects: selects };
 }
 
+/* === Pay vs Performance (SEC Item 402(v)) — pilot section ===
+   Renders the PvP table from data/pay_vs_performance.json when the ticker
+   is covered. Values are transcribed from each company's latest DEF 14A;
+   the four compensation columns were cross-checked against Inline XBRL. */
+function pvpEsc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function pvpMoney(v) {
+    if (v == null || isNaN(v)) return '—';
+    var neg = v < 0, a = Math.abs(v), s;
+    if (a >= 1e9) s = '$' + (a / 1e9).toFixed(1) + 'B';
+    else if (a >= 1e6) s = '$' + (a / 1e6).toFixed(1) + 'M';
+    else if (a >= 1e3) s = '$' + (a / 1e3).toFixed(0) + 'K';
+    else s = '$' + a.toFixed(0);
+    return (neg ? '\u2212' : '') + s;
+}
+function pvpNum(v) {
+    if (v == null || isNaN(v)) return '—';
+    return Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+function renderPvpSection(ticker) {
+    if (!pvpData || !pvpData.companies || !pvpData.companies[ticker]) return '';
+    var c = pvpData.companies[ticker];
+    var years = (c.years || []).slice().sort(function(a, b) { return b.year - a.year; });
+    if (!years.length) return '';
+    var niLabel = 'Net income' + (c.net_income && c.net_income.unit ? ' (' + c.net_income.unit + ')' : '');
+    var csmLabel = (c.csm && c.csm.label) ? c.csm.label + (c.csm.unit ? ' (' + c.csm.unit + ')' : '') : 'Company measure';
+    var peer2 = years.some(function(y) { return y.peer_tsr_2 != null; });
+    var html = '<div class="pvp-section">';
+    html += '<div class="pvp-header"><span class="pvp-title">Pay vs Performance</span>'
+        + '<span class="pvp-badge">SEC Item 402(v) &middot; pilot</span></div>';
+    html += '<div class="pvp-sub">From the latest DEF 14A (filed ' + pvpEsc(c.filing_date) + ') &mdash; '
+        + '<a href="' + pvpEsc(c.filing_url) + '" target="_blank" rel="noopener">view filing</a>. '
+        + 'Compensation actually paid reflects equity valuation changes, not cash realized. '
+        + 'TSR columns show the value of an initial fixed $100 investment.</div>';
+    html += '<div class="pvp-table-wrap"><table class="pvp-table"><thead><tr>'
+        + '<th>Year</th><th>PEO actually paid</th><th>PEO SCT total</th><th>Other NEOs avg paid</th>'
+        + '<th>Company TSR</th><th>Peer TSR' + (peer2 ? ' <span class="pvp-peer2-hint">(two series)</span>' : '') + '</th>'
+        + '<th>' + pvpEsc(niLabel) + '</th><th>' + pvpEsc(csmLabel) + '</th></tr></thead><tbody>';
+    years.forEach(function(y) {
+        var peoPay = y.peo.map(function(p) {
+            return '<span class="pvp-peo-line">' + pvpEsc(p.name) + ': <b>' + pvpMoney(p.cap) + '</b></span>';
+        }).join('');
+        var peoSct = y.peo.map(function(p) {
+            return '<span class="pvp-peo-line">' + pvpEsc(p.name) + ': ' + pvpMoney(p.sct) + '</span>';
+        }).join('');
+        var peerCell = pvpNum(y.peer_tsr);
+        if (peer2) {
+            var lbl = c.peer_labels || {};
+            peerCell = '<span class="pvp-peo-line" title="' + pvpEsc(lbl.peer_tsr_nyse_tech || 'Peer group 1') + '">' + pvpNum(y.peer_tsr) + '</span>'
+                + '<span class="pvp-peo-line" title="' + pvpEsc(lbl.peer_tsr_sp_retail || 'Peer group 2') + '">' + pvpNum(y.peer_tsr_2) + '</span>';
+        }
+        var tsrCell = pvpNum(y.co_tsr);
+        if (y.flags && y.flags.indexOf('tsr_anomaly') >= 0) {
+            tsrCell += ' <span class="pvp-flag" title="Transcribed verbatim as filed; inconsistent with the year-over-year share-price move — possible filing error.">&#9888;</span>';
+        }
+        html += '<tr><td class="pvp-year">' + y.year + '</td><td>' + peoPay + '</td><td>' + peoSct
+            + '</td><td>' + pvpMoney(y.nonpeo_cap) + '</td><td>' + tsrCell + '</td><td>' + peerCell
+            + '</td><td>' + pvpNum(y.net_income) + '</td><td>' + pvpNum(y.csm) + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    if (c.notes && c.notes.length) {
+        html += '<div class="pvp-notes">' + c.notes.map(function(n) { return '<div>' + pvpEsc(n) + '</div>'; }).join('') + '</div>';
+    }
+    html += '</div>';
+    return html;
+}
+
 /* === Focus Management — track previous focus for panels === */
 var _detailTriggerRow = null;  // row that opened the detail panel
 var _preFocusElement = null;   // element focused before modal/comparison opens
@@ -9650,6 +9721,9 @@ function setupDetailPanel(companies) {
                 html += '</div>';
             }
         }
+
+        // --- Pay vs Performance (SEC Item 402(v)) pilot section ---
+        html += renderPvpSection(ticker);
 
         html += '</div></td>'; // detail-panel
 
