@@ -11809,14 +11809,22 @@ body.light-mode .cross-sector-pair-select:focus {
     outline-offset: 1px;
 }
 
-/* Narrow screens: shrink the density slider so the control fits its row
-   instead of forcing page-level horizontal scroll. */
+/* Narrow screens: the density pill shares its row with value/count readouts
+   and two preset buttons, leaving the slider a 64px sliver — too small to
+   drag on touch. Drop the redundant "Min refs" text label (the slider keeps
+   its aria-label and the pill keeps its explanatory title) and let the
+   slider flex to fill whatever row width remains. (2026-09-20 03:30 PT) */
 @media (max-width: 600px) {
     .density-control {
         max-width: 100%;
     }
+    .density-control label {
+        display: none;
+    }
     .density-slider {
-        width: 64px;
+        width: auto;
+        flex: 1 1 80px;
+        min-width: 80px;
     }
 }
 
