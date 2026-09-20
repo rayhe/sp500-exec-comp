@@ -355,7 +355,7 @@ header h1 {
 /* === Metrics Strip === */
 .metrics-strip {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     padding: 20px 32px;
     max-width: 1440px;
@@ -403,6 +403,20 @@ header h1 {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
+}
+
+/* Metric card header: icon + label row (icon-driven strip, 2026-09-19 19:30 PT) */
+.metric-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.metric-head .metric-label { margin-bottom: 0; }
+.metric-ico {
+    color: var(--accent);
+    flex: none;
+    display: block;
 }
 
 .metric-value {
