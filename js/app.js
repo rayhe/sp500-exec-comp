@@ -16070,6 +16070,30 @@ function setupDualSparklineTooltips() {
             if (el) observer.observe(el);
         });
 
+        // === Scroll affordance: edge fades on the nav bar when the inner strip
+        // is horizontally scrollable. Shows the right fade when more content
+        // lies ahead, the left fade once the user has scrolled right. Recomputed
+        // on scroll, resize, and font load (link widths change with webfonts). ===
+        var navInner = nav.querySelector('.section-nav-inner');
+        function updateNavScrollFades() {
+            if (!navInner) return;
+            var canScroll = navInner.scrollWidth > navInner.clientWidth + 1;
+            var maxLeft = navInner.scrollWidth - navInner.clientWidth;
+            var left = navInner.scrollLeft;
+            nav.classList.toggle('nav-fade-right', canScroll && left < maxLeft - 4);
+            nav.classList.toggle('nav-fade-left', canScroll && left > 4);
+        }
+        if (navInner) {
+            navInner.addEventListener('scroll', function() {
+                requestAnimationFrame(updateNavScrollFades);
+            }, { passive: true });
+            window.addEventListener('resize', updateNavScrollFades);
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(updateNavScrollFades);
+            }
+        }
+        updateNavScrollFades();
+
         // Add scrolled shadow class to nav when page scrolls past metrics strip
         // Also clear section deep-link on manual scroll (user navigated away from the linked section)
         var _navScrolledTimer = null;

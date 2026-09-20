@@ -293,6 +293,35 @@ header h1 {
 .section-nav.scrolled {
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+/* Scroll affordance: the inner strip hides its scrollbar, so edge fades signal
+   that the nav is horizontally scrollable (esp. on narrow screens). JS in
+   initSectionNav() toggles .nav-fade-left/.nav-fade-right on .section-nav based
+   on the inner strip's scroll state. pointer-events: none keeps edge links
+   clickable. */
+.section-nav::before,
+.section-nav::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: 2;
+}
+.section-nav::before {
+    left: 0;
+    background: linear-gradient(to right, #1a1a2e 0%, rgba(26,26,46,0) 100%);
+}
+.section-nav::after {
+    right: 0;
+    background: linear-gradient(to left, #1a1a2e 0%, rgba(26,26,46,0) 100%);
+}
+.section-nav.nav-fade-left::before,
+.section-nav.nav-fade-right::after {
+    opacity: 1;
+}
 .section-nav-inner {
     max-width: 1440px;
     margin: 0 auto;
@@ -338,6 +367,12 @@ header h1 {
 [data-theme="light"] .section-nav-link.active {
     color: #0077b6;
     border-bottom-color: #0077b6;
+}
+[data-theme="light"] .section-nav::before {
+    background: linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 100%);
+}
+[data-theme="light"] .section-nav::after {
+    background: linear-gradient(to left, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 100%);
 }
 /* High-contrast support */
 @media (prefers-contrast: high) {
