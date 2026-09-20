@@ -5,8 +5,7 @@
   "pilot": true,
   "companies": 12,
   "coverage_note": "Pilot coverage: 12 mega-cap companies. Full S&P 500 rollout pending.",
-  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing. The four compensation columns were cross-checked against Inline XBRL facts (us-gaap:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt) where available; all pilot rows passed. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars.",
-  "rollout_exclusions": "KKR & Co. Inc. (KKR): exempt from Item 402(v) pay-versus-performance disclosure until its Sunset Date per 2026 10-K (acc 0001404912-26-000007); exclude from 402(v) rollout until then. Blackstone Inc. (BX): controlled company, generally not subject to Dodd-Frank say-on-pay/say-on-frequency provisions per 2026 10-K (acc 0001193125-26-082531); treat 402(v) as exempt likewise."
+  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing. The four compensation columns were cross-checked against Inline XBRL facts (us-gaap:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt) where available; all pilot rows passed. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars."
  },
  "companies": {
   "NVDA": {

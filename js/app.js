@@ -7626,6 +7626,10 @@ function setupDetailPanel(companies) {
                     '</div>';
             }
             html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value ' + sopCls + '">' + sopV.toFixed(1) + '%</div>' + voteBarHtml + distBar(sopV, '0%', '100%') + '<div class="detail-stat-sub">' + sopLbl + ' — ' + sopSrc + '</div></div>';
+        } else if (company.say_on_pay && company.say_on_pay.exempt) {
+            // Controlled-company exemption (BX, KKR): no advisory vote is held, by Dodd-Frank design — not a data gap.
+            var sopExSrc = company.say_on_pay.filing_date ? '10-K filed ' + company.say_on_pay.filing_date : 'SEC filing';
+            html += '<div class="detail-stat"><div class="detail-stat-label">Say-on-Pay</div><div class="detail-stat-value">Exempt</div><div class="detail-stat-sub">' + company.say_on_pay.exemption_basis + ' — ' + sopExSrc + '</div></div>';
         }
 
         // CEO History — transition/tenure data (enhanced with EDGAR DEF 14A data)
