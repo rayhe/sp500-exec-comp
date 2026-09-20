@@ -5573,7 +5573,7 @@ function renderSopSortSummary(companies) {
     var above95 = withSop.filter(function(c) { return c._sopApproval >= 95; });
 
     var html = '<div class="sort-summary sop-sort-summary">';
-    html += '<span class="sort-summary-label">📊 Say-on-Pay:</span> ';
+    html += '<span class="sort-summary-label"><svg class="btn-ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Say-on-Pay:</span> ';
     html += '<span>' + withSop.length + ' of ' + companies.length + ' companies with data</span>';
     html += '<span class="sort-summary-sep">·</span>';
     html += '<span>Median <strong>' + median.toFixed(1) + '%</strong></span>';
@@ -8951,7 +8951,13 @@ function setupDetailPanel(companies) {
                         var _auditEsc = _auditParts.join(' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                         _auditHtml = ' <span class="neo-audit-note" title="' + _auditEsc + '" aria-label="Correction audit note">\uD83D\uDCDD</span>';
                     }
-                    html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + _auditHtml + '</td>';
+                    html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + _auditHtml;
+                    // Row-level SCT footnote (multi-year grants, transition-year CEO, pension-swing years)
+                    if (exec.footnote) {
+                        var _fnEsc = String(exec.footnote).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        html += ' <span class="neo-footnote-mark" title="' + _fnEsc + '" aria-label="Row footnote">&#8224;</span>';
+                    }
+                    html += '</td>';
                     html += '<td class="neo-title">' + (exec.title || '—') + '</td>';
                     html += '<td class="neo-num">' + (exec.salary ? formatCompact(exec.salary) : '—') + '</td>';
                     if (yrHasBonus) html += '<td class="neo-num">' + (exec.bonus ? formatCompact(exec.bonus) : '—') + '</td>';
@@ -8995,6 +9001,20 @@ function setupDetailPanel(companies) {
                 html += '</td></tr>';
 
                 html += '</tbody></table></div>';
+
+                // Row-level SCT footnotes for this year (deduped)
+                var _yrFootnotes = [];
+                yrExecs.forEach(function(e) {
+                    if (e.footnote && _yrFootnotes.indexOf(e.footnote) === -1) _yrFootnotes.push(e.footnote);
+                });
+                if (_yrFootnotes.length > 0) {
+                    html += '<div class="neo-footnotes">';
+                    _yrFootnotes.forEach(function(fn) {
+                        var _fnLine = String(fn).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        html += '<div class="neo-footnote"><span class="neo-footnote-mark" aria-hidden="true">&#8224;</span> ' + _fnLine + '</div>';
+                    });
+                    html += '</div>';
+                }
 
                 // Year-over-year comparison vs next year (if exists)
                 var nextYrIdx = yrIdx + 1;
@@ -9703,7 +9723,7 @@ function setupDetailPanel(companies) {
                 if (!section) return;
                 var isSmooth = section.classList.toggle('neo-smooth-mode');
                 btn.classList.toggle('active', isSmooth);
-                btn.innerHTML = isSmooth ? '✓ Smoothing on' : '📊 Smooth equity grants';
+                btn.innerHTML = isSmooth ? '✓ Smoothing on' : '<svg class="btn-ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Smooth equity grants';
                 btn.setAttribute('aria-pressed', isSmooth ? 'true' : 'false');
                 // Show/hide the smoothing method banner
                 section.querySelectorAll('.neo-smooth-banner').forEach(function(b) {

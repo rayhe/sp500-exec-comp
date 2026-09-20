@@ -14459,3 +14459,29 @@ body.light-mode .cross-sector-pair-select:focus {
         order: 10;
     }
 }
+
+/* Toggle-button inline SVG icons (replaces emoji glyphs, 2026-09-19 18:00 PT) */
+.btn-ico {
+    vertical-align: -2px;
+    margin-right: 5px;
+    flex: none;
+}
+
+/* Row-level SCT footnotes (multi-year grants, transition-year CEO, pension-swing years) */
+.neo-footnote-mark {
+    color: var(--accent, #00b4d8);
+    font-weight: 700;
+    cursor: help;
+}
+.neo-footnotes {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+.neo-footnote {
+    margin-top: 4px;
+    line-height: 1.45;
+}
+.neo-footnote .neo-footnote-mark {
+    margin-right: 4px;
+}
