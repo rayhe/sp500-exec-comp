@@ -1260,8 +1260,12 @@ async function loadData() {
 // guard-checked metadata counts so it can never drift again. Uses
 // textContent only (never innerHTML) so data-derived values stay inert.
 // If metadata is absent, the static HTML fallback text stays as-is.
-// "Last repair" discloses metadata.last_updated, the cadence of the daily
-// DQ repair batches, alongside the data_collected snapshot date.
+// "Last repair" discloses metadata.last_dq_repair (the date of the most
+// recent daily DQ repair batch), falling back to metadata.last_updated.
+// Convention (2026-09-20): every DQ batch script sets BOTH the top-level
+// last_updated and metadata.last_dq_repair to the run date, so the footer
+// never lags a batch by a day again. The static HTML fallback text stays
+// as-is until the live JSON loads.
 function footerDateLabel(ymd) {
     // "2026-09-18" -> "Sep 18, 2026"; fall back to the raw string if unparseable
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
@@ -1283,7 +1287,9 @@ function renderFooterVintage(comp) {
     if (typeof md.data_collected === 'string' && md.data_collected) {
         parts.push('Data collected ' + footerDateLabel(md.data_collected));
     }
-    if (typeof md.last_updated === 'string' && md.last_updated) {
+    if (typeof md.last_dq_repair === 'string' && md.last_dq_repair) {
+        parts.push('Last repair ' + footerDateLabel(md.last_dq_repair));
+    } else if (typeof md.last_updated === 'string' && md.last_updated) {
         parts.push('Last repair ' + footerDateLabel(md.last_updated));
     }
     if (total > 0) {

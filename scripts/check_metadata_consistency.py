@@ -7,6 +7,13 @@ History: 2026-09-07 (7c6a07b) synced 6700->6750, 2026-09-09 (a3be999)
 synced 6759->6764, 2026-09-09 07:30 run synced buckets after 3f1a80c's
 pension-repair run left data_quality at the old bucket values.
 
+History: 2026-09-20 06:00 PT run added the last_dq_repair convention (section 3):
+every DQ batch script sets BOTH top-level last_updated and
+metadata.last_dq_repair to the run date; the footer's "Last repair" prefers
+metadata.last_dq_repair, so it can never lag a DQ batch by a day again.
+The guard asserts last_dq_repair is a valid ymd date and not later than
+top-level last_updated.
+
 Usage:
   python3 scripts/check_metadata_consistency.py          # manual run
   cp scripts/check_metadata_consistency.py .git/hooks/pre-commit  # install hook
@@ -720,7 +727,24 @@ def main():
     if meta.get("title_coverage") != expect_tc:
         fail(f"title_coverage={meta.get('title_coverage')!r} != {expect_tc!r}", failures)
 
-    # 3. audit buckets vs record-level _total_source (count by canonical key so
+    # 3. DQ-repair freshness convention (2026-09-20 06:00 run): the footer
+    # "Last repair" reads metadata.last_dq_repair; every DQ batch script must
+    # set both top-level last_updated and metadata.last_dq_repair to the run
+    # date, so the footer can never lag a batch by a day again.
+    ymd = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+    dqr = meta.get("last_dq_repair")
+    if not (isinstance(dqr, str) and ymd.match(dqr)):
+        fail(f"metadata.last_dq_repair={dqr!r} not a ymd date", failures)
+    else:
+        top = data.get("last_updated")
+        if isinstance(top, str) and ymd.match(top) and dqr > top:
+            fail(
+                f"metadata.last_dq_repair={dqr} is later than top-level "
+                f"last_updated={top}",
+                failures,
+            )
+
+    # 3b. audit buckets vs record-level _total_source (count by canonical key so
     # raw and normalized spellings of the same label bucket together)
     src_counts = Counter()
     unlabeled = 0
