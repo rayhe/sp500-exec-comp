@@ -7020,7 +7020,7 @@ function getPeerInfo(ticker) {
     return { selectedBy: selectedBy, selects: selects };
 }
 
-/* === Pay vs Performance (SEC Item 402(v)) — pilot section ===
+/* === Pay vs Performance (SEC Item 402(v)) section ===
    Renders the PvP table from data/pay_vs_performance.json when the ticker
    is covered. Values are transcribed from each company's latest DEF 14A;
    the four compensation columns were cross-checked against Inline XBRL. */
@@ -7050,7 +7050,7 @@ function renderPvpSection(ticker) {
     var peer2 = years.some(function(y) { return y.peer_tsr_2 != null; });
     var html = '<div class="pvp-section">';
     html += '<div class="pvp-header"><span class="pvp-title">Pay vs Performance</span>'
-        + '<span class="pvp-badge">SEC Item 402(v) &middot; pilot</span></div>';
+        + '<span class="pvp-badge">SEC Item 402(v)</span></div>';
     html += '<div class="pvp-sub">From the latest DEF 14A (filed ' + pvpEsc(c.filing_date) + ') &mdash; '
         + '<a href="' + pvpEsc(c.filing_url) + '" target="_blank" rel="noopener">view filing</a>. '
         + 'Compensation actually paid reflects equity valuation changes, not cash realized. '
@@ -9732,7 +9732,7 @@ function setupDetailPanel(companies) {
             }
         }
 
-        // --- Pay vs Performance (SEC Item 402(v)) pilot section ---
+        // --- Pay vs Performance (SEC Item 402(v)) section ---
         html += renderPvpSection(ticker);
 
         html += '</div></td>'; // detail-panel
