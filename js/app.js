@@ -7034,7 +7034,14 @@ function pvpMoney(v) {
     else if (a >= 1e6) s = '$' + (a / 1e6).toFixed(1) + 'M';
     else if (a >= 1e3) s = '$' + (a / 1e3).toFixed(0) + 'K';
     else s = '$' + a.toFixed(0);
-    return (neg ? '\u2212' : '') + s;
+    if (!neg) return s;
+    // Negative compensation actually paid: equity valuation declines for the
+    // year exceeded all other pay components (SEC 402(v) concept). Rendered in
+    // the theme's negative color so a −$9.7B cell cannot be mistaken for a
+    // positive at a glance. Purely presentational wrapper: sorting and values
+    // are untouched.
+    return '<span class="pvp-neg" title="Negative compensation actually paid: equity valuation declines exceeded other pay components for the year">'
+        + '\u2212' + s + '</span>';
 }
 function pvpNum(v) {
     if (v == null || isNaN(v)) return '—';

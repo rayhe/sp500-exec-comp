@@ -14627,6 +14627,13 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #fbbf24;
     cursor: help;
 }
+/* Negative compensation actually paid (SEC 402(v)): restrained theme-safe
+   color cue so negative cells are scannable at a glance. Uses the site's
+   --negative var (dark #ef476f / light #dc2626). */
+.pvp-neg {
+    color: var(--negative);
+    cursor: help;
+}
 .pvp-notes {
     margin-top: 10px;
     font-size: 0.75rem;
