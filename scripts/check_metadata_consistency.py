@@ -180,6 +180,7 @@ from collections import Counter
 HERE = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(HERE, "..", "data", "compensation.json")
 PEER_JSON_PATH = os.path.join(HERE, "..", "data", "peer-network.json")
+PVP_JSON_PATH = os.path.join(HERE, "..", "data", "pay_vs_performance.json")
 
 # record-level _total_source label -> metadata data_quality key
 LABEL_TO_KEY = {
@@ -702,6 +703,31 @@ def check_name_ambiguity(companies, failures):
                         f"({tag}, 14): {c.get('ticker')} {yr} "
                         f"{na!r} vs {nb!r} - triage via primary sources; "
                         f"never auto-merge")
+
+
+# -- Section 16: PvP coverage metadata truthfulness ---------------------------
+# (2026-09-21 07:30 PT): wave 6 expanded coverage 49->59 companies but left
+# metadata.methodology's hand-typed "all 242 company-years passed" from
+# wave 5 (the true total was 292 = 58x5 + GEV's 2). This section asserts the
+# PvP metadata counts recount-exact and that the methodology prose carries
+# the current total, so the wave-5 stale-count class cannot recur.
+def check_pvp_metadata(failures):
+    with open(PVP_JSON_PATH, encoding="utf-8") as f:
+        pvp = json.load(f)
+    cos = pvp.get("companies", {})
+    meta = pvp.get("metadata", {})
+    n_comp = len(cos)
+    n_years = sum(len(c.get("years", [])) for c in cos.values())
+    if meta.get("companies") != n_comp:
+        fail(f"pvp metadata.companies={meta.get('companies')} != recount "
+             f"{n_comp}", failures)
+    if meta.get("company_years") != n_years:
+        fail(f"pvp metadata.company_years={meta.get('company_years')} != "
+             f"recount {n_years}", failures)
+    method = meta.get("methodology", "")
+    if f"all {n_years} company-years passed" not in method:
+        fail(f"pvp methodology prose does not carry the current "
+             f"{n_years} company-year total (stale-count drift)", failures)
 
 
 def main():
@@ -1648,6 +1674,9 @@ def main():
     #     title-column re-read (filed Title Case, not all caps) and now
     #     asserts 0. New instances fail, recounts asserted exact.
     check_title_allcaps(companies, failures)
+
+    # 16. PvP coverage metadata truthfulness (2026-09-21 07:30 PT).
+    check_pvp_metadata(failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
