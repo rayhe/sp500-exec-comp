@@ -1,11 +1,11 @@
 {
  "metadata": {
   "source": "SEC EDGAR DEF 14A proxy statements, Item 402(v) Pay versus Performance disclosure",
-  "extracted": "2026-09-20",
+  "extracted": "2026-09-21",
   "pilot": false,
-  "companies": 42,
-  "coverage_note": "Wave 4 coverage: 42 large-cap companies (12-company pilot of 2026-09-19, 10-company wave 2 of 2026-09-20, 10-company wave 3 of 2026-09-20, 10-company wave 4 of 2026-09-20). Full S&P 500 rollout pending.",
-  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing, using per-ticker manual column maps verified against the filing HTML. The four compensation columns were cross-checked against Inline XBRL facts (ecd:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt); all 210 company-years passed with zero rejections. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars. Fiscal-year filers (PG, HD, COST, ORCL, WMT, CRM, DIS, CSCO, INTU, PANW, NKE) show the year as filed. JNJ files two peer TSR series (S&P Pharmaceuticals and S&P Healthcare Equipment); AMZN files two peer TSR series (NYSE Technology and S&P Retail). PLTR lists no company-selected measure; its CSM fields are null. NOW files two peer TSR series (2025 peer group and prior peer group); Citi (C) files net income in $B. C (2021), TMUS (2025), NKE (2025-2026) show multiple PEOs with per-executive XBRL member verification.",
+  "companies": 49,
+  "coverage_note": "Wave 5 coverage: 49 companies (12-company pilot of 2026-09-19, 10-company wave 2 of 2026-09-20, 10-company wave 3 of 2026-09-20, 10-company wave 4 of 2026-09-20, 7-company wave 5 of 2026-09-21; INTC excluded from wave 5: its 2026 proxy carries no Inline XBRL; MS and LRCX wave-5 filings unavailable on EDGAR Archives). Full S&P 500 rollout pending.",
+  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing, using per-ticker manual column maps verified against the filing HTML. The four compensation columns were cross-checked against Inline XBRL facts (ecd:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt); all 210 company-years passed with zero rejections. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars. Fiscal-year filers (PG, HD, COST, ORCL, WMT, CRM, DIS, CSCO, INTU, PANW, NKE) show the year as filed. JNJ files two peer TSR series (S&P Pharmaceuticals and S&P Healthcare Equipment); AMZN files two peer TSR series (NYSE Technology and S&P Retail). PLTR lists no company-selected measure; its CSM fields are null. NOW files two peer TSR series (2025 peer group and prior peer group); Citi (C) files net income in $B. C (2021), TMUS (2025), NKE (2025-2026) show multiple PEOs with per-executive XBRL member verification. MU (fiscal filer, Aug yr-end), CAT (CEO change May 1 2025, Creed+Umpleby 2025), AMAT (fiscal filer, Oct yr-end; neg. PEO CAP 2022), MRK (net income filed in $000s; Davis+Frazier 2021), PM (Calantzopoulos+Olczak 2021; CSM = currency-neutral adj. diluted EPS growth %), RTX (Calio+Hayes 2024-2025; neg. Hayes CAP 2023), GEV (2 PvP years only, spun off Apr 2024).",
   "rollout_exclusions": "KKR & Co. Inc. (KKR): exempt from Item 402(v) pay-versus-performance disclosure until its Sunset Date per 2026 10-K (acc 0001404912-26-000007); exclude from 402(v) rollout until then. Blackstone Inc. (BX): controlled company, generally not subject to Dodd-Frank say-on-pay/say-on-frequency provisions per 2026 10-K (acc 0001193125-26-082531); treat 402(v) as exempt likewise."
  },
  "companies": {
@@ -4584,6 +4584,737 @@
        "cap": -83286935.0
       }
      ]
+    }
+   ]
+  },
+  "MU": {
+   "ticker": "MU",
+   "company_name": "Micron Technology Inc",
+   "cik": "0000723125",
+   "filing_date": "2025-11-25",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000038/mu-20251125.htm",
+   "peer_group": "Philadelphia Semiconductor Index (PHLX Semiconductor Sector Index, from the stock price performance graph in the Form 10-K for Fiscal 2025)",
+   "peer_labels": null,
+   "csm": {
+    "label": "Non-GAAP Net Income (Loss)",
+    "unit": "$M"
+   },
+   "net_income": {
+    "label": "Net Income (Loss)",
+    "unit": "$M"
+   },
+   "notes": [
+    "Fiscal years end late August (FY2025 ended August 28, 2025); years labeled as filed.",
+    "Negative net income and negative Non-GAAP net income (CSM) in fiscal 2023.",
+    "TSR measured from an initial $100 investment at the start of fiscal 2021."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 7697877.0,
+     "nonpeo_cap": 19558088.0,
+     "co_tsr": 159.7,
+     "peer_tsr": 152.68,
+     "net_income": 5861.0,
+     "csm": 6976.0,
+     "peo": [
+      {
+       "name": "Sanjay Mehrotra",
+       "sct": 25316709.0,
+       "cap": 68023777.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 10446440.0,
+     "nonpeo_cap": 4217817.0,
+     "co_tsr": 124.42,
+     "peer_tsr": 117.53,
+     "net_income": 8687.0,
+     "csm": 9475.0,
+     "peo": [
+      {
+       "name": "Sanjay Mehrotra",
+       "sct": 28840809.0,
+       "cap": 13451732.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 8414800.0,
+     "nonpeo_cap": 13652768.0,
+     "co_tsr": 153.1,
+     "peer_tsr": 164.3,
+     "net_income": -5833.0,
+     "csm": -4862.0,
+     "peo": [
+      {
+       "name": "Sanjay Mehrotra",
+       "sct": 25276953.0,
+       "cap": 42535802.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 10791271.0,
+     "nonpeo_cap": 25984963.0,
+     "co_tsr": 210.22,
+     "peer_tsr": 225.1,
+     "net_income": 778.0,
+     "csm": 1472.0,
+     "peo": [
+      {
+       "name": "Sanjay Mehrotra",
+       "sct": 30060126.0,
+       "cap": 72800970.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 11229365.0,
+     "nonpeo_cap": 28542495.0,
+     "co_tsr": 269.61,
+     "peer_tsr": 261.97,
+     "net_income": 8539.0,
+     "csm": 9470.0,
+     "peo": [
+      {
+       "name": "Sanjay Mehrotra",
+       "sct": 30940146.0,
+       "cap": 86570533.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "CAT": {
+   "ticker": "CAT",
+   "company_name": "Caterpillar Inc",
+   "cik": "0000018230",
+   "filing_date": "2026-04-30",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/18230/000130817926000358/cat014496-def14a.htm",
+   "peer_group": "S&P 500 Industrials Index (industry index reported in the Form 10-K, per Regulation S-K Item 201(e))",
+   "peer_labels": null,
+   "csm": {
+    "label": "Return on Equity",
+    "unit": "%"
+   },
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "Joseph E. Creed became CEO on May 1, 2025 (Jim Umpleby CEO before that); 2025 carries both PEO pairs, 2021-2024 carry only the Umpleby pair (no Creed columns in the filing for those years).",
+    "CSM is Return on Equity (percentage points).",
+    "TSR amounts assume an initial $100 investment on December 31, 2020."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 7610248.0,
+     "nonpeo_cap": 10084611.0,
+     "co_tsr": 115.95,
+     "peer_tsr": 121.12,
+     "net_income": 6489.0,
+     "csm": 37.2,
+     "peo": [
+      {
+       "name": "Jim Umpleby",
+       "sct": 24298032.0,
+       "cap": 34172491.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 6610827.0,
+     "nonpeo_cap": 10398658.0,
+     "co_tsr": 137.52,
+     "peer_tsr": 114.48,
+     "net_income": 6705.0,
+     "csm": 45.3,
+     "peo": [
+      {
+       "name": "Jim Umpleby",
+       "sct": 20607600.0,
+       "cap": 34096694.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 7698819.0,
+     "nonpeo_cap": 11525285.0,
+     "co_tsr": 173.2,
+     "peer_tsr": 135.24,
+     "net_income": 10335.0,
+     "csm": 61.5,
+     "peo": [
+      {
+       "name": "Jim Umpleby",
+       "sct": 25830332.0,
+       "cap": 39641382.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 9094854.0,
+     "nonpeo_cap": 15172848.0,
+     "co_tsr": 215.91,
+     "peer_tsr": 158.87,
+     "net_income": 10792.0,
+     "csm": 55.0,
+     "peo": [
+      {
+       "name": "Jim Umpleby",
+       "sct": 25261296.0,
+       "cap": 45738387.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 7573910.0,
+     "nonpeo_cap": 23806106.0,
+     "co_tsr": 346.12,
+     "peer_tsr": 189.72,
+     "net_income": 8884.0,
+     "csm": 44.1,
+     "peo": [
+      {
+       "name": "Jim Umpleby",
+       "sct": 22191496.0,
+       "cap": 82309936.0
+      },
+      {
+       "name": "Joseph E. Creed",
+       "sct": 17008077.0,
+       "cap": 49423389.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "AMAT": {
+   "ticker": "AMAT",
+   "company_name": "Applied Materials Inc",
+   "cik": "0000006951",
+   "filing_date": "2026-01-28",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1193125/000119312526027307/d71992ddef14a.htm",
+   "peer_group": "Applied Materials compensation peer group approved by the HRCC in March 2025 (AMD, KLA, Analog Devices, Lam Research, Broadcom, Micron, Cisco, NVIDIA, Corning, NXP, Intel, Qualcomm, IBM, Texas Instruments); average TSR of the group",
+   "peer_labels": null,
+   "csm": {
+    "label": "Non-GAAP Economic Profit",
+    "unit": "$M"
+   },
+   "net_income": {
+    "label": "GAAP Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "Fiscal years end late October (FY2025 ended October 26, 2025); years labeled as filed.",
+    "Negative compensation actually paid to the PEO in fiscal 2022 (equity award valuation changes)."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 6677994.0,
+     "nonpeo_cap": 14985454.0,
+     "co_tsr": 226.06,
+     "peer_tsr": 148.13,
+     "net_income": 5888.0,
+     "csm": 4249.0,
+     "peo": [
+      {
+       "name": "Gary E. Dickerson",
+       "sct": 35265559.0,
+       "cap": 144856918.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5955804.0,
+     "nonpeo_cap": 1637143.0,
+     "co_tsr": 149.67,
+     "peer_tsr": 105.92,
+     "net_income": 6525.0,
+     "csm": 4866.0,
+     "peo": [
+      {
+       "name": "Gary E. Dickerson",
+       "sct": 20399972.0,
+       "cap": -22058266.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 6479873.0,
+     "nonpeo_cap": 12381202.0,
+     "co_tsr": 221.11,
+     "peer_tsr": 142.27,
+     "net_income": 6856.0,
+     "csm": 4277.0,
+     "peo": [
+      {
+       "name": "Gary E. Dickerson",
+       "sct": 26854544.0,
+       "cap": 71918135.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 7005299.0,
+     "nonpeo_cap": 15831603.0,
+     "co_tsr": 316.48,
+     "peer_tsr": 232.14,
+     "net_income": 7177.0,
+     "csm": 4263.0,
+     "peo": [
+      {
+       "name": "Gary E. Dickerson",
+       "sct": 27799212.0,
+       "cap": 86080922.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 7592586.0,
+     "nonpeo_cap": 16250055.0,
+     "co_tsr": 392.09,
+     "peer_tsr": 313.53,
+     "net_income": 6998.0,
+     "csm": 4243.0,
+     "peo": [
+      {
+       "name": "Gary E. Dickerson",
+       "sct": 29649352.0,
+       "cap": 86971543.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "MRK": {
+   "ticker": "MRK",
+   "company_name": "Merck & Co Inc",
+   "cik": "0000310158",
+   "filing_date": "2026-04-08",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1193125/000119312526147704/d85708ddef14a.htm",
+   "peer_group": "Merck primary peer group, market cap-weighted (AbbVie, Amgen, AstraZeneca, Bristol-Myers Squibb, Eli Lilly, Gilead Sciences, GlaxoSmithKline, Johnson & Johnson, Novartis, Pfizer, Roche Holding AG, Sanofi)",
+   "peer_labels": null,
+   "csm": {
+    "label": "Non-GAAP EPS",
+    "unit": "$"
+   },
+   "net_income": {
+    "label": "GAAP Net Income",
+    "unit": "$000s"
+   },
+   "notes": [
+    "Kenneth C. Frazier was CEO until June 30, 2021; Robert M. Davis CEO since then. Frazier columns are \"\u2014\" for 2022-2025.",
+    "Net income filed in thousands of dollars; values kept as filed.",
+    "CSM is Non-GAAP EPS (dollars per share).",
+    "2023 net income was $365,000 thousand ($365M)."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 6709905.0,
+     "nonpeo_cap": 7004950.0,
+     "co_tsr": 101.81,
+     "peer_tsr": 122.48,
+     "net_income": 12345000.0,
+     "csm": 5.37,
+     "peo": [
+      {
+       "name": "Robert M. Davis",
+       "sct": 13722121.0,
+       "cap": 14390893.0
+      },
+      {
+       "name": "Kenneth C. Frazier",
+       "sct": 15196920.0,
+       "cap": 13328924.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 8406647.0,
+     "nonpeo_cap": 22341814.0,
+     "co_tsr": 152.09,
+     "peer_tsr": 130.07,
+     "net_income": 14519000.0,
+     "csm": 7.48,
+     "peo": [
+      {
+       "name": "Robert M. Davis",
+       "sct": 18650093.0,
+       "cap": 52474235.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 7629512.0,
+     "nonpeo_cap": 9360664.0,
+     "co_tsr": 153.61,
+     "peer_tsr": 134.12,
+     "net_income": 365000.0,
+     "csm": 1.51,
+     "peo": [
+      {
+       "name": "Robert M. Davis",
+       "sct": 20273287.0,
+       "cap": 26701326.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 9487609.0,
+     "nonpeo_cap": 6989318.0,
+     "co_tsr": 144.0,
+     "peer_tsr": 145.51,
+     "net_income": 17117000.0,
+     "csm": 7.65,
+     "peo": [
+      {
+       "name": "Robert M. Davis",
+       "sct": 23186064.0,
+       "cap": 14725823.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 6918988.0,
+     "nonpeo_cap": 5356809.0,
+     "co_tsr": 158.08,
+     "peer_tsr": 198.33,
+     "net_income": 18254000.0,
+     "csm": 8.98,
+     "peo": [
+      {
+       "name": "Robert M. Davis",
+       "sct": 20797845.0,
+       "cap": 15760172.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "PM": {
+   "ticker": "PM",
+   "company_name": "Philip Morris International Inc",
+   "cik": "0001413329",
+   "filing_date": "2026-03-26",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1628280/000162828026021169/pmi-20260325.htm",
+   "peer_group": "PMI Peer Group as reported in the performance graph in Part II, Item 5 of the Annual Report on Form 10-K for the fiscal year ending December 31, 2025",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted Diluted EPS, 1-year Growth",
+    "unit": "%"
+   },
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "Andr\u00e9 Calantzopoulos was CEO until May 5, 2021; Jacek Olczak CEO since then. Calantzopoulos columns are \"n/a\" for 2022-2025.",
+    "CSM is the currency-neutral adjusted diluted EPS growth rate (percent), chosen for its weight and impact on PSUs.",
+    "Net income filed in millions of dollars."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 5433435.0,
+     "nonpeo_cap": 7491440.0,
+     "co_tsr": 120.8,
+     "peer_tsr": 114.8,
+     "net_income": 9710.0,
+     "csm": 15.4,
+     "peo": [
+      {
+       "name": "Andr\u00e9 Calantzopoulos",
+       "sct": 15349110.0,
+       "cap": 30404029.0
+      },
+      {
+       "name": "Jacek Olczak",
+       "sct": 10557568.0,
+       "cap": 15485410.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5426181.0,
+     "nonpeo_cap": 7848730.0,
+     "co_tsr": 135.7,
+     "peer_tsr": 111.2,
+     "net_income": 9527.0,
+     "csm": 10.1,
+     "peo": [
+      {
+       "name": "Jacek Olczak",
+       "sct": 15775108.0,
+       "cap": 24410701.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 8620777.0,
+     "nonpeo_cap": 6951996.0,
+     "co_tsr": 133.3,
+     "peer_tsr": 109.5,
+     "net_income": 8268.0,
+     "csm": 11.0,
+     "peo": [
+      {
+       "name": "Jacek Olczak",
+       "sct": 25480514.0,
+       "cap": 22401770.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 7525983.0,
+     "nonpeo_cap": 12714258.0,
+     "co_tsr": 179.1,
+     "peer_tsr": 109.7,
+     "net_income": 7503.0,
+     "csm": 15.6,
+     "peo": [
+      {
+       "name": "Jacek Olczak",
+       "sct": 20237916.0,
+       "cap": 44508025.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 13046507.0,
+     "nonpeo_cap": 14220778.0,
+     "co_tsr": 247.1,
+     "peer_tsr": 128.3,
+     "net_income": 11848.0,
+     "csm": 14.2,
+     "peo": [
+      {
+       "name": "Jacek Olczak",
+       "sct": 29072171.0,
+       "cap": 56821594.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "RTX": {
+   "ticker": "RTX",
+   "company_name": "RTX Corp",
+   "cik": "0000101829",
+   "filing_date": "2026-03-09",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1308179/000130817926000036/rtx014050-def14a.htm",
+   "peer_group": "S&P 500 Aerospace & Defense Industry Index (the industry line peer group reported in the 2025 Form 10-K; the SEC-mandated TSR peer group, distinct from the PSU peer groups)",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted Earnings Per Share",
+    "unit": "$"
+   },
+   "net_income": {
+    "label": "Net Income (GAAP)",
+    "unit": "$M"
+   },
+   "notes": [
+    "Christopher T. Calio became CEO on May 2, 2024 (Gregory J. Hayes CEO before that); 2024 carries both PEO pairs; 2025 Calio only; 2021-2023 Hayes only.",
+    "Negative compensation actually paid to Hayes in 2023 (-$3,811,432).",
+    "CSM is Adjusted Earnings Per Share (dollars per share)."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 9666013.0,
+     "nonpeo_cap": 11257846.0,
+     "co_tsr": 123.27,
+     "peer_tsr": 113.22,
+     "net_income": 3897.0,
+     "csm": 4.27,
+     "peo": [
+      {
+       "name": "Gregory J. Hayes",
+       "sct": 23316063.0,
+       "cap": 39680968.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 7597628.0,
+     "nonpeo_cap": 12510354.0,
+     "co_tsr": 147.94,
+     "peer_tsr": 132.89,
+     "net_income": 5216.0,
+     "csm": 4.78,
+     "peo": [
+      {
+       "name": "Gregory J. Hayes",
+       "sct": 22609036.0,
+       "cap": 45201677.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 8225337.0,
+     "nonpeo_cap": 267298.0,
+     "co_tsr": 126.58,
+     "peer_tsr": 141.88,
+     "net_income": 3195.0,
+     "csm": 5.06,
+     "peo": [
+      {
+       "name": "Gregory J. Hayes",
+       "sct": 21929459.0,
+       "cap": -3811432.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 6119056.0,
+     "nonpeo_cap": 14115544.0,
+     "co_tsr": 178.17,
+     "peer_tsr": 162.31,
+     "net_income": 4774.0,
+     "csm": 6.26,
+     "peo": [
+      {
+       "name": "Christopher T. Calio",
+       "sct": 18004831.0,
+       "cap": 43160374.0
+      },
+      {
+       "name": "Gregory J. Hayes",
+       "sct": 14598458.0,
+       "cap": 48639528.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 7464111.0,
+     "nonpeo_cap": 24903063.0,
+     "co_tsr": 287.64,
+     "peer_tsr": 230.45,
+     "net_income": 6732.0,
+     "csm": 6.88,
+     "peo": [
+      {
+       "name": "Christopher T. Calio",
+       "sct": 24846826.0,
+       "cap": 88622978.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    }
+   ]
+  },
+  "GEV": {
+   "ticker": "GEV",
+   "company_name": "GE Vernova Inc",
+   "cik": "0001996810",
+   "filing_date": "2026-04-03",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1996810/000199681026000049/gev-20260402.htm",
+   "peer_group": "S&P 500 Industrials Index (industry index reported in the Annual Report on Form 10-K for 2025, per Regulation S-K Item 201(e))",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EBITDA",
+    "unit": "$"
+   },
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$"
+   },
+   "notes": [
+    "Only two PvP years disclosed: GE Vernova spun off from GE on April 2, 2024.",
+    "Net income and Adjusted EBITDA filed in whole dollars; values kept as filed."
+   ],
+   "years": [
+    {
+     "year": 2024,
+     "nonpeo_sct": 8374408.0,
+     "nonpeo_cap": 26111218.0,
+     "co_tsr": 235.0,
+     "peer_tsr": 107.0,
+     "net_income": 1558985542.0,
+     "csm": 2035409899.0,
+     "peo": [
+      {
+       "name": "Scott Strazik",
+       "sct": 24326338.0,
+       "cap": 93739301.0
+      }
+     ],
+     "_xbrl_check": "ok"
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 7476480.0,
+     "nonpeo_cap": 27840444.0,
+     "co_tsr": 468.0,
+     "peer_tsr": 128.0,
+     "net_income": 4879123748.0,
+     "csm": 3196405462.0,
+     "peo": [
+      {
+       "name": "Scott Strazik",
+       "sct": 18020345.0,
+       "cap": 119347311.0
+      }
+     ],
+     "_xbrl_check": "ok"
     }
    ]
   }
