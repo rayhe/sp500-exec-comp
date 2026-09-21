@@ -14571,6 +14571,43 @@ body.light-mode .cross-sector-pair-select:focus {
     border: 1px solid rgba(0, 180, 216, 0.35);
     white-space: nowrap;
 }
+/* PvP coverage badge in the main company table: same cyan family as .pvp-badge,
+   smaller for the dense table row. Light-theme override follows the site's
+   badge convention (#0077b6, cf. .badge.accent) for contrast. */
+.pvp-cov-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: rgba(0, 180, 216, 0.15);
+    color: #67e8f9;
+    border: 1px solid rgba(0, 180, 216, 0.35);
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.pvp-cov-badge:hover {
+    background: rgba(0, 180, 216, 0.3);
+}
+[data-theme="light"] .pvp-cov-badge {
+    background: rgba(0, 119, 182, 0.1);
+    color: #0077b6;
+    border-color: rgba(0, 119, 182, 0.25);
+}
+/* Latent contrast fix: .pvp-badge shipped with no light-theme override, so the
+   bright cyan was unreadable on light backgrounds. Same family, same treatment. */
+[data-theme="light"] .pvp-badge {
+    background: rgba(0, 119, 182, 0.1);
+    color: #0077b6;
+    border-color: rgba(0, 119, 182, 0.25);
+}
+/* Brief highlight when a table PvP badge deep-links into the detail panel. */
+.pvp-section.pvp-flash {
+    box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.6);
+    transition: box-shadow 0.3s ease;
+}
 .pvp-sub {
     font-size: 0.78rem;
     color: #a1a1aa;

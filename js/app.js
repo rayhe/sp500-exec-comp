@@ -6561,9 +6561,23 @@ function renderTable(companies, options) {
             nameCellHtml = c.ceo_name + (c._ceoTransition ? ' <span class="new-ceo-badge new-ceo-badge-clickable" title="CEO transition: succeeded ' + c._ceoTransition.oldCeo.name.replace(/"/g, '&quot;') + ' after FY' + c._ceoTransition.oldCeo.year + ' \u2014 click to filter" onclick="event.stopPropagation();if(window.filterByCeoTransition)window.filterByCeoTransition()">NEW</span>' : '');
         }
 
+        // PvP coverage badge: marks the 49 tickers with SEC Item 402(v) data and
+        // deep-links to the per-company Pay vs Performance section in the
+        // detail panel (scroll + flash). Tickers carry no special chars
+        // (verified 2026-09-17), so raw interpolation matches the file's
+        // data-ticker convention.
+        var pvpBadgeHtml = '';
+        if (pvpData && pvpData.companies && pvpData.companies[c.ticker]) {
+            var _pvpYears = (pvpData.companies[c.ticker].years || []).length;
+            var _pvpTip = _pvpYears + ' years of Pay vs Performance (SEC Item 402(v)) data \u2014 click to jump to it';
+            pvpBadgeHtml = ' <span class="pvp-cov-badge" role="button" tabindex="0" title="' + _pvpTip + '"'
+                + ' onclick="event.stopPropagation();if(window.openPvpDetail)window.openPvpDetail(\'' + c.ticker + '\')"'
+                + ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();event.stopPropagation();if(window.openPvpDetail)window.openPvpDetail(\'' + c.ticker + '\')}">PvP</span>';
+        }
+
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
-            '<td><span class="company" title="' + String(c.company_name || '').replace(/"/g, '&quot;') + '">' + c.company_name + '</span></td>' +
+            '<td><span class="company" title="' + String(c.company_name || '').replace(/"/g, '&quot;') + '">' + c.company_name + '</span>' + pvpBadgeHtml + '</td>' +
             '<td>' + nameCellHtml + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +
@@ -7024,6 +7038,37 @@ function getPeerInfo(ticker) {
    Renders the PvP table from data/pay_vs_performance.json when the ticker
    is covered. Values are transcribed from each company's latest DEF 14A;
    the four compensation columns were cross-checked against Inline XBRL. */
+// Deep-link helper for the PvP coverage badges in the company table: opens
+// the ticker's detail panel (if not already open) and smooth-scrolls to its
+// Pay vs Performance section with a brief highlight flash. The badge is only
+// rendered when pvpData.companies[ticker] exists, so the section always exists.
+window.openPvpDetail = function(ticker) {
+    var tbody = document.getElementById('comp-tbody');
+    if (!tbody) return;
+    var row = null;
+    var rows = tbody.querySelectorAll('tr:not(.detail-row)');
+    for (var i = 0; i < rows.length; i++) {
+        var t = rows[i].querySelector('.ticker');
+        if (t && t.textContent.trim() === ticker) { row = rows[i]; break; }
+    }
+    if (!row) return;
+    var detail = tbody.querySelector('.detail-row[data-ticker="' + ticker + '"]');
+    if (!detail) {
+        row.click(); // delegated tbody handler builds the detail panel synchronously
+        detail = tbody.querySelector('.detail-row[data-ticker="' + ticker + '"]');
+    }
+    if (!detail) return;
+    var sec = detail.querySelector('.pvp-section');
+    if (!sec) return;
+    requestAnimationFrame(function() {
+        if (sec.scrollIntoView) {
+            try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            catch (e) { sec.scrollIntoView(); }
+        }
+        sec.classList.add('pvp-flash');
+        setTimeout(function() { sec.classList.remove('pvp-flash'); }, 2000);
+    });
+};
 function pvpEsc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
