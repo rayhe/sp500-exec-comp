@@ -7093,6 +7093,192 @@ function renderPvpSection(ticker) {
     return html;
 }
 
+/* === Pay vs Performance cross-company comparison ===
+   Per-company pay-performance alignment: Pearson r between annual PEO CAP
+   and the indexed ($100) company TSR over the 402(v) disclosure window. */
+function pvpPearson(xs, ys) {
+    // Pairwise-complete observations; null when <3 points or zero variance.
+    var pairs = [];
+    for (var i = 0; i < xs.length && i < ys.length; i++) {
+        if (xs[i] != null && !isNaN(xs[i]) && ys[i] != null && !isNaN(ys[i])) pairs.push([xs[i], ys[i]]);
+    }
+    if (pairs.length < 3) return { r: null, n: pairs.length };
+    var n = pairs.length, sx = 0, sy = 0, k;
+    for (k = 0; k < n; k++) { sx += pairs[k][0]; sy += pairs[k][1]; }
+    var mx = sx / n, my = sy / n, num = 0, dx = 0, dy = 0;
+    for (k = 0; k < n; k++) {
+        var ax = pairs[k][0] - mx, ay = pairs[k][1] - my;
+        num += ax * ay; dx += ax * ax; dy += ay * ay;
+    }
+    if (dx <= 0 || dy <= 0) return { r: null, n: n }; // degenerate: constant series
+    return { r: num / Math.sqrt(dx * dy), n: n };
+}
+function pvpYearCap(y) {
+    // Aggregate CAP across listed PEOs in a year (transition years list both).
+    var vals = (y.peo || []).map(function(p) { return p.cap; })
+        .filter(function(v) { return v != null && !isNaN(v); });
+    if (!vals.length) return null;
+    return vals.reduce(function(a, b) { return a + b; }, 0);
+}
+function pvpPrimaryPeoName(c) {
+    // PEO serving in the latest disclosed year with non-null CAP.
+    var years = (c.years || []).slice().sort(function(a, b) { return b.year - a.year; });
+    for (var i = 0; i < years.length; i++) {
+        var serving = (years[i].peo || []).filter(function(p) { return p.cap != null; });
+        if (serving.length) return serving[0].name;
+    }
+    var names = [];
+    (c.years || []).forEach(function(y) {
+        (y.peo || []).forEach(function(p) { if (names.indexOf(p.name) < 0) names.push(p.name); });
+    });
+    return names.length ? names[0] : '—';
+}
+function pvpComparisonRows() {
+    if (!pvpData || !pvpData.companies) return [];
+    var rows = [];
+    Object.keys(pvpData.companies).forEach(function(ticker) {
+        var c = pvpData.companies[ticker];
+        var years = (c.years || []).slice().sort(function(a, b) { return a.year - b.year; });
+        if (!years.length) return;
+        var caps = [], coTsr = [], peerTsr = [];
+        years.forEach(function(y) {
+            caps.push(pvpYearCap(y));
+            // TSR points flagged as filing anomalies are excluded from r
+            // (they render verbatim with a ⚠ flag in the per-company table).
+            var flagged = y.flags && y.flags.indexOf('tsr_anomaly') >= 0;
+            coTsr.push(flagged ? null : y.co_tsr);
+            peerTsr.push(flagged ? null : y.peer_tsr);
+        });
+        var prCo = pvpPearson(caps, coTsr);
+        var prPeer = pvpPearson(caps, peerTsr);
+        var capTotal = caps.filter(function(v) { return v != null; })
+            .reduce(function(a, b) { return a + b; }, 0);
+        var tsrVals = years.map(function(y) { return y.co_tsr; })
+            .filter(function(v) { return v != null && !isNaN(v); });
+        var tsrChange = null;
+        if (tsrVals.length >= 2 && tsrVals[0] !== 0) {
+            tsrChange = (tsrVals[tsrVals.length - 1] - tsrVals[0]) / Math.abs(tsrVals[0]);
+        }
+        var align = prCo.r == null ? 'n/a'
+            : (prCo.r >= 0.5 ? 'aligned' : (prCo.r <= -0.5 ? 'misaligned' : 'mixed'));
+        rows.push({
+            ticker: ticker,
+            name: c.company_name || ticker,
+            window: years[0].year + '–' + years[years.length - 1].year,
+            windowStart: years[0].year,
+            peo: pvpPrimaryPeoName(c),
+            capTotal: capTotal,
+            rCo: prCo.r, nCo: prCo.n,
+            rPeer: prPeer.r, nPeer: prPeer.n,
+            tsrChange: tsrChange,
+            align: align,
+            alignRank: align === 'aligned' ? 2 : (align === 'mixed' ? 1 : (align === 'misaligned' ? 0 : -1))
+        });
+    });
+    return rows;
+}
+var _pvpCompSort = { key: 'rCo', dir: 'asc' }; // default: least-aligned first
+var PVP_COMP_COLS = [
+    { key: 'ticker', label: 'Company', title: 'Click a row to open the company detail panel', num: false },
+    { key: 'windowStart', label: 'Window', title: 'Five-year Item 402(v) disclosure window', num: true },
+    { key: 'peo', label: 'PEO', title: 'Principal executive officer serving in the latest disclosed year', num: false },
+    { key: 'capTotal', label: '5-yr PEO CAP', title: 'Total compensation actually paid to the PEO across the window; transition years aggregate all listed PEOs', num: true },
+    { key: 'rCo', label: 'CAP↔Co. TSR r', title: 'Pearson correlation between annual PEO CAP and the indexed ($100) company TSR', num: true },
+    { key: 'align', label: 'Alignment', title: 'Aligned: r ≥ 0.5 · Mixed: −0.5 < r < 0.5 · Misaligned: r ≤ −0.5', num: false },
+    { key: 'rPeer', label: 'CAP↔Peer TSR r', title: 'Pearson correlation between annual PEO CAP and the primary peer-group TSR', num: true },
+    { key: 'tsrChange', label: '5-yr TSR Δ', title: 'Change in the indexed company TSR from the first to the last disclosed year', num: true }
+];
+function pvpFmtR(r, n) {
+    if (r == null) return '<span class="pvp-na">—</span>';
+    var sign = r < 0 ? '−' : '+';
+    return '<span title="r = ' + r.toFixed(3) + ' (' + n + ' observations)">' + sign + Math.abs(r).toFixed(2) + '</span>';
+}
+function pvpFmtPct(v) {
+    if (v == null) return '<span class="pvp-na">—</span>';
+    var sign = v < 0 ? '−' : '+';
+    return sign + (Math.abs(v) * 100).toFixed(1) + '%';
+}
+function renderPvpComparison() {
+    var head = document.getElementById('pvp-comp-head');
+    var body = document.getElementById('pvp-comp-tbody');
+    var badge = document.getElementById('pvp-coverage-badge');
+    var method = document.getElementById('pvp-comp-method');
+    if (!head || !body) return;
+    var rows = pvpComparisonRows();
+    if (badge) badge.textContent = rows.length + ' companies · SEC Item 402(v)';
+    if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="8" class="pvp-na">Pay vs Performance data unavailable.</td></tr>';
+        return;
+    }
+    head.innerHTML = PVP_COMP_COLS.map(function(col) {
+        var sorted = _pvpCompSort.key === col.key
+            ? (_pvpCompSort.dir === 'asc' ? ' sorted-asc' : ' sorted-desc') : '';
+        var aria = _pvpCompSort.key === col.key
+            ? (_pvpCompSort.dir === 'asc' ? 'ascending' : 'descending') : 'none';
+        return '<th class="sortable' + sorted + '" data-col="' + col.key + '" title="' + pvpEsc(col.title)
+            + '" aria-sort="' + aria + '"' + (col.num ? '' : ' style="text-align:left"') + '>' + col.label + '</th>';
+    }).join('');
+    var sortKey = _pvpCompSort.key, sortDir = _pvpCompSort.dir === 'asc' ? 1 : -1;
+    function sortVal(row, key) {
+        if (key === 'align') return row.alignRank;
+        return row[key];
+    }
+    rows.sort(function(a, b) {
+        var va = sortVal(a, sortKey), vb = sortVal(b, sortKey);
+        // nulls always sort last
+        if (va == null && vb == null) return a.ticker < b.ticker ? -1 : 1;
+        if (va == null) return 1;
+        if (vb == null) return -1;
+        if (va < vb) return -1 * sortDir;
+        if (va > vb) return 1 * sortDir;
+        return a.ticker < b.ticker ? -1 : 1;
+    });
+    body.innerHTML = rows.map(function(row) {
+        var cells = [
+            '<td class="pvp-comp-co" style="text-align:left"><b>' + pvpEsc(row.ticker) + '</b> <span class="pvp-comp-name">' + pvpEsc(row.name) + '</span></td>',
+            '<td>' + pvpEsc(row.window) + '</td>',
+            '<td style="text-align:left">' + pvpEsc(row.peo) + '</td>',
+            '<td>' + pvpMoney(row.capTotal) + '</td>',
+            '<td>' + pvpFmtR(row.rCo, row.nCo) + '</td>',
+            '<td><span class="pvp-align pvp-align-' + row.align + '">' + row.align + '</span></td>',
+            '<td>' + pvpFmtR(row.rPeer, row.nPeer) + '</td>',
+            '<td>' + pvpFmtPct(row.tsrChange) + '</td>'
+        ];
+        return '<tr class="pvp-comp-row" data-ticker="' + pvpEsc(row.ticker) + '" tabindex="0" role="button"'
+            + ' aria-label="Open ' + pvpEsc(row.ticker) + ' detail panel">' + cells.join('') + '</tr>';
+    }).join('');
+    head.querySelectorAll('th.sortable').forEach(function(th) {
+        th.addEventListener('click', function() {
+            var key = th.getAttribute('data-col');
+            if (_pvpCompSort.key === key) {
+                _pvpCompSort.dir = _pvpCompSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                _pvpCompSort = { key: key, dir: (key === 'ticker' || key === 'peo') ? 'asc' : 'desc' };
+            }
+            renderPvpComparison();
+        });
+    });
+    body.querySelectorAll('.pvp-comp-row').forEach(function(tr) {
+        function open() {
+            var t = tr.getAttribute('data-ticker');
+            if (t && window.findCompanyInTable) window.findCompanyInTable(t);
+        }
+        tr.addEventListener('click', open);
+        tr.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+        });
+    });
+    if (method) {
+        method.innerHTML = 'Method: r is the Pearson correlation over each company\u2019s annual 402(v) observations '
+            + '(PEO CAP vs indexed-$100 TSR). Transition-year CAP aggregates all PEOs listed for that year. '
+            + 'TSR points flagged as filing anomalies (\u26a0 in the per-company table) are excluded from r. '
+            + '\u2014 means fewer than three overlapping observations or a constant CAP/TSR series. '
+            + 'Peer TSR uses the primary peer series; JNJ and AMZN file two peer series and the first is used. '
+            + 'Company-selected measures are excluded: they are not comparable across companies. '
+            + 'Values transcribed from the 402(v) table in each company\u2019s latest DEF 14A and cross-checked against Inline XBRL; full S&amp;P 500 rollout pending.';
+    }
+}
+
 /* === Focus Management — track previous focus for panels === */
 var _detailTriggerRow = null;  // row that opened the detail panel
 var _preFocusElement = null;   // element focused before modal/comparison opens
@@ -10748,6 +10934,7 @@ function applyHashState(companies) {
     if (state.section && !state.detail) {
         var sectionAliases = {
             'insights': 'insights-section',
+            'pvp': 'pvp-comparison-section',
             'network': 'peer-network-section',
             'table': 'compensation-table-section',
             'charts': 'sector-chart-panel',
@@ -11381,6 +11568,7 @@ function setupDualSparklineTooltips() {
     setupSorting(companies);
     setupSearch(companies);
     setupDetailPanel(companies);
+    renderPvpComparison();
     setupSparklineTooltips();
     setupYoYSparklineTooltips();
     setupNeoSparklineTooltips();
@@ -15985,6 +16173,7 @@ function setupDualSparklineTooltips() {
                 // Map section IDs back to short aliases
                 var sectionToAlias = {
                     'insights-section': 'insights',
+                    'pvp-comparison-section': 'pvp',
                     'peer-network-section': 'network',
                     'compensation-table-section': 'table',
                     'sector-chart-panel': 'charts',
