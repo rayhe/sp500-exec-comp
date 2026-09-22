@@ -68,6 +68,8 @@ function initNetwork(peerData) {
     var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
     var communityMode = false;  // when true, nodes colored by Louvain community
+    var _pvpRingsEnabled = true; // when true, nodes with SEC Item 402(v) data get a cyan ring
+    var _pvpYears = {};          // ticker -> company-year count of Pay vs Performance coverage
     var gerThreshold = 0; // min GER score for node visibility (0 = show all)
     var densityMinDegree = 0; // min in-degree (incoming peer references) for node visibility (0 = show all)
     var searchFocusedNode = null; // node focused by search — gets pulsing ring + neighbor highlight
@@ -1503,6 +1505,17 @@ function initNetwork(peerData) {
                 ctx.lineWidth = 1 / scale;
                 ctx.stroke();
             }
+
+            // PvP coverage ring — cyan ring on nodes with SEC Item 402(v) data.
+            // Drawn outside the node body so it never collides with hover/sector
+            // strokes; alpha tracks the node's so dimmed nodes keep dimmed rings.
+            if (_pvpRingsEnabled && _pvpYears[d.ticker] && alpha > 0.08) {
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, r + 3 / scale, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(0,180,216,' + Math.min(0.9, alpha).toFixed(2) + ')';
+                ctx.lineWidth = 2 / scale;
+                ctx.stroke();
+            }
         });
 
         // Cluster sector labels — floating sector names at centroids when zoomed out
@@ -2089,6 +2102,20 @@ function initNetwork(peerData) {
     }
     _buildCompLookup();
 
+    // Build the Pay vs Performance coverage map from app.js's global pvpData
+    // (fetched in loadData before initNetwork runs). Guarded: if the PvP
+    // fetch failed, the map stays empty and the toggle hides itself.
+    function _buildPvpCoverage() {
+        _pvpYears = {};
+        if (typeof pvpData !== 'undefined' && pvpData && pvpData.companies) {
+            Object.keys(pvpData.companies).forEach(function(t) {
+                var yrs = (pvpData.companies[t].years || []).length;
+                if (yrs > 0) _pvpYears[t] = yrs;
+            });
+        }
+    }
+    _buildPvpCoverage();
+
     // Helper: compute top N pay movers from a trend ticker map
     function _getTopMovers(tMap, n) {
         n = n || 3;
@@ -2468,6 +2495,17 @@ function initNetwork(peerData) {
         if (rCount > 0) {
             html += '<div class="tt-row"><span class="tt-label">Mutual peers</span><span class="tt-value tt-mutual-val">' + rCount + ' ⇄</span></div>';
         }
+        // Pay vs Performance coverage — deep-link into the per-company PvP
+        // section (window.openPvpDetail is exposed by app.js; guarded here).
+        // Tickers carry no special chars, so raw interpolation matches the
+        // file's existing data-ticker convention.
+        if (_pvpYears[d.ticker]) {
+            var _pvpYrs = _pvpYears[d.ticker];
+            html += '<div class="tt-row"><span class="tt-label">PvP data</span>' +
+                '<span class="tt-value tt-pvp-val" data-action="pvp-view" data-ticker="' + d.ticker + '"' +
+                ' title="' + _pvpYrs + ' years of Pay vs Performance (SEC Item 402(v)) data — click to view">' +
+                _pvpYrs + ' yrs · view →</span></div>';
+        }
         html += '<div class="tt-path-actions">';
         html += '<span class="tt-path-btn" data-action="path-from" data-ticker="' + d.ticker + '">Path from here</span>';
         html += '<span class="tt-path-sep">·</span>';
@@ -2494,6 +2532,17 @@ function initNetwork(peerData) {
                 } else if (action === 'path-to') {
                     pfPrefill(ticker, 'to');
                 }
+            });
+        });
+        tooltip.querySelectorAll('[data-action="pvp-view"]').forEach(function(el) {
+            el.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var ticker = el.getAttribute('data-ticker');
+                hideTooltip();
+                hoveredNode = null;
+                draw();
+                if (typeof window.openPvpDetail === 'function') window.openPvpDetail(ticker);
             });
         });
     }
@@ -2777,7 +2826,8 @@ function initNetwork(peerData) {
                 var sector = node.sector ? ' in ' + node.sector : '';
                 var comp = _compLookup && _compLookup[node.ticker];
                 var pay = comp && comp.total ? ', CEO pay ' + _fmtComp(comp.total) : '';
-                announce('Focused ' + node.ticker + ' ' + node.name + sector + pay + '. ' + inC + ' inbound, ' + outC + ' outbound peers. Press Enter for details.');
+                var pvpNote = _pvpYears[node.ticker] ? ', has ' + _pvpYears[node.ticker] + ' years of PvP data' : '';
+                announce('Focused ' + node.ticker + ' ' + node.name + sector + pay + pvpNote + '. ' + inC + ' inbound, ' + outC + ' outbound peers. Press Enter for details.');
             }
         } else {
             hideTooltip();
@@ -3374,6 +3424,15 @@ function initNetwork(peerData) {
 
     legendItems.forEach(function(item) {
         item.style.cursor = 'pointer';
+        // PvP legend item toggles the coverage ring instead of sector-filtering
+        // (its text is not a sector, so the sectorNameMap lookup would set a
+        // bogus filter). _setPvpRings is hoisted within initNetwork scope.
+        if (item.getAttribute('data-pvp-legend') === '1') {
+            item.addEventListener('click', function() {
+                _setPvpRings(!_pvpRingsEnabled);
+            });
+            return;
+        }
         item.addEventListener('click', function() {
             // Get sector name from legend item text
             var text = item.textContent.trim();
@@ -3386,8 +3445,11 @@ function initNetwork(peerData) {
                 activeLegendSector = sectorFull;
             }
 
-            // Update legend item visual state
+            // Update legend item visual state. The PvP legend item keeps its own
+            // independent toggle state (owned by _setPvpRings) — never strip
+            // its legend-active class or dim it as part of sector filtering.
             legendItems.forEach(function(li) {
+                if (li.getAttribute('data-pvp-legend') === '1') return;
                 li.classList.remove('legend-active');
                 if (activeLegendSector) {
                     var liText = li.textContent.trim();
@@ -3412,11 +3474,58 @@ function initNetwork(peerData) {
         });
     });
 
+    // === PvP coverage ring toggle ===
+    // Shared by the "PvP Rings" overflow-menu button and the legend item.
+    function _setPvpRings(on) {
+        _pvpRingsEnabled = !!on;
+        var toggle = document.getElementById('pvp-ring-toggle');
+        if (toggle) toggle.classList.toggle('active', _pvpRingsEnabled);
+        var legendItem = document.querySelector('.network-legend .legend-item[data-pvp-legend="1"]');
+        if (legendItem) {
+            legendItem.classList.toggle('legend-active', _pvpRingsEnabled);
+            legendItem.classList.toggle('pvp-off', !_pvpRingsEnabled);
+        }
+        draw();
+        if (typeof announce === 'function') {
+            var n = Object.keys(_pvpYears).length;
+            announce(_pvpRingsEnabled
+                ? 'PvP coverage rings shown — ' + n + ' companies with Pay vs Performance data'
+                : 'PvP coverage rings hidden');
+        }
+    }
+
+    (function _initPvpRingToggle() {
+        var toggle = document.getElementById('pvp-ring-toggle');
+        var legendItem = document.querySelector('.network-legend .legend-item[data-pvp-legend="1"]');
+        var count = Object.keys(_pvpYears).length;
+        if (count === 0) {
+            // No PvP data loaded (fetch failed) — hide both controls
+            if (toggle) toggle.style.display = 'none';
+            if (legendItem) legendItem.style.display = 'none';
+            return;
+        }
+        // Rings default ON: mark the toggle + legend accordingly and disclose the count
+        if (toggle) {
+            toggle.classList.add('active');
+            toggle.title = 'Toggle the cyan ring around nodes with Pay vs Performance (SEC Item 402(v)) data — ' + count + ' companies';
+            toggle.addEventListener('click', function() { _setPvpRings(!_pvpRingsEnabled); });
+        }
+        if (legendItem) {
+            legendItem.classList.add('legend-active');
+            legendItem.title = count + ' companies carry Pay vs Performance (SEC Item 402(v)) data — click to toggle the coverage ring';
+        }
+    })();
+
     // Expose API for clearing sector filter externally
     window.clearNetworkSectorFilter = function() {
         activeLegendSector = null;
         legendItems.forEach(function(li) {
             li.classList.remove('legend-active', 'legend-dimmed');
+            // Restore the PvP legend item's own toggle state (it is not a sector filter)
+            if (li.getAttribute('data-pvp-legend') === '1') {
+                li.classList.toggle('legend-active', _pvpRingsEnabled);
+                li.classList.toggle('pvp-off', !_pvpRingsEnabled);
+            }
         });
         updateClusterStats(null);
         _updateHeatmapSectorNote();

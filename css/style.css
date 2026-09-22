@@ -966,6 +966,35 @@ header h1 {
     display: inline-block;
 }
 
+/* PvP coverage ring sample — mirrors the cyan canvas ring on covered nodes */
+.legend-ring {
+    width: 9px;
+    height: 9px;
+    border: 2px solid #00b4d8;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+.legend-item[data-pvp-legend].pvp-off .legend-ring {
+    border-color: rgba(0, 180, 216, 0.35);
+}
+.legend-item[data-pvp-legend].pvp-off {
+    opacity: 0.55;
+}
+
+/* Node tooltip PvP coverage row — same cyan as the pvp-cov-badge family */
+.tooltip .tt-pvp-val {
+    color: #67e8f9;
+    cursor: pointer;
+    font-weight: 600;
+}
+.tooltip .tt-pvp-val:hover {
+    text-decoration: underline;
+}
+[data-theme="light"] .tooltip .tt-pvp-val {
+    color: #0891b2;
+}
+
 /* Edge type legend */
 .edge-legend {
     display: flex;
