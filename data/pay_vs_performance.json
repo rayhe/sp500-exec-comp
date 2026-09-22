@@ -3,10 +3,10 @@
   "source": "SEC EDGAR DEF 14A proxy statements, Item 402(v) Pay versus Performance disclosure",
   "extracted": "2026-09-22",
   "pilot": false,
-  "companies": 172,
-  "company_years": 852,
-  "coverage_note": "Wave 14 coverage: 146 companies (12-company pilot of 2026-09-19, 10-company wave 2 of 2026-09-20, 10-company wave 3 of 2026-09-20, 10-company wave 4 of 2026-09-20, 7-company wave 5 of 2026-09-21, 10-company wave 6 of 2026-09-21, 10-company wave 7 of 2026-09-21, 10-company wave 8 of 2026-09-21, 10-company wave 9 of 2026-09-21, 10-company wave 10 of 2026-09-21, 9-company wave 11 of 2026-09-21, 10-company wave 12 of 2026-09-21, 14-company wave 13 of 2026-09-22, 14-company wave 14 of 2026-09-22; INTC excluded: 2026 proxy carries no Inline XBRL; COF excluded: filer-side XBRL sign error on 2022 PEO CAP; KKR/BX 402(v)-exempt; GOOG skipped: same issuer as GOOGL. Full S&P 500 rollout pending.; 13-company wave 15 of 2026-09-22; AMT excluded: 2026 proxy tags only narrative text blocks in Inline XBRL (zero numeric ecd facts, unverifiable). Full S&P 500 rollout pending.; 13-company wave 16 of 2026-09-22; zero exclusions (SLB, Dutch issuer, files DEF 14A with numeric Inline XBRL facts: included under the same strict audit). Full S&P 500 rollout pending.)",
-  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing, using per-ticker manual column maps verified against the filing HTML. The four compensation columns were cross-checked against Inline XBRL facts (ecd:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt); all 488 company-years passed with zero rejections through wave 10. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars. Fiscal-year filers (PG, HD, COST, ORCL, WMT, CRM, DIS, CSCO, INTU, PANW, NKE) show the year as filed. JNJ files two peer TSR series (S&P Pharmaceuticals and S&P Healthcare Equipment); AMZN files two peer TSR series (NYSE Technology and S&P Retail). PLTR lists no company-selected measure; its CSM fields are null. NOW files two peer TSR series (2025 peer group and prior peer group); Citi (C) files net income in $B. C (2021), TMUS (2025), NKE (2025-2026) show multiple PEOs with per-executive XBRL member verification. MU (fiscal filer, Aug yr-end), CAT (CEO change May 1 2025, Creed+Umpleby 2025), AMAT (fiscal filer, Oct yr-end; neg. PEO CAP 2022), MRK (net income filed in $000s; Davis+Frazier 2021), PM (Calantzopoulos+Olczak 2021; CSM = currency-neutral adj. diluted EPS growth %), RTX (Calio+Hayes 2024-2025; neg. Hayes CAP 2023), GEV (2 PvP years only, spun off Apr 2024). Wave 6 notes: SBUX 2024 three-PEO year (Narasimhan/Ruggeri interim/Niccol); WDAY multi-PEO co-CEO history, FY2026 Eschenbach CAP -$17.7M; CRWD fiscal labels FY2022-FY2026; ROST net income and CSM filed in $000s, kept as filed; CRWD net income/CSM in $K, kept as filed; ROST XBRL contexts end Jan of N+1; EQIX 2024 dual-PEO; USB 2025 dual-PEO; FICO CSM is relative TSR percentile (%); SBUX TSR headers read '3-Year' as filed. Wave 7 notes: MS 2025 TSR measured from Dec 31, 2020 while 2021-2024 use Dec 31, 2019 (filing footnote 4); MS 2023 non-CEO NEO figures carry footnote 7 (one-time Staking Awards); PH fiscal FY2022-FY2026 (Williams thru 2022, Parmentier since 2023); WBD 2022 CEO CAP negative (-$40.93M); LRCX fiscal FY2021-FY2025, net income filed in $000s kept as filed; GS 2025 CEO CAP $309.8M (PSU/Retention RSU fair-value remeasurements); BLK 2022 negative CEO CAP (-$5.79M) and negative avg non-CEO CAP (-$12.46M); TMO 2022 negative CAP both CEO (-$4.70M) and avg non-CEO NEO (-$0.64M); CMCSA 2022/2024 negative CEO CAP (-$4.09M/-$1.59M), net income and CSM in $B kept as filed; PYPL 2023 dual-PEO (Schulman/Chriss), negative CAPs Chriss 2025 (-$7.47M), Schulman 2022 (-$87.00M), avg non-PEO 2022 (-$13.36M) and 2025 (-$2.42M). Wave 8 notes: DELL fiscal FY2022-FY2026 (Michael S. Dell all years; SCT==CAP every year, no equity grants/pension); DELL FY2023 avg non-CEO NEO CAP negative (-$5.08M, split parens); DELL additional measure Non-GAAP net revenue ($M) kept in csm_addl; VZ 2025 dual-PEO (Vestberg Jan-Oct, Daniel Schulman from Oct 4, 2025; Schulman sign-on equity $32.8M); ACN FY2021-FY2025 (Julie Sweet); PFE 2023 negative CAP CEO (-$62.1M) and avg non-CEO NEO (-$9.47M); QCOM FY2021-FY2025 dual-PEO 2021 (Mollenkopf thru Jun 30, 2021, Cristiano R. Amon from Jun 30, 2021); UNP 2023 dual-PEO (Fritz thru Aug 14, 2023, Jim Vena since); HON 2023 dual-PEO (Adamczyk, Kapur since 2023); LIN interleaved First/Second CEO columns (Stephen F. Angel thru Mar 2022, Sanjiv Lamba since; LIN 2025 PEO facts omit member tags, fell back to untagged candidate matching); TJX FY2022-FY2026 (Ernie Herrman; CSM MIP Incentive Pre-Tax Income in $K, net income in $K kept as filed); MCD (Chris Kempczinski; 2024 CSM Annual EPS Growth -2.0%). All 50 wave-8 company-years passed the strict candidate-presence Inline XBRL audit. Wave 9 notes: ANET 2021-2025 (Jayshree Ullal; 2022 avg non-PEO CAP -$785,576); AMGN 2021-2025 (Robert A. Bradway; CSM Non-GAAP EPS ($)); TXN 2021-2025 dual-PEO 2023 (Templeton/Ilan, member-tag verified); SNDK FY2025 only (inaugural standalone proxy post-Feb 2025 separation; CSM Revenue ($M); net income -$1,641M); KLAC FY2021-FY2025 (Richard Wallace; CSM Free Cash Flow Margin (%); FY2025 avg non-PEO CAP -$383,111; net income in $K kept as filed); IBM 2021-2025 (Arvind Krishna); SCHW 2021-2025 (Bettinger thru 2024, Wurster 2025; net income in $000s kept as filed); PEP 2021-2025 (Ramon L. Laguarta; 2025 CSM em-dash parsed null); ABT 2021-2025 (Robert B. Ford); GILD 2021-2025 (Daniel O'Day; CSM Net Product Sales ($M)). All 46 wave-9 company-years passed the strict candidate-presence Inline XBRL audit. Wave 10 notes: STX and MRVL and ADI are fiscal filers (years as filed: STX FY2022-FY2026, MRVL FY2022-FY2026, ADI FY2021-FY2025). MRVL's peer TSR index is not named in the disclosure (gap recorded, not guessed); MRVL FY2026 PEO CAP -$69.7M. STX FY2026 CAP $606M vs SCT $26.9M (equity appreciation). WELL 2025 is a mega-grant year (SCT $821M / CAP $1B, XBRL-verified). BA 2024 dual-PEO (Calhoun/Ortberg, member-tag verified): Calhoun CAP -$23.88M, non-PEO CAP -$5.19M, net income -$11.8B, FCF -$14.3B. ETN 2025 dual-PEO (Arnold/Ruiz, member-tag verified); Arnold CAP -$16.19M (retirement-cancelled PSUs). NEE 2022 dual-PEO (Robo/Ketchum); 2022 XBRL member tags are swapped in the filing so members were omitted (column-level audit passes); NEE 2024 Ketchum SCT-table total ($21.60M) disagrees with the PvP table + reconciliation + XBRL ($21.14M) - the PvP-table value is kept verbatim. IBKR needed a custom table finder (PvP header split across rows). DE's company name normalized from the SEC legal name 'Deere & Company' to the site's 'Deere & Co'. Wave 11 notes: 9 new companies (WDC and DHR are verified wave-10 backups promoted; VRTX, BMY, NEM, CB, SPGI, ISRG, PGR newly extracted). COF dropped: filer-side sign error — 2022 PEO CAP displayed as $(758,823) in the PvP table but the ecd:PeoActuallyPaidCompAmt Inline XBRL fact is +758,823 with no sign=\"-\", so the strict candidate-presence audit fails; ticker excluded per the never-ship-unverified rule. WDC FY2025 dual PEO (Goeckeler through Feb 21, 2025; Irving Tan since), member-tagged XBRL (wdc:GoeckelerMember / wdc:TanMember); negative CAPs FY2023 Goeckeler -$3.26M, FY2022 Goeckeler -$9.10M, FY2022 non-PEO avg -$79,686, all sign=\"-\" verified. DHR 2021-2025 single PEO Rainer Blair; FY2022 non-PEO avg CAP -$930,613 (sign=\"-\" verified); CSM Adjusted EPS ($/share). VRTX 2021-2025 single PEO Reshma Kewalramani; CSM Net Product Revenue ($B); 2024 net income $(0.5)B; peer index NASDAQ Biotechnology Index. BMY 2023 dual-PEO (Giovanni Caforio through 2023; Chris Boerner since 2023), member-tag verified for 2023; single-PEO years report the serving CEO. NEM 2021-2025 single PEO Tom Palmer; peer group is a custom compensation benchmarking peer group; 2022/2023 net income negative (-$369M / -$2,467M); CSM Free Cash Flow ($M). SPGI 2024 dual-PEO (Douglas Peterson through Oct 31, 2024; Martina Cheung since), member-tag verified; Peterson 2022 CAP -$9,225,719 (spaced-paren negative, sign=\"-\" XBRL-verified); CSM Non-GAAP ICP Adjusted Diluted EPS ($/share). ISRG 2025 dual-PEO (Gary S. Guthart 2021-2024; David J. Rosa joins FY2025), member-tag verified; CSM Adjusted Operating Income ($M). PGR 2021-2025 single PEO Tricia Griffith; CSM Combined Ratio (%), net income filed in $B kept as filed. CB 2021-2025 single PEO Evan G. Greenberg; peer group is the market-cap-weighted Financial Performance Peer Group (Allstate, AIG, CNA, Hartford, Travelers, Zurich). All 533 company-years passed the strict candidate-presence Inline XBRL audit; all 533 company-years passed with zero rejections through wave 11. PLD and GLW extracted to the same standard (all years ok) and held as verified backups for wave 12. Wave 12 notes: 10 new companies (PLD and GLW are verified wave-11 backups promoted after a fresh verification pass; ACGL, ON, MSI, LEN, GM, TT, PRU, AMP newly extracted). ACGL 2024 dual-PEO (Marc Grandisson retired Oct 2024; Nicolas Papadopoulo CEO since), member-tagged XBRL; peer S&P 500 P&C Index; CSM Operating ROE (%). ON 2021-2025 single PEO Hassane El-Khoury; peer PHLX Semiconductor Sector Index; CSM Revenue ($M). MSI 2021-2025 single PEO Gregory Q. Brown; 2025 PEO CAP -$34.86M and 2025 non-PEO avg CAP -$11.03M (sign='-' verified); CSM one-year relative TSR percentile rank vs S&P 500 (%). LEN fiscal year ends Nov 30 (years as filed); three co-PEOs (Beckwitt through Sep 2023, Jaffe all years, Miller from Sep 2023), member-tagged XBRL; peer Dow Jones U.S. Home Construction Index; CSM Pretax Income ($M); negatives verified via sign='-' (2023 Beckwitt CAP (714,918); 2025 Jaffe (12,775,985), Miller (11,774,256)). GM 2021-2025 single PEO Mary Barra; peer Dow Jones Automobiles & Parts Titans 30 Index; CSM EBIT-adjusted ($B); 2022 PEO CAP (16,991,516) negative verified. TT 2021 multi-PEO (Lamach + Regnery; tt:FirstPEOMember/tt:SecondPEOMember verified), 2022-2025 Regnery only; peer S&P 500 Industrials Index; CSM Revenue ($M). PRU 2025 multi-PEO (Lowrey + Sullivan, per-executive member tags verified), 2021-2024 Lowrey only; peer Financial Services Composite Index; CSM Adjusted EPS ($/share); 2022 net income (1,438)MM negative verified. AMP 2021-2025 single PEO James Cracchiolo; peer S&P 500 Financials Index; CSM Adjusted Operating EPS excluding Unlocking, diluted ($/share). PLD 2021-2025 single PEO Hamid Moghadam; peer MSCI U.S. REIT Index; CSM Core FFO/share ($/share); NI kept as filed (K); negative CAPs FY2024/FY2022 sign='-' verified. GLW 2021-2025 single PEO Wendell P. Weeks; peer S&P 500 Communications Equipment Index; CSM Corning Core Net Sales ($M). All 50 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 583 company-years passed with zero rejections through wave 12. Wave 13 notes: 14 new companies. APH 2021-2025 single PEO R. Adam Norwitt; peer DJUSEC; CSM Net Sales ($M); 2022 PEO CAP (15,652,877) and 2022 non-PEO CAP (5,362,582) negatives verified via sign='-'; 2021 NI includes $21.4M discontinued ops per footnote. FTNT 2021-2025 single PEO Ken Xie; peer NASDAQ Computer Index; CSM Revenue; 2022 PEO CAP (15,190,085), 2022 non-PEO CAP (4,867,322) and 2025 non-PEO CAP (1,396,923) negatives verified; duplicated ecd XBRL facts handled. LMT 2021-2025 single PEO James D. Taiclet; peer S&P Aerospace & Defense Index; CSM Free Cash Flow ($M). MPC 2021-2025; 2024 dual-PEO (Maryann T. Mannen + Michael J. Hennigan, member-tagged XBRL, year-inheritance parse); peer S&P 500 Oil & Gas Refining & Marketing Sub-Industry Index; CSM MPC Relative TSR Performance Percentile (%). VLO 2021-2025; 2023 dual-PEO (R. Lane Riggs + Joseph W. Gorder); peer custom 11-member Item 201(e) group, market-cap-weighted; CSM Adjusted EPS ($). MDT FY2022-2026 fiscal (April year-end, years as filed); PEO Geoff Martha; peer S&P 500 Health Care Index; CSM Organic Revenue Growth (%); TSR base Apr 30 2021; FY2026 NI $4,801M cross-checked vs press release. CVS 2021-2025; 2021 dual-PEO (Karen S. Lynch + Larry J. Merlo, Merlo Jan 2021 only) and 2024 dual-PEO (J. David Joyner + Karen S. Lynch); Lynch 2024 CAP (15,063,925) spaced-paren negative handled by corrected parser and verified; peer S&P 500 Health Care Sector Index; CSM Adjusted EPS ($). PSX 2021-2025; 2022 dual-PEO (Greg Garland + Mark E. Lashier); positional column flip resolved via cols_by_year remapping, verified against member-tagged XBRL; peer custom 12-member Item 201(e) group, market-cap-weighted; CSM Annual Adjusted PSP ROCE (%). LOW 2021-2025 single PEO Marvin Ellison; XBRL year offset of 1 (FY ends late Jan, years as filed); peer S&P Retailing Industry Group Index; CSM Operating Income as adjusted ($M); 2022 non-PEO CAP (2,118,508) negative verified. ADP 2021-2025; 2023 dual-PEO (Carlos Rodriguez + Maria Black); positional column flip resolved via cols_by_year remapping, verified against member-tagged XBRL; peer NASDAQ Dividend Achievers Select Index; CSM Adjusted Net Income Growth (%); TSR base Jun 30 2020. SYK 2021-2025 single PEO Kevin A. Lobo; peer S&P 500 Health Care Index; CSM Reported Net Sales Growth (%). FCX 2021-2025; 2024 dual-PEO (Kathleen L. Quirk + Richard C. Adkerson); peer S&P Metals and Mining Select Industry Index; CSM Return on Investment (%). MCK FY2022-2026 fiscal (Mar 31 year-end, years as filed); PEO Brian S. Tyler; peer S&P 500 Health Care Index; CSM Adjusted EPS ($); TSR base Mar 31 2021. CME 2021-2025 single PEO Terrence A. Duffy; peer custom Item 201(e) stock performance graph group; CSM Cash Earnings ($M). TSR bases kept as filed (Dec 31 2020 most; ADP Jun 30 2020; LOW last trading day of fiscal 2020; MDT Apr 30 2021; MCK Mar 31 2021). All 70 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 653 company-years passed with zero rejections through wave 13. Wave 14 notes: 14 new companies, ranks 118-138. ABNB 2021-2025 single PEO Brian Chesky; 2022 PEO CAP -585.3M and 2025 PEO CAP -89.2M and 2022 non-PEO CAP -20.0M negatives from Multi-Year Award fair-value swings, all sign='-' XBRL-verified; NI filed in thousands kept as filed. SO 2021-2025; 2023 dual-PEO (Chris Womack + Tom Fanning, May 24 2023 transition, column-split layout, member-tagged XBRL). PWR 2021-2025 single PEO Duke Austin; peer custom 9-company Item 201(e) group. GD 2021-2025 single PEO Phebe Novakovic; CSM Annual ROIC % (14.2% 2025); 2024 CAPs were filing-corrected amounts (-7.46M PEO, -2.05M non-PEO), XBRL-verified. PNC 2021-2025 single PEO Bill Demchak; CSM = ROE% (filing's 'our ROE* (our CSM)'). CEG 2022-2025 only (spun off from Exelon Feb 1 2022); disclosed + restated 2024 CAP math error, corrected amounts match XBRL exactly; NI cross-check documented as unavailable (no us-gaap NetIncomeLoss facts), not failed. HCA 2021-2025 single PEO Sam Hazen. HWM 2021-2025; 2021 dual-PEO (John C. Plant + Tolga I. Oal co-CEOs to Oct 2021); Oal 2021 CAP -8,426,878 spaced-paren negative caught by corrected parser, sign='-' verified. DUK 2021-2025; 2025 dual-PEO (Harry K. Sideris + Lynn J. Good); CSM adjusted EPS/share. MAR 2021-2025; 2021 dual-PEO (Anthony Capuano + Arne Sorenson, d. Feb 2021). ELV 2021-2025 single PEO Gail Boudreaux; 2024 PEO CAP -3,957,314 and 2024 non-PEO CAP -256,544 negatives verified; 2021/2022 NI recast in 2023 (ASU 2018-12). JCI FY2021-FY2025 fiscal as filed (Sep 30 year-end); FY2025 dual-PEO (Joakim Weidemanis, appt. Mar 12 2025 + George Oliver); Oliver 2022 CAP -1,001,706 negative verified. WMB 2021-2025; 2025 dual-PEO (Chad Zamarin + Alan Armstrong); XBRL tagging asymmetry 2021-2024 (SCT untagged, CAP member-tagged) resolved per (tag, year), candidate-presence never relaxed. ICE 2021-2025 single PEO Jeffrey Sprecher; 2022 PEO CAP -720,835 filed split across two cells '-$' + '720,835' joined via merge_split_neg; peer = 16-company CD&A benchmarking group (Schwab added, Salesforce removed 2025). All 69 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 722 company-years passed with zero rejections through wave 14. Wave 15 (2026-09-22): AON, BSX, COIN, DASH, EW, FDX, MCO, MMC, NOC, ORLY, SHW, UPS, WM (13 companies, 65 company-years; AMT excluded, zero numeric Inline XBRL facts). FDX fiscal years ending May 31 tabled as filed (FY2022-FY2026); PEO transition Frederick W. Smith -> Raj Subramaniam. ORLY CEO transition mid-2024, split PEO/Former-PEO columns, member-tagged XBRL (Beckham + Johnson 2024). ORLY NI/CSM filed in whole dollars (unit $). AON CSM = Adjusted Earnings per Share Growth (%). WM table headed \"CEO CAP\", UPS \"Comp Actually Paid\", NOC \"CAP to PEO\": custom table locators, same strict audit. All 65 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 787 company-years passed with zero rejections through wave 15.\n\nWave 16 (2026-09-22): CDNS, CSX, CTAS, ECL, EMR, HPE, ITW, MDLZ, MMM, REGN, SLB, SNPS, TRV (13 companies, 65 company-years; zero exclusions). EMR fiscal year ends Sep 30, HPE/SNPS Oct year-ends, CTAS May 31: FY labels tabled as filed (CTAS 2022-2026, HPE 2021-2025, SNPS 2021-2025). Dual-PEO years: MMM 2024 (Roman -> Brown), EMR 2021 (Farr -> Karsanbhai), CSX 2022/2025, CDNS 2021 (Devgan + Tan), SNPS 2021/2022/2024 (co-CEO transitions: de Geus + Chan 2021; Chan departed June 2022). ITW CEO transition 2024 (Santi -> O'Herlihy). Negative CAPs: REGN 2024 (PEO and non-PEO avg), SNPS 2022/2025 (Chan 2022, Ghazi 2025), MDLZ 2024 (PEO), CTAS 2026 (non-PEO avg) - all verified against sign=\"-\" XBRL facts. Spaced-paren negatives verified: MMM 2023 NI/CSM, REGN 2024 CAPs, MDLZ 2024 PEO CAP and 2025 CSM, CTAS 2026 non-PEO CAP. CDNS FY2021 was a 52/53-week year ending 2022-01-01 (XBRL facts carry end dates in 2022); row mapped driver-side, years recorded as filed. SLB is a Dutch issuer but files DEF 14A with numeric Inline XBRL facts: included under the same strict audit. CSX table header renders \"Share holder\" with an embedded space (rtx locator); REGN header uses curly-quoted \"actually paid\": custom locators, same strict pipeline. All 65 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 852 company-years passed with zero rejections through wave 16.",
+  "companies": 185,
+  "company_years": 914,
+  "coverage_note": "Wave 14 coverage: 146 companies (12-company pilot of 2026-09-19, 10-company wave 2 of 2026-09-20, 10-company wave 3 of 2026-09-20, 10-company wave 4 of 2026-09-20, 7-company wave 5 of 2026-09-21, 10-company wave 6 of 2026-09-21, 10-company wave 7 of 2026-09-21, 10-company wave 8 of 2026-09-21, 10-company wave 9 of 2026-09-21, 10-company wave 10 of 2026-09-21, 9-company wave 11 of 2026-09-21, 10-company wave 12 of 2026-09-21, 14-company wave 13 of 2026-09-22, 14-company wave 14 of 2026-09-22; INTC excluded: 2026 proxy carries no Inline XBRL; COF excluded: filer-side XBRL sign error on 2022 PEO CAP; KKR/BX 402(v)-exempt; GOOG skipped: same issuer as GOOGL. Full S&P 500 rollout pending.; 13-company wave 15 of 2026-09-22; AMT excluded: 2026 proxy tags only narrative text blocks in Inline XBRL (zero numeric ecd facts, unverifiable). Full S&P 500 rollout pending.; 13-company wave 16 of 2026-09-22; zero exclusions (SLB, Dutch issuer, files DEF 14A with numeric Inline XBRL facts: included under the same strict audit). Full S&P 500 rollout pending.; 13-company wave 17 of 2026-09-22 (SOLV 2024-2025 only: 2024 3M spin-off; ANSS 2020-2024; WSM FY labels with FYN facts in N+1); zero exclusions. Full S&P 500 rollout pending.)",
+  "methodology": "Values transcribed from the rendered Pay versus Performance table in each company's latest DEF 14A filing, using per-ticker manual column maps verified against the filing HTML. The four compensation columns were cross-checked against Inline XBRL facts (ecd:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt); all 488 company-years passed with zero rejections through wave 10. TSR columns show the value of an initial fixed $100 investment. Units vary by filer and are recorded per company; compensation normalized to dollars. Fiscal-year filers (PG, HD, COST, ORCL, WMT, CRM, DIS, CSCO, INTU, PANW, NKE) show the year as filed. JNJ files two peer TSR series (S&P Pharmaceuticals and S&P Healthcare Equipment); AMZN files two peer TSR series (NYSE Technology and S&P Retail). PLTR lists no company-selected measure; its CSM fields are null. NOW files two peer TSR series (2025 peer group and prior peer group); Citi (C) files net income in $B. C (2021), TMUS (2025), NKE (2025-2026) show multiple PEOs with per-executive XBRL member verification. MU (fiscal filer, Aug yr-end), CAT (CEO change May 1 2025, Creed+Umpleby 2025), AMAT (fiscal filer, Oct yr-end; neg. PEO CAP 2022), MRK (net income filed in $000s; Davis+Frazier 2021), PM (Calantzopoulos+Olczak 2021; CSM = currency-neutral adj. diluted EPS growth %), RTX (Calio+Hayes 2024-2025; neg. Hayes CAP 2023), GEV (2 PvP years only, spun off Apr 2024). Wave 6 notes: SBUX 2024 three-PEO year (Narasimhan/Ruggeri interim/Niccol); WDAY multi-PEO co-CEO history, FY2026 Eschenbach CAP -$17.7M; CRWD fiscal labels FY2022-FY2026; ROST net income and CSM filed in $000s, kept as filed; CRWD net income/CSM in $K, kept as filed; ROST XBRL contexts end Jan of N+1; EQIX 2024 dual-PEO; USB 2025 dual-PEO; FICO CSM is relative TSR percentile (%); SBUX TSR headers read '3-Year' as filed. Wave 7 notes: MS 2025 TSR measured from Dec 31, 2020 while 2021-2024 use Dec 31, 2019 (filing footnote 4); MS 2023 non-CEO NEO figures carry footnote 7 (one-time Staking Awards); PH fiscal FY2022-FY2026 (Williams thru 2022, Parmentier since 2023); WBD 2022 CEO CAP negative (-$40.93M); LRCX fiscal FY2021-FY2025, net income filed in $000s kept as filed; GS 2025 CEO CAP $309.8M (PSU/Retention RSU fair-value remeasurements); BLK 2022 negative CEO CAP (-$5.79M) and negative avg non-CEO CAP (-$12.46M); TMO 2022 negative CAP both CEO (-$4.70M) and avg non-CEO NEO (-$0.64M); CMCSA 2022/2024 negative CEO CAP (-$4.09M/-$1.59M), net income and CSM in $B kept as filed; PYPL 2023 dual-PEO (Schulman/Chriss), negative CAPs Chriss 2025 (-$7.47M), Schulman 2022 (-$87.00M), avg non-PEO 2022 (-$13.36M) and 2025 (-$2.42M). Wave 8 notes: DELL fiscal FY2022-FY2026 (Michael S. Dell all years; SCT==CAP every year, no equity grants/pension); DELL FY2023 avg non-CEO NEO CAP negative (-$5.08M, split parens); DELL additional measure Non-GAAP net revenue ($M) kept in csm_addl; VZ 2025 dual-PEO (Vestberg Jan-Oct, Daniel Schulman from Oct 4, 2025; Schulman sign-on equity $32.8M); ACN FY2021-FY2025 (Julie Sweet); PFE 2023 negative CAP CEO (-$62.1M) and avg non-CEO NEO (-$9.47M); QCOM FY2021-FY2025 dual-PEO 2021 (Mollenkopf thru Jun 30, 2021, Cristiano R. Amon from Jun 30, 2021); UNP 2023 dual-PEO (Fritz thru Aug 14, 2023, Jim Vena since); HON 2023 dual-PEO (Adamczyk, Kapur since 2023); LIN interleaved First/Second CEO columns (Stephen F. Angel thru Mar 2022, Sanjiv Lamba since; LIN 2025 PEO facts omit member tags, fell back to untagged candidate matching); TJX FY2022-FY2026 (Ernie Herrman; CSM MIP Incentive Pre-Tax Income in $K, net income in $K kept as filed); MCD (Chris Kempczinski; 2024 CSM Annual EPS Growth -2.0%). All 50 wave-8 company-years passed the strict candidate-presence Inline XBRL audit. Wave 9 notes: ANET 2021-2025 (Jayshree Ullal; 2022 avg non-PEO CAP -$785,576); AMGN 2021-2025 (Robert A. Bradway; CSM Non-GAAP EPS ($)); TXN 2021-2025 dual-PEO 2023 (Templeton/Ilan, member-tag verified); SNDK FY2025 only (inaugural standalone proxy post-Feb 2025 separation; CSM Revenue ($M); net income -$1,641M); KLAC FY2021-FY2025 (Richard Wallace; CSM Free Cash Flow Margin (%); FY2025 avg non-PEO CAP -$383,111; net income in $K kept as filed); IBM 2021-2025 (Arvind Krishna); SCHW 2021-2025 (Bettinger thru 2024, Wurster 2025; net income in $000s kept as filed); PEP 2021-2025 (Ramon L. Laguarta; 2025 CSM em-dash parsed null); ABT 2021-2025 (Robert B. Ford); GILD 2021-2025 (Daniel O'Day; CSM Net Product Sales ($M)). All 46 wave-9 company-years passed the strict candidate-presence Inline XBRL audit. Wave 10 notes: STX and MRVL and ADI are fiscal filers (years as filed: STX FY2022-FY2026, MRVL FY2022-FY2026, ADI FY2021-FY2025). MRVL's peer TSR index is not named in the disclosure (gap recorded, not guessed); MRVL FY2026 PEO CAP -$69.7M. STX FY2026 CAP $606M vs SCT $26.9M (equity appreciation). WELL 2025 is a mega-grant year (SCT $821M / CAP $1B, XBRL-verified). BA 2024 dual-PEO (Calhoun/Ortberg, member-tag verified): Calhoun CAP -$23.88M, non-PEO CAP -$5.19M, net income -$11.8B, FCF -$14.3B. ETN 2025 dual-PEO (Arnold/Ruiz, member-tag verified); Arnold CAP -$16.19M (retirement-cancelled PSUs). NEE 2022 dual-PEO (Robo/Ketchum); 2022 XBRL member tags are swapped in the filing so members were omitted (column-level audit passes); NEE 2024 Ketchum SCT-table total ($21.60M) disagrees with the PvP table + reconciliation + XBRL ($21.14M) - the PvP-table value is kept verbatim. IBKR needed a custom table finder (PvP header split across rows). DE's company name normalized from the SEC legal name 'Deere & Company' to the site's 'Deere & Co'. Wave 11 notes: 9 new companies (WDC and DHR are verified wave-10 backups promoted; VRTX, BMY, NEM, CB, SPGI, ISRG, PGR newly extracted). COF dropped: filer-side sign error — 2022 PEO CAP displayed as $(758,823) in the PvP table but the ecd:PeoActuallyPaidCompAmt Inline XBRL fact is +758,823 with no sign=\"-\", so the strict candidate-presence audit fails; ticker excluded per the never-ship-unverified rule. WDC FY2025 dual PEO (Goeckeler through Feb 21, 2025; Irving Tan since), member-tagged XBRL (wdc:GoeckelerMember / wdc:TanMember); negative CAPs FY2023 Goeckeler -$3.26M, FY2022 Goeckeler -$9.10M, FY2022 non-PEO avg -$79,686, all sign=\"-\" verified. DHR 2021-2025 single PEO Rainer Blair; FY2022 non-PEO avg CAP -$930,613 (sign=\"-\" verified); CSM Adjusted EPS ($/share). VRTX 2021-2025 single PEO Reshma Kewalramani; CSM Net Product Revenue ($B); 2024 net income $(0.5)B; peer index NASDAQ Biotechnology Index. BMY 2023 dual-PEO (Giovanni Caforio through 2023; Chris Boerner since 2023), member-tag verified for 2023; single-PEO years report the serving CEO. NEM 2021-2025 single PEO Tom Palmer; peer group is a custom compensation benchmarking peer group; 2022/2023 net income negative (-$369M / -$2,467M); CSM Free Cash Flow ($M). SPGI 2024 dual-PEO (Douglas Peterson through Oct 31, 2024; Martina Cheung since), member-tag verified; Peterson 2022 CAP -$9,225,719 (spaced-paren negative, sign=\"-\" XBRL-verified); CSM Non-GAAP ICP Adjusted Diluted EPS ($/share). ISRG 2025 dual-PEO (Gary S. Guthart 2021-2024; David J. Rosa joins FY2025), member-tag verified; CSM Adjusted Operating Income ($M). PGR 2021-2025 single PEO Tricia Griffith; CSM Combined Ratio (%), net income filed in $B kept as filed. CB 2021-2025 single PEO Evan G. Greenberg; peer group is the market-cap-weighted Financial Performance Peer Group (Allstate, AIG, CNA, Hartford, Travelers, Zurich). All 533 company-years passed the strict candidate-presence Inline XBRL audit; all 533 company-years passed with zero rejections through wave 11. PLD and GLW extracted to the same standard (all years ok) and held as verified backups for wave 12. Wave 12 notes: 10 new companies (PLD and GLW are verified wave-11 backups promoted after a fresh verification pass; ACGL, ON, MSI, LEN, GM, TT, PRU, AMP newly extracted). ACGL 2024 dual-PEO (Marc Grandisson retired Oct 2024; Nicolas Papadopoulo CEO since), member-tagged XBRL; peer S&P 500 P&C Index; CSM Operating ROE (%). ON 2021-2025 single PEO Hassane El-Khoury; peer PHLX Semiconductor Sector Index; CSM Revenue ($M). MSI 2021-2025 single PEO Gregory Q. Brown; 2025 PEO CAP -$34.86M and 2025 non-PEO avg CAP -$11.03M (sign='-' verified); CSM one-year relative TSR percentile rank vs S&P 500 (%). LEN fiscal year ends Nov 30 (years as filed); three co-PEOs (Beckwitt through Sep 2023, Jaffe all years, Miller from Sep 2023), member-tagged XBRL; peer Dow Jones U.S. Home Construction Index; CSM Pretax Income ($M); negatives verified via sign='-' (2023 Beckwitt CAP (714,918); 2025 Jaffe (12,775,985), Miller (11,774,256)). GM 2021-2025 single PEO Mary Barra; peer Dow Jones Automobiles & Parts Titans 30 Index; CSM EBIT-adjusted ($B); 2022 PEO CAP (16,991,516) negative verified. TT 2021 multi-PEO (Lamach + Regnery; tt:FirstPEOMember/tt:SecondPEOMember verified), 2022-2025 Regnery only; peer S&P 500 Industrials Index; CSM Revenue ($M). PRU 2025 multi-PEO (Lowrey + Sullivan, per-executive member tags verified), 2021-2024 Lowrey only; peer Financial Services Composite Index; CSM Adjusted EPS ($/share); 2022 net income (1,438)MM negative verified. AMP 2021-2025 single PEO James Cracchiolo; peer S&P 500 Financials Index; CSM Adjusted Operating EPS excluding Unlocking, diluted ($/share). PLD 2021-2025 single PEO Hamid Moghadam; peer MSCI U.S. REIT Index; CSM Core FFO/share ($/share); NI kept as filed (K); negative CAPs FY2024/FY2022 sign='-' verified. GLW 2021-2025 single PEO Wendell P. Weeks; peer S&P 500 Communications Equipment Index; CSM Corning Core Net Sales ($M). All 50 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 583 company-years passed with zero rejections through wave 12. Wave 13 notes: 14 new companies. APH 2021-2025 single PEO R. Adam Norwitt; peer DJUSEC; CSM Net Sales ($M); 2022 PEO CAP (15,652,877) and 2022 non-PEO CAP (5,362,582) negatives verified via sign='-'; 2021 NI includes $21.4M discontinued ops per footnote. FTNT 2021-2025 single PEO Ken Xie; peer NASDAQ Computer Index; CSM Revenue; 2022 PEO CAP (15,190,085), 2022 non-PEO CAP (4,867,322) and 2025 non-PEO CAP (1,396,923) negatives verified; duplicated ecd XBRL facts handled. LMT 2021-2025 single PEO James D. Taiclet; peer S&P Aerospace & Defense Index; CSM Free Cash Flow ($M). MPC 2021-2025; 2024 dual-PEO (Maryann T. Mannen + Michael J. Hennigan, member-tagged XBRL, year-inheritance parse); peer S&P 500 Oil & Gas Refining & Marketing Sub-Industry Index; CSM MPC Relative TSR Performance Percentile (%). VLO 2021-2025; 2023 dual-PEO (R. Lane Riggs + Joseph W. Gorder); peer custom 11-member Item 201(e) group, market-cap-weighted; CSM Adjusted EPS ($). MDT FY2022-2026 fiscal (April year-end, years as filed); PEO Geoff Martha; peer S&P 500 Health Care Index; CSM Organic Revenue Growth (%); TSR base Apr 30 2021; FY2026 NI $4,801M cross-checked vs press release. CVS 2021-2025; 2021 dual-PEO (Karen S. Lynch + Larry J. Merlo, Merlo Jan 2021 only) and 2024 dual-PEO (J. David Joyner + Karen S. Lynch); Lynch 2024 CAP (15,063,925) spaced-paren negative handled by corrected parser and verified; peer S&P 500 Health Care Sector Index; CSM Adjusted EPS ($). PSX 2021-2025; 2022 dual-PEO (Greg Garland + Mark E. Lashier); positional column flip resolved via cols_by_year remapping, verified against member-tagged XBRL; peer custom 12-member Item 201(e) group, market-cap-weighted; CSM Annual Adjusted PSP ROCE (%). LOW 2021-2025 single PEO Marvin Ellison; XBRL year offset of 1 (FY ends late Jan, years as filed); peer S&P Retailing Industry Group Index; CSM Operating Income as adjusted ($M); 2022 non-PEO CAP (2,118,508) negative verified. ADP 2021-2025; 2023 dual-PEO (Carlos Rodriguez + Maria Black); positional column flip resolved via cols_by_year remapping, verified against member-tagged XBRL; peer NASDAQ Dividend Achievers Select Index; CSM Adjusted Net Income Growth (%); TSR base Jun 30 2020. SYK 2021-2025 single PEO Kevin A. Lobo; peer S&P 500 Health Care Index; CSM Reported Net Sales Growth (%). FCX 2021-2025; 2024 dual-PEO (Kathleen L. Quirk + Richard C. Adkerson); peer S&P Metals and Mining Select Industry Index; CSM Return on Investment (%). MCK FY2022-2026 fiscal (Mar 31 year-end, years as filed); PEO Brian S. Tyler; peer S&P 500 Health Care Index; CSM Adjusted EPS ($); TSR base Mar 31 2021. CME 2021-2025 single PEO Terrence A. Duffy; peer custom Item 201(e) stock performance graph group; CSM Cash Earnings ($M). TSR bases kept as filed (Dec 31 2020 most; ADP Jun 30 2020; LOW last trading day of fiscal 2020; MDT Apr 30 2021; MCK Mar 31 2021). All 70 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 653 company-years passed with zero rejections through wave 13. Wave 14 notes: 14 new companies, ranks 118-138. ABNB 2021-2025 single PEO Brian Chesky; 2022 PEO CAP -585.3M and 2025 PEO CAP -89.2M and 2022 non-PEO CAP -20.0M negatives from Multi-Year Award fair-value swings, all sign='-' XBRL-verified; NI filed in thousands kept as filed. SO 2021-2025; 2023 dual-PEO (Chris Womack + Tom Fanning, May 24 2023 transition, column-split layout, member-tagged XBRL). PWR 2021-2025 single PEO Duke Austin; peer custom 9-company Item 201(e) group. GD 2021-2025 single PEO Phebe Novakovic; CSM Annual ROIC % (14.2% 2025); 2024 CAPs were filing-corrected amounts (-7.46M PEO, -2.05M non-PEO), XBRL-verified. PNC 2021-2025 single PEO Bill Demchak; CSM = ROE% (filing's 'our ROE* (our CSM)'). CEG 2022-2025 only (spun off from Exelon Feb 1 2022); disclosed + restated 2024 CAP math error, corrected amounts match XBRL exactly; NI cross-check documented as unavailable (no us-gaap NetIncomeLoss facts), not failed. HCA 2021-2025 single PEO Sam Hazen. HWM 2021-2025; 2021 dual-PEO (John C. Plant + Tolga I. Oal co-CEOs to Oct 2021); Oal 2021 CAP -8,426,878 spaced-paren negative caught by corrected parser, sign='-' verified. DUK 2021-2025; 2025 dual-PEO (Harry K. Sideris + Lynn J. Good); CSM adjusted EPS/share. MAR 2021-2025; 2021 dual-PEO (Anthony Capuano + Arne Sorenson, d. Feb 2021). ELV 2021-2025 single PEO Gail Boudreaux; 2024 PEO CAP -3,957,314 and 2024 non-PEO CAP -256,544 negatives verified; 2021/2022 NI recast in 2023 (ASU 2018-12). JCI FY2021-FY2025 fiscal as filed (Sep 30 year-end); FY2025 dual-PEO (Joakim Weidemanis, appt. Mar 12 2025 + George Oliver); Oliver 2022 CAP -1,001,706 negative verified. WMB 2021-2025; 2025 dual-PEO (Chad Zamarin + Alan Armstrong); XBRL tagging asymmetry 2021-2024 (SCT untagged, CAP member-tagged) resolved per (tag, year), candidate-presence never relaxed. ICE 2021-2025 single PEO Jeffrey Sprecher; 2022 PEO CAP -720,835 filed split across two cells '-$' + '720,835' joined via merge_split_neg; peer = 16-company CD&A benchmarking group (Schwab added, Salesforce removed 2025). All 69 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 722 company-years passed with zero rejections through wave 14. Wave 15 (2026-09-22): AON, BSX, COIN, DASH, EW, FDX, MCO, MMC, NOC, ORLY, SHW, UPS, WM (13 companies, 65 company-years; AMT excluded, zero numeric Inline XBRL facts). FDX fiscal years ending May 31 tabled as filed (FY2022-FY2026); PEO transition Frederick W. Smith -> Raj Subramaniam. ORLY CEO transition mid-2024, split PEO/Former-PEO columns, member-tagged XBRL (Beckham + Johnson 2024). ORLY NI/CSM filed in whole dollars (unit $). AON CSM = Adjusted Earnings per Share Growth (%). WM table headed \"CEO CAP\", UPS \"Comp Actually Paid\", NOC \"CAP to PEO\": custom table locators, same strict audit. All 65 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 787 company-years passed with zero rejections through wave 15.\n\nWave 16 (2026-09-22): CDNS, CSX, CTAS, ECL, EMR, HPE, ITW, MDLZ, MMM, REGN, SLB, SNPS, TRV (13 companies, 65 company-years; zero exclusions). EMR fiscal year ends Sep 30, HPE/SNPS Oct year-ends, CTAS May 31: FY labels tabled as filed (CTAS 2022-2026, HPE 2021-2025, SNPS 2021-2025). Dual-PEO years: MMM 2024 (Roman -> Brown), EMR 2021 (Farr -> Karsanbhai), CSX 2022/2025, CDNS 2021 (Devgan + Tan), SNPS 2021/2022/2024 (co-CEO transitions: de Geus + Chan 2021; Chan departed June 2022). ITW CEO transition 2024 (Santi -> O'Herlihy). Negative CAPs: REGN 2024 (PEO and non-PEO avg), SNPS 2022/2025 (Chan 2022, Ghazi 2025), MDLZ 2024 (PEO), CTAS 2026 (non-PEO avg) - all verified against sign=\"-\" XBRL facts. Spaced-paren negatives verified: MMM 2023 NI/CSM, REGN 2024 CAPs, MDLZ 2024 PEO CAP and 2025 CSM, CTAS 2026 non-PEO CAP. CDNS FY2021 was a 52/53-week year ending 2022-01-01 (XBRL facts carry end dates in 2022); row mapped driver-side, years recorded as filed. SLB is a Dutch issuer but files DEF 14A with numeric Inline XBRL facts: included under the same strict audit. CSX table header renders \"Share holder\" with an embedded space (rtx locator); REGN header uses curly-quoted \"actually paid\": custom locators, same strict pipeline. All 65 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 852 company-years passed with zero rejections through wave 16.\n\nWave 17 (2026-09-22): ALGN, ANSS, AXON, CARR, CPAY, CSGP, DAL, HLT, LYV, OTIS, SOLV, UAL, WSM (13 companies, 62 company-years; zero exclusions). SOLV (Solventum, spun off from 3M Apr 2024) files only 2024-2025 (2 year-rows); TSR base Apr 1, 2024 (regular-way trading commencement). ANSS latest DEF 14A filed 2025-04-29 (pre-Synopsys-close): years 2020-2024, TSR base Dec 31, 2019. WSM is a 52/53-week fiscal filer (year ends late Jan/early Feb): XBRL facts for table year N carry end dates in year N+1, mapped driver-side via xbrl_year_by_row; years recorded as filed 2021-2025; peer = S&P 500 Consumer Discretionary Distribution and Retail industry index; TSR base Jan 31, 2021. All 13 PEOs single-CEO, every year (Kirby UAL, Bastian DAL verified year-by-year in footnote (1)). Negative CAPs, all spaced-paren and verified vs sign=\"-\" XBRL facts: AXON 2025 PEO; CARR 2025 PEO, 2022 PEO, 2022 non-PEO avg; ANSS 2022 non-PEO avg; CPAY 2022 PEO; WSM 2022 PEO and non-PEO avg; ALGN 2022 PEO and non-PEO avg. Split-cell negatives joined by merge_parens: LYV 2021 NI ( 650,904 / ). UAL header is stacked across 6 rows so bp.get_table/bp.get_table_rtx both miss it: custom table_fn keyed on the Absolute Adjusted EPS column text. CPAY header is transposed with a letter row (a)-(i); CARR header splits TSR labels into a second row; OTIS/CSGP render TSR labels on a second header row; data order verified column-by-column vs XBRL facts in all cases. NI units: AXON/LYV/ANSS $K, CARR $B, others $M (all kept as filed). Custom peer groups: LYV 11-company media peer list (full list in peer_labels), ANSS 7-company industry peer list (full list in peer_labels). DAL column (d) labeled \"Summary Compensation Table Total for Other NEOs\" is an average (verified vs NonPeoNeoAvgTotalCompAmt facts). All 62 new company-years passed the strict candidate-presence Inline XBRL audit with zero rejections; all 914 company-years passed with zero rejections through wave 17.",
   "rollout_exclusions": "KKR & Co. Inc. (KKR): exempt from Item 402(v) pay-versus-performance disclosure until its Sunset Date per 2026 10-K (acc 0001404912-26-000007); exclude from 402(v) rollout until then. Blackstone Inc. (BX): controlled company, generally not subject to Dodd-Frank say-on-pay/say-on-frequency provisions per 2026 10-K (acc 0001193125-26-082531); treat 402(v) as exempt likewise."
  },
  "companies": {
@@ -18981,6 +18981,1364 @@
        "name": "Alan D. Schnitzer",
        "sct": 26968756.0,
        "cap": 55596018.0
+      }
+     ]
+    }
+   ]
+  },
+  "AXON": {
+   "ticker": "AXON",
+   "company_name": "Axon Enterprise Inc",
+   "cik": "0001069183",
+   "filing_date": "2026-04-16",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1069183/000162828026025521/axon-20260416.htm",
+   "peer_group": "NASDAQ Composite Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EBITDA",
+    "unit": "$K"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income (loss)",
+    "unit": "$K"
+   },
+   "notes": [
+    "PEO 2021-2025: Patrick Smith (Founder, Chairman and CEO), single PEO every year; no dual-PEO transitions.",
+    "2025 PEO CAP ( 12,580,422 ) is a spaced-paren negative, parsed by corrected num() to -12,580,422 and verified against the sign=\"-\" XBRL fact.",
+    "2024 PEO SCT 164,525,721 / CAP 385,171,518: the CEO Performance Award mega-grant year (kept as filed, verified vs XBRL).",
+    "Net Income filed in thousands (kept as filed): 2025 = 124,656 ($124.656M); 2021 = ( 56,339 ) spaced-paren negative (-$56.339M).",
+    "CSM = Adjusted EBITDA, filed in thousands (kept as filed), per footnote (6); the most important financial performance measure linking CAP to NEOs for 2025.",
+    "Peer TSR = NASDAQ Composite Index, per footnote (5); $100 invested Dec 31, 2020, dividends reinvested.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 5634227.0,
+     "nonpeo_cap": 30194861.0,
+     "co_tsr": 128.13,
+     "peer_tsr": 122.18,
+     "net_income": -56339.0,
+     "csm": 183086.0,
+     "peo": [
+      {
+       "name": "Patrick Smith",
+       "sct": 33115.0,
+       "cap": 253610579.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 4305869.0,
+     "nonpeo_cap": 2091584.0,
+     "co_tsr": 135.4,
+     "peer_tsr": 82.43,
+     "net_income": 146930.0,
+     "csm": 232033.0,
+     "peo": [
+      {
+       "name": "Patrick Smith",
+       "sct": 33203.0,
+       "cap": 13687307.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 17716938.0,
+     "nonpeo_cap": 28506155.0,
+     "co_tsr": 210.78,
+     "peer_tsr": 119.22,
+     "net_income": 175783.0,
+     "csm": 331396.0,
+     "peo": [
+      {
+       "name": "Patrick Smith",
+       "sct": 40058.0,
+       "cap": 43533121.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 61434191.0,
+     "nonpeo_cap": 151439028.0,
+     "co_tsr": 484.86,
+     "peer_tsr": 154.48,
+     "net_income": 377034.0,
+     "csm": 521375.0,
+     "peo": [
+      {
+       "name": "Patrick Smith",
+       "sct": 164525721.0,
+       "cap": 385171518.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 1049801.0,
+     "nonpeo_cap": 4583563.0,
+     "co_tsr": 463.27,
+     "peer_tsr": 187.14,
+     "net_income": 124656.0,
+     "csm": 710155.0,
+     "peo": [
+      {
+       "name": "Patrick Smith",
+       "sct": 40001.0,
+       "cap": -12580422.0
+      }
+     ]
+    }
+   ]
+  },
+  "CARR": {
+   "ticker": "CARR",
+   "company_name": "Carrier Global Corp",
+   "cik": "0001783180",
+   "filing_date": "2026-03-03",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1783180/000178318026000016/carr-20260303.htm",
+   "peer_group": "Dow Jones Industrials Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted Diluted EPS",
+    "unit": "$"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income (GAAP)",
+    "unit": "$B"
+   },
+   "notes": [
+    "PEO 2021-2025: David L. Gitlin (CEO), single PEO every year; footnote (1) ties column (b) to \"Mr. Gitlin (our CEO)\".",
+    "Negative CAPs, all spaced-paren and verified vs sign=\"-\" XBRL facts: 2025 PEO CAP ( 27,792,296 ); 2022 PEO CAP ( 20,060,104 ); 2022 non-PEO avg CAP ( 6,280,707 ).",
+    "Header splits the two TSR column labels into a second header row (\"CUMULATIVE TOTAL SHAREOWNER RETURN (TSR)\" / \"DOW JONES INDUSTRIAL INDEX TSR\"); data order is the standard 9-col layout (TSR, peer TSR, net income, CSM).",
+    "Net Income filed in $ billions (kept as filed): 2024 = 5.604 ($5.604B); CSM = Adjusted Diluted EPS ($) kept as filed (2025 = 2.59).",
+    "Peer TSR = Dow Jones Industrials Index, per footnote (5); $100 invested Dec 31, 2020.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 4734191.0,
+     "nonpeo_cap": 17061157.0,
+     "co_tsr": 145.0,
+     "peer_tsr": 121.0,
+     "net_income": 1.664,
+     "csm": 2.27,
+     "peo": [
+      {
+       "name": "David L. Gitlin",
+       "sct": 14892815.0,
+       "cap": 61128628.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 3819391.0,
+     "nonpeo_cap": -6280707.0,
+     "co_tsr": 112.0,
+     "peer_tsr": 113.0,
+     "net_income": 3.534,
+     "csm": 2.34,
+     "peo": [
+      {
+       "name": "David L. Gitlin",
+       "sct": 13222247.0,
+       "cap": -20060104.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 5310858.0,
+     "nonpeo_cap": 8750047.0,
+     "co_tsr": 159.0,
+     "peer_tsr": 131.0,
+     "net_income": 1.349,
+     "csm": 2.73,
+     "peo": [
+      {
+       "name": "David L. Gitlin",
+       "sct": 17695200.0,
+       "cap": 42696403.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 5517288.0,
+     "nonpeo_cap": 9534871.0,
+     "co_tsr": 191.0,
+     "peer_tsr": 150.0,
+     "net_income": 5.604,
+     "csm": 2.9,
+     "peo": [
+      {
+       "name": "David L. Gitlin",
+       "sct": 65734245.0,
+       "cap": 112171337.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 4652477.0,
+     "nonpeo_cap": 754006.0,
+     "co_tsr": 149.0,
+     "peer_tsr": 173.0,
+     "net_income": 1.484,
+     "csm": 2.59,
+     "peo": [
+      {
+       "name": "David L. Gitlin",
+       "sct": 14962913.0,
+       "cap": -27792296.0
+      }
+     ]
+    }
+   ]
+  },
+  "OTIS": {
+   "ticker": "OTIS",
+   "company_name": "Otis Worldwide Corp",
+   "cik": "0001781335",
+   "filing_date": "2026-04-17",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1781335/000114036126015389/ny20061782x1_def14a.htm",
+   "peer_group": "S&P 500 Industrials Select Sector Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EPS",
+    "unit": "$"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Judy Marks, per footnote (1) (\"The PEO for each year shown in this table is Ms. Marks\"); single PEO every year.",
+    "Header renders \"Value of Initial Fixed $100 investment based on:\" with Otis TSR / Peer Group TSR labels on a second header row; data order is standard 9-col (TSR, peer TSR, net income, CSM).",
+    "Net Income filed in $ millions (kept as filed); CSM = Adjusted EPS ($) kept as filed (2025 = 4.05), per footnote (6).",
+    "Peer TSR = S&P 500 Industrials Select Sector Index, per footnote (4); Otis became independent Apr 3, 2020; $100 invested Dec 31, 2020, dividends reinvested.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 3956450.0,
+     "nonpeo_cap": 7555268.0,
+     "co_tsr": 188.0,
+     "peer_tsr": 193.0,
+     "net_income": 1246.0,
+     "csm": 3.01,
+     "peo": [
+      {
+       "name": "Judy Marks",
+       "sct": 13770306.0,
+       "cap": 26766637.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 3457622.0,
+     "nonpeo_cap": 2196543.0,
+     "co_tsr": 172.0,
+     "peer_tsr": 183.0,
+     "net_income": 1253.0,
+     "csm": 3.17,
+     "peo": [
+      {
+       "name": "Judy Marks",
+       "sct": 14477875.0,
+       "cap": 15281897.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 5576098.0,
+     "nonpeo_cap": 6457863.0,
+     "co_tsr": 199.0,
+     "peer_tsr": 216.0,
+     "net_income": 1406.0,
+     "csm": 3.54,
+     "peo": [
+      {
+       "name": "Judy Marks",
+       "sct": 15924194.0,
+       "cap": 21050577.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 5377739.0,
+     "nonpeo_cap": 3919059.0,
+     "co_tsr": 209.0,
+     "peer_tsr": 253.0,
+     "net_income": 1645.0,
+     "csm": 3.83,
+     "peo": [
+      {
+       "name": "Judy Marks",
+       "sct": 42102257.0,
+       "cap": 40088639.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 4669800.0,
+     "nonpeo_cap": 2608175.0,
+     "co_tsr": 139.0,
+     "peer_tsr": 190.0,
+     "net_income": 1384.0,
+     "csm": 4.05,
+     "peo": [
+      {
+       "name": "Judy Marks",
+       "sct": 16977877.0,
+       "cap": 9537971.0
+      }
+     ]
+    }
+   ]
+  },
+  "SOLV": {
+   "ticker": "SOLV",
+   "company_name": "Solventum Corp",
+   "cik": "0001964738",
+   "filing_date": "2026-03-27",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1964738/000196473826000017/solv-20260327.htm",
+   "peer_group": "S&P 500 Health Care (Sector) Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Constant Currency Revenue",
+    "unit": "$M"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO: Bryan C. Hanson (2024, 2025), per footnote (1); Solventum spun off from 3M in April 2024, so only two year-rows are filed (2024, 2025).",
+    "Top header row renders \"Average summary compensation table total for non-PEO NEOs\" ahead of the Year column; data order is the standard 9-col layout (verified vs XBRL facts).",
+    "Net Income in $ millions (kept as filed); CSM = Constant Currency Revenue in $ millions, per footnote (7), the most important financial performance measure linking CAP to NEOs.",
+    "Peer TSR = S&P 500 Health Care (Sector) Index, per footnote (5); TSR base is Apr 1, 2024 (regular-way trading commencement), per footnote (4).",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2024,
+     "nonpeo_sct": 8528291.0,
+     "nonpeo_cap": 8801783.0,
+     "co_tsr": 95.6,
+     "peer_tsr": 95.07,
+     "net_income": 479.0,
+     "csm": 8296.0,
+     "peo": [
+      {
+       "name": "Bryan C. Hanson",
+       "sct": 39959767.0,
+       "cap": 40244984.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 5074897.0,
+     "nonpeo_cap": 6948350.0,
+     "co_tsr": 114.67,
+     "peer_tsr": 108.95,
+     "net_income": 1556.0,
+     "csm": 8384.0,
+     "peo": [
+      {
+       "name": "Bryan C. Hanson",
+       "sct": 20139981.0,
+       "cap": 40020576.0
+      }
+     ]
+    }
+   ]
+  },
+  "CSGP": {
+   "ticker": "CSGP",
+   "company_name": "CoStar Group Inc",
+   "cik": "0001057352",
+   "filing_date": "2026-04-30",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1057352/000119312526197205/d903159ddef14a.htm",
+   "peer_group": "S&P Composite 1500 Real Estate Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "EBITDA",
+    "unit": "$M"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Andrew C. Florance (CEO), single PEO every year.",
+    "TSR / Peer Group TSR labels sit on a second header row (\"VALUE OF INITIAL FIXED $100 INVESTMENT BASED ON:\"); data order is standard 9-col (TSR, peer TSR, net income, CSM).",
+    "Net Income and CSM filed in $ millions (kept as filed): 2025 NI = 6.5, EBITDA = 170.1.",
+    "Peer TSR = S&P Composite 1500 Real Estate Index, per footnote (2) (the industry peer group used for Item 201(e) purposes); $100 invested Dec 31, 2020.",
+    "Tabular list of most important measures: Revenue, EBITDA, Relative TSR, Net Income.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 6616193.0,
+     "nonpeo_cap": 3506869.0,
+     "co_tsr": 132.09,
+     "peer_tsr": 137.09,
+     "net_income": 292.6,
+     "csm": 565.0,
+     "peo": [
+      {
+       "name": "Andrew C. Florance",
+       "sct": 22164341.0,
+       "cap": 11430937.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5633566.0,
+     "nonpeo_cap": 4583956.0,
+     "co_tsr": 129.17,
+     "peer_tsr": 101.0,
+     "net_income": 369.5,
+     "csm": 582.7,
+     "peo": [
+      {
+       "name": "Andrew C. Florance",
+       "sct": 19420514.0,
+       "cap": 16180113.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 7289696.0,
+     "nonpeo_cap": 7416214.0,
+     "co_tsr": 146.06,
+     "peer_tsr": 112.65,
+     "net_income": 374.7,
+     "csm": 389.8,
+     "peo": [
+      {
+       "name": "Andrew C. Florance",
+       "sct": 29176180.0,
+       "cap": 28622960.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 8229951.0,
+     "nonpeo_cap": 2855473.0,
+     "co_tsr": 119.66,
+     "peer_tsr": 118.76,
+     "net_income": 138.7,
+     "csm": 123.0,
+     "peo": [
+      {
+       "name": "Andrew C. Florance",
+       "sct": 37393960.0,
+       "cap": 8220790.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 8072724.0,
+     "nonpeo_cap": 5593138.0,
+     "co_tsr": 112.39,
+     "peer_tsr": 122.51,
+     "net_income": 6.5,
+     "csm": 170.1,
+     "peo": [
+      {
+       "name": "Andrew C. Florance",
+       "sct": 36431936.0,
+       "cap": 33174602.0
+      }
+     ]
+    }
+   ]
+  },
+  "UAL": {
+   "ticker": "UAL",
+   "company_name": "United Airlines Holdings Inc",
+   "cik": "0000100517",
+   "filing_date": "2026-04-07",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/100517/000110465926040467/tmb-20260519xdef14a.htm",
+   "peer_group": "NYSE Arca Airline Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Absolute Adjusted EPS",
+    "unit": "$"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income (Loss)",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Scott Kirby, per footnote (1) year-by-year listing; single PEO every year.",
+    "Header is stacked across 6 rows (\"Summary Compensation Table Total for PEO\" etc. split word-by-word), so the phrase \"compensation actually paid\" never appears contiguously and bp.get_table / get_table_rtx both miss it; custom table_fn keys on the CSM column \"(Loss) Adjusted\" text with nyr>=4.",
+    "Data order is standard 9-col: SCT PEO, CAP PEO, non-PEO avg SCT, non-PEO avg CAP, TSR, peer TSR, Net Income (Loss) ($M), Absolute Adjusted EPS ($).",
+    "2021 NI ( 1,964 ) and 2021 CSM ( 13.94 ) are spaced-paren negatives, parsed by corrected num() and kept as filed; neither column is XBRL-tagged, so no candidate check applies to them (strict audit covers the four comp columns, all verified).",
+    "Peer TSR = NYSE Arca Airline Index, per footnote (5) (also the 10-K stock performance graph index); $100 invested Dec 31, 2020.",
+    "CSM = Absolute Adjusted EPS ($), per footnote (6), the most important financial performance measure linking CAP to NEOs for 2025.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 3220759.0,
+     "nonpeo_cap": 4011244.0,
+     "co_tsr": 101.23,
+     "peer_tsr": 98.25,
+     "net_income": -1964.0,
+     "csm": -13.94,
+     "peo": [
+      {
+       "name": "Scott Kirby",
+       "sct": 9845064.0,
+       "cap": 11099444.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 2942377.0,
+     "nonpeo_cap": 3414487.0,
+     "co_tsr": 87.17,
+     "peer_tsr": 63.99,
+     "net_income": 737.0,
+     "csm": 2.52,
+     "peo": [
+      {
+       "name": "Scott Kirby",
+       "sct": 9796602.0,
+       "cap": 9915781.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 7471150.0,
+     "nonpeo_cap": 8328720.0,
+     "co_tsr": 95.4,
+     "peer_tsr": 82.72,
+     "net_income": 2618.0,
+     "csm": 10.05,
+     "peo": [
+      {
+       "name": "Scott Kirby",
+       "sct": 18573299.0,
+       "cap": 23055816.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 14012053.0,
+     "nonpeo_cap": 30524710.0,
+     "co_tsr": 224.51,
+     "peer_tsr": 82.68,
+     "net_income": 3149.0,
+     "csm": 10.61,
+     "peo": [
+      {
+       "name": "Scott Kirby",
+       "sct": 33924988.0,
+       "cap": 96724681.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 11950030.0,
+     "nonpeo_cap": 16789892.0,
+     "co_tsr": 258.54,
+     "peer_tsr": 87.62,
+     "net_income": 3353.0,
+     "csm": 10.62,
+     "peo": [
+      {
+       "name": "Scott Kirby",
+       "sct": 32282253.0,
+       "cap": 45643992.0
+      }
+     ]
+    }
+   ]
+  },
+  "LYV": {
+   "ticker": "LYV",
+   "company_name": "Live Nation Entertainment Inc",
+   "cik": "0001335258",
+   "filing_date": "2026-04-24",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1335258/000119312526174146/d43878ddef14a.htm",
+   "peer_group": "Custom 11-company peer group",
+   "peer_labels": "Electronic Arts Inc, Fox Corp, Intuit Inc, Netflix Inc, Paramount Global, PayPal Holdings Inc, Salesforce Inc, Spotify Technology SA, Universal Music Group NV, Warner Bros. Discovery Inc, Warner Music Group Corp",
+   "csm": {
+    "label": "Adjusted Operating Income",
+    "unit": "$K"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income (Loss)",
+    "unit": "$K"
+   },
+   "notes": [
+    "PEO 2021-2025: Michael Rapino (CEO), per footnote (1); table uses \"CEO\"/\"Non-CEO NEO\" terminology; single PEO every year.",
+    "2021 NI ( 650,904 ) is a spaced-paren negative split across two cells (\"( 650,904\" / \")\"), joined by merge_parens and kept in thousands as filed (-650,904).",
+    "2022 CEO SCT 139,005,565 / CAP 35,618,299: the special mega-grant year (kept as filed, verified vs XBRL).",
+    "Net Income and CSM filed in $1,000s (kept as filed); CSM = Adjusted Operating Income (AOI), the most important financial performance measure linking CAP to NEOs (tabular list: AOI, Stock Price).",
+    "Peer TSR = custom 11-company peer group (footnote 6); $100 invested Dec 31, 2020, dividends reinvested.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 2421334.0,
+     "nonpeo_cap": 10977325.0,
+     "co_tsr": 162.89,
+     "peer_tsr": 106.43,
+     "net_income": -650904.0,
+     "csm": 323863.0,
+     "peo": [
+      {
+       "name": "Michael Rapino",
+       "sct": 13842464.0,
+       "cap": 84307437.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 16434080.0,
+     "nonpeo_cap": 5192894.0,
+     "co_tsr": 94.91,
+     "peer_tsr": 34.53,
+     "net_income": 266440.0,
+     "csm": 1397095.0,
+     "peo": [
+      {
+       "name": "Michael Rapino",
+       "sct": 139005565.0,
+       "cap": 35618299.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 8349253.0,
+     "nonpeo_cap": 14016281.0,
+     "co_tsr": 127.38,
+     "peer_tsr": 58.59,
+     "net_income": 556893.0,
+     "csm": 1881119.0,
+     "peo": [
+      {
+       "name": "Michael Rapino",
+       "sct": 23438317.0,
+       "cap": 68190659.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 3280162.0,
+     "nonpeo_cap": 16070847.0,
+     "co_tsr": 176.24,
+     "peer_tsr": 80.01,
+     "net_income": 896287.0,
+     "csm": 2145898.0,
+     "peo": [
+      {
+       "name": "Michael Rapino",
+       "sct": 32960737.0,
+       "cap": 94273893.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 3288816.0,
+     "nonpeo_cap": 7615795.0,
+     "co_tsr": 193.93,
+     "peer_tsr": 81.97,
+     "net_income": 495972.0,
+     "csm": 2366400.0,
+     "peo": [
+      {
+       "name": "Michael Rapino",
+       "sct": 32552324.0,
+       "cap": 52276782.0
+      }
+     ]
+    }
+   ]
+  },
+  "ANSS": {
+   "ticker": "ANSS",
+   "company_name": "ANSYS Inc",
+   "cik": "0001013462",
+   "filing_date": "2025-04-29",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1013462/000110465925041176/tm252293-2_def14a.htm",
+   "peer_group": "Industry peer group (7 companies)",
+   "peer_labels": "Autodesk Inc, PTC Inc, Cadence Design Systems Inc, Synopsys Inc, Altair Engineering Inc, Aspen Technology Inc, Dassault Systemes SE",
+   "csm": {
+    "label": "Adjusted ACV",
+    "unit": "$K"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$K"
+   },
+   "notes": [
+    "PEO 2020-2024: Ajei Gopal (\"Dr. Gopal\"), per footnote (1) (\"served as our principal executive officer for the full year for each Covered Year\"); single PEO every year.",
+    "Latest DEF 14A filed 2025-04-29 (pre-Synopsys-close), so filed years are 2020-2024 (5 years), recorded as filed.",
+    "2022 non-PEO avg CAP ( 2,022,048 ) is a spaced-paren negative, verified against the sign=\"-\" XBRL fact.",
+    "Net Income and CSM filed in thousands (kept as filed); CSM = Adjusted ACV, per footnote (4).",
+    "Peer TSR = industry peer group of seven companies (footnote 3); $100 invested Dec 31, 2019.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2020,
+     "nonpeo_sct": 4235180.0,
+     "nonpeo_cap": 8449049.0,
+     "co_tsr": 141.33,
+     "peer_tsr": 157.0,
+     "net_income": 433887.0,
+     "csm": 1596385.0,
+     "peo": [
+      {
+       "name": "Ajei Gopal",
+       "sct": 14089533.0,
+       "cap": 35102268.0
+      }
+     ]
+    },
+    {
+     "year": 2021,
+     "nonpeo_sct": 4325215.0,
+     "nonpeo_cap": 7025221.0,
+     "co_tsr": 155.83,
+     "peer_tsr": 194.2,
+     "net_income": 454627.0,
+     "csm": 1873994.0,
+     "peo": [
+      {
+       "name": "Ajei Gopal",
+       "sct": 18260634.0,
+       "cap": 30494209.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 4720955.0,
+     "nonpeo_cap": -2022048.0,
+     "co_tsr": 93.85,
+     "peer_tsr": 148.23,
+     "net_income": 523710.0,
+     "csm": 2120017.0,
+     "peo": [
+      {
+       "name": "Ajei Gopal",
+       "sct": 21872498.0,
+       "cap": 6345680.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 5954865.0,
+     "nonpeo_cap": 10714267.0,
+     "co_tsr": 140.94,
+     "peer_tsr": 218.97,
+     "net_income": 500412.0,
+     "csm": 2234019.0,
+     "peo": [
+      {
+       "name": "Ajei Gopal",
+       "sct": 24633791.0,
+       "cap": 47175954.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 5630356.0,
+     "nonpeo_cap": 2914547.0,
+     "co_tsr": 131.01,
+     "peer_tsr": 218.93,
+     "net_income": 575692.0,
+     "csm": 2556255.0,
+     "peo": [
+      {
+       "name": "Ajei Gopal",
+       "sct": 32810655.0,
+       "cap": 30613949.0
+      }
+     ]
+    }
+   ]
+  },
+  "CPAY": {
+   "ticker": "CPAY",
+   "company_name": "Corpay Inc",
+   "cik": "0001175454",
+   "filing_date": "2026-04-10",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1175454/000117545426000022/cpay-20260410.htm",
+   "peer_group": "S&P 500 Data Processing & Outsourced Services Sub Industry Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EPS-COMP",
+    "unit": "$"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Ronald F. Clarke (\"Mr. Clarke\"), per footnote (1) (\"Mr. Clarke was our principal executive officer\"); single PEO every year.",
+    "Header is transposed: the non-PEO average labels sit on the top header row and the letter row (a)-(i) maps the columns; data order is standard 9-col (verified column-by-column vs XBRL facts).",
+    "2022 PEO CAP ( 24,347,434 ) is a spaced-paren negative, verified against the sign=\"-\" XBRL fact.",
+    "2021 PEO SCT 57,923,473 / CAP 31,186,881: multi-year equity grant year (kept as filed, verified vs XBRL).",
+    "Net Income in $ millions (kept as filed); CSM = Adjusted EPS-COMP ($), per footnote (6).",
+    "Peer TSR = S&P 500 Data Processing & Outsourced Services Sub Industry Index, per footnote (4); $100 invested Dec 31, 2020.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 4524830.0,
+     "nonpeo_cap": 2515971.0,
+     "co_tsr": 82.04,
+     "peer_tsr": 95.3,
+     "net_income": 839.0,
+     "csm": 12.66,
+     "peo": [
+      {
+       "name": "Ronald F. Clarke",
+       "sct": 57923473.0,
+       "cap": 31186881.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 3883399.0,
+     "nonpeo_cap": 208386.0,
+     "co_tsr": 67.32,
+     "peer_tsr": 78.81,
+     "net_income": 954.0,
+     "csm": 15.54,
+     "peo": [
+      {
+       "name": "Ronald F. Clarke",
+       "sct": 3986998.0,
+       "cap": -24347434.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 3076074.0,
+     "nonpeo_cap": 5914216.0,
+     "co_tsr": 103.58,
+     "peer_tsr": 119.87,
+     "net_income": 982.0,
+     "csm": 17.18,
+     "peo": [
+      {
+       "name": "Ronald F. Clarke",
+       "sct": 2669024.0,
+       "cap": 21140906.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 4025133.0,
+     "nonpeo_cap": 5546679.0,
+     "co_tsr": 124.04,
+     "peer_tsr": 131.72,
+     "net_income": 1004.0,
+     "csm": 19.49,
+     "peo": [
+      {
+       "name": "Ronald F. Clarke",
+       "sct": 28050998.0,
+       "cap": 48357542.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 5022245.0,
+     "nonpeo_cap": 3477820.0,
+     "co_tsr": 110.3,
+     "peer_tsr": 132.06,
+     "net_income": 1070.0,
+     "csm": 21.06,
+     "peo": [
+      {
+       "name": "Ronald F. Clarke",
+       "sct": 3406867.0,
+       "cap": 2722552.0
+      }
+     ]
+    }
+   ]
+  },
+  "HLT": {
+   "ticker": "HLT",
+   "company_name": "Hilton Worldwide Holdings Inc",
+   "cik": "0001585689",
+   "filing_date": "2026-04-02",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1585689/000158568926000023/hlt-20260401.htm",
+   "peer_group": "S&P 500 Hotels, Resorts & Cruise Lines Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EBITDA",
+    "unit": "$M"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Christopher J. Nassetta (CEO), per footnote (1); table uses \"CEO\"/\"Non-CEO NEO\" terminology; single PEO every year.",
+    "2021 CEO CAP 78,651,629 vs SCT 23,285,248: large equity-fair-value swing year (kept as filed, verified vs XBRL).",
+    "Net Income and CSM filed in $ millions (kept as filed); CSM = Adjusted EBITDA, per footnote (4).",
+    "Peer TSR = S&P 500 Hotels, Resorts & Cruise Lines Index (\"S&P Hotels Index\"), per footnote (3); $100 invested Dec 31, 2020.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 4824360.0,
+     "nonpeo_cap": 12470862.0,
+     "co_tsr": 140.2,
+     "peer_tsr": 119.84,
+     "net_income": 407.0,
+     "csm": 1629.0,
+     "peo": [
+      {
+       "name": "Christopher J. Nassetta",
+       "sct": 23285248.0,
+       "cap": 78651629.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5390298.0,
+     "nonpeo_cap": 3187416.0,
+     "co_tsr": 113.95,
+     "peer_tsr": 90.79,
+     "net_income": 1257.0,
+     "csm": 2599.0,
+     "peo": [
+      {
+       "name": "Christopher J. Nassetta",
+       "sct": 23532938.0,
+       "cap": 8350685.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 5788921.0,
+     "nonpeo_cap": 10477589.0,
+     "co_tsr": 164.86,
+     "peer_tsr": 150.99,
+     "net_income": 1151.0,
+     "csm": 3089.0,
+     "peo": [
+      {
+       "name": "Christopher J. Nassetta",
+       "sct": 26556464.0,
+       "cap": 56800036.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 6384084.0,
+     "nonpeo_cap": 10833541.0,
+     "co_tsr": 224.4,
+     "peer_tsr": 199.57,
+     "net_income": 1539.0,
+     "csm": 3429.0,
+     "peo": [
+      {
+       "name": "Christopher J. Nassetta",
+       "sct": 27957967.0,
+       "cap": 58773265.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 6849021.0,
+     "nonpeo_cap": 8497143.0,
+     "co_tsr": 261.39,
+     "peer_tsr": 226.6,
+     "net_income": 1461.0,
+     "csm": 3725.0,
+     "peo": [
+      {
+       "name": "Christopher J. Nassetta",
+       "sct": 27674400.0,
+       "cap": 38013198.0
+      }
+     ]
+    }
+   ]
+  },
+  "WSM": {
+   "ticker": "WSM",
+   "company_name": "Williams-Sonoma Inc",
+   "cik": "0000719955",
+   "filing_date": "2026-05-06",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/719955/000071995526000109/wsm-20260506.htm",
+   "peer_group": "S&P 500 Consumer Discretionary Distribution and Retail industry index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Adjusted EPS",
+    "unit": "$"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO FY2021-FY2025: Laura Alber, per footnote (1) year table; single PEO every year.",
+    "Fiscal year is 52/53-week ending late Jan/early Feb, so XBRL facts for table year N carry end dates in year N+1 (e.g. FY2025 facts end 2026-02-01); handled driver-side via xbrl_year_by_row (CDNS wave-16 precedent); years recorded as filed (2021-2025).",
+    "Negative CAPs in 2022, spaced-paren with embedded $ signs, verified vs sign=\"-\" XBRL facts: PEO CAP $( 163,581 ) -> -163,581; non-PEO avg CAP $( 3,488,288 ) -> -3,488,288.",
+    "CSM = Adjusted EPS ($), per footnote (8); the 2025/2024 cells carry footnote markers (9)/(10) in-cell, parsed by num() to 9.57/8.50 as filed.",
+    "Net Income filed in millions (kept as filed).",
+    "Peer TSR = S&P 500 Consumer Discretionary Distribution and Retail industry index (footnote 6), the Item 201(e) stock performance graph peer; $100 invested Jan 31, 2021 (last day of FY2020), dividends reinvested.",
+    "TSR values: 2025 = 349.00, 2024 = 355.00 (as filed)."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 6411575.0,
+     "nonpeo_cap": 15913266.0,
+     "co_tsr": 122.02,
+     "peer_tsr": 108.64,
+     "net_income": 1126.0,
+     "csm": 7.43,
+     "peo": [
+      {
+       "name": "Laura Alber",
+       "sct": 21324327.0,
+       "cap": 78793201.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5596435.0,
+     "nonpeo_cap": -3488288.0,
+     "co_tsr": 102.31,
+     "peer_tsr": 88.85,
+     "net_income": 1128.0,
+     "csm": 8.27,
+     "peo": [
+      {
+       "name": "Laura Alber",
+       "sct": 17322255.0,
+       "cap": -163581.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 6238565.0,
+     "nonpeo_cap": 13793742.0,
+     "co_tsr": 172.58,
+     "peer_tsr": 114.73,
+     "net_income": 950.0,
+     "csm": 7.43,
+     "peo": [
+      {
+       "name": "Laura Alber",
+       "sct": 23696540.0,
+       "cap": 65270818.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 5338172.0,
+     "nonpeo_cap": 21413899.0,
+     "co_tsr": 355.0,
+     "peer_tsr": 161.2,
+     "net_income": 1125.0,
+     "csm": 8.5,
+     "peo": [
+      {
+       "name": "Laura Alber",
+       "sct": 27692374.0,
+       "cap": 132461444.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 5242664.0,
+     "nonpeo_cap": 6804597.0,
+     "co_tsr": 349.0,
+     "peer_tsr": 164.12,
+     "net_income": 1088.0,
+     "csm": 9.57,
+     "peo": [
+      {
+       "name": "Laura Alber",
+       "sct": 33297422.0,
+       "cap": 56216918.0
+      }
+     ]
+    }
+   ]
+  },
+  "ALGN": {
+   "ticker": "ALGN",
+   "company_name": "Align Technology Inc",
+   "cik": "0001097149",
+   "filing_date": "2026-04-07",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1097149/000109714926000023/algn-20260407.htm",
+   "peer_group": "S&P 1500 Composite Health Care Equipment & Supplies Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Net Revenues",
+    "unit": "$M"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Joseph M. Hogan (named in the column headers); single PEO every year.",
+    "Negative CAPs in 2022, spaced-paren, verified vs sign=\"-\" XBRL facts: PEO CAP ( 61,348,849 ) -> -61,348,849; non-PEO avg CAP ( 10,393,452 ) -> -10,393,452.",
+    "Net Income and CSM filed in $ millions (kept as filed); CSM = Net Revenues, per footnote (5).",
+    "Peer TSR = S&P 1500 Composite Health Care Equipment & Supplies Index, per footnote (4); $100 invested Dec 31, 2020.",
+    "Company TSR as filed: 2021 = 123, 2022 = 39, 2023 = 51, 2024 = 39, 2025 = 29 (share-price decline reflected).",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 4328778.0,
+     "nonpeo_cap": 9498811.0,
+     "co_tsr": 123.0,
+     "peer_tsr": 119.0,
+     "net_income": 772.0,
+     "csm": 3953.0,
+     "peo": [
+      {
+       "name": "Joseph M. Hogan",
+       "sct": 21591400.0,
+       "cap": 76152942.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 3376160.0,
+     "nonpeo_cap": -10393452.0,
+     "co_tsr": 39.0,
+     "peer_tsr": 93.0,
+     "net_income": 362.0,
+     "csm": 3735.0,
+     "peo": [
+      {
+       "name": "Joseph M. Hogan",
+       "sct": 18684044.0,
+       "cap": -61348849.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 4375124.0,
+     "nonpeo_cap": 4701234.0,
+     "co_tsr": 51.0,
+     "peer_tsr": 100.0,
+     "net_income": 445.0,
+     "csm": 3862.0,
+     "peo": [
+      {
+       "name": "Joseph M. Hogan",
+       "sct": 28952411.0,
+       "cap": 29461070.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 4788150.0,
+     "nonpeo_cap": 1542978.0,
+     "co_tsr": 39.0,
+     "peer_tsr": 110.0,
+     "net_income": 421.0,
+     "csm": 3999.0,
+     "peo": [
+      {
+       "name": "Joseph M. Hogan",
+       "sct": 27321179.0,
+       "cap": 5198289.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 4319352.0,
+     "nonpeo_cap": 1766695.0,
+     "co_tsr": 29.0,
+     "peer_tsr": 117.0,
+     "net_income": 410.0,
+     "csm": 4035.0,
+     "peo": [
+      {
+       "name": "Joseph M. Hogan",
+       "sct": 19193988.0,
+       "cap": 3855982.0
+      }
+     ]
+    }
+   ]
+  },
+  "DAL": {
+   "ticker": "DAL",
+   "company_name": "Delta Air Lines Inc",
+   "cik": "0000027904",
+   "filing_date": "2026-04-24",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/27904/000130817926000345/dal014970-def14a.htm",
+   "peer_group": "NYSE ARCA Airline Index",
+   "peer_labels": null,
+   "csm": {
+    "label": "Pre-Tax Income",
+    "unit": "$M"
+   },
+   "csm_addl": null,
+   "net_income": {
+    "label": "Net Income",
+    "unit": "$M"
+   },
+   "notes": [
+    "PEO 2021-2025: Edward H. Bastian, per footnote (1) (\"for all years shown\"); single PEO every year.",
+    "Table uses \"Other NEOs\" terminology: column (d) is labeled \"Summary Compensation Table Total for Other NEOs\" but is an average, verified column-by-column vs NonPeoNeoAvgTotalCompAmt XBRL facts; column (e) is labeled \"Average Compensation Actually Paid to Other NEOs\".",
+    "Header renders \"Value of Initial Fixed $100 Investment on December 31, 2020 Based On:\" split across rows; data order is standard 9-col.",
+    "2021 Pre-Tax Income ( 3,144 ) is a spaced-paren negative, kept as filed; the CSM column is not XBRL-tagged.",
+    "Net Income and CSM filed in $ millions (kept as filed); CSM = Pre-Tax Income, per footnote (5).",
+    "Peer TSR = NYSE ARCA Airline Index, per footnote (3) (also the Item 5 10-K peer group); $100 invested Dec 31, 2020.",
+    "Calendar fiscal year; xbrl_year_offset 0."
+   ],
+   "years": [
+    {
+     "year": 2021,
+     "nonpeo_sct": 6115487.0,
+     "nonpeo_cap": 6028546.0,
+     "co_tsr": 97.0,
+     "peer_tsr": 98.0,
+     "net_income": 280.0,
+     "csm": -3144.0,
+     "peo": [
+      {
+       "name": "Edward H. Bastian",
+       "sct": 12360420.0,
+       "cap": 11616466.0
+      }
+     ]
+    },
+    {
+     "year": 2022,
+     "nonpeo_sct": 5087831.0,
+     "nonpeo_cap": 3861941.0,
+     "co_tsr": 82.0,
+     "peer_tsr": 64.0,
+     "net_income": 1318.0,
+     "csm": 3619.0,
+     "peo": [
+      {
+       "name": "Edward H. Bastian",
+       "sct": 9606387.0,
+       "cap": 7613922.0
+      }
+     ]
+    },
+    {
+     "year": 2023,
+     "nonpeo_sct": 12332605.0,
+     "nonpeo_cap": 14136612.0,
+     "co_tsr": 101.0,
+     "peer_tsr": 83.0,
+     "net_income": 4609.0,
+     "csm": 7021.0,
+     "peo": [
+      {
+       "name": "Edward H. Bastian",
+       "sct": 34214328.0,
+       "cap": 39811315.0
+      }
+     ]
+    },
+    {
+     "year": 2024,
+     "nonpeo_sct": 8919676.0,
+     "nonpeo_cap": 16903211.0,
+     "co_tsr": 152.0,
+     "peer_tsr": 83.0,
+     "net_income": 3457.0,
+     "csm": 7052.0,
+     "peo": [
+      {
+       "name": "Edward H. Bastian",
+       "sct": 27117069.0,
+       "cap": 56429052.0
+      }
+     ]
+    },
+    {
+     "year": 2025,
+     "nonpeo_sct": 7778574.0,
+     "nonpeo_cap": 33136129.0,
+     "co_tsr": 177.0,
+     "peer_tsr": 88.0,
+     "net_income": 5005.0,
+     "csm": 6799.0,
+     "peo": [
+      {
+       "name": "Edward H. Bastian",
+       "sct": 19222401.0,
+       "cap": 105500600.0
       }
      ]
     }
