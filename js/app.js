@@ -1250,6 +1250,19 @@ async function loadData() {
     trendsData = trends;
     peerData = peer;
     pvpData = pvp;
+    // Render the live PvP coverage count on the table-controls toggle.
+    // NOTE: updatePvpOnlyToggle() lives in a nested scope with the other
+    // filter-indicator functions and is not visible from top-level loadData,
+    // so the count is set inline here (same logic as the updater: badged
+    // main-table rows, not the raw 118-company PvP universe).
+    var pvpCountEl = document.getElementById('pvp-only-count');
+    if (pvpCountEl) {
+        var pvpN = 0;
+        if (pvp && pvp.companies && comp && comp.companies) {
+            pvpN = comp.companies.filter(function(c) { return pvp.companies[c.ticker]; }).length;
+        }
+        pvpCountEl.textContent = pvpN ? '(' + pvpN + ')' : '';
+    }
     renderFooterVintage(comp);
     return { comp, trends, peer };
 }
@@ -2455,6 +2468,10 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeCeoTransitionFilter = false;
             var tc = document.getElementById('transition-filter-chip');
             if (tc) tc.remove();
+        }
+        if (window._activePvpOnlyFilter) {
+            window._activePvpOnlyFilter = false;
+            if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
         }
         if (window._activeTeamCompletenessFilter) {
             window._activeTeamCompletenessFilter = null;
@@ -4233,6 +4250,7 @@ function buildSectorChips(companies) {
         if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
         if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
         if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
@@ -4263,6 +4281,7 @@ function buildSectorChips(companies) {
             if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
             if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
             if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
@@ -5847,6 +5866,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
+    if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
     if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
     if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.label); }
@@ -6251,6 +6271,11 @@ function renderTable(companies, options) {
     if (window._activeCeoTransitionFilter) {
         filtered = filtered.filter(function(c) {
             return c._ceoTransition != null;
+        });
+    }
+    if (window._activePvpOnlyFilter) {
+        filtered = filtered.filter(function(c) {
+            return pvpData && pvpData.companies && pvpData.companies[c.ticker];
         });
     }
     if (window._activeTeamCompletenessFilter) {
@@ -6715,6 +6740,7 @@ function renderTable(companies, options) {
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
+    if (window._activePvpOnlyFilter) announceMsg += ', Pay vs Performance covered only';
     if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
     if (window._activeYoYBucket) announceMsg += ', YoY: ' + window._activeYoYBucket.label;
     if (window._activePctileTier) announceMsg += ', percentile: ' + window._activePctileTier.label;
@@ -10653,6 +10679,9 @@ function serializeState() {
     if (window._activeCeoTransitionFilter) {
         params.push('ceotrans=1');
     }
+    if (window._activePvpOnlyFilter) {
+        params.push('pvponly=1');
+    }
     if (window._activeTeamCompletenessFilter) {
         params.push('teamfilter=' + encodeURIComponent(window._activeTeamCompletenessFilter));
     }
@@ -10802,6 +10831,11 @@ function applyHashState(companies) {
     // CEO transition filter
     if (state.ceotrans === '1') {
         window._activeCeoTransitionFilter = true;
+    }
+
+    // PvP-covered-only filter
+    if (state.pvponly === '1') {
+        window._activePvpOnlyFilter = true;
     }
 
     // Team completeness filter
@@ -11644,6 +11678,7 @@ function setupDualSparklineTooltips() {
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
+        updatePvpOnlyToggle();
         updateTeamCompletenessFilterIndicator();
         updateYoYFilterIndicator();
         updatePctileFilterIndicator();
@@ -11826,6 +11861,7 @@ function setupDualSparklineTooltips() {
         updateRatioFilterIndicator();
         updateConcFilterIndicator();
         updateCeoTransitionFilterIndicator();
+        updatePvpOnlyToggle();
         updateTeamCompletenessFilterIndicator();
         updateYoYFilterIndicator();
         updatePctileFilterIndicator();
@@ -12290,6 +12326,69 @@ function setupDualSparklineTooltips() {
     }
     window._updateCeoTransitionFilterIndicator = updateCeoTransitionFilterIndicator;
 
+    // PvP-covered filter — static toggle chip in the table controls; shows only
+    // companies with SEC Item 402(v) Pay vs Performance data. Mirrors the
+    // CEO-transition filter's state/URL/announce plumbing; the control itself
+    // is persistent (a toggle) rather than a transient removable chip.
+    window.filterByPvpOnly = function() {
+        window._activePvpOnlyFilter = !window._activePvpOnlyFilter;
+        currentPage = 1;
+
+        // Sort by total compensation descending when activating
+        if (window._activePvpOnlyFilter) {
+            currentSort = { key: 'total_compensation', dir: 'desc' };
+            document.querySelectorAll('th.sortable').forEach(function(t) {
+                t.classList.remove('sorted-asc', 'sorted-desc');
+                t.setAttribute('aria-sort', 'none');
+                if (t.dataset.sort === 'total_compensation') {
+                    t.classList.add('sorted-desc');
+                    t.setAttribute('aria-sort', 'descending');
+                }
+            });
+        }
+
+        updatePvpOnlyToggle();
+        renderTable(companies);
+        pushState();
+        announce(window._activePvpOnlyFilter ? 'Showing only companies with Pay vs Performance data' : 'PvP-covered filter cleared');
+
+        // Scroll to table
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updatePvpOnlyToggle() {
+        var btn = document.getElementById('pvp-only-toggle');
+        if (!btn) return;
+        var on = !!window._activePvpOnlyFilter;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        // Count the main-table rows the filter actually yields (badged rows),
+        // not the raw PvP universe: 3 PvP filers (IBKR, MRVL, SNDK) are not yet
+        // in the main 500-company table, so 118 -> 115 here.
+        var n;
+        if (typeof companies !== 'undefined' && companies && pvpData && pvpData.companies) {
+            n = companies.filter(function(c) { return pvpData.companies[c.ticker]; }).length;
+        } else {
+            n = (pvpData && pvpData.companies) ? Object.keys(pvpData.companies).length : 0;
+        }
+        var countEl = document.getElementById('pvp-only-count');
+        if (countEl) countEl.textContent = n ? '(' + n + ')' : '';
+    }
+    window._updatePvpOnlyToggle = updatePvpOnlyToggle;
+
+    // Wire the toggle click
+    (function wirePvpOnlyToggle() {
+        var btn = document.getElementById('pvp-only-toggle');
+        if (btn && window.filterByPvpOnly) {
+            btn.addEventListener('click', function() { window.filterByPvpOnly(); });
+        }
+    })();
+
     // Team Completeness filter — toggle to show only companies missing expected roles or with complete teams
     window.filterByTeamCompleteness = function(mode) {
         // mode: 'missing' = companies missing expected roles (CEO/CFO), 'complete' = 4+ roles
@@ -12633,6 +12732,7 @@ function setupDualSparklineTooltips() {
         window._activeConcTier = null;
         window._activeSopFilter = null;
         window._activeCeoTransitionFilter = false;
+        window._activePvpOnlyFilter = false;
         window._activeTeamCompletenessFilter = null;
         window._activeYoYBucket = null;
         window._activePctileTier = null;
@@ -12665,6 +12765,9 @@ function setupDualSparklineTooltips() {
         if (searchInput) searchInput.value = '';
         var searchResults = document.getElementById('table-search-results');
         if (searchResults) searchResults.style.display = 'none';
+
+        // Reset the PvP-covered toggle (aria-pressed kept in sync with the global)
+        if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
 
         // Reset sector chips
         document.querySelectorAll('.chip').forEach(function(chip) {
@@ -12726,6 +12829,7 @@ function setupDualSparklineTooltips() {
         return !!(activeSector || searchTerm || (activeRole && activeRole !== 'CEO') ||
             window._activeRatioBucket || window._activeDistFilter || window._activeConcTier ||
             window._activeSopFilter || window._activeCeoTransitionFilter ||
+            window._activePvpOnlyFilter ||
             window._activeTeamCompletenessFilter || window._activeYoYBucket ||
             window._activePctileTier || window._activeStockPctTier ||
             window._activeGenderFilter || window._activeAspDeltaTier ||
@@ -13049,6 +13153,7 @@ function setupDualSparklineTooltips() {
                 if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
                 if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
                 if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+        if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
         if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
@@ -13550,6 +13655,11 @@ function setupDualSparklineTooltips() {
     // Apply CEO transition filter chip if restored from hash
     if (window._activeCeoTransitionFilter) {
         updateCeoTransitionFilterIndicator();
+    }
+
+    // Apply PvP-covered toggle state if restored from hash
+    if (window._activePvpOnlyFilter) {
+        updatePvpOnlyToggle();
     }
 
     // Apply team completeness filter chip if restored from hash
@@ -15709,6 +15819,11 @@ function setupDualSparklineTooltips() {
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
             updateCeoTransitionFilterIndicator();
+        }
+
+        // Restore PvP-covered toggle state if present in hash state
+        if (window._activePvpOnlyFilter) {
+            updatePvpOnlyToggle();
         }
 
         // Restore team completeness filter chip if present in hash state

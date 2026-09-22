@@ -3071,6 +3071,11 @@ header h1 {
     color: var(--accent);
 }
 
+/* PvP-covered-only toggle chip in the table controls */
+.pvp-only-toggle { display: inline-flex; align-items: center; gap: 6px; }
+.pvp-only-toggle svg { flex: none; }
+.pvp-only-count { opacity: 0.75; font-variant-numeric: tabular-nums; }
+
 .table-wrapper {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
