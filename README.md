@@ -17,7 +17,7 @@ A data-driven dashboard tracking executive compensation across all 500 S&P 500 c
 
 - **`trends.json`** — Aggregate trend data: median CEO pay by year, median worker pay, pay ratio trends, sector breakdowns (S&P 500 and Russell 3000), compensation composition (salary vs. equity vs. incentive), five-year trends, gender pay analysis (27 female CEOs in FY2024, 17.4% premium over median), say-on-pay vote trends, and post-Thompson security perquisite surge data.
 
-- **`pay_vs_performance.json`** — SEC Item 402(v) Pay versus Performance dataset: 108 companies, 533 company-years (as of wave 11, 2026-09-21), transcribed from the rendered PvP table in each company's latest DEF 14A. Per year: PEO compensation actually paid vs SCT total (multi-PEO filers list each PEO), average non-PEO CAP, company TSR and peer-group TSR (value of initial fixed $100 investment), net income, and the company-selected measure. The four compensation columns were cross-checked against Inline XBRL facts (us-gaap:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt) where available; all pilot rows passed. Known filing-side anomaly flagged in-data: TSLA FY2024 company TSR (1,448) transcribed verbatim, inconsistent with the year-over-year share-price move. Rendered as a "Pay vs Performance" section in the company detail panel. Full S&P 500 rollout pending.
+- **`pay_vs_performance.json`** — SEC Item 402(v) Pay versus Performance dataset: 118 companies, 583 company-years (as of wave 12, 2026-09-21), transcribed from the rendered PvP table in each company's latest DEF 14A. Per year: PEO compensation actually paid vs SCT total (multi-PEO filers list each PEO), average non-PEO CAP, company TSR and peer-group TSR (value of initial fixed $100 investment), net income, and the company-selected measure. The four compensation columns were cross-checked against Inline XBRL facts (us-gaap:PeoTotalCompAmt, PeoActuallyPaidCompAmt, NonPeoNeoAvgTotalCompAmt, NonPeoNeoAvgCompActuallyPaidAmt) where available; all pilot rows passed. Known filing-side anomaly flagged in-data: TSLA FY2024 company TSR (1,448) transcribed verbatim, inconsistent with the year-over-year share-price move. Rendered as a "Pay vs Performance" section in the company detail panel. Full S&P 500 rollout pending.
 
 ### Dashboard (`index.html`, `js/`, `css/`)
 
@@ -71,7 +71,7 @@ All compensation data sourced from primary filings:
 │   ├── compensation.json   # 500 companies, full NEO data
 │   ├── peer-network.json   # 506 nodes, 5,897 edges
 │   ├── trends.json         # Aggregate trends and benchmarks
-│   └── pay_vs_performance.json  # 402(v): 108 companies, 533 company-years, Inline-XBRL-verified
+│   └── pay_vs_performance.json  # 402(v): 118 companies, 583 company-years, Inline-XBRL-verified
 └── .nojekyll           # GitHub Pages bypass
 ```
 
