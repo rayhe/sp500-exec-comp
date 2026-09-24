@@ -708,6 +708,33 @@ var REALIZED_COMP_NOTES = {
     'TSLA': "Tesla's 10-K/A (Amendment No. 1, FY2025, filed 2026-04-30) says the $158.4B is a grant-date accounting figure. The $132.3B 2025 CEO Performance Award and the $26.1B 2025 CEO Interim Award were both forfeited in full in April 2026. Per the filing: 'using the Total CEO realized compensation for 2025, such ratio was 0.00:1.'"
 };
 
+/* Principled PvP exclusions (standing audit class, as of 2026-09-24).
+   Keys are tickers deliberately NOT shipped in data/pay_vs_performance.json.
+   Each reason is a static filing-grounded string; the detail panel renders it
+   so a missing PvP section reads as an explained exclusion, not a data gap. */
+var PVP_EXCLUSIONS = {
+    'INTC': 'No Inline XBRL facts at all in the 402(v) disclosure — values cannot be machine-verified.',
+    'SYF':  'No Inline XBRL facts at all in the 402(v) disclosure — values cannot be machine-verified.',
+    'COF':  'Filer-side XBRL sign/shift errors in the 402(v) facts — excluded rather than publish unverifiable values.',
+    'RF':   'Filer-side one-year XBRL shift in the 402(v) facts (same class as COF).',
+    'HSY':  'Filer-side XBRL sign error: 2024 former-CEO Buck CAP printed as ( 314,886 ) in the table but the XBRL fact is 314,886 with no negative sign.',
+    'EMN':  'Filer-side XBRL sign error: 2022 PEO and non-PEO CAP printed in parentheses but the facts are filed positive with no negative sign.',
+    'KKR':  '402(v)-exempt filer — no Pay vs Performance disclosure.',
+    'BX':   '402(v)-exempt filer — no Pay vs Performance disclosure.',
+    'GOOG': 'Same issuer as GOOGL — the 402(v) disclosure is filed once and shipped under GOOGL.',
+    'AMT':  'Zero numeric Inline XBRL facts in the 402(v) table — nothing to cross-check against.',
+    'PSKY': 'Paramount Skydance registrant changed in the 2026 merger; the new registrant has filed no DEF 14A yet. Deferred until its first definitive proxy.',
+    'DAY':  'Take-private completed 2026-02-04 (Thoma Bravo, $12.3B); delisted via 15-12G.',
+    'HES':  'Delisted via 15-12G (Chevron acquisition).',
+    'JNPR': 'Delisted via 15-12G (HPE acquisition).',
+    'WBA':  'Delisted via 15-12G (Sycamore take-private).',
+    'IPG':  'Delisted via 15-12G (Omnicom acquisition).',
+    'HOLX': 'Take-private closed ~2026-04-07 (Blackstone/TPG); not shipped per take-private policy.',
+    'K':    'Take-private closed 2025-12-11 (Mars); not shipped per take-private policy.',
+    'EA':   'Take-private; 15-12G filed 2026-08-14.',
+    'BF-A': 'Same issuer as BF-B — shipped under BF-B.'
+};
+
 /* Filing-verbatim realized-comp footnote for any displayed headline figure that is
    a grant-date accounting value with a materially different realized figure in the
    same filing (e.g. TSLA's $158.4B / 2,522,203:1, realized $0 / 0.00:1). Returns the
@@ -7118,8 +7145,21 @@ function pvpNum(v) {
     if (v == null || isNaN(v)) return '—';
     return Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
+/* Renders the exclusion note for a ticker deliberately not shipped in the PvP
+   dataset (PVP_EXCLUSIONS contract). Keeps the .pvp-section wrapper so the
+   deep-link helper's querySelector('.pvp-section') contract holds. */
+function pvpExcludedHtml(ticker) {
+    var reason = PVP_EXCLUSIONS[ticker];
+    if (!reason) return '';
+    return '<div class="pvp-section">'
+        + '<div class="pvp-header"><span class="pvp-title">Pay vs Performance</span>'
+        + '<span class="pvp-badge">SEC Item 402(v)</span></div>'
+        + '<div class="pvp-excluded">Not covered: ' + pvpEsc(reason) + '</div>'
+        + '</div>';
+}
 function renderPvpSection(ticker) {
-    if (!pvpData || !pvpData.companies || !pvpData.companies[ticker]) return '';
+    if (!pvpData || !pvpData.companies) return '';
+    if (!pvpData.companies[ticker]) return pvpExcludedHtml(ticker);
     var c = pvpData.companies[ticker];
     var years = (c.years || []).slice().sort(function(a, b) { return b.year - a.year; });
     if (!years.length) return '';
@@ -7364,7 +7404,13 @@ function renderPvpComparison() {
             + '\u2014 means fewer than three overlapping observations or a constant CAP/TSR series. '
             + 'Peer TSR uses the primary peer series; JNJ and AMZN file two peer series and the first is used. '
             + 'Company-selected measures are excluded: they are not comparable across companies. '
-            + 'Values transcribed from the 402(v) table in each company\u2019s latest DEF 14A and cross-checked against Inline XBRL; full S&amp;P 500 rollout pending.';
+            + 'Values transcribed from the 402(v) table in each company\u2019s latest DEF 14A and cross-checked against Inline XBRL. '
+            + 'Coverage: 485 of 486 reachable companies. Twenty companies are excluded for principled reasons: '
+            + 'delisted or taken private (DAY, HES, JNPR, WBA, IPG, HOLX, K, EA), filer-side Inline XBRL errors '
+            + 'that left 402(v) values unverifiable (INTC, SYF, COF, RF, HSY, EMN, AMT), 402(v)-exempt filers '
+            + '(KKR, BX), and same-issuer duplicates shipped once (GOOG under GOOGL, BF-A under BF-B). '
+            + 'Paramount Skydance (PSKY) is deferred until its first definitive proxy. '
+            + 'Each excluded ticker\u2019s detail panel states the reason.';
     }
 }
 

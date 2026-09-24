@@ -14714,6 +14714,18 @@ body.light-mode .cross-sector-pair-select:focus {
 .pvp-notes div {
     margin-top: 3px;
 }
+/* PvP principled-exclusion note (per-company detail panel): a ticker was
+   deliberately not shipped, so its absence is explained rather than silently
+   dropped. Amber left-border follows the .pvp-flag methodology-caveat color;
+   text color is theme-safe via --text-secondary. */
+.pvp-excluded {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    border-left: 2px solid #fbbf24;
+    padding-left: 10px;
+}
 
 /* === Pay vs Performance cross-company comparison section === */
 .pvp-comp-wrap {
