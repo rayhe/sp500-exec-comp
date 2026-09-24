@@ -7125,6 +7125,17 @@ function renderPvpSection(ticker) {
     if (!years.length) return '';
     var niLabel = 'Net income' + (c.net_income && c.net_income.unit ? ' (' + c.net_income.unit + ')' : '');
     var csmLabel = (c.csm && c.csm.label) ? c.csm.label + (c.csm.unit ? ' (' + c.csm.unit + ')' : '') : 'Company measure';
+    // CSM non-comparability flag: the Company-Selected Measure is chosen by
+    // the filer in its own Item 402(v) disclosure, so identical labels at
+    // different companies can measure different adjusted definitions in
+    // different units (2026-09-24 site iteration: "Adjusted EPS" appears at
+    // 38 companies but each defines "adjusted" itself). The flag sits on the
+    // CSM header cell — the exact point where a cross-company comparison
+    // would be misread — and uses the shared .pvp-flag convention (amber,
+    // cursor:help), but the ⓘ glyph rather than ⚠ to mark a methodology
+    // caveat instead of a data anomaly.
+    var csmHeader = pvpEsc(csmLabel)
+        + ' <span class="pvp-flag" title="Company-Selected Measure: each filer chooses its own CSM in the Item 402(v) disclosure and defines the adjustments itself. The same label (e.g. \u201CAdjusted EPS\u201D) can therefore measure different things at different companies, and units vary ($M, $/share, %). Not comparable across companies \u2014 compare within one company\u2019s window only.">&#9432;</span>';
     var peer2 = years.some(function(y) { return y.peer_tsr_2 != null; });
     var html = '<div class="pvp-section">';
     html += '<div class="pvp-header"><span class="pvp-title">Pay vs Performance</span>'
@@ -7136,7 +7147,7 @@ function renderPvpSection(ticker) {
     html += '<div class="pvp-table-wrap"><table class="pvp-table"><thead><tr>'
         + '<th>Year</th><th>PEO actually paid</th><th>PEO SCT total</th><th>Other NEOs avg paid</th>'
         + '<th>Company TSR</th><th>Peer TSR' + (peer2 ? ' <span class="pvp-peer2-hint">(two series)</span>' : '') + '</th>'
-        + '<th>' + pvpEsc(niLabel) + '</th><th>' + pvpEsc(csmLabel) + '</th></tr></thead><tbody>';
+        + '<th>' + pvpEsc(niLabel) + '</th><th>' + csmHeader + '</th></tr></thead><tbody>';
     years.forEach(function(y) {
         // Filter non-serving PEOs: the extraction carries the window's full PEO
         // list on every year row, so non-serving PEOs (e.g. PG's David S. Taylor
