@@ -130,7 +130,7 @@
   "total_neo_records": 6873,
   "title_coverage": "6873/6873",
   "data_quality": {
-   "verified": 5895,
+   "verified": 5910,
    "component_mismatch": 28,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260910": 106,
@@ -144,7 +144,7 @@
    "def14a_verified_20260917": 136,
    "def14a_verified_20260918": 192,
    "def14a_verified_20260919": 62,
-   "def14a_verified_20260924": 22
+   "def14a_verified_20260924": 7
   },
   "median_ceo_pay": 17759221.5,
   "mean_ceo_pay": 336923582.304,
@@ -179,7 +179,7 @@
   "governance_coverage": 500,
   "board_independence_coverage": 500,
   "data_quality_detailed": {
-   "verified": 5895,
+   "verified": 5910,
    "component_mismatch": 28,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260910": 106,
@@ -193,7 +193,7 @@
    "def14a_verified_20260917": 136,
    "def14a_verified_20260918": 192,
    "def14a_verified_20260919": 62,
-   "def14a_verified_20260924": 22
+   "def14a_verified_20260924": 7
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
@@ -9087,7 +9087,7 @@
     },
     {
      "name": "Mark Mason",
-     "title": "CFO",
+     "title": "Chief Financial Officer",
      "year": 2025,
      "salary": 1000000,
      "bonus": 8403640,
@@ -9097,10 +9097,8 @@
      "pension_nqdc": 2886,
      "all_other": 12000,
      "total": 19535851,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $2,886 genuine; bonus $8.4M, NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001206774-26-000185, re-fetched 2026-09-24) pension column reads $2,886, NEIP '-' (Citi grants no options to NEOs; Option Awards column present but '-'); fn (6): PVAB increases; Pension Benefits Table confirms 6.0 yrs credited service, PVAB $58,520; foot exact; title -> SCT-verbatim 'CFO' (was 'Chief Financial Officer')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $2,886 genuine; bonus $8.4M, NEIP -."
     },
     {
      "name": "Mark Mason",
@@ -21943,10 +21941,8 @@
      "pension_nqdc": 8440,
      "all_other": 2259254,
      "total": 21562064,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $8,440 genuine; NEIP $0.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0000078003-26-000033) pension column reads $8,440, NEIP $0; cross-corroborated by the Pay-vs-Performance CEO SCT-to-CAP reconciliation (2023 deduction $8,440); foot exact"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $8,440 genuine; NEIP $0."
     },
     {
      "name": "D. Denton",
@@ -22090,7 +22086,7 @@
     },
     {
      "name": "D. Lankler",
-     "title": "Chief Legal Officer, EVP",
+     "title": "EVP",
      "year": 2023,
      "salary": 1198313,
      "bonus": 0,
@@ -22100,10 +22096,8 @@
      "pension_nqdc": 196724,
      "all_other": 561892,
      "total": 5477798,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $196,724 genuine; NEIP $0.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0000078003-26-000033, re-fetched 2026-09-24) pension column reads $196,724, NEIP $0 (2023 zero-payout incentive year for all five PFE NEOs); fn (4): actuarial PV of accumulated pension benefits; components foot exactly; title -> SCT-verbatim 'Chief Legal Officer, EVP' (was 'EVP')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $196,724 genuine; NEIP $0."
     }
    ],
    "total_neo_compensation": 55735638,
@@ -32015,10 +32009,8 @@
      "pension_nqdc": 159234,
      "all_other": 51037,
      "total": 4395324,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; NQDC earnings $159,234 genuine; no 2025 cash bonus (NEIP $0).",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001179929-26-000014, re-fetched 2026-09-24) 'Change in Nonqualified Deferred Comp. Earnings' reads $159,234, NEIP $0 (MOH paid no 2025 cash bonuses); corroborated by a second summary table in the same filing and the 2025 bonus table (actual bonus $0 for all five NEOs); foot exact"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; NQDC earnings $159,234 genuine; no 2025 cash bonus (NEIP $0)."
     },
     {
      "name": "Jeff D. Barlow",
@@ -32054,10 +32046,8 @@
      "pension_nqdc": 8630,
      "all_other": 48031,
      "total": 2931727,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; NQDC earnings $8,630 genuine; no 2025 cash bonus (NEIP $0).",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001179929-26-000014) NQDC earnings reads $8,630, NEIP $0; same corroborations as Barlow; fn (5): first-time NEO in 2024; foot exact"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; NQDC earnings $8,630 genuine; no 2025 cash bonus (NEIP $0)."
     },
     {
      "name": "Debra J. Bacon",
@@ -52342,7 +52332,7 @@
     },
     {
      "name": "Thomas F. Cowhey",
-     "title": "Former Executive Vice President and Chief Financial Officer",
+     "title": "Executive Vice President and Chief Financial Officer",
      "year": 2025,
      "salary": 420833,
      "bonus": 0,
@@ -52352,10 +52342,8 @@
      "pension_nqdc": 3097,
      "all_other": 791235,
      "total": 6715138,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $3,097 genuine; former CFO, NEIP $0.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001308179-26-000201, re-fetched 2026-09-24) pension column reads $3,097, NEIP $0; fn (6): column reflects pension values (PVAB) only, no above-market NQDC earnings (Aetna Pension Plan participant, frozen 12/31/2010); foot exact; title -> SCT-verbatim 'Former Executive Vice President and Chief Financial Officer' (was 'Executive Vice President and Chief Financial Officer')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $3,097 genuine; former CFO, NEIP $0."
     },
     {
      "name": "Thomas F. Cowhey",
@@ -52756,7 +52744,7 @@
     },
     {
      "name": "Marc E. Binda",
-     "title": "Chief Financial Officer and Treasurer",
+     "title": "CFO and Treasurer",
      "year": 2024,
      "salary": 650000,
      "bonus": 950000,
@@ -52766,10 +52754,8 @@
      "pension_nqdc": 129353,
      "all_other": 48598,
      "total": 5787452,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $129,353 genuine; bonus $950k, NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001035443-26-000031, re-fetched 2026-09-24) pension column reads $129,353, NEIP '-' (Binda takes Bonus, not NEIP; only Marcus and Moglia carry NEIP in this SCT); foot exact; title -> SCT-verbatim 'Chief Financial Officer and Treasurer' (was 'CFO and Treasurer')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $129,353 genuine; bonus $950k, NEIP -."
     },
     {
      "name": "Marc E. Binda",
@@ -52787,7 +52773,7 @@
     },
     {
      "name": "Hunter L. Kass",
-     "title": "Co-President and Regional Market Director - Greater Boston",
+     "title": "Co-President and Regional Market Director",
      "year": 2025,
      "salary": 750000,
      "bonus": 1750000,
@@ -52797,14 +52783,12 @@
      "pension_nqdc": 1454,
      "all_other": 0,
      "total": 7008198,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $1,454 genuine; bonus $1.75M, NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001035443-26-000031) pension column reads $1,454 (post-termination residual per fn 2), NEIP '-'; foot exact; title -> SCT-verbatim 'Co-President and Regional Market Director - Greater Boston' (was 'Co-President and Regional Market Director')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $1,454 genuine; bonus $1.75M, NEIP -."
     },
     {
      "name": "Hunter L. Kass",
-     "title": "Co-President and Regional Market Director - Greater Boston",
+     "title": "Co-President and Regional Market Director",
      "year": 2024,
      "salary": 700000,
      "bonus": 1750000,
@@ -52814,10 +52798,8 @@
      "pension_nqdc": 6512,
      "all_other": 46000,
      "total": 8708376,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $6,512 genuine; bonus $1.75M, NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001035443-26-000031) pension column reads $6,512, NEIP '-' (Bonus, not NEIP); fn (2): Pension Plan terminated effective 12/31/2024; foot exact; title -> SCT-verbatim 'Co-President and Regional Market Director - Greater Boston' (was 'Co-President and Regional Market Director')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $6,512 genuine; bonus $1.75M, NEIP -."
     },
     {
      "name": "Hunter L. Kass",
@@ -52849,7 +52831,7 @@
     },
     {
      "name": "Lawrence J. Diamond",
-     "title": "Co-Chief Operating Officer and Regional Market Director - Maryland",
+     "title": "Chief Operating Officer and Chief Strategic Transactions Officer",
      "year": 2025,
      "salary": 615000,
      "bonus": 585000,
@@ -52859,10 +52841,8 @@
      "pension_nqdc": 2783,
      "all_other": 0,
      "total": 2668545,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $2,783 genuine; bonus $585k, NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001035443-26-000031) pension column reads $2,783 (post-termination residual per fn 2), NEIP '-'; fn (8): not an NEO in 2023; foot exact; title -> SCT-verbatim 'Co-Chief Operating Officer and Regional Market Director - Maryland' (was 'Chief Operating Officer and Chief Strategic Transactions Officer')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $2,783 genuine; bonus $585k, NEIP -."
     }
    ],
    "neo_count": 4,
@@ -56409,10 +56389,8 @@
      "title": "President & Chief Executive Officer",
      "year": 2023,
      "total": 10944707,
-     "_total_source": "def14a_verified_20260924",
-     "_fix_note": "2026-09-13 10:00 PT: re-extracted from the APH 2026 DEF 14A Summary Compensation Table (filed 2026-04-08) verbatim; supersedes the 2026-09-04 note. The prior parse had read the All Other Compensation footnote table as SCT rows (salary = life-insurance imputed comp, total = all-other total) on the 2025/2023 rows, and mislabeled the option grants as stock_awards (Amphenol grants options only; the SCT Stock Awards column is n/a).",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-040688, re-fetched 2026-09-24) pension column reads $8,800, NEIP $0; fn (3) verbatim: 2023 actuarial-assumption-change increases $8,800/$2,600/$24,200 (benefits frozen 12/31/2006); foot exact"
+     "_total_source": "verified",
+     "_fix_note": "2026-09-13 10:00 PT: re-extracted from the APH 2026 DEF 14A Summary Compensation Table (filed 2026-04-08) verbatim; supersedes the 2026-09-04 note. The prior parse had read the All Other Compensation footnote table as SCT rows (salary = life-insurance imputed comp, total = all-other total) on the 2025/2023 rows, and mislabeled the option grants as stock_awards (Amphenol grants options only; the SCT Stock Awards column is n/a)."
     }
    ],
    "cik": "820313",
@@ -64073,11 +64051,9 @@
      "pension_nqdc": 93331,
      "all_other": 1270085,
      "total": 6742344,
-     "title": "Former Chief Operating Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $93,331 genuine; no 2025 NEIP.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2025 DEF 14A SCT (acc. 0001308179-25-000607, re-fetched 2026-09-24) pension column reads $93,331, NEIP $0; fn (3): PV increase under cash-balance Pension Retirement Plan and frozen SORP (Ayala elected FY2025 distribution); pro-rata $921,500 FY2025 bonus under qualifying termination sits in All Other per terms; foot exact; title -> SCT-verbatim 'Former Chief Operating Officer' (was 'President, Employer Services')"
+     "title": "President, Employer Services",
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $93,331 genuine; no 2025 NEIP."
     },
     {
      "name": "John C. Ayala",
@@ -77086,7 +77062,7 @@
     },
     {
      "name": "Charles E. Zebula",
-     "title": "Former Executive Vice President and Chief Financial Officer",
+     "title": "EVP and CFO",
      "year": 2025,
      "salary": 147789,
      "bonus": 0,
@@ -77096,10 +77072,8 @@
      "pension_nqdc": 151984,
      "all_other": 133916,
      "total": 556996,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $151,984 genuine; departed EVP/CFO, salary $147,789 partial-year, no bonus/NEIP.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0000004904-26-000022, re-fetched 2026-09-24) pension column reads $151,984, NEIP '-' (not eligible for 2025 annual incentive; departed EVP/CFO, partial-year salary $147,789); fn (5): actuarial increase in combined qualified/ nonqualified DB plans, no above-market NQDC earnings; foot exact; title -> SCT-verbatim 'Former Executive Vice President and Chief Financial Officer' (was 'EVP and CFO')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $151,984 genuine; departed EVP/CFO, salary $147,789 partial-year, no bonus/NEIP."
     },
     {
      "name": "Charles E. Zebula",
@@ -84050,10 +84024,8 @@
      "pension_nqdc": 29588,
      "all_other": 14968,
      "total": 1998336,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $29,588 genuine; NEIP -.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-029499, re-fetched 2026-09-24) pension column reads $29,588, NEIP '-' (fn 3: Annual STIP $0, LTCIC $0); fn (4) verbatim: '$29,588 aggregate change in pension value ... benefit accruals during 2025 and assumption changes 12/31/2024 to 12/31/2025'; foot exact"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $29,588 genuine; NEIP -."
     }
    ],
    "neo_count": 5,
@@ -97157,17 +97129,15 @@
     },
     {
      "name": "Gregory S. Lovins",
-     "title": "SVP & Chief Financial Officer",
+     "title": "SVP and Chief Financial Officer",
      "year": 2023,
      "salary": 736539,
      "stock_awards": 3156886,
      "pension_nqdc": 821,
      "all_other": 156649,
      "total": 4050895,
-     "_total_source": "def14a_verified_20260924",
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $821 genuine; NEIP $0.",
-     "_accession": "",
-     "_repair_note_20260924_1400": "2026-09-24 14:00 PT: pension/NEIP-confusion queue re-verification sweep - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001193125-26-102965, re-fetched 2026-09-24) pension column reads $821 (small actuarial change), NEIP $0 (2023 AIP paid zero - Stander also $0 NEIP); foot exact; title -> SCT-verbatim 'SVP & Chief Financial Officer' (was 'SVP and Chief Financial Officer')"
+     "_total_source": "verified",
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $821 genuine; NEIP $0."
     },
     {
      "name": "Danny G. Allouche",
