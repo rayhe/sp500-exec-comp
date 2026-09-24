@@ -735,6 +735,18 @@ var PVP_EXCLUSIONS = {
     'BF-A': 'Same issuer as BF-B — shipped under BF-B.'
 };
 
+/* Grouping of the standing PvP exclusions by exclusion class, for the
+   aggregated exclusion list in the Data Verification modal (2026-09-24).
+   Union of tickers must equal Object.keys(PVP_EXCLUSIONS); labels are
+   static presentation strings. Keep in sync with PVP_EXCLUSIONS. */
+var PVP_EXCLUSION_GROUPS = [
+    { label: 'Delisted / taken private (8)', tickers: ['DAY', 'HES', 'JNPR', 'WBA', 'IPG', 'HOLX', 'K', 'EA'] },
+    { label: 'Filer-side XBRL errors (7)', tickers: ['INTC', 'SYF', 'COF', 'RF', 'HSY', 'EMN', 'AMT'] },
+    { label: 'Item 402(v)-exempt (2)', tickers: ['KKR', 'BX'] },
+    { label: 'Same-issuer duplicates (2)', tickers: ['GOOG', 'BF-A'] },
+    { label: 'Deferred — merger registrant change (1)', tickers: ['PSKY'] }
+];
+
 /* Filing-verbatim realized-comp footnote for any displayed headline figure that is
    a grant-date accounting value with a materially different realized figure in the
    same filing (e.g. TSLA's $158.4B / 2,522,203:1, realized $0 / 0.00:1). Returns the
@@ -16584,6 +16596,8 @@ function setupDualSparklineTooltips() {
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-24)</h4>' +
                 '<p>6,845 of 6,873 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 28 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
+                '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
                 '<p id="dataq-payratio-counts">As of the 2026-09-19 screen: 386 of 500 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 14 cluster near 2x, 10 near 0.5x, 90 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
@@ -16729,6 +16743,43 @@ function setupDualSparklineTooltips() {
                ' still carry title artifacts; the 87 repaired since the 2026-09-14 screen are documented in the breakdown above.';
     }
 
+    // Data Verification modal: PvP coverage plus the full standing-exclusion
+    // list, computed at modal-open time. Shipped counts come from the live PvP
+    // dataset (metadata when present, else a recount of pvp.companies); the
+    // exclusion reasons are the static filing-grounded PVP_EXCLUSIONS map (the
+    // same strings the detail panels render), grouped by PVP_EXCLUSION_GROUPS.
+    // Returns null when pvpData isn't loaded yet — the static fallback text
+    // above is then kept.
+    function _dataqPvpHtml() {
+        var pvp = (typeof pvpData !== 'undefined' && pvpData) ? pvpData : null;
+        if (!pvp || !pvp.companies) return null;
+        var md = pvp.metadata || {};
+        var shipped = md.companies || Object.keys(pvp.companies).length;
+        var years = md.company_years;
+        if (years == null) {
+            years = 0;
+            for (var tk in pvp.companies) {
+                if (Object.prototype.hasOwnProperty.call(pvp.companies, tk)) {
+                    years += (pvp.companies[tk].years || []).length;
+                }
+            }
+        }
+        var groups = (typeof PVP_EXCLUSION_GROUPS !== 'undefined') ? PVP_EXCLUSION_GROUPS : [];
+        var nExcl = 0, listHtml = '';
+        groups.forEach(function(g) {
+            nExcl += g.tickers.length;
+            listHtml += '<h5>' + pvpEsc(g.label) + '</h5><ul class="pvp-exclusion-list">';
+            g.tickers.forEach(function(ticker) {
+                listHtml += '<li><strong>' + pvpEsc(ticker) + '</strong> &mdash; ' +
+                    pvpEsc(PVP_EXCLUSIONS[ticker] || 'No stated reason.') + '</li>';
+            });
+            listHtml += '</ul>';
+        });
+        return 'Live: ' + shipped + ' companies (' + Number(years).toLocaleString('en-US') +
+            ' company-years) shipped; ' + nExcl + ' tickers are principled exclusions, each also noted on its company detail panel:' +
+            listHtml;
+    }
+
     function openMethodologyModal(method) {
         var content = METHODOLOGY_CONTENT[method];
         if (!content) return;
@@ -16754,6 +16805,9 @@ function setupDualSparklineTooltips() {
             var tiCounts = document.getElementById('dataq-titles-counts');
             var tiHtml = _dataqTitleArtifactsHtml();
             if (tiCounts && tiHtml) tiCounts.innerHTML = tiHtml;
+            var pvpCounts = document.getElementById('dataq-pvp-counts');
+            var pvpHtml = _dataqPvpHtml();
+            if (pvpCounts && pvpHtml) pvpCounts.innerHTML = pvpHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility

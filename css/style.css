@@ -14726,6 +14726,27 @@ body.light-mode .cross-sector-pair-select:focus {
     border-left: 2px solid #fbbf24;
     padding-left: 10px;
 }
+/* PvP standing-exclusion list (Data Verification modal): grouped by exclusion
+   class. Tickers in the mono font, reasons in theme-safe secondary text.
+   Quiet styling — this is an audit list, not a headline. */
+#dataq-pvp-block h5 {
+    margin: 0.9em 0 0.25em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.pvp-exclusion-list {
+    margin: 0 0 0.3em;
+    padding-left: 1.4em;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+.pvp-exclusion-list strong {
+    font-family: var(--mono);
+    color: var(--text-primary);
+    font-weight: 600;
+}
 
 /* === Pay vs Performance cross-company comparison section === */
 .pvp-comp-wrap {
