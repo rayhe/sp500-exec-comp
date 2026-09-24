@@ -1,7 +1,7 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "500 companies, 6873 NEO records, 500 companies enriched",
+  "description": "500 companies, 6866 NEO records, 500 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -126,9 +126,9 @@
   },
   "edgar_coverage": 500,
   "total_companies": 500,
-  "last_updated": "2026-09-24",
-  "total_neo_records": 6873,
-  "title_coverage": "6873/6873",
+  "last_updated": "2026-09-19",
+  "total_neo_records": 6866,
+  "title_coverage": "6866/6866",
   "data_quality": {
    "verified": 5910,
    "component_mismatch": 28,
@@ -137,14 +137,13 @@
    "def14a_verified_20260907": 63,
    "rounding": 0,
    "def14a_verified_20260908": 12,
-   "last_audit": "2026-09-24",
-   "verified_total": 6845,
+   "last_audit": "2026-09-19",
+   "verified_total": 6838,
    "def14a_verified_20260912": 23,
    "def14a_verified_20260916": 117,
    "def14a_verified_20260917": 136,
    "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 62,
-   "def14a_verified_20260924": 7
+   "def14a_verified_20260919": 62
   },
   "median_ceo_pay": 17759221.5,
   "mean_ceo_pay": 336923582.304,
@@ -186,21 +185,20 @@
    "def14a_verified_20260907": 63,
    "rounding": 0,
    "def14a_verified_20260908": 12,
-   "last_audit": "2026-09-24",
-   "verified_total": 6845,
+   "last_audit": "2026-09-19",
+   "verified_total": 6838,
    "def14a_verified_20260912": 23,
    "def14a_verified_20260916": 117,
    "def14a_verified_20260917": 136,
    "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 62,
-   "def14a_verified_20260924": 7
+   "def14a_verified_20260919": 62
   },
   "companies_with_executives": 500,
   "board_independence_any": 500,
   "median_worker_pay": 81899.0,
   "median_pay_ratio": 199,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 6873,
+  "total_executives": 6866,
   "board_independence_count": 500,
   "board_independence_full": 500,
   "last_audit": "2026-09-18",
@@ -230,7 +228,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-09-24"
+  "last_dq_repair": "2026-09-20"
  },
  "companies": [
   {
@@ -68413,12 +68411,12 @@
   {
    "ticker": "CSX",
    "company_name": "CSX Corp",
-   "ceo_name": "Stephen F. Angel",
-   "total_compensation": 11711612,
-   "fiscal_year": 2025,
+   "ceo_name": "Kevin S. Boone",
+   "total_compensation": 4663680,
+   "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 122362,
-   "pay_ratio": 123,
+   "median_worker_pay": 123935,
+   "pay_ratio": 124,
    "sector": "Industrials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000277948",
@@ -68561,125 +68559,23 @@
      "non_equity_incentive": 747500,
      "_accession": "0001628280-26-021944",
      "_repair_note_20260917_1000": "Column-shift parse error repaired 2026-09-17 10:00 PT from the 2026 DEF 14A SCT, filing-verbatim. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Diana B. Sorfleet",
-     "year": 2025,
-     "salary": 588333,
-     "stock_awards": 1865419,
-     "option_awards": 465008,
-     "non_equity_incentive": 402420,
-     "pension_nqdc": 160430,
-     "all_other": 44691,
-     "total": 3526301,
-     "title": "Retired Executive Vice President and Chief Administrative Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Joseph R. Hinrichs",
-     "year": 2025,
-     "salary": 1113636,
-     "stock_awards": 10029002,
-     "option_awards": 2500008,
-     "non_equity_incentive": 1481137,
-     "all_other": 8572670,
-     "total": 23696453,
-     "title": "Former President and Chief Executive Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Joseph R. Hinrichs",
-     "year": 2024,
-     "salary": 1487302,
-     "stock_awards": 9120036,
-     "option_awards": 2280008,
-     "non_equity_incentive": 2110361,
-     "all_other": 352945,
-     "total": 15350652,
-     "title": "Former President and Chief Executive Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Joseph R. Hinrichs",
-     "year": 2023,
-     "salary": 1400000,
-     "stock_awards": 8000032,
-     "option_awards": 2000003,
-     "non_equity_incentive": 2415000,
-     "all_other": 259200,
-     "total": 14074235,
-     "title": "Former President and Chief Executive Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Sean R. Pelkey",
-     "year": 2025,
-     "salary": 604257,
-     "stock_awards": 2206389,
-     "option_awards": 550008,
-     "non_equity_incentive": 459235,
-     "pension_nqdc": 139238,
-     "all_other": 304209,
-     "total": 4263336,
-     "title": "Former Executive Vice President and Chief Financial Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Sean R. Pelkey",
-     "year": 2024,
-     "salary": 696667,
-     "stock_awards": 1860052,
-     "option_awards": 465004,
-     "non_equity_incentive": 571267,
-     "pension_nqdc": 151462,
-     "all_other": 58813,
-     "total": 3803265,
-     "title": "Former Executive Vice President and Chief Financial Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
-    },
-    {
-     "name": "Sean R. Pelkey",
-     "year": 2023,
-     "salary": 660000,
-     "stock_awards": 1860011,
-     "option_awards": 465008,
-     "non_equity_incentive": 759000,
-     "pension_nqdc": 156340,
-     "all_other": 59965,
-     "total": 3960324,
-     "title": "Former Executive Vice President and Chief Financial Officer",
-     "_total_source": "def14a_verified_20260924",
-     "_accession": "0001628280-26-021944",
-     "_repair_note_20260924_1000": "2026-09-24 10:00 PT: row restored from the 2026 DEF 14A SCT (acc. 0001628280-26-021944); filing-verbatim components, total foots exactly. https://www.sec.gov/Archives/edgar/data/277948/000162828026021944/csx-20260326.htm"
     }
    ],
-   "neo_count": 7,
+   "neo_count": 3,
    "available_years": [
     2025,
     2024,
     2023
    ],
-   "total_neo_compensation": 58325215,
+   "total_neo_compensation": 13326258,
    "proxy_fiscal_year": 2025,
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": 9,
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "def14a_2026_ceo_transition_20250928"
+     "table"
     ]
    },
    "board_independence": {
@@ -116476,5 +116372,5 @@
    "_multi_year_equity_basis": "Tesla CEO equity awards are multi-year performance packages granted years apart: stored SCT shows $0 stock/option awards FY2022-2024 and a $158.4B stock award in FY2025."
   }
  ],
- "last_updated": "2026-09-24"
+ "last_updated": "2026-09-20"
 }

@@ -16536,8 +16536,8 @@ function setupDualSparklineTooltips() {
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
-                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-19)</h4>' +
-                '<p>6,838 of 6,866 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 28 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-24)</h4>' +
+                '<p>6,845 of 6,873 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 28 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
                 '<p id="dataq-payratio-counts">As of the 2026-09-19 screen: 386 of 500 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 14 cluster near 2x, 10 near 0.5x, 90 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
@@ -16584,7 +16584,7 @@ function setupDualSparklineTooltips() {
         if (!dq || dq.verified_total == null || !total) return null;
         var pct = (100 * dq.verified_total / total).toFixed(1);
         var recomp = (dq.recomputed == null ? 0 : dq.recomputed);
-        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-19') + ')</h4>' +
+        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-24') + ')</h4>' +
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
             ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
