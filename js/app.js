@@ -1303,6 +1303,7 @@ async function loadData() {
         pvpCountEl.textContent = pvpN ? '(' + pvpN + ')' : '';
     }
     renderFooterVintage(comp);
+    renderHeaderCompanyCount(comp);
     return { comp, trends, peer };
 }
 
@@ -1353,6 +1354,23 @@ function renderFooterVintage(comp) {
         parts.push(countStr);
     }
     if (parts.length) el.textContent = 'Built with D3.js · ' + parts.join(' · ');
+}
+
+// === Header Company-Count Badge ===
+// The header pill hard-coded "500 Companies" and drifted stale as roster
+// batches grew the universe (512 on 2026-09-24, 514 on 2026-09-25). Render
+// it live from the guard-checked metadata count so it can never drift again.
+// The static HTML keeps today's count ("514 Companies") as the no-JS
+// fallback. textContent-only (no HTML interpolation); no-op without data,
+// so a failed or partial metadata load leaves the fallback untouched.
+function renderHeaderCompanyCount(comp) {
+    var el = document.getElementById('header-company-count');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var n = md.total_companies;
+    if (typeof n === 'number' && n > 0) {
+        el.textContent = n.toLocaleString('en-US') + ' Companies';
+    }
 }
 
 function populateMetrics(comp, trends) {
