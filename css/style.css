@@ -546,6 +546,14 @@ header h1 {
     margin-top: 2px;
 }
 
+.insight-icon svg,
+.trend-icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    color: var(--accent);
+}
+
 .insight-content {
     min-width: 0;
 }

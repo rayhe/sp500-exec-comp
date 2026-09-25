@@ -96,6 +96,44 @@ var SECTOR_COLORS_APP = {
 };
 function getSectorColor(s) { return SECTOR_COLORS_APP[s] || '#94a3b8'; }
 
+// Insight/trend card icons: inline stroke SVGs matching the metric-card icon system
+// (feather-style, stroke="currentColor"). Replaces platform-dependent emoji so the
+// cards render with a consistent professional icon language in both themes.
+var CARD_ICON_SVG_OPEN = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+var CARD_ICONS = {
+    chart:  CARD_ICON_SVG_OPEN + '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+    money:  CARD_ICON_SVG_OPEN + '<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+    scale:  CARD_ICON_SVG_OPEN + '<path d="M12 3v18"/><path d="M8 21h8"/><path d="M3 7h18"/><path d="M6 7l-2.2 5.6a2.8 2.8 0 0 0 4.4 0L6 7z"/><path d="M18 7l-2.2 5.6a2.8 2.8 0 0 0 4.4 0L18 7z"/></svg>',
+    trend:  CARD_ICON_SVG_OPEN + '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+    target: CARD_ICON_SVG_OPEN + '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+    ballot: CARD_ICON_SVG_OPEN + '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 3h6l2 5H7l2-5z"/><path d="m10 14 2 2 4-4"/></svg>',
+    shield: CARD_ICON_SVG_OPEN + '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    gem:    CARD_ICON_SVG_OPEN + '<path d="M6 3h12l4 6-10 12L2 9l4-6z"/><path d="M2 9h20"/><path d="M12 21 8 9l4-6 4 6-4 12"/></svg>',
+    award:  CARD_ICON_SVG_OPEN + '<circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/></svg>',
+    building: CARD_ICON_SVG_OPEN + '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 21v-4h6v4"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>',
+    bank:    CARD_ICON_SVG_OPEN + '<path d="M3 9l9-6 9 6"/><path d="M4 9v10M20 9v10"/><path d="M8 13v6M12 13v6M16 13v6"/><path d="M2 21h20"/></svg>',
+    ruler:   CARD_ICON_SVG_OPEN + '<path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M7 6v4M11 6v3M15 6v4M19 6v3"/></svg>',
+    triangle: CARD_ICON_SVG_OPEN + '<path d="M12 4 3 20h18L12 4z"/></svg>',
+    alert:   CARD_ICON_SVG_OPEN + '<path d="m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    crown:   CARD_ICON_SVG_OPEN + '<path d="m2 8 4.5 4L12 5l5.5 7L22 8l-1.8 11H3.8L2 8z"/><path d="M4 21h16"/></svg>',
+    refresh: CARD_ICON_SVG_OPEN + '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10"/><path d="M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg>',
+    stopwatch: CARD_ICON_SVG_OPEN + '<path d="M9 2h6"/><path d="M12 2v5"/><circle cx="12" cy="14" r="7"/><path d="M12 10.5V14l2.5 2"/></svg>',
+    chartDown: CARD_ICON_SVG_OPEN + '<polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>',
+    link:    CARD_ICON_SVG_OPEN + '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    tie:     CARD_ICON_SVG_OPEN + '<path d="M9 3h6l-1.5 5h-3L9 3z"/><path d="M10.5 8 8 14l4 8 4-8-2.5-6"/></svg>',
+    search:  CARD_ICON_SVG_OPEN + '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    female:  CARD_ICON_SVG_OPEN + '<circle cx="12" cy="8" r="5"/><path d="M12 13v8"/><path d="M9 18h6"/></svg>',
+    network: CARD_ICON_SVG_OPEN + '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>',
+    flame:   CARD_ICON_SVG_OPEN + '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+    waves:   CARD_ICON_SVG_OPEN + '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>',
+    globe:   CARD_ICON_SVG_OPEN + '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+    flask:   CARD_ICON_SVG_OPEN + '<path d="M9 3h6"/><path d="M10 3v6L4.5 19a1 1 0 0 0 .9 1.4h13.2a1 1 0 0 0 .9-1.4L14 9V3"/><path d="M7.5 14h9"/></svg>',
+    calendar: CARD_ICON_SVG_OPEN + '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    user:    CARD_ICON_SVG_OPEN + '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    check:   CARD_ICON_SVG_OPEN + '<polyline points="20 6 9 17 4 12"/></svg>',
+    tilde:   CARD_ICON_SVG_OPEN + '<path d="M4 12c2-3 4-3 6 0s4 3 6 0 2.7-2 4-1"/></svg>'
+};
+
 let compData = null;
 let trendsData = null;
 let peerData = null;
@@ -1890,7 +1928,7 @@ function populateInsights(comp, trends, sectorFilter) {
     var topNPct = totalAllPay > 0 ? (topNPay / totalAllPay * 100).toFixed(1) : '0';
     var remainCount = Math.max(0, companies.length - topN);
     insights.push({
-        icon: '📊',
+        icon: CARD_ICONS.chart,
         label: 'Pay Concentration',
         value: formatCurrency(topNPay) + ' combined',
         detail: 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation. The remaining ' + remainCount + ' CEOs share the other ' + (100 - parseFloat(topNPct)).toFixed(1) + '%.'
@@ -1900,7 +1938,7 @@ function populateInsights(comp, trends, sectorFilter) {
     var over50M = companies.filter(function(c) { return c.total_compensation >= 50000000; });
     if (over50M.length > 0) {
         insights.push({
-            icon: '💰',
+            icon: CARD_ICONS.money,
             label: '$50M+ Club',
             value: over50M.length + (over50M.length === 1 ? ' company' : ' companies'),
             detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' + realizedNote(sorted[0].ticker) : '.'),
@@ -1909,7 +1947,7 @@ function populateInsights(comp, trends, sectorFilter) {
     } else {
         // No $50M+ CEOs — show top earner context instead
         insights.push({
-            icon: '💰',
+            icon: CARD_ICONS.money,
             label: 'Highest Paid',
             value: sorted[0] ? formatCurrency(sorted[0].total_compensation) : '—',
             detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' + (sorted[0] ? realizedNote(sorted[0].ticker) : '') : 'No compensation data available.',
@@ -1921,7 +1959,7 @@ function populateInsights(comp, trends, sectorFilter) {
     var extremeRatio = companies.filter(function(c) { return c.pay_ratio != null && c.pay_ratio > 1000; });
     var maxRatioComp = companies.filter(function(c) { return c.pay_ratio != null; }).sort(function(a, b) { return b.pay_ratio - a.pay_ratio; })[0];
     insights.push({
-        icon: '⚖️',
+        icon: CARD_ICONS.scale,
         label: 'Extreme Ratios',
         value: extremeRatio.length + ' above 1,000:1',
         detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' + realizedNote(maxRatioComp.ticker) : ''),
@@ -1947,7 +1985,7 @@ function populateInsights(comp, trends, sectorFilter) {
             if (rank > 0) sectorRank = ' Ranked #' + rank + ' of ' + sectorList.length + ' sectors by median CEO pay.';
         }
         insights.push({
-            icon: '📈',
+            icon: CARD_ICONS.trend,
             label: 'vs S&P 500',
             value: vsSign + vsPct.toFixed(0) + '% median',
             detail: sectorFilter + ' median CEO pay of ' + formatCurrency(secMedian) + ' is ' + vsSign + vsPct.toFixed(1) + '% versus the S&P 500 median of ' + formatCurrency(sp500Median) + '.' + sectorRank,
@@ -1970,7 +2008,7 @@ function populateInsights(comp, trends, sectorFilter) {
             });
             var sectorSpread = topSectorPay > 0 && bottomSectorPay > 0 ? (topSectorPay / bottomSectorPay).toFixed(1) : null;
             insights.push({
-                icon: '🏢',
+                icon: CARD_ICONS.building,
                 label: 'Sector Spread',
                 value: topSector,
                 detail: topSector + ' leads at ' + formatCurrency(topSectorPay) + ' median CEO pay — ' + (sectorSpread ? sectorSpread + '× higher than ' + bottomSector + ' (' + formatCurrency(bottomSectorPay) + ').' : ''),
@@ -1985,7 +2023,7 @@ function populateInsights(comp, trends, sectorFilter) {
     if (zeroPay.length > 0) {
         var zeroNames = zeroPay.map(function(c) { return c.ceo_name + ' (' + c.ticker + ')'; }).join(', ');
         insights.push({
-            icon: '🎯',
+            icon: CARD_ICONS.target,
             label: 'Zero Pay',
             value: zeroPay.length + (zeroPay.length === 1 ? ' CEO' : ' CEOs'),
             detail: zeroNames + ' reported $0 total compensation — typically founder-CEOs with large equity stakes who forgo traditional pay.',
@@ -1994,7 +2032,7 @@ function populateInsights(comp, trends, sectorFilter) {
     } else if (under1M.length > 0) {
         var medPayRef = comp.metadata && comp.metadata.aggregate_stats ? comp.metadata.aggregate_stats.median_ceo_pay : null;
         insights.push({
-            icon: '🎯',
+            icon: CARD_ICONS.target,
             label: 'Below $1M',
             value: under1M.length + (under1M.length === 1 ? ' CEO' : ' CEOs'),
             detail: under1M.length + ' CEOs earned under $1M in total compensation' + (medPayRef ? ', well below the S&P 500 median of ' + formatCurrency(medPayRef) : '') + '.'
@@ -2008,7 +2046,7 @@ function populateInsights(comp, trends, sectorFilter) {
     if (maxPay && minPay && minPay.total_compensation > 0) {
         var span = Math.round(maxPay.total_compensation / minPay.total_compensation);
         insights.push({
-            icon: '📏',
+            icon: CARD_ICONS.ruler,
             label: 'Pay Range',
             value: span.toLocaleString() + '× span',
             detail: 'From ' + formatCurrency(minPay.total_compensation) + ' (' + minPay.ticker + ') to ' + formatCurrency(maxPay.total_compensation) + ' (' + maxPay.ticker + ') — a ' + span.toLocaleString() + '-fold range across ' + scopeLabel + '.',
@@ -2026,7 +2064,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var incStr = incPct >= 100 ? Math.round(incPct) + '%' : incPct.toFixed(1) + '%';
         var decStr = decPct >= 100 ? Math.round(decPct) + '%' : decPct.toFixed(1) + '%';
         insights.push({
-            icon: '📈',
+            icon: CARD_ICONS.trend,
             label: 'Biggest Pay Swing',
             value: '▲ +' + incStr + ' / ▼ −' + decStr,
             detail: biggestIncrease.ticker + ' CEO pay surged +' + incStr + ' (' + formatCurrency(biggestIncrease._ceoYoY.fromComp) + ' → ' + formatCurrency(biggestIncrease._ceoYoY.toComp) + '). ' + biggestDecrease.ticker + ' fell −' + decStr + ' (' + formatCurrency(biggestDecrease._ceoYoY.fromComp) + ' → ' + formatCurrency(biggestDecrease._ceoYoY.toComp) + '). ' + yoyCompanies.length + ' companies with YoY data.',
@@ -2043,7 +2081,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var allPcts = stockPctCompanies.map(function(c) { return c._ceoStockPct; });
         var medStockPct = Math.round(computeMedian(allPcts));
         insights.push({
-            icon: '📊',
+            icon: CARD_ICONS.chart,
             label: 'Equity-Heavy Pay',
             value: above90.length + ' CEOs ≥90% equity',
             detail: above90.length + ' CEOs receive ≥90% of their compensation in stock/options — led by ' + topEquity.ceo_name + ' (' + topEquity.ticker + ') at ' + Math.round(topEquity._ceoStockPct) + '%. ' + scopeLabel + ' median: ' + medStockPct + '% equity.',
@@ -2061,7 +2099,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var p1Ratio = (top1Pay / bottom50Pay).toFixed(1);
         var top1Names = pctileSorted.slice(0, top1PctCount).map(function(c) { return c.ticker; }).join(', ');
         insights.push({
-            icon: '🔺',
+            icon: CARD_ICONS.triangle,
             label: 'Top 1% vs Bottom 50%',
             value: p1Ratio + '× more pay',
             detail: 'The top ' + top1PctCount + ' CEO' + (top1PctCount > 1 ? 's' : '') + ' (P99: ' + top1Names + ') earned ' + formatCurrency(top1Pay) + ' combined — ' + p1Ratio + '× what the bottom ' + bottom50PctCount + ' CEOs earned together (' + formatCurrency(bottom50Pay) + ').',
@@ -2079,7 +2117,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var medConc = computeMedian(allConcPcts);
         var above50 = concCompanies.filter(function(c) { return c._ceoConcPct >= 50; });
         insights.push({
-            icon: '👑',
+            icon: CARD_ICONS.crown,
             label: 'CEO Concentration',
             value: above50.length + ' CEOs take ≥50%',
             detail: above50.length + ' CEOs earn at least half of their executive team\'s total compensation. Most concentrated: ' + mostConc.ceo_name + ' (' + mostConc.ticker + ') at ' + mostConc._ceoConcPct.toFixed(1) + '%. Most distributed: ' + leastConc.ticker + ' at ' + leastConc._ceoConcPct.toFixed(1) + '%. ' + scopeLabel + ' median: ' + medConc.toFixed(1) + '%.',
@@ -2106,7 +2144,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var compDelta = medNewCeo > 0 && medContinuingCeo > 0 ? ((medNewCeo - medContinuingCeo) / medContinuingCeo * 100).toFixed(0) : null;
         var compDeltaStr = compDelta ? (parseInt(compDelta) >= 0 ? '+' + compDelta + '%' : compDelta + '%') : '';
         insights.push({
-            icon: '🔄',
+            icon: CARD_ICONS.refresh,
             label: 'CEO Turnover',
             value: transitionCompanies.length + ' transitions',
             detail: transitionCompanies.length + ' companies changed CEOs in ' + yearRange + '. New CEO median pay: ' + formatCurrency(medNewCeo) + (compDeltaStr ? ' (' + compDeltaStr + ' vs continuing CEOs at ' + formatCurrency(medContinuingCeo) + ')' : '') + '. Highest-paid new CEO: ' + (topNewCeo.ceo_name || 'N/A') + ' (' + topNewCeo.ticker + ') at ' + formatCurrency(topNewCeo.total_compensation) + '.',
@@ -2125,7 +2163,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var newCeos = tenureCompanies.filter(function(c) { return c._ceoTenureYears < 3; });
         var longestCeo = tenureCompanies.slice().sort(function(a, b) { return b._ceoTenureYears - a._ceoTenureYears; })[0];
         insights.push({
-            icon: '⏱️',
+            icon: CARD_ICONS.stopwatch,
             label: 'CEO Tenure',
             value: medTenure + ' year median',
             detail: tenureCompanies.length + ' companies with tenure data (DEF 14A proxy). Median: ' + medTenure + ' years. ' +
@@ -2192,7 +2230,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var payDeltaDir = payDelta && parseInt(payDelta) >= 0 ? 'more' : 'less';
         var payDeltaAbs = payDelta ? Math.abs(parseInt(payDelta)) + '%' : '?';
         insights.push({
-            icon: '📉',
+            icon: CARD_ICONS.chartDown,
             label: 'Tenure vs Pay',
             value: corrSign + tvpCorr.toFixed(2) + ' correlation',
             detail: corrStrength.charAt(0).toUpperCase() + corrStrength.slice(1) + ' ' + (tvpCorr >= 0 ? 'positive' : 'negative') + ' correlation (r=' + corrSign + tvpCorr.toFixed(3) + ') between CEO tenure and total pay across ' + tenureCompanies.length + ' companies. Bottom-quartile tenure (<' + tvpSorted[q1Cut]._ceoTenureYears + ' yrs) median pay: ' + formatCurrency(shortMed) + '. Top-quartile (>' + tvpSorted[q3Cut]._ceoTenureYears + ' yrs): ' + formatCurrency(longMed) + ' — ' + payDeltaAbs + ' ' + payDeltaDir + '. Long-tenured CEOs ' + (payDelta && parseInt(payDelta) < 0 ? 'tend to earn less, often founders with low cash comp and large equity stakes.' : 'earn comparably, suggesting tenure alone does not drive higher pay packages.'),
@@ -2281,7 +2319,7 @@ function populateInsights(comp, trends, sectorFilter) {
             });
             secTenureDetail += '</div>';
             insights.push({
-                icon: '\uD83C\uDFE2',
+                icon: CARD_ICONS.bank,
                 label: 'Sector Tenure',
                 value: longestSec.name + ' leads',
                 detail: secTenureDetail,
@@ -2327,7 +2365,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var newMed = tpgBrackets[0].vals.length > 0 ? tpgBrackets[0].vals[Math.floor(tpgBrackets[0].vals.length / 2)] : 0;
         var vetMed = tpgBrackets[3].vals.length > 0 ? tpgBrackets[3].vals[Math.floor(tpgBrackets[3].vals.length / 2)] : 0;
         insights.push({
-            icon: '\uD83D\uDCC8',
+            icon: CARD_ICONS.trend,
             label: 'Tenure \u00D7 Growth',
             value: 'New CEOs +' + newMed.toFixed(0) + '% YoY',
             detail: 'Median year-over-year CEO pay growth by tenure bracket: ' + tpgParts.join('; ') + '. ' +
@@ -2365,7 +2403,7 @@ function populateInsights(comp, trends, sectorFilter) {
                 (vetMedGov > newMedGov + 3 ? 'tenure preserves governance' : 'tenure-neutral governance');
 
             insights.push({
-                icon: '\uD83C\uDFAF',
+                icon: CARD_ICONS.target,
                 label: 'Tenure \u00D7 Gov',
                 value: verdictIcon + ' ' + verdictText.charAt(0).toUpperCase() + verdictText.slice(1),
                 detail: 'Median governance score: new CEOs (<3 yrs) = ' + newMedGov + ', veterans (20+ yrs) = ' + vetMedGov +
@@ -2453,7 +2491,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var strongestDir = strongestR >= 0 ? 'positive' : 'negative';
 
         insights.push({
-            icon: '🔗',
+            icon: CARD_ICONS.link,
             label: 'Correlation Matrix',
             value: strongCount + ' strong pair' + (strongCount !== 1 ? 's' : ''),
             detail: nMetrics + '×' + nMetrics + ' Pearson correlation matrix across key compensation metrics. ' +
@@ -2723,7 +2761,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var cooStr = _rbCoo ? formatCompact(_rbCoo.median) + ' (COO, ' + _rbCoo.count + ')' : '';
         var roleCount = ROLE_ORDER.filter(function(r) { return _roleBenchmarks[r] && r !== 'Other'; }).length;
         insights.push({
-            icon: '👔',
+            icon: CARD_ICONS.tie,
             label: 'C-Suite Pay Gap',
             value: cfoRatio + '× CEO/CFO',
             detail: 'CEO median ' + formatCurrency(_rbCeo.median) + ' vs CFO median ' + formatCurrency(_rbCfo.median) + ' (' + cfoRatio + '× gap). ' + (cooStr ? 'COO median: ' + formatCompact(_rbCoo.median) + '. ' : '') + roleCount + ' C-suite roles benchmarked across ' + _rbCeo.count + ' CEOs, ' + _rbCfo.count + ' CFOs' + (_rbCoo ? ', ' + _rbCoo.count + ' COOs' : '') + '.'
@@ -2755,7 +2793,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var mostComplete = withExecs.slice().sort(function(a, b) { return (b._teamRoleCount || 0) - (a._teamRoleCount || 0) || (b.total_compensation || 0) - (a.total_compensation || 0); })[0];
 
         insights.push({
-            icon: '🏢',
+            icon: CARD_ICONS.building,
             label: 'Team Completeness',
             value: avgRoles + ' avg roles',
             detail: fullTeam.length + ' companies disclose 4+ C-suite roles in NEO data (of 7 tracked). ' +
@@ -2798,7 +2836,7 @@ function populateInsights(comp, trends, sectorFilter) {
             var skew = (meanComp / medComp).toFixed(2);
 
             insights.push({
-                icon: '⚖️',
+                icon: CARD_ICONS.scale,
                 label: 'Pay Inequality',
                 value: 'Gini ' + gini.toFixed(3),
                 detail: 'Top 10% of CEOs earn ' + top10Pct + '% of total ' + scopeLabel + ' CEO compensation. ' +
@@ -2842,7 +2880,7 @@ function populateInsights(comp, trends, sectorFilter) {
 
         if (totalRecs > 0) {
             insights.push({
-                icon: '🔍',
+                icon: CARD_ICONS.search,
                 label: 'Data Quality',
                 value: verifiedPct + '% Verified',
                 detail: verified.toLocaleString() + ' of ' + totalRecs.toLocaleString() + ' exec records have verified component-total consistency. ' +
@@ -2878,7 +2916,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var allMed = companies.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; })[Math.floor(companies.length / 2)];
         var fPremium = ((fMed - allMed) / allMed * 100).toFixed(1);
         insights.push({
-            icon: '♀',
+            icon: CARD_ICONS.female,
             label: 'Gender Representation',
             value: femaleCeos.length + ' Female CEOs',
             detail: femaleCeos.length + ' of ' + companies.length + ' ' + scopeLabel + ' CEOs (' + (femaleCeos.length / companies.length * 100).toFixed(1) + '%) are women. Female CEO median pay: ' + formatCurrency(fMed) + ' (' + (parseFloat(fPremium) >= 0 ? '+' : '') + fPremium + '% vs overall). Click to view all female CEOs.',
@@ -2895,7 +2933,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var cfoPremMed = cfoPremiums[Math.floor(cfoPremiums.length / 2)];
         var widestGap = withCfoPremium.slice().sort(function(a, b) { return b._ceoCfoPremium - a._ceoCfoPremium; })[0];
         insights.push({
-            icon: '⚖️',
+            icon: CARD_ICONS.scale,
             label: 'CEO-CFO Premium',
             value: cfoPremMed.toFixed(1) + '× Median',
             detail: 'The median CEO earns ' + cfoPremMed.toFixed(1) + '× their CFO across ' + withCfoPremium.length + ' companies. Widest gap: ' + widestGap.ticker + ' (' + widestGap._ceoCfoPremium.toFixed(1) + '×). Click to view the distribution.',
@@ -2946,7 +2984,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
 
         insights.push({
-            icon: '🗳️',
+            icon: CARD_ICONS.ballot,
             label: 'Shareholder Dissent',
             value: value,
             detail: detailStr,
@@ -3040,7 +3078,7 @@ function populateInsights(comp, trends, sectorFilter) {
             });
             secSopDetail += '</div>';
             insights.push({
-                icon: '\uD83C\uDFDB\uFE0F',
+                icon: CARD_ICONS.bank,
                 label: 'Sector SoP',
                 value: lowestSec.abbr + ' ' + lowestSec.median.toFixed(1) + '% low',
                 detail: secSopDetail,
@@ -3082,7 +3120,7 @@ function populateInsights(comp, trends, sectorFilter) {
             detail += ' ' + restrained.length + ' companies pay above their peer median by \u226510%.';
         }
         insights.push({
-            icon: '\ud83c\udfaf',
+            icon: CARD_ICONS.target,
             label: 'Aspirational Benchmarking',
             value: value,
             detail: detail,
@@ -3119,7 +3157,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
 
         insights.push({
-            icon: '🕸️',
+            icon: CARD_ICONS.network,
             label: 'Network Centrality',
             value: value,
             detail: detail,
@@ -3204,7 +3242,7 @@ function populateInsights(comp, trends, sectorFilter) {
         detail += '</div>';
 
         insights.push({
-            icon: '🏛️',
+            icon: CARD_ICONS.bank,
             label: 'Governance Score',
             value: value,
             detail: detail,
@@ -3248,7 +3286,7 @@ function populateInsights(comp, trends, sectorFilter) {
         distHtml += '<div style="display:flex;justify-content:space-between;font-size:8px;color:var(--text-muted);margin-top:1px"><span>Critical</span><span>Low</span></div>';
 
         insights.push({
-            icon: '\ud83d\udd25',
+            icon: CARD_ICONS.flame,
             label: 'Governance Erosion Risk',
             value: (critical.length + high.length) + ' companies high risk',
             detail: 'Composite 0\u2013100 risk score identifying companies where CEO entrenchment may erode governance. ' +
@@ -3280,7 +3318,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var medVol = allVols[Math.floor(allVols.length / 2)];
         var topVol = withVol.slice().sort(function(a,b) { return b._ceoVolatility - a._ceoVolatility; })[0];
         insights.push({
-            icon: '\ud83c\udf0a',
+            icon: CARD_ICONS.waves,
             label: 'Pay Volatility',
             value: highVol.length + ' with high volatility',
             detail: 'CEO pay volatility measures year-to-year consistency (coefficient of variation). ' +
@@ -3320,7 +3358,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var vetMed = vetVols[Math.floor(vetVols.length / 2)];
         var delta = newMed - vetMed;
         var direction = delta > 3 ? 'New CEOs have more volatile pay' : delta < -3 ? 'Veterans have more volatile pay' : 'Similar volatility across tenures';
-        var emoji = delta > 3 ? '\ud83d\udcc9' : delta < -3 ? '\ud83d\udcc8' : '\u2696\ufe0f';
+        var iconHtml = delta > 3 ? CARD_ICONS.chartDown : delta < -3 ? CARD_ICONS.trend : CARD_ICONS.scale;
 
         // Build tenure-bracket mini-sparkline SVG
         var _tbBrackets = [
@@ -3348,7 +3386,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
 
         insights.push({
-            icon: emoji,
+            icon: iconHtml,
             label: 'Volatility \u00d7 Tenure',
             value: direction,
             detail: 'New CEOs (<3 yrs, n=' + newCEOs.length + '): median ' + newMed.toFixed(1) + '% CV. ' +
@@ -3387,11 +3425,11 @@ function populateInsights(comp, trends, sectorFilter) {
         var delta = weakMed - strongMed;
         var correlated = delta > 3;
         var inverted = delta < -3;
-        var emoji = correlated ? '\u26a0\ufe0f' : inverted ? '\u2705' : '\u2248';
+        var iconHtml = correlated ? CARD_ICONS.alert : inverted ? CARD_ICONS.check : CARD_ICONS.tilde;
         var direction = correlated ? 'Weak governance \u2192 more volatile pay' : inverted ? 'Well-governed companies are more volatile' : 'No governance-volatility link';
         var dangerCount = withBoth.filter(function(c) { return c._ceoVolatility >= 40 && c._govScore < weakVols[Math.floor(weakVols.length * 0.25)]; }).length;
         insights.push({
-            icon: emoji,
+            icon: iconHtml,
             label: 'Volatility \u00d7 Governance',
             value: direction,
             detail: 'Weakly governed companies (below-median gov score, n=' + weakGov.length + '): median ' + weakMed.toFixed(1) + '% CV. ' +
@@ -3420,10 +3458,10 @@ function populateInsights(comp, trends, sectorFilter) {
         var dangerZone = withBoth.filter(function(c) { return c._sopApproval < 70 && c._ceoVolatility >= 40; });
         var correlated = delta > 5;
         var inverted = delta < -5;
-        var emoji = correlated ? '\ud83d\udea8' : inverted ? '\u2705' : '\u2248';
+        var iconHtml = correlated ? CARD_ICONS.alert : inverted ? CARD_ICONS.check : CARD_ICONS.tilde;
         var direction = correlated ? 'Low approval \u2192 volatile pay' : inverted ? 'Low approval \u2192 stable pay' : 'No SoP-volatility link';
         insights.push({
-            icon: emoji,
+            icon: iconHtml,
             label: 'SoP \u00d7 Volatility',
             value: direction,
             detail: 'Low-approval companies (<70% SoP, n=' + lowSop.length + '): median ' + lowMed.toFixed(1) + '% CV. ' +
@@ -3454,12 +3492,12 @@ function populateInsights(comp, trends, sectorFilter) {
         var lowMed = lowEq[Math.floor(lowEq.length / 2)];
         var highMed = highEq[Math.floor(highEq.length / 2)];
         var delta = lowMed - highMed;
-        var emoji = Math.abs(delta) > 5 ? '\ud83c\udfaf' : '\u2248';
+        var iconHtml = Math.abs(delta) > 5 ? CARD_ICONS.target : CARD_ICONS.tilde;
         var direction = delta > 5 ? 'Low-approval CEOs get more equity' :
                         delta < -5 ? 'Low-approval CEOs get less equity' :
                         'Similar equity mix across SoP tiers';
         insights.push({
-            icon: emoji,
+            icon: iconHtml,
             label: 'Pay Mix by SoP',
             value: direction,
             detail: 'Low-approval companies (<70% SoP, n=' + lowSop.length + '): median ' + lowMed.toFixed(1) + '% equity. ' +
@@ -3504,7 +3542,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var medianShift = allShifts.map(function(s) { return s.delta; }).sort(function(a, b) { return a - b; });
         var medVal = medianShift[Math.floor(medianShift.length / 2)];
         var direction = medVal > 2 ? 'More equity-heavy' : medVal < -2 ? 'Less equity-heavy' : 'Stable mix';
-        var emoji = shiftedUp > shiftedDown ? '\uD83D\uDCC8' : shiftedDown > shiftedUp ? '\uD83D\uDCC9' : '\u2696\uFE0F';
+        var iconHtml = shiftedUp > shiftedDown ? CARD_ICONS.trend : shiftedDown > shiftedUp ? CARD_ICONS.chartDown : CARD_ICONS.scale;
 
         var detail = shiftedUp + ' companies shifted toward more equity (\u22655pp increase), ' +
             shiftedDown + ' shifted toward less equity, and ' + stable + ' remained stable. ' +
@@ -3514,7 +3552,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
 
         insights.push({
-            icon: emoji,
+            icon: iconHtml,
             label: 'Pay Structure Shifts',
             value: direction,
             detail: detail,
@@ -3632,7 +3670,7 @@ function populateInsights(comp, trends, sectorFilter) {
         narrative += ' Most aligned: ' + aligned.sector + ' (composite divergence score ' + aligned.composite.toFixed(2) + ' vs ' + top.composite.toFixed(2) + ').';
 
         insights.push({
-            icon: '\uD83C\uDF10',
+            icon: CARD_ICONS.globe,
             label: 'Sector Divergence',
             value: top.sector,
             detail: narrative,
@@ -3701,7 +3739,7 @@ function populateInsights(comp, trends, sectorFilter) {
                 _scdDetail += ' Weakest: ' + _scdWeakest.sector + ' ' + _scdWeakest.pair + ' (r=' + _scdWeakest.r.toFixed(2) + ').';
             }
             insights.push({
-                icon: '\uD83E\uDDEA',
+                icon: CARD_ICONS.flask,
                 label: 'Sector Correlations',
                 value: 'Strongest r=' + Math.abs(_scdStrongest.r).toFixed(2),
                 detail: _scdDetail,
@@ -3798,7 +3836,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
 
         insights.push({
-            icon: '\u26A0\uFE0F',
+            icon: CARD_ICONS.alert,
             label: 'Correlation Anomalies',
             value: scdData.anomalyCount + ' outlier' + (scdData.anomalyCount > 1 ? 's' : ''),
             detail: anomDetail,
@@ -3901,7 +3939,7 @@ function populateInsights(comp, trends, sectorFilter) {
             fySpark += '</svg></div>';
         }
         insights.push({
-            icon: '\ud83d\udcc5',
+            icon: CARD_ICONS.calendar,
             label: 'FY2025 Early Filers',
             value: yoy !== null ? ((yoy >= 0 ? '+' : '') + (yoy * 100).toFixed(1) + '% YoY') : (formatCompact(med25) + ' median'),
             detail: detail,
@@ -4159,7 +4197,7 @@ function populateTrends(trends, companies) {
                 if (latest.note) detail += ' ' + latest.note + '.';
             }
             cards.push({
-                icon: '👩‍💼',
+                icon: CARD_ICONS.user,
                 label: 'Gender Pay Gap',
                 value: premiumPct ? premiumPct + '% female premium' : latest.num_female_ceos + ' female CEOs',
                 detail: detail,
@@ -4184,7 +4222,7 @@ function populateTrends(trends, companies) {
         }
         detail2 += '.';
         cards.push({
-            icon: '🗳️',
+            icon: CARD_ICONS.ballot,
             label: 'Say-on-Pay Voting',
             value: sopMedian.toFixed(1) + '% median approval',
             detail: detail2,
@@ -4203,7 +4241,7 @@ function populateTrends(trends, companies) {
                 }).join(', ') + '.';
             }
             cards.push({
-                icon: '🗳️',
+                icon: CARD_ICONS.ballot,
                 label: 'Say-on-Pay Voting',
                 value: latestSop.median_support + '% median approval',
                 detail: detail2,
@@ -4218,7 +4256,7 @@ function populateTrends(trends, companies) {
         var detail3 = sec.s_and_p_500_ceos_with_security_2025 + ' of S&P 500 CEOs receive personal security perks in 2025, up from ' + sec.s_and_p_500_ceos_with_security_2024 + ' in 2024.';
         if (sec.note) detail3 += ' ' + sec.note + '.';
         cards.push({
-            icon: '🛡️',
+            icon: CARD_ICONS.shield,
             label: 'Security Perks Surge',
             value: sec.s_and_p_500_ceos_with_security_2025 + ' of CEOs (2025)',
             detail: detail3,
@@ -4234,7 +4272,7 @@ function populateTrends(trends, companies) {
             detail4 += 'For context, the ' + (fyt.russell_3000_source || 'Harvard Law Forum') + ' put Russell 3000 CEO pay at +' + fyt.russell_3000_5yr_increase.replace('+', '') + ' over ' + (fyt.russell_3000_period || fyt.period) + ' — smaller companies closing the gap.';
         }
         cards.push({
-            icon: '📈',
+            icon: CARD_ICONS.trend,
             label: '5-Year Growth Gap',
             value: 'S&P +' + fyt.s_and_p_500_5yr_increase + ' (' + fyt.period + ')',
             detail: detail4,
@@ -4250,7 +4288,7 @@ function populateTrends(trends, companies) {
         detail5 += 'Discretionary bonus: ' + formatCurrency(cd.median_discretionary_bonus) + ' (' + cd.bonus_yoy_change + '). ';
         detail5 += 'NEIP payout: ' + formatCurrency(cd.median_neip_payout) + ' (' + cd.neip_yoy_change + ').';
         cards.push({
-            icon: '💎',
+            icon: CARD_ICONS.gem,
             label: 'Compensation Mix Detail',
             value: 'Bonus surging +' + cd.bonus_yoy_change,
             detail: detail5,
@@ -4272,7 +4310,7 @@ function populateTrends(trends, companies) {
         }
         if (detail6) {
             cards.push({
-                icon: '🏆',
+                icon: CARD_ICONS.award,
                 label: 'Historic Peak (FY2025)',
                 value: '5 CEOs over $100M',
                 detail: detail6,
