@@ -1387,12 +1387,36 @@ def main():
     # -> XYZ, which already existed as a node.) S&P-500 members among them
     # that are absent from the company table are roster-reconciliation
     # backlog #11, not this batch. All out_degree 0.
+    # 2026-09-24 23:30 PT run (backlog #11 — current-constituent roster
+    # coverage): COHR promoted from peer-only to company node (now enriched
+    # in compensation.json) — removed from the allowlist. BK->BNY and
+    # MMC->MRSH ticker remaps are company nodes under the new tickers, not
+    # allowlist changes. 52 new peer-only nodes from the 8 CD&A peer-group
+    # reads, tickers SEC-verified via company_tickers.json 2026-09-24
+    # (BNY/MRSH titles confirm both remaps): AAON, ADTN, AEIS, AI, AMCX,
+    # ARCB, CALX, CIEN, CLS, CRUS, CSL, DIOD, ENTG, EXTR, GXO, IPGP, KNX,
+    # LBTYA, LFUS, LSTR, MKSI, MXL, NVT, NXST, NXT, OLED, ONTO, ORA, OSIS,
+    # PLUG, R, REZI, RIVN, RMBS, RRX, RUN, RXO, SAIA, SBGI, SIRI, SMTC,
+    # SNDR, SYNA, TFII, TLN, VIAV, VSAT, VYX, WOLF, XPO — plus COMM
+    # (CommScope, delisted peer) and SMAR (Smartsheet, take-private Jan
+    # 2025), retained per the PARA/QRVO ex-constituent precedent because
+    # the CD&A peer groups cite them. LITE is a company node, not
+    # peer-only. All out_degree 0.
     PEER_ONLY_NODES = {"PINS", "RBLX", "SNAP", "SNOW",
-                       "SPOT", "XYZ", "QRVO", "COHR", "AMKR", "LOGI",
+                       "SPOT", "XYZ", "QRVO", "AMKR", "LOGI",
                        "PSTG", "ROKU", "PARA", "SHOP", "TTD", "AFRM",
                        "DUOL", "ETSY", "LYFT", "CART", "RKT", "SOFI",
                        "ZG", "TEAM", "HUBS", "NET", "MDB", "VEEV",
-                       "OKTA", "DOCU", "ZM", "DT", "ZS"}
+                       "OKTA", "DOCU", "ZM", "DT", "ZS",
+                       "AAON", "ADTN", "AEIS", "AI", "AMCX", "ARCB",
+                       "CALX", "CIEN", "CLS", "COMM", "CRUS", "CSL",
+                       "DIOD", "ENTG", "EXTR", "GXO", "IPGP", "KNX",
+                       "LBTYA", "LFUS", "LSTR", "MKSI", "MXL", "NVT",
+                       "NXST", "NXT", "OLED", "ONTO", "ORA", "OSIS",
+                       "PLUG", "R", "REZI", "RIVN", "RMBS", "RRX",
+                       "RUN", "RXO", "SAIA", "SBGI", "SIRI", "SMAR",
+                       "SMTC", "SNDR", "SYNA", "TFII", "TLN", "VIAV",
+                       "VSAT", "VYX", "WOLF", "XPO"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
@@ -1602,6 +1626,29 @@ def main():
         # "Former Chief Executive Officer", SNDK FY2025 SCT as CEO. Same
         # person, do not merge rows.
         ("david v goeckeler", 2025, "SNDK", "WDC"),
+        # 2026-09-24 23:30 PT (backlog #11): genuine dual-class — FOX
+        # (Class B) and FOXA (Class A) are both S&P 500 constituents of the
+        # same issuer (Fox Corp); their SCTs are byte-identical (Lachlan
+        # Murdoch FY2025 $32,980,954 in both). Same people, do not merge
+        # rows; each ticker keeps its own record for index completeness.
+        ("adam ciongoli", 2024, "FOX", "FOXA"),
+        ("adam ciongoli", 2025, "FOX", "FOXA"),
+        ("john p nallen", 2023, "FOX", "FOXA"),
+        ("john p nallen", 2024, "FOX", "FOXA"),
+        ("john p nallen", 2025, "FOX", "FOXA"),
+        ("lachlan k murdoch", 2023, "FOX", "FOXA"),
+        ("lachlan k murdoch", 2024, "FOX", "FOXA"),
+        ("lachlan k murdoch", 2025, "FOX", "FOXA"),
+        ("steven tomsic", 2023, "FOX", "FOXA"),
+        ("steven tomsic", 2024, "FOX", "FOXA"),
+        ("steven tomsic", 2025, "FOX", "FOXA"),
+        # 2026-09-24 23:30 PT (backlog #11): genuine spin-off transition —
+        # John A. Smith was President/CEO of FedEx Freight (an FDX NEO;
+        # FDX FY2025 SCT $5,281,073) through the Jun 1 2026 spin-off, then
+        # President & CEO of standalone FedEx Freight Holding Company
+        # (FDXF FY2025 SCT $5,281,073, byte-identical). Same person, do not
+        # merge rows.
+        ("john a smith", 2025, "FDX", "FDXF"),
     }
     _person_year = {}
     for c in companies:
