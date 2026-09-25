@@ -131,8 +131,8 @@
   "title_coverage": "7030/7030",
   "data_quality": {
    "verified_total": 7000,
-   "last_audit": "2026-09-24",
-   "verified": 5866,
+   "last_audit": "2026-09-25",
+   "verified": 5834,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
@@ -145,7 +145,7 @@
    "def14a_verified_20260912": 23,
    "def14a_verified_20260908": 12,
    "rounding": 0,
-   "def14a_verified_20260925": 25
+   "def14a_verified_20260925": 57
   },
   "median_ceo_pay": 16715485.5,
   "mean_ceo_pay": 327600383.381323,
@@ -181,8 +181,8 @@
   "board_independence_coverage": 499,
   "data_quality_detailed": {
    "verified_total": 7000,
-   "last_audit": "2026-09-24",
-   "verified": 5866,
+   "last_audit": "2026-09-25",
+   "verified": 5834,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
@@ -195,7 +195,7 @@
    "def14a_verified_20260912": 23,
    "def14a_verified_20260908": 12,
    "rounding": 0,
-   "def14a_verified_20260925": 25
+   "def14a_verified_20260925": 57
   },
   "companies_with_executives": 514,
   "board_independence_any": 499,
@@ -76641,8 +76641,8 @@
    "total_compensation": 13752560,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 23312,
-   "pay_ratio": 550,
+   "median_worker_pay": 25954,
+   "pay_ratio": 530,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0001513761",
@@ -76658,7 +76658,9 @@
      "non_equity_incentive": 2880800,
      "all_other": 71800,
      "total": 13752560,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Harry Sommer",
@@ -76670,7 +76672,9 @@
      "non_equity_incentive": 4600000,
      "all_other": 61697,
      "total": 12811659,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Harry Sommer",
@@ -76682,7 +76686,9 @@
      "non_equity_incentive": 1572551,
      "all_other": 66236,
      "total": 8864592,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Mark A. Kempa",
@@ -76693,7 +76699,9 @@
      "non_equity_incentive": 1080300,
      "all_other": 54115,
      "total": 4409380,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Mark A. Kempa",
@@ -76705,7 +76713,9 @@
      "non_equity_incentive": 1880000,
      "all_other": 41531,
      "total": 5981502,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Mark A. Kempa",
@@ -76717,7 +76727,9 @@
      "non_equity_incentive": 999000,
      "all_other": 40152,
      "total": 4939146,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Patrik Dahlgren",
@@ -76728,7 +76740,9 @@
      "non_equity_incentive": 1080300,
      "all_other": 54612,
      "total": 4409877,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Patrik Dahlgren",
@@ -76739,7 +76753,9 @@
      "non_equity_incentive": 1840000,
      "all_other": 46830,
      "total": 4866809,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Patrik Dahlgren",
@@ -76751,7 +76767,9 @@
      "non_equity_incentive": 555609,
      "all_other": 21312,
      "total": 5977453,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Daniel S. Farkas",
@@ -76762,7 +76780,9 @@
      "non_equity_incentive": 831000,
      "all_other": 57456,
      "total": 3798424,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Daniel S. Farkas",
@@ -76774,7 +76794,9 @@
      "non_equity_incentive": 1435000,
      "all_other": 46591,
      "total": 5249078,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Daniel S. Farkas",
@@ -76786,7 +76808,9 @@
      "non_equity_incentive": 777000,
      "all_other": 44232,
      "total": 4521226,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "David Herrera",
@@ -76797,7 +76821,9 @@
      "non_equity_incentive": 686656,
      "all_other": 2128524,
      "total": 5737645,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "David Herrera",
@@ -76808,7 +76834,9 @@
      "non_equity_incentive": 2100546,
      "all_other": 46691,
      "total": 4667484,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "David Herrera",
@@ -76819,7 +76847,9 @@
      "non_equity_incentive": 705231,
      "all_other": 39137,
      "total": 2701547,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
      "name": "Jason Montague",
@@ -76830,7 +76860,9 @@
      "non_equity_incentive": 1080300,
      "all_other": 65257,
      "total": 4360234,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-052146",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
     }
    ],
    "neo_count": 6,
@@ -76850,11 +76882,11 @@
     "source_url": "https://www.sec.gov/Archives/edgar/data/1513761/000110465926094888/nclh-20260611x8ka.htm"
    },
    "ceo_tenure": {
-    "year": 2023,
-    "month": null,
-    "confidence": "medium",
+    "year": 2026,
+    "month": "February",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -82226,81 +82258,95 @@
    "total_compensation": 1113417,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 78950,
-   "pay_ratio": 82,
+   "median_worker_pay": 98899,
+   "pay_ratio": 11,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "executives": [
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 5643947,
      "name": "Lawrence J. Ellison",
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 5643948,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 3013678,
      "name": "Lawrence J. Ellison",
      "non_equity_incentive": 5292260,
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 8305939,
-     "year": 2024
+     "year": 2024,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 3136719,
      "name": "Lawrence J. Ellison",
      "non_equity_incentive": 4165213,
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 7301933,
-     "year": 2023
+     "year": 2023,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 163417,
      "name": "Safra A. Catz",
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 1113417,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 221974,
      "name": "Safra A. Catz",
      "non_equity_incentive": 5292260,
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 6464234,
-     "year": 2024
+     "year": 2024,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 135467,
      "name": "Safra A. Catz",
      "non_equity_incentive": 4165213,
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 5250680,
-     "year": 2023
+     "year": 2023,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 8717,
      "name": "Jeffrey O. Henley",
      "salary": 650000,
      "stock_awards": 8799774,
      "title": "Executive Vice Chair",
      "total": 9458491,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 7954,
      "name": "Jeffrey O. Henley",
      "non_equity_incentive": 529226,
@@ -82308,10 +82354,12 @@
      "stock_awards": 8712433,
      "title": "Executive Vice Chair",
      "total": 9899613,
-     "year": 2024
+     "year": 2024,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 8050,
      "name": "Jeffrey O. Henley",
      "non_equity_incentive": 416521,
@@ -82319,20 +82367,24 @@
      "stock_awards": 8608921,
      "title": "Executive Vice Chair",
      "total": 9683492,
-     "year": 2023
+     "year": 2023,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 40091,
      "name": "Stuart Levey",
      "salary": 950000,
      "stock_awards": 13688537,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 14678628,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 15682,
      "bonus": 1000000,
      "name": "Stuart Levey",
@@ -82340,10 +82392,12 @@
      "stock_awards": 11616614,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 13582296,
-     "year": 2024
+     "year": 2024,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 12036,
      "bonus": 650000,
      "name": "Stuart Levey",
@@ -82351,30 +82405,36 @@
      "stock_awards": 11537388,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 12757189,
-     "year": 2023
+     "year": 2023,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 134893,
      "name": "Maria Smith",
      "salary": 504469,
      "stock_awards": 7822021,
      "title": "Executive Vice President, Chief Accounting Officer",
      "total": 8461383,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 7167,
      "name": "Edward Screven",
      "salary": 796154,
      "stock_awards": 17599383,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 18402704,
-     "year": 2025
+     "year": 2025,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 7980,
      "name": "Edward Screven",
      "non_equity_incentive": 2646130,
@@ -82382,10 +82442,12 @@
      "stock_awards": 17424865,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 20978975,
-     "year": 2024
+     "year": 2024,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20260925",
      "all_other": 8050,
      "name": "Edward Screven",
      "non_equity_incentive": 2082607,
@@ -82393,7 +82455,9 @@
      "stock_awards": 17217777,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 20208434,
-     "year": 2023
+     "year": 2023,
+     "_accession": "0001193125-25-220801",
+     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
     }
    ],
    "cik": "1341439",
