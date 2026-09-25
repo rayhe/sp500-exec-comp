@@ -1373,9 +1373,14 @@ def main():
     # (S&P 500 constituent since 2026-03-25 but absent from the 500-company
     # table — roster-reconciliation backlog, not this batch), AMKR, LOGI,
     # PSTG, ROKU (non-S&P benchmarking peers). All out_degree 0.
+    # 2026-09-24 22:00 PT run: PARA (Paramount Global, ex-S&P 500 via the
+    # Aug 2025 Skydance take-private; ticker reassigned by EDGAR to Banzai
+    # International) joins the allowlist — its peer-network node is retained
+    # because 10 incoming edges cite it as a benchmarking peer; deleting it
+    # would orphan those edges.
     PEER_ONLY_NODES = {"DDOG", "PINS", "RBLX", "SNAP", "SNOW",
                        "SPOT", "XYZ", "QRVO", "COHR", "AMKR", "LOGI",
-                       "PSTG", "ROKU"}
+                       "PSTG", "ROKU", "PARA"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])

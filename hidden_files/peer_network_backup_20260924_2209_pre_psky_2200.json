@@ -6,7 +6,7 @@
       "467 DEF 14A proxy statements from S&P 500 companies"
     ],
     "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
-    "node_count": 515,
+    "node_count": 514,
     "edge_count": 5932,
     "last_updated": "2026-09-24"
   },
@@ -4605,15 +4605,6 @@
       "in_degree": 1,
       "out_degree": 0,
       "market_cap_tier": "large"
-    },
-    {
-      "ticker": "PSKY",
-      "name": "Paramount Skydance Corp",
-      "sector": "Communication Services",
-      "in_degree": 0,
-      "out_degree": 0,
-      "market_cap_tier": "large",
-      "isSource": true
     }
   ],
   "edges": [

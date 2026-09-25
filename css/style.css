@@ -5980,6 +5980,12 @@ footer li::before {
     .detail-stat-value { font-size: 0.95rem; }
     .detail-peers { padding-top: 8px; }
     .detail-peer-tag { font-size: 0.65rem; padding: 1px 5px; }
+    /* Shortcuts FAB clearance (2026-09-24 22:00 PT): at phone widths the
+       detail panel is full-viewport-wide and its last block (footnotes)
+       sits under the fixed bottom-right shortcuts FAB when the panel
+       bottom aligns with the viewport bottom. The extra bottom padding
+       keeps the last text line clear of the FAB (bottom 16px + ~30px). */
+    .detail-panel { padding-bottom: 56px; }
 }
 
 /* === D3 Overrides === */

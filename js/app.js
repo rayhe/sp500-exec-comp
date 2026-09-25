@@ -723,7 +723,7 @@ var PVP_EXCLUSIONS = {
     'BX':   '402(v)-exempt filer — no Pay vs Performance disclosure.',
     'GOOG': 'Same issuer as GOOGL — the 402(v) disclosure is filed once and shipped under GOOGL.',
     'AMT':  'Zero numeric Inline XBRL facts in the 402(v) table — nothing to cross-check against.',
-    'PSKY': 'Paramount Skydance registrant changed in the 2026 merger; the new registrant has filed no DEF 14A yet. Deferred until its first definitive proxy.',
+    'PSKY': 'Registrant changed in the Aug 2025 Skydance merger (15-12G filed 2025-08-18); new registrant (CIK 0002041610) has filed no DEF 14A yet — its 2026-04-24 10-K/A Part III carries the FY2025 SCT but no 402(v) Pay vs Performance table. Deferred until its first definitive proxy.',
     'DAY':  'Take-private completed 2026-02-04 (Thoma Bravo, $12.3B); delisted via 15-12G.',
     'HES':  'Delisted via 15-12G (Chevron acquisition).',
     'JNPR': 'Delisted via 15-12G (HPE acquisition).',
@@ -16596,11 +16596,11 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-24)</h4>' +
-                '<p>6,879 of 6,907 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 28 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>6,869 of 6,897 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 28 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-09-24 screen: 388 of 502 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 14 cluster near 2x, 10 near 0.5x, 90 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-09-24 screen: 389 of 502 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 14 cluster near 2x, 10 near 0.5x, 89 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
                 '<p id="dataq-transitions-counts">As of the 2026-09-24 screen: 14 (name, fiscal year) tuples appear as NEO rows at two different companies; all 14 triaged by tuple: 7 genuine mid-year executive transitions (incl. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off), 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR), 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
