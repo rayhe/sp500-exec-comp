@@ -3807,6 +3807,90 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 25. FY2025 Early Filers — an early read on the 2026 proxy season.
+    // Computed live under the anchor-year convention: companies with
+    // fiscal_year === 2025 have filed FY2025 proxies, and total_compensation
+    // is the FY2025 CEO figure. Same-CEO YoY matches the anchored CEO's own
+    // 2024 SCT row and skips former-CEO rows (stale anchors) and flagged
+    // CEO-transition companies, so the median change is not polluted by
+    // transition-year or partial-year pay.
+    (function() {
+        var fy25 = companies.filter(function(c) { return c.fiscal_year === 2025 && (c.total_compensation || 0) > 0; });
+        if (fy25.length < 5) return;
+        var pays = fy25.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+        var med25 = pays[Math.floor(pays.length / 2)];
+        var pairs = [];
+        fy25.forEach(function(c) {
+            if (c._ceoTransition) return;
+            var rows = c.executives || [];
+            var r25 = null, r24 = null;
+            for (var i = 0; i < rows.length; i++) {
+                var e = rows[i];
+                if (e.name === c.ceo_name && e.year === 2025 && (e.total || 0) > 0) r25 = e;
+                if (e.name === c.ceo_name && e.year === 2024 && (e.total || 0) > 0) r24 = e;
+            }
+            if (!r25 || !r24) return;
+            // Exclude former/interim CEOs: "Former" must modify the CEO title
+            // itself (e.g. ORCL "Former Chief Executive Officer"), not a prior
+            // role (e.g. DIS "Chief Executive Officer; Former Executive Chairman").
+            var _t25 = r25.title || '';
+            if (/interim/i.test(_t25)) return;
+            var _fm = _t25.match(/former([^,;]*)/i);
+            if (_fm && /chief executive|\bceo\b|president and c/i.test(_fm[1])) return;
+            pairs.push({ ticker: c.ticker, y25: r25.total, y24: r24.total, chg: (r25.total - r24.total) / r24.total });
+        });
+        var yoy = null, medC25 = 0, medC24 = 0;
+        if (pairs.length >= 5) {
+            var p25 = pairs.map(function(p) { return p.y25; }).sort(function(a, b) { return a - b; });
+            var p24 = pairs.map(function(p) { return p.y24; }).sort(function(a, b) { return a - b; });
+            medC25 = p25[Math.floor(p25.length / 2)];
+            medC24 = p24[Math.floor(p24.length / 2)];
+            if (medC24 > 0) yoy = (medC25 - medC24) / medC24;
+        }
+        function pct(x) { return (x >= 0 ? '+' : '') + (x * 100).toFixed(0) + '%'; }
+        var gainers = pairs.slice().sort(function(a, b) { return b.chg - a.chg; }).slice(0, 3);
+        var decliners = pairs.slice().sort(function(a, b) { return a.chg - b.chg; }).slice(0, 2);
+        var detail = fy25.length + ' of ' + companies.length + ' ' + scopeLabel + ' companies have filed FY2025 proxies (2026 proxy season in progress). ' +
+            'Median FY2025 CEO pay among filers: ' + formatCurrency(med25) + '.';
+        if (yoy !== null) {
+            detail += ' Same-CEO median ' + (yoy >= 0 ? 'rose' : 'fell') + ' ' + Math.abs(yoy * 100).toFixed(1) + '% vs FY2024 (' +
+                formatCurrency(medC24) + ' to ' + formatCurrency(medC25) + ', n=' + pairs.length + ').';
+        }
+        if (gainers.length > 0) {
+            detail += ' Largest YoY gains: ' + gainers.map(function(g) { return g.ticker + ' (' + pct(g.chg) + ')'; }).join(', ') + '.';
+        }
+        if (decliners.length > 0) {
+            detail += ' Largest declines: ' + decliners.map(function(g) { return g.ticker + ' (' + pct(g.chg) + ')'; }).join(', ') + '.';
+        }
+        detail += ' Single-year swings this large typically reflect mega-grant cycles (sign-on or one-time PSU awards), not run-rate pay.';
+        // Two-bar sparkline: same-cohort median FY2024 vs FY2025
+        var fySpark = '';
+        if (yoy !== null) {
+            var _fyMax = Math.max(medC24, medC25) || 1;
+            var _fyW = 160, _fyH = 40;
+            var _fyBarW = 44;
+            var _fyH24 = (medC24 / _fyMax) * (_fyH - 16);
+            var _fyH25 = (medC25 / _fyMax) * (_fyH - 16);
+            var _upColor = yoy >= 0 ? 'rgba(6,214,160,0.85)' : 'rgba(239,71,111,0.85)';
+            fySpark = '<div class="insight-spark-wrap" title="Same-cohort median CEO pay: FY2024 vs FY2025"><svg width="' + _fyW + '" height="' + _fyH + '" viewBox="0 0 ' + _fyW + ' ' + _fyH + '" style="display:block;margin-top:6px;">';
+            fySpark += '<rect x="24" y="' + (_fyH - _fyH24 - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyH24.toFixed(1) + '" rx="2" fill="rgba(148,163,184,0.7)"/>';
+            fySpark += '<rect x="92" y="' + (_fyH - _fyH25 - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyH25.toFixed(1) + '" rx="2" fill="' + _upColor + '"/>';
+            fySpark += '<text x="46" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">FY24</text>';
+            fySpark += '<text x="114" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">FY25</text>';
+            fySpark += '<text x="46" y="' + (_fyH - _fyH24 - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medC24) + '</text>';
+            fySpark += '<text x="114" y="' + (_fyH - _fyH25 - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medC25) + '</text>';
+            fySpark += '</svg></div>';
+        }
+        insights.push({
+            icon: '\ud83d\udcc5',
+            label: 'FY2025 Early Filers',
+            value: yoy !== null ? ((yoy >= 0 ? '+' : '') + (yoy * 100).toFixed(1) + '% YoY') : (formatCompact(med25) + ' median'),
+            detail: detail,
+            sparkHtml: fySpark,
+            _tickers: gainers.map(function(g) { return g.ticker; })
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
