@@ -732,7 +732,8 @@ var PVP_EXCLUSIONS = {
     'HOLX': 'Take-private closed ~2026-04-07 (Blackstone/TPG); not shipped per take-private policy.',
     'K':    'Take-private closed 2025-12-11 (Mars); not shipped per take-private policy.',
     'EA':   'Take-private; 15-12G filed 2026-08-14.',
-    'BF-A': 'Same issuer as BF-B — shipped under BF-B.'
+    'BF-A': 'Same issuer as BF-B — shipped under BF-B.',
+    'FDXF': 'New spin-off registrant (FedEx Freight Holding Company, CIK 0002082247) — has filed no DEF 14A (EDGAR: 10-12B, 10-K, 8-Ks only); its 2026-08-05 10-K carries a Summary Compensation Table but zero mentions of "Pay Versus Performance" / "Compensation Actually Paid" / "402(v)". Deferred until its first definitive proxy.'
 };
 
 /* Grouping of the standing PvP exclusions by exclusion class, for the
@@ -744,7 +745,7 @@ var PVP_EXCLUSION_GROUPS = [
     { label: 'Filer-side XBRL errors (7)', tickers: ['INTC', 'SYF', 'COF', 'RF', 'HSY', 'EMN', 'AMT'] },
     { label: 'Item 402(v)-exempt (2)', tickers: ['KKR', 'BX'] },
     { label: 'Same-issuer duplicates (2)', tickers: ['GOOG', 'BF-A'] },
-    { label: 'Deferred — merger registrant change (1)', tickers: ['PSKY'] }
+    { label: 'Deferred — no DEF 14A yet (2)', tickers: ['PSKY', 'FDXF'] }
 ];
 
 /* Filing-verbatim realized-comp footnote for any displayed headline figure that is
