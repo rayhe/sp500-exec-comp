@@ -6,8 +6,8 @@
    "470 DEF 14A proxy statements from S&P 500 companies"
   ],
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
-  "node_count": 594,
-  "edge_count": 6111,
+  "node_count": 606,
+  "edge_count": 6148,
   "last_updated": "2026-09-24"
  },
  "nodes": [
@@ -15,7 +15,7 @@
    "ticker": "A",
    "name": "Agilent Technologies Inc",
    "sector": "Health Care",
-   "in_degree": 32,
+   "in_degree": 33,
    "out_degree": 1,
    "market_cap_tier": "large",
    "isSource": true
@@ -186,7 +186,7 @@
    "ticker": "AKAM",
    "name": "Akamai Technologies Inc",
    "sector": "Information Technology",
-   "in_degree": 13,
+   "in_degree": 14,
    "out_degree": 1,
    "market_cap_tier": "large",
    "isSource": true
@@ -204,7 +204,7 @@
    "ticker": "ALGN",
    "name": "Align Technology Inc",
    "sector": "Health Care",
-   "in_degree": 11,
+   "in_degree": 12,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -303,7 +303,7 @@
    "ticker": "ANET",
    "name": "Arista Networks Inc",
    "sector": "Information Technology",
-   "in_degree": 7,
+   "in_degree": 8,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -535,7 +535,7 @@
    "ticker": "BIIB",
    "name": "Biogen Inc",
    "sector": "Health Care",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -927,7 +927,7 @@
    "ticker": "COO",
    "name": "Cooper Cos Inc",
    "sector": "Health Care",
-   "in_degree": 1,
+   "in_degree": 2,
    "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
@@ -1150,7 +1150,7 @@
    "ticker": "DDOG",
    "name": "Datadog, Inc.",
    "sector": "Information Technology",
-   "in_degree": 7,
+   "in_degree": 8,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -1329,7 +1329,7 @@
    "ticker": "DXCM",
    "name": "Dexcom Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -1544,7 +1544,7 @@
    "ticker": "EW",
    "name": "Edwards Lifesciences Corp",
    "sector": "Health Care",
-   "in_degree": 14,
+   "in_degree": 15,
    "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
@@ -1659,7 +1659,7 @@
    "ticker": "FFIV",
    "name": "F5 Inc",
    "sector": "Information Technology",
-   "in_degree": 0,
+   "in_degree": 1,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -1729,7 +1729,7 @@
    "ticker": "FTNT",
    "name": "Fortinet Inc",
    "sector": "Information Technology",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -1988,7 +1988,7 @@
    "ticker": "HOLX",
    "name": "Hologic Inc",
    "sector": "Health Care",
-   "in_degree": 20,
+   "in_degree": 21,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -2104,7 +2104,7 @@
    "ticker": "IDXX",
    "name": "IDEXX Laboratories Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -2184,7 +2184,7 @@
    "ticker": "IQV",
    "name": "IQVIA Holdings Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 25,
    "market_cap_tier": "large",
    "isSource": true
@@ -2211,7 +2211,7 @@
    "ticker": "ISRG",
    "name": "Intuitive Surgical Inc",
    "sector": "Health Care",
-   "in_degree": 14,
+   "in_degree": 15,
    "out_degree": 27,
    "market_cap_tier": "large",
    "isSource": true
@@ -2301,7 +2301,7 @@
    "ticker": "JNPR",
    "name": "Juniper Networks Inc",
    "sector": "Information Technology",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -2917,7 +2917,7 @@
    "ticker": "MTD",
    "name": "Mettler-Toledo International Inc",
    "sector": "Health Care",
-   "in_degree": 11,
+   "in_degree": 12,
    "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
@@ -3043,7 +3043,7 @@
    "ticker": "NTAP",
    "name": "NetApp Inc",
    "sector": "Information Technology",
-   "in_degree": 15,
+   "in_degree": 16,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -3187,7 +3187,7 @@
    "ticker": "PANW",
    "name": "Palo Alto Networks Inc",
    "sector": "Information Technology",
-   "in_degree": 20,
+   "in_degree": 21,
    "out_degree": 22,
    "market_cap_tier": "large",
    "isSource": true
@@ -3510,7 +3510,7 @@
    "ticker": "REGN",
    "name": "Regeneron Pharmaceuticals Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
@@ -3546,7 +3546,7 @@
    "ticker": "RMD",
    "name": "ResMed Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -3609,7 +3609,7 @@
    "ticker": "RVTY",
    "name": "Revvity Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4264,7 +4264,7 @@
    "ticker": "VRTX",
    "name": "Vertex Pharmaceuticals Inc",
    "sector": "Health Care",
-   "in_degree": 7,
+   "in_degree": 8,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -4318,7 +4318,7 @@
    "ticker": "WAT",
    "name": "Waters Corp",
    "sector": "Health Care",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -4434,7 +4434,7 @@
    "ticker": "WST",
    "name": "West Pharmaceutical Services Inc",
    "sector": "Health Care",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -4586,18 +4586,19 @@
    "name": "LOGI",
    "company_name": "Logitech International S.A.",
    "sector": "Information Technology",
-   "in_degree": 1,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
   {
-   "ticker": "PSTG",
-   "name": "PSTG",
+   "ticker": "P",
+   "name": "Everpure, Inc.",
    "company_name": "Pure Storage, Inc.",
    "sector": "Information Technology",
    "in_degree": 2,
-   "out_degree": 0,
-   "market_cap_tier": "large"
+   "out_degree": 14,
+   "market_cap_tier": "large",
+   "isSource": true
   },
   {
    "ticker": "ROKU",
@@ -5324,6 +5325,114 @@
    "name": "XPO",
    "company_name": "XPO, Inc.",
    "sector": "Industrials",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "ILMN",
+   "name": "Illumina, Inc.",
+   "sector": "Health Care",
+   "in_degree": 0,
+   "out_degree": 23,
+   "market_cap_tier": "large",
+   "isSource": true
+  },
+  {
+   "ticker": "EXAS",
+   "name": "EXAS",
+   "company_name": "Exact Sciences Corporation",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "AVTR",
+   "name": "AVTR",
+   "company_name": "Avantor, Inc.",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "BMRN",
+   "name": "BMRN",
+   "company_name": "BioMarin Pharmaceutical Inc.",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "BIO",
+   "name": "BIO",
+   "company_name": "Bio-Rad Laboratories, Inc.",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "BRKR",
+   "name": "BRKR",
+   "company_name": "Bruker Corporation",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "JAZZ",
+   "name": "JAZZ",
+   "company_name": "Jazz Pharmaceuticals plc",
+   "sector": "Health Care",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "GWRE",
+   "name": "GWRE",
+   "company_name": "Guidewire Software, Inc.",
+   "sector": "Information Technology",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "NTNX",
+   "name": "NTNX",
+   "company_name": "Nutanix, Inc.",
+   "sector": "Information Technology",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "ESTC",
+   "name": "ESTC",
+   "company_name": "Elastic N.V.",
+   "sector": "Information Technology",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "BOX",
+   "name": "BOX",
+   "company_name": "Box, Inc.",
+   "sector": "Information Technology",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "DBX",
+   "name": "DBX",
+   "company_name": "Dropbox, Inc.",
+   "sector": "Information Technology",
    "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
@@ -46821,7 +46930,7 @@
   },
   {
    "source": "SNDK",
-   "target": "PSTG",
+   "target": "P",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-10-07"
@@ -47689,7 +47798,7 @@
   },
   {
    "source": "BE",
-   "target": "PSTG",
+   "target": "P",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-08"
@@ -48106,6 +48215,265 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "10-K 2026-08-05"
+  },
+  {
+   "source": "ILMN",
+   "target": "A",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "EW",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "REGN",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "ALGN",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "EXAS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "RMD",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "AVTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "HOLX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "RVTY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "BIIB",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "IDXX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "COO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "BMRN",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "ISRG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "VRTX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "BIO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "IQV",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "WAT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "BRKR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "JAZZ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "WST",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "DXCM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "ILMN",
+   "target": "MTD",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "P",
+   "target": "AKAM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "DDOG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "GWRE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "NTNX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "ANET",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "ESTC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "JNPR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "PANW",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "BOX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "FFIV",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "LOGI",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "DBX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "FTNT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "P",
+   "target": "NTAP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
   }
  ]
 }

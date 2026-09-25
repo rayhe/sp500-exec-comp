@@ -204,6 +204,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260918": "def14a_verified_20260918",
     "def14a_verified_20260919": "def14a_verified_20260919",
     "def14a_verified_20260924": "def14a_verified_20260924",
+    "def14a_verified_20260925": "def14a_verified_20260925",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
@@ -1404,7 +1405,7 @@ def main():
     # peer-only. All out_degree 0.
     PEER_ONLY_NODES = {"PINS", "RBLX", "SNAP", "SNOW",
                        "SPOT", "XYZ", "QRVO", "AMKR", "LOGI",
-                       "PSTG", "ROKU", "PARA", "SHOP", "TTD", "AFRM",
+                       "ROKU", "PARA", "SHOP", "TTD", "AFRM",
                        "DUOL", "ETSY", "LYFT", "CART", "RKT", "SOFI",
                        "ZG", "TEAM", "HUBS", "NET", "MDB", "VEEV",
                        "OKTA", "DOCU", "ZM", "DT", "ZS",
@@ -1416,7 +1417,9 @@ def main():
                        "PLUG", "R", "REZI", "RIVN", "RMBS", "RRX",
                        "RUN", "RXO", "SAIA", "SBGI", "SIRI", "SMAR",
                        "SMTC", "SNDR", "SYNA", "TFII", "TLN", "VIAV",
-                       "VSAT", "VYX", "WOLF", "XPO"}
+                       "VSAT", "VYX", "WOLF", "XPO",
+                       "AVTR", "BIO", "BMRN", "BOX", "BRKR", "DBX",
+                       "ESTC", "EXAS", "GWRE", "JAZZ", "NTNX"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
