@@ -1509,6 +1509,91 @@ function populateMetrics(comp, trends) {
         }
     }
 
+    // === Metric-card trend sparklines (2026-09-25 15:30 PT) ===
+    // Cards with a real year series in trends.json get a compact SVG line
+    // sparkline plus a YoY delta badge, so the strip's headline numbers read
+    // with their benchmark trend. Rendered as a separate .metric-trend div
+    // (sibling of the delta row, not inside it) because the reactive sector
+    // path rewrites delta/sub textContent on filter changes - a sibling div
+    // survives that. Cards without a series (Highest Paid, SoP, 5-Yr Growth,
+    // Data Verification) keep their existing single-stat form.
+    (function renderMetricTrendSparks() {
+        if (!trends) return;
+        function sparkSvg(xs, ys, label) {
+            var w = 140, h = 28, pad = 3;
+            var min = Math.min.apply(null, ys), max = Math.max.apply(null, ys);
+            var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+            var xr = (x1 - x0) || 1, yr = (max - min) || 1;
+            var pts = xs.map(function(x, i) {
+                var px = pad + ((x - x0) / xr) * (w - 2 * pad);
+                var py = pad + (1 - (ys[i] - min) / yr) * (h - 2 * pad);
+                return px.toFixed(1) + ',' + py.toFixed(1);
+            });
+            var lastXY = pts[pts.length - 1].split(',');
+            var svg = '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + label + '">';
+            svg += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="rgba(0,180,216,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+            svg += '<circle cx="' + lastXY[0] + '" cy="' + lastXY[1] + '" r="2.8" fill="rgba(0,180,216,1)"/>';
+            return svg + '</svg>';
+        }
+        function addTrend(deltaElId, series, yKey, sparkLabel, badgeLabel) {
+            var deltaEl = document.getElementById(deltaElId);
+            if (!deltaEl || !Array.isArray(series) || series.length < 2) return;
+            var xs = [], ys = [];
+            series.forEach(function(d) {
+                if (d && d.year != null && d[yKey] != null && !isNaN(+d[yKey])) {
+                    xs.push(+d.year); ys.push(+d[yKey]);
+                }
+            });
+            if (ys.length < 2) return;
+            // x is scaled by actual year (the pay-ratio series skips 2019-2022),
+            // so the line does not imply a steady yearly cadence where none exists.
+            var raw = series[series.length - 1].yoy_change;
+            var n = raw == null ? NaN : parseFloat(String(raw).replace('%', ''));
+            var wrap = document.createElement('div');
+            wrap.className = 'metric-trend';
+            wrap.title = sparkLabel;
+            var badge = '';
+            if (!isNaN(n)) {
+                var cls = n > 0 ? ' positive' : (n < 0 ? ' negative' : '');
+                badge = '<span class="metric-delta-vs' + cls + '" title="' + badgeLabel + '">' +
+                    (n > 0 ? '+' : '') + n.toFixed(1) + '% YoY</span>';
+            }
+            // All interpolated values are numbers (round-tripped through
+            // parseFloat) or run-authored strings; nothing raw from trends.json
+            // reaches this innerHTML.
+            wrap.innerHTML = sparkSvg(xs, ys, sparkLabel) + badge;
+            deltaEl.parentNode.insertBefore(wrap, deltaEl.nextSibling);
+        }
+        addTrend('metric-median-delta',
+            trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data, 'median_pay',
+            'S&P 500 median CEO pay trend, 2020-2025 (Equilar/AP)',
+            'Year-over-year change in S&P 500 median CEO pay');
+        addTrend('metric-ratio-sub',
+            trends.pay_ratio_trend && trends.pay_ratio_trend.data, 'median_ratio',
+            'S&P 500 median pay ratio trend, 2018 then 2023-2025 (Harvard Law Forum / Equilar)',
+            'Year-over-year change in S&P 500 median pay ratio');
+        addTrend('metric-worker-delta',
+            trends.median_worker_pay_by_year && trends.median_worker_pay_by_year.data, 'median_worker_pay',
+            'S&P 500 median worker pay trend, 2023-2025 (Conference Board / Equilar)',
+            'Year-over-year change in S&P 500 median worker pay');
+        // Stock awards card: no year series, but the composition block carries a
+        // YoY change for median stock award value - badge only, no sparkline.
+        (function addStockYoyBadge() {
+            var sub = document.getElementById('metric-stock-sub');
+            var comp = trends.compensation_composition && trends.compensation_composition.s_and_p_500;
+            if (!sub || !comp || comp.stock_awards_yoy_change == null) return;
+            var n = parseFloat(String(comp.stock_awards_yoy_change).replace('%', ''));
+            if (isNaN(n)) return;
+            var wrap = document.createElement('div');
+            wrap.className = 'metric-trend';
+            wrap.title = 'Year-over-year change in median stock award value (Equilar S&P 500)';
+            var cls = n > 0 ? ' positive' : (n < 0 ? ' negative' : '');
+            wrap.innerHTML = '<span class="metric-delta-vs' + cls + '">Median awards ' +
+                (n > 0 ? '+' : '') + n.toFixed(1) + '% YoY</span>';
+            sub.parentNode.insertBefore(wrap, sub.nextSibling);
+        })();
+    })();
+
     // === Interactive Metric Cards ===
     // Each metric card becomes a navigation entry point into the data
     var metricCards = document.querySelectorAll('.metric-card');
