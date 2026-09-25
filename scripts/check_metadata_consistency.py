@@ -1367,8 +1367,15 @@ def main():
     #     list) is a queued company-list refresh, not a section-10
     #     failure — do not "fix" it by hand-editing either list.
     KNOWN_COVERAGE_GAPS = {"AOS", "CPRT"}
-    PEER_ONLY_NODES = {"DDOG", "MRVL", "PINS", "RBLX", "SNAP", "SNOW",
-                       "SPOT", "XYZ"}
+    # 2026-09-24 18:00 PT run: MRVL promoted from peer-only to company node
+    # (now in compensation.json); 6 new peer-only nodes from the MRVL/SNDK
+    # CD&A peer-group reads: QRVO (ex-S&P 500, removed Dec 2024), COHR
+    # (S&P 500 constituent since 2026-03-25 but absent from the 500-company
+    # table — roster-reconciliation backlog, not this batch), AMKR, LOGI,
+    # PSTG, ROKU (non-S&P benchmarking peers). All out_degree 0.
+    PEER_ONLY_NODES = {"DDOG", "PINS", "RBLX", "SNAP", "SNOW",
+                       "SPOT", "XYZ", "QRVO", "COHR", "AMKR", "LOGI",
+                       "PSTG", "ROKU"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
@@ -1572,6 +1579,12 @@ def main():
         ("john murphy", 2025, "KO", "PGR"),
         ("jonathon j nudi", 2025, "GIS", "MAS"),
         ("kris sennesael", 2025, "SWKS", "WDC"),
+        # 2026-09-24 18:00 PT: genuine spin-off transition — David Goeckeler
+        # was WDC President & CEO through the Feb 21 2025 Sandisk separation,
+        # then CEO of standalone Sandisk Corp; WDC FY2025 SCT carries him as
+        # "Former Chief Executive Officer", SNDK FY2025 SCT as CEO. Same
+        # person, do not merge rows.
+        ("david v goeckeler", 2025, "SNDK", "WDC"),
     }
     _person_year = {}
     for c in companies:
