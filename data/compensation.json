@@ -132,20 +132,20 @@
   "data_quality": {
    "verified_total": 7000,
    "last_audit": "2026-09-25",
-   "verified": 5834,
+   "verified": 5825,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
    "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 136,
+   "def14a_verified_20260917": 133,
    "def14a_verified_20260910": 106,
    "def14a_verified_20260918": 192,
    "component_mismatch": 30,
-   "def14a_verified_20260919": 62,
+   "def14a_verified_20260919": 61,
    "def14a_verified_20260912": 23,
    "def14a_verified_20260908": 12,
    "rounding": 0,
-   "def14a_verified_20260925": 57
+   "def14a_verified_20260925": 70
   },
   "median_ceo_pay": 16715485.5,
   "mean_ceo_pay": 327600383.381323,
@@ -182,20 +182,20 @@
   "data_quality_detailed": {
    "verified_total": 7000,
    "last_audit": "2026-09-25",
-   "verified": 5834,
+   "verified": 5825,
    "def14a_verified_20260909": 217,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
    "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 136,
+   "def14a_verified_20260917": 133,
    "def14a_verified_20260910": 106,
    "def14a_verified_20260918": 192,
    "component_mismatch": 30,
-   "def14a_verified_20260919": 62,
+   "def14a_verified_20260919": 61,
    "def14a_verified_20260912": 23,
    "def14a_verified_20260908": 12,
    "rounding": 0,
-   "def14a_verified_20260925": 57
+   "def14a_verified_20260925": 70
   },
   "companies_with_executives": 514,
   "board_independence_any": 499,
@@ -20085,8 +20085,8 @@
    "total_compensation": 12284216,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 77988,
-   "pay_ratio": 157,
+   "median_worker_pay": 81203,
+   "pay_ratio": 120.7,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000313927",
@@ -20165,9 +20165,10 @@
      "pension_nqdc": 0,
      "all_other": 493583,
      "total": 12284216,
-     "_total_source": "def14a_verified_20260917",
+     "_total_source": "def14a_verified_20260925",
      "_accession": "0001193125-26-115994",
-     "_repair_note_20260917_1000": "Title repaired 2026-09-17 10:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/313927/000119312526115994/chd-20260319.htm"
+     "_repair_note_20260917_1000": "Title repaired 2026-09-17 10:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/313927/000119312526115994/chd-20260319.htm",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-115994): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Matthew T. Farrell",
@@ -20302,10 +20303,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "April",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -25097,12 +25098,12 @@
   {
    "ticker": "CPB",
    "company_name": "The Campbell's Company",
-   "ceo_name": "Mark A",
+   "ceo_name": "Mark A. Clouse",
    "total_compensation": 12260000,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 73352,
-   "pay_ratio": 167,
+   "median_worker_pay": 77798,
+   "pay_ratio": 128,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000016732",
@@ -25152,8 +25153,8 @@
      "_total_source": "verified"
     },
     {
-     "name": "Mark A",
-     "title": "Clouse Former, President and Chief Executive Officer",
+     "name": "Mark A. Clouse",
+     "title": "Former President and Chief Executive Officer",
      "year": 2025,
      "salary": 664015,
      "stock_awards": 8932730,
@@ -25166,28 +25167,30 @@
      "_total_source": "verified"
     },
     {
-     "name": "Mark A",
+     "name": "Mark A. Clouse",
      "year": 2024,
      "salary": 1245292,
      "stock_awards": 8427265,
      "non_equity_incentive": 1758300,
      "all_other": 829143,
      "total": 12260000,
-     "title": "Clouse Former, President and Chief Executive Officer",
+     "title": "Former President and Chief Executive Officer",
      "bonus": 0,
      "option_awards": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001308179-25-000618",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001308179-25-000618): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
-     "name": "Mark A",
+     "name": "Mark A. Clouse",
      "year": 2023,
      "salary": 1202833,
      "stock_awards": 7301734,
      "non_equity_incentive": 2468400,
      "all_other": 726855,
      "total": 11699822,
-     "title": "Clouse Former, President and Chief Executive Officer",
+     "title": "Former President and Chief Executive Officer",
      "bonus": 0,
      "option_awards": 0,
      "pension_nqdc": 0,
@@ -25373,10 +25376,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "February",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "say_on_pay": {
@@ -40357,8 +40360,8 @@
    "total_compensation": 8974550,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 154646,
-   "pay_ratio": 58,
+   "median_worker_pay": 158503,
+   "pay_ratio": 62,
    "sector": "Energy",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000895126",
@@ -40489,7 +40492,9 @@
      "pension_nqdc": 0,
      "all_other": 31616,
      "total": 8974550,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-048155",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-048155): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Domenic J. Dell'Osso Jr",
@@ -40565,10 +40570,12 @@
     "source_url": "https://www.sec.gov/Archives/edgar/data/895126/000089512626000032/exe-20260604.htm"
    },
    "ceo_tenure": {
-    "ceo_name": "Chris Lacy",
-    "start_year": 2023,
-    "confidence": "medium",
-    "source": "manual"
+    "year": 2026,
+    "month": "February",
+    "confidence": "high",
+    "sources": [
+     "prose"
+    ]
    },
    "board_independence": {
     "total_directors": 9,
@@ -52202,8 +52209,8 @@
    "total_compensation": 19360127,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 69571,
-   "pay_ratio": 278,
+   "median_worker_pay": 77679,
+   "pay_ratio": 297,
    "sector": "Information Technology",
    "cik": "0000047217",
    "filing_date": "2026-02-25",
@@ -52304,7 +52311,9 @@
      "all_other": 290419,
      "total": 19360127,
      "title": "Former President and CEO",
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0000047217-26-000015",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0000047217-26-000015): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Enrique J. Lores",
@@ -52386,11 +52395,11 @@
    "total_neo_compensation": 51285132,
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2019,
-    "month": "November",
-    "confidence": "verified",
+    "year": 2026,
+    "month": "February",
+    "confidence": "high",
     "sources": [
-     "manual_verify"
+     "prose"
     ]
    },
    "say_on_pay": {
@@ -52621,7 +52630,7 @@
    "total_compensation": 11640272,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 76751,
+   "median_worker_pay": 78954,
    "pay_ratio": 152,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -52655,7 +52664,9 @@
      "pension_nqdc": 0,
      "all_other": 371141,
      "total": 11640272,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001193125-26-146317",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-146317): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Stanley M. Bergman",
@@ -52829,11 +52840,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "year": 2026,
+    "month": "March",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -55557,8 +55568,8 @@
    "total_compensation": 17459546,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 255918,
-   "pay_ratio": 68,
+   "median_worker_pay": 295914,
+   "pay_ratio": 110.47,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -55599,7 +55610,9 @@
      "non_equity_incentive": 2202829,
      "all_other": 53298,
      "total": 17459546,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0000879169-26-000031",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0000879169-26-000031): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Herv\u00e9 Hoppenot",
@@ -55778,11 +55791,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2014,
-    "month": null,
-    "confidence": "verified",
+    "year": 2025,
+    "month": "June",
+    "confidence": "high",
     "sources": [
-     "manual_verify"
+     "prose"
     ]
    },
    "board_independence": {
@@ -63340,8 +63353,8 @@
    "total_compensation": 15631028,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 34213,
-   "pay_ratio": 457,
+   "median_worker_pay": 34552,
+   "pay_ratio": 417,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -63576,13 +63589,14 @@
      "pension_nqdc": 206800,
      "all_other": 740723,
      "total": 15631028,
-     "_total_source": "def14a_verified_20260919",
+     "_total_source": "def14a_verified_20260925",
      "_original_pension": {
       "pension_nqdc": 740723
      },
      "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total.",
-     "_accession": "",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension-change $206,800 with NEIP=0 (stable across 2025 and 2026 proxies); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')"
+     "_accession": "0001104659-26-060250",
+     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension-change $206,800 with NEIP=0 (stable across 2025 and 2026 proxies); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-060250): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "W. Rodney McMullen",
@@ -63623,11 +63637,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2014,
-    "month": "January",
-    "confidence": "verified",
+    "year": 2026,
+    "month": "February",
+    "confidence": "high",
     "sources": [
-     "manual_verify"
+     "prose"
     ]
    },
    "board_independence": {
@@ -68972,8 +68986,8 @@
    "total_compensation": 10651821,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 51203,
-   "pay_ratio": 208,
+   "median_worker_pay": 52107,
+   "pay_ratio": 249,
    "sector": "Industrials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000062996",
@@ -69206,9 +69220,10 @@
      "pension_nqdc": 0,
      "all_other": 393517,
      "total": 10651821,
-     "_total_source": "def14a_verified_20260917",
+     "_total_source": "def14a_verified_20260925",
      "_accession": "0001193125-26-151241",
-     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/62996/000119312526151241/d44594ddef14a.htm"
+     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/62996/000119312526151241/d44594ddef14a.htm",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-151241): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Keith J. Allman",
@@ -69238,10 +69253,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "July",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "say_on_pay": {
@@ -72787,8 +72802,8 @@
    "total_compensation": 17709651,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 102247,
-   "pay_ratio": 173,
+   "median_worker_pay": 88521,
+   "pay_ratio": 218,
    "sector": "Consumer Staples",
    "cik": "0000865752",
    "filing_date": "2026-03-27",
@@ -72862,7 +72877,9 @@
      "pension_nqdc": 0,
      "all_other": 918566,
      "total": 17709651,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-035990",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-035990): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Rodney C. Sacks",
@@ -73038,10 +73055,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "June",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -88124,8 +88141,8 @@
    "total_compensation": 10974308,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 168002,
-   "pay_ratio": 65,
+   "median_worker_pay": 182127,
+   "pay_ratio": 42,
    "sector": "Utilities",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000764622",
@@ -88207,10 +88224,11 @@
      "pension_nqdc": 1277261,
      "all_other": 29275,
      "total": 10974308,
-     "_total_source": "def14a_verified_20260917",
+     "_total_source": "def14a_verified_20260925",
      "_fix_note": "2026-09-13: stripped ',Former' parser fragment from name; the SCT title ends '...and currently, Special Advisor to the CEO' and the fragment leaked into the name field.",
      "_accession": "0001628280-26-023516",
-     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/764622/000162828026023516/pnw-20260403.htm"
+     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/764622/000162828026023516/pnw-20260403.htm",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001628280-26-023516): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Jeffrey B. Guldner",
@@ -88453,10 +88471,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "April",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -89285,8 +89303,8 @@
    "total_compensation": 28168258,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 96126,
-   "pay_ratio": 293,
+   "median_worker_pay": 100551,
+   "pay_ratio": 198,
    "sector": "Financials",
    "cik": "0001137774",
    "executives": [
@@ -89358,7 +89376,9 @@
      "pension_nqdc": 1247861,
      "all_other": 89755,
      "total": 28168258,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001104659-26-035162",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-035162): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Charles F. Lowrey",
@@ -89522,10 +89542,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "March",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -98918,8 +98938,8 @@
    "total_compensation": 16000281,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 76984,
-   "pay_ratio": 208,
+   "median_worker_pay": 47897,
+   "pay_ratio": 179,
    "sector": "Industrials",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -98980,8 +99000,10 @@
      "option_awards": 2593756,
      "non_equity_incentive": 3632580,
      "total": 16000281,
-     "_total_source": "verified",
-     "all_other": 642731
+     "_total_source": "def14a_verified_20260925",
+     "all_other": 642731,
+     "_accession": "0001140361-26-008170",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001140361-26-008170): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "Donald Allan, Jr.",
@@ -99162,10 +99184,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "October",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -112421,8 +112443,8 @@
    "total_compensation": 17690772,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 10726,
-   "pay_ratio": 1649,
+   "median_worker_pay": 8740,
+   "pay_ratio": 1321,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -112508,7 +112530,9 @@
      "non_equity_incentive": 4326875,
      "all_other": 84766,
      "total": 17690772,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20260925",
+     "_accession": "0001628280-25-044298",
+     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001628280-25-044298): filing-verbatim components, total foots exactly ($0 gap)."
     },
     {
      "name": "David V. Goeckeler",
