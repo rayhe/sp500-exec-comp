@@ -1378,9 +1378,21 @@ def main():
     # International) joins the allowlist — its peer-network node is retained
     # because 10 incoming edges cite it as a benchmarking peer; deleting it
     # would orphan those edges.
-    PEER_ONLY_NODES = {"DDOG", "PINS", "RBLX", "SNAP", "SNOW",
+    # 2026-09-24 22:00 PT run (backlog #10): DDOG promoted from peer-only to
+    # company node (now enriched in compensation.json) — removed from the
+    # allowlist. 20 new peer-only nodes from the APP/HOOD/DDOG CD&A
+    # peer-group reads, tickers SEC-verified via company_tickers.json:
+    # SHOP, TTD, AFRM, DUOL, ETSY, LYFT, CART, RKT, SOFI, ZG, TEAM, HUBS,
+    # NET, MDB, VEEV, OKTA, DOCU, ZM, DT, ZS. (Block cited as "Block, Inc."
+    # -> XYZ, which already existed as a node.) S&P-500 members among them
+    # that are absent from the company table are roster-reconciliation
+    # backlog #11, not this batch. All out_degree 0.
+    PEER_ONLY_NODES = {"PINS", "RBLX", "SNAP", "SNOW",
                        "SPOT", "XYZ", "QRVO", "COHR", "AMKR", "LOGI",
-                       "PSTG", "ROKU", "PARA"}
+                       "PSTG", "ROKU", "PARA", "SHOP", "TTD", "AFRM",
+                       "DUOL", "ETSY", "LYFT", "CART", "RKT", "SOFI",
+                       "ZG", "TEAM", "HUBS", "NET", "MDB", "VEEV",
+                       "OKTA", "DOCU", "ZM", "DT", "ZS"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])

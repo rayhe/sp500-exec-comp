@@ -3,11 +3,11 @@
     "title": "S&P 500 Compensation Peer Group Network",
     "description": "Directional peer group relationships from SEC EDGAR DEF 14A proxy statements",
     "sources": [
-      "470 DEF 14A proxy statements from S&P 500 companies"
+      "467 DEF 14A proxy statements from S&P 500 companies"
     ],
     "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
-    "node_count": 537,
-    "edge_count": 5976,
+    "node_count": 515,
+    "edge_count": 5932,
     "last_updated": "2026-09-24"
   },
   "nodes": [
@@ -78,7 +78,7 @@
       "ticker": "ADBE",
       "name": "Adobe Inc",
       "sector": "Information Technology",
-      "in_degree": 26,
+      "in_degree": 25,
       "out_degree": 25,
       "market_cap_tier": "large",
       "isSource": true
@@ -737,7 +737,7 @@
       "ticker": "CDNS",
       "name": "Cadence Design Systems Inc",
       "sector": "Information Technology",
-      "in_degree": 13,
+      "in_degree": 12,
       "out_degree": 18,
       "market_cap_tier": "large",
       "isSource": true
@@ -917,7 +917,7 @@
       "ticker": "COIN",
       "name": "Coinbase Global Inc",
       "sector": "Financials",
-      "in_degree": 2,
+      "in_degree": 1,
       "out_degree": 4,
       "market_cap_tier": "large",
       "isSource": true
@@ -998,7 +998,7 @@
       "ticker": "CRM",
       "name": "Salesforce Inc",
       "sector": "Information Technology",
-      "in_degree": 32,
+      "in_degree": 31,
       "out_degree": 23,
       "market_cap_tier": "large",
       "isSource": true
@@ -1007,7 +1007,7 @@
       "ticker": "CRWD",
       "name": "Crowdstrike Holdings Inc",
       "sector": "Information Technology",
-      "in_degree": 11,
+      "in_degree": 9,
       "out_degree": 15,
       "market_cap_tier": "large",
       "isSource": true
@@ -1123,7 +1123,7 @@
       "ticker": "DASH",
       "name": "DoorDash Inc",
       "sector": "Consumer Discretionary",
-      "in_degree": 5,
+      "in_degree": 4,
       "out_degree": 12,
       "market_cap_tier": "large",
       "isSource": true
@@ -1147,12 +1147,12 @@
     },
     {
       "ticker": "DDOG",
-      "name": "Datadog, Inc.",
+      "name": "DDOG",
       "sector": "Information Technology",
-      "in_degree": 7,
-      "out_degree": 17,
+      "in_degree": 6,
+      "out_degree": 0,
       "market_cap_tier": "large",
-      "isSource": true
+      "company_name": "Datadog Inc"
     },
     {
       "ticker": "DE",
@@ -1728,7 +1728,7 @@
       "ticker": "FTNT",
       "name": "Fortinet Inc",
       "sector": "Information Technology",
-      "in_degree": 18,
+      "in_degree": 17,
       "out_degree": 2,
       "market_cap_tier": "large",
       "isSource": true
@@ -2148,7 +2148,7 @@
       "ticker": "INTU",
       "name": "Intuit Inc",
       "sector": "Information Technology",
-      "in_degree": 27,
+      "in_degree": 26,
       "out_degree": 40,
       "market_cap_tier": "large",
       "isSource": true
@@ -3014,7 +3014,7 @@
       "ticker": "NOW",
       "name": "ServiceNow Inc",
       "sector": "Information Technology",
-      "in_degree": 24,
+      "in_degree": 23,
       "out_degree": 21,
       "market_cap_tier": "large",
       "isSource": true
@@ -3149,7 +3149,7 @@
       "ticker": "ORCL",
       "name": "Oracle Corp",
       "sector": "Information Technology",
-      "in_degree": 19,
+      "in_degree": 18,
       "out_degree": 14,
       "market_cap_tier": "large",
       "isSource": true
@@ -3185,7 +3185,7 @@
       "ticker": "PANW",
       "name": "Palo Alto Networks Inc",
       "sector": "Information Technology",
-      "in_degree": 20,
+      "in_degree": 18,
       "out_degree": 22,
       "market_cap_tier": "large",
       "isSource": true
@@ -3310,7 +3310,7 @@
       "ticker": "PINS",
       "name": "PINS",
       "sector": "Communication Services",
-      "in_degree": 6,
+      "in_degree": 5,
       "out_degree": 0,
       "market_cap_tier": "large",
       "company_name": "Pinterest Inc"
@@ -3337,7 +3337,7 @@
       "ticker": "PLTR",
       "name": "Palantir Technologies Inc",
       "sector": "Information Technology",
-      "in_degree": 5,
+      "in_degree": 3,
       "out_degree": 8,
       "market_cap_tier": "large",
       "isSource": true
@@ -3688,7 +3688,7 @@
       "ticker": "SNAP",
       "name": "SNAP",
       "sector": "Communication Services",
-      "in_degree": 5,
+      "in_degree": 4,
       "out_degree": 0,
       "market_cap_tier": "large",
       "company_name": "Snap Inc"
@@ -3697,7 +3697,7 @@
       "ticker": "SNOW",
       "name": "SNOW",
       "sector": "Information Technology",
-      "in_degree": 6,
+      "in_degree": 5,
       "out_degree": 0,
       "market_cap_tier": "large",
       "company_name": "Snowflake Inc"
@@ -3706,7 +3706,7 @@
       "ticker": "SNPS",
       "name": "Synopsys Inc",
       "sector": "Information Technology",
-      "in_degree": 17,
+      "in_degree": 16,
       "out_degree": 19,
       "market_cap_tier": "large",
       "isSource": true
@@ -4342,7 +4342,7 @@
       "ticker": "WDAY",
       "name": "Workday Inc",
       "sector": "Information Technology",
-      "in_degree": 28,
+      "in_degree": 27,
       "out_degree": 12,
       "market_cap_tier": "large",
       "isSource": true
@@ -4493,7 +4493,7 @@
       "ticker": "XYZ",
       "name": "XYZ",
       "sector": "Financials",
-      "in_degree": 15,
+      "in_degree": 14,
       "out_degree": 0,
       "market_cap_tier": "large",
       "company_name": "Block Inc"
@@ -4538,7 +4538,7 @@
       "ticker": "IBKR",
       "name": "Interactive Brokers Group, Inc.",
       "sector": "Financials",
-      "in_degree": 1,
+      "in_degree": 0,
       "out_degree": 0,
       "market_cap_tier": "large",
       "isSource": true
@@ -4614,204 +4614,6 @@
       "out_degree": 0,
       "market_cap_tier": "large",
       "isSource": true
-    },
-    {
-      "ticker": "APP",
-      "name": "AppLovin Corporation",
-      "sector": "Information Technology",
-      "in_degree": 0,
-      "out_degree": 13,
-      "market_cap_tier": "large",
-      "isSource": true
-    },
-    {
-      "ticker": "HOOD",
-      "name": "Robinhood Markets, Inc.",
-      "sector": "Financials",
-      "in_degree": 0,
-      "out_degree": 14,
-      "market_cap_tier": "large",
-      "isSource": true
-    },
-    {
-      "ticker": "SHOP",
-      "name": "SHOP",
-      "company_name": "Shopify Inc.",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "TTD",
-      "name": "TTD",
-      "company_name": "Trade Desk, Inc.",
-      "sector": "Communication Services",
-      "in_degree": 2,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "AFRM",
-      "name": "AFRM",
-      "company_name": "Affirm Holdings, Inc.",
-      "sector": "Financials",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "DUOL",
-      "name": "DUOL",
-      "company_name": "Duolingo, Inc.",
-      "sector": "Consumer Discretionary",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "ETSY",
-      "name": "ETSY",
-      "company_name": "Etsy, Inc.",
-      "sector": "Consumer Discretionary",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "LYFT",
-      "name": "LYFT",
-      "company_name": "Lyft, Inc.",
-      "sector": "Industrials",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "CART",
-      "name": "CART",
-      "company_name": "Maplebear Inc.",
-      "sector": "Consumer Staples",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "RKT",
-      "name": "RKT",
-      "company_name": "Rocket Companies, Inc.",
-      "sector": "Financials",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "SOFI",
-      "name": "SOFI",
-      "company_name": "SoFi Technologies, Inc.",
-      "sector": "Financials",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "ZG",
-      "name": "ZG",
-      "company_name": "Zillow Group, Inc.",
-      "sector": "Real Estate",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "TEAM",
-      "name": "TEAM",
-      "company_name": "Atlassian",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "HUBS",
-      "name": "HUBS",
-      "company_name": "HubSpot",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "NET",
-      "name": "NET",
-      "company_name": "Cloudflare",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "MDB",
-      "name": "MDB",
-      "company_name": "MongoDB",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "VEEV",
-      "name": "VEEV",
-      "company_name": "Veeva Systems",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "OKTA",
-      "name": "OKTA",
-      "company_name": "Okta",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "DOCU",
-      "name": "DOCU",
-      "company_name": "DocuSign",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "ZM",
-      "name": "ZM",
-      "company_name": "Zoom Communications, Inc.",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "DT",
-      "name": "DT",
-      "company_name": "Dynatrace",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
-    },
-    {
-      "ticker": "ZS",
-      "name": "ZS",
-      "company_name": "Zscaler",
-      "sector": "Information Technology",
-      "in_degree": 1,
-      "out_degree": 0,
-      "market_cap_tier": "large"
     }
   ],
   "edges": [
@@ -46338,314 +46140,6 @@
       "year": 2025,
       "group_type": "primary",
       "filing": "DEF 14A 2025-10-07"
-    },
-    {
-      "source": "APP",
-      "target": "ADBE",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "ORCL",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "SHOP",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "CDNS",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "PLTR",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "SNPS",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "CRWD",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "PANW",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "TTD",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "DDOG",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "CRM",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "INTU",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "APP",
-      "target": "NOW",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-21"
-    },
-    {
-      "source": "HOOD",
-      "target": "AFRM",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "XYZ",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "COIN",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "DASH",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "DUOL",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "ETSY",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "IBKR",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "LYFT",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "CART",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "PINS",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "RKT",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "SNAP",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "SOFI",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "HOOD",
-      "target": "ZG",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-22"
-    },
-    {
-      "source": "DDOG",
-      "target": "TEAM",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "HUBS",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "TTD",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "NET",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "MDB",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "VEEV",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "CRWD",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "OKTA",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "WDAY",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "DOCU",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "PLTR",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "ZM",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "DT",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "PANW",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "ZS",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "FTNT",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
-    },
-    {
-      "source": "DDOG",
-      "target": "SNOW",
-      "year": 2026,
-      "group_type": "primary",
-      "filing": "DEF 14A 2026-04-29"
     }
   ]
 }
