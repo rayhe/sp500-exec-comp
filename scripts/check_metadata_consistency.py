@@ -305,6 +305,49 @@ def check_json_description(n, meta, failures):
         )
 
 
+# -- Section 4e: header company-count badge truthfulness --------------------
+# The header pill (index.html, id="header-company-count") renders live from
+# metadata.total_companies at load, but the hand-typed no-JS fallback has
+# drifted on three consecutive roster batches (512 -> 514 -> 518), because
+# sections 4/4b/4c/4d never covered it and the live render masked the drift
+# in every headed QA pass (2026-09-26 03:30 PT run). Guard the fallback
+# against metadata.total_companies (comma-formatted, same as the JS live
+# renderer), and cross-check total_companies itself against the live company
+# count so the metadata source cannot drift silently either.
+
+
+def check_header_company_badge(companies, meta, failures):
+    tc = meta.get("total_companies")
+    ncos = len(companies)
+    if not (isinstance(tc, int) and not isinstance(tc, bool) and tc > 0):
+        fail(f"metadata.total_companies={tc!r} not a positive int", failures)
+        return
+    if tc != ncos:
+        fail(
+            f"metadata.total_companies={tc} != live company count {ncos} — "
+            f"sync metadata after roster adds",
+            failures,
+        )
+    want = (
+        f'<span class="badge" id="header-company-count">{tc:,} Companies</span>'
+    )
+    repo_root = os.path.join(HERE, "..")
+    path = os.path.join(repo_root, "index.html")
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        fail(f"section 4e: cannot read index.html: {e}", failures)
+        return
+    if want not in text:
+        fail(
+            f"header-badge fallback drift in index.html: expected {want!r} "
+            f"(from metadata.total_companies={tc}) — sync the static "
+            f"fallback so the no-JS view matches the live badge",
+            failures,
+        )
+
+
 # -- Section 4b: dataq-modal truthfulness ------------------------------------
 # The Data Verification methodology modal (js/app.js) hand-types two values
 # the section-4 headline checks do not cover: the taxonomy-decision count of
@@ -839,6 +882,11 @@ def main():
 
     # 4c. metadata.description self-consistency: the JSON's own headline copy
     check_json_description(n, meta, failures)
+
+    # 4e. header company-count badge: the no-JS fallback in index.html must
+    #     carry the live metadata.total_companies (drifted 512->514->518
+    #     across three roster batches before this check existed)
+    check_header_company_badge(companies, meta, failures)
 
     # 5. company-level aggregate recount: total_neo_compensation must equal
     #    the sum of exec totals for the company's primary fiscal_year, and
