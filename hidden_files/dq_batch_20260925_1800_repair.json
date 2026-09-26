@@ -1,0 +1,573 @@
+{
+ "batch": "dq_batch_20260925_1800",
+ "generated": "2026-09-25T18:00:00-07:00",
+ "method": "primary-source DEF 14A SCT re-read via EDGAR Archives (curl, UA Kit/1.0); browser text-fetch path returned HTTP 403",
+ "counts": {
+  "no_change_verified": 13,
+  "repair_components": 4,
+  "filing_does_not_foot_keep_total": 7,
+  "missing_component_found": 0
+ },
+ "rows": [
+  {
+   "ticker": "SBUX",
+   "name": "Sara Kelly",
+   "year": 2024,
+   "filing_values": {
+    "salary": 631827,
+    "bonus": 0,
+    "stock_awards": 2757442,
+    "option_awards": null,
+    "non_equity_incentive": 244292,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 70993,
+    "total": 3562568
+   },
+   "filing_foots": false,
+   "sum_minus_total": 141986,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/829224/000121390026007780/ea0270973-01.htm"
+  },
+  {
+   "ticker": "BE",
+   "name": "Maciej Kurzymski",
+   "year": 2025,
+   "filing_values": {
+    "salary": 416985,
+    "bonus": null,
+    "stock_awards": 569240,
+    "option_awards": null,
+    "non_equity_incentive": 339200,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 305,
+    "total": 1664930
+   },
+   "filing_foots": false,
+   "sum_minus_total": -339200,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (be-20260408.htm): all components and total match filing verbatim; -$339,200: components sum 1,325,730 vs printed 1,664,930 -- genuine filing-side arithmetic inconsistency (filing does not foot); total retained verbatim, no correction invented."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1664703/000162828026024237/be-20260408.htm"
+  },
+  {
+   "ticker": "APH",
+   "name": "C.A. Lampo",
+   "year": 2023,
+   "filing_values": {
+    "salary": 680000,
+    "bonus": 0,
+    "stock_awards": null,
+    "option_awards": 2981331,
+    "non_equity_incentive": 0,
+    "pension_nqdc": null,
+    "pension_change": 2600,
+    "all_other": 114786,
+    "total": 3715717
+   },
+   "filing_foots": false,
+   "sum_minus_total": 63000,
+   "verdict": "repair_components",
+   "corrected_fields": {
+    "stock_awards": null,
+    "pension_nqdc": null,
+    "pension_change": 2600,
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261344-1_def14a.htm): all components and total match filing verbatim; +$63,000: components sum 3,778,717 vs printed 3,715,717 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. Attribution fixes: $2,600 in 'Change in Pension Value and NQDC Earnings' is an increase in pension value per footnote (3) (actuarial assumption change), moved pension_nqdc -> pension_change; stock awards printed 'n/a' -> null."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926040688/tm261344-1_def14a.htm"
+  },
+  {
+   "ticker": "CDNS",
+   "name": "Paul Scannell",
+   "year": 2024,
+   "filing_values": {
+    "salary": 429948,
+    "bonus": null,
+    "stock_awards": 2693905,
+    "option_awards": 1384209,
+    "non_equity_incentive": 476473,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 10457,
+    "total": 5172527
+   },
+   "filing_foots": false,
+   "sum_minus_total": -177535,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/813672/000119312526124264/d932644ddef14a.htm"
+  },
+  {
+   "ticker": "CDNS",
+   "name": "Paul Cunningham",
+   "year": 2024,
+   "filing_values": {
+    "salary": 475000,
+    "bonus": null,
+    "stock_awards": 2886516,
+    "option_awards": 1473202,
+    "non_equity_incentive": 496452,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 11946,
+    "total": 5323116
+   },
+   "filing_foots": false,
+   "sum_minus_total": 20000,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/813672/000119312526124264/d932644ddef14a.htm"
+  },
+  {
+   "ticker": "CDNS",
+   "name": "Paul Cunningham",
+   "year": 2023,
+   "filing_values": {
+    "salary": 450000,
+    "bonus": null,
+    "stock_awards": 2541824,
+    "option_awards": 1307264,
+    "non_equity_incentive": 594990,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 11222,
+    "total": 4930300
+   },
+   "filing_foots": false,
+   "sum_minus_total": -25000,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/813672/000119312526124264/d932644ddef14a.htm"
+  },
+  {
+   "ticker": "FDS",
+   "name": "Helen L. Shan",
+   "year": 2023,
+   "filing_values": {
+    "salary": 498077,
+    "bonus": null,
+    "stock_awards": 825221,
+    "option_awards": 825072,
+    "non_equity_incentive": 607150,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 13200,
+    "total": 2737784
+   },
+   "filing_foots": false,
+   "sum_minus_total": 30936,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1013237/000162828025046442/fds-20251027.htm"
+  },
+  {
+   "ticker": "WAB",
+   "name": "Pascal Schweitzer",
+   "year": 2023,
+   "filing_values": {
+    "salary": 581478,
+    "bonus": null,
+    "stock_awards": 1716155,
+    "option_awards": null,
+    "non_equity_incentive": 1025795,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 398159,
+    "total": 3754634
+   },
+   "filing_foots": false,
+   "sum_minus_total": -33047,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (wab-20260330.htm): all components and total match filing verbatim; -$33,047: components sum 3,721,587 vs printed 3,754,634 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. (WAB SCT has no Bonus/Option/Pension columns; CHF amounts converted at fiscal-year-end rate per footnote (4).)"
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/943452/000162828026022197/wab-20260330.htm"
+  },
+  {
+   "ticker": "NEE",
+   "name": "Charles E. Sieving",
+   "year": 2023,
+   "filing_values": {
+    "salary": 1274300,
+    "bonus": 0,
+    "stock_awards": 2665736,
+    "option_awards": 509894,
+    "non_equity_incentive": 1641300,
+    "pension_nqdc": 423332,
+    "pension_change": null,
+    "all_other": 207615,
+    "total": 6772178
+   },
+   "filing_foots": false,
+   "sum_minus_total": -50001,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm247418-2_def14a.htm): all components and total match filing verbatim; -$50,001: components sum 6,722,177 vs printed 6,772,178 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/753308/000110465924041966/tm247418-2_def14a.htm"
+  },
+  {
+   "ticker": "RF",
+   "name": "John M. Turner, Jr",
+   "year": 2023,
+   "filing_values": {
+    "salary": 1095481,
+    "bonus": null,
+    "stock_awards": 3624103,
+    "option_awards": null,
+    "non_equity_incentive": 4147280,
+    "pension_nqdc": null,
+    "pension_change": 25161,
+    "all_other": 325693,
+    "total": 9217718
+   },
+   "filing_foots": true,
+   "sum_minus_total": 0,
+   "verdict": "repair_components",
+   "corrected_fields": {
+    "all_other": 325693,
+    "pension_nqdc": null,
+    "pension_change": 25161,
+    "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $5,060 of filing total $9,217,718; queued for filing re-verification. | 2026-09-25 DQ re-verified against primary DEF 14A SCT (rf-20240304.htm): REPAIRED -- all_other 330,753 -> 325,693 per filing (breakdown 88,740 + 16,500 + 213,853 + 6,600 = 325,693); components now foot to printed total 9,217,718 exactly. Pension column re-attributed pension_nqdc -> pension_change ($25,161): proxy states no above-market NQDC earnings for any NEO, and Turner froze his SERP benefit."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1281761/000128176124000016/rf-20240304.htm"
+  },
+  {
+   "ticker": "RF",
+   "name": "David R. Keenan",
+   "year": 2023,
+   "filing_values": {
+    "salary": 590962,
+    "bonus": null,
+    "stock_awards": 776607,
+    "option_awards": null,
+    "non_equity_incentive": 1045044,
+    "pension_nqdc": null,
+    "pension_change": 179336,
+    "all_other": 109623,
+    "total": 2701572
+   },
+   "filing_foots": true,
+   "sum_minus_total": 0,
+   "verdict": "repair_components",
+   "corrected_fields": {
+    "all_other": 109623,
+    "pension_nqdc": null,
+    "pension_change": 179336,
+    "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $1,180 of filing total $2,701,572; queued for filing re-verification. | 2026-09-25 DQ re-verified against primary DEF 14A SCT (rf-20240304.htm): REPAIRED -- all_other 110,803 -> 109,623 per filing; components now foot to printed total 2,701,572 exactly. Pension column re-attributed pension_nqdc -> pension_change ($179,336): proxy states no above-market NQDC earnings for any NEO."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1281761/000128176124000016/rf-20240304.htm"
+  },
+  {
+   "ticker": "TSCO",
+   "name": "Harry A. Lawton III",
+   "year": 2024,
+   "filing_values": {
+    "salary": 1294231,
+    "bonus": null,
+    "stock_awards": 6562207,
+    "option_awards": 2187455,
+    "non_equity_incentive": 1689691,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 43879,
+    "total": 11773463
+   },
+   "filing_foots": false,
+   "sum_minus_total": 4000,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/916365/000119312525065591/d880373ddef14a.htm"
+  },
+  {
+   "ticker": "TSCO",
+   "name": "Robert D. Mills",
+   "year": 2024,
+   "filing_values": {
+    "salary": 670846,
+    "bonus": null,
+    "stock_awards": 981628,
+    "option_awards": 324965,
+    "non_equity_incentive": 438670,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 43308,
+    "total": 2459917
+   },
+   "filing_foots": false,
+   "sum_minus_total": -500,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/916365/000119312525065591/d880373ddef14a.htm"
+  },
+  {
+   "ticker": "GPN",
+   "name": "Cameron M. Bready",
+   "year": 2025,
+   "filing_values": {
+    "salary": 1050000,
+    "bonus": null,
+    "stock_awards": 12129964,
+    "option_awards": 4002022,
+    "non_equity_incentive": 2903553,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 223853,
+    "total": 20307392
+   },
+   "filing_foots": false,
+   "sum_minus_total": 2000,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1123360/000110465926029453/tm261348-1_def14a.htm"
+  },
+  {
+   "ticker": "KR",
+   "name": "Ronald L. Sargent",
+   "year": 2025,
+   "filing_values": {
+    "salary": 3975806,
+    "bonus": null,
+    "stock_awards": 10000077,
+    "option_awards": null,
+    "non_equity_incentive": null,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 62016,
+    "total": 14037608
+   },
+   "filing_foots": false,
+   "sum_minus_total": 291,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261573d1_def14a.htm, FY2025 proxy): all components and total match filing verbatim; +$291: components sum 14,037,899 vs printed 14,037,608 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm"
+  },
+  {
+   "ticker": "KR",
+   "name": "Todd A. Foley",
+   "year": 2024,
+   "filing_values": {
+    "salary": 596613,
+    "bonus": 600000,
+    "stock_awards": 1700050,
+    "option_awards": 299965,
+    "non_equity_incentive": 759767,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 83025,
+    "total": 4039390
+   },
+   "filing_foots": false,
+   "sum_minus_total": 30,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm252618d1_def14a.htm, FY2024 proxy): all components and total match filing verbatim; +$30: components sum 4,039,420 vs printed 4,039,390 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/56873/000110465925049009/tm252618d1_def14a.htm"
+  },
+  {
+   "ticker": "CPRT",
+   "name": "Leah C. Stearns",
+   "year": 2023,
+   "filing_values": {
+    "salary": 349039,
+    "bonus": null,
+    "stock_awards": 3942000,
+    "option_awards": 5110638,
+    "non_equity_incentive": 300000,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 5250,
+    "total": 9706972
+   },
+   "filing_foots": false,
+   "sum_minus_total": -45,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (d872193ddef14a.htm): all components and total match filing verbatim; -$45: components sum 9,706,927 vs printed 9,706,972 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/900075/000119312524242623/d872193ddef14a.htm"
+  },
+  {
+   "ticker": "ALB",
+   "name": "Melissa H. Anderson",
+   "year": 2024,
+   "filing_values": {
+    "salary": 551250,
+    "bonus": null,
+    "stock_awards": 985342,
+    "option_awards": 312508,
+    "non_equity_incentive": 462389,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 128941,
+    "total": 2440430
+   },
+   "filing_foots": true,
+   "sum_minus_total": 0,
+   "verdict": "repair_components",
+   "corrected_fields": {
+    "stock_awards": 985342,
+    "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430. Relabeled DEF14A-verified 2026-09-07 -> rounding 2026-09-09: residual delta $-90 remains unexplained after DEF 14A repair; components close to but not exactly the stated total. | Relabeled rounding -> component_mismatch 2026-09-11: filing-side $90 arithmetic error confirmed (components 2,440,520 vs printed 2,440,430; filing values match verbatim), per CDNS/TSCO/RF 2026-09-10 precedent. | 2026-09-25 DQ re-verified against primary DEF 14A SCT (alb-20250327.htm): REPAIRED -- stock_awards 985,432 -> 985,342 (filing prints 985,342; the prior '$90 filing-side arithmetic error' claim was WRONG -- it was a data transcription transposition). Components now foot to printed total 2,440,430 exactly."
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/915913/000091591325000072/alb-20250327.htm"
+  },
+  {
+   "ticker": "TAP",
+   "name": "Michelle St. Jacques",
+   "year": 2024,
+   "filing_values": {
+    "salary": 728671,
+    "bonus": null,
+    "stock_awards": 1155007,
+    "option_awards": 375008,
+    "non_equity_incentive": 593340,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 208342,
+    "total": 3060390
+   },
+   "filing_foots": false,
+   "sum_minus_total": -22,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000155837025004296/tap-20250514xdef14a.htm"
+  },
+  {
+   "ticker": "TAP",
+   "name": "Natalie Maciolek",
+   "year": 2024,
+   "filing_values": {
+    "salary": 595253,
+    "bonus": null,
+    "stock_awards": 924031,
+    "option_awards": 300003,
+    "non_equity_incentive": 454699,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 128200,
+    "total": 2402156
+   },
+   "filing_foots": false,
+   "sum_minus_total": 30,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000155837025004296/tap-20250514xdef14a.htm"
+  },
+  {
+   "ticker": "NI",
+   "name": "Melody Birmingham",
+   "year": 2024,
+   "filing_values": {
+    "salary": 665883,
+    "bonus": null,
+    "stock_awards": 1583297,
+    "option_awards": null,
+    "non_equity_incentive": 975000,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 77285,
+    "total": 3301416
+   },
+   "filing_foots": false,
+   "sum_minus_total": 49,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1111711/000114036125011195/ny20036073x1_def14a.htm"
+  },
+  {
+   "ticker": "DRI",
+   "name": "Rajesh Vennam",
+   "year": 2023,
+   "filing_values": {
+    "salary": 687019,
+    "bonus": null,
+    "stock_awards": 1445747,
+    "option_awards": 445487,
+    "non_equity_incentive": 619004,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 158062,
+    "total": 3355329
+   },
+   "filing_foots": false,
+   "sum_minus_total": -10,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/940944/000095017024090429/dri-20240801.htm"
+  },
+  {
+   "ticker": "LITE",
+   "name": "Wajid Ali",
+   "year": 2023,
+   "filing_values": {
+    "salary": 549077,
+    "bonus": null,
+    "stock_awards": 4385372,
+    "option_awards": null,
+    "non_equity_incentive": 159427,
+    "pension_nqdc": null,
+    "pension_change": null,
+    "all_other": 3666,
+    "total": 5097242
+   },
+   "filing_foots": false,
+   "sum_minus_total": 300,
+   "verdict": "filing_does_not_foot_keep_total",
+   "corrected_fields": {
+    "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (lite4368861_def14a.htm): all components and total match filing verbatim; +$300: components sum 5,097,542 vs printed 5,097,242 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. (Lumentum SCT has no Bonus/Option/Pension columns.)"
+   },
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1633978/000130817924000748/lite4368861_def14a.htm"
+  },
+  {
+   "ticker": "EMN",
+   "name": "Christopher M. Killian",
+   "year": 2025,
+   "filing_values": {
+    "salary": 648253,
+    "bonus": 0,
+    "stock_awards": 1932705,
+    "option_awards": 499531,
+    "non_equity_incentive": 263670,
+    "pension_nqdc": 276581,
+    "pension_change": null,
+    "all_other": 75286,
+    "total": 3696226
+   },
+   "filing_foots": false,
+   "sum_minus_total": -200,
+   "verdict": "no_change_verified",
+   "corrected_fields": {},
+   "new_parse_note": null,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/915389/000091538926000074/emn-20260324.htm"
+  }
+ ]
+}
