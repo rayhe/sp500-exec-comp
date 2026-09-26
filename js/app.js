@@ -7840,6 +7840,19 @@ function setupDetailPanel(companies) {
         html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
         html += '</div>';
 
+        // S&P 500 index-status banner: 30 companies carry a curated _index_note
+        // removal/rename/merger annotation in compensation.json; surface it at
+        // the top of the detail panel so index-removal provenance is visible
+        // where the pay figures are read, instead of silently presenting a
+        // removed company's figures as a current constituent's. pvpEsc covers
+        // the FISV "FI -> FISV" arrow and quoted ticker strings in the notes.
+        if (company._index_note) {
+            html += '<div class="detail-index-note" role="note">'
+                + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+                + '<span><strong>Index status:</strong> ' + pvpEsc(company._index_note) + '</span>'
+                + '</div>';
+        }
+
         // --- Auto-generated Compensation Profile Summary ---
         (function() {
             var sentences = [];

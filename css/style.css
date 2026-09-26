@@ -14763,6 +14763,38 @@ body.light-mode .cross-sector-pair-select:focus {
     border-left: 2px solid #fbbf24;
     padding-left: 10px;
 }
+/* S&P 500 index-status banner (per-company detail panel): surfaces the
+   curated _index_note removal/rename/merger annotation (30 companies) at the
+   top of the panel, so index-removal provenance is visible where the pay
+   figures are read rather than silently ignored. Same amber-left-border
+   language as .pvp-excluded; text color is theme-safe via --text-secondary. */
+.detail-index-note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 10px 0 14px;
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    border-left: 3px solid #fbbf24;
+    background: rgba(251, 191, 36, 0.06);
+    border-radius: 0 6px 6px 0;
+}
+.detail-index-note svg {
+    flex: none;
+    margin-top: 2px;
+}
+.detail-index-note strong {
+    color: var(--text-primary);
+}
+@media (max-width: 640px) {
+    .detail-index-note {
+        font-size: 0.76rem;
+        padding: 8px 10px;
+        margin-bottom: 10px;
+    }
+}
 /* PvP standing-exclusion list (Data Verification modal): grouped by exclusion
    class. Tickers in the mono font, reasons in theme-safe secondary text.
    Quiet styling — this is an audit list, not a headline. */
