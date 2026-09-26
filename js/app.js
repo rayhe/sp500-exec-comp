@@ -1703,6 +1703,14 @@ function setupReactiveMetrics(companies, comp, trends) {
         strip.style.borderTop = '3px solid ' + sectorColor;
         strip.style.transition = 'border-color 0.3s';
 
+        // Benchmark-only trend adornments (.metric-trend sparklines + YoY
+        // badges — all S&P 500 / Equilar index series) would otherwise sit
+        // under sector-median values and imply a trajectory those values do
+        // not follow. Hide them while the sector filter is active; the
+        // restore path re-shows them when the filter clears. No-op when
+        // trends.json failed to load (no trend divs exist).
+        strip.querySelectorAll('.metric-trend').forEach(function(t) { t.style.display = 'none'; });
+
         function fmtDelta(sv, sp) {
             if (sv == null || sp == null || sp === 0) return '';
             var p = ((sv - sp) / sp * 100);
@@ -1793,6 +1801,9 @@ function setupReactiveMetrics(companies, comp, trends) {
 function _restoreDefaultMetrics(strip) {
     if (!_sp500Metrics) return;
     strip.style.borderTop = '';
+
+    // Re-show benchmark trend adornments hidden by the sector-filter path.
+    strip.querySelectorAll('.metric-trend').forEach(function(t) { t.style.display = ''; });
 
     var me = document.getElementById('metric-median');
     var md = document.getElementById('metric-median-delta');
