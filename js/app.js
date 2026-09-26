@@ -1515,8 +1515,11 @@ function populateMetrics(comp, trends) {
     // with their benchmark trend. Rendered as a separate .metric-trend div
     // (sibling of the delta row, not inside it) because the reactive sector
     // path rewrites delta/sub textContent on filter changes - a sibling div
-    // survives that. Cards without a series (Highest Paid, SoP, 5-Yr Growth,
-    // Data Verification) keep their existing single-stat form.
+    // survives that. Cards without a series (Highest Paid, SoP,
+    // Data Verification) keep their existing single-stat form. The 5-Yr
+    // Growth card (2026-09-26 14:00 PT) gets an indexed growth-path
+    // sparkline rather than the level series, so it narrates the card's
+    // +32% headline instead of duplicating the Median CEO Pay sparkline.
     (function renderMetricTrendSparks() {
         if (!trends) return;
         function sparkSvg(xs, ys, label) {
@@ -1535,7 +1538,7 @@ function populateMetrics(comp, trends) {
             svg += '<circle cx="' + lastXY[0] + '" cy="' + lastXY[1] + '" r="2.8" fill="rgba(0,180,216,1)"/>';
             return svg + '</svg>';
         }
-        function addTrend(deltaElId, series, yKey, sparkLabel, badgeLabel) {
+        function addTrend(deltaElId, series, yKey, sparkLabel, badgeLabel, extraClass) {
             var deltaEl = document.getElementById(deltaElId);
             if (!deltaEl || !Array.isArray(series) || series.length < 2) return;
             var xs = [], ys = [];
@@ -1550,7 +1553,7 @@ function populateMetrics(comp, trends) {
             var raw = series[series.length - 1].yoy_change;
             var n = raw == null ? NaN : parseFloat(String(raw).replace('%', ''));
             var wrap = document.createElement('div');
-            wrap.className = 'metric-trend';
+            wrap.className = 'metric-trend' + (extraClass ? ' ' + extraClass : '');
             wrap.title = sparkLabel;
             var badge = '';
             if (!isNaN(n)) {
@@ -1576,6 +1579,27 @@ function populateMetrics(comp, trends) {
             trends.median_worker_pay_by_year && trends.median_worker_pay_by_year.data, 'median_worker_pay',
             'S&P 500 median worker pay trend, 2023-2025 (Conference Board / Equilar)',
             'Year-over-year change in S&P 500 median worker pay');
+        // 5-Year Growth card (2026-09-26 14:00 PT): the level series above
+        // already feeds the Median CEO Pay card, so this card gets the growth
+        // PATH instead - the same medians indexed to 100 at 2020. It narrates
+        // the card's +32% headline (steady climb vs back-loaded) rather than
+        // duplicating the level sparkline. Pinned (not hidden) under a sector
+        // filter: the card's value stays S&P 500 in the sector path
+        // (_updateMetricsStrip section 7 only resets its label), so the
+        // trajectory never mismatches the displayed number.
+        (function addGrowthPathTrend() {
+            var md = trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data;
+            if (!Array.isArray(md) || md.length < 2 || md[0].median_pay == null) return;
+            var base = +md[0].median_pay;
+            if (!base) return;
+            var series = md.map(function(d) {
+                return { year: d.year, idx: 100 * (+d.median_pay) / base, yoy_change: d.yoy_change };
+            });
+            addTrend('metric-5yr-sub', series, 'idx',
+                'S&P 500 median CEO pay indexed to 100 at 2020 (Equilar/AP)',
+                'Year-over-year change in S&P 500 median CEO pay',
+                'metric-trend-pinned');
+        })();
         // Stock awards card: no year series, but the composition block carries a
         // YoY change for median stock award value - badge only, no sparkline.
         (function addStockYoyBadge() {
@@ -1708,8 +1732,12 @@ function setupReactiveMetrics(companies, comp, trends) {
         // under sector-median values and imply a trajectory those values do
         // not follow. Hide them while the sector filter is active; the
         // restore path re-shows them when the filter clears. No-op when
-        // trends.json failed to load (no trend divs exist).
-        strip.querySelectorAll('.metric-trend').forEach(function(t) { t.style.display = 'none'; });
+        // trends.json failed to load (no trend divs exist). Exception: the
+        // .metric-trend-pinned growth-path sparkline on the 5-Year Growth
+        // card stays visible — that card's value never switches to sector
+        // (section 7 below only resets its label), so its S&P 500 trajectory
+        // still matches the displayed number.
+        strip.querySelectorAll('.metric-trend:not(.metric-trend-pinned)').forEach(function(t) { t.style.display = 'none'; });
 
         function fmtDelta(sv, sp) {
             if (sv == null || sp == null || sp === 0) return '';
@@ -16846,7 +16874,7 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-26)</h4>' +
-                '<p>7,038 of 7,070 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,046 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
