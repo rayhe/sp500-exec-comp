@@ -205,6 +205,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260919": "def14a_verified_20260919",
     "def14a_verified_20260924": "def14a_verified_20260924",
     "def14a_verified_20260925": "def14a_verified_20260925",
+    "def14a_verified_20260926": "def14a_verified_20260926",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
@@ -1368,6 +1369,11 @@ def main():
     #     list) is a queued company-list refresh, not a section-10
     #     failure — do not "fix" it by hand-editing either list.
     KNOWN_COVERAGE_GAPS = {"AOS", "CPRT"}
+    # 2026-09-26 02:00 PT run: ARES (no extractable compensation peer-group
+    # disclosure in its 2026-04-20 DEF 14A — CD&A cites only generic "comparative
+    # analyses against peer companies" via Korn Ferry) and VMRK (no DEF 14A
+    # filed yet; formed 2026-08-17) join the known peer-network coverage gaps.
+    KNOWN_COVERAGE_GAPS |= {"ARES", "VMRK"}
     # 2026-09-24 18:00 PT run: MRVL promoted from peer-only to company node
     # (now in compensation.json); 6 new peer-only nodes from the MRVL/SNDK
     # CD&A peer-group reads: QRVO (ex-S&P 500, removed Dec 2024), COHR
@@ -1404,7 +1410,7 @@ def main():
     # the CD&A peer groups cite them. LITE is a company node, not
     # peer-only. All out_degree 0.
     PEER_ONLY_NODES = {"PINS", "RBLX", "SNAP", "SNOW",
-                       "SPOT", "XYZ", "QRVO", "AMKR", "LOGI",
+                       "SPOT", "QRVO", "AMKR", "LOGI",
                        "ROKU", "PARA", "SHOP", "TTD", "AFRM",
                        "DUOL", "ETSY", "LYFT", "CART", "RKT", "SOFI",
                        "ZG", "TEAM", "HUBS", "NET", "MDB", "VEEV",
@@ -1419,7 +1425,18 @@ def main():
                        "SMTC", "SNDR", "SYNA", "TFII", "TLN", "VIAV",
                        "VSAT", "VYX", "WOLF", "XPO",
                        "AVTR", "BIO", "BMRN", "BOX", "BRKR", "DBX",
-                       "ESTC", "EXAS", "GWRE", "JAZZ", "NTNX"}
+                       "ESTC", "EXAS", "GWRE", "JAZZ", "NTNX",
+                       # 2026-09-26 02:00 PT run: XYZ promoted to company node
+                       # (now enriched in compensation.json) — removed from the
+                       # allowlist. 5 new peer-only nodes from the RDDT/Block/
+                       # Fiserv CD&A peer-group reads, tickers SEC-verified via
+                       # company_tickers.json 2026-09-26: TOST, TWLO, U, PPLI
+                       # (People Incorporated, formerly IAC Inc., renamed
+                       # 2026-06-04); DFS (Discover Financial Services, delisted
+                       # via Capital One acquisition May 2025) retained per the
+                       # PARA/QRVO/COMM/SMAR delisted-peer precedent because
+                       # Fiserv's 2025 CD&A peer group cites it.
+                       "TOST", "TWLO", "U", "PPLI", "DFS"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])

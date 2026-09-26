@@ -16821,12 +16821,12 @@ function setupDualSparklineTooltips() {
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
-                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-25)</h4>' +
-                '<p>7,000 of 7,030 NEO rows verified (99.6%): 0 rounding, 0 recomputed, 30 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-26)</h4>' +
+                '<p>7,038 of 7,070 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-09-25 screen: 386 of 512 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 13 cluster near 2x, 11 near 0.5x, 102 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-09-26 screen: 388 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 13 cluster near 2x, 11 near 0.5x, 102 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
                 '<p id="dataq-transitions-counts">As of the 2026-09-24 screen: 26 (name, fiscal year) tuples appear as NEO rows at two different companies; all 26 triaged by tuple: 19 genuine &mdash; 8 mid-year executive transitions (incl. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off, and John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 11 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents); 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR); 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
@@ -16871,7 +16871,7 @@ function setupDualSparklineTooltips() {
         if (!dq || dq.verified_total == null || !total) return null;
         var pct = (100 * dq.verified_total / total).toFixed(1);
         var recomp = (dq.recomputed == null ? 0 : dq.recomputed);
-        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-25') + ')</h4>' +
+        return '<h4>Coverage (last audit ' + (dq.last_audit || '2026-09-26') + ')</h4>' +
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
             ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
