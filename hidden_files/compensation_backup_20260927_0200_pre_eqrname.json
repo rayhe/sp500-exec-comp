@@ -128,7 +128,7 @@
   },
   "edgar_coverage": 517,
   "total_companies": 518,
-  "last_updated": "2026-09-27",
+  "last_updated": "2026-09-26",
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
@@ -14605,8 +14605,7 @@
      "all_other": 0,
      "total": 19897221,
      "_total_source": "def14a_verified_20260917",
-     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim. Components sum $1 off printed total (filing-side rounding gap, kept verbatim).",
-     "_reverify_20260927_0200": "Re-verified 2026-09-27 02:00 PT against primary 2026 DEF 14A SCT (d939028ddef14a.htm): negative Non-Equity Incentive Plan Compensation values are filing-verbatim (parenthetical: $(171,000) Simonelli 2024, $(5,732) Borras 2024); all components foot exactly to printed totals. Genuine filing-side value, not a parse artifact; no correction invented."
+     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim. Components sum $1 off printed total (filing-side rounding gap, kept verbatim)."
     },
     {
      "name": "Lorenzo Simonelli",
@@ -14666,8 +14665,7 @@
      "all_other": 0,
      "total": 5728116,
      "_total_source": "def14a_verified_20260917",
-     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim. Components sum $1 off printed total (filing-side rounding gap, kept verbatim).",
-     "_reverify_20260927_0200": "Re-verified 2026-09-27 02:00 PT against primary 2026 DEF 14A SCT (d939028ddef14a.htm): negative Non-Equity Incentive Plan Compensation values are filing-verbatim (parenthetical: $(171,000) Simonelli 2024, $(5,732) Borras 2024); all components foot exactly to printed totals. Genuine filing-side value, not a parse artifact; no correction invented."
+     "_repair_note_20260917_1400": "2026-09-17: column-shift rebuild from FY2025 DEF 14A SCT (d939028ddef14a.htm). Values filing-verbatim. Components sum $1 off printed total (filing-side rounding gap, kept verbatim)."
     },
     {
      "name": "Maria Claudia Borras",
@@ -38276,7 +38274,7 @@
   },
   {
    "ticker": "EQR",
-   "company_name": "Equity Residential",
+   "company_name": "Residential",
    "ceo_name": "Mark J. Parrell",
    "total_compensation": 11359954,
    "fiscal_year": 2024,
@@ -38516,8 +38514,7 @@
     "source": "DEF 14A 2026-04-14",
     "source_url": "https://www.sec.gov/Archives/edgar/data/906107/000119312526155007/eqr-20260410.htm"
    },
-   "_index_note": "Merged into Vivmark Residential (ticker VMRK) effective 2026-08-17 (AvalonBay/Equity Residential merger of equals). Retained with historical NEO coverage.",
-   "_name_note_20260927_0200": "2026-09-27 02:00 PT: company_name repaired Residential -> Equity Residential (truncation artifact found by short-name audit). Verified against primary 2026 DEF 14A eqr-20260410.htm (filed 2026-04-14, accession 0001193125-26-155007): 100 occurrences of \"Equity Residential\"; EQR was the pre-merger issuer. Retained with historical NEO coverage per VMRK merger note (2026-08-17)."
+   "_index_note": "Merged into Vivmark Residential (ticker VMRK) effective 2026-08-17 (AvalonBay/Equity Residential merger of equals). Retained with historical NEO coverage."
   },
   {
    "ticker": "EQT",
@@ -120278,8 +120275,8 @@
    "ceo_tenure": "",
    "board_independence": "",
    "executives": [],
-   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-27: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files."
+   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). No DEF 14A filed yet as of 2026-09-26; queued for enrichment when first proxy files."
   }
  ],
- "last_updated": "2026-09-27"
+ "last_updated": "2026-09-26"
 }
