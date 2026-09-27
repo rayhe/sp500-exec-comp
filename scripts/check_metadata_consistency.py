@@ -206,6 +206,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260924": "def14a_verified_20260924",
     "def14a_verified_20260925": "def14a_verified_20260925",
     "def14a_verified_20260926": "def14a_verified_20260926",
+    "def14a_verified_20260927": "def14a_verified_20260927",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.
@@ -1316,25 +1317,45 @@ def main():
     #    total_neo_compensation for affected tickers is inflated wherever
     #    the corrupted year is the anchor fiscal year; section 5 cannot see
     #    it because the aggregate faithfully sums the corrupted rows.
+    #    2026-09-27 06:00 PT DG precedent (wide-gap sub-variant): the 10%
+    #    band systematically MISSES the same corruption when the dropped
+    #    salary is a larger fraction of the filing total (non-CEO NEOs).
+    #    Under the shift model stored.total = 2*filing_total - salary, so
+    #    |tot - 2*ao| IS the dropped salary exactly (DG Dilts 2024: 762,529
+    #    = filing salary to the dollar). The generalized rule is
+    #    1 < tot/ao < 2 with a salary-plausible ABSOLUTE gap
+    #    ($100K-$2.5M): 48 rows / 16 tickers matched on 2026-09-27, DG's 11
+    #    repaired filing-verbatim this run, the remaining 37 queued for
+    #    filing-by-filing verification. Limitation: bonus > 0 is still
+    #    required, so rows whose filing stock_awards is 0 (DG Vasos 2023:
+    #    filing stock em-dash) escape both bands and need the filing
+    #    re-read (caught here only because the whole DG company was corrupt).
     for c in companies:
         for e in c.get("executives", []):
             sal = e.get("salary") or 0
             bonus = e.get("bonus") or 0
             ao = e.get("all_other") or 0
             tot = e.get("total") or 0
+            gap = abs(tot - 2 * ao) if (ao > 0 and tot > 0) else None
+            classic = gap is not None and gap <= 0.10 * tot
+            wide_gap = (
+                gap is not None
+                and 1 < tot / ao < 2
+                and 100_000 < gap < 2_500_000
+            )
             if (
                 sal == 0
                 and bonus > 0
                 and ao > 0
                 and tot > 0
-                and abs(tot - 2 * ao) <= 0.10 * tot
+                and (classic or wide_gap)
             ):
                 print(
                     f"  warning: {c.get('ticker')} {e.get('year')} "
                     f"{e.get('name')!r}: salary $0 with bonus "
                     f"${bonus:,} and total ${tot:,} ~= 2x all_other "
-                    f"${ao:,} — salary-drop column-shift signature (8); "
-                    f"verify vs DEF 14A SCT before repair"
+                    f"${ao:,} (gap ${gap:,}) — salary-drop column-shift "
+                    f"signature (8); verify vs DEF 14A SCT before repair"
                 )
 
     # 9. Pension-drop tripwire (warning only): the 2026-09-13 22:00 PT
