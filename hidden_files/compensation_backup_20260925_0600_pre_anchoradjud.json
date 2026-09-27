@@ -1,7 +1,7 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "518 companies, 7078 NEO records, 517 companies enriched",
+  "description": "514 companies, 7030 NEO records, 514 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -33,8 +33,7 @@
    "Rounding-bucket re-verification 2026-09-10 10:00 PT: the 6 largest-delta rounding rows (CDNS Cunningham 2024 +$20,000 / 2023 -$25,000, TSCO Lawton 2024 +$4,000, TSCO Mills 2024 -$500, RF Turner 2023 +$5,060, RF Keenan 2023 +$1,180) were re-verified against fresh primary DEF 14A SCTs; all components and totals match the filings verbatim, so the gaps are genuine filing-side arithmetic inconsistencies - relabeled component_mismatch (precedent: SBUX Kelly / FDS Shan). Filing totals retained verbatim. Buckets now: rounding 50, component_mismatch 10; verified_total unchanged 6682/6778 (98.58%).",
    "DEF 14A company-stat repair 2026-09-11 10:00 PT: UNP total_neo_compensation 43,460,309 -> 39,707,000 and FRT 12,663,122 -> 13,898,336 (recomputed from fiscal-year rows; the Sep-10 row corrections had left the company-level sums stale). ALB Anderson 2024 relabeled rounding -> component_mismatch (filing-side $90 arithmetic error confirmed on earlier DEF14A verification). Rounding-bucket re-verification batch 2: 6 rows (GPN Bready 2025 +$2,000, EMN Killian 2025 -$200, NI Birmingham 2024 +$49, TAP Maciolek 2024 +$30, TAP St. Jacques 2024 -$22, DRI Vennam 2023 -$10) re-verified against fresh primary DEF 14A SCTs \u2014 all components and totals match filings verbatim; genuine filing-side arithmetic inconsistencies, relabeled component_mismatch per 2026-09-10 precedent. Rounding bucket 49->43, component_mismatch 14->20; verified_total 6718/6781 (99.07%).",
    "DEF 14A DQ batch 2026-09-11 18:00 PT: 23 records filing-verified and repaired. KR (13 records): parser had dropped the blank Bonus cell, shifting Stock->Bonus/Options->Stock/NonEq->Options/AllOther->NonEq, and captured the printed Total into All Other on Kennerley 2025, Massa 2025, McMullen 2024/2023 (e.g., McMullen FY2024 CEO total 30,521,333 -> 15,631,028); all corrected vs the 2026 proxy SCT, components foot exactly; KR company stats recomputed (total_neo 55,146,948 -> 40,256,643). COST Polit 2025: dropped $3,670,902 RSU stock-award column restored, total 3,837,307 -> 7,508,209. IVZ Sharp 2025: dropped $3,297,095 stock-award column restored, total 3,358,554 -> 6,655,649. IBM Kavanaugh 2025/2024: 'Change in Retention Plan Value' sub-column ($3,543/$14,178) folded into pension_nqdc; both now foot exactly. ED (6 records): relabeled rounding -> verified after row-level filing confirmation. Rounding bucket 43->24, verified_total 6718->6737 (99.34%). Sargent 2025 ($291) and Foley 2024 ($30) remain component_mismatch (filing-side arithmetic, previously documented).",
-   "DQ batch 2026-09-19 06:00 PT: re-verified the 5 remaining 8-component sum-flag rows lacking an explanatory note (NEE Sieving 2023, APH Lampo 2023, KR Sargent 2025, KR Foley 2024, ALB Anderson 2024) against fresh FY2025 DEF 14A SCTs; all 5 components and totals match the filings verbatim (filing-side arithmetic quirks $50,001 / $63,000 / $291 / $30 / $90), documented in per-row _reverify_20260919_0600 notes. Guard screens clean: 0 header-sentence name flags; 2 CEO-anchor flags were false positives (stored total_compensation is proxy_fiscal_year, not fiscal_year).",
-   "Roster add #13 (2026-09-26 02:00 PT): enriched ARES (13 rows), XYZ/Block (14 rows), RDDT (13 rows) from latest DEF 14A SCTs, digit-by-digit verified; all rows foot exactly except 2 Block $1 filing-side rounding rows (Grassadonia 2025, Weber 2025 -> component_mismatch). Fiserv ticker renamed FI -> FISV. Added VMRK stub (no DEF 14A yet). _index_note removal annotations: ANSS/HES/JNPR/WBA/IPG/K (acquired/delisted), EQR/AVB (merged into VMRK 2026-08-17). Peer network: FI->FISV node rename, XYZ promoted to company node, new RDDT node, peer groups read from Block/RDDT/Fiserv 2026 CD&As (+51 edges, 6 nodes); ARES/VMRK to known peer-network coverage gaps."
+   "DQ batch 2026-09-19 06:00 PT: re-verified the 5 remaining 8-component sum-flag rows lacking an explanatory note (NEE Sieving 2023, APH Lampo 2023, KR Sargent 2025, KR Foley 2024, ALB Anderson 2024) against fresh FY2025 DEF 14A SCTs; all 5 components and totals match the filings verbatim (filing-side arithmetic quirks $50,001 / $63,000 / $291 / $30 / $90), documented in per-row _reverify_20260919_0600 notes. Guard screens clean: 0 header-sentence name flags; 2 CEO-anchor flags were false positives (stored total_compensation is proxy_fiscal_year, not fiscal_year)."
   ],
   "aggregate_stats": {
    "total_companies": 506,
@@ -125,29 +124,28 @@
     "mean": 14714017.129032258
    }
   },
-  "edgar_coverage": 517,
-  "total_companies": 518,
-  "last_updated": "2026-09-26",
-  "total_neo_records": 7078,
-  "title_coverage": "7078/7078",
+  "edgar_coverage": 514,
+  "total_companies": 514,
+  "last_updated": "2026-09-25",
+  "total_neo_records": 7030,
+  "title_coverage": "7030/7030",
   "data_quality": {
-   "verified": 5797,
-   "def14a_verified_20260907": 63,
-   "def14a_verified_20260908": 12,
+   "verified_total": 7000,
+   "last_audit": "2026-09-24",
+   "verified": 5866,
    "def14a_verified_20260909": 217,
-   "def14a_verified_20260910": 105,
-   "def14a_verified_20260912": 22,
-   "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 133,
-   "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 61,
+   "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
-   "def14a_verified_20260925": 80,
-   "def14a_verified_20260926": 66,
+   "def14a_verified_20260916": 117,
+   "def14a_verified_20260917": 136,
+   "def14a_verified_20260910": 106,
+   "def14a_verified_20260918": 192,
+   "component_mismatch": 30,
+   "def14a_verified_20260919": 62,
+   "def14a_verified_20260912": 23,
+   "def14a_verified_20260908": 12,
    "rounding": 0,
-   "component_mismatch": 32,
-   "verified_total": 7046,
-   "last_audit": "2026-09-26"
+   "def14a_verified_20260925": 25
   },
   "median_ceo_pay": 16715485.5,
   "mean_ceo_pay": 327600383.381323,
@@ -182,35 +180,34 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "verified": 5797,
-   "def14a_verified_20260907": 63,
-   "def14a_verified_20260908": 12,
+   "verified_total": 7000,
+   "last_audit": "2026-09-24",
+   "verified": 5866,
    "def14a_verified_20260909": 217,
-   "def14a_verified_20260910": 105,
-   "def14a_verified_20260912": 22,
-   "def14a_verified_20260916": 117,
-   "def14a_verified_20260917": 133,
-   "def14a_verified_20260918": 192,
-   "def14a_verified_20260919": 61,
+   "def14a_verified_20260907": 63,
    "def14a_verified_20260924": 181,
-   "def14a_verified_20260925": 80,
-   "def14a_verified_20260926": 66,
+   "def14a_verified_20260916": 117,
+   "def14a_verified_20260917": 136,
+   "def14a_verified_20260910": 106,
+   "def14a_verified_20260918": 192,
+   "component_mismatch": 30,
+   "def14a_verified_20260919": 62,
+   "def14a_verified_20260912": 23,
+   "def14a_verified_20260908": 12,
    "rounding": 0,
-   "component_mismatch": 32,
-   "verified_total": 7046,
-   "last_audit": "2026-09-26"
+   "def14a_verified_20260925": 25
   },
-  "companies_with_executives": 517,
+  "companies_with_executives": 514,
   "board_independence_any": 499,
   "median_worker_pay": 82053.0,
   "median_pay_ratio": 197.0,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 7078,
+  "total_executives": 7030,
   "board_independence_count": 499,
   "board_independence_full": 499,
   "last_audit": "2026-09-18",
   "companies_with_pay_ratio": 512,
-  "enriched_count": 517,
+  "enriched_count": 514,
   "multiyear_fill_20260902_1400": {
    "date": "2026-09-02",
    "added_records": 54,
@@ -235,9 +232,8 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-09-26",
-  "verified_total": 7038,
-  "total_neos": 7078
+  "last_dq_repair": "2026-09-25",
+  "verified_total": 7000
  },
  "companies": [
   {
@@ -5061,9 +5057,9 @@
      "title": "Executive Vice President and Chief Financial Officer",
      "_original_total": 128941,
      "_total_source": "component_mismatch",
-     "stock_awards": 985342,
+     "stock_awards": 985432,
      "all_other": 128941,
-     "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430. Relabeled DEF14A-verified 2026-09-07 -> rounding 2026-09-09: residual delta $-90 remains unexplained after DEF 14A repair; components close to but not exactly the stated total. | Relabeled rounding -> component_mismatch 2026-09-11: filing-side $90 arithmetic error confirmed (components 2,440,520 vs printed 2,440,430; filing values match verbatim), per CDNS/TSCO/RF 2026-09-10 precedent. | 2026-09-25 DQ re-verified against primary DEF 14A SCT (alb-20250327.htm): REPAIRED -- stock_awards 985,432 -> 985,342 (filing prints 985,342; the prior '$90 filing-side arithmetic error' claim was WRONG -- it was a data transcription transposition). Components now foot to printed total 2,440,430 exactly.",
+     "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430. Relabeled DEF14A-verified 2026-09-07 -> rounding 2026-09-09: residual delta $-90 remains unexplained after DEF 14A repair; components close to but not exactly the stated total. | Relabeled rounding -> component_mismatch 2026-09-11: filing-side $90 arithmetic error confirmed (components 2,440,520 vs printed 2,440,430; filing values match verbatim), per CDNS/TSCO/RF 2026-09-10 precedent.",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
      "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $2,440,520 vs filing-printed total $2,440,430 (gap $90); filing-side arithmetic quirk, total retained verbatim."
     },
@@ -8118,8 +8114,7 @@
     "independence_pct": 100,
     "lead_independent_director": true,
     "chair_independent": true
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Synopsys, Inc.; acquisition closed 2025-07-17). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "AON",
@@ -9060,17 +9055,15 @@
      "salary": 680000,
      "option_awards": 2981331,
      "non_equity_incentive": 0,
-     "pension_nqdc": null,
+     "pension_nqdc": 2600,
      "total": 3715717,
      "title": "Executive Vice President & Chief Financial Officer",
      "_total_source": "component_mismatch",
      "_fix_note": "2026-09-13 10:00 PT: re-extracted from the APH 2026 DEF 14A Summary Compensation Table (filed 2026-04-08) verbatim; supersedes the 2026-09-04 note. The prior parse had read the All Other Compensation footnote table as SCT rows (salary = life-insurance imputed comp, total = all-other total) on the 2025/2023 rows, and mislabeled the option grants as stock_awards (Amphenol grants options only; the SCT Stock Awards column is n/a). Filing-side arithmetic error on this row: printed components sum to $3,778,717 but the filing prints total $3,715,717 (delta $63,000, filer-side); stored verbatim.",
      "bonus": 0,
-     "stock_awards": null,
+     "stock_awards": 0,
      "all_other": 114786,
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT (Amphenol grants options; Stock Awards column n/a): filing-printed components sum to $3,778,717 vs filing-printed total $3,715,717 (gap $63,000); filing-side arithmetic quirk, total retained verbatim.",
-     "pension_change": 2600,
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261344-1_def14a.htm): all components and total match filing verbatim; +$63,000: components sum 3,778,717 vs printed 3,715,717 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. Attribution fixes: $2,600 in 'Change in Pension Value and NQDC Earnings' is an increase in pension value per footnote (3) (actuarial assumption change), moved pension_nqdc -> pension_change; stock awards printed 'n/a' -> null."
+     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT (Amphenol grants options; Stock Awards column n/a): filing-printed components sum to $3,778,717 vs filing-printed total $3,715,717 (gap $63,000); filing-side arithmetic quirk, total retained verbatim."
     },
     {
      "name": "L. Walter",
@@ -10393,8 +10386,7 @@
     "votes_against": 5518957,
     "filing_date": "2026-05-22",
     "source_url": "https://www.sec.gov/Archives/edgar/data/915912/000110465926065770/tm2615343d5_8k.htm"
-   },
-   "_index_note": "Merged into Vivmark Residential (ticker VMRK) effective 2026-08-17 (AvalonBay/Equity Residential merger of equals). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "AVGO",
@@ -14996,8 +14988,7 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-02",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1316835/000119312526140509/bldr-20260402.htm"
-   },
-   "_index_note": "Removed from the S&P 500 effective 2026-09-21 (Sept quarterly rebalance; moved to S&P SmallCap 600). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "BLK",
@@ -17251,8 +17242,7 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 90.9
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-06-30); replaced in the S&P 500 by Honeywell Aerospace (HONA) following the Honeywell spin-off. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "CAH",
@@ -19172,7 +19162,7 @@
      "all_other": 10457,
      "total": 5172527,
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,994,992 vs filing total $5,172,527 (missing $177,535); total retained from filing | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d932644ddef14a.htm): all components and total match filing verbatim; -$177,535: components sum 4,994,992 vs printed 5,172,527 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,994,992 vs filing total $5,172,527 (missing $177,535); total retained from filing; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_relabel_note_20260910": "Filing-side arithmetic inconsistency: the printed SCT components (salary 429,948; stock 2,693,905; option 1,384,209; non-equity 476,473; all-other 10,457) sum to 4,994,992, $177,535 below the printed Total 5,172,527; our stored components already match the filing's printed values exactly, so nothing was dropped in parsing. The same SCT also fails to foot for Paul Cunningham 2024 (components 5,343,116 vs printed 5,323,116, off $20,000).",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
@@ -19200,7 +19190,7 @@
      "all_other": 11946,
      "total": 5323116,
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $20,000 of filing total $5,323,116 | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d932644ddef14a.htm): all components and total match filing verbatim; -$20,000: components sum 5,343,116 vs printed 5,323,116 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $20,000 of filing total $5,323,116; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $5,343,116 vs filing-printed total $5,323,116 (gap $+20,000); identical in the latest DEF 14A SCT (d932644ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
@@ -19217,7 +19207,7 @@
      "all_other": 11222,
      "total": 4930300,
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $25,000 of filing total $4,930,300 | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d932644ddef14a.htm): all components and total match filing verbatim; -$25,000: components sum 4,905,300 vs printed 4,930,300 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $25,000 of filing total $4,930,300; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $4,905,300 vs filing-printed total $4,930,300 (gap $-25,000); identical in the latest DEF 14A SCT (d932644ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
@@ -20095,8 +20085,8 @@
    "total_compensation": 12284216,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 81203,
-   "pay_ratio": 120.7,
+   "median_worker_pay": 77988,
+   "pay_ratio": 157,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000313927",
@@ -20175,10 +20165,9 @@
      "pension_nqdc": 0,
      "all_other": 493583,
      "total": 12284216,
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "def14a_verified_20260917",
      "_accession": "0001193125-26-115994",
-     "_repair_note_20260917_1000": "Title repaired 2026-09-17 10:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/313927/000119312526115994/chd-20260319.htm",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-115994): filing-verbatim components, total foots exactly ($0 gap)."
+     "_repair_note_20260917_1000": "Title repaired 2026-09-17 10:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/313927/000119312526115994/chd-20260319.htm"
     },
     {
      "name": "Matthew T. Farrell",
@@ -20313,10 +20302,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": "April",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -20998,16 +20987,15 @@
      "name": "Stephen M. Spray",
      "title": "President and Chief Executive Officer Cincinnati Financial Corporation",
      "year": 2023,
-     "salary": 893786,
-     "bonus": 0,
-     "stock_awards": 1372772,
-     "option_awards": 855096,
-     "non_equity_incentive": 1140111,
-     "pension_nqdc": 398237,
-     "all_other": 48645,
-     "total": 4708647,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CINF 2026 DEF 14A (acc. 0000020286-26-000015). Filed SCT: salary 893,786, stock 1,372,772, NEIP 1,140,111, pension 398,237, all_other 48,645, total 4,708,647"
+     "salary": 0,
+     "bonus": 1372772,
+     "stock_awards": 855096,
+     "option_awards": 1140111,
+     "non_equity_incentive": 398237,
+     "pension_nqdc": 48645,
+     "all_other": 4708647,
+     "total": 8523508,
+     "_total_source": "verified"
     },
     {
      "name": "Michael J. Sewell",
@@ -21042,16 +21030,15 @@
      "name": "Michael J. Sewell",
      "title": "Chief Financial Officer, Executive Vice President and Treasurer Cincinnati Financial Corporation",
      "year": 2023,
-     "salary": 995500,
-     "bonus": 0,
-     "stock_awards": 1511422,
-     "option_awards": 941511,
-     "non_equity_incentive": 1255307,
-     "pension_nqdc": 0,
-     "all_other": 222681,
-     "total": 4926421,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CINF 2026 DEF 14A (acc. 0000020286-26-000015). Filed SCT: salary 995,500, stock 1,511,422, NEIP 1,255,307, pension 0, all_other 222,681, total 4,926,421"
+     "salary": 0,
+     "bonus": 1511422,
+     "stock_awards": 941511,
+     "option_awards": 1255307,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 222681,
+     "all_other": 4926421,
+     "total": 8857342,
+     "_total_source": "verified"
     },
     {
      "name": "Steven J. Johnston",
@@ -21130,16 +21117,15 @@
      "name": "John S. Kellington",
      "title": "Chairman",
      "year": 2023,
-     "salary": 694161,
-     "bonus": 0,
-     "stock_awards": 1054377,
-     "option_awards": 656505,
-     "non_equity_incentive": 875324,
-     "pension_nqdc": 0,
-     "all_other": 117272,
-     "total": 3397639,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CINF 2026 DEF 14A (acc. 0000020286-26-000015). Filed SCT: salary 694,161, stock 1,054,377, NEIP 875,324, pension 0, all_other 117,272, total 3,397,639"
+     "salary": 0,
+     "bonus": 1054377,
+     "stock_awards": 656505,
+     "option_awards": 875324,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 117272,
+     "all_other": 3397639,
+     "total": 6101117,
+     "_total_source": "verified"
     },
     {
      "name": "Teresa C. Cracas",
@@ -21174,16 +21160,15 @@
      "name": "Teresa C. Cracas",
      "title": "Chief Risk Officer and Executive Vice President The Cincinnati Insurance Company",
      "year": 2023,
-     "salary": 632059,
-     "bonus": 0,
-     "stock_awards": 960083,
-     "option_awards": 597761,
-     "non_equity_incentive": 797014,
-     "pension_nqdc": 0,
-     "all_other": 125175,
-     "total": 3112092,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CINF 2026 DEF 14A (acc. 0000020286-26-000015). Filed SCT: salary 632,059, stock 960,083, NEIP 797,014, pension 0, all_other 125,175, total 3,112,092"
+     "salary": 0,
+     "bonus": 960083,
+     "stock_awards": 597761,
+     "option_awards": 797014,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 125175,
+     "all_other": 3112092,
+     "total": 5592125,
+     "_total_source": "verified"
     }
    ],
    "neo_count": 5,
@@ -23207,16 +23192,15 @@
      "name": "Christopher A. Foster",
      "title": "Executive Vice President and Chief Financial Officer",
      "year": 2024,
-     "salary": 718269,
-     "bonus": 0,
-     "stock_awards": 1884987,
-     "option_awards": 0,
-     "non_equity_incentive": 725000,
-     "pension_nqdc": 0,
-     "all_other": 245915,
-     "total": 3574172,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CNP 2026 DEF 14A (acc. 0001104659-26-023457). Filed SCT: salary 718,269, stock 1,884,987, NEIP 725,000, pension 0, all_other 245,915, total 3,574,172 Filing-side $1 footing gap kept verbatim."
+     "salary": 0,
+     "bonus": 1884987,
+     "stock_awards": 0,
+     "option_awards": 725000,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 245915,
+     "all_other": 3574172,
+     "total": 6430074,
+     "_total_source": "verified"
     },
     {
      "name": "Christopher A. Foster",
@@ -23252,31 +23236,29 @@
      "name": "Monica Karuturi",
      "title": "Executive Vice President and General Counsel",
      "year": 2024,
-     "salary": 718270,
-     "bonus": 100000,
-     "stock_awards": 1884987,
-     "option_awards": 0,
-     "non_equity_incentive": 725000,
-     "pension_nqdc": 42968,
-     "all_other": 189449,
-     "total": 3660674,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CNP 2026 DEF 14A (acc. 0001104659-26-023457). Filed SCT: salary 718,270, stock 1,884,987, NEIP 725,000, pension 42,968, all_other 189,449, total 3,660,674"
+     "salary": 100000,
+     "bonus": 1884987,
+     "stock_awards": 0,
+     "option_awards": 725000,
+     "non_equity_incentive": 42968,
+     "pension_nqdc": 189449,
+     "all_other": 3660674,
+     "total": 6603078,
+     "_total_source": "verified"
     },
     {
      "name": "Monica Karuturi",
      "title": "Executive Vice President and General Counsel",
      "year": 2023,
-     "salary": 695385,
-     "bonus": 0,
-     "stock_awards": 1819984,
-     "option_awards": 0,
-     "non_equity_incentive": 980000,
-     "pension_nqdc": 64802,
-     "all_other": 91667,
-     "total": 3651838,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CNP 2026 DEF 14A (acc. 0001104659-26-023457). Filed SCT: salary 695,385, stock 1,819,984, NEIP 980,000, pension 64,802, all_other 91,667, total 3,651,838"
+     "salary": 0,
+     "bonus": 1819984,
+     "stock_awards": 0,
+     "option_awards": 980000,
+     "non_equity_incentive": 64802,
+     "pension_nqdc": 91667,
+     "all_other": 3651838,
+     "total": 6608291,
+     "_total_source": "verified"
     },
     {
      "name": "Jesus Soto",
@@ -23310,31 +23292,29 @@
      "name": "Jason M. Ryan",
      "title": "Executive Vice President, Regulatory Services & Government Affairs",
      "year": 2024,
-     "salary": 520962,
-     "bonus": 0,
-     "stock_awards": 1050002,
-     "option_awards": 0,
-     "non_equity_incentive": 459375,
-     "pension_nqdc": 37755,
-     "all_other": 172881,
-     "total": 2240975,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CNP 2026 DEF 14A (acc. 0001104659-26-023457). Filed SCT: salary 520,962, stock 1,050,002, NEIP 459,375, pension 37,755, all_other 172,881, total 2,240,975"
+     "salary": 0,
+     "bonus": 1050002,
+     "stock_awards": 0,
+     "option_awards": 459375,
+     "non_equity_incentive": 37755,
+     "pension_nqdc": 172881,
+     "all_other": 2240975,
+     "total": 3960988,
+     "_total_source": "verified"
     },
     {
      "name": "Jason M. Ryan",
      "title": "Executive Vice President, Regulatory Services & Government Affairs",
      "year": 2023,
-     "salary": 505962,
-     "bonus": 200000,
-     "stock_awards": 1570014,
-     "option_awards": 0,
-     "non_equity_incentive": 624750,
-     "pension_nqdc": 58652,
-     "all_other": 99211,
-     "total": 3058589,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from CNP 2026 DEF 14A (acc. 0001104659-26-023457). Filed SCT: salary 505,962, stock 1,570,014, NEIP 624,750, pension 58,652, all_other 99,211, total 3,058,589"
+     "salary": 200000,
+     "bonus": 1570014,
+     "stock_awards": 0,
+     "option_awards": 624750,
+     "non_equity_incentive": 58652,
+     "pension_nqdc": 99211,
+     "all_other": 3058589,
+     "total": 5611216,
+     "_total_source": "verified"
     }
    ],
    "neo_count": 4,
@@ -23343,7 +23323,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 18726616,
+   "total_neo_compensation": 26244935,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 96.91,
@@ -25117,12 +25097,12 @@
   {
    "ticker": "CPB",
    "company_name": "The Campbell's Company",
-   "ceo_name": "Mark A. Clouse",
+   "ceo_name": "Mark A",
    "total_compensation": 12260000,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 77798,
-   "pay_ratio": 128,
+   "median_worker_pay": 73352,
+   "pay_ratio": 167,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000016732",
@@ -25172,8 +25152,8 @@
      "_total_source": "verified"
     },
     {
-     "name": "Mark A. Clouse",
-     "title": "Former President and Chief Executive Officer",
+     "name": "Mark A",
+     "title": "Clouse Former, President and Chief Executive Officer",
      "year": 2025,
      "salary": 664015,
      "stock_awards": 8932730,
@@ -25186,30 +25166,28 @@
      "_total_source": "verified"
     },
     {
-     "name": "Mark A. Clouse",
+     "name": "Mark A",
      "year": 2024,
      "salary": 1245292,
      "stock_awards": 8427265,
      "non_equity_incentive": 1758300,
      "all_other": 829143,
      "total": 12260000,
-     "title": "Former President and Chief Executive Officer",
+     "title": "Clouse Former, President and Chief Executive Officer",
      "bonus": 0,
      "option_awards": 0,
      "pension_nqdc": 0,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001308179-25-000618",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001308179-25-000618): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
-     "name": "Mark A. Clouse",
+     "name": "Mark A",
      "year": 2023,
      "salary": 1202833,
      "stock_awards": 7301734,
      "non_equity_incentive": 2468400,
      "all_other": 726855,
      "total": 11699822,
-     "title": "Former President and Chief Executive Officer",
+     "title": "Clouse Former, President and Chief Executive Officer",
      "bonus": 0,
      "option_awards": 0,
      "pension_nqdc": 0,
@@ -25395,10 +25373,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": "February",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "say_on_pay": {
@@ -25417,8 +25395,7 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2025-10-08",
     "source_url": "https://www.sec.gov/Archives/edgar/data/16732/000130817925000618/cpb-20251007.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-06-22) in the June 2026 quarterly rebalance; replaced by Flex (FLEX). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "CPRT",
@@ -25561,8 +25538,7 @@
      "total": 9706972,
      "_total_source": "component_mismatch",
      "_note": "SEC table shows 5,250 other + 9,706,972 total (45 diff) \u2014 adjusted other to 5,295 to reconcile; source total preserved",
-     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: reverted 2026-09-04 fabricated reconciliation (all_other had been invented as 5295 to force footing); filing prints all_other 5250 with total 9706972 (genuine -$45 filing-side gap, verified vs raw HTML); kept verbatim, component_mismatch",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (d872193ddef14a.htm): all components and total match filing verbatim; -$45: components sum 9,706,927 vs printed 9,706,972 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: reverted 2026-09-04 fabricated reconciliation (all_other had been invented as 5295 to force footing); filing prints all_other 5250 with total 9706972 (genuine -$45 filing-side gap, verified vs raw HTML); kept verbatim, component_mismatch"
     }
    ],
    "neo_count": 3,
@@ -27818,8 +27794,7 @@
     "votes_against": 50716007,
     "filing_date": "2025-05-05",
     "source_url": "https://www.sec.gov/Archives/edgar/data/858470/000085847025000106/ctra-20250430.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Devon Energy; all-stock merger closed 2026-05-07); replaced in the S&P 500 by Veeva Systems (VEEV). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "CTSH",
@@ -28975,8 +28950,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-23",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526174058/d140199ddef14a.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-09-22) in the September 2025 quarterly rebalance; replaced by Robinhood Markets (HOOD). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "D",
@@ -29965,8 +29939,7 @@
     "votes_against": 29997637,
     "filing_date": "2025-05-06",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1725057/000172505725000080/day-20250502.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Thoma Bravo in a $12.3B take-private; acquisition closed 2026-02-04); replaced in the S&P 500 by Ciena (CIEN) effective 2026-02-09. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "DD",
@@ -33595,7 +33568,7 @@
      "total": 3355329,
      "title": "Senior Vice President, Chief Financial Officer",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $10 of filing total $3,355,329 | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; -$10: components sum 3,355,319 vs printed 3,355,329 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent). | 2026-09-26 DQ re-verified against primary DEF 14A SCT (dri-20250804.htm): all components and total match filing verbatim; +$10: components sum 3,355,319 vs printed 3,355,329 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $10 of filing total $3,355,329; queued for filing re-verification. | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; -$10: components sum 3,355,319 vs printed 3,355,329 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
      "_relabel_note_20260909": true,
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
      "_title_note": "Title corrected 2026-09-12: 2025 proxy bio states 'Our Senior Vice President, Chief Financial Officer since December 2022'; Ricardo Cardenas is the CEO. Stored title 'President and Chief Executive Officer' was a parse-era error. Numbers unchanged."
@@ -35293,8 +35266,7 @@
     "independent_directors": 8,
     "independence_pct": 100.0,
     "lead_independent_director": true
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by a consortium of Saudi Arabia's Public Investment Fund, Silver Lake, and Affinity Partners in a ~$55B take-private; acquisition closed 2026-08-04, $210/share cash); replaced in the S&P 500 by Ferguson Enterprises (FERG) effective 2026-08-05. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "EBAY",
@@ -37352,8 +37324,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-03-24",
     "source_url": "https://www.sec.gov/Archives/edgar/data/915389/000091538926000074/emn-20260324.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-11-04); replaced in the S&P 500 by Qnity Electronics (Q) following the DuPont spin-off. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "EMR",
@@ -37701,8 +37672,7 @@
     "votes_against": 7560943,
     "filing_date": "2026-05-15",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1463101/000146310126000049/enph-20260513.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-09-22) in the September 2025 quarterly rebalance; replaced by Emcor Group (EME). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "EOG",
@@ -38104,8 +38074,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-06",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1352010/000114036126013337/ny20062726x2_def14a.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-06-02); replaced in the S&P 500 by FedEx Freight Holding (FDXF) following the FedEx spin-off. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "EQIX",
@@ -38516,8 +38485,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-14",
     "source_url": "https://www.sec.gov/Archives/edgar/data/906107/000119312526155007/eqr-20260410.htm"
-   },
-   "_index_note": "Merged into Vivmark Residential (ticker VMRK) effective 2026-08-17 (AvalonBay/Equity Residential merger of equals). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "EQT",
@@ -40389,8 +40357,8 @@
    "total_compensation": 8974550,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 158503,
-   "pay_ratio": 62,
+   "median_worker_pay": 154646,
+   "pay_ratio": 58,
    "sector": "Energy",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000895126",
@@ -40521,9 +40489,7 @@
      "pension_nqdc": 0,
      "all_other": 31616,
      "total": 8974550,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-048155",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-048155): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Domenic J. Dell'Osso Jr",
@@ -40599,12 +40565,10 @@
     "source_url": "https://www.sec.gov/Archives/edgar/data/895126/000089512626000032/exe-20260604.htm"
    },
    "ceo_tenure": {
-    "year": 2026,
-    "month": "February",
-    "confidence": "high",
-    "sources": [
-     "prose"
-    ]
+    "ceo_name": "Chris Lacy",
+    "start_year": 2023,
+    "confidence": "medium",
+    "source": "manual"
    },
    "board_independence": {
     "total_directors": 9,
@@ -42809,8 +42773,8 @@
    "total_compensation": 11933534,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 160003,
-   "pay_ratio": 84,
+   "median_worker_pay": 118994,
+   "pay_ratio": 100,
    "sector": "Utilities",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0001031296",
@@ -42837,13 +42801,11 @@
      "pension_nqdc": 186854,
      "all_other": 37867,
      "total": 11933534,
-     "title": "Chair, President and CEO",
-     "_total_source": "def14a_verified_20260925",
+     "title": "Chair, President and CEO (former)",
+     "_total_source": "def14a_verified_20260910",
      "bonus": 0,
      "non_equity_incentive": 0,
-     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $186,854 genuine; NEIP -.",
-     "_accession": "0001193125-26-138029",
-     "_repair_note_20260925_1930": "2026-09-25 19:30 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (Tierney is the sitting CEO; no transition; no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-138029): filing-verbatim components, total foots exactly ($0 gap)."
+     "_reverify_20260919_1400": "Re-verified 2026-09-19 14:00 PT against fresh DEF 14A SCT: components match filing verbatim; pension $186,854 genuine; NEIP -."
     },
     {
      "name": "Brian X. Tierney",
@@ -42855,7 +42817,7 @@
      "pension_nqdc": 49154,
      "all_other": 185087,
      "total": 26452616,
-     "title": "Chair, President and CEO",
+     "title": "Chair, President and CEO (former)",
      "_total_source": "verified",
      "_original_total": 185087,
      "_fix_note": "Primary source DEF14A 2024-03-29 FE Summary Comp Table L5691 verified"
@@ -43221,7 +43183,7 @@
    }
   },
   {
-   "ticker": "FISV",
+   "ticker": "FI",
    "company_name": "Fiserv Inc",
    "ceo_name": "Frank J. Bisignano",
    "total_compensation": 23774483,
@@ -43482,8 +43444,7 @@
     "independence_pct": 90.9,
     "chair_independent": false,
     "lead_independent_director": true
-   },
-   "_index_note": "Ticker renamed FI -> FISV (company rebranded Fiserv, Inc. to Fiserv Inc. \"FISV\" identity); retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "FICO",
@@ -46211,7 +46172,7 @@
      "all_other": 74926,
      "total": 83582308,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $82,468,920 exceeds filing total $80,495,844 by $1,973,076; a component is likely mis-parsed; filing total retained | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
+     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $82,468,920 exceeds filing total $80,495,844 by $1,973,076; a component is likely mis-parsed; filing total retained; queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
      "_relabel_note_20260909": true
     },
     {
@@ -46259,7 +46220,7 @@
      "all_other": 6404,
      "total": 22368047,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $22,120,681 exceeds filing total $20,847,605 by $1,273,076; a component is likely mis-parsed; filing total retained | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
+     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $22,120,681 exceeds filing total $20,847,605 by $1,273,076; a component is likely mis-parsed; filing total retained; queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
      "_relabel_note_20260909": true
     },
     {
@@ -46306,7 +46267,7 @@
      "all_other": 63565,
      "total": 21940522,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $21,648,111 exceeds filing total $20,485,803 by $1,162,308; a component is likely mis-parsed; filing total retained | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
+     "_parse_note": "Relabeled verified -> bloated_component 2026-09-09: components sum $21,648,111 exceeds filing total $20,485,803 by $1,162,308; a component is likely mis-parsed; filing total retained; queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (ny20070898x1_def14a.htm); prior parse misaligned VCP II sub-columns (annual->non_equity, VCP-II->all_other, total-stock->total) and duplicated salary into bonus; 2024 rows restated in same SCT (also fixing all_other==stock_awards dup).",
      "_relabel_note_20260909": true
     },
     {
@@ -48495,7 +48456,7 @@
      "total": 20307392,
      "title": "Chief Executive Officer",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $2,000 of filing total $20,307,392 | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$2,000: components sum 20,309,392 vs printed 20,307,392 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $2,000 of filing total $20,307,392; queued for filing re-verification. | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$2,000: components sum 20,309,392 vs printed 20,307,392 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
      "_relabel_note_20260909": true,
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
      "_repair_note_20260918_0600": "2026-09-18 06:00 PT: title -> SCT-verbatim 'Chief Executive Officer' (was 'Chair of the Board')"
@@ -50778,8 +50739,7 @@
     "votes_against": 10155312,
     "filing_date": "2025-05-16",
     "source_url": "https://www.sec.gov/Archives/edgar/data/4447/000119312525121673/d928300d8k.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Chevron Corporation; acquisition closed 2025-07-18). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "HIG",
@@ -51054,7 +51014,7 @@
    "ticker": "HII",
    "company_name": "Huntington Ingalls Industries Inc",
    "ceo_name": "Christopher D. Kastner",
-   "total_compensation": 14553665,
+   "total_compensation": 27826561,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
    "median_worker_pay": 77857,
@@ -51083,31 +51043,29 @@
      "name": "Christopher D. Kastner",
      "title": "President and Chief Executive Officer",
      "year": 2024,
-     "salary": 1280769,
+     "salary": 6499823,
      "bonus": 0,
-     "stock_awards": 6499823,
+     "stock_awards": 1225250,
      "option_awards": 0,
-     "non_equity_incentive": 1225250,
-     "pension_nqdc": 5316085,
-     "all_other": 231738,
-     "total": 14553665,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 1,280,769, stock 6,499,823, NEIP 1,225,250, pension 5,316,085, all_other 231,738, total 14,553,665"
+     "non_equity_incentive": 5316085,
+     "pension_nqdc": 231738,
+     "all_other": 14553665,
+     "total": 27826561,
+     "_total_source": "verified"
     },
     {
      "name": "Christopher D. Kastner",
      "title": "President and Chief Executive Officer",
      "year": 2023,
-     "salary": 1180384,
+     "salary": 5799855,
      "bonus": 0,
-     "stock_awards": 5799855,
+     "stock_awards": 2997000,
      "option_awards": 0,
-     "non_equity_incentive": 2997000,
-     "pension_nqdc": 3962861,
-     "all_other": 160519,
-     "total": 14100619,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 1,180,384, stock 5,799,855, NEIP 2,997,000, pension 3,962,861, all_other 160,519, total 14,100,619"
+     "non_equity_incentive": 3962861,
+     "pension_nqdc": 160519,
+     "all_other": 14100619,
+     "total": 27020854,
+     "_total_source": "verified"
     },
     {
      "name": "Thomas E. Stiehle",
@@ -51127,31 +51085,29 @@
      "name": "Thomas E. Stiehle",
      "title": "Executive Vice President and Chief Financial Officer",
      "year": 2024,
-     "salary": 589597,
+     "salary": 1499604,
      "bonus": 0,
-     "stock_awards": 1499604,
+     "stock_awards": 307970,
      "option_awards": 0,
-     "non_equity_incentive": 307970,
-     "pension_nqdc": 1376737,
-     "all_other": 78908,
-     "total": 3852816,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 589,597, stock 1,499,604, NEIP 307,970, pension 1,376,737, all_other 78,908, total 3,852,816"
+     "non_equity_incentive": 1376737,
+     "pension_nqdc": 78908,
+     "all_other": 3852816,
+     "total": 7116035,
+     "_total_source": "verified"
     },
     {
      "name": "Thomas E. Stiehle",
      "title": "Executive Vice President and Chief Financial Officer",
      "year": 2023,
-     "salary": 575000,
+     "salary": 1499944,
      "bonus": 0,
-     "stock_awards": 1499944,
+     "stock_awards": 851000,
      "option_awards": 0,
-     "non_equity_incentive": 851000,
-     "pension_nqdc": 1823692,
-     "all_other": 65757,
-     "total": 4815393,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 575,000, stock 1,499,944, NEIP 851,000, pension 1,823,692, all_other 65,757, total 4,815,393"
+     "non_equity_incentive": 1823692,
+     "pension_nqdc": 65757,
+     "all_other": 4815393,
+     "total": 9055786,
+     "_total_source": "verified"
     },
     {
      "name": "Chad N. Boudreaux",
@@ -51171,31 +51127,29 @@
      "name": "Chad N. Boudreaux",
      "title": "Executive Vice President and Chief Legal Officer",
      "year": 2024,
-     "salary": 584470,
+     "salary": 1149572,
      "bonus": 0,
-     "stock_awards": 1149572,
+     "stock_awards": 305292,
      "option_awards": 0,
-     "non_equity_incentive": 305292,
-     "pension_nqdc": 0,
-     "all_other": 207749,
-     "total": 2247083,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 584,470, stock 1,149,572, NEIP 305,292, pension 0, all_other 207,749, total 2,247,083"
+     "non_equity_incentive": 0,
+     "pension_nqdc": 207749,
+     "all_other": 2247083,
+     "total": 3909696,
+     "_total_source": "verified"
     },
     {
      "name": "Chad N. Boudreaux",
      "title": "Executive Vice President and Chief Legal Officer",
      "year": 2023,
-     "salary": 570001,
+     "salary": 1149814,
      "bonus": 0,
-     "stock_awards": 1149814,
+     "stock_awards": 843600,
      "option_awards": 0,
-     "non_equity_incentive": 843600,
-     "pension_nqdc": 0,
-     "all_other": 160846,
-     "total": 2724261,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 570,001, stock 1,149,814, NEIP 843,600, pension 0, all_other 160,846, total 2,724,261"
+     "non_equity_incentive": 0,
+     "pension_nqdc": 160846,
+     "all_other": 2724261,
+     "total": 4878521,
+     "_total_source": "verified"
     },
     {
      "name": "Edgar A. Green III",
@@ -51215,31 +51169,29 @@
      "name": "Edgar A. Green III",
      "title": "Executive Vice President and President, Mission Technologies",
      "year": 2024,
-     "salary": 550040,
+     "salary": 1149572,
      "bonus": 0,
-     "stock_awards": 1149572,
+     "stock_awards": 904000,
      "option_awards": 0,
-     "non_equity_incentive": 904000,
-     "pension_nqdc": 0,
-     "all_other": 197330,
-     "total": 2800942,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 550,040, stock 1,149,572, NEIP 904,000, pension 0, all_other 197,330, total 2,800,942"
+     "non_equity_incentive": 0,
+     "pension_nqdc": 197330,
+     "all_other": 2800942,
+     "total": 5051844,
+     "_total_source": "verified"
     },
     {
      "name": "Edgar A. Green III",
      "title": "Executive Vice President and President, Mission Technologies",
      "year": 2023,
-     "salary": 530458,
+     "salary": 1149814,
      "bonus": 0,
-     "stock_awards": 1149814,
+     "stock_awards": 814784,
      "option_awards": 0,
-     "non_equity_incentive": 814784,
-     "pension_nqdc": 0,
-     "all_other": 115846,
-     "total": 2610902,
-     "_total_source": "def14a_verified_20260926",
-     "_note": "DQ 2026-09-26: salary-drop column-shift repair from HII 2026 DEF 14A (acc. 0001501585-26-000014). Filed SCT: salary 530,458, stock 1,149,814, NEIP 814,784, pension 0, all_other 115,846, total 2,610,902"
+     "non_equity_incentive": 0,
+     "pension_nqdc": 115846,
+     "all_other": 2610902,
+     "total": 4691346,
+     "_total_source": "verified"
     },
     {
      "name": "Brian D. Blanchette",
@@ -51262,7 +51214,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 23454506,
+   "total_neo_compensation": 43904136,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 98.66,
@@ -52250,8 +52202,8 @@
    "total_compensation": 19360127,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 77679,
-   "pay_ratio": 297,
+   "median_worker_pay": 69571,
+   "pay_ratio": 278,
    "sector": "Information Technology",
    "cik": "0000047217",
    "filing_date": "2026-02-25",
@@ -52352,9 +52304,7 @@
      "all_other": 290419,
      "total": 19360127,
      "title": "Former President and CEO",
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0000047217-26-000015",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0000047217-26-000015): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Enrique J. Lores",
@@ -52436,11 +52386,11 @@
    "total_neo_compensation": 51285132,
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2026,
-    "month": "February",
-    "confidence": "high",
+    "year": 2019,
+    "month": "November",
+    "confidence": "verified",
     "sources": [
-     "prose"
+     "manual_verify"
     ]
    },
    "say_on_pay": {
@@ -52671,7 +52621,7 @@
    "total_compensation": 11640272,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 78954,
+   "median_worker_pay": 76751,
    "pay_ratio": 152,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
@@ -52705,9 +52655,7 @@
      "pension_nqdc": 0,
      "all_other": 371141,
      "total": 11640272,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001193125-26-146317",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-146317): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Stanley M. Bergman",
@@ -52881,11 +52829,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2026,
-    "month": "March",
-    "confidence": "high",
+    "year": 2025,
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -55609,8 +55557,8 @@
    "total_compensation": 17459546,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 295914,
-   "pay_ratio": 110.47,
+   "median_worker_pay": 255918,
+   "pay_ratio": 68,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -55651,9 +55599,7 @@
      "non_equity_incentive": 2202829,
      "all_other": 53298,
      "total": 17459546,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0000879169-26-000031",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0000879169-26-000031): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Herv\u00e9 Hoppenot",
@@ -55832,11 +55778,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2025,
-    "month": "June",
-    "confidence": "high",
+    "year": 2014,
+    "month": null,
+    "confidence": "verified",
     "sources": [
-     "prose"
+     "manual_verify"
     ]
    },
    "board_independence": {
@@ -57055,8 +57001,7 @@
     "votes_against": 27078463,
     "filing_date": "2024-05-28",
     "source_url": "https://www.sec.gov/Archives/edgar/data/51644/000005164424000027/ipg-20240523.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Omnicom Group; acquisition closed 2025-11-26). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "IQV",
@@ -60164,8 +60109,7 @@
     "lead_reason": "Christine Gorjanc has served as Lead Independent Director since May 10, 2023",
     "source": "DEF 14A 2025-04-16",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1043604/000110465925035489/tm2431514-1_def14a.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Hewlett Packard Enterprise; acquisition closed 2025-07-02). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "JPM",
@@ -60596,7 +60540,7 @@
      "total": 3156458,
      "title": "Senior Vice President & President, Kellanova Europe",
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $569,737 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $569,737 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
      "stock_awards": 1700642,
      "non_equity_incentive": 688213,
      "all_other": 195844
@@ -60638,7 +60582,7 @@
      "total": 4022641,
      "title": "Vice Chairman",
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $790,978 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $790,978 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
      "stock_awards": 1900173,
      "non_equity_incentive": 1167693,
      "all_other": 161775
@@ -60693,8 +60637,7 @@
     "lead_independent_director": true,
     "chair_independent": true,
     "independence_pct": 90.9
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Mars, Incorporated; acquisition closed 2025-12-11; delisted). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "KDP",
@@ -63130,8 +63073,7 @@
     "votes_against": 5685835,
     "filing_date": "2026-06-24",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1170010/000117001026000057/kmx-20260623.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-10-31); replaced in the S&P 500 by Solstice Advanced Materials (SOLS) following the Honeywell spin-off. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "KO",
@@ -63398,8 +63340,8 @@
    "total_compensation": 15631028,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 34552,
-   "pay_ratio": 417,
+   "median_worker_pay": 34213,
+   "pay_ratio": 457,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -63421,8 +63363,7 @@
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm. 2026 proxy SCT (fiscal 2025). Filing components foot to 14,037,899 but printed total is 14,037,608 (\u0394291, filer-side arithmetic inconsistency). Stored row was also misaligned (bonus/stock/total columns shifted). Do NOT correct; reported verbatim.",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
      "_name_note_20260913_2200": "Interim-modifier name-leak repair 2026-09-13 22:00 PT: \"Interim\" moved from name to title. Component values and the component_mismatch adjudication (filer-side -$291, verified 2026-09-10 and 2026-09-12) unchanged.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $14,037,899 vs filing-printed total $14,037,608 (gap $291); filing-side arithmetic quirk, total retained verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261573d1_def14a.htm, FY2025 proxy): all components and total match filing verbatim; +$291: components sum 14,037,899 vs printed 14,037,608 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $14,037,899 vs filing-printed total $14,037,608 (gap $291); filing-side arithmetic quirk, total retained verbatim."
     },
     {
      "name": "David J.C. Kennerley",
@@ -63604,8 +63545,7 @@
      "pension_change": 0,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/56873/000110465925049009/tm252618d1_def14a.htm. 2025 proxy SCT (fiscal 2024); identical numbers confirmed in the 2026 proxy's 2024 column. Components foot to 4,039,420 but printed total is 4,039,390 (\u039430, filer-side inconsistency, stable across both proxies). Stored row misaligned (all_other stored as printed total). Do NOT correct; reported verbatim.",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $4,039,420 vs filing-printed total $4,039,390 (gap $30); filing-side arithmetic quirk, total retained verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm252618d1_def14a.htm, FY2024 proxy): all components and total match filing verbatim; +$30: components sum 4,039,420 vs printed 4,039,390 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $4,039,420 vs filing-printed total $4,039,390 (gap $30); filing-side arithmetic quirk, total retained verbatim."
     },
     {
      "name": "W. Rodney McMullen",
@@ -63636,14 +63576,13 @@
      "pension_nqdc": 206800,
      "all_other": 740723,
      "total": 15631028,
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "def14a_verified_20260919",
      "_original_pension": {
       "pension_nqdc": 740723
      },
      "_parse_note": "2026-09-11: column-shift repair vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/56873/000110465926060250/tm261573d1_def14a.htm). Parser dropped the blank Bonus cell, shifting Stock->Bonus, Options->Stock, NonEq->Options, AllOther->NonEq; some records also captured the printed Total into All Other. Values now match the filing SCT row exactly; components foot to filing total.",
-     "_accession": "0001104659-26-060250",
-     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension-change $206,800 with NEIP=0 (stable across 2025 and 2026 proxies); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-060250): filing-verbatim components, total foots exactly ($0 gap)."
+     "_accession": "",
+     "_repair_note_20260919_1000": "2026-09-19 10:00 PT: pension/NEIP-confusion queue triage - FALSE POSITIVE; 2026 DEF 14A SCT (acc. 0001104659-26-060250) genuinely shows pension-change $206,800 with NEIP=0 (stable across 2025 and 2026 proxies); title -> SCT-verbatim 'Former Chairman and Chief Executive Officer' (was 'Chairman and Chief Executive Officer')"
     },
     {
      "name": "W. Rodney McMullen",
@@ -63684,11 +63623,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2026,
-    "month": "February",
-    "confidence": "high",
+    "year": 2014,
+    "month": "January",
+    "confidence": "verified",
     "sources": [
-     "prose"
+     "manual_verify"
     ]
    },
    "board_independence": {
@@ -65666,8 +65605,7 @@
     "independent_directors": 7,
     "independence_pct": 87.5,
     "chair_independent": false
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-12-22) in the December 2025 quarterly rebalance on market capitalization changes. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "LLY",
@@ -66806,11 +66744,11 @@
    "ticker": "LULU",
    "company_name": "Lululemon Athletica Inc",
    "ceo_name": "Calvin McDonald",
-   "total_compensation": 24023294,
-   "fiscal_year": 2025,
-   "source": "SEC DEFC14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 26179,
-   "pay_ratio": 918,
+   "total_compensation": 14551916,
+   "fiscal_year": 2024,
+   "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
+   "median_worker_pay": 20536,
+   "pay_ratio": 709,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -66823,10 +66761,9 @@
      "stock_awards": 5499824,
      "option_awards": 5499973,
      "non_equity_incentive": 2172089,
-     "all_other": 56060,
-     "total": 14570399,
-     "_total_source": "def14a_verified_20260926",
-     "_restate_note_20260926": "Restatement adopted from 2026 DEFC14A SCT https://www.sec.gov/Archives/edgar/data/1397187/000121390026058095/ea0281698-04.htm: 2024 All Other $37,577 -> $56,060, total $14,551,916 -> $14,570,399. Filing footnote (e) discloses the 2023/2024 'Other' amounts are security-related costs 'previously not included ... presented here for completeness'. Adopted per GEN Derse/Ko + TFC 2026-09-10 restatement-adoption precedent. Earlier contemporaneous-proxy values (37,577/14,551,916) preserved here."
+     "all_other": 37577,
+     "total": 14551916,
+     "_total_source": "verified"
     },
     {
      "name": "Calvin McDonald",
@@ -66837,10 +66774,9 @@
      "stock_awards": 5000011,
      "option_awards": 4999937,
      "non_equity_incentive": 5169231,
-     "all_other": 86401,
-     "total": 16547888,
-     "_total_source": "def14a_verified_20260926",
-     "_restate_note_20260926": "Restatement adopted from 2026 DEFC14A SCT https://www.sec.gov/Archives/edgar/data/1397187/000121390026058095/ea0281698-04.htm: 2023 All Other $33,290 -> $86,401, total $16,494,777 -> $16,547,888. Filing footnote (e) discloses the 2023/2024 'Other' amounts are security-related costs 'previously not included ... presented here for completeness'. Adopted per GEN Derse/Ko + TFC 2026-09-10 restatement-adoption precedent. Earlier contemporaneous-proxy values (33,290/16,494,777) preserved here."
+     "all_other": 33290,
+     "total": 16494777,
+     "_total_source": "verified"
     },
     {
      "name": "Calvin McDonald",
@@ -66860,15 +66796,14 @@
      "title": "Chief Financial Officer",
      "year": 2024,
      "salary": 814380,
-     "bonus": 0,
-     "stock_awards": 2099878,
-     "option_awards": 900031,
-     "non_equity_incentive": 592950,
+     "bonus": 2099878,
+     "stock_awards": 900031,
+     "option_awards": 592950,
+     "non_equity_incentive": 0,
      "all_other": 0,
      "total": 4407239,
-     "_total_source": "def14a_verified_20260926",
-     "_reverify_20260912_1000": "Independent re-verification 2026-09-12 10:00 PT vs primary DEF 14A SCT (acc 0001397187-25-000017); parse error corrected per batch audit (see VERIFICATION.md): all_other 4407239->0, total 8814478->4407239; components + total now match filing verbatim.",
-     "_repair_note_20260926": "Column-shift repair 2026-09-26 vs 2026 DEFC14A SCT https://www.sec.gov/Archives/edgar/data/1397187/000121390026058095/ea0281698-04.htm: stored row had bonus=2099878/stock=900031/option=592950/neip=0/all_other=0; filing prints bonus=-/stock=2099878/option=900031/neip=592950/all_other=-. Parser dropped the blank Bonus cell (KR 2026-09-11 bug class); the 2026-09-12 batch verified the total but missed the shift. Total unchanged 4407239."
+     "_total_source": "def14a_verified_20260912",
+     "_reverify_20260912_1000": "Independent re-verification 2026-09-12 10:00 PT vs primary DEF 14A SCT (acc 0001397187-25-000017); parse error corrected per batch audit (see VERIFICATION.md): all_other 4407239->0, total 8814478->4407239; components + total now match filing verbatim."
     },
     {
      "name": "Meghan Frank",
@@ -66947,123 +66882,15 @@
      "all_other": 24800,
      "total": 4340330,
      "_total_source": "verified"
-    },
-    {
-     "name": "Meghan Frank",
-     "title": "Interim Co-Chief Executive Officer and Chief Financial Officer",
-     "year": 2025,
-     "salary": 861195,
-     "bonus": 0,
-     "stock_awards": 5150017,
-     "option_awards": 3348876,
-     "non_equity_incentive": 307447,
-     "all_other": 0,
-     "total": 9667535,
-     "_total_source": "def14a_verified_20260926",
-     "_note_20260926": "FY2025 special awards: $2.0M RSUs + $2.0M options for dual interim co-CEO/CFO service (footnote 5)."
-    },
-    {
-     "name": "Andre Maestrini",
-     "title": "Interim Co-Chief Executive Officer, President, and Chief Commercial Officer",
-     "year": 2025,
-     "salary": 863008,
-     "bonus": 0,
-     "stock_awards": 5150017,
-     "option_awards": 3348876,
-     "non_equity_incentive": 308094,
-     "all_other": 61849,
-     "total": 9731844,
-     "_total_source": "def14a_verified_20260926"
-    },
-    {
-     "name": "Andre Maestrini",
-     "title": "Interim Co-Chief Executive Officer, President, and Chief Commercial Officer",
-     "year": 2024,
-     "salary": 800755,
-     "bonus": 0,
-     "stock_awards": 1925055,
-     "option_awards": 825023,
-     "non_equity_incentive": 583030,
-     "all_other": 57543,
-     "total": 4191406,
-     "_total_source": "def14a_verified_20260926"
-    },
-    {
-     "name": "Andre Maestrini",
-     "title": "Interim Co-Chief Executive Officer, President, and Chief Commercial Officer",
-     "year": 2023,
-     "salary": 762763,
-     "bonus": 0,
-     "stock_awards": 1749986,
-     "option_awards": 750023,
-     "non_equity_incentive": 1372974,
-     "all_other": 54951,
-     "total": 4690697,
-     "_total_source": "def14a_verified_20260926"
-    },
-    {
-     "name": "Nicole Neuburger",
-     "title": "Chief Brand & Product Activation Officer",
-     "year": 2025,
-     "salary": 797308,
-     "bonus": 0,
-     "stock_awards": 3349933,
-     "option_awards": 2149304,
-     "non_equity_incentive": 284639,
-     "all_other": 17055,
-     "total": 6598239,
-     "_total_source": "def14a_verified_20260926"
-    },
-    {
-     "name": "Edward Dagnese",
-     "title": "Chief Supply Chain Officer",
-     "year": 2025,
-     "salary": 670288,
-     "bonus": 0,
-     "stock_awards": 1800223,
-     "option_awards": 1199686,
-     "non_equity_incentive": 179470,
-     "all_other": 15771,
-     "total": 3865438,
-     "_total_source": "def14a_verified_20260926"
-    },
-    {
-     "name": "Calvin McDonald",
-     "title": "Former Chief Executive Officer",
-     "year": 2025,
-     "salary": 1393269,
-     "bonus": 0,
-     "stock_awards": 7800001,
-     "option_awards": 13800030,
-     "non_equity_incentive": 994794,
-     "all_other": 35200,
-     "total": 24023294,
-     "_total_source": "def14a_verified_20260926",
-     "_note_20260926": "Terminated 2026-01-31; separation treated as without-cause. Option awards include incremental fair value of separation-agreement option modification (footnote 9). PEO for FY2025 pay-ratio disclosure (918:1)."
-    },
-    {
-     "name": "Celeste Burgoyne",
-     "title": "Former President, Americas and Global Guest Innovation",
-     "year": 2025,
-     "salary": 825962,
-     "bonus": 0,
-     "stock_awards": 3150175,
-     "option_awards": 1349991,
-     "non_equity_incentive": 0,
-     "all_other": 0,
-     "total": 5326128,
-     "_total_source": "def14a_verified_20260926",
-     "_note_20260926": "Resigned 2025-12-31; no severance; unvested equity forfeited (footnote 11)."
     }
    ],
    "cik": "1397187",
-   "filing_date": "2026-05-18",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/1397187/000121390026058095/ea0281698-04.htm",
-   "total_neo_compensation": 59212478,
-   "neo_count": 6,
-   "proxy_fiscal_year": 2025,
+   "filing_date": "2025-04-29",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/1397187/000139718725000017/lulu-20250429.htm",
+   "total_neo_compensation": 28894710,
+   "neo_count": 4,
+   "proxy_fiscal_year": 2024,
    "available_years": [
-    2025,
     2024,
     2023,
     2022
@@ -67740,8 +67567,7 @@
     "lead_independent_director": false,
     "chair_independent": true,
     "independence_pct": 95.5
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-03-23) in the March 2026 quarterly rebalance; replaced by Coherent (COHR). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "LYB",
@@ -69146,8 +68972,8 @@
    "total_compensation": 10651821,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 52107,
-   "pay_ratio": 249,
+   "median_worker_pay": 51203,
+   "pay_ratio": 208,
    "sector": "Industrials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000062996",
@@ -69380,10 +69206,9 @@
      "pension_nqdc": 0,
      "all_other": 393517,
      "total": 10651821,
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "def14a_verified_20260917",
      "_accession": "0001193125-26-151241",
-     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/62996/000119312526151241/d44594ddef14a.htm",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001193125-26-151241): filing-verbatim components, total foots exactly ($0 gap)."
+     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/62996/000119312526151241/d44594ddef14a.htm"
     },
     {
      "name": "Keith J. Allman",
@@ -69413,10 +69238,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": "July",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "say_on_pay": {
@@ -71760,8 +71585,7 @@
     "votes_against": 3732023,
     "filing_date": "2026-05-21",
     "source_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926065151/tm2615069d1_8k.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-12-22) in the December 2025 quarterly rebalance on market capitalization changes. Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "MKC",
@@ -72253,8 +72077,7 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-04-29: 11 of 12 directors independent (all except CEO Concannon); independent Chairman Hernandez",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1278021/000119312526191601/mktx-20260429.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2025-09-22) in the September 2025 quarterly rebalance; replaced by AppLovin (APP). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "MLM",
@@ -72964,8 +72787,8 @@
    "total_compensation": 17709651,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 88521,
-   "pay_ratio": 218,
+   "median_worker_pay": 102247,
+   "pay_ratio": 173,
    "sector": "Consumer Staples",
    "cik": "0000865752",
    "filing_date": "2026-03-27",
@@ -73039,9 +72862,7 @@
      "pension_nqdc": 0,
      "all_other": 918566,
      "total": 17709651,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-035990",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-035990): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Rodney C. Sacks",
@@ -73217,10 +73038,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": "June",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -73685,8 +73506,7 @@
     "votes_against": 20116888,
     "filing_date": "2026-05-11",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1179929/000117992926000026/moh-20260506.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-03-23) in the March 2026 quarterly rebalance; replaced by Lumentum (LITE). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "MOS",
@@ -76376,8 +76196,7 @@
     "independent_directors": 5,
     "independence_pct": 50.0,
     "chair_independent": false
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-03-23) in the March 2026 quarterly rebalance; replaced by Vertiv (VRT). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "MTD",
@@ -76822,8 +76641,8 @@
    "total_compensation": 13752560,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 25954,
-   "pay_ratio": 530,
+   "median_worker_pay": 23312,
+   "pay_ratio": 550,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0001513761",
@@ -76839,9 +76658,7 @@
      "non_equity_incentive": 2880800,
      "all_other": 71800,
      "total": 13752560,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Harry Sommer",
@@ -76853,9 +76670,7 @@
      "non_equity_incentive": 4600000,
      "all_other": 61697,
      "total": 12811659,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Harry Sommer",
@@ -76867,9 +76682,7 @@
      "non_equity_incentive": 1572551,
      "all_other": 66236,
      "total": 8864592,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Mark A. Kempa",
@@ -76880,9 +76693,7 @@
      "non_equity_incentive": 1080300,
      "all_other": 54115,
      "total": 4409380,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Mark A. Kempa",
@@ -76894,9 +76705,7 @@
      "non_equity_incentive": 1880000,
      "all_other": 41531,
      "total": 5981502,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Mark A. Kempa",
@@ -76908,9 +76717,7 @@
      "non_equity_incentive": 999000,
      "all_other": 40152,
      "total": 4939146,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Patrik Dahlgren",
@@ -76921,9 +76728,7 @@
      "non_equity_incentive": 1080300,
      "all_other": 54612,
      "total": 4409877,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Patrik Dahlgren",
@@ -76934,9 +76739,7 @@
      "non_equity_incentive": 1840000,
      "all_other": 46830,
      "total": 4866809,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Patrik Dahlgren",
@@ -76948,9 +76751,7 @@
      "non_equity_incentive": 555609,
      "all_other": 21312,
      "total": 5977453,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Daniel S. Farkas",
@@ -76961,9 +76762,7 @@
      "non_equity_incentive": 831000,
      "all_other": 57456,
      "total": 3798424,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Daniel S. Farkas",
@@ -76975,9 +76774,7 @@
      "non_equity_incentive": 1435000,
      "all_other": 46591,
      "total": 5249078,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Daniel S. Farkas",
@@ -76989,9 +76786,7 @@
      "non_equity_incentive": 777000,
      "all_other": 44232,
      "total": 4521226,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "David Herrera",
@@ -77002,9 +76797,7 @@
      "non_equity_incentive": 686656,
      "all_other": 2128524,
      "total": 5737645,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "David Herrera",
@@ -77015,9 +76808,7 @@
      "non_equity_incentive": 2100546,
      "all_other": 46691,
      "total": 4667484,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "David Herrera",
@@ -77028,9 +76819,7 @@
      "non_equity_incentive": 705231,
      "all_other": 39137,
      "total": 2701547,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Jason Montague",
@@ -77041,9 +76830,7 @@
      "non_equity_incentive": 1080300,
      "all_other": 65257,
      "total": 4360234,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-052146",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001104659-26-052146); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "_total_source": "verified"
     }
    ],
    "neo_count": 6,
@@ -77063,11 +76850,11 @@
     "source_url": "https://www.sec.gov/Archives/edgar/data/1513761/000110465926094888/nclh-20260611x8ka.htm"
    },
    "ceo_tenure": {
-    "year": 2026,
-    "month": "February",
-    "confidence": "high",
+    "year": 2023,
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -77759,8 +77546,7 @@
      "_total_source": "component_mismatch",
      "_accession": "",
      "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 6,722,177 vs printed total 6,772,178), kept verbatim",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $6,722,177 vs filing-printed total $6,772,178 (gap $50,001); filing-side arithmetic quirk, total retained verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm247418-2_def14a.htm): all components and total match filing verbatim; -$50,001: components sum 6,722,177 vs printed 6,772,178 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
+     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $6,722,177 vs filing-printed total $6,772,178 (gap $50,001); filing-side arithmetic quirk, total retained verbatim."
     },
     {
      "name": "Terrell Kirk Crews II",
@@ -78545,7 +78331,7 @@
      "total": 3301416,
      "title": "EVP and Group President, Utilities",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $49 of filing total $3,301,416 | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$49: components sum 3,301,465 vs printed 3,301,416 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent). | 2026-09-26 DQ re-verified against primary DEF 14A SCT (ny20055306x771_def14a.htm): all components and total match filing verbatim; -$49: components sum 3,301,465 vs printed 3,301,416 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $49 of filing total $3,301,416; queued for filing re-verification. | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$49: components sum 3,301,465 vs printed 3,301,416 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
      "_relabel_note_20260909": true,
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
@@ -82440,95 +82226,81 @@
    "total_compensation": 1113417,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 98899,
-   "pay_ratio": 11,
+   "median_worker_pay": 78950,
+   "pay_ratio": 82,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "executives": [
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 5643947,
      "name": "Lawrence J. Ellison",
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 5643948,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 3013678,
      "name": "Lawrence J. Ellison",
      "non_equity_incentive": 5292260,
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 8305939,
-     "year": 2024,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2024
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 3136719,
      "name": "Lawrence J. Ellison",
      "non_equity_incentive": 4165213,
      "salary": 1,
      "title": "Executive Chair and Chief Technology Officer",
      "total": 7301933,
-     "year": 2023,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2023
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 163417,
      "name": "Safra A. Catz",
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 1113417,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 221974,
      "name": "Safra A. Catz",
      "non_equity_incentive": 5292260,
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 6464234,
-     "year": 2024,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2024
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 135467,
      "name": "Safra A. Catz",
      "non_equity_incentive": 4165213,
      "salary": 950000,
      "title": "Executive Vice Chair and Former Chief Executive Officer",
      "total": 5250680,
-     "year": 2023,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2023
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 8717,
      "name": "Jeffrey O. Henley",
      "salary": 650000,
      "stock_awards": 8799774,
      "title": "Executive Vice Chair",
      "total": 9458491,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 7954,
      "name": "Jeffrey O. Henley",
      "non_equity_incentive": 529226,
@@ -82536,12 +82308,10 @@
      "stock_awards": 8712433,
      "title": "Executive Vice Chair",
      "total": 9899613,
-     "year": 2024,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2024
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 8050,
      "name": "Jeffrey O. Henley",
      "non_equity_incentive": 416521,
@@ -82549,24 +82319,20 @@
      "stock_awards": 8608921,
      "title": "Executive Vice Chair",
      "total": 9683492,
-     "year": 2023,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2023
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 40091,
      "name": "Stuart Levey",
      "salary": 950000,
      "stock_awards": 13688537,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 14678628,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 15682,
      "bonus": 1000000,
      "name": "Stuart Levey",
@@ -82574,12 +82340,10 @@
      "stock_awards": 11616614,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 13582296,
-     "year": 2024,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2024
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 12036,
      "bonus": 650000,
      "name": "Stuart Levey",
@@ -82587,36 +82351,30 @@
      "stock_awards": 11537388,
      "title": "Executive Vice President, Chief Legal Officer",
      "total": 12757189,
-     "year": 2023,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2023
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 134893,
      "name": "Maria Smith",
      "salary": 504469,
      "stock_awards": 7822021,
      "title": "Executive Vice President, Chief Accounting Officer",
      "total": 8461383,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 7167,
      "name": "Edward Screven",
      "salary": 796154,
      "stock_awards": 17599383,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 18402704,
-     "year": 2025,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2025
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 7980,
      "name": "Edward Screven",
      "non_equity_incentive": 2646130,
@@ -82624,12 +82382,10 @@
      "stock_awards": 17424865,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 20978975,
-     "year": 2024,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2024
     },
     {
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "verified",
      "all_other": 8050,
      "name": "Edward Screven",
      "non_equity_incentive": 2082607,
@@ -82637,9 +82393,7 @@
      "stock_awards": 17217777,
      "title": "Former Executive Vice President, Chief Corporate Architect",
      "total": 20208434,
-     "year": 2023,
-     "_accession": "0001193125-25-220801",
-     "_repair_note_20260925_0600": "2026-09-25 06:00 PT: CEO-anchor adjudication - row re-read against the primary DEF 14A SCT (acc. 0001193125-25-220801); filing-verbatim components, total foots exactly (0 rounding gap)."
+     "year": 2023
     }
    ],
    "cik": "1341439",
@@ -83917,8 +83671,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A 2026-04-02: 6 directors, 5 independent per NYSE (Turney, Binz, Duques, Peters, Watts); non-independent: Chad Richison (CEO/Chairman); Frederick C. Peters II Lead Independent Director",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1590955/000119312526140064/d44715ddef14a.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-03-23) in the March 2026 quarterly rebalance; replaced by EchoStar (SATS). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "PAYX",
@@ -88307,8 +88060,8 @@
    "total_compensation": 10974308,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 182127,
-   "pay_ratio": 42,
+   "median_worker_pay": 168002,
+   "pay_ratio": 65,
    "sector": "Utilities",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000764622",
@@ -88390,11 +88143,10 @@
      "pension_nqdc": 1277261,
      "all_other": 29275,
      "total": 10974308,
-     "_total_source": "def14a_verified_20260925",
+     "_total_source": "def14a_verified_20260917",
      "_fix_note": "2026-09-13: stripped ',Former' parser fragment from name; the SCT title ends '...and currently, Special Advisor to the CEO' and the fragment leaked into the name field.",
      "_accession": "0001628280-26-023516",
-     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/764622/000162828026023516/pnw-20260403.htm",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001628280-26-023516): filing-verbatim components, total foots exactly ($0 gap)."
+     "_repair_note_20260917_0600": "Title repaired 2026-09-17 06:00 PT from the 2026 DEF 14A SCT principal-position wording, filing-verbatim. https://www.sec.gov/Archives/edgar/data/764622/000162828026023516/pnw-20260403.htm"
     },
     {
      "name": "Jeffrey B. Guldner",
@@ -88637,10 +88389,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": "April",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -89019,8 +88771,7 @@
     "lead_independent_director": false,
     "source": "DEF 14A 2026-03-26: 7 of 9 nominees independent (all except CEO Arvan and former CEO Perez de la Mesa); independent Chairman Whalen",
     "source_url": "https://www.sec.gov/Archives/edgar/data/945841/000094584126000077/pool-20260325.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (moved to the S&P SmallCap 600 effective 2026-06-22) in the June 2026 quarterly rebalance; replaced by Marvell Technology (MRVL). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "PPG",
@@ -89470,8 +89221,8 @@
    "total_compensation": 28168258,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 100551,
-   "pay_ratio": 198,
+   "median_worker_pay": 96126,
+   "pay_ratio": 293,
    "sector": "Financials",
    "cik": "0001137774",
    "executives": [
@@ -89543,9 +89294,7 @@
      "pension_nqdc": 1247861,
      "all_other": 89755,
      "total": 28168258,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-035162",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001104659-26-035162): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Charles F. Lowrey",
@@ -89709,10 +89458,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": "March",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -91968,17 +91717,16 @@
      "salary": 1095481,
      "stock_awards": 3624103,
      "non_equity_incentive": 4147280,
-     "pension_nqdc": null,
-     "all_other": 325693,
+     "pension_nqdc": 25161,
+     "all_other": 330753,
      "total": 9217718,
      "title": "President and Chief Executive Officer",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $5,060 of filing total $9,217,718 | 2026-09-25 DQ re-verified against primary DEF 14A SCT (rf-20240304.htm): REPAIRED -- all_other 330,753 -> 325,693 per filing (breakdown 88,740 + 16,500 + 213,853 + 6,600 = 325,693); components now foot to printed total 9,217,718 exactly. Pension column re-attributed pension_nqdc -> pension_change ($25,161): proxy states no above-market NQDC earnings for any NEO, and Turner froze his SERP benefit.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $5,060 of filing total $9,217,718; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $9,222,778 vs filing-printed total $9,217,718 (gap $+5,060); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error. The SCT \"Total Without\" column ($9,192,557 = total minus $25,161 pension) foots consistently.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "pension_change": 25161
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "David J. Turner, Jr",
@@ -92079,17 +91827,16 @@
      "salary": 590962,
      "stock_awards": 776607,
      "non_equity_incentive": 1045044,
-     "pension_nqdc": null,
-     "all_other": 109623,
+     "pension_nqdc": 179336,
+     "all_other": 110803,
      "total": 2701572,
      "title": "Chief Administrative Officer",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $1,180 of filing total $2,701,572 | 2026-09-25 DQ re-verified against primary DEF 14A SCT (rf-20240304.htm): REPAIRED -- all_other 110,803 -> 109,623 per filing; components now foot to printed total 2,701,572 exactly. Pension column re-attributed pension_nqdc -> pension_change ($179,336): proxy states no above-market NQDC earnings for any NEO.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $1,180 of filing total $2,701,572; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $2,702,752 vs filing-printed total $2,701,572 (gap $+1,180); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "pension_change": 179336
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "Russell K. Zusi",
@@ -99107,8 +98854,8 @@
    "total_compensation": 16000281,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 47897,
-   "pay_ratio": 179,
+   "median_worker_pay": 76984,
+   "pay_ratio": 208,
    "sector": "Industrials",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -99169,10 +98916,8 @@
      "option_awards": 2593756,
      "non_equity_incentive": 3632580,
      "total": 16000281,
-     "_total_source": "def14a_verified_20260925",
-     "all_other": 642731,
-     "_accession": "0001140361-26-008170",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001140361-26-008170): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified",
+     "all_other": 642731
     },
     {
      "name": "Donald Allan, Jr.",
@@ -99353,10 +99098,10 @@
    },
    "ceo_tenure": {
     "year": 2025,
-    "month": "October",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -100794,7 +100539,7 @@
      "total": 3060390,
      "title": "President and CEO",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $22 of filing total $3,060,390 | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; -$22: components sum 3,060,368 vs printed 3,060,390 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent). | 2026-09-26 DQ re-verified against primary DEF 14A SCT (tap-20260506xdef14a.htm): all components and total match filing verbatim; +$22: components sum 3,060,368 vs printed 3,060,390 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $22 of filing total $3,060,390; queued for filing re-verification. | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; -$22: components sum 3,060,368 vs printed 3,060,390 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
      "_relabel_note_20260909": true,
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
@@ -100833,7 +100578,7 @@
      "total": 2402156,
      "title": "President and CEO",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $30 of filing total $2,402,156 | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$30: components sum 2,402,186 vs printed 2,402,156 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent). | 2026-09-26 DQ re-verified against primary DEF 14A SCT (tap-20260506xdef14a.htm): all components and total match filing verbatim; -$30: components sum 2,402,186 vs printed 2,402,156 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $30 of filing total $2,402,156; queued for filing re-verification. | Relabeled rounding -> component_mismatch 2026-09-11: re-verified against primary DEF 14A SCT; all components and total match filing verbatim; +$30: components sum 2,402,186 vs printed 2,402,156 \u2014 genuine filing-side arithmetic inconsistency (CDNS/TSCO/RF 2026-09-10 precedent).",
      "_relabel_note_20260909": true,
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
@@ -100907,8 +100652,7 @@
     "votes_against": 7383703,
     "filing_date": "2026-05-08",
     "source_url": "https://www.sec.gov/Archives/edgar/data/24545/000110465926058010/tm2614008d1_8k.htm"
-   },
-   "_index_note": "Removed from the S&P 500 effective 2026-09-21 (Sept quarterly rebalance; moved to S&P SmallCap 600). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "TDG",
@@ -102362,8 +102106,8 @@
    "total_compensation": 20407603,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 27506,
-   "pay_ratio": 794,
+   "median_worker_pay": 27090,
+   "pay_ratio": 753,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "executives": [
@@ -102389,9 +102133,7 @@
      "non_equity_incentive": 1538320,
      "all_other": 596391,
      "total": 20407603,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001628280-26-027508",
-     "_repair_note_20260925_1930": "2026-09-25 19:30 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (Cornell was CEO through FY2025 ended 2026-01-31; Fiddelke CEO eff 2026-02-01; no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001628280-26-027508): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "Brian C. Cornell",
@@ -102542,7 +102284,7 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2026,
-    "month": "February",
+    "month": "Fiscal",
     "confidence": "high",
     "sources": [
      "prose"
@@ -104880,7 +104622,7 @@
      "total": 11773463,
      "title": "President, Chief Executive Officer, and Director",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $4,000 of filing total $11,773,463 | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d16327ddef14a.htm): all components and total match filing verbatim; -$4,000: components sum 11,777,463 vs printed 11,773,463 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $4,000 of filing total $11,773,463; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $11,777,463 vs filing-printed total $11,773,463 (gap $+4,000); identical in the latest DEF 14A SCT (d16327ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
@@ -104957,7 +104699,7 @@
      "total": 2459917,
      "title": "Executive Vice President \u2013 Chief Technology, Digital Commerce, and Strategy Officer",
      "_total_source": "component_mismatch",
-     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $500 of filing total $2,459,917 | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d16327ddef14a.htm): all components and total match filing verbatim; +$500: components sum 2,459,417 vs printed 2,459,917 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
+     "_parse_note": "Relabeled verified -> rounding 2026-09-09: components within $500 of filing total $2,459,917; queued for filing re-verification.",
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $2,459,417 vs filing-printed total $2,459,917 (gap $-500); identical in the latest DEF 14A SCT (d16327ddef14a.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
@@ -107894,7 +107636,7 @@
      "pension_nqdc": 0,
      "total": 20296362,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,475,127 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $4,475,127 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "salary": 1475000,
      "stock_awards": 9000130,
      "non_equity_incentive": 3437250,
@@ -107912,7 +107654,7 @@
      "all_other": 312221,
      "total": 17644763,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $16,311,430 vs filing total $17,644,763 (missing $1,333,333); total retained from filing | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $16,311,430 vs filing total $17,644,763 (missing $1,333,333); total retained from filing; queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "_relabel_note_20260909": true,
      "pension_nqdc": 0
     },
@@ -107957,7 +107699,7 @@
      "all_other": 34712,
      "total": 4772428,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $681,667 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $681,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "pension_nqdc": 0
     },
     {
@@ -108054,7 +107796,7 @@
      "all_other": 23678,
      "total": 3794731,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $546,667 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $546,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "pension_nqdc": 0
     },
     {
@@ -108110,7 +107852,7 @@
      "all_other": 50985,
      "total": 2543476,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $543,333 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $543,333 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "pension_nqdc": 0
     },
     {
@@ -108153,7 +107895,7 @@
      "all_other": 36061,
      "total": 6510188,
      "_total_source": "def14a_verified_20260910",
-     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $841,667 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
+     "_parse_note": "Relabeled rounding -> incomplete_components 2026-09-09: components under filing-printed total by $841,667 (exceeds the $25K taxonomy threshold); queued for filing re-verification. | Re-verified 2026-09-10 06:00 PT vs FY2026 DEF 14A SCT (unp-20260324.htm) for 2024/2025, FY2025 DEF 14A SCT (ny20039220x771_def14a.htm) for 2023; prior parse column-shifted (salary->bonus, stock->pension, options->total; 2024 continuation rows left-shifted losing salary/pension).",
      "pension_nqdc": 0
     },
     {
@@ -108680,11 +108422,11 @@
    "ticker": "USB",
    "company_name": "US Bancorp",
    "ceo_name": "Andrew Cecere",
-   "total_compensation": 19339327,
+   "total_compensation": 37278654,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
-   "median_worker_pay": 95307,
-   "pay_ratio": 178,
+   "median_worker_pay": 90217,
+   "pay_ratio": 215,
    "sector": "Financials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000036104",
@@ -108709,33 +108451,29 @@
      "name": "Gunjan Kedia",
      "title": "Chief Executive Officer and President",
      "year": 2024,
-     "salary": 930770,
+     "salary": 6499995,
      "bonus": 0,
-     "stock_awards": 6499995,
+     "stock_awards": 2292267,
      "option_awards": 0,
-     "non_equity_incentive": 2292267,
-     "pension_nqdc": 225513,
-     "all_other": 189310,
-     "total": 10137855,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 225513,
+     "pension_nqdc": 189310,
+     "all_other": 10137855,
+     "total": 19344940,
+     "_total_source": "verified"
     },
     {
      "name": "Gunjan Kedia",
      "title": "Chief Executive Officer and President",
      "year": 2023,
-     "salary": 725000,
+     "salary": 3500000,
      "bonus": 0,
-     "stock_awards": 3500000,
+     "stock_awards": 1173050,
      "option_awards": 0,
-     "non_equity_incentive": 1173050,
-     "pension_nqdc": 220797,
-     "all_other": 130447,
-     "total": 5749294,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 220797,
+     "pension_nqdc": 130447,
+     "all_other": 5749294,
+     "total": 10773588,
+     "_total_source": "verified"
     },
     {
      "name": "Andrew Cecere",
@@ -108755,33 +108493,29 @@
      "name": "Andrew Cecere",
      "title": "Executive Chairman and former Chief Executive Officer",
      "year": 2024,
-     "salary": 1400000,
+     "salary": 11000024,
      "bonus": 0,
-     "stock_awards": 11000024,
+     "stock_awards": 4929400,
      "option_awards": 0,
-     "non_equity_incentive": 4929400,
-     "pension_nqdc": 1926261,
-     "all_other": 83642,
-     "total": 19339327,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 1926261,
+     "pension_nqdc": 83642,
+     "all_other": 19339327,
+     "total": 37278654,
+     "_total_source": "verified"
     },
     {
      "name": "Andrew Cecere",
      "title": "Executive Chairman and former Chief Executive Officer",
      "year": 2023,
-     "salary": 1350000,
+     "salary": 10500000,
      "bonus": 0,
-     "stock_awards": 10500000,
+     "stock_awards": 3794175,
      "option_awards": 0,
-     "non_equity_incentive": 3794175,
-     "pension_nqdc": 7210212,
-     "all_other": 62570,
-     "total": 22916957,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 7210212,
+     "pension_nqdc": 62570,
+     "all_other": 22916957,
+     "total": 44483914,
+     "_total_source": "verified"
     },
     {
      "name": "John C. Stern",
@@ -108801,33 +108535,29 @@
      "name": "John C. Stern",
      "title": "Vice Chair and Chief Financial Officer",
      "year": 2024,
-     "salary": 700000,
+     "salary": 2700000,
      "bonus": 0,
-     "stock_awards": 2700000,
+     "stock_awards": 1408400,
      "option_awards": 0,
-     "non_equity_incentive": 1408400,
-     "pension_nqdc": 89164,
-     "all_other": 19606,
-     "total": 4917170,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 89164,
+     "pension_nqdc": 19606,
+     "all_other": 4917170,
+     "total": 9134340,
+     "_total_source": "verified"
     },
     {
      "name": "John C. Stern",
      "title": "Vice Chair and Chief Financial Officer",
      "year": 2023,
-     "salary": 527308,
+     "salary": 600000,
      "bonus": 0,
-     "stock_awards": 600000,
+     "stock_awards": 607260,
      "option_awards": 0,
-     "non_equity_incentive": 607260,
-     "pension_nqdc": 91970,
-     "all_other": 18600,
-     "total": 1845138,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 91970,
+     "pension_nqdc": 18600,
+     "all_other": 1845138,
+     "total": 3162968,
+     "_total_source": "verified"
     },
     {
      "name": "Jodi L. Richard",
@@ -108889,33 +108619,29 @@
      "name": "Terrance R. Dolan",
      "title": "Vice Chair and Chief Administration Officer",
      "year": 2024,
-     "salary": 815000,
+     "salary": 4999995,
      "bonus": 0,
-     "stock_awards": 4999995,
+     "stock_awards": 2049725,
      "option_awards": 0,
-     "non_equity_incentive": 2049725,
-     "pension_nqdc": 691796,
-     "all_other": 34007,
-     "total": 8590523,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 691796,
+     "pension_nqdc": 34007,
+     "all_other": 8590523,
+     "total": 16366046,
+     "_total_source": "verified"
     },
     {
      "name": "Terrance R. Dolan",
      "title": "Vice Chair and Chief Administration Officer",
      "year": 2023,
-     "salary": 780000,
+     "salary": 4500000,
      "bonus": 0,
-     "stock_awards": 4500000,
+     "stock_awards": 1409265,
      "option_awards": 0,
-     "non_equity_incentive": 1409265,
-     "pension_nqdc": 1857078,
-     "all_other": 32331,
-     "total": 8578674,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001104659-26-025844",
-     "_parse_note": "2026-09-25 19:30 PT: salary-drop column-shift EDGAR repair vs primary DEF 14A SCT (acc. 0001104659-26-025844): salary cell dropped, stock->salary, NEIP->stock, pension->NEIP, all_other->pension, printed total->all_other, stored total recomputed ~2x. Filing-verbatim components restored; total foots exactly ($0 gap). USB SCT carries no Bonus or Option columns."
+     "non_equity_incentive": 1857078,
+     "pension_nqdc": 32331,
+     "all_other": 8578674,
+     "total": 16377348,
+     "_total_source": "verified"
     }
    ],
    "neo_count": 4,
@@ -108924,7 +108650,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 42984875,
+   "total_neo_compensation": 82123980,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 93.5,
@@ -108936,10 +108662,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": "April",
-    "confidence": "high",
+    "month": null,
+    "confidence": "medium",
     "sources": [
-     "prose"
+     "table"
     ]
    },
    "board_independence": {
@@ -111719,8 +111445,7 @@
      "total": 3754634,
      "_total_source": "component_mismatch",
      "_note": "Filing-printed components sum to 3,721,587 vs filing-printed total 3,754,634 (gap 33,047); identical in the 2025 DEF 14A SCT \u2014 filing-side CHF-conversion artifact (proxy fn 4), not a parse error.",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (wab-20260330.htm): all components and total match filing verbatim; -$33,047: components sum 3,721,587 vs printed 3,754,634 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. (WAB SCT has no Bonus/Option/Pension columns; CHF amounts converted at fiscal-year-end rate per footnote (4).)"
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "Rafael Santana",
@@ -112159,8 +111884,7 @@
     "lead_independent_director": true,
     "source": "DEF 14A filed 2024-12-13 (2025 annual meeting), proxy summary \"10 of 12 nominees are independent\"; non-independent: Stefano Pessina (Executive Chairman) and Timothy C. Wentworth (CEO)",
     "source_url": "https://www.sec.gov/Archives/edgar/data/1618921/000155837024016214/tmb-20250130xdef14a.htm"
-   },
-   "_index_note": "Removed from the S&P 500 (acquired by Sycamore Partners in take-private transaction, closed 2025-08-28; delisted). Retained with historical NEO coverage."
+   }
   },
   {
    "ticker": "WBD",
@@ -112633,8 +112357,8 @@
    "total_compensation": 17690772,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2025 \u2014 FY2024 CEO",
-   "median_worker_pay": 8740,
-   "pay_ratio": 1321,
+   "median_worker_pay": 10726,
+   "pay_ratio": 1649,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -112720,9 +112444,7 @@
      "non_equity_incentive": 4326875,
      "all_other": 84766,
      "total": 17690772,
-     "_total_source": "def14a_verified_20260925",
-     "_accession": "0001628280-25-044298",
-     "_repair_note_20260925_1400": "2026-09-25 14:00 PT: CEO-anchor adjudication - anchor kept on the filed FY2024 PEO row per least-false-statement (no successor has a filed FY2024 SCT row); row re-read against the primary DEF 14A SCT (acc. 0001628280-25-044298): filing-verbatim components, total foots exactly ($0 gap)."
+     "_total_source": "verified"
     },
     {
      "name": "David V. Goeckeler",
@@ -118247,8 +117969,7 @@
      "_total_source": "component_mismatch",
      "_accession": null,
      "_filing_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001633978&type=DEF+14A",
-     "_note": "FY2025 SEC DEF 14A 2025 SCT, Wajid Ali 2023 row. Components foot with $-300 filing-side gap (verbatim) Filing note: Components sum to 5,097,542 vs filing total 5,097,242 (-$300) Labeled component_mismatch: the filing\u2019s own components do not sum to its printed total; values stored verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (lite4368861_def14a.htm): all components and total match filing verbatim; +$300: components sum 5,097,542 vs printed 5,097,242 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. (Lumentum SCT has no Bonus/Option/Pension columns.)"
+     "_note": "FY2025 SEC DEF 14A 2025 SCT, Wajid Ali 2023 row. Components foot with $-300 filing-side gap (verbatim) Filing note: Components sum to 5,097,542 vs filing total 5,097,242 (-$300) Labeled component_mismatch: the filing\u2019s own components do not sum to its printed total; values stored verbatim."
     },
     {
      "name": "Jae Kim",
@@ -118433,8 +118154,7 @@
      "_total_source": "component_mismatch",
      "_accession": "0001628280-26-024237",
      "_filing_url": "https://www.sec.gov/Archives/edgar/data/1664703/000162828026024237/",
-     "_note": "FY2025 SEC DEF 14A 2026 SCT, Maciej Kurzymski 2025 row. Components foot with $+339,200 filing-side gap (verbatim) Filing note: Components sum to $1,325,730 (416,985+569,240+339,200+305) but filing reports total $1,664,930; gap is exactly $339,200 = the NEIP amount (NEIP appears double-counted in total). Confirmed in both the as-filed 14A and the typeset proxy. Verbatim per filing. Labeled component_mismatch: the filing\u2019s own components do not sum to its printed total; values stored verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (be-20260408.htm): all components and total match filing verbatim; -$339,200: components sum 1,325,730 vs printed 1,664,930 -- genuine filing-side arithmetic inconsistency (filing does not foot); total retained verbatim, no correction invented."
+     "_note": "FY2025 SEC DEF 14A 2026 SCT, Maciej Kurzymski 2025 row. Components foot with $+339,200 filing-side gap (verbatim) Filing note: Components sum to $1,325,730 (416,985+569,240+339,200+305) but filing reports total $1,664,930; gap is exactly $339,200 = the NEIP amount (NEIP appears double-counted in total). Confirmed in both the as-filed 14A and the typeset proxy. Verbatim per filing. Labeled component_mismatch: the filing\u2019s own components do not sum to its printed total; values stored verbatim."
     },
     {
      "name": "Aman Joshi",
@@ -119538,764 +119258,7 @@
    ],
    "median_worker_pay": 204326,
    "pay_ratio": 90
-  },
-  {
-   "company_name": "Ares Management Corporation",
-   "ticker": "ARES",
-   "cik": "0001176948",
-   "sector": "Financials",
-   "ceo_name": "Michael J Arougheti",
-   "total_compensation": 68279532,
-   "fiscal_year": 2025,
-   "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 197440,
-   "pay_ratio": 346,
-   "executives": [
-    {
-     "name": "Michael J Arougheti",
-     "title": "Co-Founder and Chief Executive Officer",
-     "year": 2025,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 49520000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 18759532,
-     "total": 68279532,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Michael J Arougheti",
-     "title": "Co-Founder and Chief Executive Officer",
-     "year": 2024,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 62628000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 22753842,
-     "total": 85381842,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Michael J Arougheti",
-     "title": "Co-Founder and Chief Executive Officer",
-     "year": 2023,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 13728000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 16848590,
-     "total": 30576590,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "R. Kipp deVeer",
-     "title": "Co-President",
-     "year": 2025,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 49520000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 22410731,
-     "total": 71930731,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "R. Kipp deVeer",
-     "title": "Co-President",
-     "year": 2024,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 58052000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 30890324,
-     "total": 88942324,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "R. Kipp deVeer",
-     "title": "Co-President",
-     "year": 2023,
-     "salary": 0,
-     "bonus": 0,
-     "stock_awards": 9152000,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 26331574,
-     "total": 35483574,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Blair Jacobson",
-     "title": "Co-President",
-     "year": 2025,
-     "salary": 472710,
-     "bonus": 0,
-     "stock_awards": 33673600,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 15671936,
-     "total": 49818246,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Jarrod Phillips",
-     "title": "Chief Financial Officer",
-     "year": 2025,
-     "salary": 750000,
-     "bonus": 788750,
-     "stock_awards": 7966478,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 288442,
-     "total": 9793670,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Jarrod Phillips",
-     "title": "Chief Financial Officer",
-     "year": 2024,
-     "salary": 750000,
-     "bonus": 650000,
-     "stock_awards": 7944641,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 67939,
-     "total": 9412580,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Jarrod Phillips",
-     "title": "Chief Financial Officer",
-     "year": 2023,
-     "salary": 750000,
-     "bonus": 650000,
-     "stock_awards": 2630079,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 47370,
-     "total": 4077449,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Naseem Sagati Aghili",
-     "title": "General Counsel and Corporate Secretary",
-     "year": 2025,
-     "salary": 750000,
-     "bonus": 788750,
-     "stock_awards": 5301542,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 988547,
-     "total": 7828839,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Ryan Berry",
-     "title": "Chief Marketing and Strategy Officer",
-     "year": 2025,
-     "salary": 1000000,
-     "bonus": 0,
-     "stock_awards": 7923200,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 2888408,
-     "total": 11811608,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    },
-    {
-     "name": "Ryan Berry",
-     "title": "Chief Marketing and Strategy Officer",
-     "year": 2024,
-     "salary": 1000000,
-     "bonus": 0,
-     "stock_awards": 2671870,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 2947943,
-     "total": 6619813,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-026286",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm"
-    }
-   ],
-   "filing_date": "2026-04-20",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/1176948/000162828026026286/ares-20260420.htm",
-   "total_neo_compensation": 219462626,
-   "neo_count": 6,
-   "proxy_fiscal_year": 2025,
-   "available_years": [
-    2025,
-    2024,
-    2023
-   ],
-   "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-   "say_on_pay": null,
-   "ceo_gender": "",
-   "ceo_tenure": "",
-   "board_independence": "",
-   "_parse_note": "Roster add #13 (2026-09-26 02:00 PT): all SCT values read digit-by-digit from primary DEF 14A roster13_20260926/ares-20260420.htm; all 13 rows foot exactly. Co-founders Arougheti and deVeer take no salary/bonus; their comp is stock awards + All Other (incl. carried interest distributions per filing footnotes)."
-  },
-  {
-   "company_name": "Block, Inc.",
-   "ticker": "XYZ",
-   "cik": "0001512673",
-   "sector": "Financials",
-   "ceo_name": "Jack Dorsey",
-   "total_compensation": 2.75,
-   "fiscal_year": 2025,
-   "source": "SEC DEF 14A 2026 \u2014 FY2025 Block Head",
-   "median_worker_pay": 222772,
-   "pay_ratio": 0,
-   "executives": [
-    {
-     "name": "Jack Dorsey",
-     "title": "Block Head",
-     "year": 2025,
-     "salary": 2.75,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 2.75,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Jack Dorsey",
-     "title": "Block Head",
-     "year": 2024,
-     "salary": 2.75,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 2.75,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Jack Dorsey",
-     "title": "Block Head",
-     "year": 2023,
-     "salary": 2.75,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 2.75,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Amrita Ahuja",
-     "title": "Foundational Lead, Chief Financial Officer, Chief Operating Officer and People Lead",
-     "year": 2025,
-     "salary": 591250,
-     "bonus": 0,
-     "stock_awards": 5690122,
-     "option_awards": 6038329,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 12324701,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Amrita Ahuja",
-     "title": "Foundational Lead, Chief Financial Officer, Chief Operating Officer and People Lead",
-     "year": 2024,
-     "salary": 565000,
-     "bonus": 0,
-     "stock_awards": 7423210,
-     "option_awards": 7453414,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 15446624,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Amrita Ahuja",
-     "title": "Foundational Lead, Chief Financial Officer, Chief Operating Officer and People Lead",
-     "year": 2023,
-     "salary": 559259,
-     "bonus": 0,
-     "stock_awards": 7997873,
-     "option_awards": 7986849,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 16548981,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Brian Grassadonia",
-     "title": "Ecosystem Lead",
-     "year": 2025,
-     "salary": 591250,
-     "bonus": 0,
-     "stock_awards": 2845061,
-     "option_awards": 3019165,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 6460475,
-     "_total_source": "component_mismatch",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm",
-     "_parse_note": "Roster add #13: genuine filing-side $1 rounding difference - components sum $6,460,476 vs printed total $6,460,475; totals retained verbatim from DEF 14A."
-    },
-    {
-     "name": "Brian Grassadonia",
-     "title": "Ecosystem Lead",
-     "year": 2024,
-     "salary": 565000,
-     "bonus": 0,
-     "stock_awards": 6433429,
-     "option_awards": 6459622,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 13463051,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Brian Grassadonia",
-     "title": "Ecosystem Lead",
-     "year": 2023,
-     "salary": 555000,
-     "bonus": 0,
-     "stock_awards": 5736827,
-     "option_awards": 5751323,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 12048150,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Owen Britton Jennings",
-     "title": "Business Lead",
-     "year": 2025,
-     "salary": 591250,
-     "bonus": 0,
-     "stock_awards": 6350528,
-     "option_awards": 6739194,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 13685972,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Owen Britton Jennings",
-     "title": "Business Lead",
-     "year": 2024,
-     "salary": 526042,
-     "bonus": 0,
-     "stock_awards": 10300054,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 5000,
-     "total": 10831096,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Dhanji R. Prasanna",
-     "title": "Former Technology + Engineering Lead",
-     "year": 2025,
-     "salary": 607500,
-     "bonus": 0,
-     "stock_awards": 7620633,
-     "option_awards": 8087028,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 19977,
-     "total": 16335138,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Dhanji R. Prasanna",
-     "title": "Former Technology + Engineering Lead",
-     "year": 2024,
-     "salary": 540220,
-     "bonus": 0,
-     "stock_awards": 11167687,
-     "option_awards": 2981375,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 17800,
-     "total": 14707082,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm"
-    },
-    {
-     "name": "Arnaud Weber",
-     "title": "Engineering Lead",
-     "year": 2025,
-     "salary": 338958,
-     "bonus": 0,
-     "stock_awards": 21906543,
-     "option_awards": 0,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 3910,
-     "total": 22249412,
-     "_total_source": "component_mismatch",
-     "_accession": "0001628280-26-027203",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm",
-     "_parse_note": "Roster add #13: genuine filing-side $1 rounding difference - components sum $22,249,411 vs printed total $22,249,412; totals retained verbatim from DEF 14A."
-    }
-   ],
-   "filing_date": "2026-04-23",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/1512673/000162828026027203/sq-20260423.htm",
-   "total_neo_compensation": 71055700.75,
-   "neo_count": 6,
-   "proxy_fiscal_year": 2025,
-   "available_years": [
-    2025,
-    2024,
-    2023
-   ],
-   "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-   "say_on_pay": null,
-   "ceo_gender": "",
-   "ceo_tenure": "",
-   "board_independence": "",
-   "_parse_note": "Roster add #13 (2026-09-26 02:00 PT): all SCT values read digit-by-digit from primary DEF 14A roster13_20260926/sq-20260423.htm. Table has no Bonus/Non-Equity/Pension columns (all zero). Dorsey takes nominal $2.75 salary; filing pay ratio: Block Head comp less than 0.00001x median (stored as 0)."
-  },
-  {
-   "company_name": "Reddit, Inc.",
-   "ticker": "RDDT",
-   "cik": "0001713445",
-   "sector": "Communication Services",
-   "ceo_name": "Steven L. Huffman",
-   "total_compensation": 3101009,
-   "fiscal_year": 2025,
-   "source": "SEC DEF 14A 2026 \u2014 FY2025 CEO",
-   "median_worker_pay": 274953,
-   "pay_ratio": 11,
-   "executives": [
-    {
-     "name": "Steven L. Huffman",
-     "title": "Chief Executive Officer and President",
-     "year": 2025,
-     "salary": 569250,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 1405478,
-     "pension_nqdc": 0,
-     "all_other": 1126281,
-     "total": 3101009,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Steven L. Huffman",
-     "title": "Chief Executive Officer and President",
-     "year": 2024,
-     "salary": 531154,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 1546875,
-     "pension_nqdc": 0,
-     "all_other": 535840,
-     "total": 2613869,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Steven L. Huffman",
-     "title": "Chief Executive Officer and President",
-     "year": 2023,
-     "salary": 341346,
-     "bonus": 0,
-     "stock_awards": 98332716,
-     "option_awards": 93776049,
-     "non_equity_incentive": 792000,
-     "pension_nqdc": 0,
-     "all_other": 7375,
-     "total": 193249486,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Jennifer Wong",
-     "title": "Chief Operating Officer",
-     "year": 2025,
-     "salary": 672750,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 830510,
-     "pension_nqdc": 0,
-     "all_other": 205639,
-     "total": 1708899,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Jennifer Wong",
-     "title": "Chief Operating Officer",
-     "year": 2024,
-     "salary": 640577,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 0,
-     "non_equity_incentive": 1096875,
-     "pension_nqdc": 0,
-     "all_other": 37544,
-     "total": 1774996,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Jennifer Wong",
-     "title": "Chief Operating Officer",
-     "year": 2023,
-     "salary": 583820,
-     "bonus": 0,
-     "stock_awards": 45696176,
-     "option_awards": 45736084,
-     "non_equity_incentive": 506880,
-     "pension_nqdc": 0,
-     "all_other": 7375,
-     "total": 92530335,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Andrew Vollero",
-     "title": "Chief Financial Officer",
-     "year": 2025,
-     "salary": 670400,
-     "bonus": 0,
-     "stock_awards": 0,
-     "option_awards": 662087,
-     "non_equity_incentive": 0,
-     "pension_nqdc": 0,
-     "all_other": 9000,
-     "total": 1341487,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Andrew Vollero",
-     "title": "Chief Financial Officer",
-     "year": 2024,
-     "salary": 643234,
-     "bonus": 0,
-     "stock_awards": 17708361,
-     "option_awards": 0,
-     "non_equity_incentive": 874395,
-     "pension_nqdc": 0,
-     "all_other": 9000,
-     "total": 19234990,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Andrew Vollero",
-     "title": "Chief Financial Officer",
-     "year": 2023,
-     "salary": 613569,
-     "bonus": 0,
-     "stock_awards": 5413034,
-     "option_awards": 0,
-     "non_equity_incentive": 527155,
-     "pension_nqdc": 0,
-     "all_other": 9000,
-     "total": 6562758,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Christopher Slowe, Ph.D.",
-     "title": "Chief Technology Officer",
-     "year": 2025,
-     "salary": 517500,
-     "bonus": 0,
-     "stock_awards": 2813937,
-     "option_awards": 0,
-     "non_equity_incentive": 511083,
-     "pension_nqdc": 0,
-     "all_other": 7375,
-     "total": 3849895,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Christopher Slowe, Ph.D.",
-     "title": "Chief Technology Officer",
-     "year": 2024,
-     "salary": 490577,
-     "bonus": 0,
-     "stock_awards": 2974850,
-     "option_awards": 0,
-     "non_equity_incentive": 675000,
-     "pension_nqdc": 0,
-     "all_other": 7375,
-     "total": 4147802,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Benjamin Lee",
-     "title": "Chief Legal Officer and Corporate Secretary",
-     "year": 2025,
-     "salary": 445400,
-     "bonus": 0,
-     "stock_awards": 3024918,
-     "option_awards": 0,
-     "non_equity_incentive": 439877,
-     "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 3910195,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    },
-    {
-     "name": "Benjamin Lee",
-     "title": "Chief Legal Officer and Corporate Secretary",
-     "year": 2024,
-     "salary": 427322,
-     "bonus": 0,
-     "stock_awards": 1622617,
-     "option_awards": 0,
-     "non_equity_incentive": 580905,
-     "pension_nqdc": 0,
-     "all_other": 0,
-     "total": 2630844,
-     "_total_source": "def14a_verified_20260926",
-     "_accession": "0001713445-26-000060",
-     "_filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm"
-    }
-   ],
-   "filing_date": "2026-04-23",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/1713445/000171344526000060/rddt-20260423.htm",
-   "total_neo_compensation": 13911485,
-   "neo_count": 5,
-   "proxy_fiscal_year": 2025,
-   "available_years": [
-    2025,
-    2024,
-    2023
-   ],
-   "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
-   "say_on_pay": null,
-   "ceo_gender": "",
-   "ceo_tenure": "",
-   "board_independence": "",
-   "_parse_note": "Roster add #13 (2026-09-26 02:00 PT): all SCT values read digit-by-digit from primary DEF 14A roster13_20260926/rddt-20260423.htm; all 13 rows foot exactly. Note: Vollero 2025 option awards are 662,087 (option column), not stock awards."
-  },
-  {
-   "company_name": "Vivmark Residential",
-   "ticker": "VMRK",
-   "cik": "",
-   "sector": "Real Estate",
-   "ceo_name": "",
-   "total_compensation": 0,
-   "fiscal_year": 2025,
-   "source": "",
-   "median_worker_pay": null,
-   "pay_ratio": null,
-   "filing_date": "",
-   "filing_url": "",
-   "total_neo_compensation": 0,
-   "neo_count": 0,
-   "proxy_fiscal_year": 2025,
-   "available_years": [],
-   "data_source": "SEC EDGAR DEF 14A",
-   "say_on_pay": null,
-   "ceo_gender": "",
-   "ceo_tenure": "",
-   "board_independence": "",
-   "executives": [],
-   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). No DEF 14A filed yet as of 2026-09-26; queued for enrichment when first proxy files."
   }
  ],
- "last_updated": "2026-09-26"
+ "last_updated": "2026-09-25"
 }
