@@ -176,8 +176,47 @@ function computeCeoYoY(companies) {
     });
 }
 
+/* Filing-verification stamp for a trend point's underlying exec row.
+   Returns the most recent YYYY-MM-DD from _repair_note/_fix_note/_reverify_/
+   _name_note_ keys (dated suffix or leading note-text date) or from the
+   def14a_verified_* _total_source label, or null when the row was never
+   re-read against the primary filing. Used to annotate trajectory
+   sparklines with repair/verification markers. */
+function _trendPointVerifiedDate(exec) {
+    if (!exec) return null;
+    var best = null;
+    var keys = Object.keys(exec);
+    for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        var m = /^_(?:repair_note|fix_note|reverify|name_note)(?:_(\d{8}))?/.exec(k);
+        if (!m) continue;
+        var d = null;
+        if (m[1]) {
+            var mo = m[1].slice(4, 6), dy = m[1].slice(6, 8);
+            if (mo >= '01' && mo <= '12' && dy >= '01' && dy <= '31') {
+                d = m[1].slice(0, 4) + '-' + mo + '-' + dy;
+            }
+        } else {
+            var tm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(exec[k]));
+            if (tm && tm[2] >= '01' && tm[2] <= '12' && tm[3] >= '01' && tm[3] <= '31') {
+                d = tm[1] + '-' + tm[2] + '-' + tm[3];
+            }
+        }
+        if (d && (!best || d > best)) best = d;
+    }
+    var sm = /def14a_verified_(\d{8})/.exec(String(exec._total_source || ''));
+    if (sm) {
+        var smo = sm[1].slice(4, 6), sdy = sm[1].slice(6, 8);
+        if (smo >= '01' && smo <= '12' && sdy >= '01' && sdy <= '31') {
+            var d2 = sm[1].slice(0, 4) + '-' + smo + '-' + sdy;
+            if (!best || d2 > best) best = d2;
+        }
+    }
+    return best;
+}
+
 /* Pre-compute CEO multi-year pay trajectory for inline sparklines.
-   Sets c._ceoTrend = [{year, total}, ...] (ascending by year) or null if < 2 points. */
+   Sets c._ceoTrend = [{year, total, verified}, ...] (ascending by year) or null if < 2 points. */
 function computeCeoTrend(companies) {
     companies.forEach(function(c) {
         c._ceoTrend = null;
@@ -203,7 +242,8 @@ function computeCeoTrend(companies) {
                     salary: ceo.salary || 0, stock_awards: ceo.stock_awards || 0,
                     option_awards: ceo.option_awards || 0, bonus: ceo.bonus || 0,
                     non_equity_incentive: ceo.non_equity_incentive || 0,
-                    all_other: ceo.all_other || 0
+                    all_other: ceo.all_other || 0,
+                    verified: _trendPointVerifiedDate(ceo)
                 });
             }
         });
@@ -6831,9 +6871,12 @@ function renderTable(companies, options) {
                         }
                     }
                     // Invisible hit circle for mouse targeting
-                    sparkDots += '<circle class="yoy-trend-dot-hit" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="8" fill="transparent" style="cursor:pointer" data-year="' + d.year + '" data-total="' + d.total + '" data-yoy="' + dotYoY + '" data-idx="' + di + '" data-ticker="' + c.ticker + '"/>';
-                    // Visible dot
+                    sparkDots += '<circle class="yoy-trend-dot-hit" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="8" fill="transparent" style="cursor:pointer" data-year="' + d.year + '" data-total="' + d.total + '" data-yoy="' + dotYoY + '" data-idx="' + di + '" data-ticker="' + c.ticker + '"' + (d.verified ? ' data-verified="' + d.verified + '"' : '') + '/>';
+                    // Visible dot; verified points carry a filing-verified ring
                     sparkDots += '<circle class="yoy-trend-dot" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="1.5" fill="' + sparkColor + '" style="pointer-events:none"/>';
+                    if (d.verified) {
+                        sparkDots += '<circle class="yoy-trend-dot-ring" cx="' + dx.toFixed(1) + '" cy="' + dy.toFixed(1) + '" r="2.9" fill="none" style="pointer-events:none"/>';
+                    }
                 });
                 sparkSvg = '<svg class="yoy-spark-svg" width="' + sparkW + '" height="' + sparkH + '" viewBox="0 0 ' + sparkW + ' ' + sparkH + '" aria-hidden="true" title="' + sparkTitle.replace(/"/g, '&quot;') + '"><polygon points="' + sparkArea + '" fill="' + sparkFill + '"/><polyline points="' + sparkLine + '" fill="none" stroke="' + sparkColor + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' + sparkDots + '</svg>';
             }
@@ -7826,13 +7869,18 @@ function setupDetailPanel(companies) {
             _tSvg += '<polygon points="' + _tAreaPts + '" fill="' + _tAreaColor + '"/>';
             _tSvg += '<polyline points="' + _tPolyPts.join(' ') + '" fill="none" stroke="' + _tColor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
             // Data point dots
+            var _tVerifiedAny = false;
             _tPts.forEach(function(p, i) {
                 var x = _tPad + (p.year - _tMinX) / _tRangeX * (_tW - _tPad - _tPadR);
                 var y = _tPadT + (1 - (p.total - _tMinY) / _tRangeY) * (_tH - _tPadT - _tPadB);
                 var r = (i === _tPts.length - 1) ? 3.5 : 2.5;
                 _tSvg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="' + _tColor + '" stroke="' + (i === _tPts.length - 1 ? '#fff' : 'none') + '" stroke-width="' + (i === _tPts.length - 1 ? 1.5 : 0) + '">';
-                _tSvg += '<title>FY' + p.year + ': ' + formatCurrency(p.total) + '</title>';
+                _tSvg += '<title>FY' + p.year + ': ' + formatCurrency(p.total) + (p.verified ? ' - filing-verified (' + p.verified + ')' : '') + '</title>';
                 _tSvg += '</circle>';
+                if (p.verified) {
+                    _tVerifiedAny = true;
+                    _tSvg += '<circle class="trend-verified-ring" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="none" pointer-events="none"/>';
+                }
             });
             // Year labels at bottom
             _tPts.forEach(function(p) {
@@ -7855,6 +7903,9 @@ function setupDetailPanel(companies) {
             }
             _tSvg += '</svg>';
             html += '<div class="detail-trajectory-wrap detail-trajectory-clickable" data-ticker="' + ticker + '" data-sector="' + (company.sector || '').replace(/"/g, '&quot;') + '" title="Click to view pay anomaly analysis for ' + (company.sector || 'this sector') + ' → ' + ticker + '">' + _tSvg + '<span class="detail-trajectory-hint">→ Pay Anomaly</span></div>';
+            if (_tVerifiedAny) {
+                html += '<div class="detail-trajectory-verified-legend"><span class="detail-trajectory-verified-key" aria-hidden="true"></span><span>ring = point checked against the primary filing</span></div>';
+            }
         }
 
         html += '</div>';
@@ -11657,6 +11708,10 @@ function setupYoYSparklineTooltips() {
         }
         if (ticker) {
             html += '<div class="yoy-sparkline-tip-row"><span class="yoy-sparkline-tip-label">Company</span><span class="yoy-sparkline-tip-val">' + ticker + '</span></div>';
+        }
+        var verifiedDate = hit.getAttribute('data-verified');
+        if (verifiedDate) {
+            html += '<div class="yoy-sparkline-tip-row"><span class="yoy-sparkline-tip-label">Filing check</span><span class="yoy-sparkline-tip-val yoy-sparkline-tip-verified">Verified ' + verifiedDate + '</span></div>';
         }
         tip.innerHTML = html;
         tip.style.display = '';

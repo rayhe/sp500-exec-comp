@@ -10475,6 +10475,33 @@ footer li::before {
     margin-left: 6px;
     margin-right: 2px;
 }
+/* Filing-verification rings on CEO trajectory sparklines (2026-09-27 15:30 PT).
+   Ring marks a trend point whose underlying NEO row was re-read against the
+   primary filing (repair / re-verification / def14a_verified bucket). */
+.trend-verified-ring { stroke: #06d6a0; stroke-width: 1.5px; }
+.yoy-trend-dot-ring { stroke: #06d6a0; stroke-width: 1px; }
+.yoy-sparkline-tip-verified { color: #06d6a0; font-weight: 600; }
+.detail-trajectory-verified-legend {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+    font-size: 9px;
+    color: var(--text-muted);
+}
+.detail-trajectory-verified-key {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid #06d6a0;
+    border-radius: 50%;
+    flex: none;
+}
+[data-theme="light"] .trend-verified-ring { stroke: #059669; }
+[data-theme="light"] .yoy-trend-dot-ring { stroke: #059669; }
+[data-theme="light"] .yoy-sparkline-tip-verified { color: #059669; }
+[data-theme="light"] .detail-trajectory-verified-key { border-color: #059669; }
+
 /* DQ indicators in light theme */
 [data-theme="light"] .neo-dq-verified { background: #059669; }
 [data-theme="light"] .neo-dq-filing-verified { background: #059669; }
