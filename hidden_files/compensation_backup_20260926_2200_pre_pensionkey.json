@@ -6618,12 +6618,13 @@
      "stock_awards": 8164661,
      "option_awards": 2301246,
      "non_equity_incentive": 1345072,
-     "pension_nqdc": 212725,
+     "pension_nqdc": null,
      "all_other": 447027,
      "total": 14625659,
      "title": "Chairman and Chief Executive Officer",
      "_original_total": 447027,
      "_total_source": "def14a_verified_20260910",
+     "pension_change": 212725,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/1037868/000103786825000022/ame-20250312.htm. 2025 proxy SCT (fiscal 2024). Filing components foot EXACTLY to printed total 14,625,659. Stored row badly misaligned: bonus duplicated salary (1,400,000), stock/options/non-equity/pension shifted one column left, all_other 447,027 dropped, stored total 15,578,632 fabricated as misaligned sum. Correct row to these filing values. Filing combines pension+NQDC in one column (mapped to pension_change)."
     },
     {
@@ -6634,12 +6635,13 @@
      "stock_awards": 7219863,
      "option_awards": 1949327,
      "non_equity_incentive": 2318414,
-     "pension_nqdc": 335760,
+     "pension_nqdc": null,
      "all_other": 566380,
      "total": 14538544,
      "title": "Chairman and Chief Executive Officer",
      "_original_total": 566380,
      "_total_source": "def14a_verified_20260910",
+     "pension_change": 335760,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/1037868/000103786824000022/ame-20240312.htm. 2024 proxy SCT (fiscal 2023); same 2023 column confirmed in 2025 proxy. Components foot EXACTLY to printed total 14,538,544. Stored row had the same one-column-left shift as the 2024 row (stored total 15,333,164). Correct row to these filing values."
     },
     {
@@ -6692,12 +6694,13 @@
      "stock_awards": 809887,
      "option_awards": 229617,
      "non_equity_incentive": 352230,
-     "pension_nqdc": 81548,
+     "pension_nqdc": null,
      "all_other": 174010,
      "total": 2415255,
      "title": "President\u2013Electronic Instruments",
      "_original_total": 174010,
      "_total_source": "verified",
+     "pension_change": 81548,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/1037868/000103786825000022/ame-20250312.htm. 2025 proxy SCT (fiscal 2024). Filing components foot to 2,415,255 but printed total is 2,415,254 (\u03941, likely rounding). Stored row also misaligned (bonus dup of salary, stored total 2,913,246). Do NOT correct; reported verbatim. $1 filer-side rounding kept as 'verified' per the 2026-09-10 $1-2 taxonomy decision."
     },
     {
@@ -9058,7 +9061,7 @@
      "salary": 680000,
      "option_awards": 2981331,
      "non_equity_incentive": 0,
-     "pension_nqdc": 2600,
+     "pension_nqdc": null,
      "total": 3715717,
      "title": "Executive Vice President & Chief Financial Officer",
      "_total_source": "component_mismatch",
@@ -9067,6 +9070,7 @@
      "stock_awards": null,
      "all_other": 114786,
      "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT (Amphenol grants options; Stock Awards column n/a): filing-printed components sum to $3,778,717 vs filing-printed total $3,715,717 (gap $63,000); filing-side arithmetic quirk, total retained verbatim.",
+     "pension_change": 2600,
      "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261344-1_def14a.htm): all components and total match filing verbatim; +$63,000: components sum 3,778,717 vs printed 3,715,717 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. Attribution fixes: $2,600 in 'Change in Pension Value and NQDC Earnings' is an increase in pension value per footnote (3) (actuarial assumption change), moved pension_nqdc -> pension_change; stock awards printed 'n/a' -> null."
     },
     {
@@ -87670,8 +87674,8 @@
      "_total_source": "def14a_verified_20260910",
      "all_other": 2407624,
      "non_equity_incentive": 1181950,
-     "stock_awards": 1227935,
-     "pension_nqdc": 1752402
+     "pension_change": 1752402,
+     "stock_awards": 1227935
     },
     {
      "name": "Frederic de Wilde",
@@ -89254,7 +89258,7 @@
      "salary": 1237367,
      "bonus": null,
      "non_equity_incentive": 1773831,
-     "pension_nqdc": 1483614,
+     "pension_nqdc": null,
      "all_other": 119495,
      "total": 11355743,
      "title": "President and CEO",
@@ -89262,6 +89266,7 @@
      "_total_source": "def14a_verified_20260910",
      "stock_awards": 6741436,
      "option_awards": null,
+     "pension_change": 1483614,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/922224/000095017025048978/ppl-20250402.htm. Column-shift mislabel: stored bonus=1237367 is salary; stored non_equity_incentive=6741436 is stock awards; stored pension_nqdc=1773831 is non-equity incentive; stored all_other=1483614 is pension value; actual all other 119495. Filing total foots exactly (1237367+6741436+1773831+1483614+119495=11355743).",
      "_title_note_20260914_0200": "title-bleed repair: stripped board-committee membership codes (EC/PCC/SC (Chair)) bled from committee table"
     },
@@ -91964,7 +91969,7 @@
      "salary": 1095481,
      "stock_awards": 3624103,
      "non_equity_incentive": 4147280,
-     "pension_nqdc": 25161,
+     "pension_nqdc": null,
      "all_other": 325693,
      "total": 9217718,
      "title": "President and Chief Executive Officer",
@@ -91973,7 +91978,8 @@
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $9,222,778 vs filing-printed total $9,217,718 (gap $+5,060); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error. The SCT \"Total Without\" column ($9,192,557 = total minus $25,161 pension) foots consistently.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
+     "pension_change": 25161
     },
     {
      "name": "David J. Turner, Jr",
@@ -92074,7 +92080,7 @@
      "salary": 590962,
      "stock_awards": 776607,
      "non_equity_incentive": 1045044,
-     "pension_nqdc": 179336,
+     "pension_nqdc": null,
      "all_other": 109623,
      "total": 2701572,
      "title": "Chief Administrative Officer",
@@ -92083,7 +92089,8 @@
      "_relabel_note_20260909": true,
      "_note": "Filing-printed components sum to $2,702,752 vs filing-printed total $2,701,572 (gap $+1,180); identical in the latest DEF 14A SCT (rf-20260323.htm) with no explanatory footnote - filing-side arithmetic inconsistency, not a parse error.",
      "_reverify_20260910_1000": "components+total match primary DEF 14A SCT verbatim; relabeled per component_mismatch taxonomy",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
+     "pension_change": 179336
     },
     {
      "name": "Russell K. Zusi",
@@ -96652,13 +96659,14 @@
      "salary": 1560577,
      "stock_awards": 13830054,
      "non_equity_incentive": 3665025,
-     "pension_nqdc": 8961516,
+     "pension_nqdc": 0,
      "all_other": 206390,
      "total": 28223562,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 19,262,046 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 8,961,516 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $10,300,530; filing components now foot exactly to filing total 28,223,562; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 8961516,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96668,13 +96676,14 @@
      "salary": 1490577,
      "stock_awards": 11725994,
      "non_equity_incentive": 3334500,
-     "pension_nqdc": 7142735,
+     "pension_nqdc": 0,
      "all_other": 191367,
      "total": 23885173,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 16,742,438 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 7,142,735 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $9,599,703; filing components now foot exactly to filing total 23,885,173; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 7142735,
      "_accession": "0000092122-25-000036"
     },
     {
@@ -96684,13 +96693,14 @@
      "salary": 1245324,
      "stock_awards": 10009683,
      "non_equity_incentive": 2802760,
-     "pension_nqdc": 9352563,
+     "pension_nqdc": 0,
      "all_other": 110057,
      "total": 23520387,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 14,167,824 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 9,352,563 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,815,261; filing components now foot exactly to filing total 23,520,387; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 9352563,
      "_accession": "0001308179-24-000515"
     },
     {
@@ -96700,13 +96710,14 @@
      "salary": 611411,
      "stock_awards": 1201257,
      "non_equity_incentive": 938606,
-     "pension_nqdc": 1217519,
+     "pension_nqdc": 0,
      "all_other": 49417,
      "total": 4018210,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 2,800,691 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,217,519 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $1,583,172; filing components now foot exactly to filing total 4,018,210; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 1217519,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96716,13 +96727,14 @@
      "salary": 860451,
      "stock_awards": 2381706,
      "non_equity_incentive": 1401570,
-     "pension_nqdc": 1590775,
+     "pension_nqdc": 0,
      "all_other": 65207,
      "total": 6299709,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,708,934 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,590,775 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,118,159; filing components now foot exactly to filing total 6,299,709; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 1590775,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96732,13 +96744,14 @@
      "salary": 812981,
      "stock_awards": 2181230,
      "non_equity_incentive": 1192369,
-     "pension_nqdc": 332668,
+     "pension_nqdc": 0,
      "all_other": 58242,
      "total": 4577490,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,244,822 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 332,668 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,912,154; filing components now foot exactly to filing total 4,577,490; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 332668,
      "_accession": "0000092122-25-000036"
     },
     {
@@ -96748,13 +96761,14 @@
      "salary": 979732,
      "stock_awards": 2806852,
      "non_equity_incentive": 1808040,
-     "pension_nqdc": 1532018,
+     "pension_nqdc": 0,
      "all_other": 85431,
      "total": 7212073,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 5,680,055 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,532,018 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,148,037; filing components now foot exactly to filing total 7,212,073; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 1532018,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96764,13 +96778,14 @@
      "salary": 936524,
      "stock_awards": 2763957,
      "non_equity_incentive": 1691558,
-     "pension_nqdc": 716640,
+     "pension_nqdc": 0,
      "all_other": 63885,
      "total": 6172564,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 5,455,924 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 716,640 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $4,739,284; filing components now foot exactly to filing total 6,172,564; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 716640,
      "_accession": "0000092122-25-000036"
     },
     {
@@ -96780,13 +96795,14 @@
      "salary": 890969,
      "stock_awards": 2568457,
      "non_equity_incentive": 1459677,
-     "pension_nqdc": 1076497,
+     "pension_nqdc": 0,
      "all_other": 57710,
      "total": 6053310,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,976,813 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,076,497 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,900,316; filing components now foot exactly to filing total 6,053,310; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 1076497,
      "_accession": "0001308179-24-000515"
     },
     {
@@ -96796,13 +96812,14 @@
      "salary": 851212,
      "stock_awards": 2454568,
      "non_equity_incentive": 1537920,
-     "pension_nqdc": 3804829,
+     "pension_nqdc": 0,
      "all_other": 71665,
      "total": 8720194,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,915,365 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 3,804,829 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $1,110,536; filing components now foot exactly to filing total 8,720,194; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 3804829,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96812,13 +96829,14 @@
      "salary": 747440,
      "stock_awards": 2488616,
      "non_equity_incentive": 1040081,
-     "pension_nqdc": 3403558,
+     "pension_nqdc": 0,
      "all_other": 121664,
      "total": 7801359,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,397,801 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 3,403,558 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $994,243; filing components now foot exactly to filing total 7,801,359; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 3403558,
      "_accession": "0000092122-26-000028"
     },
     {
@@ -96828,13 +96846,14 @@
      "salary": 829267,
      "stock_awards": 2451630,
      "non_equity_incentive": 1253960,
-     "pension_nqdc": 622033,
+     "pension_nqdc": 0,
      "all_other": 51404,
      "total": 5208294,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,586,261 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 622,033 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $3,964,228; filing components now foot exactly to filing total 5,208,294; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 622033,
      "_accession": "0000092122-25-000036"
     },
     {
@@ -96844,13 +96863,14 @@
      "salary": 777767,
      "stock_awards": 2256706,
      "non_equity_incentive": 1058633,
-     "pension_nqdc": 1735519,
+     "pension_nqdc": 0,
      "all_other": 41257,
      "total": 5869882,
      "_total_source": "def14a_verified_20260909",
      "_parse_note": "Stored pension_nqdc 4,134,363 was the 'Total without Change in Pension Value' column (i), not the SCT pension column; replaced with filing SCT column (f) pension_change 1,735,519 and pension_nqdc 0 (filing states no NEO received above-market NQDC earnings); old components exceeded filing total by $2,398,844; filing components now foot exactly to filing total 5,869,882; added missing canonical keys bonus=0, option_awards=0 (Southern SCT has no Bonus/Option columns).",
      "bonus": 0,
      "option_awards": 0,
+     "pension_change": 1735519,
      "_accession": "0001308179-24-000515"
     }
    ],
@@ -102112,7 +102132,7 @@
      "salary": 1200000,
      "bonus": null,
      "non_equity_incentive": 2650167,
-     "pension_nqdc": 1107866,
+     "pension_nqdc": null,
      "all_other": 599979,
      "total": 12401590,
      "title": "Chairman and Chief Executive Officer",
@@ -102120,6 +102140,7 @@
      "_total_source": "def14a_verified_20260910",
      "stock_awards": 6843578,
      "option_awards": null,
+     "pension_change": 1107866,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: the 2025 proxy restates 2023 All Other Compensation upward (Rogers 236035 -> 599979, total 12037646 -> 12401590); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification.",
      "_restate_note_20260910": "Restatement adopted from 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/92230/000119312526107144/d12240ddef14a.htm): 2023 All Other $236,035 -> $599,979, total $12,037,646 -> $12,401,590. Filing components foot exactly (1200000+6843578+2650167+1107866+599979=12401590). Restatements adopted per GEN Derse/Ko precedent; the earlier contemporaneous 2024-proxy values are preserved in _original_total."
     },
@@ -102230,7 +102251,7 @@
      "salary": 800000,
      "bonus": null,
      "non_equity_incentive": 3459547,
-     "pension_nqdc": 480156,
+     "pension_nqdc": null,
      "all_other": 152553,
      "total": 8024551,
      "title": "Former Vice Chair and Chief Operating Officer",
@@ -102238,6 +102259,7 @@
      "_total_source": "def14a_verified_20260910",
      "stock_awards": 3132295,
      "option_awards": null,
+     "pension_change": 480156,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312525055156/d826258ddef14a.htm. Column-shift mislabel: stored bonus=800000 is salary; stored non_equity_incentive=3132295 is stock awards; stored pension_nqdc=3459547 is non-equity incentive; stored all_other=480156 is pension value; actual all other 152553. Filing total foots exactly."
     },
     {
@@ -102246,7 +102268,7 @@
      "salary": 800000,
      "bonus": null,
      "non_equity_incentive": 1668600,
-     "pension_nqdc": 701917,
+     "pension_nqdc": null,
      "all_other": 221535,
      "total": 6721010,
      "title": "Former Vice Chair and Chief Operating Officer",
@@ -102254,6 +102276,7 @@
      "_total_source": "def14a_verified_20260910",
      "stock_awards": 3328958,
      "option_awards": null,
+     "pension_change": 701917,
      "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/92230/000119312524064251/d614580ddef14a.htm. Authoritative SCT is 2024 proxy (filed 2024-03-11, Y+1 rule). Column-shift mislabel as above. CAUTION: 2025 proxy restates 2023 All Other upward (Cummins 19800 -> 221535, total 6519275 -> 6721010); per Y+1 filing rule the 2024 proxy values are used. Filing components foot exactly to printed total. 2025 proxy restates 2023 All Other upward (Rogers $236,035->$599,979; Cummins $19,800->$221,535); stored values are the contemporaneous 2024-proxy disclosures; restated values queued for future re-verification.",
      "_restate_note_20260910": "Restatement adopted from 2026 DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/92230/000119312526107144/d12240ddef14a.htm): 2023 All Other $19,800 -> $221,535, total $6,519,275 -> $6,721,010. Filing components foot exactly (800000+3328958+1668600+701917+221535=6721010). Restatements adopted per GEN Derse/Ko precedent; the earlier contemporaneous 2024-proxy values are preserved in _original_total."
     },
