@@ -62,6 +62,7 @@ function initNetwork(peerData) {
     var dragNode = null;
     var transform = d3.zoomIdentity;
     var activeLegendSector = null; // sector legend click-to-filter state
+    var activeVerificationTier = null; // verification legend click-to-filter state (mutually exclusive with activeLegendSector)
     var activePath = null; // { nodes: [ticker,...], edges: [{source, target},...] } for path finder
     var compHeatmapMode = false; // when true, nodes colored by CEO pay instead of sector
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
@@ -970,6 +971,15 @@ function initNetwork(peerData) {
             });
         }
 
+        // Build verification node set if a verification tier filter is active
+        var verificationNodeSet = null;
+        if (activeVerificationTier) {
+            verificationNodeSet = new Set();
+            nodes.forEach(function(n) {
+                if (_verificationTierOf(n.ticker).tier === activeVerificationTier) verificationNodeSet.add(n.ticker);
+            });
+        }
+
         // Edges — draw only visible ones, batch by opacity
         if (hoveredNode) {
             // Dim pass
@@ -1158,6 +1168,38 @@ function initNetwork(peerData) {
                 var src = e.source.ticker || e.source;
                 var tgt = e.target.ticker || e.target;
                 if (!sectorNodeSet.has(src) && !sectorNodeSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+        } else if (activeVerificationTier && verificationNodeSet) {
+            // Verification tier filter active — dim edges not touching the tier
+            ctx.strokeStyle = edgeSectorDimColor;
+            ctx.lineWidth = (_hiContrast ? 0.5 : 0.3) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (verificationNodeSet.has(src) || verificationNodeSet.has(tgt)) return;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(t.x, t.y);
+            });
+            ctx.stroke();
+
+            // Highlight edges touching the active verification tier
+            ctx.strokeStyle = _hiContrast ? 'rgba(0,180,216,0.55)' : 'rgba(0,180,216,0.35)';
+            ctx.lineWidth = (_hiContrast ? 1.2 : 0.8) / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                if (!verificationNodeSet.has(src) && !verificationNodeSet.has(tgt)) return;
                 var s = nodeMap[src] || nodeMap[e.source];
                 var t = nodeMap[tgt] || nodeMap[e.target];
                 if (!s || !t) return;
@@ -1430,6 +1472,13 @@ function initNetwork(peerData) {
                 } else {
                     alpha = _hiContrast ? 0.18 : 0.1;
                 }
+            } else if (!belowGerThreshold && activeVerificationTier && verificationNodeSet) {
+                // Verification tier filter active — full alpha for tier members, dim the rest
+                if (verificationNodeSet.has(d.ticker)) {
+                    alpha = 1;
+                } else {
+                    alpha = _hiContrast ? 0.18 : 0.1;
+                }
             } else if (!belowGerThreshold && _hoveredCommunityTickers && !hoveredNode && !activePath) {
                 // Community legend hover — highlight community members, dim the rest
                 if (_hoveredCommunityTickers.has(d.ticker)) {
@@ -1473,6 +1522,10 @@ function initNetwork(peerData) {
                 ctx.lineWidth = (_hiContrast ? 3 : 2) / scale;
                 ctx.stroke();
             } else if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
+                ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.7 : 0.5);
+                ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
+                ctx.stroke();
+            } else if (activeVerificationTier && verificationNodeSet && verificationNodeSet.has(d.ticker) && !hoveredNode) {
                 ctx.strokeStyle = hexToRGBA(color, _hiContrast ? 0.7 : 0.5);
                 ctx.lineWidth = (_hiContrast ? 1.5 : 1) / scale;
                 ctx.stroke();
@@ -1829,7 +1882,8 @@ function initNetwork(peerData) {
         nodes.forEach(function(d) {
             var isPathNode = activePath && activePath.nodes.indexOf(d.ticker) >= 0;
             if (activeLegendSector && sectorNodeSet && !sectorNodeSet.has(d.ticker) && !hoveredNode && !isPathNode) return;
-            if (!activeLegendSector && !isPathNode && !shouldShowLabel(d, scale)) return;
+            if (activeVerificationTier && verificationNodeSet && !verificationNodeSet.has(d.ticker) && !hoveredNode && !isPathNode) return;
+            if (!activeLegendSector && !activeVerificationTier && !isPathNode && !shouldShowLabel(d, scale)) return;
             if (hoveredNode && !connectedSet.has(d.ticker)) return;
             // GER threshold — hide labels for nodes below threshold
             if (gerHeatmapMode && gerThreshold > 0) {
@@ -1838,6 +1892,10 @@ function initNetwork(peerData) {
             }
             // When sector filter is active, show labels for sector nodes based on zoom
             if (activeLegendSector && sectorNodeSet && sectorNodeSet.has(d.ticker) && !hoveredNode) {
+                if (!shouldShowLabel(d, scale * 1.5)) return; // more lenient threshold
+            }
+            // When verification tier filter is active, show labels for tier members based on zoom
+            if (activeVerificationTier && verificationNodeSet && verificationNodeSet.has(d.ticker) && !hoveredNode) {
                 if (!shouldShowLabel(d, scale * 1.5)) return; // more lenient threshold
             }
             var r = getRadius(d);
@@ -2371,6 +2429,21 @@ function initNetwork(peerData) {
         var v = _verificationLookup[ticker];
         return v ? v : { tier: 'nodata', filingVerified: 0, mismatch: 0, total: 0 };
     }
+    function _verificationTierShort(id) {
+        for (var i = 0; i < VERIFICATION_TIERS.length; i++) {
+            if (VERIFICATION_TIERS[i].id === id) return VERIFICATION_TIERS[i].short;
+        }
+        return id;
+    }
+    function _refreshVerificationLegendFilterVisuals() {
+        var vel = document.getElementById('verification-legend');
+        if (!vel) return;
+        vel.querySelectorAll('.verification-legend-item[data-tier]').forEach(function(item) {
+            var t = item.getAttribute('data-tier');
+            item.classList.toggle('verification-legend-active', activeVerificationTier === t);
+            item.classList.toggle('verification-legend-dimmed', !!activeVerificationTier && activeVerificationTier !== t);
+        });
+    }
     function _populateVerificationLegend() {
         var el = document.getElementById('verification-legend');
         if (!el) return;
@@ -2382,16 +2455,44 @@ function initNetwork(peerData) {
         var html = '<div class="verification-legend-header"><span class="verification-legend-title">Data Verification</span></div>';
         html += '<div class="verification-legend-items">';
         VERIFICATION_TIERS.forEach(function(t) {
-            html += '<span class="verification-legend-item" title="' + escapeHtml(t.label) + '">';
+            html += '<span class="verification-legend-item" data-tier="' + t.id + '" title="' + escapeHtml(t.label) + ' — click to filter the graph">';
             html += '<span class="legend-dot" style="background:' + t.color + '"></span>' + escapeHtml(t.short);
             html += ' <span class="verification-legend-count">(' + (counts[t.id] || 0) + ')</span></span>';
         });
         html += '</div>';
         el.innerHTML = html;
+        // Clicking a verification tier filters the graph to that tier's nodes
+        // (toggle; mutually exclusive with the sector legend filter)
+        el.querySelectorAll('.verification-legend-item[data-tier]').forEach(function(item) {
+            item.addEventListener('click', function() {
+                var tier = item.getAttribute('data-tier');
+                if (activeVerificationTier === tier) {
+                    activeVerificationTier = null;
+                } else {
+                    activeVerificationTier = tier;
+                    if (activeLegendSector) {
+                        activeLegendSector = null;
+                        document.querySelectorAll('.network-legend .legend-item').forEach(function(li) {
+                            li.classList.remove('legend-active', 'legend-dimmed');
+                        });
+                        updateClusterStats(null);
+                    }
+                }
+                _refreshVerificationLegendFilterVisuals();
+                draw();
+                if (typeof announce === 'function') {
+                    announce(activeVerificationTier
+                        ? 'Graph filtered to ' + _verificationTierShort(activeVerificationTier) + ' companies — click the tier again to clear'
+                        : 'Verification filter cleared');
+                }
+            });
+        });
+        _refreshVerificationLegendFilterVisuals();
     }
     function _clearVerificationMode() {
         if (verificationMode) {
             verificationMode = false;
+            activeVerificationTier = null;
             var vt = document.getElementById('verification-toggle');
             if (vt) vt.classList.remove('active');
             var vl = document.getElementById('verification-legend');
@@ -3534,6 +3635,11 @@ function initNetwork(peerData) {
                 activeLegendSector = null;
             } else {
                 activeLegendSector = sectorFull;
+                // Mutually exclusive with the verification tier filter
+                if (activeVerificationTier) {
+                    activeVerificationTier = null;
+                    _refreshVerificationLegendFilterVisuals();
+                }
             }
 
             // Update legend item visual state. The PvP legend item keeps its own
@@ -3965,6 +4071,7 @@ function initNetwork(peerData) {
             if (verificationLegendEl) {
                 verificationLegendEl.style.display = verificationMode ? 'block' : 'none';
                 if (verificationMode) _populateVerificationLegend();
+                else activeVerificationTier = null;
             }
             draw();
             announce(verificationMode
