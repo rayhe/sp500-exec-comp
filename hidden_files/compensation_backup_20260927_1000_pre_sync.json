@@ -132,7 +132,7 @@
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
-   "verified": 5727,
+   "component_mismatch": 32,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -146,8 +146,7 @@
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 20,
-   "rounding": 0,
-   "component_mismatch": 32,
+   "verified": 5727,
    "verified_total": 7046,
    "last_audit": "2026-09-27"
   },
@@ -184,7 +183,7 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "verified": 5727,
+   "component_mismatch": 32,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -198,8 +197,7 @@
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 20,
-   "rounding": 0,
-   "component_mismatch": 32,
+   "verified": 5727,
    "verified_total": 7046,
    "last_audit": "2026-09-27"
   },
