@@ -16891,7 +16891,7 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-27)</h4>' +
-                '<p>7,046 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,045 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 33 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
