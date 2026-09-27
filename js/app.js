@@ -9563,6 +9563,21 @@ function setupDetailPanel(companies) {
                         var _rdComps = (exec.salary || 0) + (exec.bonus || 0) + (exec.stock_awards || 0) + (exec.option_awards || 0) + (exec.non_equity_incentive || 0) + ((exec.pension_nqdc || exec.pension_change) || 0) + (exec.all_other || 0);
                         var _rdDelta = Math.round(Math.abs(_rdComps - (exec.total || 0)));
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-rounding" title="Rounding gap of $' + _rdDelta.toLocaleString('en-US') + ' between components and filing-printed total — values match filing verbatim"></span>';
+                    } else if (dqSrc && dqSrc.indexOf('def14a_verified') === 0) {
+                        // Filing-verification provenance: this row's components were re-read
+                        // against the primary DEF 14A SCT by a DQ batch (repairs, transposition
+                        // checks, negative-value confirmations). Surface the badge so the
+                        // strongest provenance tier is visible where the total is displayed.
+                        var _fvDate = dqSrc.slice('def14a_verified_'.length);
+                        if (/^\d{8}$/.test(_fvDate)) _fvDate = _fvDate.slice(0, 4) + '-' + _fvDate.slice(4, 6) + '-' + _fvDate.slice(6, 8);
+                        var _fvNotes = [];
+                        for (var _fvK in exec) {
+                            if (Object.prototype.hasOwnProperty.call(exec, _fvK) && typeof exec[_fvK] === 'string' &&
+                                (_fvK.indexOf('_repair_note') === 0 || _fvK.indexOf('_reverify') === 0)) _fvNotes.push(exec[_fvK]);
+                        }
+                        var _fvTip = 'Filing-verified: components checked against the primary DEF 14A (re-verified ' + _fvDate + ')';
+                        if (_fvNotes.length) _fvTip += ' — ' + _fvNotes.join(' | ');
+                        dqDotHtml = ' <span class="neo-dq-dot neo-dq-filing-verified" title="' + _fvTip.replace(/"/g, '&quot;') + '"></span>';
                     }
                     html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + ' data-sort-salary="' + (exec.salary || 0) + '" data-sort-bonus="' + (exec.bonus || 0) + '" data-sort-stock="' + (exec.stock_awards || 0) + '" data-sort-option="' + (exec.option_awards || 0) + '" data-sort-incentive="' + (exec.non_equity_incentive || 0) + '" data-sort-pension="' + ((exec.pension_nqdc || exec.pension_change) || 0) + '" data-sort-other="' + (exec.all_other || 0) + '" data-sort-total="' + (exec.total || 0) + '">';
                     // Inline sparkline for this exec's multi-year trend
@@ -9747,10 +9762,11 @@ function setupDetailPanel(companies) {
             html += '</div>'; // neo-year-panels wrapper
 
             // Data quality summary for this company's exec records
-            var dqCounts = { verified: 0, recomputed: 0, incomplete: 0, bloated: 0, rounding: 0, other: 0 };
+            var dqCounts = { verified: 0, filingVerified: 0, recomputed: 0, incomplete: 0, bloated: 0, rounding: 0, other: 0 };
             company.executives.forEach(function(e) {
                 var src = e._total_source || 'verified';
                 if (src === 'verified') dqCounts.verified++;
+                else if (src && src.indexOf('def14a_verified') === 0) dqCounts.filingVerified++;
                 else if (src === 'recomputed' || src === 'recomputed_implausible_total' || src === 'computed') dqCounts.recomputed++;
                 else if (src === 'incomplete_components') dqCounts.incomplete++;
                 else if (src === 'bloated_component') dqCounts.bloated++;
@@ -9763,8 +9779,9 @@ function setupDetailPanel(companies) {
             html += '<div class="neo-source">';
             html += 'Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '');
             if (dqHasIssues) {
-                html += ' · <span class="neo-dq-summary" title="Data quality: ' + dqCounts.verified + ' verified, ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged, ' + dqCounts.rounding + ' rounding gaps">';
-                html += '<span class="neo-dq-dot neo-dq-verified"></span>' + dqCounts.verified;
+                html += ' · <span class="neo-dq-summary" title="Data quality: ' + (dqCounts.verified + dqCounts.filingVerified) + ' verified (' + dqCounts.filingVerified + ' filing-verified against primary DEF 14As), ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged, ' + dqCounts.rounding + ' rounding gaps">';
+                html += '<span class="neo-dq-dot neo-dq-verified"></span>' + (dqCounts.verified + dqCounts.filingVerified);
+                if (dqCounts.filingVerified > 0) html += ' <span class="neo-dq-dot neo-dq-filing-verified"></span>' + dqCounts.filingVerified + ' filing-verified';
                 if (dqCounts.recomputed > 0) html += ' <span class="neo-dq-dot neo-dq-recomputed"></span>' + dqCounts.recomputed + ' recomputed';
                 if (dqCounts.incomplete > 0) html += ' <span class="neo-dq-dot neo-dq-incomplete"></span>' + dqCounts.incomplete + ' incomplete';
                 if (dqCounts.bloated > 0) html += ' <span class="neo-dq-dot neo-dq-bloated"></span>' + dqCounts.bloated + ' flagged';

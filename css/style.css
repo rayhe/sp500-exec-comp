@@ -10455,6 +10455,7 @@ footer li::before {
     cursor: help;
 }
 .neo-dq-verified { background: #06d6a0; }
+.neo-dq-filing-verified { background: #06d6a0; }
 .neo-dq-recomputed { background: #ffd166; }
 .neo-dq-mismatch { background: #9d4edd; }
 .neo-dq-incomplete { background: #fb923c; }
@@ -10476,6 +10477,7 @@ footer li::before {
 }
 /* DQ indicators in light theme */
 [data-theme="light"] .neo-dq-verified { background: #059669; }
+[data-theme="light"] .neo-dq-filing-verified { background: #059669; }
 [data-theme="light"] .neo-dq-recomputed { background: #d97706; }
 [data-theme="light"] .neo-dq-mismatch { background: #7c3aed; }
 [data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
