@@ -67,6 +67,7 @@ function initNetwork(peerData) {
     var prHeatmapMode = false;  // when true, nodes colored by PageRank centrality
     var ccHeatmapMode = false;  // when true, nodes colored by local clustering coefficient
     var gerHeatmapMode = false; // when true, nodes colored by governance erosion risk score
+    var verificationMode = false; // when true, nodes colored by data-verification tier
     var communityMode = false;  // when true, nodes colored by Louvain community
     var _pvpRingsEnabled = true; // when true, nodes with SEC Item 402(v) data get a cyan ring
     var _pvpYears = {};          // ticker -> company-year count of Pay vs Performance coverage
@@ -1523,7 +1524,7 @@ function initNetwork(peerData) {
         // When a sector filter is active, show ONLY that sector's label (at full opacity)
         // In heatmap mode: hidden when no sector filter, but show sector label when sector IS filtered
         // (so users know which sector they're viewing in heatmap-filtered mode)
-        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode && !gerHeatmapMode && !communityMode) || activeLegendSector)) {
+        if (!hoveredNode && ((!compHeatmapMode && !prHeatmapMode && !ccHeatmapMode && !gerHeatmapMode && !verificationMode && !communityMode) || activeLegendSector)) {
             var clusterAlpha = 0;
             var _showFilteredSectorLabel = false;
             if (activeLegendSector) {
@@ -2050,6 +2051,7 @@ function initNetwork(peerData) {
 
     // Build ticker→compensation lookup from global compData
     var _compLookup = {};
+    var _verificationLookup = {}; // ticker -> {tier, filingVerified, mismatch, total}; tier: all|partial|verified|mismatch|nodata
     function _buildCompLookup() {
         if (typeof compData !== 'undefined' && compData && compData.companies) {
             compData.companies.forEach(function(c) {
@@ -2097,6 +2099,26 @@ function initNetwork(peerData) {
                     });
                     if (Object.keys(_cpby).length > 0) _compLookup[c.ticker]._ceoPayByYear = _cpby;
                 }
+                // Data-verification tier for the Verification color mode. Tiers mirror
+                // the DQ legend in app.js: rows re-read against primary DEF 14A SCTs
+                // (_total_source starts with 'def14a_verified') are the strongest tier.
+                var _vFv = 0, _vMm = 0, _vN = 0;
+                if (c.executives && c.executives.length > 0) {
+                    c.executives.forEach(function(e) {
+                        _vN++;
+                        var _src = e._total_source || '';
+                        if (_src.indexOf('def14a_verified') === 0) _vFv++;
+                        else if (_src === 'component_mismatch') _vMm++;
+                    });
+                }
+                var _vTier = 'nodata';
+                if (_vN > 0) {
+                    if (_vMm > 0) _vTier = 'mismatch';
+                    else if (_vFv === _vN) _vTier = 'all';
+                    else if (_vFv > 0) _vTier = 'partial';
+                    else _vTier = 'verified';
+                }
+                _verificationLookup[c.ticker] = { tier: _vTier, filingVerified: _vFv, mismatch: _vMm, total: _vN };
             });
         }
     }
@@ -2327,12 +2349,63 @@ function initNetwork(peerData) {
     }
 
     // Unified node color resolver: checks heatmap modes first, then sector
+    // Data-verification tiers for the Verification color mode. Colors follow the
+    // DQ dot palette from app.js (filing-verified green #059669, mismatch purple
+    // #9d4edd); single palette is canvas-safe on both themes.
+    var VERIFICATION_TIERS = [
+        { id: 'all',      color: '#059669', short: 'Filing-verified (all)',     label: 'Every NEO row re-read against the primary DEF 14A summary compensation table' },
+        { id: 'partial',  color: '#34d399', short: 'Filing-verified (partial)', label: 'At least one NEO row re-read against the primary DEF 14A' },
+        { id: 'verified', color: '#60a5fa', short: 'Verified',                  label: 'Stored components and total match the filing SCT (standard verification)' },
+        { id: 'mismatch', color: '#9d4edd', short: 'Filing-side mismatch',      label: 'Carries a genuine filing-side component arithmetic inconsistency, kept verbatim' },
+        { id: 'nodata',   color: '#64748b', short: 'No comp data',              label: 'Peer-only node — cited as a benchmarking peer but absent from the compensation table' }
+    ];
+    function getVerificationColor(ticker) {
+        var v = _verificationLookup[ticker];
+        var tier = v ? v.tier : 'nodata';
+        for (var i = 0; i < VERIFICATION_TIERS.length; i++) {
+            if (VERIFICATION_TIERS[i].id === tier) return VERIFICATION_TIERS[i].color;
+        }
+        return '#64748b';
+    }
+    function _verificationTierOf(ticker) {
+        var v = _verificationLookup[ticker];
+        return v ? v : { tier: 'nodata', filingVerified: 0, mismatch: 0, total: 0 };
+    }
+    function _populateVerificationLegend() {
+        var el = document.getElementById('verification-legend');
+        if (!el) return;
+        var counts = { all: 0, partial: 0, verified: 0, mismatch: 0, nodata: 0 };
+        nodes.forEach(function(n) {
+            var t = _verificationTierOf(n.ticker).tier;
+            counts[t] = (counts[t] || 0) + 1;
+        });
+        var html = '<div class="verification-legend-header"><span class="verification-legend-title">Data Verification</span></div>';
+        html += '<div class="verification-legend-items">';
+        VERIFICATION_TIERS.forEach(function(t) {
+            html += '<span class="verification-legend-item" title="' + escapeHtml(t.label) + '">';
+            html += '<span class="legend-dot" style="background:' + t.color + '"></span>' + escapeHtml(t.short);
+            html += ' <span class="verification-legend-count">(' + (counts[t.id] || 0) + ')</span></span>';
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    }
+    function _clearVerificationMode() {
+        if (verificationMode) {
+            verificationMode = false;
+            var vt = document.getElementById('verification-toggle');
+            if (vt) vt.classList.remove('active');
+            var vl = document.getElementById('verification-legend');
+            if (vl) vl.style.display = 'none';
+        }
+    }
+
     function getNodeColor(ticker, sector) {
         if (communityMode) return getCommunityColor(ticker);
         if (gerHeatmapMode) return getGERHeatmapColor(ticker);
         if (ccHeatmapMode) return getCCHeatmapColor(ticker);
         if (prHeatmapMode) return getPRHeatmapColor(ticker);
         if (compHeatmapMode) return getCompHeatmapColor(ticker);
+        if (verificationMode) return getVerificationColor(ticker);
         return SECTOR_COLORS[sector] || '#94a3b8';
     }
 
@@ -2440,6 +2513,24 @@ function initNetwork(peerData) {
         }
 
         html += '<div class="tt-row"><span class="tt-label">Sector</span><span class="tt-value">' + d.sector + '</span></div>';
+        // Data-verification tier — same tiers as the DQ legend in the main table
+        (function() {
+            var _v = _verificationTierOf(d.ticker);
+            var _vTier = VERIFICATION_TIERS[4];
+            for (var _vi = 0; _vi < VERIFICATION_TIERS.length; _vi++) {
+                if (VERIFICATION_TIERS[_vi].id === _v.tier) { _vTier = VERIFICATION_TIERS[_vi]; break; }
+            }
+            var _vText;
+            if (_v.tier === 'all') _vText = 'All ' + _v.total + ' NEO rows filing-verified';
+            else if (_v.tier === 'partial') _vText = _v.filingVerified + '/' + _v.total + ' NEO rows filing-verified';
+            else if (_v.tier === 'mismatch') _vText = _v.mismatch + ' filing-side mismatch' + (_v.mismatch > 1 ? 'es' : '');
+            else if (_v.tier === 'verified') _vText = 'Verified (' + _v.total + ' rows)';
+            else _vText = 'No comp data';
+            html += '<div class="tt-row"><span class="tt-label">Verification</span>' +
+                '<span class="tt-value" title="' + escapeHtml(_vTier.label) + '">' +
+                '<span class="legend-dot" style="background:' + _vTier.color + ';margin-right:4px"></span>' +
+                escapeHtml(_vText) + '</span></div>';
+        })();
         // Show community info when community mode is active
         if (communityMode) {
             var cid = communityOf[d.ticker];
@@ -3360,7 +3451,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || verificationMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -3371,7 +3462,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === activeIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || verificationMode || communityMode) && activeIdx >= 0 && activeIdx < items.length) {
                     var dot = items[activeIdx].querySelector('.nsr-dot');
                     if (dot) items[activeIdx].style.backgroundColor = _dotBgTint(dot);
                 }
@@ -3563,6 +3654,7 @@ function initNetwork(peerData) {
                 if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
                 if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
             }
+            if (compHeatmapMode) _clearVerificationMode();
             compHeatmapToggle.classList.toggle('active', compHeatmapMode);
 
             // Show heatmap legend when active; keep sector legend visible for filtering
@@ -3599,6 +3691,7 @@ function initNetwork(peerData) {
                 if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
                 if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
             }
+            if (prHeatmapMode) _clearVerificationMode();
             prHeatmapToggle.classList.toggle('active', prHeatmapMode);
             if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = prHeatmapMode ? 'flex' : 'none';
             draw();
@@ -3628,6 +3721,7 @@ function initNetwork(peerData) {
                 if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
                 if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
             }
+            if (ccHeatmapMode) _clearVerificationMode();
             ccHeatmapToggle.classList.toggle('active', ccHeatmapMode);
             if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = ccHeatmapMode ? 'flex' : 'none';
             // Update node-size legend and recalculate collision force for new radii
@@ -3661,6 +3755,7 @@ function initNetwork(peerData) {
                 if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
                 if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
             }
+            if (gerHeatmapMode) _clearVerificationMode();
             gerHeatmapToggle.classList.toggle('active', gerHeatmapMode);
             if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = gerHeatmapMode ? 'flex' : 'none';
             // Reset threshold when turning off GER mode
@@ -3825,6 +3920,60 @@ function initNetwork(peerData) {
         });
     }
 
+    // === Verification Color Mode Toggle ===
+    // Categorical coloring by data-verification tier (all/partial filing-verified,
+    // standard verified, filing-side mismatch, no comp data). Mutually exclusive
+    // with the four heatmaps and community mode, same as the others.
+    var verificationToggle = document.getElementById('verification-toggle');
+    var verificationLegendEl = document.getElementById('verification-legend');
+
+    if (verificationToggle) {
+        verificationToggle.addEventListener('click', function() {
+            verificationMode = !verificationMode;
+            // Mutual exclusion: turn off all heatmaps and community mode
+            if (verificationMode) {
+                _clearCommunityMode();
+                if (compHeatmapMode) {
+                    compHeatmapMode = false;
+                    if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
+                    if (compHeatmapLegendEl) compHeatmapLegendEl.style.display = 'none';
+                }
+                if (prHeatmapMode) {
+                    prHeatmapMode = false;
+                    if (prHeatmapToggle) prHeatmapToggle.classList.remove('active');
+                    if (prHeatmapLegendEl) prHeatmapLegendEl.style.display = 'none';
+                }
+                if (ccHeatmapMode) {
+                    ccHeatmapMode = false;
+                    if (ccHeatmapToggle) ccHeatmapToggle.classList.remove('active');
+                    if (ccHeatmapLegendEl) ccHeatmapLegendEl.style.display = 'none';
+                }
+                if (gerHeatmapMode) {
+                    gerHeatmapMode = false;
+                    if (gerHeatmapToggle) gerHeatmapToggle.classList.remove('active');
+                    if (gerHeatmapLegendEl) gerHeatmapLegendEl.style.display = 'none';
+                    gerThreshold = 0;
+                    var _gs = document.getElementById('ger-threshold-slider');
+                    if (_gs) _gs.value = 0;
+                    var _gv = document.getElementById('ger-threshold-value');
+                    if (_gv) _gv.textContent = '0';
+                    var _gc = document.getElementById('ger-threshold-count');
+                    if (_gc) _gc.textContent = '';
+                }
+            }
+            verificationToggle.classList.toggle('active', verificationMode);
+            if (verificationLegendEl) {
+                verificationLegendEl.style.display = verificationMode ? 'block' : 'none';
+                if (verificationMode) _populateVerificationLegend();
+            }
+            draw();
+            announce(verificationMode
+                ? 'Verification coloring enabled — green = NEO rows re-read against primary SEC filings'
+                : 'Sector coloring restored');
+            if (activeLegendSector) updateClusterStats(activeLegendSector);
+        });
+    }
+
     // === Community Detection Toggle ===
     var communityToggle = document.getElementById('community-toggle');
     var communityLegendEl = document.getElementById('community-legend');
@@ -3834,6 +3983,7 @@ function initNetwork(peerData) {
             communityMode = !communityMode;
             // Mutual exclusion: turn off all other heatmap modes
             if (communityMode) {
+                _clearVerificationMode();
                 if (compHeatmapMode) {
                     compHeatmapMode = false;
                     if (compHeatmapToggle) compHeatmapToggle.classList.remove('active');
@@ -6571,7 +6721,7 @@ function initNetwork(peerData) {
             var n = nodeMap[ticker];
             // Use heatmap color in heatmap mode, sector color otherwise
             var color;
-            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) {
+            if (compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || verificationMode || communityMode) {
                 color = getNodeColor(ticker, n ? n.sector : '');
             } else {
                 color = n ? (SECTOR_COLORS[n.sector] || '#94a3b8') : '#94a3b8';
@@ -7212,7 +7362,7 @@ function initNetwork(peerData) {
                     el.classList.toggle('active', i === newIdx);
                     el.style.backgroundColor = '';
                 });
-                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || communityMode) && newIdx >= 0 && newIdx < items.length) {
+                if ((compHeatmapMode || prHeatmapMode || ccHeatmapMode || gerHeatmapMode || verificationMode || communityMode) && newIdx >= 0 && newIdx < items.length) {
                     var dot = items[newIdx].querySelector('.nsr-dot');
                     if (dot) items[newIdx].style.backgroundColor = _dotBgTint(dot);
                 }

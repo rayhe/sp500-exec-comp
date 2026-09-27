@@ -11925,6 +11925,45 @@ body.light-mode .cross-sector-pair-select:focus {
     align-items: center;
     margin-bottom: 6px;
 }
+.verification-legend {
+    padding: 4px 0;
+}
+.verification-legend-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.verification-legend-title {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-primary, #e4e4e7);
+}
+.verification-legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+.verification-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--text-secondary, #a1a1aa);
+    cursor: default;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.verification-legend-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+[data-theme="light"] .verification-legend-item:hover {
+    background: rgba(0,0,0,0.04);
+}
+.verification-legend-count {
+    color: var(--text-muted, #6b7280);
+    font-variant-numeric: tabular-nums;
+}
 .community-legend-title {
     font-size: 0.76rem;
     font-weight: 600;
