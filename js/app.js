@@ -6947,9 +6947,28 @@ function renderTable(companies, options) {
                 + ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();event.stopPropagation();if(window.openPvpDetail)window.openPvpDetail(\'' + c.ticker + '\')}">PvP</span>';
         }
 
+        // Per-row primary-source link: opens the company's own DEF 14A (or the
+        // 10-K Part III Item 11 comp disclosure for the 402(v)-exempt / non-proxy
+        // filers: BX, KKR, PSKY, TSLA, FDXF) on SEC EDGAR in a new tab, without
+        // toggling the row's detail panel. 517/518 companies carry a filing_url
+        // (VMRK has none: no post-merger DEF 14A exists). The URL is
+        // data-derived and lands in innerHTML, so it is scheme-gated to sec.gov
+        // and pvpEsc'd (the file's file-scope HTML-escape helper); keyboard is
+        // safe because the tbody keydown handler already skips <a> targets.
+        var filingLinkHtml = '';
+        var _flUrl = c.filing_url || '';
+        if (/^https:\/\/(www\.)?sec\.gov\//.test(_flUrl)) {
+            var _flIs10K = /10-K/.test(c.source || '') || /10k\.htm/i.test(_flUrl);
+            var _flTip = _flIs10K
+                ? 'View 10-K (Part III Item 11 comp disclosure) on SEC EDGAR'
+                : 'View DEF 14A proxy statement on SEC EDGAR';
+            filingLinkHtml = ' <a class="row-filing-link" href="' + pvpEsc(_flUrl) + '" target="_blank" rel="noopener"'
+                + ' title="' + _flTip + '" onclick="event.stopPropagation()">\uD83D\uDCC4</a>';
+        }
+
         tr.innerHTML = '<td>' + (globalIdx + 1) + ' ' + compareBtnHtml + '</td>' +
             '<td><span class="ticker">' + c.ticker + '</span></td>' +
-            '<td><span class="company" title="' + String(c.company_name || '').replace(/"/g, '&quot;') + '">' + c.company_name + '</span>' + pvpBadgeHtml + '</td>' +
+            '<td><span class="company" title="' + String(c.company_name || '').replace(/"/g, '&quot;') + '">' + c.company_name + '</span>' + pvpBadgeHtml + filingLinkHtml + '</td>' +
             '<td>' + nameCellHtml + '</td>' +
             '<td>' + compHtml + '</td>' +
             '<td class="yoy-cell">' + yoyCell + '</td>' +

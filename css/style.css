@@ -7808,6 +7808,21 @@ footer li::before {
     transition: opacity 0.15s;
 }
 .neo-filing-link:hover { opacity: 1; text-decoration: underline; }
+/* Per-row primary-source link in the comp-table company cell: a quiet icon
+   that opens the company's DEF 14A (or 10-K) on SEC EDGAR. Opacity-only
+   affordance so it stays legible in both themes and never disturbs the
+   frozen identity-column layout. */
+.row-filing-link {
+    font-size: 0.72rem;
+    text-decoration: none;
+    opacity: 0.45;
+    margin-left: 3px;
+    transition: opacity 0.15s;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+.row-filing-link:hover { opacity: 1; }
+.row-filing-link:focus-visible { opacity: 1; outline: 2px solid var(--accent); outline-offset: 1px; }
 .neo-provenance {
     font-size: 0.75rem;
     color: var(--text-muted);
