@@ -777,6 +777,67 @@ def check_pvp_metadata(failures):
              f"{n_years} company-year total (stale-count drift)", failures)
 
 
+# -- Section 4f: phantom-compensation-removed metadata + static fallback ----
+# metadata.phantom_removed is the exact cumulative campaign total, seeded by
+# the 2026-09-27 23:30 PT run from a git-blob computation over the 63
+# DQ-labeled data-repair commits (2026-09-12 to 2026-09-27):
+#   phantom_i = sum(parent exec totals) - sum(commit exec totals)
+# Every figure in the iteration log's prose for those batches matches the
+# blob computation to the dollar, so this is a recount, not an estimate.
+# DQ batch scripts must increment the fields via hidden_files/phantom_record.py
+# AND re-sync the js/app.js static fallback below — this section fails the
+# commit if the fallback drifts from the metadata.
+def check_phantom_metadata(meta, failures):
+    pr = meta.get("phantom_removed")
+    if not isinstance(pr, dict):
+        fail("metadata.phantom_removed missing or not a dict", failures)
+        return
+    for key in ("cumulative", "gross_removed", "restored", "batches"):
+        v = pr.get(key)
+        if not isinstance(v, int):
+            fail(f"metadata.phantom_removed.{key}={v!r} not an int", failures)
+    if not all(isinstance(pr.get(k), int) for k in ("cumulative", "gross_removed", "restored")):
+        return
+    if pr["cumulative"] != pr["gross_removed"] - pr["restored"]:
+        fail(
+            f"metadata.phantom_removed.cumulative={pr['cumulative']:,} != "
+            f"gross_removed - restored = "
+            f"{pr['gross_removed'] - pr['restored']:,}",
+            failures,
+        )
+    if pr["gross_removed"] < 0 or pr["restored"] < 0 or pr["batches"] < 1:
+        fail(
+            f"metadata.phantom_removed has implausible values: "
+            f"gross_removed={pr['gross_removed']}, restored={pr['restored']}, "
+            f"batches={pr['batches']}",
+            failures,
+        )
+    # static fallback truthfulness: the hand-typed fallback in js/app.js must
+    # carry the live numbers
+    repo_root = os.path.join(HERE, "..")
+    path = os.path.join(repo_root, "js", "app.js")
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        fail(f"phantom-metadata check: cannot read js/app.js: {e}", failures)
+        return
+    patterns = [
+        f"${pr['cumulative']:,}",
+        f"${pr['restored']:,}",
+        f"{pr['batches']} re-verification batches",
+        "dataq-phantom-block",
+    ]
+    for pat in patterns:
+        if pat not in text:
+            fail(
+                f"phantom fallback drift in js/app.js: expected {pat!r} "
+                f"(from metadata.phantom_removed) not found — sync the "
+                f"static fallback to the JSON values before committing",
+                failures,
+            )
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -880,6 +941,10 @@ def main():
     # 4d. dataq-modal live-block fallbacks: the pay-ratio, transitions, and
     #     title-artifacts static fallbacks must carry the live recounts
     check_dataq_modal_live_blocks(companies, failures)
+
+    # 4f. phantom-removed campaign counter: metadata integers consistent and
+    #     the modal's static fallback carries the same numbers
+    check_phantom_metadata(meta, failures)
 
     # 4c. metadata.description self-consistency: the JSON's own headline copy
     check_json_description(n, meta, failures)

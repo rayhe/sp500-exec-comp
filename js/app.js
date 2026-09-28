@@ -16966,6 +16966,8 @@ function setupDualSparklineTooltips() {
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-27)</h4>' +
                 '<p>7,044 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 34 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-27 screen)</h4>' +
+                '<p>$2,748,725,865 of parser-invented compensation removed across 63 re-verification batches since 2026-09-12, partly offset by $543,465,563 of genuine missing NEO rows restored filing-verbatim. Net: $2,205,260,302.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
@@ -17018,6 +17020,25 @@ function setupDualSparklineTooltips() {
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
             ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
+    }
+
+    // Data Verification modal: phantom-compensation-removed block, rendered
+    // live from metadata.phantom_removed so the modal can never contradict
+    // the campaign totals. The guard's phantom section asserts the metadata
+    // integers and that the static fallback above carries the same numbers.
+    // Returns null when the metadata block is absent — the static fallback
+    // text above is then kept.
+    function _dataqPhantomHtml() {
+        var md = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata : null;
+        var pr = md ? md.phantom_removed : null;
+        if (!pr || pr.cumulative == null || pr.gross_removed == null ||
+            pr.restored == null || pr.batches == null) return null;
+        function bn(v) { return '$' + (v / 1e9).toFixed(1) + 'B'; }
+        return '<h4>Phantom compensation removed (since ' + (pr.since || '2026-09-12') + ')</h4>' +
+            '<p>' + bn(pr.gross_removed) + ' of parser-invented compensation removed across ' + pr.batches +
+            ' re-verification batches, partly offset by ' + bn(pr.restored) +
+            ' of genuine missing NEO rows restored filing-verbatim. Net: <strong>' + bn(pr.cumulative) + '</strong>' +
+            ' ($' + Number(pr.cumulative).toLocaleString('en-US') + ').</p>';
     }
 
     // Data Verification modal: pay-ratio methodology counts, computed from the
@@ -17166,6 +17187,9 @@ function setupDualSparklineTooltips() {
             var covBlock = document.getElementById('dataq-coverage-block');
             var covHtml = _dataqCoverageHtml();
             if (covBlock && covHtml) covBlock.innerHTML = covHtml;
+            var phBlock = document.getElementById('dataq-phantom-block');
+            var phHtml = _dataqPhantomHtml();
+            if (phBlock && phHtml) phBlock.innerHTML = phHtml;
             var prCounts = document.getElementById('dataq-payratio-counts');
             var prHtml = _dataqPayRatioHtml();
             if (prCounts && prHtml) prCounts.innerHTML = prHtml;
