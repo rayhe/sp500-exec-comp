@@ -132,7 +132,7 @@
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
-   "component_mismatch": 34,
+   "component_mismatch": 33,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -145,10 +145,10 @@
    "def14a_verified_20260924": 181,
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
-   "def14a_verified_20260927": 73,
-   "verified": 5674,
+   "def14a_verified_20260927": 51,
+   "verified": 5697,
    "rounding": 0,
-   "verified_total": 7044,
+   "verified_total": 7045,
    "last_audit": "2026-09-27"
   },
   "median_ceo_pay": 16715485.5,
@@ -184,7 +184,7 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "component_mismatch": 34,
+   "component_mismatch": 33,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -197,10 +197,10 @@
    "def14a_verified_20260924": 181,
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
-   "def14a_verified_20260927": 73,
-   "verified": 5674,
+   "def14a_verified_20260927": 51,
+   "verified": 5697,
    "rounding": 0,
-   "verified_total": 7044,
+   "verified_total": 7045,
    "last_audit": "2026-09-27"
   },
   "companies_with_executives": 517,
@@ -3208,7 +3208,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 20292698,
+   "total_neo_compensation": 24719385,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 95.69,
@@ -59495,7 +59495,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 32969068,
+   "total_neo_compensation": 35452524,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 93.85,
@@ -62608,7 +62608,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 39434072,
+   "total_neo_compensation": 43954286,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 93.98,
@@ -67545,7 +67545,7 @@
    "ticker": "LW",
    "company_name": "Lamb Weston Holdings Inc",
    "ceo_name": "Michael J. Smith",
-   "total_compensation": 3222931,
+   "total_compensation": 5695862,
    "fiscal_year": 2024,
    "source": "SEC DEF 14A 2026 \u2014 FY2024 CEO",
    "median_worker_pay": 59742,
@@ -113159,7 +113159,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 24162368,
+   "total_neo_compensation": 26184933,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 94.27,
@@ -115880,7 +115880,7 @@
     2024,
     2023
    ],
-   "total_neo_compensation": 24688114,
+   "total_neo_compensation": 30386344,
    "proxy_fiscal_year": 2025,
    "say_on_pay": {
     "approval_pct": 90.48,
