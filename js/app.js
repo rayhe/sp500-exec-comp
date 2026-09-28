@@ -7758,6 +7758,123 @@ var _detailTriggerRow = null;  // row that opened the detail panel
 var _preFocusElement = null;   // element focused before modal/comparison opens
 var _expandedDetailTicker = null; // ticker of currently expanded detail panel (for URL hash)
 
+/* === Repair diff view (2026-09-28) ===
+   Per-row before/after values from the DQ re-verification campaign, served
+   from data/repair-diffs.json (lazy-loaded once per session). A "\u0394 repaired"
+   toggle is injected into a NEO name cell only when that row carries a diff;
+   clicking renders a full-width before/after table below that year's NEO
+   table, so sorting the table never disturbs the viewer. "Before" = values
+   as stored before the first DQ repair that touched the row (2026-09-12
+   onward); "after" = current filing-verbatim values. The guard's repair-diff
+   section asserts every entry's "after" values equal the live dataset, so a
+   stale diff file fails the commit. */
+var _repairDiffs = null;
+var _repairDiffsPromise = null;
+function _ensureRepairDiffs() {
+    if (_repairDiffs) return Promise.resolve(_repairDiffs);
+    if (!_repairDiffsPromise) {
+        _repairDiffsPromise = fetch('data/repair-diffs.json')
+            .then(function(r) { if (!r.ok) throw new Error('repair diffs unavailable'); return r.json(); })
+            .then(function(d) { _repairDiffs = d; return d; })
+            .catch(function() { _repairDiffs = { rows: {} }; return _repairDiffs; });
+    }
+    return _repairDiffsPromise;
+}
+var _repairDiffFields = [
+    ['salary', 'Salary'],
+    ['bonus', 'Bonus'],
+    ['stock_awards', 'Stock Awards'],
+    ['option_awards', 'Option Awards'],
+    ['non_equity_incentive', 'Non-Equity Incentive'],
+    ['pension_nqdc', 'Pension/NQDC'],
+    ['all_other', 'All Other'],
+    ['total', 'Total']
+];
+function _fmtDiffMoney(v) {
+    return '$' + Number(v || 0).toLocaleString('en-US');
+}
+function _escDiffText(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function _repairDiffHtml(ticker, name, year, diff) {
+    var rows = '';
+    _repairDiffFields.forEach(function(pair) {
+        var f = pair[0], label = pair[1];
+        if (!diff[f]) return;
+        var before = diff[f][0], after = diff[f][1];
+        var d = after - before;
+        var cls = d < 0 ? 'neo-diff-neg' : (d > 0 ? 'neo-diff-pos' : '');
+        var dStr = (d < 0 ? '\u2212' : (d > 0 ? '+' : '')) + '$' + Math.abs(d).toLocaleString('en-US');
+        rows += '<tr><td>' + label + '</td>' +
+            '<td class="neo-diff-before">' + _fmtDiffMoney(before) + '</td>' +
+            '<td class="neo-diff-after">' + _fmtDiffMoney(after) + '</td>' +
+            '<td class="' + cls + '">' + dStr + '</td></tr>';
+    });
+    return '<div class="neo-diff-head"><strong>Repair diff</strong>: ' +
+        _escDiffText(name) + ' (' + _escDiffText(ticker) + ', FY' + _escDiffText(year) + ')</div>' +
+        '<div class="neo-diff-sub">Values as stored before the 2026-09-12 \u2192 2026-09-28 re-verification campaign vs filing-verbatim now. Negative \u0394 = parser-invented pay removed; positive \u0394 = genuine pay restored.</div>' +
+        '<table class="neo-diff-table"><thead><tr><th>Component</th><th>Before (as parsed)</th><th>After (filing-verbatim)</th><th>\u0394</th></tr></thead><tbody>' +
+        rows + '</tbody></table>';
+}
+function _toggleRepairDiff(detailRow, ticker, btn) {
+    var name = btn.getAttribute('data-diff-name');
+    var year = btn.getAttribute('data-diff-year');
+    var key = ticker + '|' + name + '|' + year;
+    var panel = btn.closest('.neo-year-panel');
+    if (!panel) return;
+    var viewer = panel.querySelector('.neo-diff-viewer');
+    var openKey = viewer ? viewer.getAttribute('data-open-key') : null;
+    // Clicking the active toggle closes the viewer.
+    if (viewer && openKey === key) {
+        viewer.remove();
+        btn.setAttribute('aria-expanded', 'false');
+        return;
+    }
+    var diff = (_repairDiffs && _repairDiffs.rows) ? _repairDiffs.rows[key] : null;
+    if (!diff) return;
+    detailRow.querySelectorAll('.neo-diff-toggle[aria-expanded="true"]').forEach(function(b) {
+        b.setAttribute('aria-expanded', 'false');
+    });
+    if (!viewer) {
+        viewer = document.createElement('div');
+        viewer.className = 'neo-diff-viewer';
+        var wrap = panel.querySelector('.neo-table-wrap');
+        if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(viewer, wrap.nextSibling);
+        else panel.appendChild(viewer);
+    }
+    viewer.setAttribute('data-open-key', key);
+    viewer.innerHTML = _repairDiffHtml(ticker, name, year, diff);
+    btn.setAttribute('aria-expanded', 'true');
+}
+function _injectRepairDiffToggles(detailRow, ticker) {
+    _ensureRepairDiffs().then(function(d) {
+        if (!detailRow.isConnected) return;
+        var rows = (d && d.rows) || {};
+        detailRow.querySelectorAll('tr[data-exec-name]').forEach(function(tr) {
+            if (tr.querySelector('.neo-diff-toggle')) return;
+            var nm = tr.getAttribute('data-exec-name');
+            var yr = tr.getAttribute('data-exec-year');
+            if (nm == null || yr == null || !rows[ticker + '|' + nm + '|' + yr]) return;
+            var cell = tr.querySelector('td.neo-name');
+            if (!cell) return;
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'neo-diff-toggle';
+            btn.setAttribute('data-diff-name', nm);
+            btn.setAttribute('data-diff-year', yr);
+            btn.setAttribute('aria-expanded', 'false');
+            btn.title = 'Show what the re-verification repair changed on this row (before vs filing-verbatim)';
+            btn.innerHTML = '<span aria-hidden="true">\u0394</span> repaired';
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                _toggleRepairDiff(detailRow, ticker, btn);
+            });
+            cell.appendChild(document.createTextNode(' '));
+            cell.appendChild(btn);
+        });
+    });
+}
+
 function setupDetailPanel(companies) {
     var tbody = document.getElementById('comp-tbody');
 
@@ -9649,7 +9766,7 @@ function setupDetailPanel(companies) {
                         if (_fvNotes.length) _fvTip += ' — ' + _fvNotes.join(' | ');
                         dqDotHtml = ' <span class="neo-dq-dot neo-dq-filing-verified" title="' + _fvTip.replace(/"/g, '&quot;') + '"></span>';
                     }
-                    html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + ' data-sort-salary="' + (exec.salary || 0) + '" data-sort-bonus="' + (exec.bonus || 0) + '" data-sort-stock="' + (exec.stock_awards || 0) + '" data-sort-option="' + (exec.option_awards || 0) + '" data-sort-incentive="' + (exec.non_equity_incentive || 0) + '" data-sort-pension="' + ((exec.pension_nqdc || exec.pension_change) || 0) + '" data-sort-other="' + (exec.all_other || 0) + '" data-sort-total="' + (exec.total || 0) + '">';
+                    html += '<tr' + (isCeo ? ' class="neo-ceo-row"' : '') + ' data-exec-name="' + String(exec.name || '').replace(/"/g, '&quot;') + '" data-exec-year="' + (exec.year || '') + '" data-sort-salary="' + (exec.salary || 0) + '" data-sort-bonus="' + (exec.bonus || 0) + '" data-sort-stock="' + (exec.stock_awards || 0) + '" data-sort-option="' + (exec.option_awards || 0) + '" data-sort-incentive="' + (exec.non_equity_incentive || 0) + '" data-sort-pension="' + ((exec.pension_nqdc || exec.pension_change) || 0) + '" data-sort-other="' + (exec.all_other || 0) + '" data-sort-total="' + (exec.total || 0) + '">';
                     // Inline sparkline for this exec's multi-year trend
                     var _execNormName = (exec.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
                     var _execTrend = execTrendMap[_execNormName];
@@ -10445,6 +10562,10 @@ function setupDetailPanel(companies) {
         detailRow.dataset.ticker = ticker;
         detailRow.innerHTML = html;
         row.after(detailRow);
+
+        // Repair diff view: lazy-load data/repair-diffs.json and add
+        // "\u0394 repaired" toggles to NEO rows that carry a before/after diff.
+        _injectRepairDiffToggles(detailRow, ticker);
 
         // Animate pay gap bars from width:0 to target width (staggered)
         (function() {

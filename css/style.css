@@ -10537,6 +10537,87 @@ footer li::before {
 .neo-audit-note:hover { opacity: 1; }
 
 
+/* === Repair diff view (2026-09-28) ===
+   "\u0394 repaired" toggle in NEO name cells + full-width before/after viewer
+   below the year's NEO table. Theme-safe: uses the same muted/positive/
+   negative tokens as the rest of the detail panel. */
+.neo-diff-toggle {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid rgba(128, 128, 128, 0.35);
+    border-radius: 999px;
+    cursor: pointer;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.neo-diff-toggle:hover,
+.neo-diff-toggle:focus-visible {
+    color: var(--text-primary);
+    border-color: var(--accent, #00b4d8);
+    outline: none;
+}
+.neo-diff-toggle[aria-expanded="true"] {
+    color: var(--text-primary);
+    border-color: var(--accent, #00b4d8);
+    background: rgba(0, 180, 216, 0.08);
+}
+.neo-diff-viewer {
+    margin: 10px 0 4px;
+    padding: 12px 14px;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 8px;
+    background: rgba(128, 128, 128, 0.05);
+}
+.neo-diff-head {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+.neo-diff-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.neo-diff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+.neo-diff-table th,
+.neo-diff-table td {
+    padding: 5px 10px;
+    text-align: right;
+    border-top: 1px solid rgba(128, 128, 128, 0.18);
+}
+.neo-diff-table th:first-child,
+.neo-diff-table td:first-child {
+    text-align: left;
+}
+.neo-diff-table thead th {
+    border-top: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.neo-diff-table .neo-diff-before {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(239, 71, 111, 0.55);
+}
+.neo-diff-table .neo-diff-after {
+    font-weight: 600;
+}
+.neo-diff-table .neo-diff-neg { color: var(--negative, #ef476f); }
+.neo-diff-table .neo-diff-pos { color: var(--positive, #06d6a0); }
+
+
 /* === Compensation Profile Radar Chart === */
 .radar-section {
     margin-top: 20px;

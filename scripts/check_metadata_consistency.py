@@ -839,6 +839,81 @@ def check_phantom_metadata(meta, failures):
             )
 
 
+# -- Section 4g: repair-diffs.json truthfulness ------------------------------
+# data/repair-diffs.json carries per-row before/after values for rows repaired
+# by the DQ campaign (built by goal hidden_files/repair-diffs/
+# build_repair_diffs.py, 2026-09-28). If a later DQ batch changes a diffed
+# row's components, the "after" values go stale and mislead the diff view —
+# this section fails the commit so the batch regenerates the file.
+DIFF_FIELDS = ("salary", "bonus", "stock_awards", "option_awards",
+               "non_equity_incentive", "pension_nqdc", "all_other", "total")
+
+
+def check_repair_diffs(companies, failures):
+    repo_root = os.path.join(HERE, "..")
+    path = os.path.join(repo_root, "data", "repair-diffs.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            diffs = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        fail(f"repair-diffs check: cannot parse data/repair-diffs.json: {e}", failures)
+        return
+    rows = diffs.get("rows")
+    meta = diffs.get("meta", {})
+    if not isinstance(rows, dict):
+        fail("repair-diffs check: 'rows' missing or not a dict", failures)
+        return
+    if meta.get("rows_with_repair_diff") != len(rows):
+        fail(
+            f"repair-diffs check: meta.rows_with_repair_diff="
+            f"{meta.get('rows_with_repair_diff')} != len(rows)={len(rows)}",
+            failures,
+        )
+    live = {}
+    for c in companies:
+        t = c.get("ticker")
+        for e in c.get("executives", []) or []:
+            live[(t, e.get("name"), e.get("year"))] = e
+    bad = 0
+    for key, entry in rows.items():
+        parts = key.split("|")
+        if len(parts) != 3:
+            fail(f"repair-diffs check: malformed key {key!r}", failures)
+            bad += 1
+            continue
+        lk = (parts[0], parts[1], int(parts[2]) if parts[2].lstrip("-").isdigit() else parts[2])
+        e = live.get(lk)
+        if e is None:
+            fail(f"repair-diffs check: key {key!r} resolves to no live row", failures)
+            bad += 1
+            continue
+        if not isinstance(entry, dict):
+            fail(f"repair-diffs check: entry for {key!r} not a dict", failures)
+            bad += 1
+            continue
+        for field, pair in entry.items():
+            if field not in DIFF_FIELDS or not isinstance(pair, list) or len(pair) != 2:
+                fail(f"repair-diffs check: bad field entry {key!r}.{field}", failures)
+                bad += 1
+                continue
+            live_v = e.get(field)
+            live_v = live_v if isinstance(live_v, (int, float)) else 0
+            if pair[1] != live_v:
+                fail(
+                    f"repair-diffs check: stale 'after' for {key!r}.{field}: "
+                    f"diff says {pair[1]:,} but live row is {live_v:,} — "
+                    f"regenerate via build_repair_diffs.py",
+                    failures,
+                )
+                bad += 1
+            if pair[0] == pair[1]:
+                fail(f"repair-diffs check: no-op diff {key!r}.{field}", failures)
+                bad += 1
+            if bad > 10:
+                fail("repair-diffs check: too many errors, stopping early", failures)
+                return
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -946,6 +1021,12 @@ def main():
     # 4f. phantom-removed campaign counter: metadata integers consistent and
     #     the modal's static fallback carries the same numbers
     check_phantom_metadata(meta, failures)
+
+    # 4g. repair-diffs.json: every entry's "after" values must equal the live
+    #     dataset (a DQ batch that changes a diffed row must regenerate the
+    #     file via goal hidden_files/repair-diffs/build_repair_diffs.py),
+    #     every key must resolve to a live row, and the meta count must match.
+    check_repair_diffs(companies, failures)
 
     # 4c. metadata.description self-consistency: the JSON's own headline copy
     check_json_description(n, meta, failures)

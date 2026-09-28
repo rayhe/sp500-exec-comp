@@ -32,6 +32,15 @@ fallback in js/app.js (the "dataq-phantom-block" div): the guard's section 4f
 fails the commit if the fallback numbers drift from metadata.phantom_removed.
 The live renderer (_dataqPhantomHtml) needs no changes.
 
+Repair-diffs pointer: if the batch changed components of a row that appears
+in data/repair-diffs.json, regenerate it before committing:
+
+    python3 ~/workspace/goals/s-p-500-executive-compensation-tracker/\
+hidden_files/repair-diffs/build_repair_diffs.py
+
+The guard's section 4g fails the commit when any diff "after" value drifts
+from the live dataset or a key no longer resolves to a live row.
+
 Seed note: the counters were seeded 2026-09-27 23:30 PT by an exact git-blob
 computation over the 63 DQ-labeled data-repair commits (2026-09-12 onward).
 Per-batch table: goal hidden_files/phantom-counter/cumulative.json.
