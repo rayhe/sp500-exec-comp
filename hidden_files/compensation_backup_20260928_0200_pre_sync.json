@@ -146,11 +146,10 @@
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 73,
-   "def14a_verified_20260928": 18,
-   "verified": 5656,
+   "verified": 5674,
    "rounding": 0,
    "verified_total": 7044,
-   "last_audit": "2026-09-28"
+   "last_audit": "2026-09-27"
   },
   "median_ceo_pay": 16715485.5,
   "mean_ceo_pay": 327600383.381323,
@@ -199,11 +198,10 @@
    "def14a_verified_20260925": 80,
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 73,
-   "def14a_verified_20260928": 18,
-   "verified": 5656,
+   "verified": 5674,
    "rounding": 0,
    "verified_total": 7044,
-   "last_audit": "2026-09-28"
+   "last_audit": "2026-09-27"
   },
   "companies_with_executives": 517,
   "board_independence_any": 499,
