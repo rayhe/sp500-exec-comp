@@ -7797,6 +7797,49 @@ function _fmtDiffMoney(v) {
 function _escDiffText(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+// Shared pay-ratio deviation-band classifier and re-verification band-move
+// map. Mirrors guard section 11 of scripts/check_metadata_consistency.py, so
+// the data-quality modal and the company detail panel agree on the band
+// vocabulary and on which companies moved bands after a repair.
+var _PAY_RATIO_BAND_LABELS = { 'within': 'within tolerance', 'near-2x': 'near 2x', 'near-0.5x': 'near 0.5x', 'differ': 'differ' };
+function _payRatioBand(ct, mw, pr) {
+    var r = (ct / mw) / pr;
+    if (Math.abs(r - 1) <= Math.max(2 / pr, 0.03)) return 'within';
+    if (r >= 1.9 && r <= 2.1) return 'near-2x';
+    if (r >= 0.4 && r <= 0.6) return 'near-0.5x';
+    return 'differ';
+}
+
+// Resolves to { moves: {ticker: {from, to}}, window } for every screened
+// company whose CEO-anchor repair changed its deviation band, or null when
+// the repair-diffs data is unavailable (callers degrade silently). The
+// diff's 'after' total must match the live anchor total within $1 or the row
+// is skipped, so a stale diff file cannot fabricate a move.
+function _payRatioBandMovesMap() {
+    var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+    if (!cos) return Promise.resolve(null);
+    return _ensureRepairDiffs().then(function(diffs) {
+        var rows = (diffs && diffs.rows) ? diffs.rows : null;
+        if (!rows || !Object.keys(rows).length) return null;
+        var win = (diffs.meta && diffs.meta.window) ? String(diffs.meta.window) : null;
+        var moves = {};
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            var t = c.ticker, pr = c.pay_ratio, mw = c.median_worker_pay, ct = c.total_compensation;
+            if (!t || pr == null || pr === 0 || mw == null || mw === 0 || ct == null) continue;
+            var d = rows[t + '|' + (c.ceo_name || '') + '|' + c.fiscal_year];
+            if (!d || !d.total || d.total.length !== 2) continue;
+            var before = d.total[0], after = d.total[1];
+            if (typeof before !== 'number' || typeof after !== 'number') continue;
+            if (Math.abs(after - ct) > 1) continue;
+            var b0 = _payRatioBand(before, mw, pr), b1 = _payRatioBand(after, mw, pr);
+            if (b0 === b1) continue;
+            moves[t] = { from: _PAY_RATIO_BAND_LABELS[b0], to: _PAY_RATIO_BAND_LABELS[b1] };
+        }
+        return { moves: moves, window: win };
+    });
+}
 function _repairDiffHtml(ticker, name, year, diff) {
     var rows = '';
     _repairDiffFields.forEach(function(pair) {
@@ -7919,6 +7962,27 @@ function _injectRepairDiffToggles(detailRow, ticker) {
             cell.appendChild(document.createTextNode(' '));
             cell.appendChild(btn);
         });
+    });
+}
+
+// Company detail panel: annotate the Pay Ratio Rank stat when the CEO-anchor
+// repair changed this company's deviation band under the DEF 14A
+// re-verification campaign (surfaces the data-quality modal's band-move
+// finding per company). Degrades silently when diffs are unavailable.
+function _annotatePayRatioBandMove(detailRow, company) {
+    _payRatioBandMovesMap().then(function(res) {
+        if (!detailRow.isConnected || !res || !res.moves) return;
+        var mv = res.moves[company.ticker];
+        if (!mv) return;
+        var stat = detailRow.querySelector('[data-stat="pay-ratio-rank"]');
+        if (!stat || stat.querySelector('.detail-bandmove')) return;
+        var note = document.createElement('div');
+        note.className = 'detail-stat-sub detail-bandmove';
+        note.title = 'The DEF 14A re-verification campaign repaired this company\u2019s CEO pay total, moving its pay-ratio deviation band from "' + mv.from + '" to "' + mv.to + '"' +
+            (res.window ? ' (' + res.window + ')' : '') +
+            '. Open the repair-diffs view on the NEO table below for the before/after row.';
+        note.innerHTML = '<span aria-hidden="true">\u0394</span> re-verified: ' + _escDiffText(mv.from) + ' &rarr; ' + _escDiffText(mv.to);
+        stat.appendChild(note);
     });
 }
 
@@ -8423,7 +8487,7 @@ function setupDetailPanel(companies) {
                 .sort(function(a, b) { return a.pay_ratio - b.pay_ratio; });
             var ratioBarIdx = ratioSortedForBar.findIndex(function(c) { return c.ticker === ticker; });
             var ratioPctBar = ratioSortedForBar.length > 1 ? ratioBarIdx / (ratioSortedForBar.length - 1) * 100 : 50;
-            html += '<div class="detail-stat"><div class="detail-stat-label">Pay Ratio Rank</div><div class="detail-stat-value">' + ratioText + '</div>' + distBar(ratioPctBar, 'Low', 'High') + '<div class="detail-stat-sub">' + formatRatio(company.pay_ratio) + '</div></div>';
+            html += '<div class="detail-stat" data-stat="pay-ratio-rank"><div class="detail-stat-label">Pay Ratio Rank</div><div class="detail-stat-value">' + ratioText + '</div>' + distBar(ratioPctBar, 'Low', 'High') + '<div class="detail-stat-sub">' + formatRatio(company.pay_ratio) + '</div></div>';
         }
 
         if (peerInfo) {
@@ -10614,6 +10678,10 @@ function setupDetailPanel(companies) {
         // Repair diff view: lazy-load data/repair-diffs.json and add
         // "\u0394 repaired" toggles to NEO rows that carry a before/after diff.
         _injectRepairDiffToggles(detailRow, ticker);
+
+        // Band-move note on the Pay Ratio Rank stat for companies whose
+        // deviation band changed under the re-verification campaign.
+        _annotatePayRatioBandMove(detailRow, company);
 
         // Animate pay gap bars from width:0 to target width (staggered)
         (function() {
@@ -17309,14 +17377,6 @@ function setupDualSparklineTooltips() {
             var rows = (diffs && diffs.rows) ? diffs.rows : null;
             if (!rows || !Object.keys(rows).length) return null;
             var win = (diffs.meta && diffs.meta.window) ? String(diffs.meta.window) : null;
-            var labels = { 'within': 'within tolerance', 'near-2x': 'near 2x', 'near-0.5x': 'near 0.5x', 'differ': 'differ' };
-            function band(ct, mw, pr) {
-                var r = (ct / mw) / pr;
-                if (Math.abs(r - 1) <= Math.max(2 / pr, 0.03)) return 'within';
-                if (r >= 1.9 && r <= 2.1) return 'near-2x';
-                if (r >= 0.4 && r <= 0.6) return 'near-0.5x';
-                return 'differ';
-            }
             var groups = {}; // 'from->to' -> [tickers]
             var n = 0, screened = 0, intoWithin = 0;
             for (var i = 0; i < cos.length; i++) {
@@ -17329,7 +17389,7 @@ function setupDualSparklineTooltips() {
                 var before = d.total[0], after = d.total[1];
                 if (typeof before !== 'number' || typeof after !== 'number') continue;
                 if (Math.abs(after - ct) > 1) continue;
-                var b0 = band(before, mw, pr), b1 = band(after, mw, pr);
+                var b0 = _payRatioBand(before, mw, pr), b1 = _payRatioBand(after, mw, pr);
                 if (b0 === b1) continue;
                 var gk = b0 + '->' + b1;
                 if (!groups[gk]) groups[gk] = [];
@@ -17342,11 +17402,11 @@ function setupDualSparklineTooltips() {
             var items = trans.map(function(gk) {
                 var parts = gk.split('->');
                 var tickers = groups[gk].slice().sort().map(function(x) { return _escDiffText(x); });
-                return '<li><strong>' + _escDiffText(labels[parts[0]]) + ' &rarr; ' + _escDiffText(labels[parts[1]]) + '</strong> (' + tickers.length + '): ' + tickers.join(', ') + '</li>';
+                return '<li><strong>' + _escDiffText(_PAY_RATIO_BAND_LABELS[parts[0]]) + ' &rarr; ' + _escDiffText(_PAY_RATIO_BAND_LABELS[parts[1]]) + '</strong> (' + tickers.length + '): ' + tickers.join(', ') + '</li>';
             }).join('');
             return '<p><strong>Band changes from the re-verification campaign</strong>' +
                 (win ? ' (' + _escDiffText(win) + ')' : '') +
-                ': ' + n + ' of ' + screened + ' screened companies sit in a different deviation band than they would have under the pre-repair data. Every one of them moved closer to the disclosed ratio, so the campaign has only ever removed false deviation signals, never created one. ' +
+                ': ' + n + ' of ' + screened + ' screened companies sit in a different deviation band than they would have under the pre-repair data. Every one moved into an equal-or-less-deviant band (none moved into differ or near-2x), so the campaign has only ever removed false deviation signals, never created one. ' +
                 intoWithin + ' of the ' + n + ' moved into the within-tolerance band.</p>' +
                 '<details class="dataq-moves-list"><summary>Per-company transition list</summary>' +
                 '<ul>' + items + '</ul></details>';

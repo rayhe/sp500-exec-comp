@@ -3502,6 +3502,11 @@ tbody tr:last-child td { border-bottom: none; }
     color: var(--text-secondary);
     margin-top: 2px;
 }
+/* Pay-ratio band-move annotation on the detail panel (re-verification campaign) */
+.detail-bandmove {
+    color: var(--text-muted);
+    cursor: help;
+}
 /* Say-on-Pay vote breakdown bar */
 .sop-vote-bar {
     display: flex;
