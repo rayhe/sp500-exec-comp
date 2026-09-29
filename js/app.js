@@ -17264,10 +17264,22 @@ function setupDualSparklineTooltips() {
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
                 '<p id="dataq-payratio-counts">As of the 2026-09-28 screen: 395 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 9 cluster near 2x, 13 near 0.5x, 97 differ otherwise.</p>' +
-                '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p><div id="dataq-payratio-moves"></div></div>' +
+                '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
+                '<p>Deviation sources, spot-verified:</p>' +
+                '<ul class="pvp-exclusion-list">' +
+                '<li><strong>Transition-year figures</strong>: the disclosed ratio uses the year-end CEO\'s pay (CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total).</li>' +
+                '<li><strong>Annualized compensation</strong>: MO\'s 2026 DEF 14A annualizes $24.58M to 147:1.</li>' +
+                '<li><strong>Pension-swing-year SCT totals</strong>: MO\'s stored 2024 SCT total is a $53.6M pension-swing year.</li>' +
+                '</ul>' +
+                '<p>A deviation is not a mislabeled figure.</p><div id="dataq-payratio-moves"></div></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
-                '<p id="dataq-transitions-counts">As of the 2026-09-24 screen: 26 (name, fiscal year) tuples appear as NEO rows at two different companies; all 26 triaged by tuple: 19 genuine &mdash; 8 mid-year executive transitions (incl. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off, and John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 11 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents); 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR); 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
-                '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Two collisions are same-name coincidences: Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people. The one suspicious pair (Celeste Burgoyne, LULU/WSM) is queued for a DEF 14A name-column re-read. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
+                '<p id="dataq-transitions-counts">As of the 2026-09-29 screen: 24 (name, fiscal year) tuples appear as NEO rows at two different companies; all 24 triaged by tuple:</p>' +
+                '<ul class="pvp-exclusion-list">' +
+                '<li><strong>19 genuine</strong>: 8 mid-year executive transitions (e.g. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off; John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 11 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents).</li>' +
+                '<li><strong>5 same-name coincidences</strong> (2 people): Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR. Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people.</li>' +
+                '<li><strong>0 suspicious</strong>: the former LULU/WSM Burgoyne pair was a wrong-name misattribution, repaired 2026-09-29 &mdash; the WSM rows were Karalyn Yearout\'s, byte-identical to her filed SCT rows.</li>' +
+                '</ul>' +
+                '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
                 '<div id="dataq-titles-block"><h4>Title artifacts</h4>' +
                 '<p id="dataq-titles-counts">As of the 2026-09-14 screen: 35 NEO rows at 11 companies carried parser artifacts in their titles; a 2026-09-15 screen found a second artifact class at 9 more companies. All 87 affected rows were repaired filing-verbatim 2026-09-14 to 2026-09-15 (breakdown below), leaving 0 rows at 0 companies shown exactly as parsed. Guard section 13 of <code>scripts/check_metadata_consistency.py</code> trips on any new title artifact.</p>' +
                 '<p>Artifact classes found, with examples:</p>' +
@@ -17463,7 +17475,7 @@ function setupDualSparklineTooltips() {
         for (var k in seen) {
             if (Object.keys(seen[k]).length >= 2) n++;
         }
-        return 'Live screen: ' + n + ' (name, fiscal year) tuples appear as NEO rows at two or more companies; the triage breakdown above covers all of them.';
+        return 'Live screen: ' + n + ' (name, fiscal year) tuples appear as NEO rows at two or more companies; the triage breakdown below covers all of them.';
     }
 
     // Data Verification modal: title-artifact row count, computed from the

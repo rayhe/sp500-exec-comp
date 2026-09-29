@@ -1834,7 +1834,24 @@ def main():
     #     LULU President Americas & Global Guest Innovation 2006-2025
     #     (joins Vail Resorts Jan 2026), so WSM's "EVP, Chief Talent
     #     Officer" rows cannot be the same person; WSM 2023 SCT parsed only
-    #     4 rows (thin). See exec_collision_queue_20260914_1400.md (also
+    #     4 rows (thin). RESOLVED 2026-09-29: the WSM-side rows were never
+    #     Burgoyne's — a wrong-name misattribution, not a collision at
+    #     all. WSM's 2024, 2025, and 2026 DEF 14As contain zero "Burgoyne"
+    #     mentions; the stored WSM 2023/2024 "Celeste Burgoyne" rows are
+    #     byte-identical (all 8 SCT components) to the filed Karalyn
+    #     Yearout / EVP, Chief Talent Officer rows, and the stored WSM
+    #     2023/2024 "Yasir Anwar" rows are byte-identical to the filed
+    #     David King / EVP, General Counsel rows ("Anwar" appears nowhere
+    #     in any WSM proxy either). Re-attributed 2026-09-29 with per-row
+    #     _note annotations; numeric values unchanged; WSM 2025 titles
+    #     repaired the same pass (King is "EVP and General Counsel", not
+    #     "President, Williams Sonoma Brand"; Yearout is "EVP, Chief
+    #     Talent Officer", not "EVP, General Counsel"). The 2026-09-26
+    #     iteration-log "legit transition" claim was wrong — LULU's own
+    #     2026 DEFC14A confirms Burgoyne at LULU through 2025-12-31, which
+    #     rules out WSM 2023/2024. The two burgoyne tuples are removed
+    #     from KNOWN_COLLISIONS (screen now finds 24, not 26).
+    #     See exec_collision_queue_20260914_1400.md (also
     #     queues the CFG 2025 woods title mismatch: stored "EVP and Head
     #     of Commercial Banking" vs his actual Citizens Vice Chair & CFO
     #     role). Any collision NOT in KNOWN_COLLISIONS fails as a
@@ -1846,8 +1863,6 @@ def main():
         ("anat ashkenazi", 2024, "GOOGL", "LLY"),
         ("bryan c hanson", 2024, "CEG", "SOLV"),
         ("bryan c hanson", 2025, "CEG", "SOLV"),
-        ("celeste burgoyne", 2023, "LULU", "WSM"),
-        ("celeste burgoyne", 2024, "LULU", "WSM"),
         ("christopher j delorefice", 2025, "BDX", "ULTA"),
         ("heather knight", 2025, "BAX", "SOLV"),
         ("john f woods", 2025, "CFG", "STT"),

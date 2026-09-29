@@ -128,7 +128,7 @@
   },
   "edgar_coverage": 517,
   "total_companies": 518,
-  "last_updated": "2026-09-27",
+  "last_updated": "2026-09-29",
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
@@ -240,7 +240,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-09-28",
+  "last_dq_repair": "2026-09-29",
   "verified_total": 7046,
   "total_neos": 7078,
   "phantom_removed": {
@@ -114757,7 +114757,7 @@
     },
     {
      "name": "David King",
-     "title": "President, Williams Sonoma Brand",
+     "title": "EVP and General Counsel",
      "year": 2025,
      "salary": 705000,
      "bonus": 0,
@@ -114767,10 +114767,11 @@
      "pension_nqdc": 0,
      "all_other": 23931,
      "total": 4178897,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: title repaired per the filed WSM 2026 DEF 14A SCT (acc. 0000719955-26-000109, wsm-20260506.htm, filed 2026-05-06): the 2025 principal position is 'Executive Vice President, General Counsel'; stored title 'President, Williams Sonoma Brand' is not the filed SCT wording (0 mentions in the filing). Numbers unchanged."
     },
     {
-     "name": "Yasir Anwar",
+     "name": "David King",
      "title": "EVP and General Counsel",
      "year": 2024,
      "salary": 700385,
@@ -114781,10 +114782,11 @@
      "pension_nqdc": 0,
      "all_other": 23831,
      "total": 4024109,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: name repaired per the filed WSM 2025 DEF 14A SCT (acc. 0001628280-25-020659, wsm-20250429.htm, filed 2026-04-29): the row's 8 SCT components are byte-identical to the filed David King / Executive Vice President, General Counsel row; stored name 'Yasir Anwar' appears nowhere in the filing (0 mentions across the 2024, 2025, and 2026 WSM proxies). Totals unchanged."
     },
     {
-     "name": "Yasir Anwar",
+     "name": "David King",
      "title": "EVP and General Counsel",
      "year": 2023,
      "salary": 675000,
@@ -114795,11 +114797,12 @@
      "pension_nqdc": 0,
      "all_other": 21408,
      "total": 3596221,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: name repaired per the filed WSM 2025 DEF 14A SCT (acc. 0001628280-25-020659, wsm-20250429.htm, filed 2026-04-29): the row's 8 SCT components are byte-identical to the filed David King / Executive Vice President, General Counsel row; stored name 'Yasir Anwar' appears nowhere in the filing (0 mentions across the 2024, 2025, and 2026 WSM proxies). Totals unchanged."
     },
     {
      "name": "Karalyn Yearout",
-     "title": "EVP, General Counsel",
+     "title": "EVP, Chief Talent Officer",
      "year": 2025,
      "salary": 696154,
      "bonus": 0,
@@ -114809,10 +114812,11 @@
      "pension_nqdc": 0,
      "all_other": 16856,
      "total": 4412976,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: title repaired per the filed WSM 2026 DEF 14A SCT (acc. 0000719955-26-000109, wsm-20260506.htm, filed 2026-05-06): the 2025 principal position is 'Executive Vice President, Chief Talent Officer'; stored title 'EVP, General Counsel' is not the filed SCT wording (0 mentions in the filing). Numbers unchanged."
     },
     {
-     "name": "Celeste Burgoyne",
+     "name": "Karalyn Yearout",
      "title": "EVP, Chief Talent Officer",
      "year": 2024,
      "salary": 671154,
@@ -114823,10 +114827,11 @@
      "pension_nqdc": 0,
      "all_other": 15178,
      "total": 3986225,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: name repaired per the filed WSM 2025 DEF 14A SCT (acc. 0001628280-25-020659, wsm-20250429.htm, filed 2026-04-29): the row's 8 SCT components are byte-identical to the filed Karalyn Yearout / Executive Vice President, Chief Talent Officer row; stored name 'Celeste Burgoyne' appears nowhere in the filing (0 mentions across the 2024, 2025, and 2026 WSM proxies). Totals unchanged."
     },
     {
-     "name": "Celeste Burgoyne",
+     "name": "Karalyn Yearout",
      "title": "EVP, Chief Talent Officer",
      "year": 2023,
      "salary": 650000,
@@ -114837,7 +114842,8 @@
      "pension_nqdc": 0,
      "all_other": 12150,
      "total": 3312133,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "2026-09-29 DQ: name repaired per the filed WSM 2025 DEF 14A SCT (acc. 0001628280-25-020659, wsm-20250429.htm, filed 2026-04-29): the row's 8 SCT components are byte-identical to the filed Karalyn Yearout / Executive Vice President, Chief Talent Officer row; stored name 'Celeste Burgoyne' appears nowhere in the filing (0 mentions across the 2024, 2025, and 2026 WSM proxies). Totals unchanged."
     }
    ],
    "cik": "0000719955",
@@ -120317,5 +120323,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-27: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files."
   }
  ],
- "last_updated": "2026-09-28"
+ "last_updated": "2026-09-29"
 }
