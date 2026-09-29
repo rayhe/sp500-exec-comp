@@ -86175,7 +86175,8 @@
      "pension_nqdc": 0,
      "all_other": 186328,
      "total": 16377514,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note": "Dedicated re-read 2026-09-29 vs primary 2026 DEF 14A SCT (acc. 0000080661-26-000099, filed 2026-03-23, pgr-20260318.htm): stored matches the filing verbatim (salary 1,044,231 + stock 10,500,128 + NEIP 4,646,827 + all-other 186,328 = 16,377,514, foots exactly). Whole-company 15-row re-read clean; 2023/2024 columns cross-checked vs 2025 DEF 14A with no restatement. Closes the queued Griffith 2024-clean investigation."
     },
     {
      "name": "Susan Patricia Griffith",
