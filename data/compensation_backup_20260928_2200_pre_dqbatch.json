@@ -9080,8 +9080,7 @@
      "stock_awards": null,
      "all_other": 114786,
      "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT (Amphenol grants options; Stock Awards column n/a): filing-printed components sum to $3,778,717 vs filing-printed total $3,715,717 (gap $63,000); filing-side arithmetic quirk, total retained verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261344-1_def14a.htm): all components and total match filing verbatim; +$63,000: components sum 3,778,717 vs printed 3,715,717 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. Attribution fixes: $2,600 in 'Change in Pension Value and NQDC Earnings' is an increase in pension value per footnote (3) (actuarial assumption change), moved pension_nqdc -> pension_change; stock awards printed 'n/a' -> null.",
-     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (tm261344-1_def14a.htm): stored components match the filing verbatim (salary 680,000 + options 2,981,331 + pension 2,600 + all other 114,786 = 3,778,717) vs filing-printed total 3,715,717 (gap -63,000). All other APH SCT rows foot exactly. Filer-side arithmetic inconsistency, not a parse error; retained verbatim."
+     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm261344-1_def14a.htm): all components and total match filing verbatim; +$63,000: components sum 3,778,717 vs printed 3,715,717 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented. Attribution fixes: $2,600 in 'Change in Pension Value and NQDC Earnings' is an increase in pension value per footnote (3) (actuarial assumption change), moved pension_nqdc -> pension_change; stock awards printed 'n/a' -> null."
     },
     {
      "name": "L. Walter",
@@ -19188,8 +19187,7 @@
      "_parse_note": "Relabeled verified -> incomplete_components 2026-09-09: component breakdown incomplete: components sum $4,994,992 vs filing total $5,172,527 (missing $177,535); total retained from filing | 2026-09-26 DQ re-verified against primary DEF 14A SCT (d932644ddef14a.htm): all components and total match filing verbatim; -$177,535: components sum 4,994,992 vs printed 5,172,527 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
      "_relabel_note_20260909": true,
      "_relabel_note_20260910": "Filing-side arithmetic inconsistency: the printed SCT components (salary 429,948; stock 2,693,905; option 1,384,209; non-equity 476,473; all-other 10,457) sum to 4,994,992, $177,535 below the printed Total 5,172,527; our stored components already match the filing's printed values exactly, so nothing was dropped in parsing. The same SCT also fails to foot for Paul Cunningham 2024 (components 5,343,116 vs printed 5,323,116, off $20,000).",
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (d932644ddef14a.htm): stored components match the filing verbatim (salary 429,948 + stock 2,693,905 + options 1,384,209 + NEIP 476,473 + all other 10,457 = 4,994,992) vs filing-printed total 5,172,527 (gap +177,535). Filer-side arithmetic inconsistency, not a parse error; retained verbatim. Sibling Cunningham 2024/2023 rows triaged identically."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "Paul Cunningham",
@@ -59412,8 +59410,7 @@
      "all_other": 7212,
      "total": 3965627,
      "_total_source": "component_mismatch",
-     "_parse_note": "2026-09-27 22:00 PT: genuine filing-side arithmetic inconsistency in the JCI 2026 DEF 14A SCT (acc. 0001104659-26-004565): filing-printed components sum to $4,314,666 vs printed total $3,965,627 (delta $349,039). Re-read digit-by-digit against raw HTML table cells (no footnote markers on the row); Brandt is not an NEO in the 2025 proxy SCT so no restatement column exists to cross-check. Values stored filing-verbatim, printed total retained, classification component_mismatch.",
-     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (tm2524665-5_def14a.htm): stored components match the filing verbatim (salary 685,577 + bonus 750,000 + stock 2,649,934 + NEIP 221,943 + all other 7,212 = 4,314,666) vs filing-printed total 3,965,627 (gap -349,039). Filer-side arithmetic inconsistency, not a parse error; retained verbatim."
+     "_parse_note": "2026-09-27 22:00 PT: genuine filing-side arithmetic inconsistency in the JCI 2026 DEF 14A SCT (acc. 0001104659-26-004565): filing-printed components sum to $4,314,666 vs printed total $3,965,627 (delta $349,039). Re-read digit-by-digit against raw HTML table cells (no footnote markers on the row); Brandt is not an NEO in the 2025 proxy SCT so no restatement column exists to cross-check. Values stored filing-verbatim, printed total retained, classification component_mismatch."
     },
     {
      "name": "Lei Schlitz",
@@ -77797,8 +77794,7 @@
      "_accession": "",
      "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 6,722,177 vs printed total 6,772,178), kept verbatim",
      "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $6,722,177 vs filing-printed total $6,772,178 (gap $50,001); filing-side arithmetic quirk, total retained verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm247418-2_def14a.htm): all components and total match filing verbatim; -$50,001: components sum 6,722,177 vs printed 6,772,178 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented.",
-     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (tm261592-1_def14a.htm): stored components match the filing verbatim (salary 1,274,300 + stock 2,665,736 + options 509,894 + NEIP 1,641,300 + pension 423,332 + all other 207,615 = 6,722,177) vs filing-printed total 6,772,178 (gap +50,001). Filer-side arithmetic inconsistency, not a parse error; retained verbatim."
+     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (tm247418-2_def14a.htm): all components and total match filing verbatim; -$50,001: components sum 6,722,177 vs printed 6,772,178 -- genuine filing-side arithmetic inconsistency; total retained verbatim, no correction invented."
     },
     {
      "name": "Terrell Kirk Crews II",
