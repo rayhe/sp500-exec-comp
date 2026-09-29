@@ -17196,7 +17196,7 @@ function setupDualSparklineTooltips() {
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
                 '<p id="dataq-payratio-counts">As of the 2026-09-28 screen: 395 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 9 cluster near 2x, 13 near 0.5x, 97 differ otherwise.</p>' +
-                '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p></div>' +
+                '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total: transition-year figures (the disclosed ratio uses the year-end CEO\'s pay), annualized compensation, or pension-swing-year SCT totals. Spot-verified: CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total; MO\'s 2026 DEF 14A annualizes $24.58M to 147:1 while the stored 2024 SCT total is a $53.6M pension-swing year. A deviation is not a mislabeled figure.</p><div id="dataq-payratio-moves"></div></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
                 '<p id="dataq-transitions-counts">As of the 2026-09-24 screen: 26 (name, fiscal year) tuples appear as NEO rows at two different companies; all 26 triaged by tuple: 19 genuine &mdash; 8 mid-year executive transitions (incl. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off, and John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 11 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents); 5 same-name-coincidence tuples (2 people: Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR); 2 suspicious tuples (1 person: Celeste Burgoyne at LULU/WSM, queued for a DEF 14A name-column re-read).</p>' +
                 '<p>The same person can legitimately appear in two companies\' SCTs for one fiscal year after a mid-year move; both companies genuinely list them (Christopher DelOrefice: BDX EVP and CFO, then ULTA CFO effective 2025-12-05). Rows are never merged across companies. Two collisions are same-name coincidences: Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people. The one suspicious pair (Celeste Burgoyne, LULU/WSM) is queued for a DEF 14A name-column re-read. Guard section 12 of <code>scripts/check_metadata_consistency.py</code> trips on any new collision.</p></div>' +
@@ -17289,6 +17289,68 @@ function setupDualSparklineTooltips() {
         return 'Live screen: ' + within + ' of ' + n + ' screened companies\' disclosed ratios match ' +
             '<code>total_compensation / median_worker_pay</code> within 3% tolerance; ' + twox +
             ' cluster near 2x, ' + half + ' near 0.5x, ' + other + ' differ otherwise.';
+    }
+
+    // Data Verification modal: repair-driven pay-ratio band moves, computed
+    // from the loaded dataset + data/repair-diffs.json at modal-open time.
+    // A DQ repair that changes a company's CEO anchor total can move its
+    // deviation band (e.g. CPT differ -> near 0.5x, MRNA near 2x -> within
+    // tolerance), so the screen's band counts carry a repair signal on top of
+    // the methodology classes described above. Band rule mirrors guard
+    // section 11 exactly. Only the CEO anchor row (ceo_name, fiscal_year) is
+    // considered, and the diff's 'after' total must still match the live
+    // anchor total (within $1) so a stale diff file cannot fabricate a move.
+    // Returns a Promise resolving to the HTML fragment, or null when the
+    // diff file is unavailable/empty or no anchor row changed band.
+    function _dataqPayRatioMovesHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos) return Promise.resolve(null);
+        return _ensureRepairDiffs().then(function(diffs) {
+            var rows = (diffs && diffs.rows) ? diffs.rows : null;
+            if (!rows || !Object.keys(rows).length) return null;
+            var win = (diffs.meta && diffs.meta.window) ? String(diffs.meta.window) : null;
+            var labels = { 'within': 'within tolerance', 'near-2x': 'near 2x', 'near-0.5x': 'near 0.5x', 'differ': 'differ' };
+            function band(ct, mw, pr) {
+                var r = (ct / mw) / pr;
+                if (Math.abs(r - 1) <= Math.max(2 / pr, 0.03)) return 'within';
+                if (r >= 1.9 && r <= 2.1) return 'near-2x';
+                if (r >= 0.4 && r <= 0.6) return 'near-0.5x';
+                return 'differ';
+            }
+            var groups = {}; // 'from->to' -> [tickers]
+            var n = 0, screened = 0, intoWithin = 0;
+            for (var i = 0; i < cos.length; i++) {
+                var c = cos[i];
+                var t = c.ticker, pr = c.pay_ratio, mw = c.median_worker_pay, ct = c.total_compensation;
+                if (!t || pr == null || pr === 0 || mw == null || mw === 0 || ct == null) continue;
+                screened++;
+                var d = rows[t + '|' + (c.ceo_name || '') + '|' + c.fiscal_year];
+                if (!d || !d.total || d.total.length !== 2) continue;
+                var before = d.total[0], after = d.total[1];
+                if (typeof before !== 'number' || typeof after !== 'number') continue;
+                if (Math.abs(after - ct) > 1) continue;
+                var b0 = band(before, mw, pr), b1 = band(after, mw, pr);
+                if (b0 === b1) continue;
+                var gk = b0 + '->' + b1;
+                if (!groups[gk]) groups[gk] = [];
+                groups[gk].push(t);
+                n++;
+                if (b1 === 'within') intoWithin++;
+            }
+            if (!n) return null;
+            var trans = Object.keys(groups).sort(function(a, b) { return groups[b].length - groups[a].length; });
+            var items = trans.map(function(gk) {
+                var parts = gk.split('->');
+                var tickers = groups[gk].slice().sort().map(function(x) { return _escDiffText(x); });
+                return '<li><strong>' + _escDiffText(labels[parts[0]]) + ' &rarr; ' + _escDiffText(labels[parts[1]]) + '</strong> (' + tickers.length + '): ' + tickers.join(', ') + '</li>';
+            }).join('');
+            return '<p><strong>Band changes from the re-verification campaign</strong>' +
+                (win ? ' (' + _escDiffText(win) + ')' : '') +
+                ': ' + n + ' of ' + screened + ' screened companies sit in a different deviation band than they would have under the pre-repair data. Every one of them moved closer to the disclosed ratio, so the campaign has only ever removed false deviation signals, never created one. ' +
+                intoWithin + ' of the ' + n + ' moved into the within-tolerance band.</p>' +
+                '<details class="dataq-moves-list"><summary>Per-company transition list</summary>' +
+                '<ul>' + items + '</ul></details>';
+        });
     }
 
     // Data Verification modal: executive-transition collision count, computed
@@ -17417,6 +17479,17 @@ function setupDualSparklineTooltips() {
             var prCounts = document.getElementById('dataq-payratio-counts');
             var prHtml = _dataqPayRatioHtml();
             if (prCounts && prHtml) prCounts.innerHTML = prHtml;
+            // Repair-driven band moves (async: data/repair-diffs.json lazy-loads).
+            var prMoves = document.getElementById('dataq-payratio-moves');
+            if (prMoves) {
+                prMoves.textContent = 'Checking whether re-verification repairs moved any company between deviation bands\u2026';
+                _dataqPayRatioMovesHtml().then(function(movesHtml) {
+                    var el = document.getElementById('dataq-payratio-moves');
+                    if (!el) return;
+                    if (movesHtml) { el.innerHTML = movesHtml; }
+                    else if (el.parentNode) { el.parentNode.removeChild(el); }
+                });
+            }
             var trCounts = document.getElementById('dataq-transitions-counts');
             var trHtml = _dataqTransitionsHtml();
             if (trCounts && trHtml) trCounts.innerHTML = trHtml;

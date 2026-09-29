@@ -14424,6 +14424,8 @@ body.light-mode .cross-sector-pair-select:focus {
     padding: 0;
 }
 .methodology-modal-body li { margin: 4px 0; }
+.methodology-modal-body .dataq-moves-list { margin: 0 0 10px; }
+.methodology-modal-body .dataq-moves-list summary { cursor: pointer; font-weight: 600; }
 .methodology-modal-body code {
     font-family: var(--mono);
     font-size: 0.78rem;
