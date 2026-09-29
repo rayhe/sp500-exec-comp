@@ -244,12 +244,12 @@
   "verified_total": 7046,
   "total_neos": 7078,
   "phantom_removed": {
-   "cumulative": 2284244764,
-   "gross_removed": 2834529215,
+   "cumulative": 2250671538,
+   "gross_removed": 2800955989,
    "restored": 550284451,
-   "batches": 66,
+   "batches": 65,
    "since": "2026-09-12",
-   "last_updated": "2026-09-28 18:00 PT",
+   "last_updated": "2026-09-28 14:00 PT",
    "method": "Sum over the 63 DQ-labeled data-repair commits (2026-09-12 to 2026-09-27) of (parent exec-total sum minus commit exec-total sum), computed per git blob. Parser-invented compensation removed counts positive; genuine missing-NEO rows restored filing-verbatim count negative. See goal hidden_files/phantom-counter/cumulative.json for the per-batch table."
   }
  },
