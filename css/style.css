@@ -15156,3 +15156,17 @@ body.light-mode .cross-sector-pair-select:focus {
         display: none;
     }
 }
+
+/* d3 outage fallback notice (see boot guard in js/app.js): quiet, matches
+   the site's muted-note styling; only rendered when the d3 CDN bundle
+   failed to load. */
+.chart-unavailable-note {
+    padding: 12px 16px;
+    margin: 8px 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    background: rgba(107, 114, 128, 0.10);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+}

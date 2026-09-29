@@ -105244,7 +105244,9 @@
      "option_awards": 0,
      "non_equity_incentive": 0,
      "pension_nqdc": 0,
-     "all_other": 0
+     "all_other": 0,
+     "_note": "Re-verified 2026-09-29 vs 2026 Tesla 10-K/A (acc. 0001104659-26-053166, filed 2026-04-30, tm2611837d1_10ka.htm): SCT row filing-verbatim (salary 0, stock awards 158,359,009,867, all other columns 0/dash, total 158,359,009,867). Per the filing, the vast majority is an accounting-driven grant-date valuation of the 2025 CEO Performance Award (no shares vested as of filing; subject to a $334.09/share offset on vesting unless paid in cash); the total also includes ~$26.1B for the 2025 CEO Interim Award, forfeited in its entirety April 2026. Filing's own caveat: amounts rely on accounting assumptions and are not indicative of realizable value. Pay ratio disclosed 2,522,203:1 on SCT basis (median worker $62,786), 0.00:1 on realized basis. Retained verbatim; values unchanged.",
+     "_reverify_20260929_1400": "Digit-by-digit re-read of the 2026 10-K/A Item 11 SCT (acc. 0001104659-26-053166); Musk 2025 row filing-verbatim; $158.36B is the filing's accounting-driven 2025 CEO Performance Award valuation, not a parse error."
     },
     {
      "_total_source": "verified",

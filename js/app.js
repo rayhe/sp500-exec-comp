@@ -11252,9 +11252,9 @@ function setupDetailPanel(companies) {
                     _navigateDetail(1);
                 }
             });
-            // Render D3 radar chart if container exists
+            // Render D3 radar chart if container exists (skip when d3 failed to load)
             var radarContainer = detailRow.querySelector('#radar-chart-' + ticker);
-            if (radarContainer && company._radarProfile) {
+            if (radarContainer && company._radarProfile && typeof d3 !== 'undefined') {
                 (function() {
                     var rp = company._radarProfile;
                     var radarDims = [
@@ -13753,11 +13753,41 @@ function setupDualSparklineTooltips() {
         }, 100);
     };
 
-    if (typeof initNetwork === 'function') {
+    // === d3 outage guard ===
+    // The peer network graph and every chart render through the d3 CDN bundle.
+    // If it failed to load (offline, blocked CDN), skip those inits so the
+    // rest of boot (sector analytics, role analysis, section nav, compare
+    // restore) still completes, and leave a quiet notice in each chart and
+    // network container instead of aborting mid-boot.
+    var d3Available = (typeof d3 !== 'undefined');
+    window._d3Available = d3Available;
+    function markChartsUnavailable() {
+        var chartMsg = 'Charts unavailable: the d3 visualization library failed to load (offline or blocked CDN). The data table and company details still work.';
+        var panels = document.querySelectorAll('.chart-panel');
+        for (var i = 0; i < panels.length; i++) {
+            if (panels[i].querySelector('.chart-unavailable-note')) continue;
+            var note = document.createElement('p');
+            note.className = 'chart-unavailable-note';
+            note.textContent = chartMsg;
+            panels[i].insertBefore(note, panels[i].firstChild);
+        }
+        var netWrap = document.querySelector('#peer-network-section .network-overflow-wrapper');
+        if (netWrap && !netWrap.querySelector('.chart-unavailable-note')) {
+            var netNote = document.createElement('p');
+            netNote.className = 'chart-unavailable-note';
+            netNote.textContent = 'Network graph unavailable: the d3 visualization library failed to load (offline or blocked CDN). The data table and company details still work.';
+            netWrap.insertBefore(netNote, netWrap.firstChild);
+        }
+    }
+
+    if (typeof initNetwork === 'function' && d3Available) {
         initNetwork(data.peer);
     }
-    if (typeof initCharts === 'function') {
+    if (typeof initCharts === 'function' && d3Available) {
         initCharts(companies, data.trends, data.comp);
+    }
+    if (!d3Available) {
+        markChartsUnavailable();
     }
 
     // === Sector Analytics Summary Table (sortable) ===
@@ -14947,6 +14977,10 @@ function setupDualSparklineTooltips() {
 
     function renderComparisonChart(container, selected, rankMap, roleCtx) {
         container.innerHTML = '';
+        if (typeof d3 === 'undefined') {
+            container.innerHTML = '<p class="chart-unavailable-note">Comparison chart unavailable: the d3 visualization library failed to load.</p>';
+            return;
+        }
         if (selected.length < 2) return;
         // roleCtx: { role: 'CFO'|..., getComp: fn(c)->number, getExec: fn(c)->exec } or null
 
@@ -15470,6 +15504,7 @@ function setupDualSparklineTooltips() {
         // Remove stale tooltip
         var oldTip = document.getElementById('cmp-radar-tooltip');
         if (oldTip) oldTip.remove();
+        if (typeof d3 === 'undefined') return;
 
         if (selected.length < 2) return;
 
