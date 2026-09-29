@@ -5,7 +5,7 @@ RMD (ResMed Inc., 13 SCT rows = 5 NEOs x 3/2 years) was queued by the
 2026-09-28 02:00 PT batch as a separate investigation: the 2025/2024 rows
 carry a salary==0/bonus==0/stock>0 signature (8 rows). Whole-company SCT
 re-read, digit-by-digit, vs the 2025 DEF 14A SCT (acc. 0000943819-25-000079,
-filed 2026-10-02; FY ended 2026-06-30; transcribed from the live filing via
+filed 2025-10-02; FY ended 2025-06-30; transcribed from the live filing via
 the sanctioned browser recovery path after the VM egress proxy timed out on
 www.sec.gov and browser.open was 403-blocked).
 

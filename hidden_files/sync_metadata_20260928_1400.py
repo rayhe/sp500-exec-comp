@@ -123,7 +123,7 @@ new_queue = ("MRNA Bancel 2025 + HUM Shetty 2023/2024 + PGR Griffith 2024-clean 
              "each needs its own filing re-read).")
 entry = (new_queue + " 2026-09-28 14:00 PT DQ batch: RMD queued investigation "
     "closed - 13-row whole-company SCT re-read from the 2025 DEF 14A "
-    "(acc. 0000943819-25-000079, filed 2026-10-02; FY ended 2026-06-30; "
+    "(acc. 0000943819-25-000079, filed 2025-10-02; FY ended 2025-06-30; "
     "transcribed via the sanctioned browser recovery path after the VM egress "
     "proxy timed out on www.sec.gov and browser.open was 403-blocked). Key "
     "filing fact: RMD's SCT has NO Bonus and NO Pension/NQDC columns "
