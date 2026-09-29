@@ -17191,7 +17191,7 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
                 '<p>7,044 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 34 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,800,955,989 of parser-invented compensation removed across 64 re-verification batches since 2026-09-12, partly offset by $543,465,563 of genuine missing NEO rows restored filing-verbatim. Net: $2,257,490,426.</p></div>' +
+                '<p>$2,800,955,989 of parser-invented compensation removed across 65 re-verification batches since 2026-09-12, partly offset by $550,284,451 of genuine missing NEO rows restored filing-verbatim. Net: $2,250,671,538.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
