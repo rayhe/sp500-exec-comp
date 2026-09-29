@@ -7071,7 +7071,7 @@ function renderTable(companies, options) {
                 var volTip = 'Pay Volatility: ' + vol.toFixed(1) + '% CV (' + (c._ceoVolatilityLabel || '') + ') across ' + (c._ceoVolatilityYears || '?') + ' years';
                 return '<span style="color:' + volColor + ';font-weight:600" title="' + volTip + '">' + vol.toFixed(0) + '%</span>';
             })() + '</td>' +
-            '<td>' + ratioHtml + '</td>' +
+            '<td class="pay-ratio-cell" data-ticker="' + c.ticker + '">' + ratioHtml + '</td>' +
             '<td>' + workerCell + '</td>';
 
         // Make row keyboard-accessible for detail panel expansion
@@ -7087,6 +7087,11 @@ function renderTable(companies, options) {
 
         tbody.appendChild(tr);
     });
+
+    // Band-move badges on the pay-ratio cell for companies whose deviation
+    // band changed under the re-verification campaign; re-applied on every
+    // render so sort/filter/pagination keep them.
+    _decorateBandMoveBadges(tbody);
 
     // Footer with pagination controls
     var footerEl = document.getElementById('table-footer');
@@ -7983,6 +7988,31 @@ function _annotatePayRatioBandMove(detailRow, company) {
             '. Open the repair-diffs view on the NEO table below for the before/after row.';
         note.innerHTML = '<span aria-hidden="true">\u0394</span> re-verified: ' + _escDiffText(mv.from) + ' &rarr; ' + _escDiffText(mv.to);
         stat.appendChild(note);
+    });
+}
+
+// Main comp table: badge the pay-ratio cell when the CEO-anchor repair
+// changed this company's deviation band under the DEF 14A re-verification
+// campaign (the table-surface counterpart of _annotatePayRatioBandMove on the
+// detail panel). Called at the end of every renderTable pass so
+// sort/filter/pagination re-renders keep the badges; degrades silently when
+// the repair-diffs data is unavailable.
+function _decorateBandMoveBadges(tbody) {
+    _payRatioBandMovesMap().then(function(res) {
+        if (!res || !res.moves || !tbody.isConnected) return;
+        var cells = tbody.querySelectorAll('td.pay-ratio-cell[data-ticker]');
+        for (var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+            if (cell.querySelector('.bandmove-badge')) continue;
+            var mv = res.moves[cell.getAttribute('data-ticker')];
+            if (!mv) continue;
+            var b = document.createElement('span');
+            b.className = 'outlier-badge bandmove-badge';
+            b.title = 'Re-verified: pay-ratio deviation band moved from \u201c' + _escDiffText(mv.from) + '\u201d to \u201c' + _escDiffText(mv.to) + '\u201d under the DEF 14A re-verification campaign' +
+                (res.window ? ' (' + res.window + ')' : '') + '. Open the company detail for the repair diff.';
+            b.innerHTML = '<span aria-hidden="true">\u0394</span>';
+            cell.appendChild(b);
+        }
     });
 }
 
