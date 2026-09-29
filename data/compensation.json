@@ -48018,7 +48018,10 @@
      "pension_nqdc": 0,
      "all_other": 10106,
      "total": 2231115,
-     "_total_source": "component_mismatch"
+     "_total_source": "component_mismatch",
+     "_note": "Re-read 2026-09-29 vs primary DEF 14A SCT (tm261388-1_def14a.htm, acc. 0001104659-26-051499): stored components match the filing verbatim (salary 426,956 + stock 1,495,415 + options 248,777 + NEIP 50,160 + all other 10,106 = 2,231,414) vs filing-printed total 2,231,115 (gap +299). Filer-side arithmetic inconsistency, not a parse error; retained verbatim.",
+     "_parse_note": "2026-09-29 DQ re-verified against primary DEF 14A SCT (tm261388-1_def14a.htm): all components and total match filing verbatim; +$299: components sum 2,231,414 vs printed 2,231,115 -- genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
+     "_reverify_20260929_1000": "Digit-by-digit re-read of the 2026 DEF 14A SCT (acc. 0001104659-26-051499, filed 2026-04-22); Taffe 2023 row filing-verbatim; delta is genuine filing-side arithmetic inconsistency."
     },
     {
      "name": "Erik Wilde",
