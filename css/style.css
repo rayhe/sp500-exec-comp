@@ -10567,6 +10567,30 @@ footer li::before {
     border-color: var(--accent, #00b4d8);
     background: rgba(0, 180, 216, 0.08);
 }
+/* Shareable-link button inside the repair-diff viewer header: same quiet
+   pill treatment as the toggle, one notch smaller since it sits in the
+   header line rather than a table cell. */
+.neo-diff-copy {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid rgba(128, 128, 128, 0.35);
+    border-radius: 999px;
+    cursor: pointer;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.neo-diff-copy:hover,
+.neo-diff-copy:focus-visible {
+    color: var(--text-primary);
+    border-color: var(--accent, #00b4d8);
+    outline: none;
+}
 .neo-diff-viewer {
     margin: 10px 0 4px;
     padding: 12px 14px;

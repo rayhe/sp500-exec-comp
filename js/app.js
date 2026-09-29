@@ -7757,6 +7757,7 @@ function renderPvpComparison() {
 var _detailTriggerRow = null;  // row that opened the detail panel
 var _preFocusElement = null;   // element focused before modal/comparison opens
 var _expandedDetailTicker = null; // ticker of currently expanded detail panel (for URL hash)
+var _activeDiffKey = null; // {ticker, name, year} of the currently open repair-diff viewer (for URL hash)
 
 /* === Repair diff view (2026-09-28) ===
    Per-row before/after values from the DQ re-verification campaign, served
@@ -7811,7 +7812,8 @@ function _repairDiffHtml(ticker, name, year, diff) {
             '<td class="' + cls + '">' + dStr + '</td></tr>';
     });
     return '<div class="neo-diff-head"><strong>Repair diff</strong>: ' +
-        _escDiffText(name) + ' (' + _escDiffText(ticker) + ', FY' + _escDiffText(year) + ')</div>' +
+        _escDiffText(name) + ' (' + _escDiffText(ticker) + ', FY' + _escDiffText(year) + ')' +
+        ' <button type="button" class="neo-diff-copy" title="Copy a shareable link to this exact repair diff">Copy link</button></div>' +
         '<div class="neo-diff-sub">Values as stored before the 2026-09-12 \u2192 2026-09-28 re-verification campaign vs filing-verbatim now. Negative \u0394 = parser-invented pay removed; positive \u0394 = genuine pay restored.</div>' +
         '<table class="neo-diff-table"><thead><tr><th>Component</th><th>Before (as parsed)</th><th>After (filing-verbatim)</th><th>\u0394</th></tr></thead><tbody>' +
         rows + '</tbody></table>';
@@ -7828,6 +7830,8 @@ function _toggleRepairDiff(detailRow, ticker, btn) {
     if (viewer && openKey === key) {
         viewer.remove();
         btn.setAttribute('aria-expanded', 'false');
+        _activeDiffKey = null;
+        pushState();
         return;
     }
     var diff = (_repairDiffs && _repairDiffs.rows) ? _repairDiffs.rows[key] : null;
@@ -7844,7 +7848,50 @@ function _toggleRepairDiff(detailRow, ticker, btn) {
     }
     viewer.setAttribute('data-open-key', key);
     viewer.innerHTML = _repairDiffHtml(ticker, name, year, diff);
+    _bindDiffCopyButton(viewer);
     btn.setAttribute('aria-expanded', 'true');
+    _activeDiffKey = { ticker: ticker, name: name, year: year };
+    pushState();
+    // Bring the viewer into view: it renders below the year's NEO table, which
+    // can sit a full table-height below the clicked row on tall detail panels.
+    try { viewer.scrollIntoView({ behavior: getScrollBehavior(), block: 'nearest' }); } catch (err) {}
+}
+/* Copy-link for a repair diff viewer: pushState() first so the hash carries
+   detail= + diff=, then copy the full URL. Clipboard API with a textarea
+   fallback for non-secure contexts; the button label confirms briefly. */
+function _bindDiffCopyButton(viewer) {
+    var copyBtn = viewer.querySelector('.neo-diff-copy');
+    if (!copyBtn) return;
+    copyBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        _copyDiffLink(copyBtn);
+    });
+}
+function _copyDiffLinkFallback(url, done) {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    document.body.removeChild(ta);
+    done();
+}
+function _copyDiffLink(btn) {
+    pushState();
+    var url = window.location.href;
+    function done() {
+        var orig = btn.getAttribute('data-orig') || 'Copy link';
+        btn.setAttribute('data-orig', orig);
+        btn.textContent = 'Copied';
+        setTimeout(function() { btn.textContent = orig; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function() { _copyDiffLinkFallback(url, done); });
+    } else {
+        _copyDiffLinkFallback(url, done);
+    }
 }
 function _injectRepairDiffToggles(detailRow, ticker) {
     _ensureRepairDiffs().then(function(d) {
@@ -7890,6 +7937,7 @@ function setupDetailPanel(companies) {
         var existing = tbody.querySelector('.detail-row');
         var wasOpen = existing && existing.dataset.ticker === ticker;
         if (existing) existing.remove();
+        _activeDiffKey = null; // any open diff viewer died with the panel
         tbody.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
         tbody.querySelectorAll('tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
 
@@ -11290,6 +11338,13 @@ function serializeState() {
     if (_expandedDetailTicker) {
         params.push('detail=' + encodeURIComponent(_expandedDetailTicker));
     }
+    // Repair-diff deep link: only emitted together with detail=, since the
+    // viewer lives inside that company's detail panel.
+    if (_expandedDetailTicker && _activeDiffKey && _activeDiffKey.ticker === _expandedDetailTicker) {
+        var diffParts = [_activeDiffKey.ticker, _activeDiffKey.year, _activeDiffKey.name]
+            .map(function(s) { return encodeURIComponent(s == null ? '' : String(s)); });
+        params.push('diff=' + diffParts.join('|'));
+    }
     // Scatter axis selections (only serialize if non-default)
     var _scXSel = document.getElementById('scatter-x-metric');
     var _scYSel = document.getElementById('scatter-y-metric');
@@ -11324,6 +11379,51 @@ function parseHash() {
         if (parts.length === 2) state[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
     });
     return state;
+}
+
+/* Repair-diff deep link (diff=TICKER|YEAR|name in the URL hash, segments
+   encodeURIComponent'd): after the detail panel opens, poll for the injected
+   "Delta repaired" toggle (the JSON fetch is async), switch to the right year
+   tab, and open the viewer. Degrades silently when the key has no toggle
+   (e.g. a repair was superseded) or the JSON is unreachable. */
+function _openDiffFromHash(detailTicker, diffStr) {
+    if (!diffStr || !detailTicker) return;
+    var parts = String(diffStr).split('|');
+    if (parts.length < 3) return;
+    var dTicker = parts[0].toUpperCase();
+    var dYear = parts[1];
+    var dName = parts.slice(2).join('|');
+    if (dTicker !== String(detailTicker).toUpperCase() || !dYear || !dName) return;
+    var attempts = 0;
+    var iv = setInterval(function() {
+        attempts++;
+        var panel = document.querySelector('#comp-tbody .detail-row[data-ticker="' + dTicker + '"]');
+        var btn = null;
+        if (panel) {
+            var toggles = panel.querySelectorAll('.neo-diff-toggle');
+            for (var i = 0; i < toggles.length; i++) {
+                if (toggles[i].getAttribute('data-diff-name') === dName &&
+                    String(toggles[i].getAttribute('data-diff-year')) === String(dYear)) {
+                    btn = toggles[i];
+                    break;
+                }
+            }
+        }
+        if (btn) {
+            clearInterval(iv);
+            // Select the year tab first so the viewer renders in a visible panel.
+            var tab = panel.querySelector('.neo-year-tab[data-year="' + dYear + '"]');
+            if (tab && !tab.classList.contains('active')) tab.click();
+            setTimeout(function() {
+                btn.click();
+                // Re-assert the hash: the toggle click sets _activeDiffKey and
+                // pushes, but the boot-time pushState guard must be satisfied.
+                pushState();
+            }, 80);
+        } else if (attempts > 40) {
+            clearInterval(iv); // ~6s: no matching toggle; leave the panel as-is
+        }
+    }, 150);
 }
 
 function applyHashState(companies) {
@@ -11556,6 +11656,7 @@ function applyHashState(companies) {
                                     var off = getStickyOffset();
                                     if (off > 0) window.scrollBy({ top: -off - 16, behavior: getScrollBehavior() });
                                 }, 100);
+                                _openDiffFromHash(detailTicker, state.diff);
                             }
                         });
                     }, 50);
@@ -11566,6 +11667,7 @@ function applyHashState(companies) {
                         var off = getStickyOffset();
                         if (off > 0) window.scrollBy({ top: -off - 16, behavior: getScrollBehavior() });
                     }, 100);
+                    _openDiffFromHash(detailTicker, state.diff);
                 }
             }, 50);
         }
@@ -16323,6 +16425,7 @@ function setupDualSparklineTooltips() {
         window._activeTeamCompletenessFilter = null;
         window._activeYoYBucket = null;
         _expandedDetailTicker = null;
+        _activeDiffKey = null;
         // Close any open detail panel
         var existingDetail = document.querySelector('#comp-tbody .detail-row');
         if (existingDetail) existingDetail.remove();
