@@ -14,6 +14,13 @@ metadata.last_dq_repair, so it can never lag a DQ batch by a day again.
 The guard asserts last_dq_repair is a valid ymd date and not later than
 top-level last_updated.
 
+History: 2026-09-29 15:30 PT run added section 17 (aggregate_stats +
+sector_medians recount) after finding both stale since the 2026-08-14-era
+pipeline: all 11 sector medians wrong (Real Estate stored $14.16M vs live
+$11.36M), aggregate median/mean/min/total_companies drifted; recomputed
+from live company records with the pipeline's exact semantics, plus
+verified-anchor coverage fields per sector.
+
 Usage:
   python3 scripts/check_metadata_consistency.py          # manual run
   cp scripts/check_metadata_consistency.py .git/hooks/pre-commit  # install hook
@@ -174,6 +181,7 @@ Headline buckets 99.7% (6,759/6,780).
 import json
 import os
 import re
+import statistics
 import sys
 from collections import Counter
 
@@ -776,6 +784,98 @@ def check_pvp_metadata(failures):
     if f"all {n_years} company-years passed" not in method:
         fail(f"pvp methodology prose does not carry the current "
              f"{n_years} company-year total (stale-count drift)", failures)
+
+
+# -- Section 17: aggregate_stats + sector_medians truthfulness ----------------
+# (2026-09-29 15:30 PT): both were last computed by the 2026-08-14-era
+# pipeline and never recomputed by any DQ batch, while Sept roster adds and
+# CEO-anchor repairs changed company.total_compensation values. Found stale:
+# all 11 sector medians (e.g. Real Estate stored $14,155,801 vs live
+# $11,359,954; Industrials $18,141,012 vs $15,699,684), median_ceo_pay
+# $16,715,485.5 vs $16,628,568, min_ceo_pay $100,000 vs $2.75 (XYZ Dorsey),
+# total_companies 506 vs 518. These feed the "vs Sector Median" detail panel
+# and the Sector Spread insight card. This section recounts them from the
+# live company records with the pipeline's exact semantics, plus the
+# verified-anchor coverage fields added by the same run (verified_anchors /
+# documented_anchors / undocumented_anchors / verified_pct), so the
+# stale-aggregate class cannot recur.
+def _anchor_row_for(c):
+    ceo, fy, tot = c.get("ceo_name", ""), c.get("fiscal_year"), c.get("total_compensation", 0)
+    if not tot:
+        return None
+    rows = [e for e in c.get("executives", [])
+            if e.get("name") == ceo and e.get("year") == fy]
+    if not rows:
+        rows = [e for e in c.get("executives", []) if e.get("total") == tot]
+    return rows[0] if rows else None
+
+
+def _is_verified_source(src):
+    return bool(src) and (src.startswith("verified") or src.startswith("def14a_verified"))
+
+
+def check_aggregate_stats(companies, meta, failures):
+    ceo_pays = [c["total_compensation"] for c in companies
+                if c.get("total_compensation", 0) > 0]
+    worker_pays = [c["median_worker_pay"] for c in companies
+                   if c.get("median_worker_pay") and c["median_worker_pay"] > 0]
+    ratios = [c["pay_ratio"] for c in companies
+              if c.get("pay_ratio") is not None and c["pay_ratio"] > 0]
+    expect_agg = {
+        "total_companies": len(companies),
+        "companies_with_pay_ratio": len(ratios),
+        "median_ceo_pay": int(statistics.median(ceo_pays)),
+        "mean_ceo_pay": int(statistics.mean(ceo_pays)),
+        "max_ceo_pay": max(ceo_pays),
+        "min_ceo_pay": min(ceo_pays),
+        "median_worker_pay": int(statistics.median(worker_pays)) if worker_pays else 0,
+        "median_pay_ratio": int(statistics.median(ratios)) if ratios else 0,
+    }
+    agg = meta.get("aggregate_stats", {})
+    for k, v in expect_agg.items():
+        if agg.get(k) != v:
+            fail(f"aggregate_stats.{k}={agg.get(k)!r} != live recount {v!r} "
+                 f"(stale-aggregate class, 17)", failures)
+
+    sector_pays = {}
+    for c in companies:
+        if c.get("total_compensation", 0) > 0:
+            sector_pays.setdefault(c.get("sector", "Unknown"), []).append(c["total_compensation"])
+    sector_cov = {}
+    for c in companies:
+        a = _anchor_row_for(c)
+        if a is None:
+            continue
+        s = c.get("sector", "Unknown")
+        r = sector_cov.setdefault(s, {"ver": 0, "doc": 0, "undoc": 0})
+        src = a.get("_total_source") or ""
+        if _is_verified_source(src):
+            r["ver"] += 1
+        elif a.get("_note"):
+            r["doc"] += 1
+        else:
+            r["undoc"] += 1
+    sm = meta.get("sector_medians", {})
+    if set(sm.keys()) != set(sector_pays.keys()):
+        fail(f"sector_medians sectors={sorted(sm.keys())} != live sectors "
+             f"{sorted(sector_pays.keys())} (17)", failures)
+    for s, p in sector_pays.items():
+        e = sm.get(s, {})
+        cov = sector_cov.get(s, {"ver": 0, "doc": 0, "undoc": 0})
+        expect = {
+            "median_ceo_pay": int(statistics.median(p)),
+            "count": len(p),
+            "min": min(p),
+            "max": max(p),
+            "verified_anchors": cov["ver"],
+            "documented_anchors": cov["doc"],
+            "undocumented_anchors": cov["undoc"],
+            "verified_pct": round(100.0 * cov["ver"] / len(p), 1),
+        }
+        for k, v in expect.items():
+            if e.get(k) != v:
+                fail(f"sector_medians[{s}].{k}={e.get(k)!r} != live recount "
+                     f"{v!r} (17)", failures)
 
 
 # -- Section 4f: phantom-compensation-removed metadata + static fallback ----
@@ -2006,6 +2106,9 @@ def main():
 
     # 16. PvP coverage metadata truthfulness (2026-09-21 07:30 PT).
     check_pvp_metadata(failures)
+
+    # 17. aggregate_stats + sector_medians truthfulness (2026-09-29 15:30 PT).
+    check_aggregate_stats(companies, meta, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")

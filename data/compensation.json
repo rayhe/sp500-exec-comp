@@ -38,92 +38,125 @@
    "2026-09-26 19:30 PT column-shift batch: 47 NEO rows across TYL, APO, BRO, CMCSA, ESS, EXR, MKTX, MTB, PLTR, REG, VICI re-read filing-verbatim against 20 primary DEF 14As; phantom compensation removed $185,311,982."
   ],
   "aggregate_stats": {
-   "total_companies": 506,
-   "companies_with_pay_ratio": 505,
-   "median_ceo_pay": 16715485.5,
-   "mean_ceo_pay": 327600383.381323,
+   "total_companies": 518,
+   "companies_with_pay_ratio": 514,
+   "median_ceo_pay": 16628568,
+   "mean_ceo_pay": 325709399,
    "max_ceo_pay": 158359009867,
-   "min_ceo_pay": 100000,
-   "median_worker_pay": 82053.0,
-   "median_pay_ratio": 197.0
+   "min_ceo_pay": 2.75,
+   "median_worker_pay": 82224,
+   "median_pay_ratio": 196
   },
   "sector_medians": {
-   "Industrials": {
-    "count": 70,
-    "median_ceo_pay": 18141012.0,
-    "min": 1693133,
-    "max": 164525721,
-    "mean": 20957736.34285714
-   },
-   "Consumer Discretionary": {
-    "count": 59,
-    "median_ceo_pay": 16628568.0,
-    "min": 186326,
-    "max": 158359009867,
-    "mean": 2702030865.8135595
-   },
-   "Financials": {
-    "count": 66,
-    "median_ceo_pay": 19920884.0,
-    "min": 100000,
-    "max": 125641824,
-    "mean": 23009988.242424242
+   "Health Care": {
+    "median_ceo_pay": 18659934,
+    "count": 62,
+    "min": 5922271,
+    "max": 39959767,
+    "verified_anchors": 62,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    },
    "Information Technology": {
-    "count": 81,
-    "median_ceo_pay": 19465233.0,
+    "median_ceo_pay": 19412680,
+    "count": 88,
     "min": 1113417,
     "max": 96496790,
-    "mean": 24258420.12345679
+    "verified_anchors": 88,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    },
-   "Communication Services": {
-    "count": 20,
-    "median_ceo_pay": 22980235.5,
-    "min": 274074,
-    "max": 61922397,
-    "mean": 25278865.3
+   "Consumer Discretionary": {
+    "median_ceo_pay": 17842189,
+    "count": 59,
+    "min": 186326,
+    "max": 158359009867,
+    "verified_anchors": 58,
+    "documented_anchors": 1,
+    "undocumented_anchors": 0,
+    "verified_pct": 98.3
    },
-   "Real Estate": {
-    "count": 29,
-    "median_ceo_pay": 14154801.0,
-    "min": 4124066,
-    "max": 61394770,
-    "mean": 16598815.103448275
-   },
-   "Energy": {
-    "count": 22,
-    "median_ceo_pay": 18181305.0,
-    "min": 8974550,
-    "max": 44052537,
-    "mean": 21439641.59090909
-   },
-   "Health Care": {
-    "count": 61,
-    "median_ceo_pay": 18562794.0,
-    "min": 4393871,
-    "max": 39959767,
-    "mean": 18637913.639344264
+   "Financials": {
+    "median_ceo_pay": 19022255,
+    "count": 70,
+    "min": 2.75,
+    "max": 125641824,
+    "verified_anchors": 70,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    },
    "Consumer Staples": {
+    "median_ceo_pay": 15843571,
     "count": 34,
-    "median_ceo_pay": 17374146.0,
-    "min": 5695862,
+    "min": 3222931,
     "max": 53577224,
-    "mean": 18844312.76470588
-   },
-   "Materials": {
-    "count": 27,
-    "median_ceo_pay": 13379135.0,
-    "min": 3631262,
-    "max": 32187200,
-    "mean": 14776604.25925926
+    "verified_anchors": 34,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    },
    "Utilities": {
+    "median_ceo_pay": 12367961,
     "count": 31,
-    "median_ceo_pay": 13257022.0,
-    "min": 6732386,
-    "max": 30247878,
-    "mean": 14714017.129032258
+    "min": 5463154,
+    "max": 23885173,
+    "verified_anchors": 31,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Materials": {
+    "median_ceo_pay": 12992297,
+    "count": 27,
+    "min": 3631262,
+    "max": 21329257,
+    "verified_anchors": 27,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Industrials": {
+    "median_ceo_pay": 15699684,
+    "count": 73,
+    "min": 1693133,
+    "max": 164525721,
+    "verified_anchors": 73,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Real Estate": {
+    "median_ceo_pay": 11359954,
+    "count": 29,
+    "min": 4124066,
+    "max": 61394770,
+    "verified_anchors": 29,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Energy": {
+    "median_ceo_pay": 17673565,
+    "count": 22,
+    "min": 8974550,
+    "max": 44052537,
+    "verified_anchors": 22,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Communication Services": {
+    "median_ceo_pay": 26026969,
+    "count": 22,
+    "min": 274074,
+    "max": 63211569,
+    "verified_anchors": 22,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    }
   },
   "edgar_coverage": 517,

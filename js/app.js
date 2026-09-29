@@ -8563,7 +8563,14 @@ function setupDetailPanel(companies) {
         if (vsMedianPct !== null) {
             var sign = parseInt(vsMedianPct) >= 0 ? '+' : '';
             var cls = parseInt(vsMedianPct) >= 0 ? 'positive' : 'negative';
-            html += '<div class="detail-stat"><div class="detail-stat-label">vs Sector Median</div><div class="detail-stat-value ' + cls + '">' + sign + vsMedianPct + '%</div><div class="detail-stat-sub">Median: ' + formatCurrency(sectorMedianPay) + '</div></div>';
+            // Sector-median anchor coverage (metadata verified since the
+            // 2026-09-29 15:30 PT recompute): quiet provenance on the sub-line.
+            var secCovSub = '';
+            if (sectorMedian && sectorMedian.count) {
+                secCovSub = ' \u00b7 ' + sectorMedian.count + ' CEOs';
+                if (sectorMedian.verified_pct != null) secCovSub += ', ' + String(sectorMedian.verified_pct) + '% verified';
+            }
+            html += '<div class="detail-stat"><div class="detail-stat-label">vs Sector Median</div><div class="detail-stat-value ' + cls + '">' + sign + vsMedianPct + '%</div><div class="detail-stat-sub">Median: ' + formatCurrency(sectorMedianPay) + secCovSub + '</div></div>';
         }
 
         if (ratioText) {
