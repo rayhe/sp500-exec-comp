@@ -7466,6 +7466,56 @@ window.openPvpDetail = function(ticker) {
         setTimeout(function() { sec.classList.remove('pvp-flash'); }, 2000);
     });
 };
+// Jump helper for the data-quality modal's band-move transition list: closes
+// the modal (the caller does that), then opens the ticker's company detail
+// panel and auto-opens the repair diff viewer for the repaired row. Mirrors
+// the boot-time deep-link flow (search -> render -> click row -> diff), so
+// the ticker is found regardless of current filters or pagination. Degrades
+// silently when the ticker is unknown or the diff has no matching toggle.
+window.openCompanyDetailWithDiff = function(ticker, diffStr) {
+    if (!ticker || !compData || !compData.companies) return;
+    var companies = compData.companies;
+    var t = String(ticker).toUpperCase();
+    var exists = companies.some(function(c) { return c.ticker === t; });
+    if (!exists) return;
+    // Force the ticker visible regardless of current filters/pagination
+    searchTerm = t;
+    var si = document.getElementById('table-search');
+    if (si) si.value = t;
+    currentPage = 1;
+    renderTable(companies);
+    setTimeout(function() {
+        var tbody = document.getElementById('comp-tbody');
+        if (!tbody) return;
+        var rows = tbody.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)');
+        var row = null;
+        for (var i = 0; i < rows.length; i++) {
+            var te = rows[i].querySelector('.ticker');
+            if (te && te.textContent.trim() === t) { row = rows[i]; break; }
+        }
+        if (!row) return;
+        var detail = tbody.querySelector('.detail-row[data-ticker="' + t + '"]');
+        if (!detail) {
+            row.click(); // delegated tbody handler builds the detail panel synchronously
+            detail = tbody.querySelector('.detail-row[data-ticker="' + t + '"]');
+        }
+        if (!detail) return;
+        // Auto-open the repair diff viewer for the repaired row, if any
+        if (diffStr) _openDiffFromHash(t, diffStr);
+        // Move keyboard focus into the panel and scroll it into view
+        var panel = detail.querySelector('.detail-panel');
+        if (panel) { try { panel.focus({ preventScroll: true }); } catch (e) { panel.focus(); } }
+        setTimeout(function() {
+            try { row.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' }); }
+            catch (e2) { row.scrollIntoView(); }
+            var off = (typeof getStickyOffset === 'function') ? getStickyOffset() : 0;
+            if (off > 0) {
+                try { window.scrollBy({ top: -off - 16, behavior: getScrollBehavior() }); }
+                catch (e3) { window.scrollBy(0, -off - 16); }
+            }
+        }, 120);
+    }, 60);
+};
 function pvpEsc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -7801,6 +7851,11 @@ function _fmtDiffMoney(v) {
 }
 function _escDiffText(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+// Attribute-safe variant of _escDiffText: also escapes double quotes so
+// data-derived values (CEO names, diff keys) can sit inside "..." attributes.
+function _escDiffAttr(s) {
+    return _escDiffText(s).replace(/"/g, '&quot;');
 }
 
 // Shared pay-ratio deviation-band classifier and re-verification band-move
@@ -17442,6 +17497,7 @@ function setupDualSparklineTooltips() {
             if (!rows || !Object.keys(rows).length) return null;
             var win = (diffs.meta && diffs.meta.window) ? String(diffs.meta.window) : null;
             var groups = {}; // 'from->to' -> [tickers]
+            var diffKeys = {}; // ticker -> 'TICKER|fiscal_year|ceo_name' for the jump-to-diff affordance
             var n = 0, screened = 0, intoWithin = 0;
             for (var i = 0; i < cos.length; i++) {
                 var c = cos[i];
@@ -17458,6 +17514,7 @@ function setupDualSparklineTooltips() {
                 var gk = b0 + '->' + b1;
                 if (!groups[gk]) groups[gk] = [];
                 groups[gk].push(t);
+                diffKeys[t] = t + '|' + c.fiscal_year + '|' + (c.ceo_name || '');
                 n++;
                 if (b1 === 'within') intoWithin++;
             }
@@ -17465,7 +17522,17 @@ function setupDualSparklineTooltips() {
             var trans = Object.keys(groups).sort(function(a, b) { return groups[b].length - groups[a].length; });
             var items = trans.map(function(gk) {
                 var parts = gk.split('->');
-                var tickers = groups[gk].slice().sort().map(function(x) { return _escDiffText(x); });
+                // Tickers are jump buttons: they close the modal and open the
+                // company's detail panel with the repair diff auto-opened
+                // (see window.openCompanyDetailWithDiff). The data-diff key
+                // matches the repair-diffs.json 'TICKER|name|year' keying.
+                var tickers = groups[gk].slice().sort().map(function(x) {
+                    var dk = diffKeys[x] || '';
+                    return '<button type="button" class="dataq-ticker-jump" data-ticker="' + _escDiffAttr(x) + '"' +
+                        (dk ? ' data-diff="' + _escDiffAttr(dk) + '"' : '') +
+                        ' title="Open ' + _escDiffAttr(x) + ' and show the repair diff">' +
+                        _escDiffText(x) + '</button>';
+                });
                 return '<li><strong>' + _escDiffText(_PAY_RATIO_BAND_LABELS[parts[0]]) + ' &rarr; ' + _escDiffText(_PAY_RATIO_BAND_LABELS[parts[1]]) + '</strong> (' + tickers.length + '): ' + tickers.join(', ') + '</li>';
             }).join('');
             return '<p><strong>Band changes from the re-verification campaign</strong>' +
@@ -17652,6 +17719,18 @@ function setupDualSparklineTooltips() {
             e.preventDefault();
             e.stopPropagation();
             openMethodologyModal(btn.dataset.method);
+            return;
+        }
+        // Band-move transition tickers: jump from the data-quality modal to
+        // the company's detail panel with the repair diff auto-opened.
+        var jump = e.target.closest('.dataq-ticker-jump');
+        if (jump) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMethodologyModal();
+            if (typeof window.openCompanyDetailWithDiff === 'function') {
+                window.openCompanyDetailWithDiff(jump.getAttribute('data-ticker'), jump.getAttribute('data-diff'));
+            }
             return;
         }
         var overlay = document.getElementById('methodology-modal-overlay');

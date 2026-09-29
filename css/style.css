@@ -14446,6 +14446,28 @@ body.light-mode .cross-sector-pair-select:focus {
 .methodology-modal-body li { margin: 4px 0; }
 .methodology-modal-body .dataq-moves-list { margin: 0 0 10px; }
 .methodology-modal-body .dataq-moves-list summary { cursor: pointer; font-weight: 600; }
+/* Band-move transition tickers: quiet link-buttons that jump to the company
+   detail panel with the repair diff auto-opened. Theme-aware via --accent;
+   visible focus ring matches the site's :focus-visible convention. */
+.methodology-modal-body .dataq-ticker-jump {
+    background: none;
+    border: none;
+    padding: 0 1px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+}
+.methodology-modal-body .dataq-ticker-jump:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.methodology-modal-body .dataq-ticker-jump:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-radius: 2px;
+}
 .methodology-modal-body code {
     font-family: var(--mono);
     font-size: 0.78rem;
