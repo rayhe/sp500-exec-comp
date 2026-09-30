@@ -21,6 +21,15 @@ $11.36M), aggregate median/mean/min/total_companies drifted; recomputed
 from live company records with the pipeline's exact semantics, plus
 verified-anchor coverage fields per sector.
 
+History: 2026-09-29 18:00 PT run added section 18 (peer-network
+section-desc copy recount) after finding index.html's "Covers 512 of the
+514 tracked companies: AOS and CPRT have no network node" had drifted
+two roster batches (512->514->518) with no guard coverage; ARES and VMRK
+had joined the coverage gaps unannounced. The section recounts company
+node coverage from the live JSONs and asserts the section-desc's "Covers
+N of the M tracked companies" phrase plus the naming of every live gap
+ticker.
+
 Usage:
   python3 scripts/check_metadata_consistency.py          # manual run
   cp scripts/check_metadata_consistency.py .git/hooks/pre-commit  # install hook
@@ -1012,6 +1021,53 @@ def check_repair_diffs(companies, failures):
             if bad > 10:
                 fail("repair-diffs check: too many errors, stopping early", failures)
                 return
+
+
+# -- Section 18: peer-network section-desc copy truthfulness ---------------
+# index.html's Compensation Peer Network section ships a hand-typed
+# coverage sentence ("Covers N of the M tracked companies: <gaps> have no
+# network node"). Nothing asserted it, so it drifted two roster batches
+# (512->514->518) while ARES and VMRK joined the coverage gaps
+# unannounced (found 2026-09-29 18:00 PT run). This section recounts node
+# coverage from the live JSONs: covered = companies with a peer-network
+# node, gaps = company tickers with no node. It fails the commit if the
+# section-desc's "Covers N of the M tracked companies" phrase disagrees
+# with the recount, or if any live gap ticker is not named in the
+# section copy. (Section 10 already fails on NEW gap regressions and
+# warns on the known gaps; this section only guards the prose copy.)
+def check_network_section_desc(companies, failures):
+    with open(PEER_JSON_PATH, encoding="utf-8") as f:
+        peer = json.load(f)
+    comp_tickers = {c.get("ticker") for c in companies}
+    node_tickers = {n.get("ticker") for n in peer.get("nodes", [])}
+    gaps = sorted(comp_tickers - node_tickers)
+    n_cov = len(comp_tickers) - len(gaps)
+    n_tot = len(comp_tickers)
+
+    path = os.path.join(HERE, "..", "index.html")
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        fail(f"network section-desc 18: cannot read index.html: {e}", failures)
+        return
+    start = text.find('id="peer-network-section"')
+    seg = text[start:start + 2500] if start >= 0 else ""
+    mat = re.search(r"Covers (\d+) of the (\d+) tracked companies", seg)
+    if not mat:
+        fail("network section-desc 18: peer-network section has no "
+             "'Covers N of the M tracked companies' copy", failures)
+        return
+    if int(mat.group(1)) != n_cov or int(mat.group(2)) != n_tot:
+        fail(f"network section-desc 18 drift: copy says Covers "
+             f"{mat.group(1)} of {mat.group(2)}, live recount is "
+             f"{n_cov} of {n_tot} (gaps: {', '.join(gaps)}); sync "
+             f"index.html before committing", failures)
+    for g in gaps:
+        if not re.search(r"\b" + re.escape(g) + r"\b", seg):
+            fail(f"network section-desc 18 drift: gap ticker {g} not named "
+                 f"in the section copy (gaps: {', '.join(gaps)}); sync "
+                 f"index.html before committing", failures)
 
 
 def main():
@@ -2109,6 +2165,9 @@ def main():
 
     # 17. aggregate_stats + sector_medians truthfulness (2026-09-29 15:30 PT).
     check_aggregate_stats(companies, meta, failures)
+
+    # 18. peer-network section-desc copy truthfulness (2026-09-29 18:00 PT).
+    check_network_section_desc(companies, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
