@@ -1825,7 +1825,18 @@ def main():
                        "MZTI", "NOG", "OVV", "PLTK", "POST", "PR",
                        "PVH", "RH", "RRC", "SHOO", "SKX", "SM",
                        "STR", "THS", "TRU", "UAA", "URBN", "VFC",
-                       "WES", "WMG", "WTTR"}
+                       "WES", "WMG", "WTTR",
+                       # 2026-09-30 14:00 PT run: thin-edge repair batch
+                       # (GE/MRNA/COF/MS/EBAY/EMR/WDC/DOV peer groups from
+                       # latest DEF 14As; TSLA bogus edge deleted, isSource
+                       # off). New peer-only nodes, tickers SEC-verified via
+                       # company_tickers.json 2026-09-30: AAL (American
+                       # Airlines), ALLY (Ally Financial), ALNY (Alnylam),
+                       # FLS (Flowserve), NBIX (Neurocrine), ONC (BeOne
+                       # Medicines, formerly BeiGene - Nasdaq ADR),
+                       # SRPT (Sarepta), W (Wayfair), XRX (Xerox).
+                       "AAL", "ALLY", "ALNY", "FLS", "NBIX", "ONC",
+                       "SRPT", "W", "XRX"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
