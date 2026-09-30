@@ -1836,7 +1836,22 @@ def main():
                        # Medicines, formerly BeiGene - Nasdaq ADR),
                        # SRPT (Sarepta), W (Wayfair), XRX (Xerox).
                        "AAL", "ALLY", "ALNY", "FLS", "NBIX", "ONC",
-                       "SRPT", "W", "XRX"}
+                       "SRPT", "W", "XRX",
+                       # 2026-09-30 16:00 PT run: peer-network batch-2
+                       # refresh (XYZ/DRI/CAG/GIS/MDT/PAYX/STX/FOX/FOXA/
+                       # PH/KLAC/NWSA/ADP/LRCX/ORCL/TPR/AMCR/BR/EL peer
+                       # groups from latest DEF 14As; CTAS dropped - no
+                       # named comp peer group, isSource off). New
+                       # peer-only nodes, tickers SEC-verified via
+                       # company_tickers.json 2026-09-30 (VSXY per company
+                       # 8-K 2026-06-02 ticker change; MOG-A per SEC
+                       # listing for Moog; K retained per delisted-peer
+                       # precedent - Mars acquisition Dec 2025).
+                       "AA", "AAP", "AEO", "ARMK", "BBWI", "BURL",
+                       "CCK", "COTY", "EEFT", "FLEX", "GFS", "GIB",
+                       "GPK", "ITT", "MOG-A", "NWL", "QSR", "RELX",
+                       "SAP", "SSNC", "TRI", "VSXY", "VSNT", "WEX",
+                       "WU", "Z"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
