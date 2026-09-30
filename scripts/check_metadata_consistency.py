@@ -1808,7 +1808,24 @@ def main():
                        # via Capital One acquisition May 2025) retained per the
                        # PARA/QRVO/COMM/SMAR delisted-peer precedent because
                        # Fiserv's 2025 CD&A peer group cites it.
-                       "TOST", "TWLO", "U", "PPLI", "DFS"}
+                       "TOST", "TWLO", "U", "PPLI", "DFS",
+                       # 2026-09-30 10:30 PT run: peer-network refresh batch
+                       # (DECK/GEN/LULU/LW/NTAP/PG/TPL/TTWO peer groups from
+                       # latest DEF 14As; TPL via 2026-09-25 annual proxy
+                       # Reference Group, LULU via DEFC14A 2026-05-18).
+                       # MZTI verified = The Marzetti Company (NASDAQ) via
+                       # Finnhub/MarketBeat listings 2026-09-30.
+                       # FL/JWN/SKX/STR/ARIS/ENLC retained under last ticker
+                       # per the PARA/QRVO/COMM/SMAR delisted-peer precedent
+                       # because the disclosed CD&A groups cite them.
+                       "ANF", "ARIS", "BRBR", "BSM", "CIVI", "COLM",
+                       "CPRI", "CROX", "DKNG", "DKS", "DTM", "ENLC",
+                       "FL", "FLO", "GAP", "HAIN", "INGR", "JWN",
+                       "KLG", "KNTK", "KRP", "LEVI", "MAT", "MTDR",
+                       "MZTI", "NOG", "OVV", "PLTK", "POST", "PR",
+                       "PVH", "RH", "RRC", "SHOO", "SKX", "SM",
+                       "STR", "THS", "TRU", "UAA", "URBN", "VFC",
+                       "WES", "WMG", "WTTR"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
