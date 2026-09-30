@@ -786,10 +786,13 @@ var REALIZED_COMP_NOTES = {
     'TSLA': "Tesla's 10-K/A (Amendment No. 1, FY2025, filed 2026-04-30) says the $158.4B is a grant-date accounting figure. The $132.3B 2025 CEO Performance Award and the $26.1B 2025 CEO Interim Award were both forfeited in full in April 2026. Per the filing: 'using the Total CEO realized compensation for 2025, such ratio was 0.00:1.'"
 };
 
-/* Principled PvP exclusions (standing audit class, as of 2026-09-24).
-   Keys are tickers deliberately NOT shipped in data/pay_vs_performance.json.
-   Each reason is a static filing-grounded string; the detail panel renders it
-   so a missing PvP section reads as an explained exclusion, not a data gap. */
+/* Principled PvP exclusions (standing audit class, as of 2026-09-24; extended
+   2026-09-30 03:30 PT with the deferred-VMRK and pending-extraction classes).
+   Keys are tickers deliberately NOT shipped in data/pay_vs_performance.json —
+   plus pending entries (ARES/RDDT/XYZ, and VMRK) whose extraction is deferred
+   or not yet run, each labeled as such. Each reason is a static
+   filing-grounded string; the detail panel renders it so a missing PvP
+   section reads as an explained exclusion, not a data gap. */
 var PVP_EXCLUSIONS = {
     'INTC': 'No Inline XBRL facts at all in the 402(v) disclosure — values cannot be machine-verified.',
     'SYF':  'No Inline XBRL facts at all in the 402(v) disclosure — values cannot be machine-verified.',
@@ -810,8 +813,11 @@ var PVP_EXCLUSIONS = {
     'HOLX': 'Take-private closed ~2026-04-07 (Blackstone/TPG); not shipped per take-private policy.',
     'K':    'Take-private closed 2025-12-11 (Mars); not shipped per take-private policy.',
     'EA':   'Take-private; 15-12G filed 2026-08-14.',
-    'BF-A': 'Same issuer as BF-B — shipped under BF-B.',
-    'FDXF': 'New spin-off registrant (FedEx Freight Holding Company, CIK 0002082247) — has filed no DEF 14A (EDGAR: 10-12B, 10-K, 8-Ks only); its 2026-08-05 10-K carries a Summary Compensation Table but zero mentions of "Pay Versus Performance" / "Compensation Actually Paid" / "402(v)". Deferred until its first definitive proxy.'
+    'FDXF': 'New spin-off registrant (FedEx Freight Holding Company, CIK 0002082247) — has filed no DEF 14A (EDGAR: 10-12B, 10-K, 8-Ks only); its 2026-08-05 10-K carries a Summary Compensation Table but zero mentions of "Pay Versus Performance" / "Compensation Actually Paid" / "402(v)". Deferred until its first definitive proxy.',
+    'VMRK': 'No post-merger DEF 14A filed yet (AvalonBay/Equity Residential merger closed 2026-08-17; CIK 906107 now Vivmark Residential) — and therefore no Item 402(v) disclosure. Deferred until its first definitive proxy, same class as PSKY/FDXF. (2026-09-30 03:30 PT)',
+    'ARES': 'Sep-2026 roster add — Pay vs Performance extraction (waves 1-37 ended 2026-09-25) has not been run for this ticker yet. Pending, not a principled exclusion. (2026-09-30 03:30 PT)',
+    'RDDT': 'Sep-2026 roster add — Pay vs Performance extraction (waves 1-37 ended 2026-09-25) has not been run for this ticker yet. Pending, not a principled exclusion. (2026-09-30 03:30 PT)',
+    'XYZ':  'Sep-2026 roster add — Pay vs Performance extraction (waves 1-37 ended 2026-09-25) has not been run for this ticker yet. Pending, not a principled exclusion. (2026-09-30 03:30 PT)'
 };
 
 /* Grouping of the standing PvP exclusions by exclusion class, for the
@@ -822,8 +828,9 @@ var PVP_EXCLUSION_GROUPS = [
     { label: 'Delisted / taken private (8)', tickers: ['DAY', 'HES', 'JNPR', 'WBA', 'IPG', 'HOLX', 'K', 'EA'] },
     { label: 'Filer-side XBRL errors (7)', tickers: ['INTC', 'SYF', 'COF', 'RF', 'HSY', 'EMN', 'AMT'] },
     { label: 'Item 402(v)-exempt (2)', tickers: ['KKR', 'BX'] },
-    { label: 'Same-issuer duplicates (2)', tickers: ['GOOG', 'BF-A'] },
-    { label: 'Deferred — no DEF 14A yet (2)', tickers: ['PSKY', 'FDXF'] }
+    { label: 'Same-issuer duplicate shipped once (1)', tickers: ['GOOG'] },
+    { label: 'Deferred — no DEF 14A yet (3)', tickers: ['PSKY', 'FDXF', 'VMRK'] },
+    { label: 'PvP extraction pending — Sep-2026 roster adds (3)', tickers: ['ARES', 'RDDT', 'XYZ'] }
 ];
 
 /* Filing-verbatim realized-comp footnote for any displayed headline figure that is
@@ -7799,12 +7806,13 @@ function renderPvpComparison() {
             + 'Peer TSR uses the primary peer series; JNJ and AMZN file two peer series and the first is used. '
             + 'Company-selected measures are excluded: they are not comparable across companies. '
             + 'Values transcribed from the 402(v) table in each company\u2019s latest DEF 14A and cross-checked against Inline XBRL. '
-            + 'Coverage: 485 of 486 reachable companies. Twenty companies are excluded for principled reasons: '
-            + 'delisted or taken private (DAY, HES, JNPR, WBA, IPG, HOLX, K, EA), filer-side Inline XBRL errors '
-            + 'that left 402(v) values unverifiable (INTC, SYF, COF, RF, HSY, EMN, AMT), 402(v)-exempt filers '
-            + '(KKR, BX), and same-issuer duplicates shipped once (GOOG under GOOGL, BF-A under BF-B). '
-            + 'Paramount Skydance (PSKY) is deferred until its first definitive proxy. '
-            + 'Each excluded ticker\u2019s detail panel states the reason.';
+            + 'Coverage: 495 of 518 roster companies (2,454 company-years; 2026-09-30 ticker normalization removed the stale duplicate BK/MMC keys — byte-identical 402(v) data to BNY/MRSH — and renamed FI→FISV, BF-B→BF-A to the current roster tickers). Twenty-three roster companies are not covered: '
+            + 'delisted or taken private (8: DAY, HES, JNPR, WBA, IPG, HOLX, K, EA), filer-side Inline XBRL errors '
+            + 'that left 402(v) values unverifiable (7: INTC, SYF, COF, RF, HSY, EMN, AMT), 402(v)-exempt filers '
+            + '(2: KKR, BX), same-issuer duplicate shipped once (GOOG under GOOGL), deferred until a first '
+            + 'definitive proxy (3: PSKY, FDXF, VMRK), and PvP extraction still pending for the Sep-2026 roster '
+            + 'adds (3: ARES, RDDT, XYZ). '
+            + 'Each excluded ticker’s detail panel states the reason.';
     }
 }
 
