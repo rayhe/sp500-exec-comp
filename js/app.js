@@ -13806,6 +13806,34 @@ function setupDualSparklineTooltips() {
         // Current sort state for sector analytics table
         var saSort = { key: 'median', dir: 'desc' };
 
+        // CEO total comp for one company in one fiscal year. Anchor years use the
+        // verified company-level total; other years match the CEO by SCT title
+        // (transition years take the higher-paid CEO row).
+        var SA_CEO_TITLE_RE = /chief executive|\bceo\b/i;
+        function saCeoPayForYear(c, year) {
+            if (c.fiscal_year === year && c.total_compensation > 0) return c.total_compensation;
+            var best = 0;
+            (c.executives || []).forEach(function(e) {
+                if (e.year === year && SA_CEO_TITLE_RE.test(e.title || '') && (e.total || 0) > best) best = e.total;
+            });
+            return best > 0 ? best : null;
+        }
+
+        // Inline 3-point sparkline (FY2023-2025 sector medians), per-sector min-max
+        // normalized so the shape reads at a glance; magnitude is in the % label.
+        function saSparkline(vals) {
+            var W = 76, H = 26, P = 4;
+            var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+            if (!(mx > mn)) { mn = mn * 0.9; mx = mx * 1.1; if (!(mx > mn)) mx = mn + 1; }
+            function sx(i) { return (P + i * (W - 2 * P) / (vals.length - 1)).toFixed(1); }
+            function sy(v) { return (H - P - (v - mn) / (mx - mn) * (H - 2 * P)).toFixed(1); }
+            var pts = vals.map(function(v, i) { return sx(i) + ',' + sy(v); }).join(' ');
+            var dots = vals.map(function(v, i) {
+                return '<circle cx="' + sx(i) + '" cy="' + sy(v) + '" r="2.2" class="sa-spark-dot"/>';
+            }).join('');
+            return '<svg class="sa-spark" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true" focusable="false"><polyline points="' + pts + '" class="sa-spark-line"/>' + dots + '</svg>';
+        }
+
         // Compute per-sector metrics (once)
         var sectorMap = {};
         companies.forEach(function(c) {
@@ -13866,11 +13894,25 @@ function setupDualSparklineTooltips() {
             var gerHighRiskCount = comps.filter(function(c) { return c._gerScore != null && c._gerScore >= 60; }).length;
             var gerRiskTier = medianGer != null ? (medianGer >= 75 ? 'Critical' : medianGer >= 60 ? 'High' : medianGer >= 45 ? 'Elevated' : medianGer >= 30 ? 'Moderate' : 'Low') : null;
 
+            // Median CEO pay trajectory FY2023-2025 (live from exec rows, same
+            // median convention as the other sector columns)
+            var saTrendYears = [2023, 2024, 2025];
+            var trendMeds = saTrendYears.map(function(y) {
+                var tvals = comps.map(function(c) { return saCeoPayForYear(c, y); })
+                    .filter(function(v) { return v != null && v > 0; })
+                    .sort(function(a, b) { return a - b; });
+                return tvals.length ? tvals[Math.floor(tvals.length / 2)] : null;
+            });
+            var trend2yr = (trendMeds[0] != null && trendMeds[2] != null && trendMeds[0] > 0)
+                ? (trendMeds[2] - trendMeds[0]) / trendMeds[0] * 100 : null;
+
             saRows.push({
                 sector: sector,
                 count: count,
                 median: median,
                 mean: mean,
+                trendMeds: trendMeds,
+                trend2yr: trend2yr,
                 medianEq: medianEq,
                 medianRatio: medianRatio,
                 medianSop: medianSop,
@@ -13913,6 +13955,18 @@ function setupDualSparklineTooltips() {
 
             var maxMedian = Math.max.apply(null, saRows.map(function(r) { return r.median; }));
 
+            function trendCellHtml(r) {
+                var meds = r.trendMeds;
+                if (!meds || meds.some(function(v) { return v == null; })) return '—';
+                var pct = r.trend2yr;
+                var pctTxt = pct == null ? '' : (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+                var pctCls = pct == null ? '' : (Math.abs(pct) < 0.05 ? 'sa-trend-flat' : (pct > 0 ? 'sa-trend-up' : 'sa-trend-down'));
+                var yrTxt = '2023: ' + fmt(meds[0]) + ' · 2024: ' + fmt(meds[1]) + ' · 2025: ' + fmt(meds[2]);
+                var tip = yrTxt + ' (sector median CEO pay, FY2023-2025' + (pct == null ? '' : '; ' + pctTxt + ' vs 2023') + ')';
+                return '<span class="sa-trend-wrap" title="' + tip + '">' + saSparkline(meds) +
+                    (pctTxt ? '<span class="sa-trend-pct ' + pctCls + '">' + pctTxt + '</span>' : '') + '</span>';
+            }
+
             tbody.innerHTML = sorted.map(function(r) {
                 var barW = maxMedian > 0 ? Math.round(r.median / maxMedian * 100) : 0;
                 var eqClass = r.medianEq != null ? (r.medianEq >= 70 ? 'eq-high' : r.medianEq >= 40 ? 'eq-mid' : 'eq-low') : '';
@@ -13922,7 +13976,8 @@ function setupDualSparklineTooltips() {
                     '<td class="sa-sector"><span class="sa-sector-dot" style="background:' + getSectorColor(r.sector) + '"></span>' + r.sector + '</td>' +
                     '<td class="sa-count">' + r.count + '</td>' +
                     '<td class="sa-pay"><div class="sa-bar-cell"><div class="sa-bar" style="width:' + barW + '%"></div><span class="sa-bar-val">' + fmt(r.median) + '</span></div></td>' +
-                    '<td class="sa-pay">' + fmt(r.mean) + '</td>' +
+                    '<td class="sa-trend">' + trendCellHtml(r) + '</td>' +
+                    '<td class="sa-pay sa-mean">' + fmt(r.mean) + '</td>' +
                     '<td class="sa-eq ' + eqClass + '">' + (r.medianEq != null ? r.medianEq + '%' : '—') + '</td>' +
                     '<td class="sa-ratio ' + ratioClass + '">' + (r.medianRatio != null ? r.medianRatio.toLocaleString() + ':1' : '—') + '</td>' +
                     '<td class="sa-sop">' + (r.medianSop != null ? '<span style="color:' + (r.medianSop < 70 ? '#ef476f' : r.medianSop < 85 ? '#fbbf24' : '#06d6a0') + '">' + r.medianSop.toFixed(1) + '%</span>' + (r.sopCoverage ? ' <span style="opacity:0.5;font-size:0.75em">(' + r.sopCoverage + ')</span>' : '') : '—') + '</td>' +
