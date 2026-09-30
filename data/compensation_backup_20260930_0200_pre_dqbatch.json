@@ -44523,8 +44523,7 @@
      "total": 9929147,
      "_total_source": "component_mismatch",
      "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
-     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: salary/bonus column-shift repair - FRT SCT salary was zeroed and filed under bonus (2026-09-04 fix note superseded); salary=1000000, bonus=0, total=9929147 filing-verbatim; $1 filing-side arithmetic gap (components sum != printed total), kept verbatim2026-09-18 10:00 PT: title -> SCT-verbatim 'Chief Executive Officer and President' (was 'President')",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: salary/bonus column-shift repair - FRT SCT salary was zeroed and filed under bonus (2026-09-04 fix note superseded); salary=1000000, bonus=0, total=9929147 filing-verbatim; $1 filing-side arithmetic gap (components sum != printed total), kept verbatim2026-09-18 10:00 PT: title -> SCT-verbatim 'Chief Executive Officer and President' (was 'President')"
     },
     {
      "name": "Donald C. Wood",
@@ -44587,8 +44586,7 @@
      "all_other": 13340,
      "total": 2299188,
      "_total_source": "component_mismatch",
-     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: filing-side $1 arithmetic gap (components sum differs by $1 from printed total 2299188); values already filing-verbatim, tagged component_mismatch2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Financial Officer & Treasurer' (was 'Executive Vice President')",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: filing-side $1 arithmetic gap (components sum differs by $1 from printed total 2299188); values already filing-verbatim, tagged component_mismatch2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Financial Officer & Treasurer' (was 'Executive Vice President')"
     },
     {
      "name": "Daniel Guglielmone",
@@ -44603,8 +44601,7 @@
      "all_other": 12389,
      "total": 2446128,
      "_total_source": "component_mismatch",
-     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: filing-side $1 arithmetic gap (components sum differs by $1 from printed total 2446128); values already filing-verbatim, tagged component_mismatch2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Financial Officer & Treasurer' (was 'Chief Financial Officer & Treasurer')",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: filing-side $1 arithmetic gap (components sum differs by $1 from printed total 2446128); values already filing-verbatim, tagged component_mismatch2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Financial Officer & Treasurer' (was 'Chief Financial Officer & Treasurer')"
     },
     {
      "name": "Dawn M. Becker",
@@ -44636,8 +44633,7 @@
      "total": 2358619,
      "_total_source": "component_mismatch",
      "_fix_note": "2026-09-04: zeroed duplicated/misattributed salary (remaining components sum exactly to filing total).",
-     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: salary/bonus column-shift repair - FRT SCT salary was zeroed and filed under bonus (2026-09-04 fix note superseded); salary=575000, bonus=0, total=2358619 filing-verbatim; $1 filing-side arithmetic gap (components sum != printed total), kept verbatim2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Legal Officer & Secretary' (was 'Executive Vice President')",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_repair_note_20260918_1000": "2026-09-18 10:00 PT: salary/bonus column-shift repair - FRT SCT salary was zeroed and filed under bonus (2026-09-04 fix note superseded); salary=575000, bonus=0, total=2358619 filing-verbatim; $1 filing-side arithmetic gap (components sum != printed total), kept verbatim2026-09-18 10:00 PT: title -> SCT-verbatim 'Executive Vice President-Chief Legal Officer & Secretary' (was 'Executive Vice President')"
     },
     {
      "name": "Dawn M. Becker",
@@ -73846,8 +73842,7 @@
      "title": "Executive Vice President and Chief Financial Officer",
      "_total_source": "component_mismatch",
      "_original_total": 2588145,
-     "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/1285785/000128578525000025/mos-20250415.htm. FILER-SIDE MISMATCH: filing's own printed total (2,588,145) does not equal its component sum (635,000 + 1,700,019 + 254,626 - 1,500 + 229,482 = 2,817,627). The printed total exactly equals salary+stock+non-equity+pension (i.e., it omits All Other Compensation of 229,482). MOS SCT has no Bonus or Option Awards columns. Stored components already match the filing verbatim; do NOT 'correct' the stored total to the filing's printed total. Stored total 2,817,627 = sum of filing-verbatim components; retained.",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_relabel_note_20260910": "DEF 14A re-verified 2026-09-10 vs https://www.sec.gov/Archives/edgar/data/1285785/000128578525000025/mos-20250415.htm. FILER-SIDE MISMATCH: filing's own printed total (2,588,145) does not equal its component sum (635,000 + 1,700,019 + 254,626 - 1,500 + 229,482 = 2,817,627). The printed total exactly equals salary+stock+non-equity+pension (i.e., it omits All Other Compensation of 229,482). MOS SCT has no Bonus or Option Awards columns. Stored components already match the filing verbatim; do NOT 'correct' the stored total to the filing's printed total. Stored total 2,817,627 = sum of filing-verbatim components; retained."
     },
     {
      "name": "Karen A. Swager",
@@ -77887,8 +77882,7 @@
      "total": 4418556,
      "_total_source": "component_mismatch",
      "_accession": "",
-     "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 4,418,557 vs printed total 4,418,556), kept verbatim",
-     "_parse_note": "components foot to reported total within $1 (sub-dollar rounding artifact); parse-verified 2026-09-30 02:00 PT tripwire scan - no real mismatch"
+     "_repair_note_20260918_1800": "2026-09-18 18:00 PT: missing NEO row restored from 2026 DEF 14A SCT; genuine filing-side arithmetic gap (components sum 4,418,557 vs printed total 4,418,556), kept verbatim"
     },
     {
      "name": "Rebecca J. Kujawa",
@@ -120364,7 +120358,7 @@
    "ceo_tenure": "",
    "board_independence": "",
    "executives": [],
-   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files."
+   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-29: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files."
   }
  ],
  "last_updated": "2026-09-29"
