@@ -1070,6 +1070,64 @@ def check_network_section_desc(companies, failures):
                  f"index.html before committing", failures)
 
 
+# -- Section 19: extractor-fingerprint cross-sector warning -----------------
+# The sweep extractor's false-positive fingerprint is a fixed set of absurd
+# cross-sector targets (documented across the 2026-09-30 batch-2/batch-3
+# repairs: GIS, COF, PFG, BLK, STT, CHTR, NDAQ, PSA, WM, KMI, IP, TGT, FRT,
+# HSY, PG, CVX, MSFT). Batch-3's "GIS appears as a target 0 times" claim
+# was FALSE (full-universe recount 2026-10-01: 173 GIS-citers, 91 COF-citers)
+# because the batch-3 scan only covered thin sources. This section emits a
+# WARNING (not a failure: genuine cross-sector peers exist, e.g. AXP's
+# repaired group) listing edges where a fingerprint target is cited by a
+# source outside the target's home sectors -- the review queue for future
+# fingerprint-repair batches. Silence here means the queue is drained.
+FINGERPRINT_TARGETS = {
+    # target -> home sectors where citing it is plausible
+    "GIS": {"Consumer Staples"},
+    "HSY": {"Consumer Staples"},
+    "PG": {"Consumer Staples"},
+    "TGT": {"Consumer Staples", "Consumer Discretionary"},
+    "COF": {"Financials"},
+    "BLK": {"Financials"},
+    "STT": {"Financials"},
+    "PFG": {"Financials"},
+    "NDAQ": {"Financials"},
+    "CHTR": {"Communication Services"},
+    "PSA": {"Real Estate"},
+    "FRT": {"Real Estate"},
+    "WM": {"Industrials"},
+    "KMI": {"Energy"},
+    "CVX": {"Energy"},
+    "IP": {"Materials"},
+    "MSFT": {"Information Technology"},
+}
+
+
+def check_fingerprint_queue():
+    with open(PEER_JSON_PATH, encoding="utf-8") as f:
+        peer = json.load(f)
+    sectors = {n.get("ticker"): n.get("sector") for n in peer.get("nodes", [])}
+    offenders = []
+    for e in peer.get("edges", []):
+        tgt = e.get("target")
+        home = FINGERPRINT_TARGETS.get(tgt)
+        if not home:
+            continue
+        src, ssec = e.get("source"), sectors.get(e.get("source"))
+        if ssec not in home:
+            offenders.append((src, ssec, tgt, sectors.get(tgt)))
+    if not offenders:
+        print("  fingerprint queue 19: clean (0 cross-sector fingerprint "
+              "edges)")
+        return
+    offenders.sort()
+    show = ", ".join(f"{s}({ss})->{t}" for s, ss, t, _ in offenders[:15])
+    suffix = f" (+{len(offenders) - 15} more)" if len(offenders) > 15 else ""
+    print(f"  warning: fingerprint queue 19: {len(offenders)} cross-sector "
+          f"fingerprint-target edges pending primary-source review: {show}"
+          f"{suffix}")
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -1865,7 +1923,20 @@ def main():
                        "CUBE", "EHC", "FLR", "HEI", "IOT", "JBLU",
                        "JLL", "KBR", "KD", "MASI", "OTEX", "PCOR",
                        "PCTY", "PENN", "SAIC", "SEM", "SUI", "TFX",
-                       "THC", "XRAY"}
+                       "THC", "XRAY",
+                       # 2026-10-01 run: peer-network batch-4 GIS-fingerprint
+                       # repair (15 garbage parses replaced: AAPL/META/MSFT/
+                       # CVX/VZ/QCOM/MU/LIN/TRV/BLK/KEYS/INCY/APO/KO/MPC).
+                       # New peer-only nodes, tickers SEC-verified via
+                       # company_tickers.json 2026-10-01. ARES (Ares Mgmt,
+                       # S&P 500 company) is NOT in this allowlist: it
+                       # matches a company record, so section 10's
+                       # company-match passes without it; its node is
+                       # peer-only (out_degree 0, no extractable DEF 14A
+                       # peer-group disclosure as a source).
+                       "ARGX", "BAM", "BP", "BUD", "CG", "EXEL",
+                       "GMAB", "LNC", "NTRA", "OWL", "PTCT", "SHEL",
+                       "ST", "TPG", "UL", "UTHR"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
@@ -2225,6 +2296,10 @@ def main():
 
     # 18. peer-network section-desc copy truthfulness (2026-09-29 18:00 PT).
     check_network_section_desc(companies, failures)
+
+    # 19. extractor-fingerprint cross-sector review queue (2026-10-01;
+    #     warning only, never fails: genuine cross-sector peers exist).
+    check_fingerprint_queue()
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
