@@ -1936,7 +1936,26 @@ def main():
                        # peer-group disclosure as a source).
                        "ARGX", "BAM", "BP", "BUD", "CG", "EXEL",
                        "GMAB", "LNC", "NTRA", "OWL", "PTCT", "SHEL",
-                       "ST", "TPG", "UL", "UTHR"}
+                       "ST", "TPG", "UL", "UTHR",
+                       # 2026-10-01 06:00 PT run: peer-network batch-5
+                       # thin GIS/COF-fingerprint repair (12 garbage
+                       # parses replaced: WAT/DG/PHM/SWKS/LEN/MRK/EIX/
+                       # TYL/GPC/TRMB/ODFL/PCAR). New peer-only nodes,
+                       # tickers SEC-verified via company_tickers.json +
+                       # submissions JSON 2026-10-01. ENV (Envestnet),
+                       # TMHC (Taylor Morrison), TPH (Tri Pointe Homes)
+                       # all filed 15-12G deregistrations (2024-12-05 /
+                       # 2026-08-04 / 2026-05-26) after being cited in
+                       # the repaired CD&A peer groups; retained per the
+                       # PARA/QRVO/COMM/SMAR/DFS delisted-peer precedent.
+                       # AVT (Avnet) stored where GPC's filing prints
+                       # "Avent, Inc." (filing typo, no such listed co).
+                       "ACIW", "ADNT", "AGCO", "AIT", "AN", "ARW",
+                       "AVT", "AZN", "BLKB", "BSY", "CP", "ENV",
+                       "GSK", "HUBG", "KBH", "LEA", "MANH", "MHO",
+                       "MSM", "MTH", "NVS", "OSK", "PAG", "PEGA",
+                       "PFGC", "SNY", "TEX", "TMHC", "TOL", "TPH",
+                       "UHAL", "USFD", "VNT", "WCC"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
