@@ -2007,6 +2007,17 @@ def main():
                        # acquisition) retained under last ticker per the
                        # PARA/QRVO/COMM/SMAR/DFS delisted-peer precedent
                        # because the disclosed CD&A groups cite them.
+                       # UPDATE 2026-10-01 15:30 PT run (batch-8b):
+                       # ticker-slot collision on B - NYSE:B has been
+                       # live-held by Barrick Mining Corporation
+                       # (formerly Barrick Gold Corporation) since
+                       # 2025-05-09 (verified via web search), and NEM's
+                       # 2026-03-26 DEF 14A cites "Barrick Gold
+                       # Corporation (B)" filing-verbatim. Rule: the LIVE
+                       # holder wins the ticker slot. Node B renamed to
+                       # Barrick Mining Corporation (Materials); NDSN's
+                       # inferred Barnes edge dropped (first ticker-slot
+                       # adjudication; see batch-8b repair docstring).
                        # CTSH's "Fiserv" stored as FISV (current Nasdaq
                        # ticker; FI was the interim NYSE ticker, FISV
                        # restored 2025-11-11 - batch-4 "Fiserv is FISV"
@@ -2043,7 +2054,17 @@ def main():
                        # (current ticker; the old PARA node is Banzai
                        # International per SEC).
                        "BJ", "DAN", "ECHO", "H", "LUMN", "PK",
-                       "PRGO", "VNO", "WSO"}
+                       "PRGO", "VNO", "WSO",
+                       # 2026-10-01 15:30 PT run: peer-network batch-8b
+                       # fingerprint-queue repair (6 heaviest remaining
+                       # 3-edge sources re-read verbatim: CMS/NEE/NEM/
+                       # PFE/V/IQV). 2 new peer-only nodes: HE (Hawaiian
+                       # Electric Industries Inc, Utilities - CMS's peer
+                       # group) and ICLR (ICON plc, Health Care - IQVIA's
+                       # peer group), tickers SEC-verified via
+                       # company_tickers.json + live SEC file/
+                       # submissions 2026-10-01.
+                       "HE", "ICLR"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
