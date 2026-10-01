@@ -1989,7 +1989,23 @@ def main():
                        "RIO", "RNR", "SCI", "SEIC", "SITE", "SMG",
                        "STN", "SU", "THG", "TTEK", "TW", "UFPI",
                        "UGI", "UNF", "UNM", "VIRT", "VOYA", "VRTS",
-                       "WCN", "WHR", "WIX", "WT", "WTS", "WWD"}
+                       "WCN", "WHR", "WIX", "WT", "WTS", "WWD",
+                       # 2026-10-01 11:00 PT run: peer-network batch-7
+                       # fingerprint-queue repair (18 heaviest offender
+                       # sources replaced verbatim: EXC/KVUE/LLY/AEP/
+                       # CVS/CCI/CHTR/DOW/GM/HON/HST/LKQ/PANW/RTX/
+                       # STE/TGT/TT/UPS). New peer-only nodes, tickers
+                       # SEC-verified via company_tickers.json + live
+                       # SEC file/submissions 2026-10-01. ECHO = EchoStar
+                       # CORP (SEC live ticker; CHTR filing's "EchoStar"
+                       # SATS is stale). TGT's "The Gap, Inc. (GPS)"
+                       # stored as GAP (SEC ticker; proxy label is a
+                       # typo; GAP node already existed). CHTR's
+                       # "Paramount Skydance Corp." stored as PSKY
+                       # (current ticker; the old PARA node is Banzai
+                       # International per SEC).
+                       "BJ", "DAN", "ECHO", "H", "LUMN", "PK",
+                       "PRGO", "VNO", "WSO"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
