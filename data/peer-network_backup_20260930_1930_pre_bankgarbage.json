@@ -7,7 +7,7 @@
   ],
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 692,
-  "edge_count": 6464,
+  "edge_count": 6447,
   "last_updated": "2026-09-30"
  },
  "nodes": [
@@ -436,7 +436,7 @@
    "ticker": "AXP",
    "name": "American Express Co",
    "sector": "Financials",
-   "in_degree": 21,
+   "in_degree": 18,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -463,8 +463,8 @@
    "ticker": "BAC",
    "name": "Bank of America Corp",
    "sector": "Financials",
-   "in_degree": 16,
-   "out_degree": 12,
+   "in_degree": 14,
+   "out_degree": 4,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -580,7 +580,7 @@
    "ticker": "BLK",
    "name": "Blackrock Inc",
    "sector": "Financials",
-   "in_degree": 41,
+   "in_degree": 40,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -633,7 +633,7 @@
    "ticker": "BX",
    "name": "Blackstone Inc",
    "sector": "Financials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -650,7 +650,7 @@
    "ticker": "C",
    "name": "Citigroup Inc",
    "sector": "Financials",
-   "in_degree": 16,
+   "in_degree": 14,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -1088,7 +1088,7 @@
    "ticker": "CVX",
    "name": "Chevron Corp",
    "sector": "Energy",
-   "in_degree": 12,
+   "in_degree": 14,
    "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
@@ -1802,7 +1802,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 181,
+   "in_degree": 183,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -1883,7 +1883,7 @@
    "ticker": "GS",
    "name": "Goldman Sachs Group Inc",
    "sector": "Financials",
-   "in_degree": 14,
+   "in_degree": 11,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -2042,7 +2042,7 @@
    "ticker": "HSY",
    "name": "Hershey Co/The",
    "sector": "Consumer Staples",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2301,8 +2301,8 @@
    "ticker": "JPM",
    "name": "JPMorgan Chase & Co",
    "sector": "Financials",
-   "in_degree": 20,
-   "out_degree": 6,
+   "in_degree": 18,
+   "out_degree": 4,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2855,7 +2855,7 @@
    "ticker": "MS",
    "name": "Morgan Stanley",
    "sector": "Financials",
-   "in_degree": 9,
+   "in_degree": 6,
    "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
@@ -2873,7 +2873,7 @@
    "ticker": "MSFT",
    "name": "Microsoft Corp",
    "sector": "Information Technology",
-   "in_degree": 26,
+   "in_degree": 28,
    "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
@@ -3259,7 +3259,7 @@
    "ticker": "PFG",
    "name": "Principal Financial Group Inc",
    "sector": "Financials",
-   "in_degree": 30,
+   "in_degree": 31,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -3349,7 +3349,7 @@
    "ticker": "PNC",
    "name": "PNC Financial Services Group Inc/The",
    "sector": "Financials",
-   "in_degree": 17,
+   "in_degree": 15,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -3781,7 +3781,7 @@
    "ticker": "STT",
    "name": "State Street Corp",
    "sector": "Financials",
-   "in_degree": 25,
+   "in_degree": 24,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -3923,7 +3923,7 @@
    "ticker": "TFC",
    "name": "Truist Financial Corp",
    "sector": "Financials",
-   "in_degree": 10,
+   "in_degree": 9,
    "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
@@ -4184,7 +4184,7 @@
    "ticker": "USB",
    "name": "US Bancorp",
    "sector": "Financials",
-   "in_degree": 4,
+   "in_degree": 2,
    "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
@@ -4372,8 +4372,8 @@
    "ticker": "WFC",
    "name": "Wells Fargo & Co",
    "sector": "Financials",
-   "in_degree": 16,
-   "out_degree": 10,
+   "in_degree": 14,
+   "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -8073,6 +8073,34 @@
    "filing": "DEF 14A 2025-10-28"
   },
   {
+   "source": "JPM",
+   "target": "HSY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "JPM",
+   "target": "PFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "JPM",
+   "target": "CVX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "JPM",
+   "target": "MSFT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
    "source": "NOW",
    "target": "WDAY",
    "year": 2026,
@@ -9690,6 +9718,27 @@
    "filing": "DEF 14A 2026-04-07"
   },
   {
+   "source": "WFC",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "WFC",
+   "target": "BNY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "WFC",
+   "target": "C",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
    "source": "CB",
    "target": "MET",
    "year": 2026,
@@ -10381,6 +10430,34 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "BAC",
+   "target": "CVX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "BAC",
+   "target": "MSFT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "BAC",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "BAC",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
   },
   {
    "source": "TT",
@@ -51184,202 +51261,6 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-09-30"
-  },
-  {
-   "source": "JPM",
-   "target": "AXP",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "JPM",
-   "target": "BAC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "JPM",
-   "target": "C",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "JPM",
-   "target": "GS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "JPM",
-   "target": "MS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "JPM",
-   "target": "WFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-06"
-  },
-  {
-   "source": "BAC",
-   "target": "C",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "GS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "JPM",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "MS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "WFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "PNC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "TFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "USB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "BLK",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "BX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "AXP",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "BAC",
-   "target": "COF",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-23"
-  },
-  {
-   "source": "WFC",
-   "target": "AXP",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "BAC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "BNY",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "C",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "GS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "JPM",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "MS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "PNC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "STT",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "WFC",
-   "target": "USB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
   }
  ]
 }
