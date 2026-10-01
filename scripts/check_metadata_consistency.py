@@ -1955,7 +1955,41 @@ def main():
                        "GSK", "HUBG", "KBH", "LEA", "MANH", "MHO",
                        "MSM", "MTH", "NVS", "OSK", "PAG", "PEGA",
                        "PFGC", "SNY", "TEX", "TMHC", "TOL", "TPH",
-                       "UHAL", "USFD", "VNT", "WCC"}
+                       "UHAL", "USFD", "VNT", "WCC",
+                       # 2026-10-01 07:45 PT run: peer-network batch-6
+                       # thin GIS/COF-fingerprint repair (29 garbage
+                       # parses replaced: ABT/AEE/AZO/CFG/COP/CTSH/EG/
+                       # ESS/FAST/FE/GDDY/GL/HPQ/J/KMB/KR/MCK/MKTX/
+                       # NDSN/NXPI/PODD/POOL/PPG/ROL/SLB/SO/TJX/VST/
+                       # WSM). New peer-only nodes, tickers SEC-verified
+                       # via company_tickers.json + submissions JSON
+                       # 2026-10-01. B (Barnes Group, taken private by
+                       # Apollo Jan 2025), CMA (Comerica, acquired by
+                       # Fifth Third 2026), K (Kellanova, Mars
+                       # acquisition) retained under last ticker per the
+                       # PARA/QRVO/COMM/SMAR/DFS delisted-peer precedent
+                       # because the disclosed CD&A groups cite them.
+                       # CTSH's "Fiserv" stored as FISV (current Nasdaq
+                       # ticker; FI was the interim NYSE ticker, FISV
+                       # restored 2025-11-11 - batch-4 "Fiserv is FISV"
+                       # stands). AAL (Anglo American) / BAESY (BAE
+                       # Systems) / SB (Schneider) / SGO / ENR skipped
+                       # per the RHHBY OTC-only precedent.
+                       "ABB", "ABM", "ACI", "ADT", "AFG", "AMH",
+                       "AXS", "B", "BCC", "BCO", "BECN", "BGC",
+                       "BHF", "BHP", "BV", "BWA", "CE", "CLH",
+                       "CMA", "CNA", "CNM", "CNO", "CNS", "CR",
+                       "CWAN", "CWST", "DCI", "DXC", "ELS", "ENB",
+                       "EQH", "FBIN", "FCN", "FG", "FIX", "FTDR",
+                       "FTI", "GGG", "GMED", "GMS", "GT", "GTLS",
+                       "HBI", "HTGC", "ICUI", "ITGR", "JXN", "KSS",
+                       "LECO", "M", "MKL", "MMSI", "MORN", "NCNO",
+                       "NOV", "NVCR", "OC", "OGE", "ORI", "PDCO",
+                       "PEAK", "POR", "PRI", "PSN", "QTWO", "RGA",
+                       "RIO", "RNR", "SCI", "SEIC", "SITE", "SMG",
+                       "STN", "SU", "THG", "TTEK", "TW", "UFPI",
+                       "UGI", "UNF", "UNM", "VIRT", "VOYA", "VRTS",
+                       "WCN", "WHR", "WIX", "WT", "WTS", "WWD"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
