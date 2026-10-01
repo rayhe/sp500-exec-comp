@@ -531,6 +531,47 @@ function initNetwork(peerData) {
             });
         }
 
+        // Cross-sector verification split: edges whose target is a
+        // known extractor-fingerprint ticker and whose source sits in a
+        // different sector. Filing-verbatim verified count comes from
+        // metadata; the queue is recomputed live from edges + sectors so
+        // the label can never go stale. Omitted when metadata is absent.
+        var _xsvMarks = _pnMeta.verified_cross_sector || null;
+        if (_xsvMarks && nodes.length && allEdges.length) {
+            var _xsvTargets = {
+                'GIS': ['Consumer Staples'], 'HSY': ['Consumer Staples'],
+                'PG': ['Consumer Staples'],
+                'TGT': ['Consumer Staples', 'Consumer Discretionary'],
+                'COF': ['Financials'], 'BLK': ['Financials'],
+                'STT': ['Financials'], 'PFG': ['Financials'],
+                'NDAQ': ['Financials'],
+                'CHTR': ['Communication Services'],
+                'PSA': ['Real Estate'], 'FRT': ['Real Estate'],
+                'WM': ['Industrials'],
+                'KMI': ['Energy'], 'CVX': ['Energy'],
+                'IP': ['Materials'],
+                'MSFT': ['Information Technology']
+            };
+            var _xsvSector = {};
+            nodes.forEach(function(n) { _xsvSector[n.ticker] = n.sector; });
+            var _xsvSeen = {}, _xsvQueued = 0;
+            allEdges.forEach(function(e) {
+                var _home = _xsvTargets[e.target];
+                if (!_home) return;
+                if (_home.indexOf(_xsvSector[e.source]) !== -1) return;
+                var _k = e.source + '>' + e.target;
+                if (!_xsvSeen[_k]) { _xsvSeen[_k] = 1; _xsvQueued++; }
+            });
+            var _xsvVer = _xsvMarks.length;
+            var _xsvPend = Math.max(0, _xsvQueued - _xsvVer);
+            var _xsvTotal = _xsvVer + _xsvPend;
+            stats.push({
+                label: 'Cross-Sector Verified',
+                value: _xsvVer + ' of ' + _xsvTotal,
+                title: _xsvVer + ' of ' + _xsvTotal + ' cross-sector peer edges verified verbatim against the filing DEF 14A (' + _xsvPend + ' still pending primary-source review). Updated ' + (_pnLong || _pnShort) + '.'
+            });
+        }
+
         var html = '';
         stats.forEach(function(s) {
             // Escape title/id: titles are partly derived from peer-network.json
