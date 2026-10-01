@@ -1851,7 +1851,21 @@ def main():
                        "CCK", "COTY", "EEFT", "FLEX", "GFS", "GIB",
                        "GPK", "ITT", "MOG-A", "NWL", "QSR", "RELX",
                        "SAP", "SSNC", "TRI", "VSXY", "VSNT", "WEX",
-                       "WU", "Z"}
+                       "WU", "Z",
+                       # 2026-09-30 22:00 PT run: peer-network batch-3
+                       # fingerprint repair (17 garbage parses replaced:
+                       # AKAM/LUV/MCHP/PPL/EXR/PGR/ALGN/ANET/AXON/AXP/
+                       # CBRE/DVA/ELV/EQIX/IBM/LDOS/MGM; NRG/L/CLX/AMZN
+                       # no named comp peer group, isSource off). New
+                       # peer-only nodes, tickers SEC-verified via
+                       # company_tickers.json 2026-09-30; AZPN/MASI/SEM
+                       # retained under last ticker per the delisted-peer
+                       # precedent (acquired/taken private, cited in CD&A).
+                       "ACM", "ALK", "ALRM", "AZPN", "BAH", "CACI",
+                       "CUBE", "EHC", "FLR", "HEI", "IOT", "JBLU",
+                       "JLL", "KBR", "KD", "MASI", "OTEX", "PCOR",
+                       "PCTY", "PENN", "SAIC", "SEM", "SUI", "TFX",
+                       "THC", "XRAY"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
