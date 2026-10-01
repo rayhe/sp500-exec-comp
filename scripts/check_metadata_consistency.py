@@ -194,6 +194,14 @@ import statistics
 import sys
 from collections import Counter
 
+# Sibling import: the verified-genuine cross-sector marking logic and the
+# shared fingerprint-target table live in the marking module (single source
+# of truth; this guard enforces the marks). scripts/ is sys.path[0] when
+# this file is exec'd as a script; the insert covers odd invocations.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from mark_verified_cross_sector_20261001 import (  # noqa: E402
+    FINGERPRINT_TARGETS, build_repair_map)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(HERE, "..", "data", "compensation.json")
 PEER_JSON_PATH = os.path.join(HERE, "..", "data", "peer-network.json")
@@ -1070,43 +1078,32 @@ def check_network_section_desc(companies, failures):
                  f"index.html before committing", failures)
 
 
-# -- Section 19: extractor-fingerprint cross-sector warning -----------------
+# -- Section 19: extractor-fingerprint cross-sector queue -------------------
 # The sweep extractor's false-positive fingerprint is a fixed set of absurd
 # cross-sector targets (documented across the 2026-09-30 batch-2/batch-3
 # repairs: GIS, COF, PFG, BLK, STT, CHTR, NDAQ, PSA, WM, KMI, IP, TGT, FRT,
 # HSY, PG, CVX, MSFT). Batch-3's "GIS appears as a target 0 times" claim
 # was FALSE (full-universe recount 2026-10-01: 173 GIS-citers, 91 COF-citers)
-# because the batch-3 scan only covered thin sources. This section emits a
-# WARNING (not a failure: genuine cross-sector peers exist, e.g. AXP's
-# repaired group) listing edges where a fingerprint target is cited by a
-# source outside the target's home sectors -- the review queue for future
-# fingerprint-repair batches. Silence here means the queue is drained.
-FINGERPRINT_TARGETS = {
-    # target -> home sectors where citing it is plausible
-    "GIS": {"Consumer Staples"},
-    "HSY": {"Consumer Staples"},
-    "PG": {"Consumer Staples"},
-    "TGT": {"Consumer Staples", "Consumer Discretionary"},
-    "COF": {"Financials"},
-    "BLK": {"Financials"},
-    "STT": {"Financials"},
-    "PFG": {"Financials"},
-    "NDAQ": {"Financials"},
-    "CHTR": {"Communication Services"},
-    "PSA": {"Real Estate"},
-    "FRT": {"Real Estate"},
-    "WM": {"Industrials"},
-    "KMI": {"Energy"},
-    "CVX": {"Energy"},
-    "IP": {"Materials"},
-    "MSFT": {"Information Technology"},
-}
+# because the batch-3 scan only covered thin sources.
+#
+# FINGERPRINT_TARGETS lives in mark_verified_cross_sector_20261001.py
+# (imported above; single source of truth). This section lists queued
+# edges where a fingerprint target is cited by a source outside the
+# target's home sectors -- the review queue for future fingerprint-repair
+# batches. Edges verified filing-verbatim by the 2026-09-30/10-01 repair
+# series are marked in metadata.verified_cross_sector (source, target,
+# filing, batch) and excluded from the pending count; the marks are
+# enforced exact here: stale marks, drifted marks, and unmarked
+# repaired-source edges are hard failures, so the queue can never again
+# conflate "reviewed genuine" with "pending review".
 
 
-def check_fingerprint_queue():
+def check_fingerprint_queue(failures):
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     sectors = {n.get("ticker"): n.get("sector") for n in peer.get("nodes", [])}
+    edge_pairs = {(e.get("source"), e.get("target"))
+                  for e in peer.get("edges", [])}
     offenders = []
     for e in peer.get("edges", []):
         tgt = e.get("target")
@@ -1116,16 +1113,57 @@ def check_fingerprint_queue():
         src, ssec = e.get("source"), sectors.get(e.get("source"))
         if ssec not in home:
             offenders.append((src, ssec, tgt, sectors.get(tgt)))
-    if not offenders:
+    offender_pairs = sorted({(s, t) for s, _, t, _ in offenders})
+
+    verified_meta = peer.get("metadata", {}).get("verified_cross_sector", [])
+    for v in verified_meta:
+        if not all(k in v for k in ("source", "target", "filing", "batch")):
+            fail(f"verified_cross_sector entry missing keys: {v}", failures)
+    marked = {(v.get("source"), v.get("target")) for v in verified_meta}
+    marked_live = sorted(marked & set(edge_pairs))
+    # (a) stale marks: no such edge exists anymore
+    for v in verified_meta:
+        if (v.get("source"), v.get("target")) not in edge_pairs:
+            fail(f"verified_cross_sector mark {v.get('source')}->"
+                 f"{v.get('target')} has no such edge (stale mark; "
+                 f"re-run the marking script)", failures)
+    # (b) drift: marked edge no longer matches the queue pattern
+    offender_set = set(offender_pairs)
+    for s, t in sorted(set(marked_live) - offender_set):
+        fail(f"verified_cross_sector mark {s}->{t} no longer matches the "
+             f"cross-sector fingerprint pattern (sector/table changed?) - "
+             f"remove it", failures)
+    # (c) unmarked repaired-source edges: a queued edge from a fully
+    # repaired source (outbound set == the documented repair filing)
+    # must be marked; otherwise a future batch re-repairs verified work.
+    repair_map = build_repair_map()
+    src_filings = {}
+    for e in peer.get("edges", []):
+        src_filings.setdefault(e.get("source"), set()).add(e.get("filing"))
+    unmarked = []
+    for s, t in offender_pairs:
+        if (s, t) in marked:
+            continue
+        if s in repair_map and src_filings.get(s) == {repair_map[s][1]}:
+            unmarked.append(f"{s}->{t}")
+    if unmarked:
+        fail(f"{len(unmarked)} queued cross-sector edges from fully-repaired "
+             f"sources lack verified_cross_sector marks "
+             f"(e.g. {', '.join(unmarked[:8])}) - run "
+             f"scripts/mark_verified_cross_sector_20261001.py", failures)
+
+    pending = [p for p in offender_pairs if p not in marked]
+    n_verified = len(set(marked_live) & offender_set)
+    if not pending and not n_verified:
         print("  fingerprint queue 19: clean (0 cross-sector fingerprint "
               "edges)")
         return
-    offenders.sort()
-    show = ", ".join(f"{s}({ss})->{t}" for s, ss, t, _ in offenders[:15])
-    suffix = f" (+{len(offenders) - 15} more)" if len(offenders) > 15 else ""
-    print(f"  warning: fingerprint queue 19: {len(offenders)} cross-sector "
+    show = ", ".join(f"{s}->{t}" for s, t in pending[:15])
+    suffix = f" (+{len(pending) - 15} more)" if len(pending) > 15 else ""
+    print(f"  warning: fingerprint queue 19: {len(pending)} cross-sector "
           f"fingerprint-target edges pending primary-source review: {show}"
-          f"{suffix}")
+          f"{suffix}; {n_verified} verified-genuine (filing-verbatim, "
+          f"marked)")
 
 
 def main():
@@ -2367,8 +2405,9 @@ def main():
     check_network_section_desc(companies, failures)
 
     # 19. extractor-fingerprint cross-sector review queue (2026-10-01;
-    #     warning only, never fails: genuine cross-sector peers exist).
-    check_fingerprint_queue()
+    #     2026-10-01 12:00 PT: pending/verified split; stale, drifted, and
+    #     unmarked repaired-source edges are hard failures).
+    check_fingerprint_queue(failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
