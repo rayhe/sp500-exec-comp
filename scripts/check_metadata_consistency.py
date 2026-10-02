@@ -2171,7 +2171,18 @@ def main():
                        # company_tickers.json verified 2026-10-02; IAC
                        # rename verified via EDGAR submissions +
                        # primary press (PR Newswire 2026-06-04).
-                       "DINO", "IAC", "MPLX", "TRIP", "WRK"}
+                       "DINO", "IAC", "MPLX", "TRIP", "WRK",
+                       # 2026-10-02 11:30 PT run: peer-network batch-8k
+                       # fingerprint-queue repair (6 heaviest remaining
+                       # 2-edge sources PCG/PEG/PYPL/UNH/VTR/FISV re-read
+                       # verbatim). 1 new peer-only node: MPT (Medical
+                       # Properties Trust, Real Estate - VTR peer; NYSE
+                       # ticker changed MPW->MPT effective 2026-02-02 per
+                       # Business Wire 2026-01-20; the VTR DEF 14A
+                       # (filed 2026-04-01) prints the stale (MPW) code -
+                       # live holder MPT wins per ticker-slot discipline,
+                       # same class as batch-8g VERX->VRTX).
+                       "MPT"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
