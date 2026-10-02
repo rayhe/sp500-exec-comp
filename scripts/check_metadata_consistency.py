@@ -2064,7 +2064,21 @@ def main():
                        # peer group), tickers SEC-verified via
                        # company_tickers.json + live SEC file/
                        # submissions 2026-10-01.
-                       "HE", "ICLR"}
+                       "HE", "ICLR",
+                       # 2026-10-01 17:00 PT run: peer-network batch-8c
+                       # fingerprint-queue repair (6 next-heaviest
+                       # 3-edge sources re-read verbatim: BG/CSX/TXN/
+                       # NTRS/GLW/WAB). 4 new peer-only nodes, tickers
+                       # SEC-verified via company_tickers.json 2026-10-01:
+                       # CNH (CNH Industrial N.V., Industrials - BG peer),
+                       # NTR (Nutrien Ltd., Materials - BG peer), CNI
+                       # (Canadian National Railway, Industrials - CSX
+                       # peer), TKR (Timken Company, Industrials - WAB
+                       # peer). BNY ticker-slot note: BK->BNY effective
+                       # 2026-05-21 (company press release, verified via
+                       # web search this run) - the BNY node was already
+                       # correct; no rename performed.
+                       "CNH", "CNI", "NTR", "TKR"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
