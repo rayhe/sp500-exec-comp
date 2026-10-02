@@ -2186,8 +2186,13 @@ function populateInsights(comp, trends, sectorFilter) {
     }
 
     // 5. Zero/Near-Zero Pay
-    var zeroPay = companies.filter(function(c) { return c.total_compensation <= 1; });
-    var under1M = companies.filter(function(c) { return c.total_compensation > 1 && c.total_compensation < 1000000; });
+    // A $0 total is only a "zero pay" finding when the company actually has
+    // NEO compensation data. Coverage stubs (e.g. VMRK: added at the Sep 2026
+    // rebalance with no post-merger DEF 14A on file yet, total_compensation 0
+    // as a placeholder) must not be presented as CEOs who "reported $0".
+    function _hasNeoData(c) { return !!(c.executives && c.executives.length); }
+    var zeroPay = companies.filter(function(c) { return c.total_compensation <= 1 && _hasNeoData(c); });
+    var under1M = companies.filter(function(c) { return c.total_compensation > 1 && c.total_compensation < 1000000 && _hasNeoData(c); });
     if (zeroPay.length > 0) {
         var zeroNames = zeroPay.map(function(c) { return c.ceo_name + ' (' + c.ticker + ')'; }).join(', ');
         insights.push({
