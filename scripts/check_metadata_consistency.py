@@ -2182,7 +2182,14 @@ def main():
                        # (filed 2026-04-01) prints the stale (MPW) code -
                        # live holder MPT wins per ticker-slot discipline,
                        # same class as batch-8g VERX->VRTX).
-                       "MPT"}
+                       # 2026-10-02 14:00 PT run: peer-network batch-8l
+                       # fingerprint-queue repair (6 heaviest remaining
+                       # 2-edge sources HUM/SBUX/BLDR/CB/CCL/FIS re-read
+                       # verbatim). 1 new peer-only node: IAG
+                       # (International Consolidated Airlines Group, S.A.,
+                       # Industrials - CCL 2025 Peer Group member,
+                       # LSE/Nasdaq-listed, no company row).
+                       "MPT", "IAG"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
