@@ -2078,7 +2078,20 @@ def main():
                        # 2026-05-21 (company press release, verified via
                        # web search this run) - the BNY node was already
                        # correct; no rename performed.
-                       "CNH", "CNI", "NTR", "TKR"}
+                       "CNH", "CNI", "NTR", "TKR",
+                       # 2026-10-01 19:30 PT run: peer-network batch-8d
+                       # fingerprint-queue repair (6 next-heaviest
+                       # 3-edge sources re-read verbatim: KDP/CNP/YUM/
+                       # TDG/MAS/IFF). 6 new peer-only nodes, tickers
+                       # SEC-verified 2026-10-01: DEO (Diageo plc,
+                       # Consumer Staples - KDP peer, NYSE ADR), RBC
+                       # (RBC Bearings, Industrials - TDG peer), RPM
+                       # (RPM International, Materials - MAS peer), LEG
+                       # (Leggett & Platt, Consumer Discretionary - MAS
+                       # peer), BHC (Bausch Health, Health Care - IFF
+                       # peer), CTLT (Catalent, Health Care - IFF peer,
+                       # delisted Dec 2024, no live slot holder).
+                       "BHC", "CTLT", "DEO", "LEG", "RBC", "RPM"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])

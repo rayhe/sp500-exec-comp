@@ -61,6 +61,8 @@ REPAIR_SCRIPTS = OrderedDict([
     ("peer-batch7-20261001", "scripts/peer_batch7_fingerprint_repair_20261001.py"),
     ("peer-batch8a-20261001", "scripts/peer_batch8a_fingerprint_repair_20261001.py"),
     ("peer-batch8b-20261001", "scripts/peer_batch8b_fingerprint_repair_20261001.py"),
+    ("peer-batch8c-20261001", "scripts/peer_batch8c_fingerprint_repair_20261001.py"),
+    ("peer-batch8d-20261001", "scripts/peer_batch8d_fingerprint_repair_20261001.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;
