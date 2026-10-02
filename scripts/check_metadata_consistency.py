@@ -2132,7 +2132,26 @@ def main():
                        # BF-A peer, NYSE); YETI (YETI Holdings, Consumer
                        # Discretionary - BF-A peer, NYSE).
                        "AYI", "BDC", "BYD", "ENR", "EPC", "HOG",
-                       "SAM", "SPXC", "YETI"}
+                       "SAM", "SPXC", "YETI",
+                       # 2026-10-02 03:30 PT run: peer-network batch-8g
+                       # fingerprint-queue repair (6 heaviest 2-edge
+                       # sources CARR/ETN/ITW/LNT/MMM/CRL re-read
+                       # verbatim; ETN isSource flipped off - only named
+                       # group is the TSR group). 9 new peer-only nodes:
+                       # AVA (Avista Corp, Utilities - LNT peer, NYSE,
+                       # CIK 0000104918); IDA (IDACORP, Utilities - LNT
+                       # peer, NYSE); BKH (Black Hills, Utilities - LNT
+                       # peer, NYSE); MDU (MDU Resources, Utilities -
+                       # LNT peer, NYSE); SWX (Southwest Gas Holdings,
+                       # Utilities - LNT peer, NYSE); TXNM (TXNM Energy,
+                       # Utilities - LNT peer, NYSE); FTRE (Fortrea
+                       # Holdings, Health Care - CRL peer, Nasdaq);
+                       # MYGN (Myriad Genetics, Health Care - CRL peer,
+                       # Nasdaq); MEDP (Medpace Holdings, Health Care -
+                       # CRL peer, Nasdaq). All 9 SEC company_tickers.json
+                       # verified 2026-10-02.
+                       "AVA", "BKH", "FTRE", "IDA", "MDU", "MEDP",
+                       "MYGN", "SWX", "TXNM"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
