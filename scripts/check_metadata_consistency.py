@@ -2091,7 +2091,29 @@ def main():
                        # peer), BHC (Bausch Health, Health Care - IFF
                        # peer), CTLT (Catalent, Health Care - IFF peer,
                        # delisted Dec 2024, no live slot holder).
-                       "BHC", "CTLT", "DEO", "LEG", "RBC", "RPM"}
+                       "BHC", "CTLT", "DEO", "LEG", "RBC", "RPM",
+                       # 2026-10-01 22:00 PT run: peer-network batch-8e
+                       # fingerprint-queue repair (6 next-heaviest
+                       # 3-edge sources re-read verbatim: LVS/DVN/FANG/
+                       # FFIV/GEV/TRGP). 10 new peer-only nodes: YUMC
+                       # (Yum China Holdings, Consumer Discretionary -
+                       # LVS peer, NYSE); MRO (Marathon Oil, Energy - DVN
+                       # peer, delisted Nov 2024 via COP acquisition,
+                       # retained per delisted-peer precedent); LNG
+                       # (Cheniere Energy, Energy - FANG/TRGP peer);
+                       # CHKP (Check Point Software, IT - FFIV peer,
+                       # Nasdaq); INFA (Informatica, IT - FFIV peer);
+                       # PSTG (Pure Storage, IT - FFIV peer, CIK
+                       # 0001474432, live NYSE); TDC (Teradata, IT -
+                       # FFIV peer); ET (Energy Transfer LP, Energy -
+                       # TRGP peer); EPD (Enterprise Products Partners,
+                       # Energy - TRGP peer); PAA (Plains All American,
+                       # Energy - TRGP peer, Nasdaq). PSTG/INFA absent
+                       # from company_tickers.json 2026-10-01 (file
+                       # quirk) but live-verified via EDGAR full-text
+                       # search this run.
+                       "CHKP", "EPD", "ET", "INFA", "LNG", "MRO",
+                       "PAA", "PSTG", "TDC", "YUMC"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
