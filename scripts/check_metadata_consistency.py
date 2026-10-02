@@ -2113,7 +2113,26 @@ def main():
                        # quirk) but live-verified via EDGAR full-text
                        # search this run.
                        "CHKP", "EPD", "ET", "INFA", "LNG", "MRO",
-                       "PAA", "PSTG", "TDC", "YUMC"}
+                       "PAA", "PSTG", "TDC", "YUMC",
+                       # 2026-10-02 02:00 PT run: peer-network batch-8f
+                       # fingerprint-queue repair (3 heaviest 3-edge
+                       # sources UNP/WYNN/ALLE + DE/CI/BF-A). 9 new
+                       # peer-only nodes: BYD (Boyd Gaming, Consumer
+                       # Discretionary - WYNN peer, NYSE); AYI (Acuity
+                       # Brands, Industrials - ALLE peer, NYSE); AOS
+                       # NOT listed here: A. O. Smith is an S&P 500
+                       # tracked company (AOS) - now a full company node;
+                       # BDC (Belden, IT - ALLE peer, NYSE); SPXC (SPX
+                       # Technologies, Industrials - ALLE peer, NYSE);
+                       # SAM (Boston Beer, Consumer Staples - BF-A peer,
+                       # NYSE); EPC (Edgewell Personal Care, Consumer
+                       # Staples - BF-A peer, NYSE); ENR (Energizer,
+                       # Consumer Staples - BF-A peer, NYSE); HOG
+                       # (Harley-Davidson, Consumer Discretionary -
+                       # BF-A peer, NYSE); YETI (YETI Holdings, Consumer
+                       # Discretionary - BF-A peer, NYSE).
+                       "AYI", "BDC", "BYD", "ENR", "EPC", "HOG",
+                       "SAM", "SPXC", "YETI"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
