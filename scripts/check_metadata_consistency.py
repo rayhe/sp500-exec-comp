@@ -2151,7 +2151,27 @@ def main():
                        # CRL peer, Nasdaq). All 9 SEC company_tickers.json
                        # verified 2026-10-02.
                        "AVA", "BKH", "FTRE", "IDA", "MDU", "MEDP",
-                       "MYGN", "SWX", "TXNM"}
+                       "MYGN", "SWX", "TXNM",
+                       # 2026-10-02 06:00 PT run: peer-network batch-8h
+                       # fingerprint-queue repair (6 heaviest 2-edge
+                       # sources DTE/BKNG/NOC/SRE/BKR/CEG re-read
+                       # verbatim). 5 new peer-only nodes: DINO (HF
+                       # Sinclair Corp, Energy - CEG peer, NYSE, CIK
+                       # 0000000636); IAC (IAC/InterActiveCorp,
+                       # Communication Services - BKNG peer; renamed
+                       # People Incorporated Jun 2026, ticker now PPLI
+                       # - stored as IAC per delisted-peer precedent);
+                       # MPLX (MPLX LP, Energy - SRE peer, NYSE, CIK
+                       # 0000000293); TRIP (TripAdvisor Inc., Consumer
+                       # Discretionary - BKNG peer, Nasdaq, CIK
+                       # 0000002690); WRK (WestRock Company, Materials -
+                       # CEG peer; Smurfit Westrock merger 2024,
+                       # delisted - stored verbatim per delisted-peer
+                       # precedent). DINO/MPLX/TRIP SEC
+                       # company_tickers.json verified 2026-10-02; IAC
+                       # rename verified via EDGAR submissions +
+                       # primary press (PR Newswire 2026-06-04).
+                       "DINO", "IAC", "MPLX", "TRIP", "WRK"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
