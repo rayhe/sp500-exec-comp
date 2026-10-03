@@ -2236,7 +2236,17 @@ def main():
                        # CBT (Cabot Corporation), SUM (Summit Materials,
                        # Inc.) and WLK (Westlake Chemical Corporation) - all
                        # Materials - from VMC's 2025 peer group.
-                       "EXP", "NEU", "ALSN", "FMC", "CBT", "SUM", "WLK"}
+                       "EXP", "NEU", "ALSN", "FMC", "CBT", "SUM", "WLK",
+                       # 2026-10-03 06:00 PT batch-8q: PHG (Koninklijke
+                       # Philips N.V. ADR) and SMNEY (Siemens Healthineers AG
+                       # ADR) - Health Care - from GEHC's 2025 Compensation
+                       # Peer Group; MIDD (The Middleby Corporation) and VMI
+                       # (Valmont Industries, Inc.) - Industrials - from
+                       # PNR's Comparator Group; PPC (Pilgrim's Pride
+                       # Corporation), SEB (Seaboard Corporation) and FDP
+                       # (Fresh Del Monte Produce Inc.) - Consumer Staples -
+                       # from HRL's Fiscal 2025 Compensation Peer Group.
+                       "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
