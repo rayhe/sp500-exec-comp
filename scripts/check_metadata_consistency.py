@@ -2189,7 +2189,23 @@ def main():
                        # (International Consolidated Airlines Group, S.A.,
                        # Industrials - CCL 2025 Peer Group member,
                        # LSE/Nasdaq-listed, no company row).
-                       "MPT", "IAG"}
+                       "MPT", "IAG",
+                       # 2026-10-02 18:00 PT run: peer-network batch-8m
+                       # fingerprint-queue repair (6 heaviest remaining
+                       # 2-edge sources LHX/NKE/PEP/PLD/PWR/RVTY re-read
+                       # verbatim). 7 new peer-only nodes: EVR (Evercore
+                       # Inc., Financials), JEF (Jefferies Financial Group
+                       # Inc., Financials), LAZ (Lazard, Inc., Financials)
+                       # from PLD's 2025 Peer Group; EME (EMCOR Group,
+                       # Inc., Industrials) and MTZ (MasTec, Inc.,
+                       # Industrials) from PWR's 2025 peer group
+                       # (filing-supplied NYSE tickers); QGEN (QIAGEN N.V.,
+                       # Health Care, NYSE-listed) and QDEL (QuidelOrtho
+                       # Corporation, Health Care, Nasdaq-listed) from
+                       # RVTY's 2025 Peer Group. CG/ACM/FLR already
+                       # existed as nodes; DANOY/NSRGY skipped OTC-only
+                       # per the RHHBY/batch-8d precedent.
+                       "EVR", "JEF", "LAZ", "EME", "MTZ", "QGEN", "QDEL"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
