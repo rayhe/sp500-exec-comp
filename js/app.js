@@ -2095,11 +2095,34 @@ function populateInsights(comp, trends, sectorFilter) {
     var topNPay = sorted.slice(0, topN).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
     var topNPct = totalAllPay > 0 ? (topNPay / totalAllPay * 100).toFixed(1) : '0';
     var remainCount = Math.max(0, companies.length - topN);
+    // One-CEO-singularity framing: when a single CEO dominates the whole
+    // distribution (TSLA: $158.4B of ~$168.4B), the headline "top 10 earned X%"
+    // is really a one-person story and says nothing about the remaining
+    // companies. Recompute the distribution excluding the #1 earner so the
+    // card informs on both the dominant CEO and the other N-1. Works for any
+    // scope (full index or a single sector); realized-comp caveat follows the
+    // dominant figure per the REALIZED_COMP_NOTES contract.
+    var pcDetail = 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation. The remaining ' + remainCount + ' CEOs share the other ' + (100 - parseFloat(topNPct)).toFixed(1) + '%.';
+    var pcTickers = [];
+    if (sorted.length > 0) {
+        var pcDom = sorted[0];
+        var pcDomShare = totalAllPay > 0 ? ((pcDom.total_compensation || 0) / totalAllPay * 100) : 0;
+        var pcRest = companies.filter(function(c) { return c !== pcDom; })
+            .slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
+        var pcRestTotal = pcRest.reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+        var pcRestTopN = Math.min(10, pcRest.length);
+        var pcRestTopNPay = pcRest.slice(0, pcRestTopN).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
+        var pcRestTopNPct = pcRestTotal > 0 ? (pcRestTopNPay / pcRestTotal * 100).toFixed(1) : '0';
+        var pcRestLeader = pcRest[0];
+        pcDetail = 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation — but ' + pcDomShare.toFixed(1) + '% of the total is ' + pcDom.ceo_name + ' (' + pcDom.ticker + ') alone.' + realizedNote(pcDom.ticker) + ' Excluding ' + pcDom.ticker + ', the top ' + pcRestTopN + ' of the remaining ' + pcRest.length + ' CEOs earned ' + pcRestTopNPct + '%, led by ' + (pcRestLeader ? pcRestLeader.ceo_name + ' (' + pcRestLeader.ticker + ')' : 'no one') + '.';
+        pcTickers = [pcDom.ticker].concat(pcRest.slice(0, 2).map(function(c) { return c.ticker; }));
+    }
     insights.push({
         icon: CARD_ICONS.chart,
         label: 'Pay Concentration',
         value: formatCurrency(topNPay) + ' combined',
-        detail: 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation. The remaining ' + remainCount + ' CEOs share the other ' + (100 - parseFloat(topNPct)).toFixed(1) + '%.'
+        detail: pcDetail,
+        _tickers: pcTickers
     });
 
     // 2. $50M+ Club
