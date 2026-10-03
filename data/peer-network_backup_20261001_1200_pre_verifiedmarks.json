@@ -2,10 +2,10 @@
  "metadata": {
   "title": "S&P 500 Compensation Peer Group Network",
   "description": "Directional peer group relationships from SEC EDGAR DEF 14A proxy statements",
-  "sources": "487 DEF 14A proxy statements from S&P 500 companies",
+  "sources": "491 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
-  "node_count": 952,
-  "edge_count": 7241,
+  "node_count": 953,
+  "edge_count": 7307,
   "last_updated": "2026-10-03",
   "last_dq_repair": "2026-10-03",
   "verified_cross_sector": [
@@ -436,7 +436,7 @@
    "ticker": "ABT",
    "name": "Abbott Laboratories",
    "sector": "Health Care",
-   "in_degree": 22,
+   "in_degree": 23,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -735,7 +735,8 @@
    "sector": "Information Technology",
    "in_degree": 5,
    "out_degree": 0,
-   "market_cap_tier": "large"
+   "market_cap_tier": "large",
+   "isSource": false
   },
   {
    "ticker": "APO",
@@ -840,7 +841,7 @@
    "ticker": "BA",
    "name": "Boeing Co/The",
    "sector": "Industrials",
-   "in_degree": 22,
+   "in_degree": 24,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -867,7 +868,7 @@
    "ticker": "BAX",
    "name": "Baxter International Inc",
    "sector": "Health Care",
-   "in_degree": 19,
+   "in_degree": 20,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -885,7 +886,7 @@
    "ticker": "BDX",
    "name": "Becton Dickinson & Co",
    "sector": "Health Care",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
@@ -1010,7 +1011,7 @@
    "ticker": "BSX",
    "name": "Boston Scientific Corp",
    "sector": "Health Care",
-   "in_degree": 24,
+   "in_degree": 25,
    "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
@@ -1021,7 +1022,8 @@
    "sector": "Financials",
    "in_degree": 4,
    "out_degree": 0,
-   "market_cap_tier": "large"
+   "market_cap_tier": "large",
+   "isSource": false
   },
   {
    "ticker": "BXP",
@@ -1055,8 +1057,9 @@
    "name": "Cardinal Health Inc",
    "sector": "Health Care",
    "in_degree": 11,
-   "out_degree": 0,
-   "market_cap_tier": "large"
+   "out_degree": 24,
+   "market_cap_tier": "large",
+   "isSource": true
   },
   {
    "ticker": "CARR",
@@ -1179,7 +1182,7 @@
    "ticker": "CHRW",
    "name": "CH Robinson Worldwide Inc",
    "sector": "Industrials",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
@@ -1188,7 +1191,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 27,
+   "in_degree": 28,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1197,7 +1200,7 @@
    "ticker": "CI",
    "name": "Cigna Group/The",
    "sector": "Health Care",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 24,
    "market_cap_tier": "large",
    "isSource": true
@@ -1233,7 +1236,7 @@
    "ticker": "CMCSA",
    "name": "Comcast Corp",
    "sector": "Communication Services",
-   "in_degree": 13,
+   "in_degree": 14,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -1332,7 +1335,7 @@
    "ticker": "COR",
    "name": "Cencora Inc",
    "sector": "Health Care",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
@@ -1386,7 +1389,7 @@
    "ticker": "CRM",
    "name": "Salesforce Inc",
    "sector": "Information Technology",
-   "in_degree": 39,
+   "in_degree": 40,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -1404,7 +1407,7 @@
    "ticker": "CSCO",
    "name": "Cisco Systems Inc",
    "sector": "Information Technology",
-   "in_degree": 40,
+   "in_degree": 41,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -1422,7 +1425,7 @@
    "ticker": "CSX",
    "name": "CSX Corp",
    "sector": "Industrials",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 20,
    "market_cap_tier": "large",
    "isSource": true
@@ -1467,7 +1470,7 @@
    "ticker": "CVS",
    "name": "CVS Health Corp",
    "sector": "Health Care",
-   "in_degree": 15,
+   "in_degree": 16,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -1476,7 +1479,7 @@
    "ticker": "CVX",
    "name": "Chevron Corp",
    "sector": "Energy",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 8,
    "market_cap_tier": "large",
    "isSource": true
@@ -1567,7 +1570,8 @@
    "sector": "Information Technology",
    "in_degree": 6,
    "out_degree": 0,
-   "market_cap_tier": "large"
+   "market_cap_tier": "large",
+   "isSource": false
   },
   {
    "ticker": "DG",
@@ -1600,7 +1604,7 @@
    "ticker": "DHR",
    "name": "Danaher Corp",
    "sector": "Health Care",
-   "in_degree": 25,
+   "in_degree": 26,
    "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
@@ -1609,7 +1613,7 @@
    "ticker": "DIS",
    "name": "Walt Disney Co/The",
    "sector": "Communication Services",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -1798,7 +1802,7 @@
    "ticker": "ELV",
    "name": "Elevance Health Inc",
    "sector": "Health Care",
-   "in_degree": 13,
+   "in_degree": 14,
    "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
@@ -1960,14 +1964,15 @@
    "name": "Expeditors International of Washington Inc",
    "sector": "Industrials",
    "in_degree": 4,
-   "out_degree": 0,
-   "market_cap_tier": "large"
+   "out_degree": 14,
+   "market_cap_tier": "large",
+   "isSource": true
   },
   {
    "ticker": "EXPE",
    "name": "Expedia Group Inc",
    "sector": "Consumer Discretionary",
-   "in_degree": 16,
+   "in_degree": 17,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -1985,7 +1990,7 @@
    "ticker": "F",
    "name": "Ford Motor Co",
    "sector": "Consumer Discretionary",
-   "in_degree": 5,
+   "in_degree": 6,
    "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
@@ -2030,7 +2035,7 @@
    "ticker": "FDX",
    "name": "FedEx Corp",
    "sector": "Industrials",
-   "in_degree": 16,
+   "in_degree": 17,
    "out_degree": 0,
    "market_cap_tier": "large",
    "isSource": false
@@ -2146,7 +2151,7 @@
    "ticker": "GE",
    "name": "General Electric Co",
    "sector": "Industrials",
-   "in_degree": 9,
+   "in_degree": 11,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2218,7 +2223,7 @@
    "ticker": "GM",
    "name": "General Motors Co",
    "sector": "Consumer Discretionary",
-   "in_degree": 5,
+   "in_degree": 7,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -2416,7 +2421,7 @@
    "ticker": "HSIC",
    "name": "Henry Schein Inc",
    "sector": "Health Care",
-   "in_degree": 8,
+   "in_degree": 9,
    "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
@@ -2470,7 +2475,7 @@
    "ticker": "IBM",
    "name": "International Business Machines Corp",
    "sector": "Information Technology",
-   "in_degree": 36,
+   "in_degree": 38,
    "out_degree": 22,
    "market_cap_tier": "large",
    "isSource": true
@@ -2524,7 +2529,7 @@
    "ticker": "INTC",
    "name": "Intel Corp",
    "sector": "Information Technology",
-   "in_degree": 30,
+   "in_degree": 31,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -2640,7 +2645,7 @@
    "ticker": "JBHT",
    "name": "JB Hunt Transport Services Inc",
    "sector": "Industrials",
-   "in_degree": 4,
+   "in_degree": 5,
    "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
@@ -2676,7 +2681,7 @@
    "ticker": "JNJ",
    "name": "Johnson & Johnson",
    "sector": "Health Care",
-   "in_degree": 28,
+   "in_degree": 30,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2810,7 +2815,7 @@
    "ticker": "KR",
    "name": "Kroger Co",
    "sector": "Consumer Staples",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -2855,7 +2860,7 @@
    "ticker": "LH",
    "name": "Labcorp Holdings Inc",
    "sector": "Health Care",
-   "in_degree": 6,
+   "in_degree": 7,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -3053,7 +3058,7 @@
    "ticker": "MCK",
    "name": "McKesson Corp",
    "sector": "Health Care",
-   "in_degree": 11,
+   "in_degree": 12,
    "out_degree": 20,
    "market_cap_tier": "large",
    "isSource": true
@@ -3080,7 +3085,7 @@
    "ticker": "MDT",
    "name": "Medtronic PLC",
    "sector": "Health Care",
-   "in_degree": 22,
+   "in_degree": 23,
    "out_degree": 22,
    "market_cap_tier": "large",
    "isSource": true
@@ -3367,7 +3372,7 @@
    "ticker": "NFLX",
    "name": "Netflix Inc",
    "sector": "Communication Services",
-   "in_degree": 24,
+   "in_degree": 25,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -3421,7 +3426,7 @@
    "ticker": "NSC",
    "name": "Norfolk Southern Corp",
    "sector": "Industrials",
-   "in_degree": 8,
+   "in_degree": 9,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -3502,7 +3507,7 @@
    "ticker": "ODFL",
    "name": "Old Dominion Freight Line Inc",
    "sector": "Industrials",
-   "in_degree": 4,
+   "in_degree": 5,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -3538,7 +3543,7 @@
    "ticker": "ORCL",
    "name": "Oracle Corp",
    "sector": "Information Technology",
-   "in_degree": 23,
+   "in_degree": 24,
    "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
@@ -3645,7 +3650,7 @@
    "ticker": "PFE",
    "name": "Pfizer Inc",
    "sector": "Health Care",
-   "in_degree": 27,
+   "in_degree": 28,
    "out_degree": 31,
    "market_cap_tier": "large",
    "isSource": true
@@ -3663,7 +3668,7 @@
    "ticker": "PG",
    "name": "Procter & Gamble Co",
    "sector": "Consumer Staples",
-   "in_degree": 28,
+   "in_degree": 29,
    "out_degree": 21,
    "market_cap_tier": "large",
    "isSource": true
@@ -3987,7 +3992,7 @@
    "ticker": "RTX",
    "name": "RTX Corp",
    "sector": "Industrials",
-   "in_degree": 24,
+   "in_degree": 25,
    "out_degree": 21,
    "market_cap_tier": "large",
    "isSource": true
@@ -4239,7 +4244,7 @@
    "ticker": "SYK",
    "name": "Stryker Corp",
    "sector": "Health Care",
-   "in_degree": 19,
+   "in_degree": 20,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4248,7 +4253,7 @@
    "ticker": "SYY",
    "name": "Sysco Corp",
    "sector": "Consumer Staples",
-   "in_degree": 7,
+   "in_degree": 8,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -4257,9 +4262,10 @@
    "ticker": "T",
    "name": "AT&T Inc",
    "sector": "Communication Services",
-   "in_degree": 13,
-   "out_degree": 0,
-   "market_cap_tier": "large"
+   "in_degree": 14,
+   "out_degree": 16,
+   "market_cap_tier": "large",
+   "isSource": true
   },
   {
    "ticker": "TAP",
@@ -4328,7 +4334,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 38,
+   "in_degree": 39,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -4355,7 +4361,7 @@
    "ticker": "TMO",
    "name": "Thermo Fisher Scientific Inc",
    "sector": "Health Care",
-   "in_degree": 19,
+   "in_degree": 20,
    "out_degree": 26,
    "market_cap_tier": "large",
    "isSource": true
@@ -4364,7 +4370,7 @@
    "ticker": "TMUS",
    "name": "T-Mobile US Inc",
    "sector": "Communication Services",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -4544,7 +4550,7 @@
    "ticker": "UNH",
    "name": "UnitedHealth Group Inc",
    "sector": "Health Care",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 20,
    "market_cap_tier": "large",
    "isSource": true
@@ -4553,7 +4559,7 @@
    "ticker": "UNP",
    "name": "Union Pacific Corp",
    "sector": "Industrials",
-   "in_degree": 11,
+   "in_degree": 12,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -4562,7 +4568,7 @@
    "ticker": "UPS",
    "name": "United Parcel Service Inc",
    "sector": "Industrials",
-   "in_degree": 17,
+   "in_degree": 19,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4688,7 +4694,7 @@
    "ticker": "VZ",
    "name": "Verizon Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 16,
+   "in_degree": 18,
    "out_degree": 26,
    "market_cap_tier": "large",
    "isSource": true
@@ -4715,7 +4721,7 @@
    "ticker": "WBA",
    "name": "Walgreens Boots Alliance Inc",
    "sector": "Consumer Staples",
-   "in_degree": 12,
+   "in_degree": 13,
    "out_degree": 20,
    "market_cap_tier": "large",
    "isSource": true
@@ -4796,7 +4802,7 @@
    "ticker": "WMT",
    "name": "Walmart Inc",
    "sector": "Consumer Staples",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 23,
    "market_cap_tier": "large",
    "isSource": true
@@ -4868,8 +4874,9 @@
    "name": "Exxon Mobil Corp",
    "sector": "Energy",
    "in_degree": 7,
-   "out_degree": 0,
-   "market_cap_tier": "large"
+   "out_degree": 12,
+   "market_cap_tier": "large",
+   "isSource": true
   },
   {
    "ticker": "XYL",
@@ -5389,7 +5396,7 @@
    "name": "GXO",
    "company_name": "GXO Logistics, Inc.",
    "sector": "Industrials",
-   "in_degree": 1,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5407,7 +5414,7 @@
    "name": "KNX",
    "company_name": "Knight-Swift Transportation Holdings Inc.",
    "sector": "Industrials",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5533,7 +5540,7 @@
    "name": "R",
    "company_name": "RYDER SYSTEM INC",
    "sector": "Industrials",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5641,7 +5648,7 @@
    "name": "SNDR",
    "company_name": "Schneider National, Inc.",
    "sector": "Industrials",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5659,7 +5666,7 @@
    "name": "TFII",
    "company_name": "TFI International Inc.",
    "sector": "Industrials",
-   "in_degree": 1,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5713,7 +5720,7 @@
    "name": "XPO",
    "company_name": "XPO, Inc.",
    "sector": "Industrials",
-   "in_degree": 2,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6532,7 +6539,7 @@
    "ticker": "ALK",
    "name": "Alaska Air Group, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 1,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -8604,6 +8611,14 @@
    "ticker": "VMW",
    "name": "VMware, Inc.",
    "sector": "Information Technology",
+   "in_degree": 1,
+   "out_degree": 0,
+   "market_cap_tier": "large"
+  },
+  {
+   "ticker": "ACH",
+   "name": "Accendra Health Inc.",
+   "sector": "Health Care",
    "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
@@ -59296,6 +59311,468 @@
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-03-20"
+  },
+  {
+   "source": "T",
+   "target": "BA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "CSCO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "GE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "IBM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "NFLX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "CRM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "UPS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "WMT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "CMCSA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "GM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "INTC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "ORCL",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "TMUS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "VZ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "T",
+   "target": "DIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "CAH",
+   "target": "ABT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "JNJ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "ACH",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "KR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "BAX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "LH",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "BDX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "MCK",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "BSX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "MDT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "COR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "SYK",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "CI",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "SYY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "CVS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "DHR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "TMO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "ELV",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "UPS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "FDX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "UNH",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "HSIC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "CAH",
+   "target": "WBA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-09-21"
+  },
+  {
+   "source": "XOM",
+   "target": "T",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "BA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "CVX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "F",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "GE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "GM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "IBM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "JNJ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "PFE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "PG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "RTX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "XOM",
+   "target": "VZ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "EXPD",
+   "target": "ALK",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "CHRW",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "CSX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "EXPE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "GXO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "JBHT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "KNX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "NSC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "ODFL",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "R",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "SNDR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "TFII",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "UNP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "EXPD",
+   "target": "XPO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
   }
  ]
 }

@@ -2258,8 +2258,16 @@ def main():
                        # 2025-04-04); AR (Antero Resources Corporation) -
                        # Energy - from CTRA's 2024 comp-decisions peer group
                        # (DEF 14A 2025-03-20).
+                       # 2026-10-03 14:00 PT run: peer-network batch-8t orphan
+                       # extraction (T/CAH/XOM/EXPD peer groups from latest
+                       # DEF 14As; BX/DELL/APH verified-absent). ACH
+                       # (Accendra Health Inc., formerly Owens & Minor -
+                       # renamed 2026-09; ticker SEC-verified via
+                       # company_tickers_exchange.json 2026-10-03) - Health
+                       # Care - from CAH's FY2026 Comparator Group (DEF 14A
+                       # 2026-09-21).
                        "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP",
-                       "BCS", "DB", "UBS", "VMW", "MUR", "AR"}
+                       "BCS", "DB", "UBS", "VMW", "MUR", "AR", "ACH"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
