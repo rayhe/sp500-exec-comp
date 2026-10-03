@@ -2246,7 +2246,12 @@ def main():
                        # Corporation), SEB (Seaboard Corporation) and FDP
                        # (Fresh Del Monte Produce Inc.) - Consumer Staples -
                        # from HRL's Fiscal 2025 Compensation Peer Group.
-                       "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP"}
+                       # 2026-10-03 10:00 PT batch-8r: BCS (Barclays PLC ADR),
+                       # DB (Deutsche Bank AG ADR) and UBS (UBS Group AG ADR)
+                       # - Financials - from GS's "Our Peers" compensation
+                       # benchmarking peer set (DEF 14A 2026-03-20).
+                       "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP",
+                       "BCS", "DB", "UBS"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
