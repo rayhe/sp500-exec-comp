@@ -2204,8 +2204,21 @@ def main():
                        # Corporation, Health Care, Nasdaq-listed) from
                        # RVTY's 2025 Peer Group. CG/ACM/FLR already
                        # existed as nodes; DANOY/NSRGY skipped OTC-only
-                       # per the RHHBY/batch-8d precedent.
-                       "EVR", "JEF", "LAZ", "EME", "MTZ", "QGEN", "QDEL"}
+                       # per the RHHBY/batch-8d precedent. 2026-10-02
+                       # 22:00 PT batch-8n: NSIT (Insight Enterprises, Inc.,
+                       # Information Technology) from ZBRA's 2025 comp peer
+                       # group; HR (Healthcare Realty Trust Incorporated),
+                       # OHI (Omega Healthcare Investors, Inc.) and WPC
+                       # (W.P. Carey Inc.) - all Real Estate - from DOC's
+                       # 2025 executive compensation peer group; AMRC
+                       # (Ameresco, Inc.), ARRY (Array Technologies, Inc.)
+                       # and ENS (EnerSys) - all Industrials - plus AGR
+                       # (Avangrid, Inc., Utilities, delisted Dec 2024,
+                       # stored verbatim per the delisted-peer precedent)
+                       # from FSLR's 2025 peer group.
+                       "EVR", "JEF", "LAZ", "EME", "MTZ", "QGEN", "QDEL",
+                       "NSIT", "HR", "OHI", "WPC", "AMRC", "ARRY", "AGR",
+                       "ENS"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
