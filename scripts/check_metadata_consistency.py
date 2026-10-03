@@ -2229,7 +2229,14 @@ def main():
                        # investigated - no named comp peer group in its
                        # 2026-04-01 DEF 14A, honest orphan per ADM
                        # precedent, isSource False unchanged).
-                       "CRH", "ELAN"}
+                       "CRH", "ELAN",
+                       # 2026-10-03 02:00 PT batch-8p: EXP (Eagle Materials
+                       # Inc.), NEU (NewMarket Corporation), ALSN (Allison
+                       # Transmission Holdings, Inc.), FMC (FMC Corporation),
+                       # CBT (Cabot Corporation), SUM (Summit Materials,
+                       # Inc.) and WLK (Westlake Chemical Corporation) - all
+                       # Materials - from VMC's 2025 peer group.
+                       "EXP", "NEU", "ALSN", "FMC", "CBT", "SUM", "WLK"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
