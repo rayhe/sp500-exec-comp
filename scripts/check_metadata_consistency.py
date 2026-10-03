@@ -2218,7 +2218,18 @@ def main():
                        # from FSLR's 2025 peer group.
                        "EVR", "JEF", "LAZ", "EME", "MTZ", "QGEN", "QDEL",
                        "NSIT", "HR", "OHI", "WPC", "AMRC", "ARRY", "AGR",
-                       "ENS"}
+                       "ENS",
+                       # 2026-10-02 23:30 PT batch-8o: CRH (CRH plc,
+                       # Materials, NYSE-listed) from SW's 2025
+                       # Compensation Peer Group; ELAN (Elanco Animal
+                       # Health Incorporated, Health Care, NYSE-listed)
+                       # from IDXX's 2025 Compensation Peer Group.
+                       # Same batch: FL (Foot Locker Inc) orphan node
+                       # REMOVED (0 edges, not in S&P 500 roster; L
+                       # investigated - no named comp peer group in its
+                       # 2026-04-01 DEF 14A, honest orphan per ADM
+                       # precedent, isSource False unchanged).
+                       "CRH", "ELAN"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
