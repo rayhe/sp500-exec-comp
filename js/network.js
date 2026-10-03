@@ -896,9 +896,14 @@ function initNetwork(peerData) {
         }
         var inDeg = node.in_degree || 0;
         if (inDeg === 0) return 4;
-        // Normalize to 0-1, then map to area range [minA, maxA]
+        // Normalize to 0-1, then map to area range [minA, maxA].
+        // maxR is capped so the largest hubs don't swallow the graph:
+        // at 939 nodes the packed default view reads as a bubble blob
+        // when the top hubs reach 55px. 44px keeps the size channel
+        // (legend samples derive from this same function) while letting
+        // edges and labels breathe.
         var t = inDeg / maxInDegree;
-        var minR = 5, maxR = 55;
+        var minR = 5, maxR = 44;
         // Area-proportional: r = sqrt(lerp(minA, maxA, t))
         var minA = minR * minR;
         var maxA = maxR * maxR;
@@ -1396,9 +1401,12 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
         } else {
-            // Default edge colors — overridden below when path-finder or high-contrast is active
-            var edgeCrossColor = _dark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)';
-            var edgeSameColor = _dark ? 'rgba(0,180,216,0.1)' : 'rgba(0,120,180,0.12)';
+            // Default edge colors — overridden below when path-finder or high-contrast is active.
+            // Same-sector alpha raised 0.10 -> 0.14 and cross-sector 0.035 -> 0.05
+            // (2026-10-03): with the smaller node radii the edge web is now the
+            // structure-carrying channel in the default view, so it needs to read.
+            var edgeCrossColor = _dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)';
+            var edgeSameColor = _dark ? 'rgba(0,180,216,0.14)' : 'rgba(0,120,180,0.16)';
             var edgeCrossWidth = 0.4;
             var edgeSameWidth = 0.7;
 
@@ -2847,8 +2855,8 @@ function initNetwork(peerData) {
     });
 
     var simulation = d3.forceSimulation(nodes)
-        .force('link', d3.forceLink(links).id(function(d) { return d.ticker; }).distance(60).strength(0.15))
-        .force('charge', d3.forceManyBody().strength(-80).distanceMax(300))
+        .force('link', d3.forceLink(links).id(function(d) { return d.ticker; }).distance(72).strength(0.15))
+        .force('charge', d3.forceManyBody().strength(-110).distanceMax(320))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(function(d) { return getRadius(d) + 2; }).iterations(1))
         .alphaDecay(0.03)
