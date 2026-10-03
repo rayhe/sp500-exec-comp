@@ -2267,7 +2267,24 @@ def main():
                        # Care - from CAH's FY2026 Comparator Group (DEF 14A
                        # 2026-09-21).
                        "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP",
-                       "BCS", "DB", "UBS", "VMW", "MUR", "AR", "ACH"}
+                       "BCS", "DB", "UBS", "VMW", "MUR", "AR", "ACH",
+                       # 2026-10-03 15:30 PT run: peer-network batch-8u orphan
+                       # extraction (WST/MO/IPG/DAY peer groups from latest
+                       # DEF 14As; KKR/AOS/BRK-B/IBKR/FRT/ARES/PSKY/ERIE
+                       # verified-absent). 13 new peer-only nodes, tickers
+                       # SEC-verified via company_tickers_exchange.json:
+                       # ATR (AptarGroup, Health Care), HAE (Haemonetics,
+                       # Health Care), IART (Integra LifeSciences, Health
+                       # Care) from WST's 2025 Business Segment Group;
+                       # ATVI (Activision Blizzard), PUBGY (Publicis Groupe
+                       # ADR), LGF (Lions Gate), QRTEA (Qurate Retail),
+                       # GCI (Gannett), NLSN (Nielsen), WPP (WPP plc ADR)
+                       # from IPG's 2022 Comparator Group (last pre-Omnicom);
+                       # BILL, RNG (RingCentral), FIVN (Five9) from DAY's
+                       # Oct-2024 peer group (last pre-Thoma Bravo).
+                       "ATR", "HAE", "IART", "ATVI", "PUBGY", "LGF",
+                       "QRTEA", "GCI", "NLSN", "WPP", "BILL", "RNG",
+                       "FIVN"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
