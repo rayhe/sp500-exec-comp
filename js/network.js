@@ -1619,6 +1619,25 @@ function initNetwork(peerData) {
                 ctx.lineWidth = 2 / scale;
                 ctx.stroke();
             }
+
+            // Peer-orphan ring — dashed amber ring on tracked S&P 500 companies
+            // with zero outgoing peer selections. Drawn outside the node body
+            // (and outside the PvP ring when both are present) so the honest
+            // orphan reads as intentional, not missing data. Two flavors:
+            // isSource === false means the DEF 14A was re-read and verified to
+            // disclose no compensation peer group (e.g. AVY, batch-8q);
+            // missing isSource means the peer group has not been extracted yet
+            // (AOS, ARES). Alpha tracks the node's so dimmed nodes keep dimmed
+            // rings; the tooltip names which flavor applies.
+            if (_compLookup[d.ticker] && (d.out_degree || 0) === 0 && alpha > 0.08) {
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, r + 6 / scale, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(251,191,36,' + Math.min(0.75, alpha).toFixed(2) + ')';
+                ctx.lineWidth = 1.5 / scale;
+                ctx.setLineDash([4 / scale, 3 / scale]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
         });
 
         // Cluster sector labels — floating sector names at centroids when zoomed out
@@ -2699,7 +2718,19 @@ function initNetwork(peerData) {
             html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + inSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - inSamePct) + '%"></div></div>';
             html += '<div class="tt-peer-detail"><span class="tt-peer-same">' + inSame + ' same-sector</span><span class="tt-peer-cross">' + inCross + ' cross-sector</span></div>';
         }
-        html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-out"></span>Selects</span><span class="tt-value">' + d.out_degree + ' peers</span></div>';
+        // Peer-orphan note — a tracked S&P 500 company with 0 outgoing edges is
+        // either a verified non-discloser (isSource === false: the DEF 14A was
+        // re-read and names no compensation peer group, e.g. AVY) or a peer
+        // group not yet extracted from its DEF 14A (AOS, ARES). Say which, so
+        // "0 peers" cannot be mistaken for a data gap.
+        if (_compLookup[d.ticker] && (d.out_degree || 0) === 0) {
+            var _orphanNote = d.isSource === false
+                ? ' · no compensation peer group disclosed in the latest DEF 14A (verified)'
+                : ' · peer group not yet verified from the DEF 14A';
+            html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-out"></span>Selects</span><span class="tt-value">' + d.out_degree + ' peers' + escapeHtml(_orphanNote) + '</span></div>';
+        } else {
+            html += '<div class="tt-row"><span class="tt-label"><span class="tt-dir-dot tt-dir-out"></span>Selects</span><span class="tt-value">' + d.out_degree + ' peers</span></div>';
+        }
         if (outTotal > 0) {
             var outSamePct = Math.round(outSame / outTotal * 100);
             html += '<div class="tt-peer-bar"><div class="tt-peer-bar-fill tt-same" style="width:' + outSamePct + '%"></div><div class="tt-peer-bar-fill tt-cross" style="width:' + (100 - outSamePct) + '%"></div></div>';
@@ -3674,6 +3705,12 @@ function initNetwork(peerData) {
             });
             return;
         }
+        // Orphan legend item is informational only (no ring toggle, not a
+        // sector) — never attach the sector-filter click handler to it.
+        if (item.getAttribute('data-orphan-legend') === '1') {
+            item.style.cursor = 'default';
+            return;
+        }
         item.addEventListener('click', function() {
             // Get sector name from legend item text
             var text = item.textContent.trim();
@@ -3696,6 +3733,9 @@ function initNetwork(peerData) {
             // its legend-active class or dim it as part of sector filtering.
             legendItems.forEach(function(li) {
                 if (li.getAttribute('data-pvp-legend') === '1') return;
+                // Orphan legend item is not a sector — never strip or dim it
+                // as part of sector filtering.
+                if (li.getAttribute('data-orphan-legend') === '1') return;
                 li.classList.remove('legend-active');
                 if (activeLegendSector) {
                     var liText = li.textContent.trim();

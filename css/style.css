@@ -1007,6 +1007,17 @@ header h1 {
     opacity: 0.55;
 }
 
+/* Peer-orphan ring sample — mirrors the dashed amber canvas ring on tracked
+   S&P 500 companies with no outgoing peer selections */
+.legend-ring-orphan {
+    width: 9px;
+    height: 9px;
+    border: 2px dashed #fbbf24;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+
 /* Node tooltip PvP coverage row — same cyan as the pvp-cov-badge family */
 .tooltip .tt-pvp-val {
     color: #67e8f9;

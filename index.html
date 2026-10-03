@@ -123,7 +123,7 @@
     <section class="section" id="peer-network-section" role="region" aria-label="Compensation peer network graph">
         <div class="section-header">
             <h2>Compensation Peer Network</h2>
-            <p class="section-desc">Directional peer group relationships from SEC EDGAR DEF 14A proxy statements. Arrows show which companies benchmark against which peers. Node size = how many companies selected it as a peer. Click any node for full company details. Covers 516 of the 518 tracked companies: CPRT has no network node (no extractable peer-group disclosure in its DEF 14A filing), and VMRK has no node yet (no post-merger DEF 14A filed). AOS has a peer-only node (cited as a peer by ALLE; its own DEF 14A names no compensation peer group). ARES has a peer-only node (cited as a peer; its own DEF 14A names no compensation peer group).</p>
+            <p class="section-desc">Directional peer group relationships from SEC EDGAR DEF 14A proxy statements. Arrows show which companies benchmark against which peers. Node size = how many companies selected it as a peer. Click any node for full company details. Covers 516 of the 518 tracked companies: CPRT has no network node (no extractable peer-group disclosure in its DEF 14A filing), and VMRK has no node yet (no post-merger DEF 14A filed). 31 tracked companies currently have peer-only nodes — cited as peers, but their own peer groups have not yet been verified from their DEF 14As (extraction ongoing; most-cited: HOLX, MA, SYK, C, FDX, GS). Tracked companies with no outgoing peer selections carry a dashed amber ring — either no compensation peer group disclosed in the latest DEF 14A (verified) or the peer group not yet extracted: an honest absence, not missing data.</p>
         </div>
         <div class="network-controls">
             <div class="network-search-box">
@@ -215,6 +215,7 @@
                 <span class="legend-item"><span class="legend-dot" style="background:#f9a8d4"></span>Materials</span>
                 <span class="legend-item"><span class="legend-dot" style="background:#67e8f9"></span>Utilities</span>
                 <span class="legend-item legend-active" data-pvp-legend="1" title="Companies with Pay vs Performance (SEC Item 402(v)) data — click to toggle the coverage ring"><span class="legend-ring"></span>PvP-covered</span>
+                <span class="legend-item" data-orphan-legend="1" title="Tracked S&P 500 companies with no outgoing peer selections: either no compensation peer group disclosed in the latest DEF 14A (verified) or the peer group not yet verified from the filing — an honest absence, not missing data"><span class="legend-ring-orphan"></span>No peer group</span>
             </div>
             <div class="comp-heatmap-legend" id="comp-heatmap-legend" style="display:none">
                 <span class="comp-heatmap-label">Low Pay</span>
