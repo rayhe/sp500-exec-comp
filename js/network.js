@@ -636,6 +636,36 @@ function initNetwork(peerData) {
         renderCCDistPanel();
     }
 
+    // Peer-orphan desc (truthfulness): the network section's description
+    // paragraph names the pending peer-only extraction count and the
+    // most-cited examples. Rendered live from the loaded data so the copy
+    // can never go stale as extraction batches land (it went stale twice:
+    // after batch-8r left "31 ... HOLX, MA, SYK, C, FDX, GS" and again after
+    // batch-8s). The static HTML text remains as the no-JS fallback.
+    // Same classification as the orphan rings/tooltips (07:38 run):
+    // tracked = in the comp lookup, out_degree 0, isSource !== false.
+    // textContent-only (no raw HTML interpolation), same as the footer
+    // vintage and stats-bar escape conventions.
+    function renderOrphanDesc() {
+        var el = document.getElementById('network-orphan-desc');
+        if (!el) return;
+        var orphans = [];
+        nodes.forEach(function(n) {
+            if (_compLookup[n.ticker] && (n.out_degree || 0) === 0 && n.isSource !== false) {
+                orphans.push({ ticker: n.ticker, inDeg: n.in_degree || 0 });
+            }
+        });
+        orphans.sort(function(a, b) { return b.inDeg - a.inDeg; });
+        var text;
+        if (orphans.length === 0) {
+            text = 'All tracked companies\u2019 peer groups have now been verified from their DEF 14As.';
+        } else {
+            var top = orphans.slice(0, 6).map(function(o) { return o.ticker; }).join(', ');
+            text = orphans.length + ' tracked companies currently have peer-only nodes \u2014 cited as peers, but their own peer groups have not yet been verified from their DEF 14As (extraction ongoing; most-cited: ' + top + ').';
+        }
+        el.textContent = text;
+    }
+
     // Escape HTML special chars in data-driven strings (company names contain & etc.)
     function escapeHtml(s) {
         return String(s == null ? '' : s)
@@ -2249,6 +2279,9 @@ function initNetwork(peerData) {
         }
     }
     _buildCompLookup();
+    // The orphan-desc copy depends on the comp lookup, so it renders here
+    // (after the lookup exists), not at the top of init.
+    renderOrphanDesc();
 
     // Build the Pay vs Performance coverage map from app.js's global pvpData
     // (fetched in loadData before initNetwork runs). Guarded: if the PvP

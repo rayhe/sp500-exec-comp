@@ -2250,8 +2250,16 @@ def main():
                        # DB (Deutsche Bank AG ADR) and UBS (UBS Group AG ADR)
                        # - Financials - from GS's "Our Peers" compensation
                        # benchmarking peer set (DEF 14A 2026-03-20).
+                       # 2026-10-03 11:30 PT batch-8s: VMW (VMware, Inc.) -
+                       # Information Technology - named in JNPR's FY24 Peer
+                       # Group (DEF 14A 2025-04-16) despite the Nov 2023
+                       # Broadcom acquisition; MUR (Murphy Oil Corporation) -
+                       # Energy - from HES's 2024 Peer Group (DEF 14A
+                       # 2025-04-04); AR (Antero Resources Corporation) -
+                       # Energy - from CTRA's 2024 comp-decisions peer group
+                       # (DEF 14A 2025-03-20).
                        "PHG", "SMNEY", "MIDD", "VMI", "PPC", "SEB", "FDP",
-                       "BCS", "DB", "UBS"}
+                       "BCS", "DB", "UBS", "VMW", "MUR", "AR"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
