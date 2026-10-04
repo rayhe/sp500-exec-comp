@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7396,
+  "edge_count": 7409,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -665,7 +665,7 @@
    "name": "Allstate Corp",
    "sector": "Financials",
    "in_degree": 10,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -782,7 +782,7 @@
    "name": "APA Corp",
    "sector": "Energy",
    "in_degree": 10,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -836,7 +836,7 @@
    "name": "Atmos Energy Corp",
    "sector": "Utilities",
    "in_degree": 6,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1258,7 +1258,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 16,
+   "in_degree": 18,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1349,7 +1349,7 @@
    "name": "Centene Corp",
    "sector": "Health Care",
    "in_degree": 9,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1366,7 +1366,7 @@
    "ticker": "COF",
    "name": "Capital One Financial Corp",
    "sector": "Financials",
-   "in_degree": 24,
+   "in_degree": 26,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -1385,7 +1385,7 @@
    "name": "Cooper Cos Inc",
    "sector": "Health Care",
    "in_degree": 9,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1583,7 +1583,7 @@
    "name": "DoorDash Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 7,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1601,7 +1601,7 @@
    "name": "DuPont de Nemours Inc",
    "sector": "Materials",
    "in_degree": 17,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1673,7 +1673,7 @@
    "name": "Danaher Corp",
    "sector": "Health Care",
    "in_degree": 26,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2096,7 +2096,7 @@
    "name": "FactSet Research Systems Inc",
    "sector": "Information Technology",
    "in_degree": 10,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2266,7 +2266,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 35,
+   "in_degree": 40,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2510,7 +2510,7 @@
    "name": "Hershey Co/The",
    "sector": "Consumer Staples",
    "in_degree": 21,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2519,7 +2519,7 @@
    "name": "Hubbell Inc",
    "sector": "Industrials",
    "in_degree": 8,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2933,7 +2933,7 @@
    "name": "Labcorp Holdings Inc",
    "sector": "Health Care",
    "in_degree": 7,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3266,7 +3266,7 @@
    "name": "Molina Healthcare Inc",
    "sector": "Health Care",
    "in_degree": 8,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3409,7 +3409,7 @@
    "ticker": "NDAQ",
    "name": "Nasdaq Inc",
    "sector": "Financials",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 22,
    "market_cap_tier": "large",
    "isSource": true
@@ -3894,7 +3894,7 @@
    "ticker": "PSA",
    "name": "Public Storage",
    "sector": "Real Estate",
-   "in_degree": 16,
+   "in_degree": 18,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4407,7 +4407,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 29,
+   "in_degree": 30,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -11124,6 +11124,13 @@
   },
   {
    "source": "ALL",
+   "target": "PSA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-10"
+  },
+  {
+   "source": "ALL",
    "target": "CINF",
    "year": 2026,
    "group_type": "primary",
@@ -13392,10 +13399,24 @@
   },
   {
    "source": "DHR",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "DHR",
    "target": "TMO",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "MOH",
+   "target": "PSA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
   },
   {
    "source": "MOH",
@@ -14035,6 +14056,13 @@
    "filing": "DEF 14A 2026-03-26"
   },
   {
+   "source": "CNC",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-26"
+  },
+  {
    "source": "MET",
    "target": "PRU",
    "year": 2026,
@@ -14667,6 +14695,13 @@
   {
    "source": "LH",
    "target": "BSX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-10"
+  },
+  {
+   "source": "LH",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-10"
@@ -17963,6 +17998,13 @@
   },
   {
    "source": "DD",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-10"
+  },
+  {
+   "source": "DD",
    "target": "ECL",
    "year": 2026,
    "group_type": "primary",
@@ -18363,6 +18405,13 @@
   {
    "source": "COO",
    "target": "DXCM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-02-24"
+  },
+  {
+   "source": "COO",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-02-24"
@@ -19518,6 +19567,13 @@
   {
    "source": "ATO",
    "target": "PPL",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-12-19"
+  },
+  {
+   "source": "ATO",
+   "target": "TGT",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-12-19"
@@ -21001,6 +21057,13 @@
   },
   {
    "source": "HSY",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "HSY",
    "target": "KHC",
    "year": 2026,
    "group_type": "primary",
@@ -21450,6 +21513,13 @@
   {
    "source": "APA",
    "target": "COP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-09"
+  },
+  {
+   "source": "APA",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-09"
@@ -22723,6 +22793,13 @@
   },
   {
    "source": "HUBB",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "HUBB",
    "target": "ITW",
    "year": 2026,
    "group_type": "primary",
@@ -23557,6 +23634,13 @@
   {
    "source": "FDS",
    "target": "FICO",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-10-27"
+  },
+  {
+   "source": "FDS",
+   "target": "NDAQ",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-10-27"
@@ -24453,6 +24537,13 @@
   {
    "source": "DASH",
    "target": "UBER",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-20"
+  },
+  {
+   "source": "DASH",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-20"
