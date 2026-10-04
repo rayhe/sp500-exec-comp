@@ -2347,7 +2347,16 @@ def main():
                        "ADC", "BC", "BRX", "CASY", "CC", "CWK", "GOLF",
                        "HUN", "KRC", "KRG", "MAC", "MTN", "NNN", "OLN",
                        "PII", "SAVE", "SKT", "STLA", "TNL", "VAC", "VC",
-                       "WGO"}
+                       "WGO",
+                       # 2026-10-03 23:30 PT run: peer-network batch-8y
+                       # fingerprint repair (VICI/FCX/TMO/ADBE/HCA/WMT
+                       # peer groups from latest DEF 14As; SEC Archives
+                       # curl 403-blocked, live-browser transcription
+                       # path). 1 new peer-only node, SEC-verified via
+                       # company_tickers_exchange.json: GLPI (Gaming &
+                       # Leisure Properties, Nasdaq, CIK 1575965) - Real
+                       # Estate, from VICI's 2025 peer group.
+                       "GLPI"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
