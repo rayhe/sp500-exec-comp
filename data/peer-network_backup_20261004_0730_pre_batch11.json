@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7409,
+  "edge_count": 7421,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -440,12 +440,6 @@
     "target": "MSFT",
     "filing": "DEF 14A 2026-04-23",
     "batch": "peer-batch8y-20261003"
-   },
-   {
-    "source": "WY",
-    "target": "PSA",
-    "filing": "DEF 14A 2026-04-01",
-    "batch": "peer-batch11-20261004"
    },
    {
     "source": "XOM",
@@ -1097,7 +1091,7 @@
    "name": "BXP Inc",
    "sector": "Real Estate",
    "in_degree": 15,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1258,7 +1252,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1366,7 +1360,7 @@
    "ticker": "COF",
    "name": "Capital One Financial Corp",
    "sector": "Financials",
-   "in_degree": 26,
+   "in_degree": 27,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -1907,7 +1901,7 @@
    "name": "EOG Resources Inc",
    "sector": "Energy",
    "in_degree": 17,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1943,7 +1937,7 @@
    "name": "EQT Corp",
    "sector": "Energy",
    "in_degree": 7,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1997,7 +1991,7 @@
    "name": "Evergy Inc",
    "sector": "Utilities",
    "in_degree": 12,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2266,7 +2260,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 40,
+   "in_degree": 47,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2626,7 +2620,7 @@
    "ticker": "IP",
    "name": "International Paper Co",
    "sector": "Materials",
-   "in_degree": 24,
+   "in_degree": 26,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2663,7 +2657,7 @@
    "name": "Iron Mountain Inc",
    "sector": "Real Estate",
    "in_degree": 5,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3338,7 +3332,7 @@
    "name": "MSCI Inc",
    "sector": "Financials",
    "in_degree": 9,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3356,7 +3350,7 @@
    "name": "Motorola Solutions Inc",
    "sector": "Information Technology",
    "in_degree": 12,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3635,7 +3629,7 @@
    "name": "Otis Worldwide Corp",
    "sector": "Industrials",
    "in_degree": 8,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4651,7 +4645,7 @@
    "name": "United Rentals Inc",
    "sector": "Industrials",
    "in_degree": 2,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4857,7 +4851,7 @@
    "ticker": "WM",
    "name": "Waste Management Inc",
    "sector": "Industrials",
-   "in_degree": 10,
+   "in_degree": 11,
    "out_degree": 3,
    "market_cap_tier": "large",
    "isSource": true
@@ -4885,7 +4879,7 @@
    "name": "W R Berkley Corp",
    "sector": "Financials",
    "in_degree": 3,
-   "out_degree": 12,
+   "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4912,7 +4906,7 @@
    "name": "Willis Towers Watson PLC",
    "sector": "Financials",
    "in_degree": 16,
-   "out_degree": 13,
+   "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4939,7 +4933,7 @@
    "name": "Xcel Energy Inc",
    "sector": "Utilities",
    "in_degree": 22,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -9437,6 +9431,13 @@
   },
   {
    "source": "OTIS",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-17"
+  },
+  {
+   "source": "OTIS",
    "target": "TEL",
    "year": 2026,
    "group_type": "primary",
@@ -10470,6 +10471,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "MSI",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-02"
   },
   {
    "source": "MSI",
@@ -15240,6 +15248,13 @@
   },
   {
    "source": "IRM",
+   "target": "WM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "IRM",
    "target": "WY",
    "year": 2026,
    "group_type": "primary",
@@ -16165,6 +16180,13 @@
   {
    "source": "WRB",
    "target": "KMX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-22"
+  },
+  {
+   "source": "WRB",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-22"
@@ -17354,6 +17376,13 @@
   },
   {
    "source": "EOG",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "EOG",
    "target": "WMB",
    "year": 2026,
    "group_type": "primary",
@@ -17978,6 +18007,13 @@
   {
    "source": "MSCI",
    "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-11"
+  },
+  {
+   "source": "MSCI",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-11"
@@ -19762,6 +19798,13 @@
   },
   {
    "source": "URI",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "URI",
    "target": "FTV",
    "year": 2026,
    "group_type": "primary",
@@ -20063,6 +20106,13 @@
   },
   {
    "source": "XEL",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "XEL",
    "target": "PPL",
    "year": 2026,
    "group_type": "primary",
@@ -20308,6 +20358,13 @@
   },
   {
    "source": "BXP",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-10"
+  },
+  {
+   "source": "BXP",
    "target": "DLR",
    "year": 2026,
    "group_type": "primary",
@@ -20547,6 +20604,13 @@
   {
    "source": "WTW",
    "target": "PFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "WTW",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-27"
@@ -21744,6 +21808,13 @@
   {
    "source": "EQT",
    "target": "HES",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-02-26"
+  },
+  {
+   "source": "EQT",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-02-26"
@@ -23725,6 +23796,13 @@
   {
    "source": "EVRG",
    "target": "WTW",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-26"
+  },
+  {
+   "source": "EVRG",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-26"
