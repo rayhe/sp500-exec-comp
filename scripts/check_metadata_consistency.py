@@ -2315,7 +2315,39 @@ def main():
                        # Aug 2024, TXNM already a node) per batch-8b
                        # live-holder / batch-4 "Fiserv is FISV".
                        "BFH", "BLMN", "IHG", "PZZA", "SPB", "TXRH",
-                       "WEN", "WH", "WING"}
+                       "WEN", "WH", "WING",
+                       # 2026-10-03 22:00 PT run: peer-network batch-8x
+                       # fingerprint repair (ALB/F/GRMN/MAA/NCLH/REG/SPG/
+                       # TSCO peer groups from latest DEF 14As; SEC
+                       # Archives curl unblocked this run, filing HTMLs
+                       # persisted at download time). 18 new peer-only
+                       # nodes, tickers SEC-verified via
+                       # company_tickers_exchange.json: GOLF (Acushnet),
+                       # BC (Brunswick), VC (Visteon), WGO (Winnebago),
+                       # PII (Polaris) - Consumer Discretionary, from
+                       # GRMN's 2025 comparator group; VAC (Marriott
+                       # Vacations), TNL (Travel & Leisure), MTN (Vail
+                       # Resorts) - Consumer Discretionary, from NCLH's
+                       # 2025 group; SAVE (Spirit Airlines, DELISTED -
+                       # Industrials) retained under last ticker per the
+                       # PARA/QRVO/COMM/SMAR delisted-peer precedent;
+                       # ADC (Agree Realty), BRX (Brixmor), KRC
+                       # (Kilroy Realty), KRG (Kite Realty), NNN (NNN
+                       # REIT), MAC (Macerich), CWK (Cushman &
+                       # Wakefield), SKT (Tanger) - Real Estate, from
+                       # REG's + SPG's 2025 groups; CASY (Casey's
+                       # General Stores, Consumer Staples) from TSCO's
+                       # 2025 group. SPG's filing prints "The GAP
+                       # (NYSE:GPS)"; stored as GAP (live ticker, CIK
+                       # 39911, company node) per batch-4 "Fiserv is
+                       # FISV". CC (Chemours), HUN (Huntsman), OLN
+                       # (Olin) - Materials, from ALB's 2025 group;
+                       # STLA (Stellantis, Consumer Discretionary)
+                       # from F's December 2025 group.
+                       "ADC", "BC", "BRX", "CASY", "CC", "CWK", "GOLF",
+                       "HUN", "KRC", "KRG", "MAC", "MTN", "NNN", "OLN",
+                       "PII", "SAVE", "SKT", "STLA", "TNL", "VAC", "VC",
+                       "WGO"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
