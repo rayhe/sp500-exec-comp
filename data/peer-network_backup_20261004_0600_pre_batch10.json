@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7421,
+  "edge_count": 7434,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -1027,7 +1027,7 @@
    "ticker": "BLK",
    "name": "Blackrock Inc",
    "sector": "Financials",
-   "in_degree": 21,
+   "in_degree": 22,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -1154,7 +1154,7 @@
    "name": "Cboe Global Markets Inc",
    "sector": "Financials",
    "in_degree": 4,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1252,7 +1252,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 19,
+   "in_degree": 20,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1360,7 +1360,7 @@
    "ticker": "COF",
    "name": "Capital One Financial Corp",
    "sector": "Financials",
-   "in_degree": 27,
+   "in_degree": 28,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -1460,7 +1460,7 @@
    "name": "Crowdstrike Holdings Inc",
    "sector": "Information Technology",
    "in_degree": 13,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1469,7 +1469,7 @@
    "name": "Cisco Systems Inc",
    "sector": "Information Technology",
    "in_degree": 42,
-   "out_degree": 16,
+   "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1478,7 +1478,7 @@
    "name": "CoStar Group Inc",
    "sector": "Information Technology",
    "in_degree": 5,
-   "out_degree": 16,
+   "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1523,7 +1523,7 @@
    "name": "Corteva Inc",
    "sector": "Materials",
    "in_degree": 8,
-   "out_degree": 15,
+   "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1685,7 +1685,7 @@
    "name": "Digital Realty Trust Inc",
    "sector": "Real Estate",
    "in_degree": 18,
-   "out_degree": 16,
+   "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1874,7 +1874,7 @@
    "name": "Eastman Chemical Co",
    "sector": "Materials",
    "in_degree": 17,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2161,7 +2161,7 @@
    "ticker": "FRT",
    "name": "Federal Realty Investment Trust",
    "sector": "Real Estate",
-   "in_degree": 3,
+   "in_degree": 4,
    "out_degree": 0,
    "market_cap_tier": "large",
    "isSource": false
@@ -2189,7 +2189,7 @@
    "name": "Fortive Corp",
    "sector": "Industrials",
    "in_degree": 31,
-   "out_degree": 15,
+   "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2260,7 +2260,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 47,
+   "in_degree": 51,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2620,7 +2620,7 @@
    "ticker": "IP",
    "name": "International Paper Co",
    "sector": "Materials",
-   "in_degree": 26,
+   "in_degree": 29,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -3134,7 +3134,7 @@
    "name": "Moody's Corp",
    "sector": "Financials",
    "in_degree": 5,
-   "out_degree": 15,
+   "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3143,7 +3143,7 @@
    "name": "Mondelez International Inc",
    "sector": "Consumer Staples",
    "in_degree": 28,
-   "out_degree": 14,
+   "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3494,7 +3494,7 @@
    "name": "Norfolk Southern Corp",
    "sector": "Industrials",
    "in_degree": 9,
-   "out_degree": 16,
+   "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3898,7 +3898,7 @@
    "name": "Phillips 66",
    "sector": "Energy",
    "in_degree": 9,
-   "out_degree": 15,
+   "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4033,7 +4033,7 @@
    "name": "Roper Technologies Inc",
    "sector": "Information Technology",
    "in_degree": 11,
-   "out_degree": 15,
+   "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4401,7 +4401,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 30,
+   "in_degree": 32,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -9760,6 +9760,13 @@
   },
   {
    "source": "CSCO",
+   "target": "GIS",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-10-28"
+  },
+  {
+   "source": "CSCO",
    "target": "QCOM",
    "year": 2025,
    "group_type": "primary",
@@ -9865,6 +9872,13 @@
   },
   {
    "source": "CSGP",
+   "target": "BLK",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-30"
+  },
+  {
+   "source": "CSGP",
    "target": "VRSK",
    "year": 2026,
    "group_type": "primary",
@@ -9929,6 +9943,13 @@
   {
    "source": "CRWD",
    "target": "SNAP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-05"
+  },
+  {
+   "source": "CRWD",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-05-05"
@@ -12546,6 +12567,13 @@
   },
   {
    "source": "ROP",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROP",
    "target": "ADSK",
    "year": 2026,
    "group_type": "primary",
@@ -12666,6 +12694,13 @@
   {
    "source": "PSX",
    "target": "OXY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-02"
+  },
+  {
+   "source": "PSX",
+   "target": "FRT",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-02"
@@ -13254,6 +13289,13 @@
   {
    "source": "MDLZ",
    "target": "HSY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-03"
+  },
+  {
+   "source": "MDLZ",
+   "target": "IP",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-03"
@@ -15374,6 +15416,13 @@
   },
   {
    "source": "FTV",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-29"
+  },
+  {
+   "source": "FTV",
    "target": "STE",
    "year": 2026,
    "group_type": "primary",
@@ -16823,6 +16872,13 @@
   },
   {
    "source": "MCO",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-04"
+  },
+  {
+   "source": "MCO",
    "target": "NDAQ",
    "year": 2026,
    "group_type": "primary",
@@ -17313,6 +17369,13 @@
   },
   {
    "source": "DLR",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-17"
+  },
+  {
+   "source": "DLR",
    "target": "AWK",
    "year": 2026,
    "group_type": "primary",
@@ -17527,6 +17590,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-30"
+  },
+  {
+   "source": "EMN",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
   },
   {
    "source": "EMN",
@@ -19281,6 +19351,13 @@
   {
    "source": "CTVA",
    "target": "APD",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-19"
+  },
+  {
+   "source": "CTVA",
+   "target": "TGT",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-19"
@@ -23130,6 +23207,13 @@
   },
   {
    "source": "NSC",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "NSC",
    "target": "CSX",
    "year": 2026,
    "group_type": "primary",
@@ -24384,6 +24468,13 @@
   {
    "source": "CBOE",
    "target": "BR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-02"
+  },
+  {
+   "source": "CBOE",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-02"
