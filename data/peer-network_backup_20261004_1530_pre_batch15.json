@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7356,
+  "edge_count": 7375,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -497,7 +497,7 @@
    "name": "AbbVie Inc",
    "sector": "Health Care",
    "in_degree": 17,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -740,7 +740,7 @@
    "name": "Ameriprise Financial Inc",
    "sector": "Financials",
    "in_degree": 7,
-   "out_degree": 1,
+   "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -857,7 +857,7 @@
    "name": "AvalonBay Communities Inc",
    "sector": "Real Estate",
    "in_degree": 18,
-   "out_degree": 5,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1262,7 +1262,7 @@
    "name": "CH Robinson Worldwide Inc",
    "sector": "Industrials",
    "in_degree": 4,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1270,7 +1270,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 9,
+   "in_degree": 13,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1289,7 +1289,7 @@
    "name": "Cincinnati Financial Corp",
    "sector": "Financials",
    "in_degree": 5,
-   "out_degree": 5,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1298,7 +1298,7 @@
    "name": "Colgate-Palmolive Co",
    "sector": "Consumer Staples",
    "in_degree": 25,
-   "out_degree": 7,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1378,7 +1378,7 @@
    "ticker": "COF",
    "name": "Capital One Financial Corp",
    "sector": "Financials",
-   "in_degree": 22,
+   "in_degree": 24,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -1424,7 +1424,7 @@
    "name": "Costco Wholesale Corp",
    "sector": "Consumer Staples",
    "in_degree": 10,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1712,7 +1712,7 @@
    "name": "Dollar Tree Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 9,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1775,7 +1775,7 @@
    "name": "Duke Energy Corp",
    "sector": "Utilities",
    "in_degree": 17,
-   "out_degree": 4,
+   "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2278,7 +2278,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 23,
+   "in_degree": 24,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2504,7 +2504,7 @@
    "name": "Henry Schein Inc",
    "sector": "Health Care",
    "in_degree": 9,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2638,7 +2638,7 @@
    "ticker": "IP",
    "name": "International Paper Co",
    "sector": "Materials",
-   "in_degree": 17,
+   "in_degree": 21,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2756,7 +2756,7 @@
    "name": "Jack Henry & Associates Inc",
    "sector": "Information Technology",
    "in_degree": 5,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3179,7 +3179,7 @@
    "name": "MetLife Inc",
    "sector": "Financials",
    "in_degree": 15,
-   "out_degree": 3,
+   "out_degree": 4,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3386,7 +3386,7 @@
    "name": "Match Group Inc",
    "sector": "Communication Services",
    "in_degree": 3,
-   "out_degree": 7,
+   "out_degree": 8,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3602,7 +3602,7 @@
    "name": "ONEOK Inc",
    "sector": "Energy",
    "in_degree": 5,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3611,7 +3611,7 @@
    "name": "Omnicom Group Inc",
    "sector": "Communication Services",
    "in_degree": 3,
-   "out_degree": 4,
+   "out_degree": 5,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3906,7 +3906,7 @@
    "ticker": "PSA",
    "name": "Public Storage",
    "sector": "Real Estate",
-   "in_degree": 11,
+   "in_degree": 14,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -3997,7 +3997,7 @@
    "name": "Regions Financial Corp",
    "sector": "Financials",
    "in_degree": 8,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4114,7 +4114,7 @@
    "name": "Charles Schwab Corp",
    "sector": "Financials",
    "in_degree": 13,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4419,7 +4419,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 22,
+   "in_degree": 27,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -4816,7 +4816,7 @@
    "name": "Warner Bros Discovery Inc",
    "sector": "Communication Services",
    "in_degree": 10,
-   "out_degree": 8,
+   "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -9274,6 +9274,13 @@
   },
   {
    "source": "WBD",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-30"
+  },
+  {
+   "source": "WBD",
    "target": "PARA",
    "year": 2026,
    "group_type": "primary",
@@ -10681,6 +10688,13 @@
   },
   {
    "source": "AMP",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-20"
+  },
+  {
+   "source": "AMP",
    "target": "BLK",
    "year": 2026,
    "group_type": "primary",
@@ -11172,6 +11186,13 @@
   {
    "source": "SCHW",
    "target": "STT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "SCHW",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-06"
@@ -13523,6 +13544,13 @@
   },
   {
    "source": "OMC",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-26"
+  },
+  {
+   "source": "OMC",
    "target": "ACN",
    "year": 2026,
    "group_type": "primary",
@@ -13789,6 +13817,13 @@
   },
   {
    "source": "DUK",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-20"
+  },
+  {
+   "source": "DUK",
    "target": "RTX",
    "year": 2026,
    "group_type": "primary",
@@ -13993,6 +14028,13 @@
   {
    "source": "MET",
    "target": "PRU",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-29"
+  },
+  {
+   "source": "MET",
+   "target": "PSA",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-29"
@@ -14958,6 +15000,13 @@
   },
   {
    "source": "ABBV",
+   "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "ABBV",
    "target": "KEY",
    "year": 2026,
    "group_type": "primary",
@@ -15308,6 +15357,13 @@
   },
   {
    "source": "CL",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "CL",
    "target": "GIS",
    "year": 2026,
    "group_type": "primary",
@@ -15316,6 +15372,13 @@
   {
    "source": "CL",
    "target": "KVUE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "CL",
+   "target": "TGT",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-25"
@@ -17709,6 +17772,13 @@
   },
   {
    "source": "MTCH",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-30"
+  },
+  {
+   "source": "MTCH",
    "target": "GDDY",
    "year": 2026,
    "group_type": "primary",
@@ -19403,6 +19473,13 @@
   },
   {
    "source": "OKE",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "OKE",
    "target": "HES",
    "year": 2026,
    "group_type": "primary",
@@ -20698,6 +20775,13 @@
   },
   {
    "source": "COST",
+   "target": "PSA",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-12-04"
+  },
+  {
+   "source": "COST",
    "target": "CVS",
    "year": 2025,
    "group_type": "primary",
@@ -21014,6 +21098,13 @@
   {
    "source": "HSIC",
    "target": "CAH",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "HSIC",
+   "target": "IP",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-08"
@@ -21671,6 +21762,13 @@
   },
   {
    "source": "JKHY",
+   "target": "COF",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-10-02"
+  },
+  {
+   "source": "JKHY",
    "target": "TYL",
    "year": 2025,
    "group_type": "primary",
@@ -21889,6 +21987,13 @@
   {
    "source": "RF",
    "target": "KEY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "RF",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-23"
@@ -22672,6 +22777,13 @@
   },
   {
    "source": "AVB",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "AVB",
    "target": "UDR",
    "year": 2026,
    "group_type": "primary",
@@ -23042,6 +23154,13 @@
    "filing": "DEF 14A 2026-03-18"
   },
   {
+   "source": "CINF",
+   "target": "PSA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
    "source": "CHRW",
    "target": "ODFL",
    "year": 2026,
@@ -23058,6 +23177,13 @@
   {
    "source": "CHRW",
    "target": "FDX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "CHRW",
+   "target": "TGT",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-24"
@@ -23226,6 +23352,13 @@
   {
    "source": "DLTR",
    "target": "KR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-01"
+  },
+  {
+   "source": "DLTR",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-05-01"
