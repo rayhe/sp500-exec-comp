@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7385,
+  "edge_count": 7396,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -20,12 +20,6 @@
     "target": "WM",
     "filing": "DEF 14A 2026-03-18",
     "batch": "peer-batch7-20261001"
-   },
-   {
-    "source": "BALL",
-    "target": "GIS",
-    "filing": "DEF 14A 2026-03-17",
-    "batch": "peer-batch13-20261004"
    },
    {
     "source": "BKNG",
@@ -206,12 +200,6 @@
     "target": "PG",
     "filing": "DEF 14A 2026-04-20",
     "batch": "peer-batch7-20261001"
-   },
-   {
-    "source": "GOOGL",
-    "target": "MSFT",
-    "filing": "DEF 14A 2026-04-24",
-    "batch": "peer-batch13-20261004"
    },
    {
     "source": "HLT",
@@ -632,7 +620,7 @@
    "name": "Assurant Inc",
    "sector": "Financials",
    "in_degree": 3,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1270,7 +1258,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 15,
+   "in_degree": 16,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -2278,7 +2266,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 30,
+   "in_degree": 35,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2441,7 +2429,7 @@
    "name": "Huntington Ingalls Industries Inc",
    "sector": "Industrials",
    "in_degree": 2,
-   "out_degree": 10,
+   "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2638,7 +2626,7 @@
    "ticker": "IP",
    "name": "International Paper Co",
    "sector": "Materials",
-   "in_degree": 21,
+   "in_degree": 24,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2882,7 +2870,7 @@
    "name": "CarMax Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 5,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3206,7 +3194,7 @@
    "name": "Mohawk Industries Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 3,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3233,7 +3221,7 @@
    "name": "Martin Marietta Materials Inc",
    "sector": "Materials",
    "in_degree": 2,
-   "out_degree": 10,
+   "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3260,7 +3248,7 @@
    "name": "Monster Beverage Corp",
    "sector": "Consumer Staples",
    "in_degree": 7,
-   "out_degree": 10,
+   "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3287,7 +3275,7 @@
    "name": "Mosaic Co/The",
    "sector": "Materials",
    "in_degree": 4,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3988,7 +3976,7 @@
    "name": "Regeneron Pharmaceuticals Inc",
    "sector": "Health Care",
    "in_degree": 12,
-   "out_degree": 10,
+   "out_degree": 11,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4222,7 +4210,7 @@
    "name": "S&P Global Inc",
    "sector": "Financials",
    "in_degree": 19,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4419,7 +4407,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 27,
+   "in_degree": 29,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -4573,7 +4561,7 @@
    "name": "Textron Inc",
    "sector": "Industrials",
    "in_degree": 22,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4699,7 +4687,7 @@
    "name": "Valero Energy Corp",
    "sector": "Energy",
    "in_degree": 9,
-   "out_degree": 11,
+   "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -12228,6 +12216,13 @@
   },
   {
    "source": "SPGI",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-31"
+  },
+  {
+   "source": "SPGI",
    "target": "MSCI",
    "year": 2026,
    "group_type": "primary",
@@ -12894,6 +12889,13 @@
   {
    "source": "VLO",
    "target": "CVX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-19"
+  },
+  {
+   "source": "VLO",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-19"
@@ -14213,6 +14215,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-16"
+  },
+  {
+   "source": "TXT",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-05"
   },
   {
    "source": "TXT",
@@ -15812,6 +15821,13 @@
   },
   {
    "source": "MLM",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-15"
+  },
+  {
+   "source": "MLM",
    "target": "NEM",
    "year": 2026,
    "group_type": "primary",
@@ -15876,6 +15892,13 @@
   {
    "source": "MNST",
    "target": "CMG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "MNST",
+   "target": "IP",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-27"
@@ -16502,6 +16525,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-17"
+  },
+  {
+   "source": "KMX",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-12"
   },
   {
    "source": "KMX",
@@ -19032,6 +19062,13 @@
   },
   {
    "source": "HII",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-20"
+  },
+  {
+   "source": "HII",
    "target": "TXT",
    "year": 2026,
    "group_type": "primary",
@@ -19358,6 +19395,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-16"
+  },
+  {
+   "source": "AIZ",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
   },
   {
    "source": "AIZ",
@@ -22455,6 +22499,13 @@
   },
   {
    "source": "MOS",
+   "target": "TGT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-16"
+  },
+  {
+   "source": "MOS",
    "target": "CTVA",
    "year": 2026,
    "group_type": "primary",
@@ -23820,6 +23871,13 @@
   },
   {
    "source": "REGN",
+   "target": "CHTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-24"
+  },
+  {
+   "source": "REGN",
    "target": "BIIB",
    "year": 2026,
    "group_type": "primary",
@@ -23950,6 +24008,13 @@
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-12-12"
+  },
+  {
+   "source": "MHK",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-03"
   },
   {
    "source": "MHK",
