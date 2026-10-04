@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7434,
+  "edge_count": 7447,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -560,7 +560,7 @@
    "name": "Autodesk Inc",
    "sector": "Information Technology",
    "in_degree": 27,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -695,7 +695,7 @@
    "name": "Advanced Micro Devices Inc",
    "sector": "Information Technology",
    "in_degree": 24,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1136,7 +1136,7 @@
    "name": "Caterpillar Inc",
    "sector": "Industrials",
    "in_degree": 36,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1190,7 +1190,7 @@
    "name": "Cadence Design Systems Inc",
    "sector": "Information Technology",
    "in_degree": 18,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1252,7 +1252,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 20,
+   "in_degree": 21,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1424,7 +1424,7 @@
    "name": "The Campbell's Company",
    "sector": "Consumer Staples",
    "in_degree": 14,
-   "out_degree": 18,
+   "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1658,7 +1658,7 @@
    "name": "DR Horton Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 2,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1820,7 +1820,7 @@
    "name": "Consolidated Edison Inc",
    "sector": "Utilities",
    "in_degree": 24,
-   "out_degree": 18,
+   "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2260,7 +2260,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 51,
+   "in_degree": 57,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2620,8 +2620,8 @@
    "ticker": "IP",
    "name": "International Paper Co",
    "sector": "Materials",
-   "in_degree": 29,
-   "out_degree": 17,
+   "in_degree": 31,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3340,7 +3340,7 @@
    "ticker": "MSFT",
    "name": "Microsoft Corp",
    "sector": "Information Technology",
-   "in_degree": 27,
+   "in_degree": 28,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -3449,7 +3449,7 @@
    "name": "NiSource Inc",
    "sector": "Utilities",
    "in_degree": 16,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3726,7 +3726,7 @@
    "ticker": "PFG",
    "name": "Principal Financial Group Inc",
    "sector": "Financials",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
@@ -3817,7 +3817,7 @@
    "name": "PNC Financial Services Group Inc/The",
    "sector": "Financials",
    "in_degree": 16,
-   "out_degree": 18,
+   "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3880,7 +3880,7 @@
    "name": "Prudential Financial Inc",
    "sector": "Financials",
    "in_degree": 13,
-   "out_degree": 17,
+   "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3888,7 +3888,7 @@
    "ticker": "PSA",
    "name": "Public Storage",
    "sector": "Real Estate",
-   "in_degree": 18,
+   "in_degree": 19,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4015,7 +4015,7 @@
    "name": "Rockwell Automation Inc",
    "sector": "Industrials",
    "in_degree": 35,
-   "out_degree": 18,
+   "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4168,7 +4168,7 @@
    "name": "Synopsys Inc",
    "sector": "Information Technology",
    "in_degree": 20,
-   "out_degree": 18,
+   "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4401,7 +4401,7 @@
    "ticker": "TGT",
    "name": "Target Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 32,
+   "in_degree": 33,
    "out_degree": 38,
    "market_cap_tier": "large",
    "isSource": true
@@ -10453,6 +10453,13 @@
   },
   {
    "source": "AMD",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "AMD",
    "target": "IBM",
    "year": 2026,
    "group_type": "primary",
@@ -10594,6 +10601,13 @@
   {
    "source": "PRU",
    "target": "COF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-26"
+  },
+  {
+   "source": "PRU",
+   "target": "TGT",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-26"
@@ -10947,6 +10961,13 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-23"
+  },
+  {
+   "source": "SNPS",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-02-19"
   },
   {
    "source": "SNPS",
@@ -11524,6 +11545,13 @@
   },
   {
    "source": "CAT",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-30"
+  },
+  {
+   "source": "CAT",
    "target": "ADM",
    "year": 2026,
    "group_type": "primary",
@@ -11692,6 +11720,13 @@
   },
   {
    "source": "ADSK",
+   "target": "PFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-05-06"
+  },
+  {
+   "source": "ADSK",
    "target": "ANSS",
    "year": 2026,
    "group_type": "primary",
@@ -11847,6 +11882,13 @@
   {
    "source": "DHI",
    "target": "NVR",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-12-10"
+  },
+  {
+   "source": "DHI",
+   "target": "PSA",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-12-10"
@@ -13169,6 +13211,13 @@
   },
   {
    "source": "PNC",
+   "target": "MSFT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-11"
+  },
+  {
+   "source": "PNC",
    "target": "AXP",
    "year": 2026,
    "group_type": "primary",
@@ -13912,6 +13961,13 @@
   {
    "source": "IP",
    "target": "BALL",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "IP",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-27"
@@ -14829,6 +14885,13 @@
   {
    "source": "CDNS",
    "target": "SNPS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "CDNS",
+   "target": "GIS",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-25"
@@ -17152,6 +17215,13 @@
   },
   {
    "source": "ROK",
+   "target": "GIS",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-12-22"
+  },
+  {
+   "source": "ROK",
    "target": "AME",
    "year": 2025,
    "group_type": "primary",
@@ -18923,6 +18993,13 @@
   },
   {
    "source": "ED",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-08"
+  },
+  {
+   "source": "ED",
    "target": "CMS",
    "year": 2026,
    "group_type": "primary",
@@ -20463,6 +20540,13 @@
   },
   {
    "source": "NI",
+   "target": "IP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-30"
+  },
+  {
+   "source": "NI",
    "target": "ED",
    "year": 2026,
    "group_type": "primary",
@@ -20989,6 +21073,13 @@
   {
    "source": "CPB",
    "target": "JNJ",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-10-08"
+  },
+  {
+   "source": "CPB",
+   "target": "CHTR",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-10-08"

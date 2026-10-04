@@ -84,6 +84,11 @@ REPAIR_SCRIPTS = OrderedDict([
     ("peer-batch8w-20261003", "scripts/peer_batch8w_fingerprint_repair_20261003.py"),
     ("peer-batch8x-20261003", "scripts/peer_batch8x_fingerprint_repair_20261003.py"),
     ("peer-batch8y-20261003", "scripts/peer_batch8y_fingerprint_repair_20261003.py"),
+    # 2026-10-04 03:30 PT run: batch-8z was committed (4dfd27e) without
+    # REPAIR_SCRIPTS registration; registered here. The 8z invariant
+    # (each source's edges carry exactly the documented repair filing)
+    # was verified green before registering.
+    ("peer-batch8z-20261004", "scripts/peer_batch8z_fingerprint_repair_20261004.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;
