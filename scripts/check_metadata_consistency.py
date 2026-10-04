@@ -2356,7 +2356,18 @@ def main():
                        # company_tickers_exchange.json: GLPI (Gaming &
                        # Leisure Properties, Nasdaq, CIK 1575965) - Real
                        # Estate, from VICI's 2025 peer group.
-                       "GLPI"}
+                       "GLPI",
+                       # 2026-10-04 02:00 PT run: peer-network batch-8z
+                       # fingerprint repair (AME/ES/NUE/SMCI/AIG/LYB/RSG
+                       # peer groups from latest DEF 14As; SEC Archives
+                       # curl open). 3 new peer-only nodes: CLF
+                       # (Cleveland-Cliffs Inc., NYSE, CIK 0000764065) and
+                       # SANM (Sanmina Corporation, Nasdaq, CIK 0000897723)
+                       # SEC-verified via company_tickers_exchange.json;
+                       # X (United States Steel Corporation, delisted after
+                       # the Nippon Steel acquisition, retained under last
+                       # ticker per the PNR/SMAR/SAVE precedent).
+                       "CLF", "SANM", "X"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
