@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7375,
+  "edge_count": 7385,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -1082,7 +1082,7 @@
    "name": "Brown & Brown Inc",
    "sector": "Financials",
    "in_degree": 3,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1270,7 +1270,7 @@
    "ticker": "CHTR",
    "name": "Charter Communications Inc",
    "sector": "Communication Services",
-   "in_degree": 13,
+   "in_degree": 15,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -1343,7 +1343,7 @@
    "name": "Cummins Inc",
    "sector": "Industrials",
    "in_degree": 32,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1667,7 +1667,7 @@
    "name": "Quest Diagnostics Inc",
    "sector": "Health Care",
    "in_degree": 11,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2162,7 +2162,7 @@
    "name": "Fifth Third Bancorp",
    "sector": "Financials",
    "in_degree": 2,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2278,7 +2278,7 @@
    "ticker": "GIS",
    "name": "General Mills Inc",
    "sector": "Consumer Staples",
-   "in_degree": 24,
+   "in_degree": 30,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2738,7 +2738,7 @@
    "name": "Jabil Inc",
    "sector": "Information Technology",
    "in_degree": 2,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3799,7 +3799,7 @@
    "name": "Packaging Corp of America",
    "sector": "Materials",
    "in_degree": 6,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3826,7 +3826,7 @@
    "name": "Philip Morris International Inc",
    "sector": "Consumer Staples",
    "in_degree": 4,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3906,7 +3906,7 @@
    "ticker": "PSA",
    "name": "Public Storage",
    "sector": "Real Estate",
-   "in_degree": 14,
+   "in_degree": 16,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4159,7 +4159,7 @@
    "name": "Snap-on Inc",
    "sector": "Industrials",
    "in_degree": 9,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4384,7 +4384,7 @@
    "name": "Bio-Techne Corp",
    "sector": "Health Care",
    "in_degree": 3,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4411,7 +4411,7 @@
    "name": "Truist Financial Corp",
    "sector": "Financials",
    "in_degree": 11,
-   "out_degree": 9,
+   "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -13488,6 +13488,13 @@
   },
   {
    "source": "CMI",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-02"
+  },
+  {
+   "source": "CMI",
    "target": "ETN",
    "year": 2026,
    "group_type": "primary",
@@ -14063,6 +14070,13 @@
   {
    "source": "PM",
    "target": "MDLZ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-26"
+  },
+  {
+   "source": "PM",
+   "target": "PSA",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-26"
@@ -18010,6 +18024,13 @@
   },
   {
    "source": "PKG",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "PKG",
    "target": "IP",
    "year": 2026,
    "group_type": "primary",
@@ -19214,6 +19235,13 @@
   },
   {
    "source": "DGX",
+   "target": "PSA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-06"
+  },
+  {
+   "source": "DGX",
    "target": "DVA",
    "year": 2026,
    "group_type": "primary",
@@ -19285,6 +19313,13 @@
   {
    "source": "TFC",
    "target": "CFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-16"
+  },
+  {
+   "source": "TFC",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-16"
@@ -21027,6 +21062,13 @@
   },
   {
    "source": "BRO",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-24"
+  },
+  {
+   "source": "BRO",
    "target": "AON",
    "year": 2026,
    "group_type": "primary",
@@ -22056,6 +22098,13 @@
   },
   {
    "source": "SNA",
+   "target": "GIS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "SNA",
    "target": "SWK",
    "year": 2026,
    "group_type": "primary",
@@ -22274,6 +22323,13 @@
   {
    "source": "FITB",
    "target": "MTB",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-09"
+  },
+  {
+   "source": "FITB",
+   "target": "CHTR",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-09"
@@ -23652,6 +23708,13 @@
   },
   {
    "source": "TECH",
+   "target": "GIS",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-09-19"
+  },
+  {
+   "source": "TECH",
    "target": "IDXX",
    "year": 2025,
    "group_type": "primary",
@@ -23828,6 +23891,13 @@
   {
    "source": "JBL",
    "target": "DHR",
+   "year": 2025,
+   "group_type": "primary",
+   "filing": "DEF 14A 2025-12-12"
+  },
+  {
+   "source": "JBL",
+   "target": "GIS",
    "year": 2025,
    "group_type": "primary",
    "filing": "DEF 14A 2025-12-12"
