@@ -2295,7 +2295,27 @@ def main():
                        # Information Technology) from CDW's 2025 group;
                        # RIG (Transocean, Energy), WFRD (Weatherford,
                        # Energy) from HAL's 2025 Comparator Peer Group.
-                       "CRBG", "MFC", "SNX", "RIG", "WFRD"}
+                       "CRBG", "MFC", "SNX", "RIG", "WFRD",
+                       # 2026-10-03 19:30 PT run: peer-network batch-8w
+                       # fingerprint repair (HLT/MAR/PNW/SJM/CPAY/DPZ/
+                       # JBHT/SYF peer groups from latest DEF 14As, via
+                       # live-browser transcription - SEC Archives 403'd
+                       # curl this run). 9 new peer-only nodes, tickers
+                       # SEC-verified via company_tickers_exchange.json:
+                       # BFH (Bread Financial, Financials) from SYF's
+                       # 2025 group; WH (Wyndham Hotels & Resorts,
+                       # Consumer Discretionary) from HLT's + DPZ's 2025
+                       # groups; BLMN (Bloomin' Brands), PZZA (Papa
+                       # John's), TXRH (Texas Roadhouse), WEN (The
+                       # Wendy's Company), WING (Wingstop), IHG
+                       # (InterContinental Hotels Group), SPB (Spectrum
+                       # Brands) — all Consumer Discretionary — from
+                       # DPZ's 2025 group. PNW's filing cites "PNM
+                       # Resources, Inc. (PNM)"; stored as TXNM (renamed
+                       # Aug 2024, TXNM already a node) per batch-8b
+                       # live-holder / batch-4 "Fiserv is FISV".
+                       "BFH", "BLMN", "IHG", "PZZA", "SPB", "TXRH",
+                       "WEN", "WH", "WING"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
