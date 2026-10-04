@@ -2284,7 +2284,18 @@ def main():
                        # Oct-2024 peer group (last pre-Thoma Bravo).
                        "ATR", "HAE", "IART", "ATVI", "PUBGY", "LGF",
                        "QRTEA", "GCI", "NLSN", "WPP", "BILL", "RNG",
-                       "FIVN"}
+                       "FIVN",
+                       # 2026-10-03 18:00 PT run: peer-network batch-8v
+                       # fingerprint repair (AFL/BMY/CDW/CMG/HAL/HIG peer
+                       # groups from latest DEF 14As). 5 new peer-only
+                       # nodes, tickers SEC-verified via
+                       # company_tickers_exchange.json: CRBG (Corebridge
+                       # Financial, Financials), MFC (Manulife Financial,
+                       # Financials) from AFL's 2025 group; SNX (TD SYNNEX,
+                       # Information Technology) from CDW's 2025 group;
+                       # RIG (Transocean, Energy), WFRD (Weatherford,
+                       # Energy) from HAL's 2025 Comparator Peer Group.
+                       "CRBG", "MFC", "SNX", "RIG", "WFRD"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
