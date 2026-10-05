@@ -3333,8 +3333,12 @@ tbody tr:last-child td { border-bottom: none; }
        18-column table. Unconstrained it stretches to the full table width,
        so on viewports narrower than the table its text runs off-screen
        (verified at 360px: profile summary clipped mid-word). Cap it at the
-       viewport width; inner wide tables keep their own overflow-x wrappers. */
-    max-width: calc(100vw - 24px);
+       viewport width; inner wide tables keep their own overflow-x wrappers.
+       The panel's natural left edge sits ~31px in (page padding + the
+       colspan cell's padding), so 100vw-24px still bled 7px past the right
+       edge at 360px (re-verified 2026-10-05): subtract the measured offset
+       for a 12px right margin. */
+    max-width: calc(100vw - 43px);
 }
 
 .detail-header {
