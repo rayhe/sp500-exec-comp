@@ -17520,6 +17520,19 @@ function setupDualSparklineTooltips() {
                 '<p>Title repairs are never made offline: every repaired title was verified verbatim in the filed DEF 14A summary compensation table before the stored value changed, with all numeric fields asserted byte-identical. The earlier as-parsed display posture applied only while the re-read queue was open; the queue is now drained, and every NEO title now matches its filed DEF 14A SCT. Guard section 13 of <code>scripts/check_metadata_consistency.py</code> trips on any new title artifact.</p></div>' +
                 '<div class="method-note">The guard <code>scripts/check_metadata_consistency.py</code> (also installed as a pre-commit hook) asserts every metadata count equals an independent recount of the stored records, so stale counts can never be committed.</div>'
         },
+        peer: {
+            title: 'Peer Network Methodology',
+            html: '<h4>What an edge means</h4>' +
+                '<p>A directed edge <code>A&rarr;B</code> means company A named company B as a member of its disclosed <strong>compensation peer group</strong> in its SEC DEF 14A proxy statement (the CD&amp;A benchmarking disclosure). Direction is benchmarker&rarr;benchmarkee. Node size = in-degree: how many companies selected that node as a peer.</p>' +
+                '<h4>Primary source, filing-verbatim</h4>' +
+                '<p>Every peer list was extracted from the named company\'s own DEF 14A proxy filing and hand-verified. Peer relationships are never inferred from business similarity or estimated from stock returns — an edge exists only when the filing names the target as a peer-group member.</p>' +
+                '<h4>Operative-group convention</h4>' +
+                '<p>Filings often disclose several peer lists alongside the operative one: prior-year groups, forward-looking updates, pay-vs-performance TSR peer groups, VC comparison groups, and consultant survey data. The stored group is the one the filing says governed <em>that proxy year\'s</em> compensation decisions. Forward-looking revisions disclosed in the same filing are intentionally left unstored (e.g., VRSN\'s approved 2026 group, WM\'s 2026-forward chart, VLTO\'s 2026 updates, HAS\'s 2026 group).</p>' +
+                '<h4>Extractor decontamination</h4>' +
+                '<p>An ongoing re-verification program re-reads every stored peer list against its source DEF 14A and has removed extractor fabrications, including: image-rendered peer tables that text extraction missed or misattributed (chart-source pickup), shareholders picked up from beneficial-ownership tables, companies mentioned only in director biographies, partial-name matches, members of consultant survey data never named as peers, and pay-vs-performance TSR groups filed as dual-role disclosures. Ticker aliases follow a normalization convention (e.g., Block Inc. is stored as XYZ).</p>' +
+                '<div id="peer-coverage-block"><h4>Coverage</h4><p>Coverage counts render live when the peer network loads.</p></div>' +
+                '<div class="method-note">The network stats bar renders node/edge counts, the peer-data vintage, and the cross-sector verification split live from <code>data/peer-network.json</code> metadata, so they can never go stale.</div>'
+        },
         ger: {
             title: 'Governance Erosion Risk (GER) Methodology',
             html: '<h4>Composite Score (0–100)</h4>' +
@@ -17559,6 +17572,24 @@ function setupDualSparklineTooltips() {
             '<p>' + Number(dq.verified_total).toLocaleString('en-US') + ' of ' + Number(total).toLocaleString('en-US') +
             ' NEO rows verified (' + pct + '%): ' + dq.rounding + ' rounding, ' + recomp + ' recomputed, ' +
             dq.component_mismatch + ' component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p>';
+    }
+
+    // Peer Network modal: coverage block, rendered live from peer-network.json
+    // metadata at modal-open time — the same convention as the dataq coverage
+    // block (the guard asserts metadata counts equal a recount of the stored
+    // records, so the modal can never contradict the network stats bar).
+    // Returns null when the peer data isn't loaded yet — the static fallback
+    // text above is then kept. Strings from metadata are escaped (the file is
+    // rewritten by every DQ batch).
+    function _peerCoverageHtml() {
+        var meta = (typeof peerData !== 'undefined' && peerData && peerData.metadata) ? peerData.metadata : null;
+        if (!meta || meta.node_count == null || meta.edge_count == null) return null;
+        var ver = (meta.verified_cross_sector && meta.verified_cross_sector.length) ? meta.verified_cross_sector.length : 0;
+        var esc = (typeof pvpEsc === 'function') ? pvpEsc : function(s) { return String(s); };
+        return '<h4>Coverage (peer data updated ' + esc(meta.last_updated || 'unknown') + ')</h4>' +
+            '<p>' + Number(meta.node_count).toLocaleString('en-US') + ' nodes and ' +
+            Number(meta.edge_count).toLocaleString('en-US') + ' directed peer edges from ' + esc(meta.sources || '') + '.</p>' +
+            '<p>' + ver + ' cross-sector peer edges verified verbatim against the filing DEF 14A (edges whose target is a known extractor-fingerprint ticker and whose source sits in a different sector; the stats bar recomputes the pending remainder live).</p>';
     }
 
     // Data Verification modal: phantom-compensation-removed block, rendered
@@ -17818,6 +17849,15 @@ function setupDualSparklineTooltips() {
             var pvpCounts = document.getElementById('dataq-pvp-counts');
             var pvpHtml = _dataqPvpHtml();
             if (pvpCounts && pvpHtml) pvpCounts.innerHTML = pvpHtml;
+        }
+        // Peer Network modal: render the Coverage block from live metadata so
+        // the modal can never contradict the network stats bar (the hardcoded
+        // description paragraph went stale twice during the 2026-10 fragmentary
+        // sweeps). node/edge/verified counts come from guard-checked metadata.
+        if (method === 'peer') {
+            var peerBlock = document.getElementById('peer-coverage-block');
+            var peerHtml = _peerCoverageHtml();
+            if (peerBlock && peerHtml) peerBlock.innerHTML = peerHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility
