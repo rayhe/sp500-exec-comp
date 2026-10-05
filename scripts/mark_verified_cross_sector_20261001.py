@@ -89,6 +89,13 @@ REPAIR_SCRIPTS = OrderedDict([
     # (each source's edges carry exactly the documented repair filing)
     # was verified green before registering.
     ("peer-batch8z-20261004", "scripts/peer_batch8z_fingerprint_repair_20261004.py"),
+    # 2026-10-04 19:30 PT run: peer-network batch-17 wholesale re-read -
+    # ROK (2025 Compensation Peer Group, DEF 14A 2025-12-22) and IP (2025
+    # CCG, DEF 14A 2026-03-27) replaced wholesale filing-verbatim. The
+    # batch-9 adjudicating filings are the stored edges' own filings, so
+    # the single-filing invariant holds by construction; verified green
+    # post-repair before registering.
+    ("peer-batch17-20261004", "scripts/peer_batch17_wholesale_20261004.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;

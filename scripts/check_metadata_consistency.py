@@ -2367,7 +2367,15 @@ def main():
                        # X (United States Steel Corporation, delisted after
                        # the Nippon Steel acquisition, retained under last
                        # ticker per the PNR/SMAR/SAVE precedent).
-                       "CLF", "SANM", "X"}
+                       "CLF", "SANM", "X",
+                       # 2026-10-04 19:30 PT run: peer-network batch-17
+                       # wholesale re-read (ROK + IP peer groups from their
+                       # stored DEF 14A filings). 1 new peer-only node:
+                       # BERY (Berry Global Group, Inc., Materials; acquired
+                       # by Amcor Plc on April 30, 2025 per IP's DEF 14A
+                       # footnote (2); retained under last ticker per the
+                       # PNR/SMAR/SAVE/X delisted-peer precedent).
+                       "BERY"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
