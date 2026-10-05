@@ -5,7 +5,7 @@
   "sources": "495 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
   "node_count": 1006,
-  "edge_count": 7354,
+  "edge_count": 7356,
   "last_updated": "2026-10-04",
   "last_dq_repair": "2026-10-04",
   "verified_cross_sector": [
@@ -214,12 +214,6 @@
     "batch": "peer-batch13-20261004"
    },
    {
-    "source": "HAS",
-    "target": "HSY",
-    "filing": "DEF 14A 2026-04-17",
-    "batch": "batch-16"
-   },
-   {
     "source": "HLT",
     "target": "COF",
     "filing": "DEF 14A 2026-04-02",
@@ -272,12 +266,6 @@
     "target": "COF",
     "filing": "DEF 14A 2026-03-27",
     "batch": "peer-batch8w-20261003"
-   },
-   {
-    "source": "MCD",
-    "target": "PG",
-    "filing": "DEF 14A 2026-04-07",
-    "batch": "batch-16"
    },
    {
     "source": "MCK",
@@ -1057,7 +1045,7 @@
    "ticker": "BLK",
    "name": "Blackrock Inc",
    "sector": "Financials",
-   "in_degree": 20,
+   "in_degree": 21,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -2210,7 +2198,7 @@
    "name": "Fortinet Inc",
    "sector": "Information Technology",
    "in_degree": 24,
-   "out_degree": 1,
+   "out_degree": 2,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3433,7 +3421,7 @@
    "ticker": "NDAQ",
    "name": "Nasdaq Inc",
    "sector": "Financials",
-   "in_degree": 9,
+   "in_degree": 10,
    "out_degree": 22,
    "market_cap_tier": "large",
    "isSource": true
@@ -4639,7 +4627,7 @@
    "name": "Ulta Beauty Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 11,
-   "out_degree": 5,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -19477,6 +19465,13 @@
    "filing": "DEF 14A 2026-04-29"
   },
   {
+   "source": "FTNT",
+   "target": "NDAQ",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-29"
+  },
+  {
    "source": "URI",
    "target": "CTAS",
    "year": 2026,
@@ -20305,6 +20300,13 @@
   {
    "source": "ULTA",
    "target": "ROST",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-22"
+  },
+  {
+   "source": "ULTA",
+   "target": "BLK",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-22"
