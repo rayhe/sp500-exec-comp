@@ -115,6 +115,17 @@ REPAIR_SCRIPTS = OrderedDict([
     # own filings (all also the latest DEF 14A); verified green post-repair
     # before registering.
     ("peer-batch20-20261005", "scripts/peer_batch20_fragmentary_20261005.py"),
+    # 2026-10-05 03:55 PT run: peer-network batch-21 fragmentary-source
+    # sweep tranche 3 -- the 8 remaining deg-5 sources triaged filing-
+    # verbatim (AVB/CINF/ELV/HAS/LUV/MS/UHS/ULTA). ELV left unchanged
+    # (stored 5 == the filing's 2025 Direct Industry Group; General
+    # Industry Group dual-role UNSTORED). The other 7 replaced wholesale
+    # filing-verbatim (AVB/CINF/HAS/LUV/MS/UHS/ULTA); AVB->SPGI fabricated
+    # (chart-source pickup), CINF->BLK/STT fabricated (13G shareholder
+    # pickup). All repairs adjudicated against the stored edges' own
+    # filings (all also the latest DEF 14A); verified green post-repair
+    # before registering.
+    ("peer-batch21-20261005", "scripts/peer_batch21_fragmentary_20261005.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;

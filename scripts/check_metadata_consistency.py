@@ -2404,7 +2404,27 @@ def main():
                        # (G-III Apparel Group), GPS (The Gap, Inc.), FL (Foot
                        # Locker, Inc.) -- Consumer Discretionary, from RL's
                        # Fiscal 2026 peer group.
-                       "CGNX", "CAR", "GIII", "GPS", "FL"}
+                       "CGNX", "CAR", "GIII", "GPS", "FL",
+                       # 2026-10-05 03:55 PT run: peer-network batch-21
+                       # fragmentary-source sweep tranche 3. 10 new peer-only
+                       # nodes, all filing-named: SIGI (Selective Insurance
+                       # Group), UFCS (United Fire Group) -- Financials, from
+                       # CINF's 2025 peer group; IHRT (iHeartMedia) --
+                       # Communication Services, TOY (Spin Master), MODG
+                       # (Topgolf Callaway Brands) -- Consumer Discretionary,
+                       # from HAS's 2025 peer group; ALGT (Allegiant Travel),
+                       # ULCC (Frontier Group) -- Industrials, from LUV's
+                       # LTIP Peer Group; ACHC (Acadia Healthcare), BKD
+                       # (Brookdale Senior Living), CYH (Community Health
+                       # Systems) -- Health Care, from UHS's Compensation
+                       # Peer Group. 8/10 SEC-verified via
+                       # company_tickers.json (SIGI/UFCS/IHRT/ALGT/ULCC/
+                       # ACHC/BKD/CYH); TOY = Spin Master primary TSX
+                       # listing (TSE:TOY, MarketBeat/TipRanks 2026-10);
+                       # MODG = Topgolf Callaway Brands confirmed via
+                       # EDGAR search index (CIK 0000837465).
+                       "SIGI", "UFCS", "IHRT", "TOY", "MODG", "ALGT",
+                       "ULCC", "ACHC", "BKD", "CYH"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
