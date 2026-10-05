@@ -10829,6 +10829,22 @@ function _refreshGerChips() {
     }
 }
 
+/* Set an h2's label text while preserving any child info button.
+   drawGERChart rewrites the GER title on every render (including each
+   sector-chip change); a naive titleEl.textContent = label destroys the
+   GER methodology button child and makes the modal unreachable (found
+   2026-10-05: with working d3 the button was absent from the DOM). Click
+   wiring is delegated at document level, so re-appending the same button
+   node keeps it working. */
+function _setTitleLabel(titleEl, label) {
+    var btn = titleEl.querySelector('.methodology-info-btn');
+    titleEl.textContent = label;
+    if (btn) {
+        titleEl.appendChild(document.createTextNode(' '));
+        titleEl.appendChild(btn);
+    }
+}
+
 function drawGERChart(companies) {
     _gerCompaniesRef = companies;
     var container = document.getElementById('ger-chart');
@@ -10841,15 +10857,17 @@ function drawGERChart(companies) {
         _buildGerSectorChips(companies);
     }
 
-    // Update title/desc based on sector filter
+    // Update title/desc based on sector filter. The h2 carries the GER
+    // methodology info button -- never assign textContent to the h2 itself
+    // (that destroys the button and makes the modal unreachable); rewrite
+    // only the label via _setTitleLabel.
     var titleEl = document.getElementById('ger-chart-title');
     var descEl = document.getElementById('ger-chart-desc');
     var sectorFilter = _gerSectorFilter;
+    if (titleEl) _setTitleLabel(titleEl, sectorFilter ? 'Governance Erosion Risk \u2014 ' + sectorFilter : 'Governance Erosion Risk');
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Governance Erosion Risk \u2014 ' + sectorFilter;
         if (descEl) descEl.textContent = 'Top ' + sectorFilter + ' companies by governance erosion risk. Stacked components show what drives each company\'s risk profile.';
     } else {
-        if (titleEl) titleEl.textContent = 'Governance Erosion Risk';
         if (descEl) descEl.textContent = 'Companies most at risk for governance erosion from CEO entrenchment. Score 0\u2013100 from four components: tenure duration, governance quality deficit, pay-governance mismatch, and CEO pay concentration. Click any bar for company details.';
     }
 

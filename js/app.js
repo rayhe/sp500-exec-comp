@@ -17457,6 +17457,7 @@ function setupDualSparklineTooltips() {
                 '<h4>Letter Grades</h4>' +
                 '<p><span class="method-pill">A ≥80</span> <span class="method-pill">B ≥65</span> <span class="method-pill">C ≥50</span> <span class="method-pill">D ≥35</span> <span class="method-pill">F &lt;35</span></p>' +
                 '<p>Grade thresholds apply to the 0–100 composite, not raw percentiles.</p>' +
+                '<div id="gov-coverage-block"><h4>Coverage</h4><p>Coverage counts render live when the dataset loads.</p></div>' +
                 '<div class="method-note">Percentile convention: rank-based, (rank / n) × 100 with 1-based rank, rounded to the nearest integer. The two inverse components sort <em>descending</em>, which equals 100 − ascending%ile + 100/n (≈ ±0.2 pts on a ~500-company scale) — not exactly 100 − ascending%ile.</div>' +
                 '<div class="method-note">Primary sources: SEC DEF 14A Summary Compensation Table (SCT) for NEO totals and role inference, 8-K Item 5.07 for SoP approval %, proxy Item 402(u) for pay ratio and median worker pay. Governance score is a descriptive composite, not a causal claim about governance quality.</div>'
         },
@@ -17553,6 +17554,7 @@ function setupDualSparklineTooltips() {
                 '<p><span class="method-pill" style="border-color:rgba(239,68,68,0.35);color:#ef4444">Critical ≥75</span> <span class="method-pill" style="border-color:rgba(251,146,60,0.35)">High ≥60</span> <span class="method-pill">Elevated ≥45</span> <span class="method-pill">Moderate ≥30</span> <span class="method-pill">Low &lt;30</span></p>' +
                 '<h4>Interpretation</h4>' +
                 '<p>GER is a screening tool, not a prediction of misconduct. A Critical score (≥75) indicates overlapping risk factors: long tenure + weak governance + high pay relative to governance + concentrated pay. Many high-GER companies are founder-led or turnaround situations where concentration reflects context, not necessarily entrenchment.</p>' +
+                '<div id="ger-coverage-block"><h4>Coverage</h4><p>Coverage counts render live when the dataset loads.</p></div>' +
                 '<div class="method-note ger-note">Thresholds (tenure 3/6/11/16/20, concentration 30/40/50/60, GER tiers 30/45/60/75) are calibrated to S&P 500 FY2024 distribution. YoY direction 5% threshold for trend sparklines (red &gt;5% increase, green decrease, amber stable) is an arbitrary materiality convention, not a statistical test.</div>'
         }
     };
@@ -17590,6 +17592,72 @@ function setupDualSparklineTooltips() {
             '<p>' + Number(meta.node_count).toLocaleString('en-US') + ' nodes and ' +
             Number(meta.edge_count).toLocaleString('en-US') + ' directed peer edges from ' + esc(meta.sources || '') + '.</p>' +
             '<p>' + ver + ' cross-sector peer edges verified verbatim against the filing DEF 14A (edges whose target is a known extractor-fingerprint ticker and whose source sits in a different sector; the stats bar recomputes the pending remainder live).</p>';
+    }
+
+    // Governance Score modal: coverage block, rendered live from the computed
+    // _govScore/_govGrade/_govComponents at modal-open time — the same
+    // convention as the dataq/peer coverage blocks. The grade distribution
+    // shifts with every re-verification pass (percentiles are recomputed
+    // across the S&P 500 each load), so a static count would go stale.
+    // The component-availability line discloses which of the five inputs are
+    // sparse (e.g. say-on-pay 8-K coverage is thinner than pay-ratio
+    // coverage), which the methodology text alone does not reveal. Numbers
+    // only, so no escaping is needed. Returns null when the dataset isn't
+    // loaded yet — the static fallback text above is then kept.
+    function _govCoverageHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos || !cos.length) return null;
+        var n = cos.length, scored = 0;
+        var grades = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+        var compNames = { sop: 'Say-on-Pay', conc: 'Inverse CEO concentration', ratio: 'Inverse pay ratio', team: 'Team disclosure completeness', board: 'Board independence' };
+        var compKeys = ['sop', 'conc', 'ratio', 'team', 'board'];
+        var compCounts = { sop: 0, conc: 0, ratio: 0, team: 0, board: 0 };
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            if (c._govScore == null) continue;
+            scored++;
+            if (grades[c._govGrade] != null) grades[c._govGrade]++;
+            var gc = c._govComponents || {};
+            for (var j = 0; j < compKeys.length; j++) {
+                if (gc[compKeys[j]] != null) compCounts[compKeys[j]]++;
+            }
+        }
+        var compList = compKeys.map(function(k) {
+            return compNames[k] + ' ' + compCounts[k] + '/' + n;
+        }).join('; ');
+        return '<h4>Coverage (live)</h4>' +
+            '<p>' + scored + ' of ' + n + ' companies carry a Governance Score — grade distribution ' +
+            'A: ' + grades.A + ', B: ' + grades.B + ', C: ' + grades.C + ', D: ' + grades.D + ', F: ' + grades.F +
+            '. ' + (n - scored) + ' companies are excluded (fewer than 2 available components).</p>' +
+            '<p>Component availability across all ' + n + ' companies: ' + compList + '.</p>';
+    }
+
+    // Governance Erosion Risk (GER) modal: coverage block, rendered live from
+    // the computed _gerScore/_gerRisk at modal-open time — the same
+    // convention as the dataq/peer coverage blocks. Tier counts move with
+    // re-verification (tenure and pay inputs change), so a static count
+    // would go stale. Median uses the same floor(n/2) convention as the
+    // governance insight card. Numbers only, no escaping needed. Returns
+    // null when the dataset isn't loaded yet — the static fallback text
+    // above is then kept.
+    function _gerCoverageHtml() {
+        var cos = (typeof compData !== 'undefined' && compData && compData.companies) ? compData.companies : null;
+        if (!cos || !cos.length) return null;
+        var tiers = { Critical: 0, High: 0, Elevated: 0, Moderate: 0, Low: 0 };
+        var scores = [];
+        for (var i = 0; i < cos.length; i++) {
+            var c = cos[i];
+            if (c._gerScore == null) continue;
+            if (tiers[c._gerRisk] != null) tiers[c._gerRisk]++;
+            scores.push(c._gerScore);
+        }
+        scores.sort(function(a, b) { return a - b; });
+        var med = scores.length ? scores[Math.floor(scores.length / 2)] : null;
+        return '<h4>Coverage (live)</h4>' +
+            '<p>' + scores.length + ' of ' + cos.length + ' companies carry a GER score — ' +
+            'Critical: ' + tiers.Critical + ', High: ' + tiers.High + ', Elevated: ' + tiers.Elevated +
+            ', Moderate: ' + tiers.Moderate + ', Low: ' + tiers.Low +
+            ' (median ' + (med == null ? 'n/a' : med) + '/100).</p>';
     }
 
     // Data Verification modal: phantom-compensation-removed block, rendered
@@ -17858,6 +17926,20 @@ function setupDualSparklineTooltips() {
             var peerBlock = document.getElementById('peer-coverage-block');
             var peerHtml = _peerCoverageHtml();
             if (peerBlock && peerHtml) peerBlock.innerHTML = peerHtml;
+        }
+        // Governance Score modal: live coverage (grade distribution +
+        // component availability) so the modal can't go stale as
+        // re-verification shifts percentiles. Same convention as dataq/peer.
+        if (method === 'gov') {
+            var govBlock = document.getElementById('gov-coverage-block');
+            var govHtml = _govCoverageHtml();
+            if (govBlock && govHtml) govBlock.innerHTML = govHtml;
+        }
+        // GER modal: live tier counts + median, same convention.
+        if (method === 'ger') {
+            var gerBlock = document.getElementById('ger-coverage-block');
+            var gerHtml = _gerCoverageHtml();
+            if (gerBlock && gerHtml) gerBlock.innerHTML = gerHtml;
         }
         overlay.hidden = false;
         // Focus close button for accessibility
