@@ -97,6 +97,15 @@ REPAIR_SCRIPTS = OrderedDict([
     # post-repair before registering.
     ("peer-batch17-20261004", "scripts/peer_batch17_wholesale_20261004.py"),
     ("peer-batch18-20261004", "scripts/peer_batch18_wtw_residual_20261004.py"),
+    # 2026-10-04 23:30 PT run: peer-network batch-19 fragmentary-source
+    # sweep tranche 1 -- 10 sources with out_degree <= 5 replaced wholesale
+    # filing-verbatim (FTNT/A/ABNB/AES/AMP/BA/GWW/IVZ/MPWR/MET); FICO had
+    # both stored edges fabricated and discloses no peer list, so it is a
+    # drop-all (isSource -> False) and is NOT in this script's NEW dict --
+    # the single-filing invariant stays vacuous for it. All repairs
+    # adjudicated against the stored edges' own filings (all also the
+    # latest DEF 14A); verified green post-repair before registering.
+    ("peer-batch19-20261004", "scripts/peer_batch19_fragmentary_20261004.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;

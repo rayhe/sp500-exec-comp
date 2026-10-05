@@ -2375,7 +2375,26 @@ def main():
                        # by Amcor Plc on April 30, 2025 per IP's DEF 14A
                        # footnote (2); retained under last ticker per the
                        # PNR/SMAR/SAVE/X delisted-peer precedent).
-                       "BERY"}
+                       "BERY",
+                       # 2026-10-04 23:30 PT run: peer-network batch-19
+                       # fragmentary-source sweep tranche 1. 12 new peer-only
+                       # nodes, all filing-named: AB (AllianceBernstein
+                       # Holding L.P.), JHG (Janus Henderson Group plc) --
+                       # Financials, from IVZ's compensation benchmarking peer
+                       # group; LSCC (Lattice Semiconductor), POWI (Power
+                       # Integrations), SLAB (Silicon Laboratories) --
+                       # Information Technology, from MPWR's 2025 peer group;
+                       # BEP (Brookfield Renewable Partners), CWEN (Clearway
+                       # Energy), ENLT (Enlight Renewable Energy), IBDRY
+                       # (Iberdrola ADR), DNNGY (Orsted ADR), ENIA (Enel
+                       # Americas, delisted 2024, last ticker) -- Utilities,
+                       # from AES's Clean Energy Peer Group; ALIZY (Allianz SE
+                       # US ADR; filing prints Xetra "ALV", stored as ADR to
+                       # avoid Autoliv NYSE:ALV collision) -- Financials,
+                       # from MET's Compensation Comparator Group.
+                       "AB", "JHG", "LSCC", "POWI", "SLAB",
+                       "BEP", "CWEN", "ENLT", "IBDRY", "DNNGY", "ENIA",
+                       "ALIZY"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
