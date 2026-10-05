@@ -126,6 +126,16 @@ REPAIR_SCRIPTS = OrderedDict([
     # filings (all also the latest DEF 14A); verified green post-repair
     # before registering.
     ("peer-batch21-20261005", "scripts/peer_batch21_fragmentary_20261005.py"),
+    # 2026-10-05 06:00 PT run: peer-network batch-22 fragmentary-source
+    # sweep tranche 4 -- the 9 remaining deg-6 sources triaged filing-
+    # verbatim (ENPH/HBAN/JPM/KEY/MTD/O/ROST/STLD/VST). JPM and VST left
+    # unchanged (stored groups == the filings' operative groups exactly;
+    # JPM narrative-only references and VST 2026-forward changes UNSTORED).
+    # The other 7 replaced wholesale filing-verbatim (ENPH 6->16, HBAN
+    # 6->11, KEY 6->10, MTD 6->16, O 6->18, ROST 6->17, STLD 6->13). All
+    # repairs adjudicated against the stored edges' own filings (all also
+    # the latest DEF 14A); verified green post-repair before registering.
+    ("peer-batch22-20261005", "scripts/peer_batch22_fragmentary_20261005.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;

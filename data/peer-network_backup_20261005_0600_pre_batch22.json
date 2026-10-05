@@ -4,8 +4,8 @@
   "description": "Directional peer group relationships from SEC EDGAR DEF 14A proxy statements",
   "sources": "494 DEF 14A proxy statements from S&P 500 companies",
   "methodology": "Company-disclosed compensation peer groups from CD&A sections. Each directed edge = source selected target as a benchmarking peer.",
-  "node_count": 1040,
-  "edge_count": 7739,
+  "node_count": 1034,
+  "edge_count": 7680,
   "last_updated": "2026-10-05",
   "last_dq_repair": "2026-10-05",
   "verified_cross_sector": [
@@ -38,12 +38,6 @@
     "target": "PG",
     "filing": "DEF 14A 2026-03-06",
     "batch": "peer-batch19-20261004"
-   },
-   {
-    "source": "BALL",
-    "target": "GIS",
-    "filing": "DEF 14A 2026-03-17",
-    "batch": "peer-batch13-20261004"
    },
    {
     "source": "BKNG",
@@ -232,12 +226,6 @@
     "batch": "peer-batch7-20261001"
    },
    {
-    "source": "GOOGL",
-    "target": "MSFT",
-    "filing": "DEF 14A 2026-04-24",
-    "batch": "peer-batch13-20261004"
-   },
-   {
     "source": "HAS",
     "target": "HSY",
     "filing": "DEF 14A 2026-04-17",
@@ -296,12 +284,6 @@
     "target": "COF",
     "filing": "DEF 14A 2026-03-27",
     "batch": "peer-batch8w-20261003"
-   },
-   {
-    "source": "MCD",
-    "target": "PG",
-    "filing": "DEF 14A 2026-04-07",
-    "batch": "batch-16"
    },
    {
     "source": "MCK",
@@ -490,12 +472,6 @@
     "batch": "peer-batch8y-20261003"
    },
    {
-    "source": "WY",
-    "target": "PSA",
-    "filing": "DEF 14A 2026-04-01",
-    "batch": "peer-batch11-20261004"
-   },
-   {
     "source": "XOM",
     "target": "PG",
     "filing": "DEF 14A 2026-04-08",
@@ -506,6 +482,30 @@
     "target": "GIS",
     "filing": "DEF 14A 2026-04-03",
     "batch": "peer-batch8d-20261001"
+   },
+   {
+    "source": "BALL",
+    "target": "GIS",
+    "filing": "DEF 14A 2026-03-17",
+    "batch": "peer-batch13-20261004"
+   },
+   {
+    "source": "GOOGL",
+    "target": "MSFT",
+    "filing": "DEF 14A 2026-04-24",
+    "batch": "peer-batch13-20261004"
+   },
+   {
+    "source": "MCD",
+    "target": "PG",
+    "filing": "DEF 14A 2026-04-07",
+    "batch": "batch-16"
+   },
+   {
+    "source": "WY",
+    "target": "PSA",
+    "filing": "DEF 14A 2026-04-01",
+    "batch": "peer-batch11-20261004"
    }
   ]
  },
@@ -514,7 +514,7 @@
    "ticker": "A",
    "name": "Agilent Technologies Inc",
    "sector": "Health Care",
-   "in_degree": 39,
+   "in_degree": 38,
    "out_degree": 32,
    "market_cap_tier": "large",
    "isSource": true
@@ -757,7 +757,7 @@
    "ticker": "AME",
    "name": "AMETEK Inc",
    "sector": "Industrials",
-   "in_degree": 20,
+   "in_degree": 19,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -892,7 +892,7 @@
    "ticker": "AVB",
    "name": "AvalonBay Communities Inc",
    "sector": "Real Estate",
-   "in_degree": 19,
+   "in_degree": 18,
    "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
@@ -1216,7 +1216,7 @@
    "ticker": "CBRE",
    "name": "CBRE Group Inc",
    "sector": "Industrials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -1225,7 +1225,7 @@
    "ticker": "CCI",
    "name": "Crown Castle Inc",
    "sector": "Real Estate",
-   "in_degree": 12,
+   "in_degree": 11,
    "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
@@ -1946,7 +1946,7 @@
    "name": "Enphase Energy Inc",
    "sector": "Information Technology",
    "in_degree": 4,
-   "out_degree": 16,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -1981,7 +1981,7 @@
    "ticker": "EQR",
    "name": "Residential",
    "sector": "Real Estate",
-   "in_degree": 16,
+   "in_degree": 15,
    "out_degree": 13,
    "market_cap_tier": "large",
    "isSource": true
@@ -2197,7 +2197,7 @@
    "ticker": "FITB",
    "name": "Fifth Third Bancorp",
    "sector": "Financials",
-   "in_degree": 4,
+   "in_degree": 2,
    "out_degree": 9,
    "market_cap_tier": "large",
    "isSource": true
@@ -2432,7 +2432,7 @@
    "name": "Huntington Bancshares Inc/OH",
    "sector": "Financials",
    "in_degree": 6,
-   "out_degree": 11,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -2467,7 +2467,7 @@
    "ticker": "HIG",
    "name": "Hartford Insurance Group Inc",
    "sector": "Financials",
-   "in_degree": 13,
+   "in_degree": 12,
    "out_degree": 14,
    "market_cap_tier": "large",
    "isSource": true
@@ -2846,7 +2846,7 @@
    "name": "KeyCorp",
    "sector": "Financials",
    "in_degree": 14,
-   "out_degree": 10,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3431,7 +3431,7 @@
    "name": "Mettler-Toledo International Inc",
    "sector": "Health Care",
    "in_degree": 16,
-   "out_degree": 16,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3565,7 +3565,7 @@
    "ticker": "NTRS",
    "name": "Northern Trust Corp",
    "sector": "Financials",
-   "in_degree": 16,
+   "in_degree": 15,
    "out_degree": 12,
    "market_cap_tier": "large",
    "isSource": true
@@ -3620,7 +3620,7 @@
    "name": "Realty Income Corp",
    "sector": "Real Estate",
    "in_degree": 11,
-   "out_degree": 18,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -3807,7 +3807,7 @@
    "ticker": "PH",
    "name": "Parker-Hannifin Corp",
    "sector": "Industrials",
-   "in_degree": 39,
+   "in_degree": 38,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -3843,7 +3843,7 @@
    "ticker": "PLD",
    "name": "Prologis Inc",
    "sector": "Real Estate",
-   "in_degree": 11,
+   "in_degree": 10,
    "out_degree": 20,
    "market_cap_tier": "large",
    "isSource": true
@@ -3942,7 +3942,7 @@
    "ticker": "PSA",
    "name": "Public Storage",
    "sector": "Real Estate",
-   "in_degree": 13,
+   "in_degree": 12,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4059,7 +4059,7 @@
    "ticker": "RMD",
    "name": "ResMed Inc",
    "sector": "Health Care",
-   "in_degree": 16,
+   "in_degree": 15,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -4068,7 +4068,7 @@
    "ticker": "ROK",
    "name": "Rockwell Automation Inc",
    "sector": "Industrials",
-   "in_degree": 38,
+   "in_degree": 37,
    "out_degree": 18,
    "market_cap_tier": "large",
    "isSource": true
@@ -4096,7 +4096,7 @@
    "name": "Ross Stores Inc",
    "sector": "Consumer Discretionary",
    "in_degree": 13,
-   "out_degree": 17,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4122,7 +4122,7 @@
    "ticker": "RVTY",
    "name": "Revvity Inc",
    "sector": "Health Care",
-   "in_degree": 17,
+   "in_degree": 16,
    "out_degree": 15,
    "market_cap_tier": "large",
    "isSource": true
@@ -4248,7 +4248,7 @@
    "ticker": "SPG",
    "name": "Simon Property Group Inc",
    "sector": "Real Estate",
-   "in_degree": 15,
+   "in_degree": 14,
    "out_degree": 21,
    "market_cap_tier": "large",
    "isSource": true
@@ -4294,7 +4294,7 @@
    "name": "Steel Dynamics Inc",
    "sector": "Materials",
    "in_degree": 1,
-   "out_degree": 13,
+   "out_degree": 6,
    "market_cap_tier": "large",
    "isSource": true
   },
@@ -4410,7 +4410,7 @@
    "ticker": "TDY",
    "name": "Teledyne Technologies Inc",
    "sector": "Industrials",
-   "in_degree": 12,
+   "in_degree": 11,
    "out_degree": 16,
    "market_cap_tier": "large",
    "isSource": true
@@ -4464,7 +4464,7 @@
    "ticker": "TJX",
    "name": "TJX Cos Inc",
    "sector": "Consumer Discretionary",
-   "in_degree": 6,
+   "in_degree": 5,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -4707,7 +4707,7 @@
    "ticker": "USB",
    "name": "US Bancorp",
    "sector": "Financials",
-   "in_degree": 14,
+   "in_degree": 12,
    "out_degree": 10,
    "market_cap_tier": "large",
    "isSource": true
@@ -4887,7 +4887,7 @@
    "ticker": "WELL",
    "name": "Welltower Inc",
    "sector": "Real Estate",
-   "in_degree": 13,
+   "in_degree": 12,
    "out_degree": 17,
    "market_cap_tier": "large",
    "isSource": true
@@ -5004,7 +5004,7 @@
    "ticker": "XYL",
    "name": "Xylem Inc/NY",
    "sector": "Industrials",
-   "in_degree": 18,
+   "in_degree": 17,
    "out_degree": 19,
    "market_cap_tier": "large",
    "isSource": true
@@ -5069,7 +5069,7 @@
    "name": "QRVO",
    "company_name": "Qorvo, Inc.",
    "sector": "Information Technology",
-   "in_degree": 12,
+   "in_degree": 11,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5357,7 +5357,7 @@
    "ticker": "BE",
    "name": "Bloom Energy Corporation",
    "sector": "Industrials",
-   "in_degree": 1,
+   "in_degree": 0,
    "out_degree": 21,
    "market_cap_tier": "large",
    "isSource": true
@@ -5502,7 +5502,7 @@
    "name": "ENTG",
    "company_name": "Entegris, Inc.",
    "sector": "Information Technology",
-   "in_degree": 8,
+   "in_degree": 7,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5610,7 +5610,7 @@
    "name": "NXT",
    "company_name": "Nextracker Inc.",
    "sector": "Industrials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5673,7 +5673,7 @@
    "name": "REZI",
    "company_name": "RESIDEO TECHNOLOGIES, INC.",
    "sector": "Industrials",
-   "in_degree": 4,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5682,7 +5682,7 @@
    "name": "RIVN",
    "company_name": "Rivian Automotive, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5709,7 +5709,7 @@
    "name": "RUN",
    "company_name": "Sunrun Inc.",
    "sector": "Industrials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5835,7 +5835,7 @@
    "name": "WOLF",
    "company_name": "WOLFSPEED, INC.",
    "sector": "Information Technology",
-   "in_degree": 4,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5889,7 +5889,7 @@
    "name": "BIO",
    "company_name": "Bio-Rad Laboratories, Inc.",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 9,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -5898,7 +5898,7 @@
    "name": "BRKR",
    "company_name": "Bruker Corporation",
    "sector": "Health Care",
-   "in_degree": 6,
+   "in_degree": 5,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6191,7 +6191,7 @@
    "ticker": "JWN",
    "name": "Nordstrom Inc",
    "sector": "Consumer Discretionary",
-   "in_degree": 2,
+   "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6239,7 +6239,7 @@
    "ticker": "VFC",
    "name": "VF Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 12,
+   "in_degree": 11,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6279,7 +6279,7 @@
    "ticker": "DKS",
    "name": "Dick's Sporting Goods Inc",
    "sector": "Consumer Discretionary",
-   "in_degree": 8,
+   "in_degree": 7,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6303,7 +6303,7 @@
    "ticker": "PVH",
    "name": "PVH Corp",
    "sector": "Consumer Discretionary",
-   "in_degree": 10,
+   "in_degree": 9,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6447,7 +6447,7 @@
    "ticker": "AA",
    "name": "Alcoa Corporation",
    "sector": "Materials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6479,7 +6479,7 @@
    "ticker": "BBWI",
    "name": "Bath & Body Works, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 8,
+   "in_degree": 7,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6487,7 +6487,7 @@
    "ticker": "BURL",
    "name": "Burlington Stores, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 4,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6751,7 +6751,7 @@
    "ticker": "JLL",
    "name": "Jones Lang LaSalle Inc",
    "sector": "Industrials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -6839,7 +6839,7 @@
    "ticker": "TFX",
    "name": "Teleflex Inc",
    "sector": "Health Care",
-   "in_degree": 10,
+   "in_degree": 9,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -7016,7 +7016,7 @@
    "ticker": "AGCO",
    "name": "AGCO Corporation",
    "sector": "Industrials",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -7416,7 +7416,7 @@
    "ticker": "CMA",
    "name": "Comerica Incorporated",
    "sector": "Financials",
-   "in_degree": 3,
+   "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -7648,7 +7648,7 @@
    "ticker": "KSS",
    "name": "Kohl's Corporation",
    "sector": "Consumer Discretionary",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -7664,7 +7664,7 @@
    "ticker": "M",
    "name": "Macy's, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 4,
+   "in_degree": 3,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -8216,7 +8216,7 @@
    "ticker": "PSTG",
    "name": "Pure Storage, Inc.",
    "sector": "Information Technology",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -9153,7 +9153,7 @@
    "ticker": "CLF",
    "name": "Cleveland-Cliffs Inc.",
    "sector": "Materials",
-   "in_degree": 2,
+   "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -9169,7 +9169,7 @@
    "ticker": "X",
    "name": "United States Steel Corporation",
    "sector": "Materials",
-   "in_degree": 2,
+   "in_degree": 1,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -9297,7 +9297,7 @@
    "ticker": "FL",
    "name": "Foot Locker, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -9313,7 +9313,7 @@
    "ticker": "GPS",
    "name": "The Gap, Inc.",
    "sector": "Consumer Discretionary",
-   "in_degree": 3,
+   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   },
@@ -9394,54 +9394,6 @@
    "name": "Frontier Group Holdings, Inc.",
    "sector": "Industrials",
    "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "CMC",
-   "name": "Commercial Metals Company",
-   "sector": "Materials",
-   "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "FHN",
-   "name": "First Horizon Corporation",
-   "sector": "Financials",
-   "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "KW",
-   "name": "Kennedy-Wilson Holdings, Inc.",
-   "sector": "Real Estate",
-   "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "RS",
-   "name": "Reliance, Inc.",
-   "sector": "Materials",
-   "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "SEDG",
-   "name": "SolarEdge Technologies, Inc.",
-   "sector": "Information Technology",
-   "in_degree": 1,
-   "out_degree": 0,
-   "market_cap_tier": "large"
-  },
-  {
-   "ticker": "ZION",
-   "name": "Zions Bancorporation, National Association",
-   "sector": "Financials",
-   "in_degree": 2,
    "out_degree": 0,
    "market_cap_tier": "large"
   }
@@ -14824,6 +14776,48 @@
    "filing": "DEF 14A 2026-03-25"
   },
   {
+   "source": "KEY",
+   "target": "RF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "KEY",
+   "target": "CFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "KEY",
+   "target": "MTB",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "KEY",
+   "target": "TFC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "KEY",
+   "target": "HBAN",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "KEY",
+   "target": "PNC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
    "source": "OXY",
    "target": "HES",
    "year": 2026,
@@ -16462,6 +16456,48 @@
    "filing": "DEF 14A 2026-05-12"
   },
   {
+   "source": "ROST",
+   "target": "DLTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROST",
+   "target": "TSCO",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROST",
+   "target": "ULTA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROST",
+   "target": "BBY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROST",
+   "target": "WSM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
+   "source": "ROST",
+   "target": "DG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-07"
+  },
+  {
    "source": "MCO",
    "target": "CME",
    "year": 2026,
@@ -18000,6 +18036,48 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-01-16"
+  },
+  {
+   "source": "O",
+   "target": "EQIX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "O",
+   "target": "DLR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "O",
+   "target": "MET",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "O",
+   "target": "BXP",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "O",
+   "target": "ARE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "O",
+   "target": "VTR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-25"
   },
   {
    "source": "STZ",
@@ -19794,6 +19872,48 @@
    "filing": "DEF 14A 2026-03-30"
   },
   {
+   "source": "ENPH",
+   "target": "MPWR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "ENPH",
+   "target": "TER",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "ENPH",
+   "target": "GNRC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "ENPH",
+   "target": "SWKS",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "ENPH",
+   "target": "ZBRA",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
+   "source": "ENPH",
+   "target": "FSLR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-04-01"
+  },
+  {
    "source": "WTW",
    "target": "SPGI",
    "year": 2026,
@@ -20359,6 +20479,48 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-25"
+  },
+  {
+   "source": "STLD",
+   "target": "FCX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "STLD",
+   "target": "PCAR",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "STLD",
+   "target": "ITW",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "STLD",
+   "target": "NUE",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "STLD",
+   "target": "NEM",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
+  },
+  {
+   "source": "STLD",
+   "target": "CMI",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-27"
   },
   {
    "source": "BRO",
@@ -21549,6 +21711,48 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-09"
+  },
+  {
+   "source": "HBAN",
+   "target": "PNC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "HBAN",
+   "target": "CFG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "HBAN",
+   "target": "KEY",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "HBAN",
+   "target": "TFC",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "HBAN",
+   "target": "MTB",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
+  },
+  {
+   "source": "HBAN",
+   "target": "RF",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-12"
   },
   {
    "source": "LII",
@@ -22844,6 +23048,48 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-24"
+  },
+  {
+   "source": "MTD",
+   "target": "IEX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "MTD",
+   "target": "WAT",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "MTD",
+   "target": "NDSN",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "MTD",
+   "target": "HOLX",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "MTD",
+   "target": "FTV",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
+  },
+  {
+   "source": "MTD",
+   "target": "ISRG",
+   "year": 2026,
+   "group_type": "primary",
+   "filing": "DEF 14A 2026-03-18"
   },
   {
    "source": "PFG",
@@ -62912,713 +63158,6 @@
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-04-22"
-  },
-  {
-   "source": "ENPH",
-   "target": "BE",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "NXT",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "SEDG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "ENTG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "QRVO",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "RUN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "PSTG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "REZI",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "TER",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "FSLR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "RIVN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "WOLF",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "GNRC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "SWKS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "ZBRA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "ENPH",
-   "target": "MPWR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-01"
-  },
-  {
-   "source": "HBAN",
-   "target": "CFG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "CMA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "FITB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "FHN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "KEY",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "MTB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "PNC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "RF",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "TFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "USB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "HBAN",
-   "target": "ZION",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-12"
-  },
-  {
-   "source": "KEY",
-   "target": "CFG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "CMA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "FITB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "HBAN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "MTB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "PNC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "RF",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "TFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "USB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "KEY",
-   "target": "ZION",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "MTD",
-   "target": "A",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "AME",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "BIO",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "BRKR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "FTV",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "HOLX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "IEX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "ISRG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "NDSN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "RVTY",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "RMD",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "ROK",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "TDY",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "TFX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "WAT",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "MTD",
-   "target": "XYL",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-18"
-  },
-  {
-   "source": "O",
-   "target": "ARE",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "EQIX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "PLD",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "AVB",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "EQR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "PSA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "BXP",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "JLL",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "SPG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "CBRE",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "KW",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "HIG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "CCI",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "MET",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "VTR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "DLR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "NTRS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "O",
-   "target": "WELL",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-25"
-  },
-  {
-   "source": "ROST",
-   "target": "BBWI",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "BBY",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "BURL",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "DKS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "DG",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "DLTR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "FL",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "GPS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "KSS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "M",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "JWN",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "PVH",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "TJX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "TSCO",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "ULTA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "VFC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "ROST",
-   "target": "WSM",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-04-07"
-  },
-  {
-   "source": "STLD",
-   "target": "AGCO",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "NEM",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "AA",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "NUE",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "CLF",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "PCAR",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "CMC",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "PH",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "CMI",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "RS",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "FCX",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "X",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
-  },
-  {
-   "source": "STLD",
-   "target": "ITW",
-   "year": 2026,
-   "group_type": "primary",
-   "filing": "DEF 14A 2026-03-27"
   }
  ]
 }

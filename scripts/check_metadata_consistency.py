@@ -2424,7 +2424,21 @@ def main():
                        # MODG = Topgolf Callaway Brands confirmed via
                        # EDGAR search index (CIK 0000837465).
                        "SIGI", "UFCS", "IHRT", "TOY", "MODG", "ALGT",
-                       "ULCC", "ACHC", "BKD", "CYH"}
+                       "ULCC", "ACHC", "BKD", "CYH",
+                       # 2026-10-05 06:00 PT run: peer-network batch-22
+                       # fragmentary-source sweep tranche 4. 6 new peer-only
+                       # nodes, all filing-named: SEDG (SolarEdge
+                       # Technologies) -- Information Technology, from ENPH's
+                       # 2025 peer group; KW (Kennedy-Wilson Holdings) --
+                       # Real Estate, from O's 2025 Peer Group; CMC
+                       # (Commercial Metals), RS (Reliance) -- Materials, from
+                       # STLD's 2025 compensation peer group; FHN (First
+                       # Horizon), ZION (Zions Bancorporation) -- Financials,
+                       # from HBAN's 2025 peer banks. 5/6 SEC-verified via
+                       # company_tickers.json (SEDG/CMC/RS/FHN/ZION); KW =
+                       # Kennedy-Wilson Holdings confirmed as EDGAR
+                       # registrant CIK 0001408100.
+                       "SEDG", "KW", "CMC", "RS", "FHN", "ZION"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])
