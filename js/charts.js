@@ -251,15 +251,15 @@ window._redrawSectorAwareCharts = function() {
     var compDesc = document.getElementById('comp-dist-desc');
     var lorenzTitle = document.getElementById('lorenz-title');
     var lorenzDesc = document.getElementById('lorenz-desc');
-    if (compTitle) compTitle.textContent = sector
+    if (compTitle) _setTitleLabel(compTitle, sector
         ? sector + ' vs S&P 500 Compensation Distribution'
-        : 'CEO Compensation Distribution';
+        : 'CEO Compensation Distribution');
     if (compDesc) compDesc.textContent = sector
         ? 'Comparing ' + sector + ' CEO pay distribution against the full S&P 500. Gray bars = index benchmark, colored bars = sector. Click a bucket to filter.'
         : 'Distribution of CEO total compensation across the S&P 500. Includes Gini coefficient measuring pay inequality. Click a bucket to filter the table.';
-    if (lorenzTitle) lorenzTitle.textContent = sector
+    if (lorenzTitle) _setTitleLabel(lorenzTitle, sector
         ? sector + ' vs S&P 500 Lorenz Curve'
-        : 'CEO Pay Lorenz Curve';
+        : 'CEO Pay Lorenz Curve');
     if (lorenzDesc) lorenzDesc.textContent = sector
         ? 'Sector inequality (solid) overlaid on S&P 500 baseline (dashed). Gini delta shows whether the sector has more or less pay concentration than the index.'
         : 'Cumulative share of CEO compensation vs. cumulative share of companies. The gap between the curve and the diagonal (perfect equality) represents the Gini coefficient. Hover for precise percentile breakpoints.';
@@ -293,9 +293,9 @@ window._redrawSectorAwareCharts = function() {
     // Redraw concentration distribution chart (sector-aware)
     var concTitle = document.getElementById('conc-dist-title');
     var concDesc = document.getElementById('conc-dist-desc');
-    if (concTitle) concTitle.textContent = sector
+    if (concTitle) _setTitleLabel(concTitle, sector
         ? sector + ' vs S&P 500 CEO Pay Concentration'
-        : 'CEO Pay Concentration';
+        : 'CEO Pay Concentration');
     if (concDesc) concDesc.textContent = sector
         ? 'Comparing ' + sector + ' CEO pay concentration against the full S&P 500. Gray bars = index benchmark, colored bars = sector. Click a bucket to filter.'
         : 'CEO pay as a share of total Named Executive Officer compensation. Higher concentration means the CEO captures a larger slice of the executive pay pool. Click a bucket to filter the table.';
@@ -1523,9 +1523,9 @@ function drawTrendChart(trends) {
         if (showWorker) seriesNames.push('Worker Pay');
         if (showRatio) seriesNames.push('Pay Ratio');
         var modeLabel = useIndexed ? ' (Indexed to ' + indexBaseYear + ')' : '';
-        titleEl.textContent = seriesNames.length > 1
+        _setTitleLabel(titleEl, seriesNames.length > 1
             ? 'Compensation Trends: ' + seriesNames.join(' + ') + modeLabel
-            : 'Median CEO Pay Trend';
+            : 'Median CEO Pay Trend');
     }
     if (descEl) {
         if (useIndexed) {
@@ -1870,9 +1870,9 @@ function drawTop10Chart(companies, mode) {
     // Update title and description
     var titleEl = document.getElementById('top10-title');
     var descEl = document.getElementById('top10-desc');
-    if (titleEl) titleEl.textContent = sectorName
+    if (titleEl) _setTitleLabel(titleEl, sectorName
         ? cfg.title.replace('Top 10', 'Top ' + sectorAbbr)
-        : cfg.title;
+        : cfg.title);
     if (descEl) descEl.textContent = sectorName
         ? cfg.desc + ' — ' + sectorName + ' sector (' + sectorFilteredCompanies.length + ' companies)'
         : cfg.desc;
@@ -3048,7 +3048,7 @@ function drawScatterChart(companies) {
         var titleText = xMetric.shortLabel + ' vs. ' + yMetric.shortLabel;
         if (hasSectorOverlay) titleText = sectorName + ' — ' + titleText;
         else if (_scatterCommunityMode) titleText += ' (by Community)';
-        scatterTitle.textContent = titleText;
+        _setTitleLabel(scatterTitle, titleText);
     }
     if (scatterDesc) {
         if (hasSectorOverlay) {
@@ -7454,7 +7454,7 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
     // Update title/description
     var titleEl = document.getElementById('cross-sector-corr-title');
     var descEl = document.getElementById('cross-sector-corr-desc');
-    if (titleEl) titleEl.textContent = mX.short + ' × ' + mY.short + ' — Cross-Sector Comparison';
+    if (titleEl) _setTitleLabel(titleEl, mX.short + ' × ' + mY.short + ' — Cross-Sector Comparison');
     if (descEl) descEl.textContent = 'Pearson correlation between ' + mX.label + ' and ' + mY.label + ' computed independently for each GICS sector. Dashed line = S&P 500 overall.';
 
     // Pearson helper (same as correlation matrix)
@@ -9211,10 +9211,10 @@ function drawPayAnomalyChart(companies) {
     var titleEl = document.getElementById('pay-anomaly-title');
     var descEl = document.getElementById('pay-anomaly-desc');
     if (_anomalySectorFilter) {
-        if (titleEl) titleEl.textContent = 'Pay Anomalies — ' + _anomalySectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Pay Anomalies — ' + _anomalySectorFilter);
         if (descEl) descEl.textContent = 'All ' + _anomalySectorFilter + ' companies ranked by pay deviation from the sector\u2019s governance-adjusted model. Showing every company in the sector.';
     } else {
-        if (titleEl) titleEl.textContent = 'Pay Anomalies';
+        if (titleEl) _setTitleLabel(titleEl, 'Pay Anomalies');
         if (descEl) descEl.textContent = 'Companies whose CEO pay deviates most from what their sector and governance profile would predict. Expected pay is modeled per-sector using log-linear regression on governance score. Overpaid (red) and underpaid (green) relative to the model.';
     }
 
@@ -9961,10 +9961,10 @@ function drawTenurePayGrowthChart(companies) {
     var descEl = document.getElementById('tenure-pay-growth-desc');
     var sectorFilter = _tenureGrowthSectorFilter;
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Pay Growth \u2014 ' + sectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Tenure \u00D7 Pay Growth \u2014 ' + sectorFilter);
         if (descEl) descEl.textContent = sectorFilter + ' CEO pay growth by tenure bracket. Showing all ' + sectorFilter + ' companies with tenure and year-over-year compensation data from DEF 14A proxy filings.';
     } else {
-        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Pay Growth';
+        if (titleEl) _setTitleLabel(titleEl, 'Tenure \u00D7 Pay Growth');
         if (descEl) descEl.textContent = 'Do long-tenured CEOs accumulate faster pay growth? Median year-over-year CEO compensation change by tenure bracket with IQR range. Individual company dots overlaid. Based on multi-year Summary Compensation Table data from DEF 14A proxy filings.';
     }
 
@@ -10388,10 +10388,10 @@ function drawTenureGovCrossTab(companies) {
     var descEl = document.getElementById('tenure-gov-crosstab-desc');
     var sectorFilter = _crosstabSectorFilter;
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Governance \u2014 ' + sectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Tenure \u00D7 Governance \u2014 ' + sectorFilter);
         if (descEl) descEl.textContent = sectorFilter + ' CEO tenure vs governance quality. Cross-tabulation of tenure brackets by governance quartiles for all ' + sectorFilter + ' companies with tenure and governance data from DEF 14A proxy filings.';
     } else {
-        if (titleEl) titleEl.textContent = 'Tenure \u00D7 Governance';
+        if (titleEl) _setTitleLabel(titleEl, 'Tenure \u00D7 Governance');
         if (descEl) descEl.textContent = 'Does longer CEO tenure erode corporate governance quality? Cross-tabulation of tenure brackets (rows) by governance score quartiles (columns). Each cell shows company count, median CEO pay, and YoY pay change. Cell color intensity reflects median pay. Click any cell to filter the main table.';
     }
 
@@ -12465,10 +12465,10 @@ function drawVolatilityTenureChart(companies) {
     var descEl = document.getElementById('vol-tenure-desc');
     var sectorFilter = _volTenureSectorFilter;
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Tenure \u2014 ' + sectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Volatility \u00D7 Tenure \u2014 ' + sectorFilter);
         if (descEl) descEl.textContent = sectorFilter + ' CEO pay volatility by tenure bracket. Do long-tenured ' + sectorFilter + ' CEOs have more stable or volatile compensation?';
     } else {
-        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Tenure';
+        if (titleEl) _setTitleLabel(titleEl, 'Volatility \u00D7 Tenure');
         if (descEl) descEl.textContent = 'Do long-tenured CEOs have more stable or more volatile pay? Median CEO pay volatility (CV%) by tenure bracket with IQR range. Individual company dots overlaid. Click any bracket bar to filter the table.';
     }
 
@@ -12860,10 +12860,10 @@ function drawVolGovCrossTab(companies) {
     var descEl = document.getElementById('vol-gov-crosstab-desc');
     var sectorFilter = _volGovSectorFilter;
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Governance \u2014 ' + sectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Volatility \u00D7 Governance \u2014 ' + sectorFilter);
         if (descEl) descEl.textContent = sectorFilter + ' CEO pay volatility vs governance quality. Cross-tabulation of volatility tiers by governance quartiles for all ' + sectorFilter + ' companies with volatility and governance data.';
     } else {
-        if (titleEl) titleEl.textContent = 'Volatility \u00D7 Governance';
+        if (titleEl) _setTitleLabel(titleEl, 'Volatility \u00D7 Governance');
         if (descEl) descEl.textContent = 'Do poorly governed companies also have volatile CEO pay? Cross-tabulation of pay volatility tiers (rows) by governance score quartiles (columns). Each cell shows company count, median CEO pay, and median CV%. Cell color intensity reflects median volatility. Click any cell to filter the main table.';
     }
 
@@ -13290,10 +13290,10 @@ function drawSopVolCrossTab(companies) {
     var descEl = document.getElementById('sop-vol-crosstab-desc');
     var sectorFilter = _sopVolSectorFilter;
     if (sectorFilter) {
-        if (titleEl) titleEl.textContent = 'Say-on-Pay \u00D7 Volatility \u2014 ' + sectorFilter;
+        if (titleEl) _setTitleLabel(titleEl, 'Say-on-Pay \u00D7 Volatility \u2014 ' + sectorFilter);
         if (descEl) descEl.textContent = sectorFilter + ' shareholder approval vs CEO pay volatility. Cross-tabulation of say-on-pay tiers by volatility buckets for all ' + sectorFilter + ' companies with both metrics.';
     } else {
-        if (titleEl) titleEl.textContent = 'Say-on-Pay \u00D7 Volatility';
+        if (titleEl) _setTitleLabel(titleEl, 'Say-on-Pay \u00D7 Volatility');
         if (descEl) descEl.textContent = 'Do companies with low shareholder approval also have volatile CEO pay? Cross-tabulation of say-on-pay approval tiers (rows) by pay volatility buckets (columns). Each cell shows company count, median CEO pay, and median SoP%. Cell color intensity reflects median approval. Click any cell to filter the main table.';
     }
 
