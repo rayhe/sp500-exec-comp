@@ -2394,7 +2394,17 @@ def main():
                        # from MET's Compensation Comparator Group.
                        "AB", "JHG", "LSCC", "POWI", "SLAB",
                        "BEP", "CWEN", "ENLT", "IBDRY", "DNNGY", "ENIA",
-                       "ALIZY"}
+                       "ALIZY",
+                       # 2026-10-05 02:15 PT run: peer-network batch-20
+                       # fragmentary-source sweep tranche 2. 5 new peer-only
+                       # nodes, all filing-named: CGNX (Cognex Corporation) --
+                       # Information Technology, from TER's 2025 peer group;
+                       # CAR (Avis Budget Group, Inc.) -- Industrials, from
+                       # WM's 2025 comparison group (chart image); GIII
+                       # (G-III Apparel Group), GPS (The Gap, Inc.), FL (Foot
+                       # Locker, Inc.) -- Consumer Discretionary, from RL's
+                       # Fiscal 2026 peer group.
+                       "CGNX", "CAR", "GIII", "GPS", "FL"}
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     pnodes = peer.get("nodes", [])

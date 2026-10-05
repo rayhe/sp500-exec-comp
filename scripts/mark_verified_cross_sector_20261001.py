@@ -106,6 +106,15 @@ REPAIR_SCRIPTS = OrderedDict([
     # adjudicated against the stored edges' own filings (all also the
     # latest DEF 14A); verified green post-repair before registering.
     ("peer-batch19-20261004", "scripts/peer_batch19_fragmentary_20261004.py"),
+    # 2026-10-05 02:15 PT run: peer-network batch-20 fragmentary-source
+    # sweep tranche 2 -- the 10 remaining deg<=4 sources replaced wholesale
+    # filing-verbatim (CZR/UBER/VRSN/TER/WM/COIN/DUK/OMC/RL/VLTO; RL's AWK
+    # edge fabricated zero-mention, TER's KLAC excluded by the filing's
+    # 2025 revision, LRCX/VRSN-DLR/WM-CARR+JCI/VLTO-IR forward-group or
+    # dual-role drops). All repairs adjudicated against the stored edges'
+    # own filings (all also the latest DEF 14A); verified green post-repair
+    # before registering.
+    ("peer-batch20-20261005", "scripts/peer_batch20_fragmentary_20261005.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;
