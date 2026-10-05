@@ -96,6 +96,7 @@ REPAIR_SCRIPTS = OrderedDict([
     # the single-filing invariant holds by construction; verified green
     # post-repair before registering.
     ("peer-batch17-20261004", "scripts/peer_batch17_wholesale_20261004.py"),
+    ("peer-batch18-20261004", "scripts/peer_batch18_wtw_residual_20261004.py"),
 ])
 
 # Same table as check_metadata_consistency.py Section 19 (kept in sync here;
