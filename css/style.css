@@ -1636,6 +1636,30 @@ header h1 {
 }
 .network-minimap:hover { opacity: 1; }
 
+/* Mini-map collapse toggle (mobile only; hidden on desktop) */
+.network-minimap-toggle {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    z-index: 6;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15,15,26,0.88);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    padding: 0;
+}
+.network-minimap-toggle.active {
+    color: #00b4d8;
+    border-color: rgba(0,180,216,0.5);
+}
+
 /* === Path Finder === */
 .path-finder-toggle.active {
     background: rgba(168,85,247,0.15);
@@ -5917,6 +5941,14 @@ footer li::before {
     /* When cluster stats is visible on mobile, hide minimap entirely to prevent any overlap */
     .network-cluster-stats.visible ~ .network-minimap { display: none !important; }
     #network-graph:has(.network-cluster-stats.visible) .network-minimap { opacity: 0 !important; pointer-events: none !important; }
+    /* Mobile minimap starts collapsed behind its toggle so graph nodes stay
+       unobstructed; the opaque 96x66 box used to cover the top-right nodes and
+       swallow taps in a camouflaged dead zone. */
+    .network-minimap-toggle { display: flex; }
+    /* #network-graph scoping outranks the base "#network-graph canvas { display: block }" rule */
+    #network-graph .network-minimap { display: none; }
+    #network-graph .network-minimap.expanded { display: block; }
+    .network-cluster-stats.visible ~ .network-minimap-toggle { display: none !important; }
     .path-finder-bar { gap: 4px; }
     .path-finder-search-box input { width: 70px; font-size: 0.72rem; }
     .path-finder-label { font-size: 0.64rem; }

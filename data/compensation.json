@@ -78764,7 +78764,7 @@
      "all_other": 6439301,
      "total": 29184701,
      "_total_source": "def14a_verified_20260918",
-     "_parse_note": "2026-09-18: restored from Nike FY2025 DEF 14A SCT (acc. 0000320187-25-000048, filed 2025-07-17, re-fetched from EDGAR). Filing total $29,184,701 retained verbatim; components foot exactly. All Other $6,439,301 includes non-competition agreement payout (fn 6)."
+     "_parse_note": "2026-09-18: restored from Nike FY2025 DEF 14A SCT (acc. 0000320187-25-000048, filed 2025-07-17, re-fetched from EDGAR). Filing total $29,184,701 retained verbatim; components foot exactly. All Other $6,439,301 includes non-competition agreement payout (fn 6). 2026-10-06: re-verified verbatim against the primary FY2025 DEF 14A SCT (acc. 0000320187-25-000048, filed 2025-07-17): salary 1,557,692 / stock 12,400,986 / options 6,836,722 / non-equity 1,950,000 / all-other 6,439,301 / total 29,184,701 all match; closes the carried-forward residual."
     },
     {
      "name": "Craig Williams",
@@ -120364,7 +120364,7 @@
    "ceo_tenure": "",
    "board_independence": "",
    "executives": [],
-   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files."
+   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only)."
   }
  ],
  "last_updated": "2026-09-29"

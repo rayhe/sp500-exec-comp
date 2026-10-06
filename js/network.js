@@ -6736,6 +6736,24 @@ function initNetwork(peerData) {
     mmCanvas.setAttribute('role', 'img');
     mmCanvas.setAttribute('aria-label', 'Network overview map. Tap or drag to center the main graph view on that location.');
 
+    // Mobile minimap collapse toggle (2026-10-06): on small screens the opaque
+    // minimap occludes graph nodes by default, so it starts collapsed behind a
+    // small toggle button. Desktop keeps the always-visible minimap (toggle hidden).
+    var mmToggle = document.createElement('button');
+    mmToggle.className = 'network-minimap-toggle';
+    mmToggle.type = 'button';
+    mmToggle.setAttribute('aria-label', 'Show network overview map');
+    mmToggle.setAttribute('aria-expanded', 'false');
+    mmToggle.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><path d="M1.5 6h13M1.5 10.5h13M6 1.5v13M10.5 1.5v13"/></svg>';
+    container.appendChild(mmToggle);
+    mmToggle.addEventListener('click', function(event) {
+        event.stopPropagation();
+        var expanded = mmCanvas.classList.toggle('expanded');
+        mmToggle.classList.toggle('active', expanded);
+        mmToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        mmToggle.setAttribute('aria-label', expanded ? 'Hide network overview map' : 'Show network overview map');
+    });
+
     // === Path Finder ===
     // BFS shortest path between two companies (treating edges as undirected)
     function bfsShortestPath(fromTicker, toTicker) {
