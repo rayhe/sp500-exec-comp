@@ -608,6 +608,16 @@ header h1 {
     line-height: 1.4;
 }
 
+/* Compact cross-reference shown in insight cards whose ticker already carried
+   the full realized-comp footnote in an earlier card of the same section
+   (collapses the repeated TSLA 10-K/A paragraph to a single full rendering). */
+.insight-footnote-ref {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    white-space: nowrap;
+}
+
 .insight-spark-wrap {
     margin-top: 6px;
     color: var(--text-secondary);

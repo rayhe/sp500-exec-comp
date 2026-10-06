@@ -2085,8 +2085,21 @@ function populateInsights(comp, trends, sectorFilter) {
 
     // Filing-verbatim realized-comp footnote for a headline figure (e.g. TSLA's
     // $158.4B / 2,522,203:1, realized $0). Empty string when no note exists.
-    // Shared file-scope helper (defined next to REALIZED_COMP_NOTES).
-    function realizedNote(ticker) { return realizedFootnoteHtml(ticker); }
+    // File-scope helper realizedFootnoteHtml (defined next to REALIZED_COMP_NOTES)
+    // renders the full note. Within one insights section the note is emitted in
+    // full the FIRST time a ticker needs it; later cards for the same ticker get
+    // a compact cross-reference, so the TSLA 10-K/A paragraph is not repeated
+    // verbatim in adjacent cards (function-local map: resets on every render).
+    var _realizedNoteEmitted = {};
+    function realizedNote(ticker) {
+        var full = realizedFootnoteHtml(ticker);
+        if (!full) return '';
+        if (_realizedNoteEmitted[ticker]) {
+            return ' <span class="insight-footnote-ref" title="See the realized-compensation footnote in the card above">\u2020 realized-comp note above</span>';
+        }
+        _realizedNoteEmitted[ticker] = true;
+        return full;
+    }
 
     // 1. Pay Concentration — top 10 CEOs share of total
     var sorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
