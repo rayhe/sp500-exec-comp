@@ -12,6 +12,13 @@ Usage:
     python3 scripts/drift_canary.py              # run all guards, record state
     python3 scripts/drift_canary.py --no-state   # run, do not write state
     python3 scripts/drift_canary.py --state PATH # override state file path
+    python3 scripts/drift_canary.py --check-stale # read-only staleness check
+
+A full canary run also reads the previous state first: if the last full
+run was more than STALE_HOURS ago, it prints a STALE warning (the run
+itself is the remediation, so the exit code is unaffected). The
+--check-stale mode is the cheap scheduled variant: exit 0 = fresh,
+1 = stale, 2 = no state file (never ran).
 
 Exit: 0 = all guards green; 1 = at least one guard FAILED;
       2 = infra problem before any guard verdict (mirrors the pre-commit
@@ -22,7 +29,8 @@ auto-discovery skips it (it is a runner, not a static guard).
 
 History: added 2026-10-06 11:30 PT run per the queued candidate from the
 2026-10-06 10:25 PT iteration ("consider a periodic full guard re-run as a
-drift canary").
+drift canary"). Staleness check added 2026-10-06 14:00 PT run (queued
+candidate #5 from the 11:40 PT iteration).
 """
 import datetime
 import json
@@ -36,6 +44,11 @@ DEFAULT_STATE = os.path.expanduser(
     "~/workspace/goals/s-p-500-executive-compensation-tracker/"
     "hidden_files/drift_canary_state.json"
 )
+
+# If the last full canary run is older than this, the drift window has
+# lapsed: a cheap --check-stale poll (or the warning line on a full run)
+# tells a scheduled run it is time for a fresh full pass.
+STALE_HOURS = 48
 
 # (name, script filename, timeout seconds)
 GUARDS = [
@@ -74,14 +87,56 @@ def run_guard(name, script, timeout):
                 "note": "spawn failed: %s" % e}
 
 
+def stale_hours(state_path):
+    """Hours since the last full canary run recorded in state, or None."""
+    try:
+        with open(state_path) as f:
+            ts = json.load(f).get("last_run_utc")
+    except (OSError, ValueError):
+        return None
+    if not ts:
+        return None
+    try:
+        dt = datetime.datetime.fromisoformat(ts)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.timezone.utc)
+        return (now - dt).total_seconds() / 3600.0
+    except (ValueError, TypeError):
+        return None
+
+
 def main(argv):
     write_state = True
+    check_stale_only = False
     state_path = DEFAULT_STATE
     for i, a in enumerate(argv):
         if a == "--no-state":
             write_state = False
+        elif a == "--check-stale":
+            check_stale_only = True
         elif a == "--state" and i + 1 < len(argv):
             state_path = argv[i + 1]
+
+    if check_stale_only:
+        # Read-only staleness poll: cheap enough for a scheduled drift check.
+        hrs = stale_hours(state_path)
+        if hrs is None:
+            print("canary: INFRA - no canary state at %s" % state_path)
+            return 2
+        if hrs > STALE_HOURS:
+            print("canary: STALE - last full run %.1fh ago (threshold %dh)"
+                  % (hrs, STALE_HOURS))
+            return 1
+        print("canary: FRESH - last full run %.1fh ago (threshold %dh)"
+              % (hrs, STALE_HOURS))
+        return 0
+
+    prev_hrs = stale_hours(state_path)
+    if prev_hrs is not None and prev_hrs > STALE_HOURS:
+        # Warning only: this full run IS the remediation.
+        print("canary: STALE - last full run was %.1fh ago (threshold %dh); "
+              "drift window exceeded, re-running now" % (prev_hrs, STALE_HOURS))
 
     try:
         commit = subprocess.run(
