@@ -17321,23 +17321,24 @@ function setupDualSparklineTooltips() {
             requestAnimationFrame(function() {
                 _navUpdatePending = false;
 
-                // Find the topmost visible section
+                // Find the section the user is actually reading: the deepest
+                // (last in document order) section whose top has crossed the
+                // viewport reference line. Picking the topmost (smallest
+                // rect.top) instead keeps the PREVIOUS tall section active
+                // long after its content scrolled away — an off-by-one nav lie.
                 var bestSection = null;
-                var bestTop = Infinity;
 
                 sectionIds.forEach(function(id) {
                     var el = document.getElementById(id);
                     if (!el) return;
                     var rect = el.getBoundingClientRect();
                     // Consider a section "active" if its top is above the viewport midpoint
-                    // and it's partially visible (not entirely scrolled past)
+                    // and it's partially visible (not entirely scrolled past).
+                    // Later sections override earlier ones, so the most recently
+                    // scrolled-into section wins.
                     var viewportMid = window.innerHeight * 0.4;
                     if (rect.top < viewportMid && rect.bottom > 0) {
-                        if (rect.top < bestTop || (rect.top === bestTop)) {
-                            // Pick the one whose top is closest to the nav bar (most recently scrolled into)
-                            bestSection = id;
-                            bestTop = rect.top;
-                        }
+                        bestSection = id;
                     }
                 });
 
