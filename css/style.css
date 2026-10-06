@@ -3194,7 +3194,9 @@ header h1 {
     border-radius: 12px;
     z-index: 6;
     pointer-events: none;
-    animation: scrollHintPulse 2s ease-in-out 0.5s 3;
+    /* Pulses 3x to draw the eye, then fades out so the pill never lingers
+       over row chips — the right-edge fade keeps signaling scrollability. */
+    animation: scrollHintPulse 2s ease-in-out 0.5s 3, scrollHintFadeOut 0.6s ease 6.6s forwards;
     white-space: nowrap;
     letter-spacing: 0.02em;
 }
@@ -3209,6 +3211,11 @@ header h1 {
 @keyframes scrollHintPulse {
     0%, 100% { opacity: 0.7; transform: translateY(-50%) translateX(0); }
     50% { opacity: 1; transform: translateY(-50%) translateX(3px); }
+}
+/* Terminal fade for the scroll hint: runs once the pulses finish (6.5s),
+   then holds at 0 via the forwards fill on the shorthand above. */
+@keyframes scrollHintFadeOut {
+    to { opacity: 0; }
 }
 
 table {
