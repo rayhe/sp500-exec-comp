@@ -17294,6 +17294,24 @@ function setupDualSparklineTooltips() {
                 var targetTop = target.getBoundingClientRect().top + window.scrollY - stickyH - 8;
                 window.scrollTo({ top: targetTop, behavior: getScrollBehavior() });
 
+                // Guarantee the highlight converges after the smooth scroll
+                // lands: observer entries are not guaranteed to fire after a
+                // fast/coarse programmatic scroll, which left the previous
+                // section highlighted (2026-10-06). Poll for scroll settle,
+                // then recompute once from live geometry (idempotent).
+                (function ensureNavSettled() {
+                    var lastY = window.scrollY, still = 0, tries = 0;
+                    var timer = setInterval(function() {
+                        tries++;
+                        var y = window.scrollY;
+                        if (y === lastY) { still++; } else { still = 0; lastY = y; }
+                        if (still >= 3 || tries > 40) {
+                            clearInterval(timer);
+                            updateSectionNavActive();
+                        }
+                    }, 120);
+                })();
+
                 // Persist section in URL hash for deep-linking
                 // Map section IDs back to short aliases
                 var sectionToAlias = {
@@ -17319,6 +17337,67 @@ function setupDualSparklineTooltips() {
             });
         });
 
+        // Recompute the active nav link from live geometry. Idempotent: safe
+        // to call after any scroll settles. The observer calls it on every
+        // rAF tick; the click handler calls it once more after its smooth
+        // scroll lands (see below).
+        function updateSectionNavActive() {
+            // Find the section the user is actually reading: the deepest
+            // (last in document order) section whose top has crossed the
+            // viewport reference line. Picking the topmost (smallest
+            // rect.top) instead keeps the PREVIOUS tall section active
+            // long after its content scrolled away — an off-by-one nav lie.
+            var bestSection = null;
+
+            sectionIds.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var rect = el.getBoundingClientRect();
+                // Consider a section "active" if its top is above the viewport midpoint
+                // and it's partially visible (not entirely scrolled past).
+                // Later sections override earlier ones, so the most recently
+                // scrolled-into section wins.
+                var viewportMid = window.innerHeight * 0.4;
+                if (rect.top < viewportMid && rect.bottom > 0) {
+                    bestSection = id;
+                }
+            });
+
+            // Fallback: if nothing is above midpoint, use the first section
+            if (!bestSection) {
+                for (var i = 0; i < sectionIds.length; i++) {
+                    var el = document.getElementById(sectionIds[i]);
+                    if (el && el.getBoundingClientRect().top < window.innerHeight) {
+                        bestSection = sectionIds[i];
+                        break;
+                    }
+                }
+            }
+
+            if (bestSection) {
+                links.forEach(function(l) {
+                    l.classList.toggle('active', l.dataset.section === bestSection);
+                });
+
+                // Scroll the active link into view within the nav bar (for narrow screens)
+                var activeLink = nav.querySelector('.section-nav-link.active');
+                if (activeLink) {
+                    var navInner = nav.querySelector('.section-nav-inner');
+                    if (navInner && navInner.scrollWidth > navInner.clientWidth) {
+                        var linkLeft = activeLink.offsetLeft;
+                        var linkRight = linkLeft + activeLink.offsetWidth;
+                        var scrollLeft = navInner.scrollLeft;
+                        var visibleRight = scrollLeft + navInner.clientWidth;
+                        if (linkLeft < scrollLeft + 20) {
+                            navInner.scrollTo({ left: Math.max(0, linkLeft - 20), behavior: 'auto' });
+                        } else if (linkRight > visibleRight - 20) {
+                            navInner.scrollTo({ left: linkRight - navInner.clientWidth + 20, behavior: 'auto' });
+                        }
+                    }
+                }
+            }
+        }
+
         // IntersectionObserver to track which section is currently visible
         // Use a rootMargin that accounts for the sticky header + nav bar height
         var _navUpdatePending = false;
@@ -17333,61 +17412,7 @@ function setupDualSparklineTooltips() {
             _navUpdatePending = true;
             requestAnimationFrame(function() {
                 _navUpdatePending = false;
-
-                // Find the section the user is actually reading: the deepest
-                // (last in document order) section whose top has crossed the
-                // viewport reference line. Picking the topmost (smallest
-                // rect.top) instead keeps the PREVIOUS tall section active
-                // long after its content scrolled away — an off-by-one nav lie.
-                var bestSection = null;
-
-                sectionIds.forEach(function(id) {
-                    var el = document.getElementById(id);
-                    if (!el) return;
-                    var rect = el.getBoundingClientRect();
-                    // Consider a section "active" if its top is above the viewport midpoint
-                    // and it's partially visible (not entirely scrolled past).
-                    // Later sections override earlier ones, so the most recently
-                    // scrolled-into section wins.
-                    var viewportMid = window.innerHeight * 0.4;
-                    if (rect.top < viewportMid && rect.bottom > 0) {
-                        bestSection = id;
-                    }
-                });
-
-                // Fallback: if nothing is above midpoint, use the first section
-                if (!bestSection) {
-                    for (var i = 0; i < sectionIds.length; i++) {
-                        var el = document.getElementById(sectionIds[i]);
-                        if (el && el.getBoundingClientRect().top < window.innerHeight) {
-                            bestSection = sectionIds[i];
-                            break;
-                        }
-                    }
-                }
-
-                if (bestSection) {
-                    links.forEach(function(l) {
-                        l.classList.toggle('active', l.dataset.section === bestSection);
-                    });
-
-                    // Scroll the active link into view within the nav bar (for narrow screens)
-                    var activeLink = nav.querySelector('.section-nav-link.active');
-                    if (activeLink) {
-                        var navInner = nav.querySelector('.section-nav-inner');
-                        if (navInner && navInner.scrollWidth > navInner.clientWidth) {
-                            var linkLeft = activeLink.offsetLeft;
-                            var linkRight = linkLeft + activeLink.offsetWidth;
-                            var scrollLeft = navInner.scrollLeft;
-                            var visibleRight = scrollLeft + navInner.clientWidth;
-                            if (linkLeft < scrollLeft + 20) {
-                                navInner.scrollTo({ left: Math.max(0, linkLeft - 20), behavior: 'auto' });
-                            } else if (linkRight > visibleRight - 20) {
-                                navInner.scrollTo({ left: linkRight - navInner.clientWidth + 20, behavior: 'auto' });
-                            }
-                        }
-                    }
-                }
+                updateSectionNavActive();
             });
         }, {
             rootMargin: '-80px 0px -40% 0px',
