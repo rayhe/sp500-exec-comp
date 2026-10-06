@@ -6094,6 +6094,14 @@ footer li::before {
        bottom aligns with the viewport bottom. The extra bottom padding
        keeps the last text line clear of the FAB (bottom 16px + ~30px). */
     .detail-panel { padding-bottom: 56px; }
+    /* Shortcuts FAB icon-only at phone widths (2026-10-06 15:30 PT): the
+       full "? Shortcuts" pill is ~110px wide and floats over full-bleed
+       insight-card body text while scrolling on 360px screens (seen
+       covering the $50M+ Club card). Collapsing to the "?" chip keeps the
+       discovery affordance at ~1/3 the footprint; click behavior and the
+       title tooltip are unchanged. */
+    .kbd-hint-label { display: none; }
+    .kbd-hint { padding: 6px 9px; gap: 0; }
 }
 
 /* === D3 Overrides === */
