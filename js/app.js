@@ -17517,10 +17517,11 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-09-28 screen: 395 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 9 cluster near 2x, 13 near 0.5x, 97 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-10-06 screen: 102 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 13 near 0.5x, 397 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
                 '<p>Deviation sources, spot-verified:</p>' +
                 '<ul class="pvp-exclusion-list">' +
+                '<li><strong>Fiscal-year roll</strong>: the anchor now reflects FY2025 (FY2026 for non-calendar filers) SCT totals while the disclosed ratio and median worker pay remain the FY2024 figures from the 2026 proxy season — the dominant deviation source after the 2026-10-06 anchor promotion.</li>' +
                 '<li><strong>Transition-year figures</strong>: the disclosed ratio uses the year-end CEO\'s pay (CMG\'s 2025 DEF 14A ratio uses year-end CEO Boatwright\'s ~$19.1M, not Niccol\'s $37.5M SCT total).</li>' +
                 '<li><strong>Annualized compensation</strong>: MO\'s 2026 DEF 14A annualizes $24.58M to 147:1.</li>' +
                 '<li><strong>Pension-swing-year SCT totals</strong>: MO\'s stored 2024 SCT total is a $53.6M pension-swing year.</li>' +
