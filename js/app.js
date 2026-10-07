@@ -1387,6 +1387,7 @@ async function loadData() {
     }
     renderFooterVintage(comp);
     renderHeaderCompanyCount(comp);
+    renderSectorCompDesc(comp);
     return { comp, trends, peer };
 }
 
@@ -1453,6 +1454,26 @@ function renderHeaderCompanyCount(comp) {
     var n = md.total_companies;
     if (typeof n === 'number' && n > 0) {
         el.textContent = n.toLocaleString('en-US') + ' Companies';
+    }
+}
+
+// === Sector-comp description company count ===
+// The "Compensation Structure by Sector" section description hard-coded
+// "computed from 500 DEF 14A proxy filings" and drifted stale as roster
+// batches grew the universe to 518 - the same stale-count class the header
+// company-count badge (2026-09-24) and the median-pay FY2025 label
+// (2026-10-07) fixes addressed. Render the count live from the guard-checked
+// metadata.total_companies so the next roster change cannot drift it again.
+// The static HTML keeps today's count ("518") as the no-JS fallback.
+// textContent-only (no HTML interpolation); no-op without data, so a failed
+// or partial metadata load leaves the fallback untouched.
+function renderSectorCompDesc(comp) {
+    var el = document.getElementById('sector-comp-desc');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var n = md.total_companies;
+    if (typeof n === 'number' && n > 0) {
+        el.textContent = 'Median CEO pay component mix across all 11 GICS sectors \u2014 computed from ' + n.toLocaleString('en-US') + ' DEF 14A proxy filings. Cell intensity shows component weight; click any cell to filter the table.';
     }
 }
 
