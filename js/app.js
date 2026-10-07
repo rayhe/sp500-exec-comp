@@ -17515,7 +17515,7 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
-                '<p>7,044 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 34 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,045 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 33 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
                 '<p>$2,834,529,215 of parser-invented compensation removed across 66 re-verification batches since 2026-09-12, partly offset by $550,284,451 of genuine missing NEO rows restored filing-verbatim. Net: $2,284,244,764.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +

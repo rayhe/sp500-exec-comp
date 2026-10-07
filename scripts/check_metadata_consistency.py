@@ -233,6 +233,7 @@ LABEL_TO_KEY = {
     "def14a_verified_20260926": "def14a_verified_20260926",
     "def14a_verified_20260927": "def14a_verified_20260927",
     "def14a_verified_20260928": "def14a_verified_20260928",
+    "def14a_verified_20261007": "def14a_verified_20261007",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.

@@ -35,8 +35,7 @@
    "DEF 14A DQ batch 2026-09-11 18:00 PT: 23 records filing-verified and repaired. KR (13 records): parser had dropped the blank Bonus cell, shifting Stock->Bonus/Options->Stock/NonEq->Options/AllOther->NonEq, and captured the printed Total into All Other on Kennerley 2025, Massa 2025, McMullen 2024/2023 (e.g., McMullen FY2024 CEO total 30,521,333 -> 15,631,028); all corrected vs the 2026 proxy SCT, components foot exactly; KR company stats recomputed (total_neo 55,146,948 -> 40,256,643). COST Polit 2025: dropped $3,670,902 RSU stock-award column restored, total 3,837,307 -> 7,508,209. IVZ Sharp 2025: dropped $3,297,095 stock-award column restored, total 3,358,554 -> 6,655,649. IBM Kavanaugh 2025/2024: 'Change in Retention Plan Value' sub-column ($3,543/$14,178) folded into pension_nqdc; both now foot exactly. ED (6 records): relabeled rounding -> verified after row-level filing confirmation. Rounding bucket 43->24, verified_total 6718->6737 (99.34%). Sargent 2025 ($291) and Foley 2024 ($30) remain component_mismatch (filing-side arithmetic, previously documented).",
    "DQ batch 2026-09-19 06:00 PT: re-verified the 5 remaining 8-component sum-flag rows lacking an explanatory note (NEE Sieving 2023, APH Lampo 2023, KR Sargent 2025, KR Foley 2024, ALB Anderson 2024) against fresh FY2025 DEF 14A SCTs; all 5 components and totals match the filings verbatim (filing-side arithmetic quirks $50,001 / $63,000 / $291 / $30 / $90), documented in per-row _reverify_20260919_0600 notes. Guard screens clean: 0 header-sentence name flags; 2 CEO-anchor flags were false positives (stored total_compensation is proxy_fiscal_year, not fiscal_year).",
    "Roster add #13 (2026-09-26 02:00 PT): enriched ARES (13 rows), XYZ/Block (14 rows), RDDT (13 rows) from latest DEF 14A SCTs, digit-by-digit verified; all rows foot exactly except 2 Block $1 filing-side rounding rows (Grassadonia 2025, Weber 2025 -> component_mismatch). Fiserv ticker renamed FI -> FISV. Added VMRK stub (no DEF 14A yet). _index_note removal annotations: ANSS/HES/JNPR/WBA/IPG/K (acquired/delisted), EQR/AVB (merged into VMRK 2026-08-17). Peer network: FI->FISV node rename, XYZ promoted to company node, new RDDT node, peer groups read from Block/RDDT/Fiserv 2026 CD&As (+51 edges, 6 nodes); ARES/VMRK to known peer-network coverage gaps.",
-   "2026-09-26 19:30 PT column-shift batch: 47 NEO rows across TYL, APO, BRO, CMCSA, ESS, EXR, MKTX, MTB, PLTR, REG, VICI re-read filing-verbatim against 20 primary DEF 14As; phantom compensation removed $185,311,982.",
-   "DQ batch 2026-10-07 02:00 PT: full 7,078-row component recompute scan flagged 4 non-footing rows; all re-verified against primary EDGAR SCTs. JCI Julie Brandt FY2023 salary corrected 685,577 -> 336,538 per the ORIGINAL FY2023 DEF 14A (filed 2024-01-19, d554585ddef14a.htm; prorated mid-year hire) - the 2026 proxy reprint erroneously carried her annualized base salary while keeping the filed total, which is what broke the row arithmetic (supersedes the 2026-09-27 'genuine filing-side inconsistency' note, which had only checked the 2026 reprint). Row now foots exactly; relabeled def14a_verified_20261007. SBUX Sara Kelly FY2024 column shift repaired (transposed SCT; option_awards 0->244,292, non_equity_incentive 244,292->70,993, all_other->None); Starbucks' own filed total 3,562,568 still does not foot (components sum 3,704,554) - genuine filing error, flag retained. CDNS Paul Scannell FY2024 (diff 177,535) and BE Maciej Kurzymski FY2025 (total double-counts the $339,200 ACI) confirmed as genuine filing-side arithmetic errors in both original and reprint proxies; filed numbers retained verbatim, flags stand. Buckets: component_mismatch 34->33, verified_total 7,044->7,045 (99.5%). VMRK watch re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107)."
+   "2026-09-26 19:30 PT column-shift batch: 47 NEO rows across TYL, APO, BRO, CMCSA, ESS, EXR, MKTX, MTB, PLTR, REG, VICI re-read filing-verbatim against 20 primary DEF 14As; phantom compensation removed $185,311,982."
   ],
   "aggregate_stats": {
    "total_companies": 518,
@@ -166,7 +165,7 @@
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
-   "component_mismatch": 33,
+   "component_mismatch": 34,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -183,9 +182,8 @@
    "def14a_verified_20260928": 44,
    "verified": 5630,
    "rounding": 0,
-   "verified_total": 7045,
-   "last_audit": "2026-09-28",
-   "def14a_verified_20261007": 1
+   "verified_total": 7044,
+   "last_audit": "2026-09-28"
   },
   "median_ceo_pay": 17188658,
   "mean_ceo_pay": 329481099,
@@ -220,7 +218,7 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "component_mismatch": 33,
+   "component_mismatch": 34,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -237,9 +235,8 @@
    "def14a_verified_20260928": 44,
    "verified": 5630,
    "rounding": 0,
-   "verified_total": 7045,
-   "last_audit": "2026-09-28",
-   "def14a_verified_20261007": 1
+   "verified_total": 7044,
+   "last_audit": "2026-09-28"
   },
   "companies_with_executives": 517,
   "board_independence_any": 499,
@@ -276,7 +273,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-10-07",
+  "last_dq_repair": "2026-10-06",
   "verified_total": 7046,
   "total_neos": 7078,
   "phantom_removed": {
@@ -19226,8 +19223,7 @@
      "_relabel_note_20260909": true,
      "_relabel_note_20260910": "Filing-side arithmetic inconsistency: the printed SCT components (salary 429,948; stock 2,693,905; option 1,384,209; non-equity 476,473; all-other 10,457) sum to 4,994,992, $177,535 below the printed Total 5,172,527; our stored components already match the filing's printed values exactly, so nothing was dropped in parsing. The same SCT also fails to foot for Paul Cunningham 2024 (components 5,343,116 vs printed 5,323,116, off $20,000).",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (d932644ddef14a.htm): stored components match the filing verbatim (salary 429,948 + stock 2,693,905 + options 1,384,209 + NEIP 476,473 + all other 10,457 = 4,994,992) vs filing-printed total 5,172,527 (gap +177,535). Filer-side arithmetic inconsistency, not a parse error; retained verbatim. Sibling Cunningham 2024/2023 rows triaged identically.",
-     "_repair_note": "2026-10-07: verified against original FY2024 DEF 14A (filed 2025-03-25, d877390ddef14a.htm) and 2026 reprint \u2014 Cadence's own SCT does not foot (components sum 4,994,992 vs filed total 5,172,527; diff 177,535). Filed numbers retained as-is; mismatch flag stands."
+     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (d932644ddef14a.htm): stored components match the filing verbatim (salary 429,948 + stock 2,693,905 + options 1,384,209 + NEIP 476,473 + all other 10,457 = 4,994,992) vs filing-printed total 5,172,527 (gap +177,535). Filer-side arithmetic inconsistency, not a parse error; retained verbatim. Sibling Cunningham 2024/2023 rows triaged identically."
     },
     {
      "name": "Paul Cunningham",
@@ -59448,7 +59444,7 @@
      "name": "Julie Brandt",
      "title": "Vice President and President, Global Commercial & Field Operations",
      "year": 2023,
-     "salary": 336538,
+     "salary": 685577,
      "bonus": 750000,
      "stock_awards": 2649934,
      "option_awards": 0,
@@ -59456,10 +59452,9 @@
      "pension_nqdc": 0,
      "all_other": 7212,
      "total": 3965627,
-     "_total_source": "def14a_verified_20261007",
+     "_total_source": "component_mismatch",
      "_parse_note": "2026-09-27 22:00 PT: genuine filing-side arithmetic inconsistency in the JCI 2026 DEF 14A SCT (acc. 0001104659-26-004565): filing-printed components sum to $4,314,666 vs printed total $3,965,627 (delta $349,039). Re-read digit-by-digit against raw HTML table cells (no footnote markers on the row); Brandt is not an NEO in the 2025 proxy SCT so no restatement column exists to cross-check. Values stored filing-verbatim, printed total retained, classification component_mismatch.",
-     "_note": "SUPERSEDED 2026-10-07: the 2026-09-28 re-verification below checked only the 2026 proxy reprint. The original FY2023 DEF 14A (filed 2024-01-19, d554585ddef14a.htm) shows salary 336,538 (prorated mid-year hire), which foots exactly to the filed total 3,965,627. The 2026 proxy reprint erroneously carried her annualized base salary (685,577). Corrected per the original filing; row now verified. --- Original note: Re-read 2026-09-28 vs primary DEF 14A SCT (tm2524665-5_def14a.htm): stored components match the filing verbatim (salary 685,577 + bonus 750,000 + stock 2,649,934 + NEIP 221,943 + all other 7,212 = 4,314,666) vs filing-printed total 3,965,627 (gap -349,039). Filer-side arithmetic inconsistency, not a parse error; retained verbatim.",
-     "_repair_note": "2026-10-07: salary corrected 685,577 -> 336,538 per original FY2023 DEF 14A (filed 2024-01-19, d554585ddef14a.htm); the 2026 proxy reprint erroneously used her annualized base salary, breaking the row arithmetic. Row now foots exactly (3,965,627)."
+     "_note": "Re-read 2026-09-28 vs primary DEF 14A SCT (tm2524665-5_def14a.htm): stored components match the filing verbatim (salary 685,577 + bonus 750,000 + stock 2,649,934 + NEIP 221,943 + all other 7,212 = 4,314,666) vs filing-printed total 3,965,627 (gap -349,039). Filer-side arithmetic inconsistency, not a parse error; retained verbatim."
     },
     {
      "name": "Lei Schlitz",
@@ -94794,9 +94789,9 @@
      "salary": 631827,
      "bonus": 0,
      "stock_awards": 2757442,
-     "option_awards": 244292,
-     "non_equity_incentive": 70993,
-     "all_other": null,
+     "option_awards": 0,
+     "non_equity_incentive": 244292,
+     "all_other": 70993,
      "total": 3562568,
      "title": "Executive Vice President, Chief Partner Officer",
      "_total_source": "component_mismatch",
@@ -94804,8 +94799,7 @@
      "_note": "Filing-printed components sum to $3,704,554 vs filing-printed total $3,562,568 (gap $141,986); identical in the FY2025 DEF 14A SCT restatement (ea0270973-01.htm) with no explanatory footnote \u2014 filing-side arithmetic inconsistency, not a parse error.",
      "_parse_note": "Filing-verbatim 2026-09-09: primary DEF 14A SCT prints components summing to $3,704,554 against a printed total of $3,562,568 (diff $141,986); the filing itself does not foot. No footnote explains the gap; values retained as printed, not invented.",
      "_relabel_note_20260909": true,
-     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_repair_note": "2026-10-07: column shift repaired per 2026 DEF 14A SCT (transposed layout; verified against Ruggeri FY2024 row which foots): option_awards 0->244,292, non_equity_incentive 244,292->70,993, all_other 70,993->None. Filed total 3,562,568 retained although SBUX's own SCT does not foot (components sum 3,704,554; diff 141,986) \u2014 genuine filing error."
+     "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed."
     },
     {
      "name": "Sara Kelly",
@@ -118511,8 +118505,7 @@
      "_accession": "0001628280-26-024237",
      "_filing_url": "https://www.sec.gov/Archives/edgar/data/1664703/000162828026024237/",
      "_note": "FY2025 SEC DEF 14A 2026 SCT, Maciej Kurzymski 2025 row. Components foot with $+339,200 filing-side gap (verbatim) Filing note: Components sum to $1,325,730 (416,985+569,240+339,200+305) but filing reports total $1,664,930; gap is exactly $339,200 = the NEIP amount (NEIP appears double-counted in total). Confirmed in both the as-filed 14A and the typeset proxy. Verbatim per filing. Labeled component_mismatch: the filing\u2019s own components do not sum to its printed total; values stored verbatim.",
-     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (be-20260408.htm): all components and total match filing verbatim; -$339,200: components sum 1,325,730 vs printed 1,664,930 -- genuine filing-side arithmetic inconsistency (filing does not foot); total retained verbatim, no correction invented.",
-     "_repair_note": "2026-10-07: verified against 2026 DEF 14A (be-20260408.htm) SCT table 217 \u2014 Bloom's own SCT does not foot (components sum 1,325,730 vs filed total 1,664,930; total double-counts the $339,200 ACI). Filed numbers retained as-is; mismatch flag stands."
+     "_parse_note": "2026-09-25 DQ re-verified against primary DEF 14A SCT (be-20260408.htm): all components and total match filing verbatim; -$339,200: components sum 1,325,730 vs printed 1,664,930 -- genuine filing-side arithmetic inconsistency (filing does not foot); total retained verbatim, no correction invented."
     },
     {
      "name": "Aman Joshi",
@@ -120372,8 +120365,8 @@
    "ceo_tenure": "",
    "board_independence": "",
    "executives": [],
-   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only)."
+   "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only)."
   }
  ],
- "last_updated": "2026-10-07"
+ "last_updated": "2026-10-06"
 }
