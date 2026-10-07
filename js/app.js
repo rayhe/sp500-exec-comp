@@ -13863,6 +13863,22 @@ function setupDualSparklineTooltips() {
             note.textContent = chartMsg;
             panels[i].insertBefore(note, panels[i].firstChild);
         }
+        // Bare d3-only chart containers (not inside any .chart-panel): the
+        // Composition section renders #composition-chart and
+        // #quartile-comp-chart as bare divs, so on a d3 outage they stayed
+        // empty — a heading followed by dead space (2026-10-07 render review,
+        // same glitch class as the network skeleton). Fill them with the same
+        // unavailable note. NOTE: role-comp-chart is intentionally excluded —
+        // it renders in plain HTML and works without d3.
+        var bareCharts = ['composition-chart', 'quartile-comp-chart'];
+        for (var j = 0; j < bareCharts.length; j++) {
+            var bc = document.getElementById(bareCharts[j]);
+            if (!bc || bc.querySelector('.chart-unavailable-note')) continue;
+            var bnote = document.createElement('p');
+            bnote.className = 'chart-unavailable-note';
+            bnote.textContent = chartMsg;
+            bc.appendChild(bnote);
+        }
         // Network graph container: the boot-time "Loading peer network..." skeleton
         // was injected before this guard ran, and initNetwork is skipped when
         // d3 is unavailable — so without this replacement the user sees an
