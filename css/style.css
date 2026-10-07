@@ -3232,6 +3232,19 @@ header h1 {
     display: none;
 }
 
+/* Detail-panel table wraps share the main table's scroll-hint contract.
+   The hide rules sort below the show rules (equal specificity, order wins). */
+.neo-table-wrap.has-scroll-right .scroll-hint,
+.pvp-table-wrap.has-scroll-right .scroll-hint {
+    display: block;
+}
+.neo-table-wrap.scroll-end .scroll-hint,
+.neo-table-wrap.scroll-started .scroll-hint,
+.pvp-table-wrap.scroll-end .scroll-hint,
+.pvp-table-wrap.scroll-started .scroll-hint {
+    display: none;
+}
+
 @keyframes scrollHintPulse {
     0%, 100% { opacity: 0.7; transform: translateY(-50%) translateX(0); }
     50% { opacity: 1; transform: translateY(-50%) translateX(3px); }
@@ -8110,6 +8123,7 @@ footer li::before {
     .neo-section.neo-sbs-mode .neo-year-panels .neo-table-wrap { overflow-x: auto; }
 }
 .neo-table-wrap {
+    position: relative;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-bottom: 0.5rem;
@@ -15043,6 +15057,7 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #67e8f9;
 }
 .pvp-table-wrap {
+    position: relative;
     overflow-x: auto;
 }
 .pvp-table {

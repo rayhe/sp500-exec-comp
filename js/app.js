@@ -7627,7 +7627,7 @@ function renderPvpSection(ticker) {
         + '<a href="' + pvpEsc(c.filing_url) + '" target="_blank" rel="noopener">view filing</a>. '
         + 'Compensation actually paid reflects equity valuation changes, not cash realized. '
         + 'TSR columns show the value of an initial fixed $100 investment.</div>';
-    html += '<div class="pvp-table-wrap"><table class="pvp-table"><thead><tr>'
+    html += '<div class="pvp-table-wrap"><span class="scroll-hint" aria-hidden="true">Scroll &rarr;</span><table class="pvp-table"><thead><tr>'
         + '<th>Year</th><th>PEO actually paid</th><th>PEO SCT total</th><th>Other NEOs avg paid</th>'
         + '<th>Company TSR</th><th>Peer TSR' + (peer2 ? ' <span class="pvp-peer2-hint">(two series)</span>' : '') + '</th>'
         + '<th>' + pvpEsc(niLabel) + '</th><th>' + csmHeader + '</th></tr></thead><tbody>';
@@ -8118,6 +8118,29 @@ function _decorateBandMoveBadges(tbody) {
             cell.appendChild(b);
         }
     });
+}
+
+// Shared horizontal-scroll hint for detail-panel table wraps.
+// Mirrors the main #table-wrapper indicator: .has-scroll-right shows the
+// .scroll-hint pill, .scroll-end/.scroll-started hide it, and the shared CSS
+// pulse(3x)+fade animation handles the rest. The detail panel rebuilds its
+// DOM on every expand, so each wrap is wired at render time; hidden year
+// panels are re-checked when a year tab or the SBS toggle reveals them.
+function _updateScrollHint(el) {
+    if (!el || !el.isConnected) return;
+    var scrollable = el.scrollWidth > el.clientWidth + 2;
+    var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    var hasStarted = el.scrollLeft > 10;
+    el.classList.toggle('has-scroll-right', scrollable);
+    el.classList.toggle('scroll-end', atEnd);
+    el.classList.toggle('scroll-started', hasStarted);
+}
+function _wireScrollHint(el) {
+    if (!el || el._scrollHintWired) return;
+    el._scrollHintWired = true;
+    el.addEventListener('scroll', function() { _updateScrollHint(el); }, { passive: true });
+    window.addEventListener('resize', function() { setTimeout(function() { _updateScrollHint(el); }, 300); });
+    setTimeout(function() { _updateScrollHint(el); }, 100);
 }
 
 function setupDetailPanel(companies) {
@@ -9962,7 +9985,7 @@ function setupDetailPanel(companies) {
                 var yrSmoothApplies = false; // true once any NEO in this FY has multi-year smoothing
 
                 html += '<div class="neo-year-panel" data-year="' + yr + '"' + (yrIdx > 0 ? ' style="display:none"' : '') + '>';
-                html += '<div class="neo-table-wrap"><table class="neo-table">';
+                html += '<div class="neo-table-wrap"><span class="scroll-hint" aria-hidden="true">Scroll &rarr;</span><table class="neo-table">';
                 // Determine which optional columns have data for this year
                 var yrHasBonus = yrExecs.some(function(e) { return e.bonus && e.bonus > 0; });
                 var yrHasPension = yrExecs.some(function(e) { return (e.pension_nqdc && e.pension_nqdc > 0) || (e.pension_change && e.pension_change > 0); });
@@ -10816,6 +10839,11 @@ function setupDetailPanel(companies) {
         detailRow.innerHTML = html;
         row.after(detailRow);
 
+        // Scroll hints on the detail panel's horizontally-scrollable tables
+        // (NEO + Pay-vs-Performance wraps): same pulse/fade contract as the
+        // main table, so narrow-viewport users discover the off-screen columns.
+        detailRow.querySelectorAll('.neo-table-wrap, .pvp-table-wrap').forEach(_wireScrollHint);
+
         // Repair diff view: lazy-load data/repair-diffs.json and add
         // "\u0394 repaired" toggles to NEO rows that carry a before/after diff.
         _injectRepairDiffToggles(detailRow, ticker);
@@ -10865,6 +10893,10 @@ function setupDetailPanel(companies) {
                 section.querySelectorAll('.neo-year-panel').forEach(function(panel) {
                     panel.style.display = panel.getAttribute('data-year') === yr ? '' : 'none';
                 });
+                // Revealing a hidden year panel changes its wrap's scrollability.
+                setTimeout(function() {
+                    section.querySelectorAll('.neo-table-wrap').forEach(_updateScrollHint);
+                }, 50);
             });
             // Arrow key navigation between tabs
             tab.addEventListener('keydown', function(e) {
@@ -10917,6 +10949,10 @@ function setupDetailPanel(companies) {
                         panel.style.display = (panel.getAttribute('data-year') === activeYr) ? '' : 'none';
                     }
                 });
+                // SBS toggling changes which panels are visible: re-check hints.
+                setTimeout(function() {
+                    section.querySelectorAll('.neo-table-wrap').forEach(_updateScrollHint);
+                }, 50);
             });
         });
 
