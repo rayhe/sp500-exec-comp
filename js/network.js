@@ -1026,6 +1026,53 @@ function initNetwork(peerData) {
         var edges = getFilteredEdges();
         var scale = transform.k;
 
+        // Same-sector edge pass, extracted as a helper (2026-10-06) so the
+        // default view can stroke it ON TOP of the nodes instead of underneath
+        // them. Colors mirror the 2026-10-03 default-branch selection.
+        var defaultEdgeBranch = false;
+        function strokeSameSectorEdges() {
+            var edgeSameColor, edgeSameWidth;
+            if (_hiContrast) {
+                edgeSameColor = _dark ? 'rgba(0,180,216,0.25)' : 'rgba(0,120,180,0.3)';
+                edgeSameWidth = 1.0;
+            } else {
+                edgeSameColor = _dark ? 'rgba(0,180,216,0.14)' : 'rgba(0,120,180,0.16)';
+                edgeSameWidth = 0.7;
+            }
+            ctx.strokeStyle = edgeSameColor;
+            ctx.lineWidth = edgeSameWidth / scale;
+            ctx.beginPath();
+            edges.forEach(function(e) {
+                var src = e.source.ticker || e.source;
+                var tgt = e.target.ticker || e.target;
+                var s = nodeMap[src] || nodeMap[e.source];
+                var t = nodeMap[tgt] || nodeMap[e.target];
+                if (!s || !t) return;
+                if (!s.sector || !t.sector || s.sector !== t.sector) return;
+                // GER threshold — hide edges where both endpoints are below threshold
+                if (gerHeatmapMode && gerThreshold > 0) {
+                    var gs1 = _compLookup[s.ticker] ? _compLookup[s.ticker]._gerScore : null;
+                    var gs2 = _compLookup[t.ticker] ? _compLookup[t.ticker]._gerScore : null;
+                    if ((gs1 == null || gs1 < gerThreshold) && (gs2 == null || gs2 < gerThreshold)) return;
+                }
+                // Quadratic curve with control point offset perpendicular to the midpoint
+                var mx = (s.x + t.x) / 2;
+                var my = (s.y + t.y) / 2;
+                var dx = t.x - s.x;
+                var dy = t.y - s.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                // Offset proportional to distance, capped — perpendicular direction
+                var curvature = Math.min(dist * 0.12, 30);
+                // Use source ticker charcode parity to alternate curve direction
+                var side = (src.charCodeAt(0) + tgt.charCodeAt(0)) % 2 === 0 ? 1 : -1;
+                var nx = -dy / (dist || 1) * curvature * side;
+                var ny =  dx / (dist || 1) * curvature * side;
+                ctx.moveTo(s.x, s.y);
+                ctx.quadraticCurveTo(mx + nx, my + ny, t.x, t.y);
+            });
+            ctx.stroke();
+        }
+
         // Connected set for hover highlighting
         var connectedSet = null;
         if (hoveredNode) {
@@ -1431,29 +1478,25 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
         } else {
+            defaultEdgeBranch = true;
             // Default edge colors — overridden below when path-finder or high-contrast is active.
-            // Same-sector alpha raised 0.10 -> 0.14 and cross-sector 0.035 -> 0.05
-            // (2026-10-03): with the smaller node radii the edge web is now the
-            // structure-carrying channel in the default view, so it needs to read.
+            // Same-sector edges are stroked by strokeSameSectorEdges() AFTER the
+            // nodes (2026-10-06 overlay): drawn underneath, the packed default
+            // layout buried all 7,739 edges under opaque node fills and the view
+            // read as a bubble chart with no visible peer relationships.
             var edgeCrossColor = _dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)';
-            var edgeSameColor = _dark ? 'rgba(0,180,216,0.14)' : 'rgba(0,120,180,0.16)';
             var edgeCrossWidth = 0.4;
-            var edgeSameWidth = 0.7;
 
             // When path finder is active, dim all background edges further
             if (activePath && activePath.nodes.length >= 2) {
                 edgeCrossColor = _dark ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.015)';
-                edgeSameColor = _dark ? 'rgba(0,180,216,0.03)' : 'rgba(0,120,180,0.04)';
                 edgeCrossWidth = 0.3;
-                edgeSameWidth = 0.4;
             }
 
             // High-contrast: significantly increase edge visibility
             if (_hiContrast) {
                 edgeCrossColor = _dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)';
-                edgeSameColor = _dark ? 'rgba(0,180,216,0.25)' : 'rgba(0,120,180,0.3)';
                 edgeCrossWidth = 0.6;
-                edgeSameWidth = 1.0;
             }
 
             // Cross-sector edges (dimmer, thinner)
@@ -1478,39 +1521,6 @@ function initNetwork(peerData) {
             });
             ctx.stroke();
 
-            // Same-sector edges (brighter, slightly thicker, accent-tinted, curved to reduce overlap)
-            ctx.strokeStyle = edgeSameColor;
-            ctx.lineWidth = edgeSameWidth / scale;
-            ctx.beginPath();
-            edges.forEach(function(e) {
-                var src = e.source.ticker || e.source;
-                var tgt = e.target.ticker || e.target;
-                var s = nodeMap[src] || nodeMap[e.source];
-                var t = nodeMap[tgt] || nodeMap[e.target];
-                if (!s || !t) return;
-                if (!s.sector || !t.sector || s.sector !== t.sector) return;
-                // GER threshold — hide edges where both endpoints are below threshold
-                if (gerHeatmapMode && gerThreshold > 0) {
-                    var gs1 = _compLookup[s.ticker] ? _compLookup[s.ticker]._gerScore : null;
-                    var gs2 = _compLookup[t.ticker] ? _compLookup[t.ticker]._gerScore : null;
-                    if ((gs1 == null || gs1 < gerThreshold) && (gs2 == null || gs2 < gerThreshold)) return;
-                }
-                // Quadratic curve with control point offset perpendicular to the midpoint
-                var mx = (s.x + t.x) / 2;
-                var my = (s.y + t.y) / 2;
-                var dx = t.x - s.x;
-                var dy = t.y - s.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                // Offset proportional to distance, capped — perpendicular direction
-                var curvature = Math.min(dist * 0.12, 30);
-                // Use source ticker charcode parity to alternate curve direction
-                var side = (src.charCodeAt(0) + tgt.charCodeAt(0)) % 2 === 0 ? 1 : -1;
-                var nx = -dy / (dist || 1) * curvature * side;
-                var ny =  dx / (dist || 1) * curvature * side;
-                ctx.moveTo(s.x, s.y);
-                ctx.quadraticCurveTo(mx + nx, my + ny, t.x, t.y);
-            });
-            ctx.stroke();
         }
 
         // Nodes
@@ -1669,6 +1679,19 @@ function initNetwork(peerData) {
                 ctx.setLineDash([]);
             }
         });
+
+        // Default-view edge-web overlay (2026-10-06): stroke the same-sector
+        // edge pass on top of the nodes. The packed default layout
+        // (collision radius = node radius + 2) leaves almost no gaps, so the
+        // under-node web was invisible and the flagship view read as a bubble
+        // chart with no peer relationships. Gated off while a path is active
+        // (path mode dims the web to 0.03 — invisible anyway — and has its own
+        // highlighted edge rendering) and off in every non-default edge branch
+        // (hover, sector/tier filter, community/flow/quartile/trend hovers),
+        // which keep their existing behavior byte-identical.
+        if (defaultEdgeBranch && !(activePath && activePath.nodes.length >= 2)) {
+            strokeSameSectorEdges();
+        }
 
         // Cluster sector labels — floating sector names at centroids when zoomed out
         // Provides orientation without requiring users to match colors to the legend
