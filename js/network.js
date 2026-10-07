@@ -666,6 +666,46 @@ function initNetwork(peerData) {
         el.textContent = text;
     }
 
+    // Network coverage desc (truthfulness): the network section's "Covers N of
+    // the M tracked companies" clause hard-coded the 516/518 counts and the
+    // per-ticker reasons (CPRT / VMRK) — the same stale-count class the
+    // header company-count badge (2026-09-24), median-pay FY2025 sublabel
+    // (2026-10-07), sector-comp desc and role-comp desc (2026-10-07) fixes
+    // addressed. Rendered live from the loaded data so a peer batch that
+    // adds nodes (or a future post-merger VMRK DEF 14A) can never stale it:
+    // coverage = tracked tickers present in the node list, total = tracked
+    // tickers. Uncovered tickers are enumerated with a ticker-keyed reason;
+    // tickers without a known reason degrade to a generic "peer group not
+    // yet verified" clause so the sentence stays honest. textContent-only
+    // (no raw HTML interpolation), same convention as renderOrphanDesc.
+    // The static HTML keeps today's copy as the no-JS fallback.
+    var NETWORK_NODE_MISSING_REASONS = {
+        'CPRT': 'has no network node (no extractable peer-group disclosure in its DEF 14A filing)',
+        'VMRK': 'has no node yet (no post-merger DEF 14A filed)'
+    };
+    function renderNetworkCoverage() {
+        var el = document.getElementById('network-coverage-desc');
+        if (!el) return;
+        var nodeTickers = {};
+        nodes.forEach(function(n) { nodeTickers[n.ticker] = true; });
+        var tracked = Object.keys(_compLookup || {});
+        var uncovered = tracked.filter(function(t) { return !nodeTickers[t]; }).sort();
+        var covered = tracked.length - uncovered.length;
+        var text = 'Covers ' + covered + ' of the ' + tracked.length + ' tracked companies';
+        if (uncovered.length > 0) {
+            var parts = uncovered.map(function(t) {
+                return t + ' ' + (NETWORK_NODE_MISSING_REASONS[t] ||
+                    'has no network node (peer group not yet verified from its DEF 14A)');
+            });
+            var list = parts.length === 1 ? parts[0] :
+                parts.slice(0, -1).join(', ') + ', and ' + parts[parts.length - 1];
+            text += ': ' + list + '.';
+        } else {
+            text += '.';
+        }
+        el.textContent = text;
+    }
+
     // Escape HTML special chars in data-driven strings (company names contain & etc.)
     function escapeHtml(s) {
         return String(s == null ? '' : s)
@@ -2305,6 +2345,8 @@ function initNetwork(peerData) {
     // The orphan-desc copy depends on the comp lookup, so it renders here
     // (after the lookup exists), not at the top of init.
     renderOrphanDesc();
+    // Same for the network coverage clause (516/518-style counts + reasons).
+    renderNetworkCoverage();
 
     // Build the Pay vs Performance coverage map from app.js's global pvpData
     // (fetched in loadData before initNetwork runs). Guarded: if the PvP
