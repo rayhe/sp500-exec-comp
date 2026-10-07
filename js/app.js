@@ -2090,14 +2090,18 @@ function populateInsights(comp, trends, sectorFilter) {
     // full the FIRST time a ticker needs it; later cards for the same ticker get
     // a compact cross-reference, so the TSLA 10-K/A paragraph is not repeated
     // verbatim in adjacent cards (function-local map: resets on every render).
-    var _realizedNoteEmitted = {};
-    function realizedNote(ticker) {
+    // The cross-reference names the card where the full note actually landed
+    // (cardLabel recorded at emit time) - never a positional "above"/"below",
+    // which is wrong on the desktop 3-column layout where the emitting card may
+    // sit to the LEFT of the referencing one (fixed 2026-10-06).
+    var _realizedNoteEmitted = {};  // ticker -> card label where full note was emitted
+    function realizedNote(ticker, cardLabel) {
         var full = realizedFootnoteHtml(ticker);
         if (!full) return '';
         if (_realizedNoteEmitted[ticker]) {
-            return ' <span class="insight-footnote-ref" title="See the realized-compensation footnote in the card above">\u2020 realized-comp note above</span>';
+            return ' <span class="insight-footnote-ref" title="See the realized-compensation footnote in the ' + _realizedNoteEmitted[ticker] + ' card">\u2020 realized-comp note in the ' + _realizedNoteEmitted[ticker] + ' card</span>';
         }
-        _realizedNoteEmitted[ticker] = true;
+        _realizedNoteEmitted[ticker] = cardLabel;
         return full;
     }
 
@@ -2127,7 +2131,7 @@ function populateInsights(comp, trends, sectorFilter) {
         var pcRestTopNPay = pcRest.slice(0, pcRestTopN).reduce(function(s, c) { return s + (c.total_compensation || 0); }, 0);
         var pcRestTopNPct = pcRestTotal > 0 ? (pcRestTopNPay / pcRestTotal * 100).toFixed(1) : '0';
         var pcRestLeader = pcRest[0];
-        pcDetail = 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation — but ' + pcDomShare.toFixed(1) + '% of the total is ' + pcDom.ceo_name + ' (' + pcDom.ticker + ') alone.' + realizedNote(pcDom.ticker) + ' Excluding ' + pcDom.ticker + ', the top ' + pcRestTopN + ' of the remaining ' + pcRest.length + ' CEOs earned ' + pcRestTopNPct + '%, led by ' + (pcRestLeader ? pcRestLeader.ceo_name + ' (' + pcRestLeader.ticker + ')' : 'no one') + '.';
+        pcDetail = 'The top ' + topN + ' CEOs earned ' + topNPct + '% of all ' + scopeLabel + ' CEO compensation — but ' + pcDomShare.toFixed(1) + '% of the total is ' + pcDom.ceo_name + ' (' + pcDom.ticker + ') alone.' + realizedNote(pcDom.ticker, 'Pay Concentration') + ' Excluding ' + pcDom.ticker + ', the top ' + pcRestTopN + ' of the remaining ' + pcRest.length + ' CEOs earned ' + pcRestTopNPct + '%, led by ' + (pcRestLeader ? pcRestLeader.ceo_name + ' (' + pcRestLeader.ticker + ')' : 'no one') + '.';
         pcTickers = [pcDom.ticker].concat(pcRest.slice(0, 2).map(function(c) { return c.ticker; }));
     }
     insights.push({
@@ -2145,7 +2149,7 @@ function populateInsights(comp, trends, sectorFilter) {
             icon: CARD_ICONS.money,
             label: '$50M+ Club',
             value: over50M.length + (over50M.length === 1 ? ' company' : ' companies'),
-            detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' + realizedNote(sorted[0].ticker) : '.'),
+            detail: over50M.length + ' CEOs received more than $50 million in total compensation' + (sorted[0] ? ' — led by ' + sorted[0].ceo_name + ' (' + sorted[0].ticker + ') at ' + formatCurrency(sorted[0].total_compensation) + '.' + realizedNote(sorted[0].ticker, '$50M+ Club') : '.'),
             _tickers: sorted[0] ? [sorted[0].ticker] : []
         });
     } else {
@@ -2154,7 +2158,7 @@ function populateInsights(comp, trends, sectorFilter) {
             icon: CARD_ICONS.money,
             label: 'Highest Paid',
             value: sorted[0] ? formatCurrency(sorted[0].total_compensation) : '—',
-            detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' + (sorted[0] ? realizedNote(sorted[0].ticker) : '') : 'No compensation data available.',
+            detail: sorted[0] ? sorted[0].ceo_name + ' (' + sorted[0].ticker + ') is the highest-paid CEO in ' + scopeLabel + ' at ' + formatCurrency(sorted[0].total_compensation) + '.' + (sorted[0] ? realizedNote(sorted[0].ticker, 'Highest Paid') : '') : 'No compensation data available.',
             _tickers: sorted[0] ? [sorted[0].ticker] : []
         });
     }
@@ -2166,7 +2170,7 @@ function populateInsights(comp, trends, sectorFilter) {
         icon: CARD_ICONS.scale,
         label: 'Extreme Ratios',
         value: extremeRatio.length + ' above 1,000:1',
-        detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' + realizedNote(maxRatioComp.ticker) : ''),
+        detail: extremeRatio.length + ' ' + scopeLabel + ' companies have CEO-to-worker pay ratios exceeding 1,000:1. ' + (maxRatioComp ? maxRatioComp.ticker + ' leads at ' + maxRatioComp.pay_ratio.toLocaleString() + ':1.' + realizedNote(maxRatioComp.ticker, 'Extreme Ratios') : ''),
         _tickers: maxRatioComp ? [maxRatioComp.ticker] : []
     });
 
