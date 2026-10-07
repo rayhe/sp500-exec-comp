@@ -13827,12 +13827,22 @@ function setupDualSparklineTooltips() {
             note.textContent = chartMsg;
             panels[i].insertBefore(note, panels[i].firstChild);
         }
-        var netWrap = document.querySelector('#peer-network-section .network-overflow-wrapper');
-        if (netWrap && !netWrap.querySelector('.chart-unavailable-note')) {
+        // Network graph container: the boot-time "Loading peer network..." skeleton
+        // was injected before this guard ran, and initNetwork is skipped when
+        // d3 is unavailable — so without this replacement the user sees an
+        // eternal loading spinner next to the unavailable notice (2026-10-07
+        // render review). Replace the skeleton with the unavailable state
+        // where the graph would have rendered.
+        var netGraph = document.getElementById('network-graph');
+        if (netGraph && !netGraph.querySelector('.network-unavailable-state')) {
+            netGraph.innerHTML = '';
+            var netState = document.createElement('div');
+            netState.className = 'network-unavailable-state';
             var netNote = document.createElement('p');
             netNote.className = 'chart-unavailable-note';
             netNote.textContent = 'Network graph unavailable: the d3 visualization library failed to load (offline or blocked CDN). The data table and company details still work.';
-            netWrap.insertBefore(netNote, netWrap.firstChild);
+            netState.appendChild(netNote);
+            netGraph.appendChild(netState);
         }
     }
 

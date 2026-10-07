@@ -15277,3 +15277,17 @@ body.light-mode .cross-sector-pair-select:focus {
     border: 1px dashed var(--border);
     border-radius: 8px;
 }
+/* Network graph container in the d3-outage state: replaces the boot-time
+   "Loading peer network..." skeleton (2026-10-07 fix) so a graph that will
+   never load does not spin forever. */
+.network-unavailable-state {
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+}
+.network-unavailable-state .chart-unavailable-note {
+    max-width: 620px;
+    margin: 0;
+}
