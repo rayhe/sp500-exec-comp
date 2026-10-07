@@ -1456,6 +1456,19 @@ function renderHeaderCompanyCount(comp) {
     }
 }
 
+// === Median-CEO-pay FY sublabel ===
+// The 2026-10-06 anchor promotion moved the primary fiscal year from FY2024
+// to FY2025 (425 companies to FY2025, 22 non-calendar filers to FY2026) and
+// recomputed aggregate_stats.median_ceo_pay on the new anchors, but the
+// metric-card sublabel stayed hard-coded at 'S&P 500, FY2024' - the value
+// shown is FY2025-anchored while the label claimed FY2024. Render the label
+// live from metadata.primary_fiscal_year so the next anchor roll cannot
+// drift again. textContent-only; falls back to the bare 'S&P 500' when the
+// metadata field is absent (a failed metadata load leaves no FY claim).
+function _medianPayFYLabel(fy) {
+    return 'S&P 500' + (typeof fy === 'number' && fy > 0 ? ', FY' + fy : '');
+}
+
 function populateMetrics(comp, trends) {
     var stats = comp.metadata && comp.metadata.aggregate_stats;
     var medianPay = stats ? stats.median_ceo_pay : null;
@@ -1472,7 +1485,8 @@ function populateMetrics(comp, trends) {
     } else {
         medianEl.textContent = '$16.8M';
     }
-    document.getElementById('metric-median-delta').textContent = 'S&P 500, FY2024';
+    document.getElementById('metric-median-delta').textContent =
+        _medianPayFYLabel(comp.metadata && comp.metadata.primary_fiscal_year);
 
     if (medianRatio) {
         animateMetricValue(ratioEl, medianRatio, formatRatio, 900);
@@ -1733,6 +1747,10 @@ function setupReactiveMetrics(companies, comp, trends) {
         medianRatio: computeMedian(allRatios) || (stats ? stats.median_pay_ratio : null),
         medianWorker: computeMedian(allWorker) || (stats ? stats.median_worker_pay : null),
         medianStock: computeMedian(allStock),
+        // Primary fiscal year gates the median-CEO-pay card sublabel
+        // (check_median_pay_fy_label.py); captured here so the restore path
+        // cannot drift after an anchor promotion.
+        primaryFY: (comp.metadata && comp.metadata.primary_fiscal_year) || null,
         topCeo: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].ceo_name : ''; })(),
         topTicker: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].ticker : ''; })(),
         topComp: (function() { var s = companies.slice().sort(function(a,b){return b.total_compensation-a.total_compensation;}); return s[0] ? s[0].total_compensation : 0; })(),
@@ -1884,7 +1902,7 @@ function _restoreDefaultMetrics(strip) {
     } else if (me) {
         me.textContent = '$16.8M';
     }
-    if (md) md.textContent = 'S&P 500, FY2024';
+    if (md) md.textContent = _medianPayFYLabel(_sp500Metrics.primaryFY);
 
     var re = document.getElementById('metric-ratio');
     var rs = document.getElementById('metric-ratio-sub');
