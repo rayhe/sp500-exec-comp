@@ -1388,6 +1388,7 @@ async function loadData() {
     renderFooterVintage(comp);
     renderHeaderCompanyCount(comp);
     renderSectorCompDesc(comp);
+    renderRoleCompDesc(comp);
     return { comp, trends, peer };
 }
 
@@ -1474,6 +1475,30 @@ function renderSectorCompDesc(comp) {
     var n = md.total_companies;
     if (typeof n === 'number' && n > 0) {
         el.textContent = 'Median CEO pay component mix across all 11 GICS sectors \u2014 computed from ' + n.toLocaleString('en-US') + ' DEF 14A proxy filings. Cell intensity shows component weight; click any cell to filter the table.';
+    }
+}
+
+// === Role-comp description record/company counts ===
+// The "C-Suite Role Compensation" section description hard-coded
+// "benchmarked from 7,078 Named Executive Officer records across 518 proxy
+// filings" - true today, but the same stale-count class the header
+// company-count badge (2026-09-24), the median-pay FY2025 sublabel
+// (2026-10-07) and the sector-comp description (2026-10-07) fixes addressed:
+// every DQ/roster batch that changes the row count would silently stale it
+// (the sector-comp sibling had already drifted to "500" before its fix).
+// Render both counts live from the guard-checked metadata.total_neo_records
+// and metadata.total_companies so the next batch cannot drift it again. The
+// static HTML keeps today's counts ("7,078" / "518") as the no-JS fallback.
+// textContent-only (no HTML interpolation); no-op without data, so a failed
+// or partial metadata load leaves the fallback untouched.
+function renderRoleCompDesc(comp) {
+    var el = document.getElementById('role-comp-desc');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var rows = md.total_neo_records;
+    var n = md.total_companies;
+    if (typeof rows === 'number' && rows > 0 && typeof n === 'number' && n > 0) {
+        el.textContent = 'S&P 500 median total compensation by executive role \u2014 benchmarked from ' + rows.toLocaleString('en-US') + ' Named Executive Officer records across ' + n.toLocaleString('en-US') + ' proxy filings. IQR bars show P25\u2013P75 range.';
     }
 }
 
