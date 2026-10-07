@@ -6088,18 +6088,15 @@ footer li::before {
     .detail-stat-value { font-size: 0.95rem; }
     .detail-peers { padding-top: 8px; }
     .detail-peer-tag { font-size: 0.65rem; padding: 1px 5px; }
-    /* Shortcuts FAB clearance (2026-09-24 22:00 PT): at phone widths the
-       detail panel is full-viewport-wide and its last block (footnotes)
-       sits under the fixed bottom-right shortcuts FAB when the panel
-       bottom aligns with the viewport bottom. The extra bottom padding
-       keeps the last text line clear of the FAB (bottom 16px + ~30px). */
+    /* Detail-panel bottom breathing room (was shortcuts-FAB clearance,
+       2026-09-24; the FAB moved into the header 2026-10-06 so the overlap
+       it guarded against no longer exists — kept as plain padding). */
     .detail-panel { padding-bottom: 56px; }
-    /* Shortcuts FAB icon-only at phone widths (2026-10-06 15:30 PT): the
-       full "? Shortcuts" pill is ~110px wide and floats over full-bleed
-       insight-card body text while scrolling on 360px screens (seen
-       covering the $50M+ Club card). Collapsing to the "?" chip keeps the
-       discovery affordance at ~1/3 the footprint; click behavior and the
-       title tooltip are unchanged. */
+    /* Shortcuts hint icon-only at phone widths: the hint now lives in the
+       header, so the "?" chip sits beside the theme toggle without
+       covering any content. Collapsing the label keeps the header row
+       compact on 360px screens; click behavior and the title tooltip are
+       unchanged. */
     .kbd-hint-label { display: none; }
     .kbd-hint { padding: 6px 9px; gap: 0; }
 }
@@ -7409,25 +7406,31 @@ footer li::before {
     color: var(--text-secondary);
 }
 
-/* Keyboard hint badge (bottom-right) */
+/* Keyboard hint badge (2026-10-06 19:30 PT: moved from a fixed bottom-right
+   FAB into the header, next to the theme toggle. The fixed FAB overlapped
+   real content in three evidence-backed render reviews (09-24 detail panel,
+   15:30 mobile insight-card body text, 19:30 table GOV cell + network legend
+   "57" + mobile table company cell); no fixed element can avoid covering
+   arbitrary bottom-right content. As a header control it keeps the same
+   first-visit discovery affordance (plus the "?" key binding) with zero
+   overlap. Now a <button> so it is keyboard-focusable. */
 .kbd-hint {
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    z-index: 100;
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
+    min-height: 34px;
+    font-family: inherit;
     font-size: 0.72rem;
     color: var(--text-secondary);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: 8px;
     cursor: pointer;
-    opacity: 0.5;
+    opacity: 0.75;
     transition: opacity 0.2s, border-color 0.2s;
     user-select: none;
+    flex-shrink: 0;
 }
 .kbd-hint:hover {
     opacity: 1;
@@ -7467,11 +7470,6 @@ footer li::before {
 [data-theme="light"] .kbd-hint kbd {
     background: #f4f5f7;
     border-color: rgba(0,0,0,0.1);
-}
-
-/* Hide keyboard hint when compare tray is visible (overlap) */
-.compare-tray.visible ~ .kbd-hint {
-    bottom: 72px;
 }
 
 /* Print: hide keyboard UI and section nav */
