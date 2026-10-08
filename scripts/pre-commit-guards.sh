@@ -24,6 +24,12 @@
 #     (missing binary, no network) - treated as a pass-with-warning so a
 #     broken laptop does not wedge every commit. (Guards that must never
 #     be skipped on infra failure should say so in their header and exit 1.)
+#   - rc 126/127 (Permission denied / command not found, i.e. the guard
+#     lost its exec bit or its shebang broke) is a HARD FAIL: a guard
+#     that cannot execute is indistinguishable from a guard that passes,
+#     so it blocks the commit loudly instead of skipping silently.
+#     check_guard_exec_bits.py additionally asserts the exec bit on
+#     every check_*.py statically.
 #   - keep the static half fast (<2s). Heavy render/browser halves stay
 #     iteration-run-only behind the default (no-flag) invocation.
 #
@@ -33,6 +39,10 @@
 #   2026-10-05 18:00 - generalized to auto-discovery per the 15:38 run's
 #     queued candidate ("extend the pre-commit wrapper to future
 #     static-only guards"); exit-2 infra rule documented.
+#   2026-10-08 15:30 - rc 126/127 (exec-bit/shebang) is a hard fail instead
+#     of a silent skip (silent-skip class: 03090dd, 2026-10-08
+#     check_composition_fy_detail.py repair); check_guard_exec_bits.py
+#     asserts the exec bit statically for every check_*.py.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
@@ -48,7 +58,12 @@ for g in "$TOP"/scripts/check_*.py; do
     FOUND=1
     "$g" --static-only
     rc=$?
-    if [ "$rc" -eq 1 ]; then exit 1; fi
+    if [ "$rc" -eq 1 ] || [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ]; then
+      if [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ]; then
+        echo "FAIL: $g could not be executed (rc $rc - exec bit or shebang broken), blocking commit"
+      fi
+      exit 1
+    fi
     if [ "$rc" -eq 2 ]; then echo "WARN: $g --static-only infra problem (exit 2), not blocking"; fi
   fi
 done
