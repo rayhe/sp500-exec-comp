@@ -1735,11 +1735,29 @@ function drawRatioChart(companies) {
 /* Top 10 chart mode state */
 var _top10Mode = 'comp';
 
+/* === Top-10 "Highest Paid" description === */
+// The 2026-10-06 anchor promotion moved the primary fiscal year from FY2024
+// to FY2025 (425 companies to FY2025, 22 non-calendar filers to FY2026), but
+// TOP10_MODES.comp.desc stayed hard-coded at 'FY 2024 total compensation
+// from proxy statements' while the chart ranks the same FY2025-anchored
+// company list the median-pay metric card is computed from - the value was
+// FY2025-anchored while the label claimed FY2024. Render the year live from
+// _chartData.compData.metadata.primary_fiscal_year (initCharts receives
+// data.comp as compData); fall back to the historical FY2024 copy when the
+// field is absent so a failed metadata load leaves no false FY claim.
+// textContent-only at the single assignment site in drawTop10Chart.
+function _top10CompDesc() {
+    var md = _chartData && _chartData.compData ? _chartData.compData.metadata : null;
+    var fy = md ? md.primary_fiscal_year : null;
+    return 'FY ' + (typeof fy === 'number' && fy > 0 ? fy : 2024) +
+        ' total compensation from proxy statements';
+}
+
 /* Mode definitions for the multi-mode Top 10 chart */
 var TOP10_MODES = {
     comp: {
         title: 'Top 10 Highest Paid CEOs',
-        desc: 'FY 2024 total compensation from proxy statements',
+        // desc: rendered live by _top10CompDesc() - never hard-code an FY year here
         filter: function(c) { return c.total_compensation > 0; },
         sort: function(a, b) { return b.total_compensation - a.total_compensation; },
         value: function(c) { return c.total_compensation; },
@@ -1867,15 +1885,18 @@ function drawTop10Chart(companies, mode) {
             .replace('Health Care', 'Health Care')
         : null;
 
-    // Update title and description
+    // Update title and description. The 'comp' mode ranks the FY2025-anchored
+    // company list, so its description renders the live primary fiscal year
+    // via _top10CompDesc(); other modes keep their static descriptions.
     var titleEl = document.getElementById('top10-title');
     var descEl = document.getElementById('top10-desc');
+    var descText = (mode === 'comp') ? _top10CompDesc() : cfg.desc;
     if (titleEl) _setTitleLabel(titleEl, sectorName
         ? cfg.title.replace('Top 10', 'Top ' + sectorAbbr)
         : cfg.title);
     if (descEl) descEl.textContent = sectorName
-        ? cfg.desc + ' — ' + sectorName + ' sector (' + sectorFilteredCompanies.length + ' companies)'
-        : cfg.desc;
+        ? descText + ' — ' + sectorName + ' sector (' + sectorFilteredCompanies.length + ' companies)'
+        : descText;
 
     // Get and sort data
     var filtered = sectorFilteredCompanies.filter(cfg.filter);
