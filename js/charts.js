@@ -383,10 +383,11 @@ window.highlightSectorBar = function(sectorName) {
     // Distribution elements update on full redraw via redrawAllCharts
 };
 
-/* Sector vocabulary bridge — trends.json's median_pay_by_sector_sp500_fy2024 uses a
- * different sector naming than the GICS-style company records in
- * compensation.json (5 of 11 names match verbatim). Without this bridge, the
- * per-sector distribution overlays (IQR box, min-max whiskers, (n) counts,
+/* Sector vocabulary bridge — trends.json's latest year-keyed
+ * median_pay_by_sector_sp500_fy<YYYY> edition (resolved live by
+ * latestSectorMedianKey() below) uses a different sector naming than the
+ * GICS-style company records in compensation.json (5 of 11 names match
+ * verbatim). Without this bridge, the per-sector distribution overlays (IQR box, min-max whiskers, (n) counts,
  * tooltip stats, sparklines), bar click-to-filter, and chip→chart highlight
  * sync silently fail for the 6 renamed sectors (bar clicks even empty the
  * table, since the table filters on company-vocabulary names). Each datum
@@ -405,13 +406,44 @@ function sectorTrendToComp(trendSector) {
 }
 
 /* --- Sector Bar Chart with Distribution Box Plot --- */
+/* Resolver for the stale-hard-coded-year class: the sector chart used to read
+ * trends.median_pay_by_sector_sp500_fy<YYYY> through a hard-coded fy2024 key, so a new
+ * study edition (e.g. median_pay_by_sector_sp500_fy2025) would leave the chart
+ * silently stale — same class as the header-subtitle, trend-label, Early
+ * Filers, Security Perks, Historic Peak, sparkline-label, sector-trend-window,
+ * and composition-detail fixes. This scans the year-keyed family and returns
+ * the latest edition; the legacy un-keyed median_pay_by_sector_sp500 (a
+ * partial-edition study, FY2025, only 4 sectors) is used only when no
+ * year-keyed full breakdown exists. Returns null when neither exists, in
+ * which case the chart's existing "No sector data available" path fires. */
+var SECTOR_DESC_BASE = 'Median total CEO compensation by sector with distribution range (box plot). Click distribution ranges to filter the table.';
+function latestSectorMedianKey(trends) {
+    if (!trends) return null;
+    var years = Object.keys(trends).map(function (k) {
+        var m = /^median_pay_by_sector_sp500_fy(\d{4})$/.exec(k);
+        return m ? parseInt(m[1], 10) : null;
+    }).filter(function (y) { return y !== null; }).sort(function (a, b) { return b - a; });
+    if (years.length) return 'median_pay_by_sector_sp500_fy' + years[0];
+    return trends.median_pay_by_sector_sp500 ? 'median_pay_by_sector_sp500' : null;
+}
 function drawSectorChart(trends, companies) {
     var dark = typeof isDarkTheme === 'function' ? isDarkTheme() : true;
     var container = document.getElementById('sector-chart');
     container.innerHTML = ''; // clear the boot skeleton placeholder before appending the svg
-    var data = trends.median_pay_by_sector_sp500_fy2024 && trends.median_pay_by_sector_sp500_fy2024.data
-        ? trends.median_pay_by_sector_sp500_fy2024.data.filter(function(d) { return d.median_pay; })
+    var sectorKey = latestSectorMedianKey(trends);
+    var sectorEdition = sectorKey && trends[sectorKey] ? trends[sectorKey] : null;
+    var data = sectorEdition && sectorEdition.data
+        ? sectorEdition.data.filter(function(d) { return d.median_pay; })
         : [];
+
+    // Live-label the section description with the resolved study edition's
+    // fiscal year (textContent-only; no raw data reaches the DOM). The
+    // static HTML keeps today's copy as the no-JS fallback.
+    var sectorDesc = document.getElementById('sector-desc');
+    if (sectorDesc) {
+        var sectorFY = sectorEdition && sectorEdition.fiscal_year ? sectorEdition.fiscal_year : null;
+        sectorDesc.textContent = SECTOR_DESC_BASE + (sectorFY ? ' \u2014 S&P 500, FY' + sectorFY : '');
+    }
 
     // Bridge the sector vocabularies: trends data carries vendor names, company
     // records carry GICS names. _compSector is used for all data joins,
