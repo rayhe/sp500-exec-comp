@@ -5151,6 +5151,14 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     min-height: 320px;
 }
 
+/* Keyboard focus ring for the sector chart's clickable bars (2026-10-08):
+   the bars are tabindex="0" role="button" (see drawSectorChart). Matches the
+   site's --accent focus-visible convention (e.g. .metric-card:focus-visible). */
+#sector-chart rect.bar:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 #composition-chart {
     background: var(--bg-secondary);
     border: 1px solid var(--border);

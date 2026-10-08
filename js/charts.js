@@ -637,6 +637,22 @@ function drawSectorChart(trends, companies) {
         })
         .on('click', function(event, d) {
             if (window.filterBySector) window.filterBySector(d._compSector);
+        })
+        // Keyboard operability (2026-10-08): the bars are the chart's only
+        // click targets (dist-boxes/whiskers are visual-only, drawn beneath).
+        // Expose them as buttons so keyboard users can filter the table too.
+        // Attribute-bound strings only (set via d3 .attr); data never
+        // reaches HTML parsing.
+        .attr('tabindex', '0')
+        .attr('role', 'button')
+        .attr('aria-label', function(d) {
+            return 'Filter table to ' + d._compSector + ' sector — median CEO pay ' + fmtCurr(d.median_pay);
+        })
+        .on('keydown', function(event, d) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                if (window.filterBySector) window.filterBySector(d._compSector);
+            }
         });
 
     // Labels — show median and count
