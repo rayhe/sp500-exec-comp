@@ -367,21 +367,42 @@ window.highlightSopDistBucket = function(minPct, maxPct) {
 /* Update sector chart bar highlighting without full redraw */
 window.highlightSectorBar = function(sectorName) {
     d3.selectAll('#sector-chart .bar').each(function(d) {
-        if (!d || !d.sector) return;
+        if (!d || !d._compSector) return;
         if (!sectorName) {
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
-        } else if (d.sector === sectorName) {
+        } else if (d._compSector === sectorName) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
         } else {
             d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
         }
     });
     d3.selectAll('#sector-chart .bar-label').each(function(d) {
-        if (!d || !d.sector) return;
-        d3.select(this).attr('opacity', !sectorName || d.sector === sectorName ? 1 : 0.4);
+        if (!d || !d._compSector) return;
+        d3.select(this).attr('opacity', !sectorName || d._compSector === sectorName ? 1 : 0.4);
     });
     // Distribution elements update on full redraw via redrawAllCharts
 };
+
+/* Sector vocabulary bridge — trends.json's median_pay_by_sector_sp500_fy2024 uses a
+ * different sector naming than the GICS-style company records in
+ * compensation.json (5 of 11 names match verbatim). Without this bridge, the
+ * per-sector distribution overlays (IQR box, min-max whiskers, (n) counts,
+ * tooltip stats, sparklines), bar click-to-filter, and chip→chart highlight
+ * sync silently fail for the 6 renamed sectors (bar clicks even empty the
+ * table, since the table filters on company-vocabulary names). Each datum
+ * gets a _compSector carrying the company-vocabulary name, used for all
+ * data joins and interactions. */
+var SECTOR_TREND_TO_COMP = {
+    'Consumer Cyclical': 'Consumer Discretionary',
+    'Consumer Defensive': 'Consumer Staples',
+    'Financial Services': 'Financials',
+    'Healthcare': 'Health Care',
+    'Technology': 'Information Technology',
+    'Basic Materials': 'Materials'
+};
+function sectorTrendToComp(trendSector) {
+    return SECTOR_TREND_TO_COMP[trendSector] || trendSector;
+}
 
 /* --- Sector Bar Chart with Distribution Box Plot --- */
 function drawSectorChart(trends, companies) {
@@ -391,6 +412,11 @@ function drawSectorChart(trends, companies) {
     var data = trends.median_pay_by_sector_sp500_fy2024 && trends.median_pay_by_sector_sp500_fy2024.data
         ? trends.median_pay_by_sector_sp500_fy2024.data.filter(function(d) { return d.median_pay; })
         : [];
+
+    // Bridge the sector vocabularies: trends data carries vendor names, company
+    // records carry GICS names. _compSector is used for all data joins,
+    // interactions, and labels below.
+    data.forEach(function(d) { d._compSector = sectorTrendToComp(d.sector); });
 
     if (data.length === 0) {
         container.innerHTML = '<p style="color:' + (typeof getThemeSecondaryColor === 'function' ? getThemeSecondaryColor() : '#a1a1aa') + ';padding:40px;text-align:center;">No sector data available</p>';
@@ -422,10 +448,11 @@ function drawSectorChart(trends, companies) {
         });
     }
 
-    // Merge distribution data into chart data
+    // Merge distribution data into chart data (sectorDist is keyed by the
+    // company-vocabulary sector names from compensation.json)
     data.forEach(function(d) {
-        if (sectorDist[d.sector]) {
-            d._dist = sectorDist[d.sector];
+        if (sectorDist[d._compSector]) {
+            d._dist = sectorDist[d._compSector];
         }
     });
 
@@ -453,7 +480,7 @@ function drawSectorChart(trends, companies) {
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     var x = d3.scaleLinear().domain([0, xMax]).range([0, w]);
-    var y = d3.scaleBand().domain(data.map(function(d) { return d.sector; })).range([0, h]).padding(0.3);
+    var y = d3.scaleBand().domain(data.map(function(d) { return d._compSector; })).range([0, h]).padding(0.3);
 
     // Grid
     svg.append('g').attr('class', 'grid')
@@ -472,11 +499,11 @@ function drawSectorChart(trends, companies) {
     data.forEach(function(d) {
         if (!d._dist) return;
         var dist = d._dist;
-        var cy = y(d.sector) + bandH / 2;
-        var byTop = y(d.sector) + boxOffset;
+        var cy = y(d._compSector) + bandH / 2;
+        var byTop = y(d._compSector) + boxOffset;
 
-        var isActive = activeSector && d.sector === activeSector;
-        var isDimmed = activeSector && d.sector !== activeSector;
+        var isActive = activeSector && d._compSector === activeSector;
+        var isDimmed = activeSector && d._compSector !== activeSector;
         var baseOpacity = isDimmed ? 0.15 : 0.5;
 
         // Whisker line: min → max (capped at chart width)
@@ -539,24 +566,24 @@ function drawSectorChart(trends, companies) {
         .join('rect')
         .attr('class', 'bar')
         .attr('x', 0)
-        .attr('y', function(d) { return y(d.sector); })
+        .attr('y', function(d) { return y(d._compSector); })
         .attr('width', function(d) { return x(d.median_pay); })
         .attr('height', y.bandwidth())
         .attr('fill', '#00b4d8')
         .attr('rx', 3)
         .attr('opacity', function(d) {
-            if (activeSector) return d.sector === activeSector ? 1 : 0.3;
+            if (activeSector) return d._compSector === activeSector ? 1 : 0.3;
             return 0.8;
         })
         .each(function(d) {
-            if (activeSector && d.sector === activeSector) {
+            if (activeSector && d._compSector === activeSector) {
                 d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1);
-            var html = '<div class="ct-title">' + d.sector + '</div>' +
+            var html = '<div class="ct-title">' + d._compSector + '</div>' +
                 '<div class="ct-row"><span class="ct-label">Median CEO Pay</span><span class="ct-val">' + fmtCurr(d.median_pay) + '</span></div>';
             if (d._dist) {
                 html += '<div class="ct-row"><span class="ct-label">25th Percentile</span><span class="ct-val">' + fmtCurr(d._dist.q1) + '</span></div>' +
@@ -569,7 +596,7 @@ function drawSectorChart(trends, companies) {
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function(event, d) {
-            var isActive = activeSector && d.sector === activeSector;
+            var isActive = activeSector && d._compSector === activeSector;
             d3.select(this)
                 .attr('opacity', isActive ? 1 : (activeSector ? 0.3 : 0.8))
                 .attr('stroke', isActive ? chartStrokeColor() : 'none')
@@ -577,7 +604,7 @@ function drawSectorChart(trends, companies) {
             hideChartTooltip();
         })
         .on('click', function(event, d) {
-            if (window.filterBySector) window.filterBySector(d.sector);
+            if (window.filterBySector) window.filterBySector(d._compSector);
         });
 
     // Labels — show median and count
@@ -586,7 +613,7 @@ function drawSectorChart(trends, companies) {
         .join('text')
         .attr('class', 'bar-label')
         .attr('x', function(d) { return x(d.median_pay) + 6; })
-        .attr('y', function(d) { return y(d.sector) + y.bandwidth() / 2; })
+        .attr('y', function(d) { return y(d._compSector) + y.bandwidth() / 2; })
         .attr('dy', '0.35em')
         .text(function(d) {
             var label = fmtCurr(d.median_pay);
@@ -594,7 +621,7 @@ function drawSectorChart(trends, companies) {
             return label;
         })
         .attr('opacity', function(d) {
-            if (activeSector) return d.sector === activeSector ? 1 : 0.4;
+            if (activeSector) return d._compSector === activeSector ? 1 : 0.4;
             return 1;
         });
 
@@ -641,11 +668,11 @@ function drawSectorChart(trends, companies) {
 
             var sparkW = 48, sparkH = 16;
             data.forEach(function(d) {
-                var pts = sectorTrends[d.sector];
+                var pts = sectorTrends[d._compSector];
                 if (!pts || pts.length < 2) return;
 
-                var isDimmed = activeSector && d.sector !== activeSector;
-                var bandCenter = y(d.sector) + y.bandwidth() / 2;
+                var isDimmed = activeSector && d._compSector !== activeSector;
+                var bandCenter = y(d._compSector) + y.bandwidth() / 2;
                 var sparkX = x(d.median_pay) + 6;
                 // Offset past the bar label text
                 var labelLen = (fmtCurr(d.median_pay) + (d._dist ? ' (' + d._dist.count + ')' : '')).length;
@@ -700,7 +727,7 @@ function drawSectorChart(trends, companies) {
                 // Tooltip on hover + click to navigate to pay anomaly chart
                 var pctChange = ((lastPt.median / pts[0].median) - 1) * 100;
                 var tipYears = pts.map(function(p) { return 'FY' + p.year + ': ' + fmtCurr(p.median); }).join('<br>');
-                var sectorForClick = d.sector; // capture for closure
+                var sectorForClick = d._compSector; // capture for closure (company-vocabulary name)
                 sparkG.append('rect')
                     .attr('class', 'sector-sparkline-hit')
                     .attr('width', sparkW + 8).attr('height', sparkH + 6)
@@ -714,11 +741,11 @@ function drawSectorChart(trends, companies) {
                             .attr('stroke-width', 1);
                         sparkG.attr('opacity', 1);
                         showChartTooltip(event,
-                            '<strong>' + d.sector + ' Median CEO Pay Trend</strong><br>' +
+                            '<strong>' + d._compSector + ' Median CEO Pay Trend</strong><br>' +
                             tipYears + '<br>' +
                             '<span style="color:' + (trendUp ? '#10b981' : '#ef4444') + '">' +
                             (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '% over ' + (pts.length - 1) + ' yr</span>' +
-                            '<br><span style="color:' + (dark ? '#a1a1aa' : '#6b7280') + ';font-size:10px">Click to explore ' + d.sector + ' pay anomalies \u2192</span>');
+                            '<br><span style="color:' + (dark ? '#a1a1aa' : '#6b7280') + ';font-size:10px">Click to explore ' + d._compSector + ' pay anomalies \u2192</span>');
                     })
                     .on('mousemove', function(event) { positionChartTooltip(event); })
                     .on('mouseout', function() {
@@ -794,7 +821,7 @@ function drawSectorChart(trends, companies) {
     data.forEach(function(d) {
         if (!d._dist) return;
         var dist = d._dist;
-        var cy = y(d.sector);
+        var cy = y(d._compSector);
         var bh = y.bandwidth();
         var whiskerMax = Math.min(x(dist.max), w);
 
@@ -808,7 +835,7 @@ function drawSectorChart(trends, companies) {
                 .attr('height', bh)
                 .attr('fill', 'transparent')
                 .style('cursor', 'pointer')
-                .datum({ sector: d.sector, min: dist.min, max: dist.q1, label: d.sector + ': Bottom 25%', zone: 'bottom' })
+                .datum({ sector: d._compSector, min: dist.min, max: dist.q1, label: d._compSector + ': Bottom 25%', zone: 'bottom' })
                 .on('mouseover', function(event, zd) {
                     d3.select(this).attr('fill', 'rgba(0,180,216,0.12)');
                     var html = '<div class="ct-title">' + zd.sector + ' — Bottom 25%</div>' +
@@ -836,7 +863,7 @@ function drawSectorChart(trends, companies) {
             .attr('height', bh)
             .attr('fill', 'transparent')
             .style('cursor', 'pointer')
-            .datum({ sector: d.sector, min: dist.q1, max: dist.q3, label: d.sector + ': IQR (25th–75th)', zone: 'iqr' })
+            .datum({ sector: d._compSector, min: dist.q1, max: dist.q3, label: d._compSector + ': IQR (25th–75th)', zone: 'iqr' })
             .on('mouseover', function(event, zd) {
                 d3.select(this).attr('fill', 'rgba(0,180,216,0.15)');
                 var html = '<div class="ct-title">' + zd.sector + ' — IQR (Middle 50%)</div>' +
@@ -865,7 +892,7 @@ function drawSectorChart(trends, companies) {
                 .attr('height', bh)
                 .attr('fill', 'transparent')
                 .style('cursor', 'pointer')
-                .datum({ sector: d.sector, min: dist.q3, max: dist.max, label: d.sector + ': Top 25%', zone: 'top' })
+                .datum({ sector: d._compSector, min: dist.q3, max: dist.max, label: d._compSector + ': Top 25%', zone: 'top' })
                 .on('mouseover', function(event, zd) {
                     d3.select(this).attr('fill', 'rgba(0,180,216,0.12)');
                     var html = '<div class="ct-title">' + zd.sector + ' — Top 25%</div>' +
