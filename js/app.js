@@ -7855,6 +7855,39 @@ function pvpFmtPct(v) {
     var sign = v < 0 ? '−' : '+';
     return sign + (Math.abs(v) * 100).toFixed(1) + '%';
 }
+// Pay-vs-Performance coverage transparency: live "Covers N of M tracked
+// companies" clause naming every roster gap, same convention as
+// network.js renderNetworkCoverage (textContent-only, no raw HTML).
+// The static HTML keeps today's copy as the no-JS fallback; the
+// 20 gaps below are documented in data/pay_vs_performance.json's
+// coverage_note (take-private, delisted, 402(v)-exempt, no DEF 14A,
+// filer-side XBRL errors, no Inline XBRL 402(v) disclosure).
+// scripts/check_pvp_coverage_desc.py guards all of it.
+var PVP_COVERAGE_EXCLUSION_GROUPS = [
+    ['take-private', ['DAY', 'EA', 'HOLX', 'K']],
+    ['delisted', ['HES', 'IPG', 'JNPR', 'WBA']],
+    ['402(v)-exempt', ['BX', 'KKR']],
+    ['no DEF 14A filed', ['FDXF', 'PSKY', 'VMRK']],
+    ['filer-side XBRL errors', ['COF', 'EMN', 'HSY', 'RF']],
+    ['no Inline XBRL 402(v) disclosure', ['AMT', 'INTC', 'SYF']]
+];
+function renderPvpCoverageDesc(rows) {
+    var el = document.getElementById('pvp-coverage-desc');
+    if (!el) return;
+    var tracked = (compData && compData.companies) ? compData.companies.length : 0;
+    var covered = rows ? rows.length : 0;
+    var gaps = tracked - covered;
+    var text = 'Covers ' + covered + ' of the ' + tracked + ' tracked companies';
+    if (gaps > 0) {
+        var clauses = PVP_COVERAGE_EXCLUSION_GROUPS.map(function(g) {
+            return g[0] + ' (' + g[1].join(', ') + ')';
+        });
+        text += '. ' + gaps + ' excluded: ' + clauses.join(' \u00b7 ') + '.';
+    } else {
+        text += '.';
+    }
+    el.textContent = text;
+}
 function renderPvpComparison() {
     var head = document.getElementById('pvp-comp-head');
     var body = document.getElementById('pvp-comp-tbody');
@@ -7863,6 +7896,7 @@ function renderPvpComparison() {
     if (!head || !body) return;
     var rows = pvpComparisonRows();
     if (badge) badge.textContent = rows.length + ' companies · SEC Item 402(v)';
+    renderPvpCoverageDesc(rows);
     if (!rows.length) {
         body.innerHTML = '<tr><td colspan="8" class="pvp-na">Pay vs Performance data unavailable.</td></tr>';
         return;

@@ -103,7 +103,11 @@ def static_checks():
           fallback_ok, "" if fallback_ok else "fallback missing id or wrong copy")
 
     # S5: no hard-coded "Covers N of the M" outside the span.
+    # (2026-10-08: also exclude the PvP coverage paragraph -- it is a
+    # guarded live-rendered fallback of its own, kept current by
+    # check_pvp_coverage_desc.py S5, not a stale hard-coded clause.)
     stripped = re.sub(r'<span id="network-coverage-desc">.*?</span>', '', html, flags=re.DOTALL)
+    stripped = re.sub(r'<p class="section-desc" id="pvp-coverage-desc">.*?</p>', '', stripped, flags=re.DOTALL)
     s5 = re.search(r"Covers \d+ of the \d+ tracked companies", stripped) is None
     check("S5 no hard-coded 'Covers N of the M tracked companies' remains outside the span",
           s5, "" if s5 else "stale hard-coded coverage clause still present")
