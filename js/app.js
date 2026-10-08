@@ -255,7 +255,7 @@ function computeCeoTrend(companies) {
 }
 
 /* Pre-compute CEO stock awards as percentage of total compensation.
-   Sets c._ceoStockPct (0-100 or null) for the primary fiscal year (FY2024).
+   Sets c._ceoStockPct (0-100 or null) for the primary fiscal year (FY2025 as of 2026-10-06).
    Also sets c._ceoStockPctHistory = { year: pct, ... } for multi-year trend analysis. */
 function computeCeoStockPct(companies) {
     companies.forEach(function(c) {
@@ -4162,54 +4162,65 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
-    // 25. FY2025 Early Filers — an early read on the 2026 proxy season.
-    // Computed live under the anchor-year convention: companies with
-    // fiscal_year === 2025 have filed FY2025 proxies, and total_compensation
-    // is the FY2025 CEO figure. Same-CEO YoY matches the anchored CEO's own
-    // 2024 SCT row and skips former-CEO rows (stale anchors) and flagged
-    // CEO-transition companies, so the median change is not polluted by
-    // transition-year or partial-year pay.
+    // 25. Latest-proxy-season early filers — an early read on the newest proxy season.
+    // Computed live from metadata.primary_fiscal_year: companies with
+    // fiscal_year >= primaryFY have filed their latest proxy (calendar
+    // filers at the primary year, non-calendar filers one year ahead), and
+    // total_compensation is that filing's CEO figure. Same-CEO YoY matches
+    // the anchored CEO's own prior-fiscal-year SCT row (c.fiscal_year - 1)
+    // and skips former-CEO rows (stale anchors) and flagged CEO-transition
+    // companies, so the median change is not polluted by transition-year or
+    // partial-year pay. Survives anchor promotions (was hard-coded to FY2025
+    // through 2026-10-07, which also excluded the FY2026 non-calendar filers).
     (function() {
-        var fy25 = companies.filter(function(c) { return c.fiscal_year === 2025 && (c.total_compensation || 0) > 0; });
-        if (fy25.length < 5) return;
-        var pays = fy25.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
-        var med25 = pays[Math.floor(pays.length / 2)];
+        var primaryFY = (typeof compData !== 'undefined' && compData && compData.metadata && compData.metadata.primary_fiscal_year) || 2025;
+        var fyCur = companies.filter(function(c) { return c.fiscal_year >= primaryFY && (c.total_compensation || 0) > 0; });
+        if (fyCur.length < 5) return;
+        var pays = fyCur.map(function(c) { return c.total_compensation; }).sort(function(a, b) { return a - b; });
+        var medCur = pays[Math.floor(pays.length / 2)];
         var pairs = [];
-        fy25.forEach(function(c) {
+        fyCur.forEach(function(c) {
             if (c._ceoTransition) return;
             var rows = c.executives || [];
-            var r25 = null, r24 = null;
+            var rCur = null, rPrev = null;
+            var prevYear = (c.fiscal_year || primaryFY) - 1;
             for (var i = 0; i < rows.length; i++) {
                 var e = rows[i];
-                if (e.name === c.ceo_name && e.year === 2025 && (e.total || 0) > 0) r25 = e;
-                if (e.name === c.ceo_name && e.year === 2024 && (e.total || 0) > 0) r24 = e;
+                if (e.name === c.ceo_name && e.year === c.fiscal_year && (e.total || 0) > 0) rCur = e;
+                if (e.name === c.ceo_name && e.year === prevYear && (e.total || 0) > 0) rPrev = e;
             }
-            if (!r25 || !r24) return;
+            if (!rCur || !rPrev) return;
+            // Skip stub-scale current-year rows (e.g. SMCI 2025 $442) -- the
+            // DQ tripwire's 7b screen flags these as possible All-Other-Comp
+            // subtables parsed as SCT rows; kept as-filed in the data, but a
+            // -100% "decline" here would be an artifact, not a pay cut. Real
+            // CEO SCT totals are never below $10K.
+            if ((rCur.total || 0) < 10000) return;
             // Exclude former/interim CEOs: "Former" must modify the CEO title
             // itself (e.g. ORCL "Former Chief Executive Officer"), not a prior
             // role (e.g. DIS "Chief Executive Officer; Former Executive Chairman").
-            var _t25 = r25.title || '';
-            if (/interim/i.test(_t25)) return;
-            var _fm = _t25.match(/former([^,;]*)/i);
+            var _tCur = rCur.title || '';
+            if (/interim/i.test(_tCur)) return;
+            var _fm = _tCur.match(/former([^,;]*)/i);
             if (_fm && /chief executive|\bceo\b|president and c/i.test(_fm[1])) return;
-            pairs.push({ ticker: c.ticker, y25: r25.total, y24: r24.total, chg: (r25.total - r24.total) / r24.total });
+            pairs.push({ ticker: c.ticker, yCur: rCur.total, yPrev: rPrev.total, chg: (rCur.total - rPrev.total) / rPrev.total });
         });
-        var yoy = null, medC25 = 0, medC24 = 0;
+        var yoy = null, medCCur = 0, medCPrev = 0;
         if (pairs.length >= 5) {
-            var p25 = pairs.map(function(p) { return p.y25; }).sort(function(a, b) { return a - b; });
-            var p24 = pairs.map(function(p) { return p.y24; }).sort(function(a, b) { return a - b; });
-            medC25 = p25[Math.floor(p25.length / 2)];
-            medC24 = p24[Math.floor(p24.length / 2)];
-            if (medC24 > 0) yoy = (medC25 - medC24) / medC24;
+            var pCur = pairs.map(function(p) { return p.yCur; }).sort(function(a, b) { return a - b; });
+            var pPrev = pairs.map(function(p) { return p.yPrev; }).sort(function(a, b) { return a - b; });
+            medCCur = pCur[Math.floor(pCur.length / 2)];
+            medCPrev = pPrev[Math.floor(pPrev.length / 2)];
+            if (medCPrev > 0) yoy = (medCCur - medCPrev) / medCPrev;
         }
         function pct(x) { return (x >= 0 ? '+' : '') + (x * 100).toFixed(0) + '%'; }
         var gainers = pairs.slice().sort(function(a, b) { return b.chg - a.chg; }).slice(0, 3);
         var decliners = pairs.slice().sort(function(a, b) { return a.chg - b.chg; }).slice(0, 2);
-        var detail = fy25.length + ' of ' + companies.length + ' ' + scopeLabel + ' companies have filed FY2025 proxies (2026 proxy season in progress). ' +
-            'Median FY2025 CEO pay among filers: ' + formatCurrency(med25) + '.';
+        var detail = fyCur.length + ' of ' + companies.length + ' ' + scopeLabel + ' companies have filed latest-proxy filings (FY' + primaryFY + ' primary anchors; ' + (primaryFY + 1) + ' proxy season in progress). ' +
+            'Median CEO pay among filers (latest proxies): ' + formatCurrency(medCur) + '.';
         if (yoy !== null) {
-            detail += ' Same-CEO median ' + (yoy >= 0 ? 'rose' : 'fell') + ' ' + Math.abs(yoy * 100).toFixed(1) + '% vs FY2024 (' +
-                formatCurrency(medC24) + ' to ' + formatCurrency(medC25) + ', n=' + pairs.length + ').';
+            detail += ' Same-CEO median ' + (yoy >= 0 ? 'rose' : 'fell') + ' ' + Math.abs(yoy * 100).toFixed(1) + '% vs prior fiscal year (' +
+                formatCurrency(medCPrev) + ' to ' + formatCurrency(medCCur) + ', n=' + pairs.length + ').';
         }
         if (gainers.length > 0) {
             detail += ' Largest YoY gains: ' + gainers.map(function(g) { return g.ticker + ' (' + pct(g.chg) + ')'; }).join(', ') + '.';
@@ -4218,28 +4229,30 @@ function populateInsights(comp, trends, sectorFilter) {
             detail += ' Largest declines: ' + decliners.map(function(g) { return g.ticker + ' (' + pct(g.chg) + ')'; }).join(', ') + '.';
         }
         detail += ' Single-year swings this large typically reflect mega-grant cycles (sign-on or one-time PSU awards), not run-rate pay.';
-        // Two-bar sparkline: same-cohort median FY2024 vs FY2025
+        // Two-bar sparkline: same-cohort median prior-FY vs latest filing
         var fySpark = '';
         if (yoy !== null) {
-            var _fyMax = Math.max(medC24, medC25) || 1;
+            var _fyMax = Math.max(medCPrev, medCCur) || 1;
             var _fyW = 160, _fyH = 40;
             var _fyBarW = 44;
-            var _fyH24 = (medC24 / _fyMax) * (_fyH - 16);
-            var _fyH25 = (medC25 / _fyMax) * (_fyH - 16);
+            var _fyHPrev = (medCPrev / _fyMax) * (_fyH - 16);
+            var _fyHCur = (medCCur / _fyMax) * (_fyH - 16);
             var _upColor = yoy >= 0 ? 'rgba(6,214,160,0.85)' : 'rgba(239,71,111,0.85)';
-            fySpark = '<div class="insight-spark-wrap" title="Same-cohort median CEO pay: FY2024 vs FY2025"><svg width="' + _fyW + '" height="' + _fyH + '" viewBox="0 0 ' + _fyW + ' ' + _fyH + '" style="display:block;margin-top:6px;">';
-            fySpark += '<rect x="24" y="' + (_fyH - _fyH24 - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyH24.toFixed(1) + '" rx="2" fill="rgba(148,163,184,0.7)"/>';
-            fySpark += '<rect x="92" y="' + (_fyH - _fyH25 - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyH25.toFixed(1) + '" rx="2" fill="' + _upColor + '"/>';
-            fySpark += '<text x="46" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">FY24</text>';
-            fySpark += '<text x="114" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">FY25</text>';
-            fySpark += '<text x="46" y="' + (_fyH - _fyH24 - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medC24) + '</text>';
-            fySpark += '<text x="114" y="' + (_fyH - _fyH25 - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medC25) + '</text>';
+            var _prevShort = 'FY' + String(primaryFY - 1).slice(-2);
+            var _curShort = 'FY' + String(primaryFY).slice(-2);
+            fySpark = '<div class="insight-spark-wrap" title="Same-cohort median CEO pay: prior fiscal year vs latest filing"><svg width="' + _fyW + '" height="' + _fyH + '" viewBox="0 0 ' + _fyW + ' ' + _fyH + '" style="display:block;margin-top:6px;">';
+            fySpark += '<rect x="24" y="' + (_fyH - _fyHPrev - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyHPrev.toFixed(1) + '" rx="2" fill="rgba(148,163,184,0.7)"/>';
+            fySpark += '<rect x="92" y="' + (_fyH - _fyHCur - 12).toFixed(1) + '" width="' + _fyBarW + '" height="' + _fyHCur.toFixed(1) + '" rx="2" fill="' + _upColor + '"/>';
+            fySpark += '<text x="46" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">' + _prevShort + '</text>';
+            fySpark += '<text x="114" y="' + (_fyH - 2) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.5">' + _curShort + '</text>';
+            fySpark += '<text x="46" y="' + (_fyH - _fyHPrev - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medCPrev) + '</text>';
+            fySpark += '<text x="114" y="' + (_fyH - _fyHCur - 14).toFixed(1) + '" text-anchor="middle" fill="currentColor" font-size="7" opacity="0.7">' + formatCompact(medCCur) + '</text>';
             fySpark += '</svg></div>';
         }
         insights.push({
             icon: CARD_ICONS.calendar,
-            label: 'FY2025 Early Filers',
-            value: yoy !== null ? ((yoy >= 0 ? '+' : '') + (yoy * 100).toFixed(1) + '% YoY') : (formatCompact(med25) + ' median'),
+            label: 'FY' + primaryFY + ' Early Filers',
+            value: yoy !== null ? ((yoy >= 0 ? '+' : '') + (yoy * 100).toFixed(1) + '% YoY') : (formatCompact(medCur) + ' median'),
             detail: detail,
             sparkHtml: fySpark,
             _tickers: gainers.map(function(g) { return g.ticker; })
