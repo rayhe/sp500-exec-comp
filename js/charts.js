@@ -2666,7 +2666,24 @@ function drawCompositionChart(trends) {
     }
 
     var sp = compComp.s_and_p_500;
-    var detail = compComp.s_and_p_500_fy2024_detail;
+    // The granular detail field is year-keyed (s_and_p_500_fy<YYYY>_detail);
+    // resolve the latest edition live via the shared app.js helper (same
+    // stale-year class as the Composition Mix Detail trend card). The chart
+    // degrades to the 4-segment approximation when no detail edition exists.
+    var compDetailKey = (typeof latestCompositionDetailKey === 'function')
+        ? latestCompositionDetailKey(compComp) : null;
+    var detail = compDetailKey ? compComp[compDetailKey] : null;
+
+    // Live-label the section description from the resolved detail year
+    // (textContent-only; the static HTML carries today's copy as the no-JS
+    // fallback).
+    if (compDetailKey) {
+        var compDetailYear = parseInt(compDetailKey.replace(/^s_and_p_500_fy(\d{4})_detail$/, '$1'), 10);
+        var compDesc = document.getElementById('composition-desc');
+        if (compDesc) {
+            compDesc.textContent = 'Granular breakdown of median CEO pay components with year-over-year changes — S&P 500, FY' + compDetailYear;
+        }
+    }
 
     // Build segments from granular detail data when available
     var segments;

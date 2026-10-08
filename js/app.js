@@ -4518,6 +4518,20 @@ function populateInsights(comp, trends, sectorFilter) {
     });
 }
 
+// Compensation-composition detail keys are year-keyed: s_and_p_500_fy<YYYY>_detail.
+// Scan and return the latest-year key so a new study edition updates the
+// Composition Mix Detail card and the composition donut chart without a code
+// change - the same stale-year class as the Security Perks (2026-10-08 02:06)
+// and Historic Peak (2026-10-08 02:08) fixes. Global: charts.js shares it.
+function latestCompositionDetailKey(compComp) {
+    if (!compComp) return null;
+    var years = Object.keys(compComp).map(function (k) {
+        var m = /^s_and_p_500_fy(\d{4})_detail$/.exec(k);
+        return m ? parseInt(m[1], 10) : null;
+    }).filter(function (y) { return y !== null; }).sort(function (a, b) { return b - a; });
+    return years.length ? 's_and_p_500_fy' + years[0] + '_detail' : null;
+}
+
 function populateTrends(trends, companies) {
     var grid = document.getElementById('trends-grid');
     if (!grid || !trends) return;
@@ -4638,16 +4652,25 @@ function populateTrends(trends, companies) {
         });
     }
 
-    // 5. Detailed Composition Breakdown
-    if (trends.compensation_composition && trends.compensation_composition.s_and_p_500_fy2024_detail) {
-        var cd = trends.compensation_composition.s_and_p_500_fy2024_detail;
+    // 5. Detailed Composition Breakdown -- the detail field is year-keyed
+    // (s_and_p_500_fy<YYYY>_detail); the latest year resolves live via
+    // latestCompositionDetailKey() so new study editions surface without a
+    // code change (same stale-year class as the Security Perks / Historic
+    // Peak fixes).
+    var compDetailKey = latestCompositionDetailKey(trends.compensation_composition);
+    var compDetailYear = compDetailKey
+        ? parseInt(compDetailKey.replace(/^s_and_p_500_fy(\d{4})_detail$/, '$1'), 10)
+        : null;
+    if (compDetailKey) {
+        var cd = trends.compensation_composition[compDetailKey];
         var detail5 = 'Performance stock: ' + formatCurrency(cd.median_performance_stock_awards) + ' (' + cd.perf_stock_yoy_change + ' YoY). ';
         detail5 += 'Restricted stock: ' + formatCurrency(cd.median_restricted_stock) + ' (' + cd.restricted_stock_yoy_change + '). ';
         detail5 += 'Discretionary bonus: ' + formatCurrency(cd.median_discretionary_bonus) + ' (' + cd.bonus_yoy_change + '). ';
         detail5 += 'NEIP payout: ' + formatCurrency(cd.median_neip_payout) + ' (' + cd.neip_yoy_change + ').';
         cards.push({
             icon: CARD_ICONS.gem,
-            label: 'Compensation Mix Detail',
+            label: 'Compensation Mix Detail (FY' + compDetailYear + ')',
+            _compMixDetail: true,
             value: 'Bonus surging +' + cd.bonus_yoy_change,
             detail: detail5,
             source: cd.source || 'Harvard Law Forum'
@@ -4753,7 +4776,7 @@ function populateTrends(trends, companies) {
         } else if (card.label === '5-Year Growth Gap') {
             card.action = function() { scrollToSection('trend-chart-panel'); };
             card.actionHint = 'View trend chart';
-        } else if (card.label === 'Compensation Mix Detail') {
+        } else if (card._compMixDetail) {
             card.action = function() { scrollToSection('composition-section'); };
             card.actionHint = 'View composition chart';
         } else if (card._historicTopTicker) {
