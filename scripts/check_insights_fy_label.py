@@ -10,14 +10,11 @@ compData.metadata.primary_fiscal_year, filters c.fiscal_year >= primaryFY,
 matches YoY baselines per-company (c.fiscal_year - 1), and labels the card
 'FY<primaryFY> Early Filers' with 'prior fiscal year' YoY copy.
 
-This guard:
-  S1: primaryFY is derived from compData.metadata.primary_fiscal_year in
-      the early-filers block (with a 2025 fallback).
-  S2: no hard-coded 'fiscal_year === 2025' remains in js/app.js.
-  S3: no hard-coded 'FY2025 Early Filers' label remains in js/app.js.
-  S4: the early-filers filter uses 'c.fiscal_year >= primaryFY'.
-  S5: the YoY baseline row match uses the per-company prior year
-      ('e.year === prevYear' with 'prevYear = (c.fiscal_year || primaryFY) - 1').
+This guard covers two live-year insights:
+  S1-S6: the early-filers card (see above).
+  S7: the Security Perks card derives its years from the year-keyed
+      trends.json fields, so new study editions update the card with no
+      code change.
 
 Usage:
   scripts/check_insights_fy_label.py              # static checks
@@ -83,6 +80,14 @@ def static_checks():
     s6 = "if ((rCur.total || 0) < 10000) return;" in src
     check("S6 stub-scale current-year rows (<$10K) excluded from YoY pairs",
           s6, "" if s6 else "stub filter missing")
+
+    # S7: Security Perks insight derives its years from the year-keyed
+    # trends.json fields (no hard-coded _2025/_2024 field access).
+    s7 = ("s_and_p_500_ceos_with_security_2025" not in src
+          and "s_and_p_500_ceos_with_security_2024" not in src
+          and "/^s_and_p_500_ceos_with_security_(\\d{4})$/" in src)
+    check("S7 Security Perks years derived from year-keyed fields, not hard-coded",
+          s7, "" if s7 else "hard-coded security-perks year field remains")
 
 
 def main():

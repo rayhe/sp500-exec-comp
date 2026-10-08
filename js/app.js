@@ -4561,18 +4561,28 @@ function populateTrends(trends, companies) {
         }
     }
 
-    // 3. Security Perks
+    // 3. Security Perks -- years derived from the latest year-keyed fields in
+    // trends.json, so the card tracks new study editions without code changes.
     if (trends.security_perks_trend && trends.security_perks_trend.data) {
         var sec = trends.security_perks_trend.data;
-        var detail3 = sec.s_and_p_500_ceos_with_security_2025 + ' of S&P 500 CEOs receive personal security perks in 2025, up from ' + sec.s_and_p_500_ceos_with_security_2024 + ' in 2024.';
-        if (sec.note) detail3 += ' ' + sec.note + '.';
-        cards.push({
-            icon: CARD_ICONS.shield,
-            label: 'Security Perks Surge',
-            value: sec.s_and_p_500_ceos_with_security_2025 + ' of CEOs (2025)',
-            detail: detail3,
-            source: 'Harvard Law Forum / ISS / Equilar'
-        });
+        var secYears = Object.keys(sec).map(function(k) {
+            var m2 = /^s_and_p_500_ceos_with_security_(\d{4})$/.exec(k);
+            return m2 ? parseInt(m2[1], 10) : null;
+        }).filter(function(y) { return y !== null; }).sort(function(a, b) { return b - a; });
+        if (secYears.length >= 2) {
+            var secCur = secYears[0], secPrev = secYears[1];
+            var secCurV = sec['s_and_p_500_ceos_with_security_' + secCur];
+            var secPrevV = sec['s_and_p_500_ceos_with_security_' + secPrev];
+            var detail3 = secCurV + ' of S&P 500 CEOs receive personal security perks in ' + secCur + ', up from ' + secPrevV + ' in ' + secPrev + '.';
+            if (sec.note) detail3 += ' ' + sec.note + '.';
+            cards.push({
+                icon: CARD_ICONS.shield,
+                label: 'Security Perks Surge',
+                value: secCurV + ' of CEOs (' + secCur + ')',
+                detail: detail3,
+                source: 'Harvard Law Forum / ISS / Equilar'
+            });
+        }
     }
 
     // 4. Five-Year Growth: S&P 500 (site median series) with Russell 3000 context
