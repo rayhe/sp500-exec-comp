@@ -30,7 +30,12 @@ auto-discovery skips it (it is a runner, not a static guard).
 History: added 2026-10-06 11:30 PT run per the queued candidate from the
 2026-10-06 10:25 PT iteration ("consider a periodic full guard re-run as a
 drift canary"). Staleness check added 2026-10-06 14:00 PT run (queued
-candidate #5 from the 11:40 PT iteration).
+candidate #5 from the 11:40 PT iteration). Guard list auto-discovered
+2026-10-08 03:30 PT run: the hardcoded 5-guard list had silently fallen
+behind the 21-guard suite (every FY-label, coverage-desc, and vocab-bridge
+guard added since Oct 6 never got a scheduled full render re-run), so the
+canary now discovers scripts/check_*.py itself, same naming contract as
+the pre-commit hook.
 """
 import datetime
 import json
@@ -50,14 +55,35 @@ DEFAULT_STATE = os.path.expanduser(
 # tells a scheduled run it is time for a fresh full pass.
 STALE_HOURS = 48
 
-# (name, script filename, timeout seconds)
-GUARDS = [
-    ("metadata-gate", "check_metadata_consistency.py", 120),
-    ("methodology-buttons", "check_methodology_buttons.py", 300),
-    ("scrollspy-nav", "check_scrollspy_nav.py", 300),
-    ("minimap-toggle", "check_minimap_toggle.py", 300),
-    ("scroll-hint", "check_scroll_hint.py", 300),
-]
+# Auto-discovery contract (mirrors the pre-commit hook's): every
+# scripts/check_*.py guard runs in FULL (no-flag) mode. The pre-commit hook
+# only runs the --static-only halves, so the render halves (headless
+# Chromium) otherwise run ad hoc during iteration runs only -- this canary
+# is the one scheduled full re-run, and a hardcoded list silently falls
+# behind as new guards are added (the 2026-10-08 finding: 16 of 21 guards
+# were never re-run by the canary). Adding a new guard needs no canary edit.
+#
+# Per-guard timeout overrides in seconds; everything else gets the default.
+# check_metadata_consistency.py has no --static-only split (its no-flag
+# invocation IS the full data-truthfulness check), so it is included like
+# any other guard.
+DEFAULT_GUARD_TIMEOUT = 300
+GUARD_TIMEOUT_OVERRIDES = {
+    # "check_<thing>.py": 600,
+}
+
+
+def discover_guards():
+    scripts = sorted(
+        f for f in os.listdir(HERE)
+        if f.startswith("check_") and f.endswith(".py")
+        and os.path.isfile(os.path.join(HERE, f))
+    )
+    return [
+        (os.path.splitext(s)[0], s,
+         GUARD_TIMEOUT_OVERRIDES.get(s, DEFAULT_GUARD_TIMEOUT))
+        for s in scripts
+    ]
 
 
 def run_guard(name, script, timeout):
@@ -148,7 +174,7 @@ def main(argv):
         commit = "unknown"
 
     results = {}
-    for name, script, timeout in GUARDS:
+    for name, script, timeout in discover_guards():
         print("canary: running %s ..." % name, flush=True)
         results[name] = run_guard(name, script, timeout)
         r = results[name]
