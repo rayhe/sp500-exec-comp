@@ -14077,6 +14077,30 @@ function setupDualSparklineTooltips() {
         // Current sort state for sector analytics table
         var saSort = { key: 'median', dir: 'desc' };
 
+        // Trend window derived live from metadata.primary_fiscal_year so the
+        // next anchor-year roll moves the whole trend column (sparkline,
+        // header, description, tooltip) without code changes. Static HTML
+        // keeps today's live copy ("FY2023-2025" / "Trend FY23-25") as the
+        // no-JS fallback. All user-visible labels update via textContent /
+        // title assignment below; no-op without data, so a failed or partial
+        // metadata load leaves the fallback untouched.
+        var saFy = (typeof compData !== 'undefined' && compData && compData.metadata && typeof compData.metadata.primary_fiscal_year === 'number')
+            ? compData.metadata.primary_fiscal_year : 2025;
+        var saTrendYears = [saFy - 2, saFy - 1, saFy];
+
+        function renderSectorAnalyticsLiveLabels() {
+            var desc = document.getElementById('sector-analytics-desc');
+            if (desc) {
+                desc.textContent = 'Cross-sector comparison of CEO compensation metrics — median, mean, equity mix, pay ratios, governance, erosion risk, top earner per sector, and median pay trajectory (FY' + saTrendYears[0] + '–' + saTrendYears[2] + '). Click a row to filter the main table.';
+            }
+            var th = document.getElementById('sa-trend-th');
+            if (th) {
+                th.title = 'Sector median CEO total compensation, FY' + saTrendYears[0] + ' to FY' + saTrendYears[2] + ', computed live from DEF 14A exec rows. Anchor-year values use verified company totals; other years match the CEO by SCT title (transition years take the higher-paid CEO row). Sorts by ' + saTrendYears[0] + ' to ' + saTrendYears[2] + ' change.';
+                th.textContent = 'Trend FY' + String(saTrendYears[0]).slice(-2) + '-' + String(saTrendYears[2]).slice(-2);
+            }
+        }
+        renderSectorAnalyticsLiveLabels();
+
         // CEO total comp for one company in one fiscal year. Anchor years use the
         // verified company-level total; other years match the CEO by SCT title
         // (transition years take the higher-paid CEO row).
@@ -14090,7 +14114,7 @@ function setupDualSparklineTooltips() {
             return best > 0 ? best : null;
         }
 
-        // Inline 3-point sparkline (FY2023-2025 sector medians), per-sector min-max
+        // Inline 3-point sparkline (live-window sector medians), per-sector min-max
         // normalized so the shape reads at a glance; magnitude is in the % label.
         function saSparkline(vals) {
             var W = 76, H = 26, P = 4;
@@ -14165,9 +14189,9 @@ function setupDualSparklineTooltips() {
             var gerHighRiskCount = comps.filter(function(c) { return c._gerScore != null && c._gerScore >= 60; }).length;
             var gerRiskTier = medianGer != null ? (medianGer >= 75 ? 'Critical' : medianGer >= 60 ? 'High' : medianGer >= 45 ? 'Elevated' : medianGer >= 30 ? 'Moderate' : 'Low') : null;
 
-            // Median CEO pay trajectory FY2023-2025 (live from exec rows, same
-            // median convention as the other sector columns)
-            var saTrendYears = [2023, 2024, 2025];
+            // Median CEO pay trajectory (live from exec rows, same
+            // median convention as the other sector columns; years are the
+            // live saTrendYears window derived from metadata at IIFE top)
             var trendMeds = saTrendYears.map(function(y) {
                 var tvals = comps.map(function(c) { return saCeoPayForYear(c, y); })
                     .filter(function(v) { return v != null && v > 0; })
@@ -14232,8 +14256,8 @@ function setupDualSparklineTooltips() {
                 var pct = r.trend2yr;
                 var pctTxt = pct == null ? '' : (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
                 var pctCls = pct == null ? '' : (Math.abs(pct) < 0.05 ? 'sa-trend-flat' : (pct > 0 ? 'sa-trend-up' : 'sa-trend-down'));
-                var yrTxt = '2023: ' + fmt(meds[0]) + ' · 2024: ' + fmt(meds[1]) + ' · 2025: ' + fmt(meds[2]);
-                var tip = yrTxt + ' (sector median CEO pay, FY2023-2025' + (pct == null ? '' : '; ' + pctTxt + ' vs 2023') + ')';
+                var yrTxt = saTrendYears.map(function(y, i) { return y + ': ' + fmt(meds[i]); }).join(' · ');
+                var tip = yrTxt + ' (sector median CEO pay, FY' + saTrendYears[0] + '–' + saTrendYears[2] + (pct == null ? '' : '; ' + pctTxt + ' vs ' + saTrendYears[0]) + ')';
                 return '<span class="sa-trend-wrap" title="' + tip + '">' + saSparkline(meds) +
                     (pctTxt ? '<span class="sa-trend-pct ' + pctCls + '">' + pctTxt + '</span>' : '') + '</span>';
             }
