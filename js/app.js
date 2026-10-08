@@ -1386,6 +1386,7 @@ async function loadData() {
         pvpCountEl.textContent = pvpN ? '(' + pvpN + ')' : '';
     }
     renderFooterVintage(comp);
+    renderHeaderSubtitle(comp);
     renderHeaderCompanyCount(comp);
     renderSectorCompDesc(comp);
     renderRoleCompDesc(comp);
@@ -1439,6 +1440,26 @@ function renderFooterVintage(comp) {
         parts.push(countStr);
     }
     if (parts.length) el.textContent = 'Built with D3.js · ' + parts.join(' · ');
+}
+
+// === Header Subtitle Fiscal Year ===
+// The header subtitle hard-coded "FY 2024-2025" and drifted stale when the
+// 2026-10-06 anchor promotion moved the primary fiscal year from FY2024 to
+// FY2025 (425 companies to FY2025, 22 non-calendar filers to FY2026) - the
+// same stale-year class the median-pay FY2025 sublabel (2026-10-07 10:00)
+// and the top-10 comp desc (2026-10-07 19:40) fixes addressed. Render the
+// year live from metadata.primary_fiscal_year, matching the flagship metric
+// cards' "FY<year>" vintage convention. The static HTML keeps today's live
+// copy ("FY2025") as the no-JS fallback. textContent-only; no-op without
+// data, so a failed or partial metadata load leaves the fallback untouched.
+function renderHeaderSubtitle(comp) {
+    var el = document.getElementById('header-subtitle');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var fy = md.primary_fiscal_year;
+    if (typeof fy === 'number' && fy > 0) {
+        el.textContent = 'Executive compensation data from SEC DEF 14A proxy statements, FY' + fy;
+    }
 }
 
 // === Header Company-Count Badge ===
