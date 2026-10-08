@@ -89,6 +89,19 @@ def static_checks():
     check("S7 Security Perks years derived from year-keyed fields, not hard-coded",
           s7, "" if s7 else "hard-coded security-perks year field remains")
 
+    # S8: Historic Peak card derives its year from the year-keyed
+    # historical_context fields; no hard-coded FY2025 label/field access.
+    # Also asserts the card's click-through uses its own top ticker
+    # (previously hard-coded to the FY2024 NYT top).
+    s8 = ("'Historic Peak (FY2025)'" not in src
+          and "highest_paid_ceo_fy2025_equilar_ap" not in src
+          and "five_ceos_over_100m_fy2025" not in src
+          and "/^highest_paid_ceo_fy(\\d{4})_/" in src
+          and "_historicTopTicker" in src
+          and "card._historicTopTicker" in src)
+    check("S8 Historic Peak year derived from year-keyed fields; click-through uses card's own top ticker",
+          s8, "" if s8 else "hard-coded historic-peak year remains")
+
 
 def main():
     static_only = "--static-only" in sys.argv

@@ -4617,25 +4617,44 @@ function populateTrends(trends, companies) {
         });
     }
 
-    // 6. Historic Peak
+    // 6. Historic Peak -- year derived from the latest year-keyed fields in
+    // trends.historical_context, so new study editions update without code
+    // changes. Prefers the full-study key (equilar_nyt / equilar_ap) over
+    // early-look keys for the headline top earner.
     if (trends.historical_context) {
         var hc = trends.historical_context;
-        var detail6 = '';
-        if (hc.five_ceos_over_100m_fy2025) {
-            detail6 += '5 CEOs exceeded $100M in FY2025 — the highest concentration of nine-figure packages ever recorded. ';
+        var hcYears = Object.keys(hc).map(function(k) {
+            var m2 = /^highest_paid_ceo_fy(\d{4})_/.exec(k);
+            return m2 ? parseInt(m2[1], 10) : null;
+        }).filter(function(y) { return y !== null; }).sort(function(a, b) { return b - a; });
+        var hcYear = hcYears.length ? hcYears[0] : null;
+        var hcTop = null;
+        if (hcYear) {
+            var topKeys = Object.keys(hc).filter(function(k) {
+                return new RegExp('^highest_paid_ceo_fy' + hcYear + '_').test(k);
+            });
+            topKeys.sort(function(a, b) {
+                function fullStudy(k) { return /_(nyt|ap)$/.test(k) ? 0 : 1; }
+                return fullStudy(a) - fullStudy(b);
+            });
+            hcTop = topKeys.length ? hc[topKeys[0]] : null;
         }
-        if (hc.highest_paid_ceo_fy2025_equilar_ap) {
-            var top = hc.highest_paid_ceo_fy2025_equilar_ap;
-            detail6 += 'Led by ' + top.name + ' (' + top.ticker + ') at ' + formatCurrency(top.total_compensation) + '. ';
-            if (top.note) detail6 += top.note + '.';
+        var detail6 = '';
+        if (hcYear && hc['five_ceos_over_100m_fy' + hcYear]) {
+            detail6 += '5 CEOs exceeded $100M in FY' + hcYear + ' — the highest concentration of nine-figure packages ever recorded. ';
+        }
+        if (hcTop) {
+            detail6 += 'Led by ' + hcTop.name + ' (' + hcTop.ticker + ') at ' + formatCurrency(hcTop.total_compensation) + '. ';
+            if (hcTop.note) detail6 += hcTop.note + '.';
         }
         if (detail6) {
             cards.push({
                 icon: CARD_ICONS.award,
-                label: 'Historic Peak (FY2025)',
+                label: 'Historic Peak (FY' + hcYear + ')',
                 value: '5 CEOs over $100M',
                 detail: detail6,
-                source: 'Equilar/AP 2026'
+                source: 'Equilar/AP ' + (hcYear + 1),
+                _historicTopTicker: hcTop && hcTop.ticker
             });
         }
     }
@@ -4700,13 +4719,12 @@ function populateTrends(trends, companies) {
         } else if (card.label === 'Compensation Mix Detail') {
             card.action = function() { scrollToSection('composition-section'); };
             card.actionHint = 'View composition chart';
-        } else if (card.label === 'Historic Peak (FY2025)') {
-            var hc = trends.historical_context;
-            if (hc && hc.highest_paid_ceo_fy2024_equilar_nyt && hc.highest_paid_ceo_fy2024_equilar_nyt.ticker) {
-                var peakTicker = hc.highest_paid_ceo_fy2024_equilar_nyt.ticker;
-                card.action = function() { if (window.findCompanyInTable) window.findCompanyInTable(peakTicker); };
-                card.actionHint = 'View ' + peakTicker + ' details';
-            }
+        } else if (card._historicTopTicker) {
+            // Links to the card's own headline top earner (was hard-coded to
+            // the FY2024 NYT top even when the card showed FY2025).
+            var peakTicker = card._historicTopTicker;
+            card.action = function() { if (window.findCompanyInTable) window.findCompanyInTable(peakTicker); };
+            card.actionHint = 'View ' + peakTicker + ' details';
         }
     });
 
