@@ -1663,6 +1663,34 @@ function populateMetrics(comp, trends) {
             svg += '<circle cx="' + lastXY[0] + '" cy="' + lastXY[1] + '" r="2.8" fill="rgba(0,180,216,1)"/>';
             return svg + '</svg>';
         }
+        // Metric-trend sparkline year ranges (2026-10-08 07:30 PT): the
+        // aria-label/title ranges ("2020-2025", "2018 then 2023-2025",
+        // "2023-2025", "indexed to 100 at 2020") were hard-coded
+        // run-authored strings while the series itself is year-keyed - a
+        // trends.json data extension would silently stale them (same
+        // stale-year class as the header-subtitle, insights FY labels,
+        // median-pay FY label, Early Filers, Security Perks, Historic
+        // Peak, and sector-trend-window fixes). The label template now
+        // carries a {range} placeholder (and {first} for the indexed
+        // growth path), filled live from the plotted years. Contiguous
+        // years collapse to "2020-2025"; gapped series keep the
+        // "2018 then 2023-2025" form. Today's rendered labels are
+        // byte-identical to the previous hard-coded ones.
+        function fmtYearRange(years) {
+            var nums = years.filter(function(y) { return isFinite(y); })
+                .map(function(y) { return Math.round(y); })
+                .sort(function(a, b) { return a - b; });
+            var runs = [];
+            nums.forEach(function(y) {
+                var r = runs[runs.length - 1];
+                if (r && y === r[r.length - 1]) return; // defensive dupe skip
+                if (r && y === r[r.length - 1] + 1) r.push(y);
+                else runs.push([y]);
+            });
+            return runs.map(function(r) {
+                return r.length > 1 ? (r[0] + '-' + r[r.length - 1]) : String(r[0]);
+            }).join(' then ');
+        }
         function addTrend(deltaElId, series, yKey, sparkLabel, badgeLabel, extraClass) {
             var deltaEl = document.getElementById(deltaElId);
             if (!deltaEl || !Array.isArray(series) || series.length < 2) return;
@@ -1673,13 +1701,22 @@ function populateMetrics(comp, trends) {
                 }
             });
             if (ys.length < 2) return;
+            // Live year range for the sparkline label: the plotted years,
+            // not a hard-coded string (see fmtYearRange above). The years
+            // are numbers round-tripped through parseFloat/Number, and the
+            // templates are run-authored, so nothing raw from trends.json
+            // reaches innerHTML/attributes here.
+            var sortedXs = xs.slice().sort(function(a, b) { return a - b; });
+            var sparkLabelLive = sparkLabel
+                .replace('{range}', fmtYearRange(sortedXs))
+                .replace('{first}', String(sortedXs[0]));
             // x is scaled by actual year (the pay-ratio series skips 2019-2022),
             // so the line does not imply a steady yearly cadence where none exists.
             var raw = series[series.length - 1].yoy_change;
             var n = raw == null ? NaN : parseFloat(String(raw).replace('%', ''));
             var wrap = document.createElement('div');
             wrap.className = 'metric-trend' + (extraClass ? ' ' + extraClass : '');
-            wrap.title = sparkLabel;
+            wrap.title = sparkLabelLive;
             var badge = '';
             if (!isNaN(n)) {
                 var cls = n > 0 ? ' positive' : (n < 0 ? ' negative' : '');
@@ -1689,20 +1726,20 @@ function populateMetrics(comp, trends) {
             // All interpolated values are numbers (round-tripped through
             // parseFloat) or run-authored strings; nothing raw from trends.json
             // reaches this innerHTML.
-            wrap.innerHTML = sparkSvg(xs, ys, sparkLabel) + badge;
+            wrap.innerHTML = sparkSvg(xs, ys, sparkLabelLive) + badge;
             deltaEl.parentNode.insertBefore(wrap, deltaEl.nextSibling);
         }
         addTrend('metric-median-delta',
             trends.median_ceo_pay_by_year && trends.median_ceo_pay_by_year.data, 'median_pay',
-            'S&P 500 median CEO pay trend, 2020-2025 (Equilar/AP)',
+            'S&P 500 median CEO pay trend, {range} (Equilar/AP)',
             'Year-over-year change in S&P 500 median CEO pay');
         addTrend('metric-ratio-sub',
             trends.pay_ratio_trend && trends.pay_ratio_trend.data, 'median_ratio',
-            'S&P 500 median pay ratio trend, 2018 then 2023-2025 (Harvard Law Forum / Equilar)',
+            'S&P 500 median pay ratio trend, {range} (Harvard Law Forum / Equilar)',
             'Year-over-year change in S&P 500 median pay ratio');
         addTrend('metric-worker-delta',
             trends.median_worker_pay_by_year && trends.median_worker_pay_by_year.data, 'median_worker_pay',
-            'S&P 500 median worker pay trend, 2023-2025 (Conference Board / Equilar)',
+            'S&P 500 median worker pay trend, {range} (Conference Board / Equilar)',
             'Year-over-year change in S&P 500 median worker pay');
         // 5-Year Growth card (2026-09-26 14:00 PT): the level series above
         // already feeds the Median CEO Pay card, so this card gets the growth
@@ -1721,7 +1758,7 @@ function populateMetrics(comp, trends) {
                 return { year: d.year, idx: 100 * (+d.median_pay) / base, yoy_change: d.yoy_change };
             });
             addTrend('metric-5yr-sub', series, 'idx',
-                'S&P 500 median CEO pay indexed to 100 at 2020 (Equilar/AP)',
+                'S&P 500 median CEO pay indexed to 100 at {first} (Equilar/AP)',
                 'Year-over-year change in S&P 500 median CEO pay',
                 'metric-trend-pinned');
         })();
