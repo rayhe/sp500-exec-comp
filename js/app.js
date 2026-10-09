@@ -17440,6 +17440,14 @@ function setupDualSparklineTooltips() {
         // Don't fire with Ctrl/Cmd/Alt modifiers (except for our specific combos)
         if (e.ctrlKey || e.metaKey || e.altKey) return;
 
+        // Keyboard-pilot contract (2026-10-09): a focused surface that
+        // preventDefault()ed the key has handled it (network canvas node
+        // nav, treemap/scatter/correlation arrow keys). Firing the global
+        // shortcut on top would double-apply the key: ArrowRight moved the
+        // network node AND flipped the table page, clobbering the node's
+        // aria-live announcement with the page-change one.
+        if (e.defaultPrevented) return;
+
         switch (e.key) {
             case '/':
                 // Focus table search

@@ -3267,7 +3267,11 @@ function initNetwork(peerData) {
             if (searchInput && document.activeElement === canvas) {
                 // Let typing go to search — focus search and inject char
                 searchInput.focus();
-                // Don't preventDefault, let the char appear in search
+                // Don't preventDefault, let the char appear in search — but
+                // stop the key reaching the document-level single-letter
+                // shortcuts ('t' would otherwise also scroll to the table
+                // section, 'n' re-scroll to network, etc.).
+                ev.stopPropagation();
             }
         }
     });
