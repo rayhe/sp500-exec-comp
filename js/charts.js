@@ -8063,7 +8063,17 @@ function drawQuartileComposition(companies) {
             var segW = x(pct);
             var segG = svg.append('g')
                 .attr('class', 'quartile-seg')
-                .style('cursor', 'pointer');
+                .style('cursor', 'pointer')
+                // Keyboard operability (2026-10-08): these segments filter
+                // the table on click, so expose them as buttons for keyboard
+                // users too (sector-bar pilot convention). Attribute-bound
+                // strings only (set via d3 .attr); data never reaches HTML
+                // parsing.
+                .attr('tabindex', '0')
+                .attr('role', 'button')
+                .attr('aria-label', 'Filter table to ' + q.label + ' (' + q.desc + ') quartile \u2014 ' +
+                    componentLabels[key] + ': ' + pct.toFixed(1) + '% of average pay, avg value ' +
+                    fmtCurr(q.avgTotal * pct / 100));
 
             segG.append('rect')
                 .attr('x', cumX)
@@ -8127,10 +8137,11 @@ function drawQuartileComposition(companies) {
                 }
             }
 
-            // Tooltip — with S&P 500 comparison when sector active
+            // Tooltip — with S&P 500 comparison when sector active.
+            // segTooltipHtml is shared by the mouseover and keyboard-focus
+            // paths so both get byte-identical tooltips (donut-pilot pattern).
             (function(segKey, segPct, quartileData, segCumX, segSegW, overallQ) {
-                segG.on('mouseover', function(event) {
-                    d3.select(this).select('rect').attr('opacity', 1);
+                var segTooltipHtml = function() {
                     var avgVal = quartileData.avgTotal * segPct / 100;
                     var html = '<div class="ct-title">' + componentLabels[segKey] + '</div>' +
                         '<div class="ct-row"><span class="ct-label">' + (sector || 'S&P 500') + ' Avg Share</span><span class="ct-val">' + segPct.toFixed(1) + '%</span></div>' +
@@ -8145,18 +8156,33 @@ function drawQuartileComposition(companies) {
                             (dv > 0 ? '+' : '') + dv.toFixed(1) + 'pp</span></div>';
                     }
                     html += '<div class="ct-row ct-sub"><span class="ct-label">' + quartileData.label + ' (' + quartileData.desc + ') \u2014 ' + quartileData.rows.length + ' CEOs</span></div>';
-                    showChartTooltip(event, html);
+                    return html;
+                };
+                segG.on('mouseover', function(event) {
+                    d3.select(this).select('rect').attr('opacity', 1);
+                    showChartTooltip(event, segTooltipHtml());
                 })
                 .on('mousemove', function(event) { positionChartTooltip(event); })
                 .on('mouseout', function() {
                     d3.select(this).select('rect').attr('opacity', 0.85);
                     hideChartTooltip();
+                })
+                .on('focus', function() {
+                    // Keyboard parity: same tooltip, anchored to the segment.
+                    d3.select(this).select('rect').attr('opacity', 1);
+                    var r = this.getBoundingClientRect();
+                    showChartTooltip({ clientX: r.left + r.width / 2, clientY: r.top }, segTooltipHtml());
+                })
+                .on('blur', function() {
+                    d3.select(this).select('rect').attr('opacity', 0.85);
+                    hideChartTooltip();
                 });
             })(key, pct, q, cumX, segW, oq);
 
-            // Click to filter table to this quartile range
+            // Click to filter table to this quartile range; Enter/Space on the
+            // keyboard-focusable segment fires the same action.
             (function(quartileData) {
-                segG.on('click', function() {
+                var filterAction = function() {
                     if (window.filterByDistribution) {
                         window.filterByDistribution(
                             sector || null,
@@ -8165,7 +8191,14 @@ function drawQuartileComposition(companies) {
                             quartileData.label + ' (' + quartileData.desc + ')'
                         );
                     }
-                });
+                };
+                segG.on('click', filterAction)
+                    .on('keydown', function(event) {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            filterAction();
+                        }
+                    });
             })(q);
 
             cumX += segW;
@@ -8811,7 +8844,16 @@ function drawGovQuartileComp(companies) {
             var segW = x(pct);
 
             var segG = g.append('g')
-                .style('cursor', 'pointer');
+                .attr('class', 'gov-quartile-seg')
+                .style('cursor', 'pointer')
+                // Keyboard operability (2026-10-08): these segments filter
+                // the table by governance tier on click, so expose them as
+                // buttons for keyboard users too (sector-bar pilot convention).
+                .attr('tabindex', '0')
+                .attr('role', 'button')
+                .attr('aria-label', 'Filter table to governance tier ' + q.label + ' (' + q.desc + ') \u2014 ' +
+                    componentLabels[key] + ': ' + pct.toFixed(1) + '% of average pay, avg value ' +
+                    fmtCurr(q.avgTotal * pct / 100));
 
             segG.append('rect')
                 .attr('x', cumX)
@@ -8848,10 +8890,11 @@ function drawGovQuartileComp(companies) {
                     .text(Math.round(pct) + '%');
             }
 
-            // Tooltip
+            // Tooltip. segTooltipHtml is shared by the mouseover and
+            // keyboard-focus paths so both get byte-identical tooltips
+            // (donut-pilot pattern).
             (function(segKey, segPct, quartileData, segCumX, segSegW) {
-                segG.on('mouseover', function(event) {
-                    d3.select(this).select('rect').attr('opacity', 1);
+                var segTooltipHtml = function() {
                     var avgVal = quartileData.avgTotal * segPct / 100;
                     // Compare to overall S&P 500 average for this component
                     var overallPct = 0;
@@ -8872,23 +8915,48 @@ function drawGovQuartileComp(companies) {
                         '<div class="ct-row"><span class="ct-label">vs S&P 500</span><span class="ct-val" style="color:' + deltaColor + '">' +
                         (delta > 0 ? '+' : '') + delta.toFixed(1) + 'pp</span></div>' +
                         '<div class="ct-row ct-sub"><span class="ct-label">Gov Score ' + quartileData.govMin + '\u2013' + quartileData.govMax + ' | ' + quartileData.rows.length + ' companies</span></div>';
-                    showChartTooltip(event, html);
+                    return html;
+                };
+                segG.on('mouseover', function(event) {
+                    d3.select(this).select('rect').attr('opacity', 1);
+                    showChartTooltip(event, segTooltipHtml());
                 })
                 .on('mousemove', function(event) { positionChartTooltip(event); })
                 .on('mouseout', function() {
                     d3.select(this).select('rect').attr('opacity', 0.85);
                     hideChartTooltip();
+                })
+                .on('focus', function() {
+                    // Keyboard parity: same tooltip, anchored to the segment.
+                    d3.select(this).select('rect').attr('opacity', 1);
+                    var r = this.getBoundingClientRect();
+                    showChartTooltip({ clientX: r.left + r.width / 2, clientY: r.top }, segTooltipHtml());
+                })
+                .on('blur', function() {
+                    d3.select(this).select('rect').attr('opacity', 0.85);
+                    hideChartTooltip();
                 });
             })(key, pct, q, cumX, segW);
 
-            // Click to filter by governance range
+            // Click to filter by governance range; Enter/Space on the
+            // keyboard-focusable segment fires the same action.
+            // (2026-10-08: the original call target filterByGovScore was never
+            // defined anywhere — the click silently did nothing since the
+            // chart's first commit. Route through the real filterByGovGrade.)
             (function(quartileData) {
-                segG.on('click', function() {
+                var filterAction = function() {
                     if (window.filterByGovGrade) {
                         // Use the min/max gov scores of this quartile
-                        window.filterByGovScore && window.filterByGovScore(quartileData.govMin, quartileData.govMax, quartileData.label);
+                        window.filterByGovGrade(quartileData.gradeHint, quartileData.govMin, quartileData.govMax);
                     }
-                });
+                };
+                segG.on('click', filterAction)
+                    .on('keydown', function(event) {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            filterAction();
+                        }
+                    });
             })(q);
 
             cumX += segW;
