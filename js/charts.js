@@ -46,6 +46,60 @@ function hideChartTooltip() {
     tip.classList.remove('visible');
 }
 
+/* Keyboard pilot extension (2026-10-09): roving-tabindex focus support for
+   scatter-chart dots. The three scatter charts (configurable .scatter-dot*,
+   Say-on-Pay .sop-dot, gov-pay .gps-dot) rendered tooltip-bearing,
+   click-to-lookup dots that were mouse-only -- with ~500 dots per chart,
+   per-dot tab stops would make keyboard traversal unusable. Each chart gets
+   one tab stop: focus reuses the exact mouseover behavior (highlight +
+   tooltip) via a synthetic MouseEvent anchored to the focused dot's
+   getBoundingClientRect; blur reuses the exact mouseout behavior (highlight
+   reset + tooltip hide); Enter/Space runs cfg.activate (the same company
+   lookup as click, or a keyboard-only one where the chart has no click);
+   ArrowLeft/Right/Up/Down and Home/End move between dots while carrying
+   the tabindex="0" holder. Attribute-bound only, no innerHTML, so the
+   escaping conventions are untouched. */
+function _enableDotKeyboard(root, dotSel, cfg) {
+    var dots = root.selectAll(dotSel);
+    dots
+        .attr('tabindex', function(d, i) { return i === 0 ? '0' : '-1'; })
+        .attr('role', 'button')
+        .attr('aria-label', cfg.label)
+        .on('focus', function(event, d) {
+            var el = d3.select(this);
+            dots.attr('tabindex', '-1');
+            el.attr('tabindex', '0');
+            var rc = this.getBoundingClientRect();
+            this.dispatchEvent(new MouseEvent('mouseover', {
+                bubbles: true, cancelable: true,
+                clientX: rc.left + rc.width / 2, clientY: rc.top
+            }));
+        })
+        .on('blur', function(event, d) {
+            this.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }));
+        })
+        .on('keydown', function(event, d) {
+            var key = event.key;
+            if (key === 'Enter' || key === ' ') {
+                event.preventDefault();
+                cfg.activate(d);
+            } else if (key === 'ArrowRight' || key === 'ArrowDown' ||
+                       key === 'ArrowLeft' || key === 'ArrowUp' ||
+                       key === 'Home' || key === 'End') {
+                event.preventDefault();
+                var nodes = dots.nodes();
+                var idx = nodes.indexOf(this);
+                if (idx < 0) return;
+                var nidx = key === 'Home' ? 0 : key === 'End' ? nodes.length - 1
+                    : (key === 'ArrowRight' || key === 'ArrowDown') ? (idx + 1) % nodes.length
+                    : (idx - 1 + nodes.length) % nodes.length;
+                dots.attr('tabindex', '-1');
+                d3.select(nodes[nidx]).attr('tabindex', '0');
+                nodes[nidx].focus();
+            }
+        });
+}
+
 /* Store refs for resize redraw */
 var _chartData = null;
 
@@ -6505,6 +6559,23 @@ function drawSopDistChart(companies) {
         .style('font-size', '11px')
         .style('opacity', 0.7)
         .text(statsText);
+
+    // Keyboard pilot (2026-10-09): the configurable scatter's dots were the
+    // largest remaining mouse-only surface. Roving tabindex; focus mirrors
+    // hover exactly via the shared helper; Enter/Space runs the same
+    // company lookup + trend trail as click. NOTE: rooted at #scatter-chart
+    // (not the local `svg`) because the mega-function reassigns `svg` to
+    // later mini-charts (var is function-scoped).
+    _enableDotKeyboard(d3.select('#scatter-chart'), '.scatter-dot, .scatter-dot-bg, .scatter-dot-sector', {
+        label: function(d) {
+            return d.ticker + ' — ' + (d.company_name || '') + ', CEO total pay ' +
+                fmtCurr(d.total_compensation) + '. Press Enter to view in table.';
+        },
+        activate: function(d) {
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
+            _drawScatterTrendTrail(d);
+        }
+    });
 }
 
 /* ========================================================================
@@ -9088,6 +9159,21 @@ function drawGovQuartileComp(companies) {
         .attr('font-style', 'italic')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text(narrativeText);
+
+    // Keyboard pilot (2026-10-09): Say-on-Pay dots join the roving-tabindex
+    // pilot. Mouse has no click on these dots, so Enter adds a keyboard-only
+    // lookup using the same findCompanyInTable the other charts use.
+    // Rooted at #sop-scatter-chart (not the local `svg`) for the same
+    // reassignment reason as above.
+    _enableDotKeyboard(d3.select('#sop-scatter-chart'), '.sop-dot', {
+        label: function(c) {
+            return c.ticker + ' — ' + (c.company_name || '') + ', say-on-pay approval ' +
+                c._sopApproval.toFixed(1) + '%. Press Enter to view in table.';
+        },
+        activate: function(c) {
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(c.ticker);
+        }
+    });
 }
 
 
@@ -9380,6 +9466,19 @@ function drawGovPayScatter(companies) {
         .attr('fill', textColor)
         .attr('font-size', '12px')
         .text('CEO Total Compensation (log scale)');
+
+    // Keyboard pilot (2026-10-09): gov-pay dots join the roving-tabindex
+    // pilot; Enter/Space runs the same scrollToCompany as click.
+    _enableDotKeyboard(d3.select('#gov-pay-scatter-chart'), '.gps-dot', {
+        label: function(c) {
+            return c.ticker + ' — ' + (c.company_name || '') + ', governance ' +
+                c._govScore.toFixed(0) + ' (' + (c._govGrade || '—') + '), CEO total pay ' +
+                fmtCurr(c.total_compensation) + '. Press Enter to view in table.';
+        },
+        activate: function(c) {
+            if (window.scrollToCompany) window.scrollToCompany(c.ticker);
+        }
+    });
 }
 
 /* --- Pay Anomaly Chart — companies whose CEO pay deviates most from sector+governance norm --- */

@@ -5184,6 +5184,19 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard pilot extension (2026-10-09): the three scatter charts' dots
+   (configurable .scatter-dot family, Say-on-Pay .sop-dot, gov-pay .gps-dot)
+   use the pilot's roving tabindex (one dot in the tab order; arrows move
+   between dots); the ring matches the site's --accent convention. */
+#scatter-chart .scatter-dot:focus-visible,
+#scatter-chart .scatter-dot-bg:focus-visible,
+#scatter-chart .scatter-dot-sector:focus-visible,
+#sop-scatter-chart .sop-dot:focus-visible,
+#gov-pay-scatter-chart .gps-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* Keyboard pilot extension (2026-10-09): the community-comparison table's
    column headers (.cm-th) are tabindex="0" sort controls with click and
    Enter/Space keydown wired in _renderCommunityMetrics (network.js); the
