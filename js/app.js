@@ -4519,7 +4519,24 @@ function populateInsights(comp, trends, sectorFilter) {
         card.innerHTML = html;
         if (ins.action) {
             card.style.cursor = 'pointer';
+            // Keyboard pilot (2026-10-09 14:00 PT run): insight cards with a
+            // click action are full keyboard surfaces — one tab stop, role
+            // button, data-bearing aria-label (label + CTA hint), Enter/Space
+            // firing the same action as a click. The e.target === card guard
+            // keeps keys on nested buttons (compare toggles) out of the card
+            // path; e.preventDefault() keeps the single-key global shortcuts
+            // from double-firing.
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            card.setAttribute('aria-label', ins.label + (ins.actionHint ? '. ' + ins.actionHint : ''));
             card.addEventListener('click', ins.action);
+            card.addEventListener('keydown', function(e) {
+                if (e.target !== card) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    ins.action();
+                }
+            });
         }
         // Wire sector rank chart bar click handlers
         card.querySelectorAll('.src-row').forEach(function(row) {
