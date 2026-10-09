@@ -5184,6 +5184,26 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard pilot extension (2026-10-09): the community-comparison table's
+   column headers (.cm-th) are tabindex="0" sort controls with click and
+   Enter/Space keydown wired in _renderCommunityMetrics (network.js); the
+   focus ring matches the site's --accent convention so keyboard users can
+   see which header has focus. */
+.cm-th:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Keyboard pilot extension (2026-10-09): the clickable network stats
+   (#ngs-avg-degree, #ngs-avg-cc via .ngs-stat-clickable) are tabindex="0"
+   role="button" distribution-panel toggles with click and Enter/Space
+   keydown wired in renderGlobalStats (network.js); the focus ring matches
+   the site's --accent convention. */
+.ngs-stat-clickable:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 #composition-chart {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
