@@ -4805,6 +4805,18 @@ function populateTrends(trends, companies) {
         el.innerHTML = html;
         if (card.action) {
             el.addEventListener('click', card.action);
+            // Keyboard operability (2026-10-08): clickable insight cards were
+            // mouse-only divs. Expose the card action as a button so keyboard
+            // users reach the same actions (company lookups, section scrolls).
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'button');
+            if (card.actionHint) el.setAttribute('aria-label', card.actionHint);
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.action();
+                }
+            });
         }
         grid.appendChild(el);
     });

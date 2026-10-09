@@ -2813,6 +2813,24 @@ function drawCompositionChart(trends) {
 
     var arcs = pie(segments);
 
+    // Tooltip HTML for a donut segment — shared by mouseover and keyboard
+    // focus so both input modes surface identical detail.
+    function compositionSegTooltipHtml(d) {
+        var yoyHtml = '';
+        if (d.data.yoy) {
+            var isNeg = d.data.yoy.indexOf('-') === 0;
+            var isFlat = d.data.yoy.toLowerCase() === 'flat';
+            var yoyColor = isNeg ? '#ef476f' : (isFlat ? mutedColor : '#06d6a0');
+            var yoyPrefix = (!isNeg && !isFlat && d.data.yoy.indexOf('+') !== 0) ? '+' : '';
+            yoyHtml = '<div class="ct-row"><span class="ct-label">YoY Change</span><span class="ct-val" style="color:' + yoyColor + '">' + yoyPrefix + d.data.yoy + '</span></div>';
+        }
+        return '<div class="ct-title">' + d.data.label + '</div>' +
+            '<div class="ct-row"><span class="ct-label">Median Value</span><span class="ct-val">' + fmtCurr(d.data.value) + '</span></div>' +
+            '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + d.data.pct.toFixed(1) + '%</span></div>' +
+            yoyHtml +
+            '<div class="ct-row ct-sub"><span class="ct-label">' + d.data.desc + '</span></div>';
+    }
+
     // Draw donut segments
     g.selectAll('.donut-seg')
         .data(arcs)
@@ -2835,24 +2853,39 @@ function drawCompositionChart(trends) {
             g.selectAll('.donut-seg').filter(function(dd) { return dd !== d; })
                 .attr('opacity', 0.4);
 
-            var yoyHtml = '';
-            if (d.data.yoy) {
-                var isNeg = d.data.yoy.indexOf('-') === 0;
-                var isFlat = d.data.yoy.toLowerCase() === 'flat';
-                var yoyColor = isNeg ? '#ef476f' : (isFlat ? mutedColor : '#06d6a0');
-                var yoyPrefix = (!isNeg && !isFlat && d.data.yoy.indexOf('+') !== 0) ? '+' : '';
-                yoyHtml = '<div class="ct-row"><span class="ct-label">YoY Change</span><span class="ct-val" style="color:' + yoyColor + '">' + yoyPrefix + d.data.yoy + '</span></div>';
-            }
-
-            showChartTooltip(event,
-                '<div class="ct-title">' + d.data.label + '</div>' +
-                '<div class="ct-row"><span class="ct-label">Median Value</span><span class="ct-val">' + fmtCurr(d.data.value) + '</span></div>' +
-                '<div class="ct-row"><span class="ct-label">Share of Total</span><span class="ct-val">' + d.data.pct.toFixed(1) + '%</span></div>' +
-                yoyHtml +
-                '<div class="ct-row ct-sub"><span class="ct-label">' + d.data.desc + '</span></div>');
+            showChartTooltip(event, compositionSegTooltipHtml(d));
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function() {
+            g.selectAll('.donut-seg')
+                .attr('d', arc)
+                .attr('opacity', 0.88)
+                .attr('stroke', bgStroke)
+                .attr('stroke-width', 2);
+            hideChartTooltip();
+        })
+        // Keyboard operability (2026-10-08): the segment tooltips and hover
+        // highlight were mouse-only. Expose each segment as an image with a
+        // data-bearing label; focus mirrors the hover highlight and shows the
+        // same tooltip anchored to the focused segment, so keyboard users get
+        // identical detail. Attribute-bound strings only (d3 .attr()).
+        .attr('tabindex', '0')
+        .attr('role', 'img')
+        .attr('aria-label', function(d) {
+            return d.data.label + ': ' + d.data.pct.toFixed(1) + '% of median total, ' + fmtCurr(d.data.value);
+        })
+        .on('focus', function(event, d) {
+            d3.select(this)
+                .attr('d', arcHover)
+                .attr('opacity', 1)
+                .attr('stroke-width', 0);
+            g.selectAll('.donut-seg').filter(function(dd) { return dd !== d; })
+                .attr('opacity', 0.4);
+            var r = this.getBoundingClientRect();
+            showChartTooltip({ clientX: r.right + 8, clientY: r.top + 8 },
+                compositionSegTooltipHtml(d));
+        })
+        .on('blur', function() {
             g.selectAll('.donut-seg')
                 .attr('d', arc)
                 .attr('opacity', 0.88)
