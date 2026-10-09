@@ -4296,6 +4296,53 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
+    // 26. Pay vs Performance Alignment — does CEO pay track shareholder returns?
+    // Computed live from the same pvpComparisonRows() the Pay vs Performance
+    // section renders (Pearson r between annual PEO CAP and the indexed $100
+    // company TSR over each company's 402(v) disclosure window; n>=3,
+    // tsr_anomaly-flagged years excluded). Classification mirrors the table:
+    // aligned r>=0.5, mixed -0.5<r<0.5, misaligned r<=-0.5. The PvP table's
+    // default sort is rCo ascending, so the drill-down opens with the
+    // misaligned rows first. Sector-filter-aware via the ticker->sector map.
+    (function() {
+        if (!pvpData || !pvpData.companies) return;
+        var _tsMap = {};
+        (companies || []).forEach(function(c) { if (c.ticker) _tsMap[c.ticker] = c.sector; });
+        var pvpRows = pvpComparisonRows().filter(function(r) { return r.rCo != null; });
+        if (sectorFilter) pvpRows = pvpRows.filter(function(r) { return _tsMap[r.ticker] === sectorFilter; });
+        if (pvpRows.length < 10) return;
+        var pvpAligned = pvpRows.filter(function(r) { return r.align === 'aligned'; });
+        var pvpMixed = pvpRows.filter(function(r) { return r.align === 'mixed'; });
+        var pvpMis = pvpRows.filter(function(r) { return r.align === 'misaligned'; });
+        pvpMis.sort(function(a, b) { return a.rCo - b.rCo; });
+        var pvpRs = pvpRows.map(function(r) { return r.rCo; }).sort(function(a, b) { return a - b; });
+        var medR = pvpRs[Math.floor(pvpRs.length / 2)];
+        function fmtR(r) { return (r < 0 ? '\u2212' : '+') + Math.abs(r).toFixed(2); }
+        var worstNames = pvpMis.slice(0, 5).map(function(r) { return r.ticker + ' (' + fmtR(r.rCo) + ')'; }).join(', ');
+        var pvpValue, pvpDetail;
+        if (pvpMis.length > 0) {
+            pvpValue = pvpMis.length + ' Misaligned';
+            pvpDetail = pvpMis.length + ' of ' + pvpRows.length + ' ' + scopeLabel +
+                ' companies show CEO pay moving opposite to shareholder returns (CAP vs company TSR r \u2264 \u22120.5). ';
+        } else {
+            pvpValue = 'Median r ' + fmtR(medR);
+            pvpDetail = 'No ' + scopeLabel + ' company shows pay moving opposite to shareholder returns (CAP vs company TSR r \u2264 \u22120.5). ';
+        }
+        pvpDetail += pvpAligned.length + ' aligned (r \u2265 0.5), ' + pvpMixed.length + ' mixed. ' +
+            'Median alignment r = ' + fmtR(medR) + ' across ' + pvpRows.length + ' companies with 402(v) data.';
+        if (worstNames) pvpDetail += ' Worst: ' + worstNames + '.';
+        pvpDetail += ' r uses compensation actually paid (CAP), not grant-date pay; TSR points flagged as filing anomalies are excluded.';
+        insights.push({
+            icon: CARD_ICONS.scale,
+            label: 'Pay vs Performance Alignment',
+            value: pvpValue,
+            detail: pvpDetail,
+            action: function() { scrollToSectionById('pvp-comparison-section'); },
+            actionHint: 'Open pay-vs-performance table',
+            _tickers: pvpMis.slice(0, 5).map(function(r) { return r.ticker; })
+        });
+    })();
+
     // Render cards
     grid.innerHTML = '';
     insights.forEach(function(ins) {
