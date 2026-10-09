@@ -58,8 +58,14 @@ function hideChartTooltip() {
    lookup as click, or a keyboard-only one where the chart has no click);
    ArrowLeft/Right/Up/Down and Home/End move between dots while carrying
    the tabindex="0" holder. Attribute-bound only, no innerHTML, so the
-   escaping conventions are untouched. */
+   escaping conventions are untouched.
+   cfg.hoverIn / cfg.hoverOut optionally override the synthetic hover event
+   pair (default 'mouseover'/'mouseout'); surfaces whose hover handlers are
+   bound to 'mouseenter'/'mouseleave' pass those instead so the focused
+   element's tooltip path fires. */
 function _enableDotKeyboard(root, dotSel, cfg) {
+    var hoverIn = cfg.hoverIn || 'mouseover';
+    var hoverOut = cfg.hoverOut || 'mouseout';
     var dots = root.selectAll(dotSel);
     dots
         .attr('tabindex', function(d, i) { return i === 0 ? '0' : '-1'; })
@@ -70,13 +76,13 @@ function _enableDotKeyboard(root, dotSel, cfg) {
             dots.attr('tabindex', '-1');
             el.attr('tabindex', '0');
             var rc = this.getBoundingClientRect();
-            this.dispatchEvent(new MouseEvent('mouseover', {
+            this.dispatchEvent(new MouseEvent(hoverIn, {
                 bubbles: true, cancelable: true,
                 clientX: rc.left + rc.width / 2, clientY: rc.top
             }));
         })
         .on('blur', function(event, d) {
-            this.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }));
+            this.dispatchEvent(new MouseEvent(hoverOut, { bubbles: true, cancelable: true }));
         })
         .on('keydown', function(event, d) {
             var key = event.key;
@@ -7337,6 +7343,28 @@ function drawCorrelationMatrix(companies) {
         .attr('font-weight', '500')
         .text(function(d) { return d.short; });
 
+    // Keyboard pilot extension (2026-10-09): the click-to-explore-pair action
+    // is factored out so Enter/Space on a keyboard-focused cell runs the
+    // exact same path as the mouse click.
+    function _exploreCorrPair(ci, ri) {
+        hideChartTooltip();
+        var xSel = document.getElementById('scatter-x-metric');
+        var ySel = document.getElementById('scatter-y-metric');
+        if (xSel && ySel) {
+            xSel.value = metrics[ci].key;
+            ySel.value = metrics[ri].key;
+            xSel.dispatchEvent(new Event('change'));
+            var scatterPanel = document.getElementById('scatter-chart-panel');
+            if (scatterPanel) {
+                scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        // Also update cross-sector correlation chart with the clicked pair
+        var csEl = document.getElementById('cross-sector-corr-chart');
+        if (csEl) csEl.innerHTML = '';
+        drawCrossSectorCorrelation(_chartData.companies, ci, ri);
+    }
+
     // Cells
     for (var ri = 0; ri < n; ri++) {
         for (var ci = 0; ci < n; ci++) {
@@ -7350,6 +7378,8 @@ function drawCorrelationMatrix(companies) {
 
                 // Cell background
                 var rect = svg.append('rect')
+                    .attr('class', (!isDiagonal && r != null) ? 'corr-heat-cell' : null)
+                    .datum({ row: row, col: col, r: r, n: corr.n })
                     .attr('x', cx + pad)
                     .attr('y', cy + pad)
                     .attr('width', cellSize - pad * 2)
@@ -7476,28 +7506,39 @@ function drawCorrelationMatrix(companies) {
                             hideChartTooltip();
                         })
                         .on('click', function() {
-                            hideChartTooltip();
-                            var xSel = document.getElementById('scatter-x-metric');
-                            var ySel = document.getElementById('scatter-y-metric');
-                            if (xSel && ySel) {
-                                xSel.value = metrics[colIdx].key;
-                                ySel.value = metrics[rowIdx].key;
-                                xSel.dispatchEvent(new Event('change'));
-                                var scatterPanel = document.getElementById('scatter-chart-panel');
-                                if (scatterPanel) {
-                                    scatterPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                            }
-                            // Also update cross-sector correlation chart with clicked pair
-                            var csEl = document.getElementById('cross-sector-corr-chart');
-                            if (csEl) csEl.innerHTML = '';
-                            drawCrossSectorCorrelation(_chartData.companies, colIdx, rowIdx);
+                            _exploreCorrPair(colIdx, rowIdx);
                         });
                     })(row, col, corr, delta, overallR);
                 }
             })(ri, ci);
         }
     }
+
+    /* Keyboard pilot extension (2026-10-09): roving tabindex for the
+       correlation matrix cells. The matrix's non-diagonal cells were
+       mouse-only (mouseenter tooltip + click to explore in the scatter
+       plot) -- with ~182 cells, per-cell tab stops would make keyboard
+       traversal unusable. Reuses _enableDotKeyboard (the scatter-dot
+       pilot): one tab stop per matrix, Arrow/Home/End move between cells,
+       focus reuses the exact mouseover behavior via a synthetic MouseEvent
+       anchored to the focused cell's getBoundingClientRect, blur reuses
+       mouseout, Enter/Space runs the same explore-pair action as click.
+       Cells carry a data-bearing aria-label ("<row> vs <col>: Pearson r
+       <r>, <strength>, n = <n>"); diagonal and insufficient-data cells are
+       excluded from the tab order. Attribute-bound only, no innerHTML. */
+    _enableDotKeyboard(svg, 'rect.corr-heat-cell', {
+        label: function(d) {
+            var m1 = metrics[d.row].label, m2 = metrics[d.col].label;
+            var rTxt = (d.r >= 0 ? '+' : '') + d.r.toFixed(2);
+            var a = Math.abs(d.r);
+            var strength = a >= 0.7 ? 'Strong' : a >= 0.4 ? 'Moderate' : a >= 0.2 ? 'Weak' : 'Very weak';
+            var dir = a >= 0.2 ? (d.r > 0 ? ' positive' : ' negative') : '';
+            return m1 + ' vs ' + m2 + ': Pearson r ' + rTxt + ', ' + strength + dir + ', n = ' + d.n + '. Press Enter to explore in the scatter plot.';
+        },
+        activate: function(d) { _exploreCorrPair(d.col, d.row); },
+        hoverIn: 'mouseenter',
+        hoverOut: 'mouseleave'
+    });
 
     // Color legend (right side)
     var legendX = w + 16;

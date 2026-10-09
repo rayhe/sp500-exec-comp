@@ -98,11 +98,13 @@ def static_checks():
           and ".attr('role', 'button')" in block
           and ".attr('aria-label', cfg.label)" in block
           and ".on('focus', function(event, d)" in block
-          and "new MouseEvent('mouseover'" in block
+          and "var hoverIn = cfg.hoverIn || 'mouseover'" in block
+          and "new MouseEvent(hoverIn," in block
           and "getBoundingClientRect()" in block
           and ".on('blur', function(event, d)" in block
-          and "new MouseEvent('mouseout'" in block)
-    check("S1 _enableDotKeyboard sets roving tabindex/role=button/aria-label; focus=synthetic mouseover, blur=synthetic mouseout",
+          and "var hoverOut = cfg.hoverOut || 'mouseout'" in block
+          and "new MouseEvent(hoverOut," in block)
+    check("S1 _enableDotKeyboard sets roving tabindex/role=button/aria-label; focus=synthetic hover-in (default mouseover), blur=synthetic hover-out (default mouseout)",
           s1, "" if s1 else "roving-tabindex wiring missing from the helper block")
 
     s2 = (block is not None
