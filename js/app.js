@@ -4540,11 +4540,39 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         // Wire sector rank chart bar click handlers
         card.querySelectorAll('.src-row').forEach(function(row) {
+            var sectorName = row.dataset.sector;
+            var activateRow = function() {
+                if (sectorName && window.filterBySector) window.filterBySector(sectorName);
+            };
             row.addEventListener('click', function(e) {
                 e.stopPropagation();
-                var sectorName = row.dataset.sector;
-                if (sectorName && window.filterBySector) window.filterBySector(sectorName);
+                activateRow();
             });
+            // Keyboard pilot (2026-10-09 15:30 PT run): card-interior pilot
+            // extends to the sector-rank chart rows. Only rows carrying a
+            // data-sector are functional filter triggers and join the tab
+            // order (role=button, data-bearing aria-label, Enter/Space fires
+            // the same action as a click). The anomaly-distribution rows
+            // reuse .src-row styling but carry no data-sector — their click
+            // is a no-op and they stay informational (out of the tab order),
+            // preserving keyboard/click parity.
+            if (sectorName) {
+                row.setAttribute('tabindex', '0');
+                row.setAttribute('role', 'button');
+                var srcLabelEl = row.querySelector('.src-label');
+                var srcValEl = row.querySelector('.src-val');
+                var rowLabel = srcLabelEl ? srcLabelEl.textContent : sectorName;
+                var rowVal = srcValEl ? srcValEl.textContent : '';
+                row.setAttribute('aria-label',
+                    rowLabel + ', ' + rowVal + ' median CEO pay. Press Enter to filter the table to this sector.');
+                row.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        activateRow();
+                    }
+                });
+            }
         });
         // Wire compare button click handlers (stop propagation to avoid triggering card action)
         card.querySelectorAll('.insight-compare-btn').forEach(function(btn) {
@@ -4556,24 +4584,67 @@ function populateInsights(comp, trends, sectorFilter) {
         // Wire correlation heatmap cell click handlers — open scatter plot with that pair
         if (ins._corrHeatmap) {
             var chMets = ins._corrHeatmap.metrics;
-            card.querySelectorAll('.corr-cell-active').forEach(function(cell) {
+            // The click body is factored into openCorrPair so the keyboard
+            // Enter/Space path fires the exact same action (2026-10-09
+            // 15:30 PT card-interior keyboard pilot).
+            var openCorrPair = function(ri, ci) {
+                var xKey = chMets[ri].scatterKey;
+                var yKey = chMets[ci].scatterKey;
+                if (!xKey || !yKey) return;
+                var scXSel = document.getElementById('scatter-x-metric');
+                var scYSel = document.getElementById('scatter-y-metric');
+                if (scXSel) scXSel.value = xKey;
+                if (scYSel) scYSel.value = yKey;
+                if (scXSel) scXSel.dispatchEvent(new Event('change'));
+                var chartPanel = document.getElementById('scatter-panel');
+                if (chartPanel) {
+                    var headerHeight = getStickyOffset();
+                    var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+                    window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                }
+            };
+            var corrCells = card.querySelectorAll('.corr-cell-active');
+            corrCells.forEach(function(cell, cellIdx) {
                 cell.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    var ri = parseInt(cell.dataset.corrRi);
-                    var ci = parseInt(cell.dataset.corrCi);
-                    var xKey = chMets[ri].scatterKey;
-                    var yKey = chMets[ci].scatterKey;
-                    if (!xKey || !yKey) return;
-                    var scXSel = document.getElementById('scatter-x-metric');
-                    var scYSel = document.getElementById('scatter-y-metric');
-                    if (scXSel) scXSel.value = xKey;
-                    if (scYSel) scYSel.value = yKey;
-                    if (scXSel) scXSel.dispatchEvent(new Event('change'));
-                    var chartPanel = document.getElementById('scatter-panel');
-                    if (chartPanel) {
-                        var headerHeight = getStickyOffset();
-                        var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-                        window.scrollTo({ top: top, behavior: getScrollBehavior() });
+                    openCorrPair(parseInt(cell.dataset.corrRi), parseInt(cell.dataset.corrCi));
+                });
+                // Roving tabindex: ~56 cells would otherwise add 56 tab
+                // stops. One tab stop per heatmap (treemap-roving
+                // convention); Arrow keys move linearly between cells,
+                // Home/End jump to the ends. Every key is preventDefault()ed
+                // so the global ArrowLeft/Right table-page shortcut cannot
+                // double-fire (keyboard-pilot contract, 2026-10-09).
+                cell.setAttribute('tabindex', cellIdx === 0 ? '0' : '-1');
+                cell.setAttribute('role', 'button');
+                var cellTitle = cell.getAttribute('title') || '';
+                cell.setAttribute('aria-label',
+                    cellTitle + '. Press Enter to view this pair in the scatter plot.');
+                cell.addEventListener('keydown', function(e) {
+                    var allCells = Array.prototype.slice.call(card.querySelectorAll('.corr-cell-active'));
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openCorrPair(parseInt(cell.dataset.corrRi), parseInt(cell.dataset.corrCi));
+                        return;
+                    }
+                    var moveTo = null;
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                        moveTo = allCells.indexOf(cell) + 1;
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        moveTo = allCells.indexOf(cell) - 1;
+                    } else if (e.key === 'Home') {
+                        moveTo = 0;
+                    } else if (e.key === 'End') {
+                        moveTo = allCells.length - 1;
+                    }
+                    if (moveTo !== null) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        moveTo = (moveTo + allCells.length) % allCells.length;
+                        allCells.forEach(function(c) { c.setAttribute('tabindex', '-1'); });
+                        allCells[moveTo].setAttribute('tabindex', '0');
+                        allCells[moveTo].focus();
                     }
                 });
             });
