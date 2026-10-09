@@ -6830,6 +6830,33 @@ function drawCompTreemap(companies) {
         .attr('class', 'treemap-leaf')
         .style('cursor', 'pointer');
 
+    // Keyboard pilot (2026-10-08): roving tabindex. With ~500 leaves,
+    // per-leaf tab stops would make keyboard traversal unusable, so only
+    // the first leaf starts in the tab order; arrow keys move between
+    // leaves and Enter/Space fires the same company-lookup as click.
+    leafGroups
+        .attr('tabindex', function(d, i) { return i === 0 ? '0' : '-1'; })
+        .attr('role', 'button')
+        .attr('aria-label', function(d) {
+            return d.data.name + ' — ' + d.data.company + ', CEO total pay ' +
+                fmtCurr(d.data.comp) + '. Press Enter to view in table.';
+        });
+
+    // Tooltip HTML shared by mouseover and the keyboard focus path
+    // (byte-identical output either way).
+    function treemapLeafTooltipHtml(d) {
+        var data = d.data;
+        var sec = d.parent ? d.parent.data.name : '';
+        var sectorTotal = d.parent ? d.parent.value : 0;
+        var pctOfSector = sectorTotal > 0 ? (d.value / sectorTotal * 100).toFixed(1) : '0';
+        var pctOfSP500 = root.value > 0 ? (d.value / root.value * 100).toFixed(2) : '0';
+        return '<strong>' + data.company + '</strong> (' + data.name + ')<br>' +
+            'CEO: ' + (data.ceo || 'N/A') + '<br>' +
+            'Total Comp: <strong>' + fmtCurr(data.comp) + '</strong><br>' +
+            sec + ': ' + pctOfSector + '% of sector<br>' +
+            'S&P 500: ' + pctOfSP500 + '% of total';
+    }
+
     leafGroups.append('rect')
         .attr('x', function(d) { return d.x0; })
         .attr('y', function(d) { return d.y0; })
@@ -6850,18 +6877,7 @@ function drawCompTreemap(companies) {
         .attr('rx', 1)
         .on('mouseover', function(event, d) {
             d3.select(this).attr('stroke', '#fff').attr('stroke-width', 2);
-            var data = d.data;
-            var sec = d.parent ? d.parent.data.name : '';
-            var sectorTotal = d.parent ? d.parent.value : 0;
-            var pctOfSector = sectorTotal > 0 ? (d.value / sectorTotal * 100).toFixed(1) : '0';
-            var pctOfSP500 = root.value > 0 ? (d.value / root.value * 100).toFixed(2) : '0';
-            showChartTooltip(event,
-                '<strong>' + data.company + '</strong> (' + data.name + ')<br>' +
-                'CEO: ' + (data.ceo || 'N/A') + '<br>' +
-                'Total Comp: <strong>' + fmtCurr(data.comp) + '</strong><br>' +
-                sec + ': ' + pctOfSector + '% of sector<br>' +
-                'S&P 500: ' + pctOfSP500 + '% of total'
-            );
+            showChartTooltip(event, treemapLeafTooltipHtml(d));
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
         .on('mouseout', function(event, d) {
@@ -6872,6 +6888,55 @@ function drawCompTreemap(companies) {
         })
         .on('click', function(event, d) {
             if (window.findCompanyInTable) window.findCompanyInTable(d.data.name);
+        });
+
+    // Keyboard interaction on the leaf groups: focus mirrors hover
+    // (same tooltip, anchored to the focused leaf), blur mirrors
+    // mouseout, Enter/Space fires the company lookup, and the arrow keys
+    // move between leaves (roving tabindex -- only one leaf is ever in
+    // the tab order). Home/End jump to the first/last leaf.
+    leafGroups
+        .on('focus', function(event, d) {
+            leafGroups.attr('tabindex', '-1');
+            d3.select(this).attr('tabindex', '0');
+            d3.select(this).select('rect')
+                .attr('stroke', '#fff').attr('stroke-width', 2);
+            var r = this.getBoundingClientRect();
+            showChartTooltip(
+                { clientX: r.left + r.width / 2, clientY: r.top },
+                treemapLeafTooltipHtml(d));
+        })
+        .on('blur', function() {
+            d3.select(this).select('rect')
+                .attr('stroke', dark ? 'rgba(20,20,30,0.6)' : 'rgba(255,255,255,0.7)')
+                .attr('stroke-width', 0.5);
+            hideChartTooltip();
+        })
+        .on('keydown', function(event, d) {
+            var key = event.key;
+            if (key === 'Enter' || key === ' ') {
+                event.preventDefault();
+                if (window.findCompanyInTable) window.findCompanyInTable(d.data.name);
+                return;
+            }
+            var nodes = leafGroups.nodes();
+            var idx = nodes.indexOf(this);
+            var target = null;
+            if (key === 'ArrowRight' || key === 'ArrowDown') {
+                target = nodes[Math.min(nodes.length - 1, idx + 1)];
+            } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+                target = nodes[Math.max(0, idx - 1)];
+            } else if (key === 'Home') {
+                target = nodes[0];
+            } else if (key === 'End') {
+                target = nodes[nodes.length - 1];
+            }
+            if (target && target !== this) {
+                event.preventDefault();
+                leafGroups.attr('tabindex', '-1');
+                d3.select(target).attr('tabindex', '0');
+                target.focus();
+            }
         });
 
     // Labels for leaves — show ticker only if cell is large enough

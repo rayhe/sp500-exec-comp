@@ -5176,6 +5176,14 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard pilot extension (2026-10-08): treemap leaves use a roving
+   tabindex (one leaf in the tab order, arrows move between them); the
+   ring matches the sector-bar/donut-segment convention. */
+#comp-treemap-chart g.treemap-leaf:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 #composition-chart {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
