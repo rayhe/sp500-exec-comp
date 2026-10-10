@@ -30,6 +30,70 @@ function announce(msg) {
     _announceTimer = setTimeout(function() { el.textContent = msg; }, 80);
 }
 
+/* === Accessibility — click-to-keyboard upgrade with roving tabindex ===
+   Keyboard pilot (2026-10-09 19:30 PT run): extends the click-only treatment
+   to click surfaces OUTSIDE insight cards, whether wired via inline onclick
+   or addEventListener('click'): sector comp heatmap labels/cells, role
+   ranking table labels/cells, main-table per-row filter badges, the detail
+   panel's pay-anomaly trajectory wrap, and the team-completeness
+   missing-roles link. One roving-tabindex group per container
+   (treemap-roving convention from the corr-cell pilot): the first element
+   holds tabindex="0", the rest "-1"; Arrow keys move the holder linearly;
+   Enter/Space fires el.click() so the keyboard path reproduces the exact
+   mouse behavior (inline handler and/or listeners), with preventDefault +
+   stopPropagation per the keyboard-pilot contract. Cells with no click
+   action (zero/empty cells) are excluded from the selector at the call
+   site (click/no-op parity). All additions are attribute-bound (no
+   innerHTML). File-scope so every render path can reach it. */
+function _kbdUpgradeRoving(container, selector) {
+    if (!container || !container.querySelectorAll) return;
+    var els = [];
+    var nodes = container.querySelectorAll(selector);
+    for (var i = 0; i < nodes.length; i++) {
+        var el = nodes[i];
+        var tag = (el.tagName || '').toUpperCase();
+        if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') continue;
+        if (el.hasAttribute('tabindex') || el.hasAttribute('onkeydown') || el.hasAttribute('data-kbd-upgraded')) continue;
+        if (el.getAttribute('role') === 'button') continue;
+        els.push(el);
+    }
+    for (var k = 0; k < els.length; k++) {
+        (function(el, idx) {
+            var title = (el.getAttribute('title') || '').trim();
+            var label;
+            if (title) {
+                label = title.replace(/click to/gi, 'Press Enter to');
+                if (!/press enter/i.test(label)) label += '. Press Enter to activate';
+            } else {
+                var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+                if (txt.length > 120) txt = txt.slice(0, 117) + '...';
+                label = (txt ? txt + '. ' : '') + 'Press Enter to activate';
+            }
+            el.setAttribute('tabindex', idx === 0 ? '0' : '-1');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('data-kbd-upgraded', '1');
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.click();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown' ||
+                           e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var n = els.length;
+                    var next = (e.key === 'ArrowRight' || e.key === 'ArrowDown')
+                        ? (idx + 1) % n : (idx - 1 + n) % n;
+                    els[idx].setAttribute('tabindex', '-1');
+                    els[next].setAttribute('tabindex', '0');
+                    els[next].focus();
+                }
+            });
+        })(els[k], k);
+    }
+}
+
 /* === Theme Management === */
 function initTheme() {
     var saved = localStorage.getItem('sp500-theme');
@@ -7526,6 +7590,11 @@ function renderTable(companies, options) {
     // render so sort/filter/pagination keep them.
     _decorateBandMoveBadges(tbody);
 
+    // Keyboard pilot (2026-10-09 19:30 PT): per-row filter badges are
+    // click-only; make them one roving-tabindex group per page render so
+    // the table keeps a single badge tab stop instead of hundreds.
+    _kbdUpgradeRoving(tbody, '.eq-tbl-badge-clickable, .new-ceo-badge-clickable, .conc-badge-clickable, .asp-tbl-badge-clickable, .gov-badge-clickable');
+
     // Footer with pagination controls
     var footerEl = document.getElementById('table-footer');
     footerEl.innerHTML = '';
@@ -11418,6 +11487,10 @@ function setupDetailPanel(companies) {
             });
         }
 
+        // Keyboard pilot (2026-10-09 19:30 PT): the pay-anomaly trajectory
+        // wrap and the team-completeness missing-roles link are click-only.
+        _kbdUpgradeRoving(detailRow, '.detail-trajectory-clickable, .tc-missing-link');
+
         // Wire up clickable detail peer tags — click to find in table, shift+click to show in network
         detailRow.querySelectorAll('.detail-peer-tag-link').forEach(function(tag) {
             tag.addEventListener('click', function(e) {
@@ -14781,6 +14854,11 @@ function setupDualSparklineTooltips() {
                 if (window.filterBySector) window.filterBySector(sector);
             });
         });
+
+        // Keyboard pilot (2026-10-09 19:30 PT): sector labels + non-zero
+        // cells are click-only filter controls; one roving-tabindex group.
+        // Zero cells carry no click action and stay informational.
+        _kbdUpgradeRoving(container, '.hm-sector-label, .hm-cell:not(.hm-zero)');
     }
     renderSectorCompHeatmap();
     window._redrawSectorHeatmap = renderSectorCompHeatmap;
@@ -14878,6 +14956,11 @@ function setupDualSparklineTooltips() {
 
         html += '</div>';
         container.innerHTML = html;
+
+        // Keyboard pilot (2026-10-09 19:30 PT): sector labels + data cells
+        // are click-only filter controls; one roving-tabindex group.
+        // Empty cells carry no click action and stay informational.
+        _kbdUpgradeRoving(container, '.rs-sector-label, .rs-cell:not(.rs-cell-empty)');
     })();
 
     function hexToRgba(hex, alpha) {

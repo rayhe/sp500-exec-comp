@@ -668,6 +668,17 @@ header h1 {
     outline-offset: 2px;
     border-radius: 3px;
 }
+/* Roving keyboard pilot (2026-10-09 19:30 PT run): click surfaces OUTSIDE
+   insight cards (sector heatmap cells/labels, role ranking table
+   cells/labels, main-table filter badges, detail trajectory wrap,
+   team-completeness missing-roles link) that _kbdUpgradeRoving() marks with
+   data-kbd-upgraded get the same :focus-visible --accent ring. The scoped
+   .insight-card rule above is kept intact for the 18:00 PT guard. */
+[data-kbd-upgraded]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
 
 .insight-cta {
     font-size: 0.7rem;
