@@ -5241,6 +5241,16 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard pilot extension (2026-10-10): the scatter trend-trail year dots
+   (.scatter-trend-trail-dots circle) join the roving-tabindex pilot (one
+   dot in the tab order; Arrow/Home/End move between years; focus shows the
+   FY-breakdown tooltip and pauses the auto-fade); the ring matches the
+   site's --accent convention. */
+#scatter-chart .scatter-trend-trail-dots circle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* Keyboard pilot extension (2026-10-09): correlation matrix heat cells use
    the pilot's roving tabindex (one cell in the tab order; arrows move
    between cells); the ring matches the site's --accent convention. */

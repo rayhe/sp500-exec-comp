@@ -29,6 +29,10 @@ function announce(msg) {
     clearTimeout(_announceTimer);
     _announceTimer = setTimeout(function() { el.textContent = msg; }, 80);
 }
+/* Cross-file exposure (2026-10-10 run): charts.js trend-trail keyboard
+   pilot announces the transient trail for screen-reader discoverability.
+   Standard cross-scope pattern (cf. window.insightResetAndSort). */
+window.announce = announce;
 
 /* === Accessibility — click-to-keyboard upgrade with roving tabindex ===
    Keyboard pilot (2026-10-09 19:30 PT run): extends the click-only treatment

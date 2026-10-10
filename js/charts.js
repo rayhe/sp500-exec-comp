@@ -11791,7 +11791,10 @@ function _drawScatterTrendTrail(company) {
             .attr('opacity', opacity);
 
         // Interactive hover target (larger hit area)
+        // .datum(pt): binds the trend point so the keyboard pilot's
+        // aria-label builder receives the FY breakdown data.
         dotsGroup.append('circle')
+            .datum(pt)
             .attr('cx', pt.x)
             .attr('cy', pt.y)
             .attr('r', 10)
@@ -11862,10 +11865,12 @@ function _drawScatterTrendTrail(company) {
                 }
             });
 
-        // Year label
+        // Year label (aria-hidden: the text duplicates the interactive dot's
+        // data-bearing aria-label; hiding avoids double-announcement)
         var labelYOffset = isYComp ? -10 : 12;
         var labelXOffset = isXComp ? 0 : 10;
         trailGroup.append('text')
+            .attr('aria-hidden', 'true')
             .attr('x', pt.x + labelXOffset)
             .attr('y', pt.y + labelYOffset)
             .attr('text-anchor', isXComp ? 'middle' : 'start')
@@ -11878,6 +11883,62 @@ function _drawScatterTrendTrail(company) {
             .attr('opacity', opacity + 0.2)
             .text("'" + String(pt.year).slice(-2) + ' ' + (typeof fmtCurr === 'function' ? fmtCurr(pt.total) : '$' + (pt.total / 1e6).toFixed(1) + 'M'));
     });
+
+    /* Keyboard pilot (2026-10-10): the trend-trail year dots were the last
+       click-without-keyboard surface the 2026-10-10 03:30 PT audit missed
+       (D3 .on('click') -> window.findCompanyInTable, the same navigation as
+       the parent scatter dot; the transient 8s auto-fade made the dots
+       invisible to the static class sweeps). Reuses _enableDotKeyboard (the
+       scatter-dot pilot): one tab stop per trail, Arrow/Home/End move
+       between year dots, focus fires the exact mouseenter tooltip path via
+       a synthetic MouseEvent (which also pauses the auto-fade, mirroring
+       the mouse hover-pause), blur fires mouseleave (restores the dot,
+       hides the tooltip, restarts the fade), Enter/Space runs the same
+       findCompanyInTable navigation as click. The dots carry a data-bearing
+       aria-label (FY, ticker, total, component breakdown, YoY change) so
+       the info-only hover values are available to keyboard users without
+       the tooltip; the year text labels are aria-hidden (they duplicate
+       the dot labels). Attribute-bound only, no innerHTML. Rooted at the
+       #scatter-chart container (not the local `svg`) because the
+       mega-function reassigns `svg` to later mini-charts. */
+    _enableDotKeyboard(d3.select(container), '.scatter-trend-trail-dots circle', {
+        hoverIn: 'mouseenter',
+        hoverOut: 'mouseleave',
+        label: function(pt) {
+            var s = 'FY' + pt.year + ', ' + company.ticker;
+            if (pt.name) s += ', ' + pt.name;
+            s += ', total ' + fmtCurr(pt.total) + '.';
+            var items = [];
+            if (pt.salary > 0) items.push('Salary ' + fmtCurr(pt.salary));
+            if (pt.stock_awards > 0) items.push('Stock Awards ' + fmtCurr(pt.stock_awards));
+            if (pt.option_awards > 0) items.push('Option Awards ' + fmtCurr(pt.option_awards));
+            if (pt.bonus > 0) items.push('Bonus ' + fmtCurr(pt.bonus));
+            if (pt.non_equity_incentive > 0) items.push('Non-Equity Incentive ' + fmtCurr(pt.non_equity_incentive));
+            if (pt.all_other > 0) items.push('All Other ' + fmtCurr(pt.all_other));
+            if (items.length > 0) s += ' Breakdown: ' + items.join(', ') + '.';
+            var prevIdx = trailPts.indexOf(pt) - 1;
+            if (prevIdx >= 0 && trailPts[prevIdx].total > 0) {
+                var yoy = (pt.total - trailPts[prevIdx].total) / trailPts[prevIdx].total * 100;
+                s += ' ' + (yoy >= 0 ? '+' : '') + yoy.toFixed(1) + '% vs FY' + trailPts[prevIdx].year + '.';
+            }
+            s += ' Press Enter to view in table.';
+            return s;
+        },
+        activate: function(pt) {
+            if (typeof hideChartTooltip === 'function') hideChartTooltip();
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(company.ticker);
+        }
+    });
+
+    // Screen-reader announcement so the transient trail is discoverable:
+    // without this a keyboard user would never know the year dots exist
+    // (the trail auto-fades and the dots sit behind the table navigation).
+    if (typeof window.announce === 'function') {
+        var _ttYears = trailPts.map(function(p) { return p.year; });
+        window.announce('Trend trail for ' + company.ticker + ': FY' + _ttYears[0] +
+            ' to FY' + _ttYears[_ttYears.length - 1] +
+            '. Tab to a year dot for the breakdown, arrow keys move between years.');
+    }
 
     // Auto-fade trail after 8 seconds
     _trendTrailTimer = setTimeout(function() {
