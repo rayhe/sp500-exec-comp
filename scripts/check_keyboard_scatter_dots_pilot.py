@@ -41,7 +41,10 @@ Checks:
   B. Render (headless Chromium via playwright, 1440px desktop, d3 shim):
      R1 every rendered dot across the three charts is role="button" with a
         data-bearing aria-label, and each chart has exactly one
-        tabindex="0" (roving).
+        tabindex="0" DOT (roving). The holder count is scoped to the dot
+        classes: #scatter-chart also hosts the keyboard brush layer and
+        the transient trend-trail year dots, which are separate tab stops
+        by design (whole-container count went stale 2026-10-10).
      R2 focusing a configurable-scatter dot shows the tooltip with that
         dot's ticker; blur hides it.
      R3 Enter on a dot fires findCompanyInTable with the dot's ticker.
@@ -208,6 +211,14 @@ def render_checks():
 
             # R1: roving tabindex -- every dot is a labelled button, exactly
             # one dot per chart is in the tab order.
+            # NOTE (2026-10-10 drift-canary repair): the holder count is
+            # scoped to the dot classes, not the whole chart container.
+            # #scatter-chart legitimately hosts additional tabindex="0"
+            # surfaces: the keyboard brush layer
+            # (.scatter-brush-layer[tabindex="0"], added 2026-10-10 03:30 PT)
+            # and the transient trend-trail year dots (added 2026-10-10
+            # 06:00 PT) -- separate tab stops by design, not roving-group
+            # violations.
             r1info = pg.evaluate("""() => {
               const sel = '#scatter-chart .scatter-dot, #scatter-chart .scatter-dot-bg, ' +
                           '#scatter-chart .scatter-dot-sector, #sop-scatter-chart .sop-dot, ' +
@@ -217,8 +228,13 @@ def render_checks():
                 d.getAttribute('role') !== 'button' ||
                 !(d.getAttribute('aria-label') || '').includes('Press Enter to view in table');
               const charts = ['#scatter-chart', '#sop-scatter-chart', '#gov-pay-scatter-chart'];
+              const dotHolderSel = {
+                '#scatter-chart': '.scatter-dot[tabindex="0"], .scatter-dot-bg[tabindex="0"], .scatter-dot-sector[tabindex="0"]',
+                '#sop-scatter-chart': '.sop-dot[tabindex="0"]',
+                '#gov-pay-scatter-chart': '.gps-dot[tabindex="0"]'
+              };
               const holders = charts.map(c =>
-                document.querySelectorAll(c + ' [tabindex="0"]').length);
+                document.querySelectorAll(c + ' ' + dotHolderSel[c]).length);
               return {n: dots.length, bad: dots.filter(bad).length, holders: holders,
                       sample: dots[0] ? dots[0].getAttribute('aria-label') : null};
             }""")
