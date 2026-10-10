@@ -5247,6 +5247,17 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard focus ring for the sector-gov pilot (2026-10-10): the median
+   bars and y-axis sector names of the governance-by-sector chart are
+   tabindex="0" role="button" via _enableDotKeyboard (see
+   drawSectorGovChart in js/charts.js). Matches the site's --accent
+   focus-visible convention. */
+#sector-gov-chart .gov-sector-bar:focus-visible,
+#sector-gov-chart .gov-yaxis-label:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* 2026-10-08: quartile-composition segments and governance-quartile
    segments are tabindex="0" role="button" (see drawQuartileComposition /
    drawGovQuartileComp). Matches the site's --accent focus-visible

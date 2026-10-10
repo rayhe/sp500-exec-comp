@@ -9052,6 +9052,7 @@ function drawSectorGovChart(companies) {
     g.append('g')
         .call(d3.axisLeft(y))
         .selectAll('text')
+        .attr('class', 'gov-yaxis-label')
         .style('fill', chartStrokeColor())
         .style('font-size', '11px')
         .style('cursor', 'pointer')
@@ -9107,6 +9108,40 @@ function drawSectorGovChart(companies) {
         .on('click', function(event, d) {
             if (window.filterBySector) window.filterBySector(d.sector);
         });
+
+    // 2026-10-10: keyboard pilot for the sector-gov click surfaces (same
+    // failure-mode class the histogram-bar/anomaly/gender pilots closed):
+    // median bars (tooltip + filterBySector) and y-axis sector names
+    // (filterBySector). Roving tabindex, role=button, data-bearing labels.
+    _enableDotKeyboard(d3.select('#sector-gov-chart'), '.gov-sector-bar', {
+        label: function(d) {
+            return d.sector + ': median governance score ' + d.median +
+                ' (Grade ' + d.grade + '), mean ' + d.mean + ', range ' +
+                d.min + ' to ' + d.max + ', IQR ' + d.p25 + ' to ' + d.p75 +
+                ', ' + d.count + ' companies in sector. ' +
+                'Press Enter to filter the table to this sector.';
+        },
+        activate: function(d) {
+            if (typeof hideChartTooltip === 'function') hideChartTooltip();
+            if (window.filterBySector) window.filterBySector(d.sector);
+        }
+    });
+    _enableDotKeyboard(d3.select('#sector-gov-chart'), '.gov-yaxis-label', {
+        label: function(sector) {
+            var row = null;
+            for (var i = 0; i < sectorData.length; i++) {
+                if (sectorData[i].sector === sector) { row = sectorData[i]; break; }
+            }
+            return row
+                ? sector + ': median governance score ' + row.median +
+                  ' (Grade ' + row.grade + '), ' + row.count +
+                  ' companies. Press Enter to filter the table to this sector.'
+                : sector + '. Press Enter to filter the table to this sector.';
+        },
+        activate: function(sector) {
+            if (window.filterBySector) window.filterBySector(sector);
+        }
+    });
 
     // Score + grade labels at end of bars
     g.selectAll('.gov-sector-label')
