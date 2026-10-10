@@ -5682,6 +5682,7 @@ function drawGenderPayChart(trends) {
 
     // Female bars
     barGroups.append('rect')
+        .attr('class', 'gender-bar')
         .attr('x', function() { return x1('female'); })
         .attr('y', function(d) { return y(d.female_median_pay); })
         .attr('width', x1.bandwidth())
@@ -5707,6 +5708,32 @@ function drawGenderPayChart(trends) {
             hideChartTooltip();
             if (window.filterByGender) window.filterByGender('F');
         });
+
+    // Keyboard pilot (2026-10-10): the female bars carry a click action (filter
+    // the table to female CEOs) plus data-bearing hover tooltips, but had no
+    // keyboard path. Roving tabindex, role="button", and data-bearing
+    // aria-labels mirror the tooltip; focus fires the exact hover-tooltip
+    // path, Enter/Space replays the click action. (The overall bars are
+    // info-only hover with no click path, so they stay out of the tab order.)
+    _enableDotKeyboard(d3.select('#gender-pay-chart'), '.gender-bar', {
+        label: function(d) {
+            var premiumTxt = '';
+            if (d.overall_median_pay > 0 && d.female_median_pay > 0) {
+                premiumTxt = ' (female median is +' +
+                    ((d.female_median_pay - d.overall_median_pay) / d.overall_median_pay * 100).toFixed(1) +
+                    '% over the all-CEO median)';
+            }
+            return 'Female CEOs, FY' + d.fiscal_year + ': median pay ' + fmtCurr(d.female_median_pay) +
+                ', ' + d.num_female_ceos + ' of ' + d.total_ceos_in_study + ' CEOs in study' + premiumTxt +
+                (d.highest_paid_woman ? '. Highest paid: ' + d.highest_paid_woman +
+                    (d.highest_paid_woman_comp ? ' at ' + fmtCurr(d.highest_paid_woman_comp) : '') : '') +
+                '. Press Enter to filter the table to female CEOs.';
+        },
+        activate: function(d) {
+            hideChartTooltip();
+            if (window.filterByGender) window.filterByGender('F');
+        }
+    });
 
     // Bar value labels
     barGroups.append('text')
