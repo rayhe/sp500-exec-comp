@@ -1815,6 +1815,25 @@ function drawRatioChart(companies) {
         });
 
     // Count labels on top of bars
+
+    // Keyboard operability (2026-10-10): the ratio bars are click-to-filter
+    // controls, so expose them as buttons for keyboard users too
+    // (histogram-bar pilot: roving tabindex, focus fires the hover tooltip,
+    // Enter/Space runs the same filter path as click).
+    _enableDotKeyboard(d3.select('#ratio-chart'), '.hist-bar rect', {
+        label: function(b) {
+            var pct = (b.count / withRatio.length * 100).toFixed(1);
+            var topNames = b.companies.slice(0, 3).map(function(c) {
+                return c.ticker + ' (' + c.pay_ratio.toLocaleString() + ':1)';
+            }).join(', ');
+            return 'Pay ratio ' + b.label + ': ' + b.count + ' companies (' + pct + '% of S&P 500)' +
+                (topNames ? '. Highest: ' + topNames : '') +
+                '. Press Enter to filter the table by this ratio range.';
+        },
+        activate: function(b) {
+            if (window.filterByRatioBucket) window.filterByRatioBucket(b.min, b.max);
+        }
+    });
     bars.append('text')
         .attr('class', 'bar-label')
         .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
@@ -2104,6 +2123,7 @@ function drawTop10Chart(companies, mode) {
     svg.selectAll('.top-bar')
         .data(top10)
         .join('rect')
+        .attr('class', 'top-bar')
         .attr('x', 0)
         .attr('y', function(d) { return y(cfg.label(d)); })
         .attr('width', function(d) { return Math.max(2, x(cfg.value(d))); })
@@ -2156,6 +2176,21 @@ function drawTop10Chart(companies, mode) {
         });
 
     // Ticker labels on bars (small, inside or next to bar)
+
+    // Keyboard operability (2026-10-10): the top-10 bars are click-to-find
+    // controls (histogram-bar pilot).
+    _enableDotKeyboard(d3.select('#top10-chart'), '.top-bar', {
+        label: function(d) {
+            var rank = top10.indexOf(d) + 1;
+            return '#' + rank + ' ' + (d.ceo_name || d.ticker) + ' (' + d.ticker + '): ' +
+                cfg.xLabel + ' ' + cfg.format(cfg.value(d), d) +
+                (d.sector ? '. Sector: ' + d.sector : '') +
+                '. Press Enter to find in the table.';
+        },
+        activate: function(d) {
+            if (window.findCompanyInTable) window.findCompanyInTable(d.ticker);
+        }
+    });
     svg.selectAll('.top-ticker')
         .data(top10)
         .join('text')
@@ -2523,6 +2558,25 @@ function drawCompDistChart(companies) {
         });
 
     // S&P 500 count labels (dimmed when sector overlay active)
+
+    // Keyboard operability (2026-10-10): the comp-bracket bars are
+    // click-to-filter controls (histogram-bar pilot). The sector overlay
+    // bars share the bucket datum and the same filter action, so they ride
+    // the same roving pilot.
+    _enableDotKeyboard(d3.select('#comp-dist-chart'), '.comp-dist-bar rect, .comp-dist-sector-bar rect', {
+        label: function(b) {
+            var pct = (b.count / withComp.length * 100).toFixed(1);
+            var topNames = b.companies.slice(0, 3).map(function(c) {
+                return c.ticker + ' (' + fmtCurr(c.total_compensation) + ')';
+            }).join(', ');
+            return b.label + ' compensation: ' + b.count + ' companies (' + pct + '% of S&P 500)' +
+                (topNames ? '. Top earners: ' + topNames : '') +
+                '. Press Enter to filter the table.';
+        },
+        activate: function(b) {
+            if (window.filterByCompBracket) window.filterByCompBracket(b.min, b.max, b.label);
+        }
+    });
     bars.append('text')
         .attr('class', 'bar-label')
         .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
@@ -4855,6 +4909,29 @@ function drawYoYDistChart(companies) {
         });
 
     // Count labels on bars
+
+    // Keyboard operability (2026-10-10): the YoY bars are click-to-filter
+    // controls (histogram-bar pilot). Hover handlers here are
+    // mouseenter/mouseleave, so the pilot's hover pair is overridden.
+    _enableDotKeyboard(d3.select('#yoy-dist-chart'), '.yoy-bar rect', {
+        hoverIn: 'mouseenter',
+        hoverOut: 'mouseleave',
+        label: function(b) {
+            var pct = (b.count / yoyData.length * 100).toFixed(1);
+            var topList = b.companies.slice().sort(function(a, c) {
+                return Math.abs(c.pct) - Math.abs(a.pct);
+            }).slice(0, 3).map(function(d) {
+                var sign = d.pct >= 0 ? '+' : '';
+                return d.ticker + ' ' + sign + d.pct.toFixed(1) + '%';
+            }).join(', ');
+            return b.label + ' YoY pay change: ' + b.count + ' companies (' + pct + '%)' +
+                (topList ? '. Largest movers: ' + topList : '') +
+                '. Press Enter to filter the table.';
+        },
+        activate: function(b) {
+            if (typeof window.filterByYoYBucket === 'function') window.filterByYoYBucket(b.min, b.max, b.label);
+        }
+    });
     bars.append('text')
         .attr('x', x.bandwidth() / 2)
         .attr('y', function(b) { return y(b.count) - 5; })
@@ -5972,6 +6049,33 @@ function drawCeoCfoChart(companies) {
         });
 
     // Count labels above bars
+
+    // Keyboard operability (2026-10-10): the premium bars are click-to-highlight
+    // controls (histogram-bar pilot). Enter/Space replays the same toggle the
+    // click handler runs.
+    _enableDotKeyboard(d3.select('#ceo-cfo-chart'), '.cfo-bar', {
+        label: function(b) {
+            var pct = (b.count / withPremium.length * 100).toFixed(1);
+            var topCompanies = b.companies.slice().sort(function(a, c) {
+                return (c._ceoCfoPremium || 0) - (a._ceoCfoPremium || 0);
+            }).slice(0, 3).map(function(c) {
+                return c.ticker + ' ' + c._ceoCfoPremium.toFixed(1) + 'x';
+            }).join(', ');
+            return b.label + ' CEO-to-CFO pay premium: ' + b.count + ' companies (' + pct + '%)' +
+                (topCompanies ? '. Highest: ' + topCompanies : '') +
+                '. Press Enter to highlight this bucket.';
+        },
+        activate: function(b) {
+            var isActive = window._activeCeoCfoBucket &&
+                window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
+            if (isActive) {
+                window._activeCeoCfoBucket = null;
+            } else {
+                window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+            }
+            highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
+        }
+    });
     g.selectAll('.cfo-count')
         .data(buckets)
         .enter().append('text')
@@ -6234,6 +6338,31 @@ function drawConcDistChart(companies) {
         });
 
     // Count labels
+
+    // Keyboard operability (2026-10-10): the concentration bars are
+    // click-to-filter controls (histogram-bar pilot). The sector overlay bars
+    // share the bucket datum and the same filter action, so they ride the
+    // same roving pilot.
+    _enableDotKeyboard(d3.select('#conc-dist-chart'), '.conc-dist-bar rect, .conc-sector-bar rect', {
+        label: function(b) {
+            var pct = (b.count / n * 100).toFixed(1);
+            var compList = b.companies.slice(0, 3).map(function(c) {
+                return c.ticker + ' ' + c._ceoConcPct.toFixed(1) + '%';
+            }).join(', ');
+            return b.label + ' CEO pay concentration: ' + b.count + ' companies (' + pct + '% of S&P 500)' +
+                (compList ? '. Top: ' + compList : '') +
+                '. Press Enter to filter the table.';
+        },
+        activate: function(b) {
+            if (typeof filterByConcTier === 'function') {
+                filterByConcTier(b.min, b.max, b.tag, b.label);
+                if (window.highlightConcDistBucket) window.highlightConcDistBucket(
+                    window._activeConcTier ? window._activeConcTier.min : null,
+                    window._activeConcTier ? window._activeConcTier.max : null
+                );
+            }
+        }
+    });
     bars.append('text')
         .attr('class', 'conc-count-label')
         .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
@@ -6614,6 +6743,23 @@ function drawSopDistChart(companies) {
         });
 
     // Count labels on top of bars
+
+    // Keyboard operability (2026-10-10): the say-on-pay bars are
+    // click-to-highlight controls (histogram-bar pilot).
+    _enableDotKeyboard(d3.select('#sop-dist-chart'), '.sop-bar', {
+        label: function(b) {
+            var compList = b.companies.slice(0, 3).map(function(c) {
+                return c.ticker + ' ' + c._sopApproval.toFixed(1) + '%';
+            }).join(', ');
+            return b.label + ' say-on-pay approval: ' + b.count + ' companies' +
+                (compList ? '. Highest approval: ' + compList : '') +
+                '. Press Enter to highlight this bucket.';
+        },
+        activate: function(b) {
+            if (window.highlightSopBucket) window.highlightSopBucket(b.min, b.max);
+        }
+    });
+
     g.selectAll('.sop-count-label')
         .data(activeBuckets)
         .enter()
@@ -8730,6 +8876,27 @@ function drawGovDistChart(companies) {
         });
 
     // Count labels on top of bars
+
+    // Keyboard operability (2026-10-10): the governance bars are
+    // click-to-filter controls (histogram-bar pilot).
+    _enableDotKeyboard(d3.select('#gov-dist-chart'), '.gov-bar', {
+        label: function(b) {
+            var grade = b.companies.length > 0 ? b.companies[0]._govGrade : 'C';
+            var compList = b.companies.slice(0, 3).map(function(c) {
+                return c.ticker + ' ' + c._govScore + ' (' + c._govGrade + ')';
+            }).join(', ');
+            return 'Governance score ' + b.label + ' (Grade ' + b.grade + '): ' + b.count + ' companies' +
+                (compList ? '. Top: ' + compList : '') +
+                '. Press Enter to filter the table by grade ' + grade + '.';
+        },
+        activate: function(b) {
+            if (window.filterByGovGrade) {
+                var grade = b.companies.length > 0 ? b.companies[0]._govGrade : 'C';
+                window.filterByGovGrade(grade, b.min, b.max);
+            }
+        }
+    });
+
     g.selectAll('.gov-count-label')
         .data(activeBuckets)
         .enter()
@@ -12599,6 +12766,7 @@ function drawVolatilityDistChart(companies) {
     g.selectAll('.vol-bar')
         .data(buckets)
         .enter().append('rect')
+        .attr('class', 'vol-bar')
         .attr('x', function(b) { return x(b.label); })
         .attr('y', function(b) { return y(b.count); })
         .attr('width', x.bandwidth())
@@ -12623,6 +12791,24 @@ function drawVolatilityDistChart(companies) {
         });
 
     // Count labels
+
+    // Keyboard operability (2026-10-10): the volatility bars are
+    // click-to-filter controls (histogram-bar pilot). Enter/Space replays the
+    // same filter path the click handler runs.
+    _enableDotKeyboard(d3.select('#volatility-dist-chart'), '.vol-bar', {
+        label: function(b) {
+            var pct = (b.count / withVol.length * 100).toFixed(1);
+            return b.label + ' CEO pay volatility: ' + b.count + ' companies (' + pct + '%)' +
+                '. ' + b.tag + ' volatility tier. Press Enter to filter the table.';
+        },
+        activate: function(b) {
+            window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            if (typeof renderTable === 'function') renderTable(companies);
+            if (typeof scrollToTable === 'function') scrollToTable();
+            if (typeof announce === 'function') announce('Filtered to ' + b.count + ' companies with ' + b.label + ' pay volatility');
+        }
+    });
+
     g.selectAll('.vol-count')
         .data(buckets)
         .enter().append('text')

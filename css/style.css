@@ -5203,6 +5203,26 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard focus ring for the histogram-bar pilot's clickable bucket bars
+   (2026-10-10): the pay-ratio, top-10, comp-distribution, YoY, CEO-CFO
+   premium, concentration, say-on-pay, governance, and volatility chart bars
+   are tabindex="0" role="button" via _enableDotKeyboard (see js/charts.js).
+   Matches the site's --accent focus-visible convention. */
+#ratio-chart .hist-bar rect:focus-visible,
+#top10-chart .top-bar:focus-visible,
+#comp-dist-chart .comp-dist-bar rect:focus-visible,
+#comp-dist-chart .comp-dist-sector-bar rect:focus-visible,
+#yoy-dist-chart .yoy-bar rect:focus-visible,
+#ceo-cfo-chart .cfo-bar:focus-visible,
+#conc-dist-chart .conc-dist-bar rect:focus-visible,
+#conc-dist-chart .conc-sector-bar rect:focus-visible,
+#sop-dist-chart .sop-bar:focus-visible,
+#gov-dist-chart .gov-bar:focus-visible,
+#volatility-dist-chart .vol-bar:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* 2026-10-08: quartile-composition segments and governance-quartile
    segments are tabindex="0" role="button" (see drawQuartileComposition /
    drawGovQuartileComp). Matches the site's --accent focus-visible
