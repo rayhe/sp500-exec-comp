@@ -9875,6 +9875,29 @@ function _refreshAnomalyChips() {
     }
 }
 
+/* Data-bearing aria-label for the pay-anomaly pilot's keyboard surfaces
+   (2026-10-10): mirrors the hover tooltip content so keyboard users get the
+   same company data. */
+function _anomalyBarLabel(d) {
+    var parts = [d.ticker + ' — ' + d.company + ', CEO ' + d.ceo];
+    parts.push('Actual pay ' + fmtCurr(d.actual) + ', expected ' + fmtCurr(d.expected));
+    parts.push('Deviation ' + (d.pctDev > 0 ? '+' : '') + d.pctDev.toFixed(0) + '%' +
+        (d.pctDev >= 0 ? ' above' : ' below') + ' expected');
+    parts.push('Governance ' + d.govScore.toFixed(0) + ' (' + d.govGrade + ')');
+    if (d.sector) parts.push(d.sector);
+    parts.push('Press Enter to open company detail.');
+    return parts.join('. ');
+}
+
+function _anomalySparkLabel(d) {
+    if (!d.trend || d.trend.length < 2) return _anomalyBarLabel(d);
+    var first = d.trend[0], last = d.trend[d.trend.length - 1];
+    var yoy = (last.total - first.total) / first.total * 100;
+    return d.ticker + ' 3-year CEO pay trend: FY' + first.year + ' ' + fmtCurr(first.total) +
+        ' to FY' + last.year + ' ' + fmtCurr(last.total) + ' (' +
+        (yoy >= 0 ? '+' : '') + yoy.toFixed(0) + '% overall). Press Enter to open company detail.';
+}
+
 function drawPayAnomalyChart(companies) {
     _anomalyCompaniesRef = companies;
     var container = document.getElementById('pay-anomaly-chart');
@@ -10069,6 +10092,7 @@ function drawPayAnomalyChart(companies) {
         summaryParts.push('Avg Gov ' + (sectorMeanGov || 0).toFixed(0));
         summaryParts.push('Median Deviation ' + (sectorMedianDev > 0 ? '+' : '') + (sectorMedianDev || 0).toFixed(0) + '%');
         var summaryG = g.append('g')
+            .attr('class', 'anomaly-summary')
             .style('cursor', 'pointer')
             .on('mouseover', function() {
                 summaryG.select('.anomaly-summary-text').attr('text-decoration', 'underline');
@@ -10092,6 +10116,27 @@ function drawPayAnomalyChart(companies) {
                         govPayPanel.style.outline = 'none';
                         govPayPanel.style.outlineOffset = '';
                     }, 1500);
+                }
+            });
+        // Keyboard operability (2026-10-10): the sector summary strip is a
+        // click-only nav control; expose it as a real button for keyboard users
+        // (anomaly pilot). Focus mirrors the hover underline/hint reveal.
+        summaryG
+            .attr('tabindex', '0')
+            .attr('role', 'button')
+            .attr('aria-label', 'Sector summary: ' + summaryParts.join(', ') + '. Press Enter to view in Governance vs Pay scatter.')
+            .on('focus', function() {
+                summaryG.select('.anomaly-summary-text').attr('text-decoration', 'underline');
+                summaryG.select('.anomaly-nav-hint').attr('opacity', 1);
+            })
+            .on('blur', function() {
+                summaryG.select('.anomaly-summary-text').attr('text-decoration', 'none');
+                summaryG.select('.anomaly-nav-hint').attr('opacity', 0);
+            })
+            .on('keydown', function(ev) {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    this.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
                 }
             });
         summaryG.append('text')
@@ -10124,6 +10169,8 @@ function drawPayAnomalyChart(companies) {
 
         // Bar
         g.append('rect')
+            .attr('class', 'anomaly-bar')
+            .datum(d)
             .attr('x', barX).attr('y', by)
             .attr('width', 0).attr('height', barH)
             .attr('fill', barColor)
@@ -10215,6 +10262,8 @@ function drawPayAnomalyChart(companies) {
 
         // Company label
         g.append('text')
+            .attr('class', 'anomaly-label')
+            .datum(d)
             .attr('x', -6)
             .attr('y', by + barH / 2)
             .attr('dy', '0.35em')
@@ -10229,11 +10278,12 @@ function drawPayAnomalyChart(companies) {
             .text(d.ticker + ' \u2014 ' + d.ceo.split(/\s+/).slice(-1)[0]);
 
         // Compare button (+ / ✓) — add/remove from comparison panel
-        (function(ticker, by2, barH2) {
+        (function(ticker, by2, barH2, isFirst) {
             var isCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
             var isFull = window._compareSet && window._compareSet.length >= 4 && !isCompared;
             var cmpBtn = g.append('text')
                 .attr('class', 'anomaly-compare-btn')
+                .datum(d)
                 .attr('x', -margin.left + 18)
                 .attr('y', by2 + barH2 / 2)
                 .attr('dy', '0.35em')
@@ -10286,8 +10336,53 @@ function drawPayAnomalyChart(companies) {
                 .on('mousemove', function() { positionChartTooltip(d3.event || event); })
                 .on('mouseout', function() { hideChartTooltip(); });
             }
+            // Keyboard operability (2026-10-10): the compare toggle is a
+            // click-only control; expose it as a real button (anomaly pilot).
+            // Focus mirrors the hover tooltip; Enter/Space replays the click
+            // path and refreshes the aria-label to the post-toggle state.
+            cmpBtn
+                .attr('tabindex', isFirst ? '0' : '-1')
+                .attr('role', 'button')
+                .attr('aria-label', (isCompared ? 'Remove ' + ticker + ' from comparison' : 'Add ' + ticker + ' to comparison') + '. Press Enter to toggle.')
+                .on('focus', function() {
+                    this.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true }));
+                })
+                .on('blur', function() {
+                    this.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, cancelable: true }));
+                })
+                .on('keydown', function(ev) {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        if (window._compareSet && window._compareSet.length >= 4 &&
+                            window._compareSet.indexOf(ticker) < 0) {
+                            if (typeof announce === 'function') announce('Max 4 companies in comparison');
+                            return;
+                        }
+                        this.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+                        var nowCompared = window._compareSet && window._compareSet.indexOf(ticker) >= 0;
+                        d3.select(this).attr('aria-label',
+                            (nowCompared ? 'Remove ' + ticker + ' from comparison' : 'Add ' + ticker + ' to comparison') + '. Press Enter to toggle.');
+                    } else if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown' ||
+                               ev.key === 'ArrowLeft' || ev.key === 'ArrowUp' ||
+                               ev.key === 'Home' || ev.key === 'End') {
+                        // Roving tabindex within the compare-button set (anomaly
+                        // pilot convention: Tab reaches the chart's first control,
+                        // arrows move within each control set).
+                        ev.preventDefault();
+                        var btns = document.querySelectorAll('#pay-anomaly-chart .anomaly-compare-btn');
+                        var idx = Array.prototype.indexOf.call(btns, this);
+                        if (idx < 0) return;
+                        var nidx = ev.key === 'Home' ? 0 : ev.key === 'End' ? btns.length - 1
+                            : (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') ? (idx + 1) % btns.length
+                            : (idx - 1 + btns.length) % btns.length;
+                        for (var b = 0; b < btns.length; b++) {
+                            btns[b].setAttribute('tabindex', b === nidx ? '0' : '-1');
+                        }
+                        btns[nidx].focus();
+                    }
+                });
             cmpBtn.attr('data-ticker', ticker);
-        })(d.ticker, by, barH);
+        })(d.ticker, by, barH, i === 0);
 
         // Deviation % label
         var labelX = d.pctDev >= 0 ? x(d.pctDev) + 6 : x(d.pctDev) - 6;
@@ -10374,6 +10469,8 @@ function drawPayAnomalyChart(companies) {
 
                 // Hover overlay for tooltip
                 g.append('rect')
+                    .attr('class', 'anomaly-spark')
+                    .datum(d)
                     .attr('x', spkX - 2).attr('y', spkY - 2)
                     .attr('width', spkW + 4).attr('height', spkH + 4)
                     .attr('fill', 'transparent')
@@ -10400,6 +10497,8 @@ function drawPayAnomalyChart(companies) {
             ? (d.pctDev.toFixed(0).length + fmtCurr(d.actual).length + 5) * (_anomalySectorFilter ? 5.4 : 6)
             : -((d.pctDev.toFixed(0).length + fmtCurr(d.actual).length + 5) * (_anomalySectorFilter ? 5.4 : 6));
         g.append('text')
+            .attr('class', 'anomaly-nav-icon')
+            .datum(d)
             .attr('x', navIconX + navIconOffset)
             .attr('y', by + barH / 2)
             .attr('dy', '0.35em')
@@ -10427,6 +10526,41 @@ function drawPayAnomalyChart(companies) {
             .delay(i * (_anomalySectorFilter ? 12 : 20) + 500)
             .attr('opacity', 0.6)
             .text('\u2934');
+    });
+
+    // Keyboard operability (2026-10-10): the anomaly rows carried click
+    // actions (company detail, compare toggle, scatter navigation) and
+    // data-bearing hover tooltips but no keyboard path (anomaly pilot:
+    // roving tabindex, role=button, data-bearing aria-labels, focus fires
+    // the exact hover-tooltip path, Enter/Space replays the click action).
+    var _anomalyG = d3.select('#pay-anomaly-chart');
+    _enableDotKeyboard(_anomalyG, '.anomaly-bar', {
+        label: function(d) { return _anomalyBarLabel(d); },
+        activate: function(d) {
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
+        }
+    });
+    _enableDotKeyboard(_anomalyG, '.anomaly-label', {
+        label: function(d) { return _anomalyBarLabel(d); },
+        activate: function(d) {
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
+        }
+    });
+    _enableDotKeyboard(_anomalyG, '.anomaly-spark', {
+        label: function(d) { return _anomalySparkLabel(d); },
+        activate: function(d) {
+            if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.ticker);
+        }
+    });
+    _enableDotKeyboard(_anomalyG, '.anomaly-nav-icon', {
+        label: function(d) {
+            return 'View ' + d.ticker + ' in the Governance vs Pay scatter plot. Press Enter.';
+        },
+        activate: function(d) {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_govScore', 'total_compensation');
+            }
+        }
     });
 
     // Clear highlight ticker after rendering
