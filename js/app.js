@@ -94,6 +94,11 @@ function _kbdUpgradeRoving(container, selector) {
     }
 }
 
+/* Cross-file exposure (2026-10-10 run): charts.js brush-results rows are a
+   separate-file call site. Standard cross-scope pattern
+   (cf. window.insightResetAndSort). */
+window._kbdUpgradeRoving = _kbdUpgradeRoving;
+
 /* Bespoke SVG keyboard treatment (2026-10-09 23:30 PT run): D3-created SVG
    click surfaces (compare radar dimension labels) cannot use
    _kbdUpgradeRoving() because (1) their "title" is an SVG <title> CHILD

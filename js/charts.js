@@ -4394,6 +4394,13 @@ function drawScatterChart(companies) {
     var brushResultsEl = document.getElementById('scatter-brush-results');
     var brushG = svg.append('g').attr('class', 'scatter-brush-layer');
 
+    // Keyboard brush state (2026-10-10): _kbdBrushSel is the keyboard-drawn
+    // rect in px ([[x0,y0],[x1,y1]]) or null; _kbdBrushSilent marks a
+    // live-draw arrow-key move whose 'end' should dim dots only and hold
+    // the results panel until Enter commits.
+    var _kbdBrushSel = null;
+    var _kbdBrushSilent = false;
+
     // Track whether a dot is currently under the pointer
     var _dotUnderPointer = false;
     svg.selectAll('.scatter-dot, .scatter-dot-bg, .scatter-dot-sector')
@@ -4426,6 +4433,7 @@ function drawScatterChart(companies) {
         .on('end', function(event) {
             if (!event.selection) {
                 // Brush cleared — restore opacities
+                _kbdBrushSel = null;   // keyboard-drawn rect is gone too
                 if (hasSectorOverlay) {
                     svg.selectAll('.scatter-dot-bg').attr('opacity', defaultOpacity);
                     svg.selectAll('.scatter-dot-sector').attr('opacity', sectorDotOpacity);
@@ -4435,7 +4443,14 @@ function drawScatterChart(companies) {
                 if (brushResultsEl) brushResultsEl.style.display = 'none';
                 return;
             }
+            if (_kbdBrushSilent) {
+                // Keyboard live-draw (arrow keys): the 'brush' event already
+                // dimmed the dots; hold the results panel until Enter commits.
+                _kbdBrushSilent = false;
+                return;
+            }
             var sel = event.selection;
+            _kbdBrushSel = sel;   // sync a mouse-drawn rect into the keyboard path
             // Find companies inside selection
             var selected = pts.filter(function(d) {
                 var cx = dotX(d), cy = dotY(d);
@@ -4466,6 +4481,79 @@ function drawScatterChart(companies) {
         if (brushResultsEl) brushResultsEl.style.display = 'none';
     };
 
+    // === Keyboard brush (2026-10-10) ===
+    // The brush overlay rect is mouse-only (click-and-drag). Keyboard users
+    // get an equivalent region rectangle on the SAME d3.brush: when the brush
+    // layer has focus, arrow keys move a selection rect (Shift+arrows resize
+    // it from the bottom-right corner), Enter/Space commits it through the
+    // normal brush.move -> 'end' path, so the results panel, dot dimming,
+    // and clear affordances are identical to the mouse path (full parity).
+    // Escape clears an uncommitted keyboard-drawn rect; a committed
+    // selection bubbles to the existing global Esc handler (same clear).
+    var KBD_BRUSH_STEP = 14;
+    var KBD_BRUSH_MIN = 10;
+    function _kbdBrushClamp(sel) {
+        var x0 = Math.max(0, Math.min(sel[0][0], w - KBD_BRUSH_MIN));
+        var y0 = Math.max(0, Math.min(sel[0][1], h - KBD_BRUSH_MIN));
+        var x1 = Math.max(x0 + KBD_BRUSH_MIN, Math.min(sel[1][0], w));
+        var y1 = Math.max(y0 + KBD_BRUSH_MIN, Math.min(sel[1][1], h));
+        return [[x0, y0], [x1, y1]];
+    }
+    brushG
+        .attr('tabindex', '0')
+        .attr('focusable', 'true')
+        .attr('role', 'application')
+        .attr('data-kbd-upgraded', '1')
+        .attr('aria-label', 'Scatter chart region selection. Press arrow keys to move the selection region. Hold Shift and press arrow keys to resize the region. Press Enter to apply the selection. Press Escape to clear.')
+        .on('keydown.kbdbrush', function(event) {
+            var key = event.key;
+            if (key === 'Escape') {
+                // Uncommitted keyboard rect (results panel still hidden):
+                // clear it here and stop the event so the global Esc
+                // handler does not fall through to clearing filters.
+                if (_kbdBrushSel && (!brushResultsEl || brushResultsEl.style.display === 'none')) {
+                    window._clearScatterBrush();
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                return;   // committed selections bubble to the global handler
+            }
+            if (key === 'Enter' || key === ' ') {
+                if (!_kbdBrushSel) return;
+                event.preventDefault();
+                event.stopPropagation();
+                _kbdBrushSilent = false;   // commit: let 'end' render results
+                brushG.call(brush.move, _kbdBrushSel);
+                return;
+            }
+            var dx = 0, dy = 0;
+            if (key === 'ArrowLeft') dx = -KBD_BRUSH_STEP;
+            else if (key === 'ArrowRight') dx = KBD_BRUSH_STEP;
+            else if (key === 'ArrowUp') dy = -KBD_BRUSH_STEP;
+            else if (key === 'ArrowDown') dy = KBD_BRUSH_STEP;
+            else return;
+            // Keyboard-pilot contract: arrows must not reach the global
+            // ArrowLeft/Right table-page shortcut.
+            event.preventDefault();
+            event.stopPropagation();
+            if (!_kbdBrushSel) {
+                var cx = w / 2, cy = h / 2, half = 70;
+                _kbdBrushSel = [[cx - half, cy - half], [cx + half, cy + half]];
+            }
+            if (event.shiftKey) {
+                // Resize from the bottom-right corner.
+                _kbdBrushSel[1][0] += dx;
+                _kbdBrushSel[1][1] += dy;
+            } else {
+                // Translate the whole rect.
+                _kbdBrushSel[0][0] += dx; _kbdBrushSel[0][1] += dy;
+                _kbdBrushSel[1][0] += dx; _kbdBrushSel[1][1] += dy;
+            }
+            _kbdBrushSel = _kbdBrushClamp(_kbdBrushSel);
+            _kbdBrushSilent = true;   // live-draw: dim dots, hold results
+            brushG.call(brush.move, _kbdBrushSel);
+        });
+
     // Hint text for brush
     svg.append('text')
         .attr('class', 'scatter-brush-hint')
@@ -4475,7 +4563,7 @@ function drawScatterChart(companies) {
         .attr('font-size', '9px')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .attr('pointer-events', 'none')
-        .text('Drag on empty space to select a region · Click dots to view details · Esc to clear');
+        .text('Drag on empty space, or focus the chart and use Arrow keys, to select a region · Click dots to view details · Esc to clear');
 
     // Apply any pending scatter highlight (cross-chart navigation)
     _applyScatterHighlight();
@@ -4566,7 +4654,7 @@ function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brus
     var displayList = showAll ? selected : selected.slice(0, 15);
     displayList.forEach(function(c) {
         var sColor = typeof getSectorColor === 'function' ? getSectorColor(c.sector) : '#94a3b8';
-        html += '<tr class="sbr-row" data-ticker="' + c.ticker + '" style="cursor:pointer">';
+        html += '<tr class="sbr-row" data-ticker="' + c.ticker + '" title="Click to find in table" style="cursor:pointer">';
         html += '<td><span class="sbr-dot" style="background:' + sColor + '"></span><b>' + c.ticker + '</b></td>';
         html += '<td>' + (c.company_name || '') + '</td>';
         html += '<td>' + (c.ceo_name || '—') + '</td>';
@@ -4606,6 +4694,12 @@ function _renderBrushResults(selected, xMetric, yMetric, container, brushG, brus
             }
             container.style.display = 'none';
         });
+    }
+
+    // Keyboard: rows were click-only (addEventListener -> findCompanyInTable).
+    // Roving-tabindex group with full click parity (2026-10-10 run).
+    if (typeof window._kbdUpgradeRoving === 'function') {
+        window._kbdUpgradeRoving(container, '.sbr-row');
     }
 }
 
