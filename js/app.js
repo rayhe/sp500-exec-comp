@@ -3106,6 +3106,12 @@ function populateInsights(comp, trends, sectorFilter) {
         if (window._refreshInsights) window._refreshInsights(null);
         scrollToTable();
     }
+    // Expose for the Company Comparison view (radar dim labels + divergence
+    // rows), which lives outside populateInsights' scope: bare identifier
+    // calls from there threw "insightResetAndSort is not defined" and the
+    // click-to-sort affordances were dead for mouse and keyboard alike
+    // (found 2026-10-09 22:00 PT by the compare/bridge keyboard guard's R3).
+    window.insightResetAndSort = insightResetAndSort;
 
     // 1. Pay Concentration → sort by comp desc, show top earners
     insights[0].action = function() { insightResetAndSort('total_compensation', 'desc'); };
@@ -11591,6 +11597,12 @@ function setupDetailPanel(companies) {
             });
         });
 
+        // Keyboard: roving-tabindex group over the expandable community bridge
+        // rows (click-only otherwise) — Enter/Space fires el.click(), which the
+        // per-row listener above turns into the same expand/collapse toggle as
+        // a mouse click. One tab stop for the whole bridge list (arrows move).
+        _kbdUpgradeRoving(detailRow, '.cb-bridge-expandable');
+
         // Wire up bridge detail ticker tag clicks — click to find in table, shift+click for network
         detailRow.querySelectorAll('.cb-detail-tag[data-ticker]').forEach(function(tag) {
             tag.addEventListener('click', function(e) {
@@ -16552,6 +16564,11 @@ function setupDualSparklineTooltips() {
                 var sd = row.getAttribute('data-sort-dir');
                 if (sk) insightResetAndSort(sk, sd);
             });
+            // Keyboard: roving-tabindex group over the sortable divergence rows
+            // (click-only otherwise) — Enter/Space fires el.click(), which the
+            // delegated listener above turns into the same insightResetAndSort
+            // sort action as a mouse click.
+            _kbdUpgradeRoving(divEl, '.cmp-div-row-clickable');
         }
 
         // === Profile Similarity Score ===
