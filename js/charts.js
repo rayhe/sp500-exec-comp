@@ -11012,7 +11012,6 @@ function drawTenurePayGrowthChart(companies) {
             .attr('fill', b.color)
             .attr('opacity', 0.8)
             .attr('rx', 4)
-            .style('cursor', 'pointer')
             .on('mouseover', function(event) {
                 d3.select(this).attr('opacity', 1);
                 var tooltipLines = '<strong>' + b.label.replace('\n', ' ') + '</strong><br>' +
@@ -11079,6 +11078,8 @@ function drawTenurePayGrowthChart(companies) {
             if (dotY < 0 || dotY > chartH) return; // skip out-of-range
             var jitter = (Math.random() - 0.5) * bw * 0.6;
             g.append('circle')
+                .datum(m)
+                .attr('class', 'tenure-growth-dot')
                 .attr('cx', bx + bw / 2 + jitter)
                 .attr('cy', dotY)
                 .attr('r', 2.5)
@@ -11108,6 +11109,31 @@ function drawTenurePayGrowthChart(companies) {
                     }
                 });
         });
+    });
+
+    // Keyboard pilot (2026-10-10): the individual company dots carry a click
+    // action (scatter navigation to tenure x pay, else table find) plus a
+    // data-bearing hover tooltip, but had no keyboard path -- the same
+    // failure-mode class the earlier pilots closed (scatter dots, histogram
+    // bars, anomaly rows, gender bars, sector-gov bars). Roving tabindex,
+    // role=button, data-bearing aria-labels (ticker, company, CEO, tenure,
+    // YoY growth); focus fires the exact mouseover-tooltip path via a
+    // synthetic event, blur hides it, Enter/Space replays the click path.
+    _enableDotKeyboard(d3.select('#tenure-pay-growth-chart'), '.tenure-growth-dot', {
+        label: function(d) {
+            return d.ticker + ', ' + (d.company || '') + ', CEO ' + d.ceo +
+                ' (' + d.tenure.toFixed(1) + ' yrs), pay growth ' +
+                (d.yoyPct > 0 ? '+' : '') + d.yoyPct.toFixed(1) + '% FY' +
+                d.fromYear + ' to FY' + d.toYear +
+                '. Press Enter to view in the scatter.';
+        },
+        activate: function(d) {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_ceoTenureYears', 'total_compensation');
+            } else if (window.scrollToCompany) {
+                window.scrollToCompany(d.ticker);
+            }
+        }
     });
 
     // Y-axis labels

@@ -5258,6 +5258,17 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     outline-offset: 2px;
 }
 
+/* Keyboard pilot (2026-10-10): the individual company dots of the tenure x
+   pay growth chart (.tenure-growth-dot) carry a click action (scatter
+   navigation) plus a data-bearing hover tooltip; they join the
+   roving-tabindex pilot (one dot in the tab order; Arrow/Home/End move
+   between dots) via _enableDotKeyboard (see drawTenurePayGrowthChart in
+   js/charts.js). The ring matches the site's --accent convention. */
+#tenure-pay-growth-chart .tenure-growth-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* 2026-10-08: quartile-composition segments and governance-quartile
    segments are tabindex="0" role="button" (see drawQuartileComposition /
    drawGovQuartileComp). Matches the site's --accent focus-visible
