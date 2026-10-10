@@ -658,6 +658,16 @@ header h1 {
     outline: 2px solid var(--accent);
     outline-offset: -2px;
 }
+/* Inline-onclick keyboard pilot (2026-10-09 18:00 PT run): inline onclick
+   filter controls in card prose (.clickable-bar spans, .gov-grade-filter
+   buckets) that the _upgradeInlineOnclickControls() helper marks with
+   data-kbd-upgraded become keyboard surfaces. Matches the site's --accent
+   focus-visible convention. */
+.insight-card [data-kbd-upgraded]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
 
 .insight-cta {
     font-size: 0.7rem;

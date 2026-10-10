@@ -2862,6 +2862,52 @@ function populateInsights(comp, trends, sectorFilter) {
     // Actions reference window-level APIs set up in init(); safe because user clicks happen after init completes
 
     // Helper: reset table to clean state, apply sort, scroll
+    // Keyboard pilot (2026-10-09 18:00 PT run): inline onclick filter controls
+    // in insight-card prose join the tab order. Earlier pilots covered the
+    // card chart surfaces (sector-rank rows, corr cells, treemap leaves,
+    // scatter dots, donut segments, quartile bars); the inline prose filter
+    // links (.insight-tenure-bracket, .gov-grade-filter, and the
+    // *-dist-bar-group histogram bars) were still click-only. This upgrades
+    // every [onclick] inside a rendered card that is not already
+    // keyboard-operable. Skipped: native controls (a/button/input/select/
+    // textarea), elements carrying their own tabindex or onkeydown (e.g. the
+    // PvP badge), elements already role=button, and already-upgraded nodes.
+    // Enter/Space fires el.click() so the keyboard path reproduces the exact
+    // mouse behavior, including the inline handler and its bubble to the
+    // card action; keydown is stopPropagation()ed per the keyboard-pilot
+    // contract so the card's own keydown handler cannot double-fire.
+    function _upgradeInlineOnclickControls(root) {
+        if (!root || !root.querySelectorAll) return;
+        var els = root.querySelectorAll('[onclick]');
+        for (var i = 0; i < els.length; i++) {
+            var el = els[i];
+            var tag = (el.tagName || '').toUpperCase();
+            if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') continue;
+            if (el.hasAttribute('tabindex') || el.hasAttribute('onkeydown') || el.hasAttribute('data-kbd-upgraded')) continue;
+            if (el.getAttribute('role') === 'button') continue;
+            var title = (el.getAttribute('title') || '').trim();
+            var label;
+            if (title) {
+                label = title.replace(/click to/gi, 'Press Enter to');
+                if (!/press enter/i.test(label)) label += '. Press Enter to activate';
+            } else {
+                var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+                if (txt.length > 120) txt = txt.slice(0, 117) + '...';
+                label = (txt ? txt + '. ' : '') + 'Press Enter to activate';
+            }
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('data-kbd-upgraded', '1');
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.click();
+                }
+            });
+        }
+    }
     function insightResetAndSort(sortKey, sortDir) {
         currentSort = { key: sortKey, dir: sortDir };
         setActiveSector(null);
@@ -4517,6 +4563,11 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         html += '</div>';
         card.innerHTML = html;
+        // Keyboard pilot (2026-10-09 18:00 PT run): inline onclick filter
+        // controls in the card prose (.clickable-bar spans, .gov-grade-filter
+        // buckets) join the keyboard surface. Placed before the ins.action
+        // wiring so the upgrade sees the final card DOM.
+        _upgradeInlineOnclickControls(card);
         if (ins.action) {
             card.style.cursor = 'pointer';
             // Keyboard pilot (2026-10-09 14:00 PT run): insight cards with a
