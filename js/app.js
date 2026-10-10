@@ -94,6 +94,75 @@ function _kbdUpgradeRoving(container, selector) {
     }
 }
 
+/* Bespoke SVG keyboard treatment (2026-10-09 23:30 PT run): D3-created SVG
+   click surfaces (compare radar dimension labels) cannot use
+   _kbdUpgradeRoving() because (1) their "title" is an SVG <title> CHILD
+   ELEMENT, not a title attribute (getAttribute('title') returns null), and
+   (2) SVG elements have no .click() method, so the Enter/Space path
+   dispatches a synthetic bubbled click instead (D3 .on('click') uses
+   addEventListener, so the synthetic event hits the real listener for
+   exact keyboard/click parity). Same roving-tabindex group convention and
+   keyboard-pilot contract (preventDefault/stopPropagation on Enter/Space
+   and arrows so the global ArrowLeft/Right table-page shortcut cannot
+   double-fire). */
+function _kbdUpgradeSvgRoving(svgNode, selector) {
+    if (!svgNode || !svgNode.querySelectorAll) return;
+    var els = [];
+    var nodes = svgNode.querySelectorAll(selector);
+    for (var i = 0; i < nodes.length; i++) {
+        var el = nodes[i];
+        var tag = (el.tagName || '').toUpperCase();
+        if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') continue;
+        if (el.hasAttribute('tabindex') || el.hasAttribute('onkeydown') || el.hasAttribute('data-kbd-upgraded')) continue;
+        if (el.getAttribute('role') === 'button') continue;
+        els.push(el);
+    }
+    for (var k = 0; k < els.length; k++) {
+        (function(el, idx) {
+            var titleEl = el.querySelector('title');
+            var title = titleEl ? (titleEl.textContent || '').trim() : '';
+            var label;
+            if (title) {
+                label = title.replace(/click to/gi, 'Press Enter to');
+                if (!/press enter/i.test(label)) label += '. Press Enter to activate';
+            } else {
+                var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+                if (txt.length > 120) txt = txt.slice(0, 117) + '...';
+                label = (txt ? txt + '. ' : '') + 'Press Enter to activate';
+            }
+            el.setAttribute('tabindex', idx === 0 ? '0' : '-1');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('data-kbd-upgraded', '1');
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var ev;
+                    try {
+                        ev = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+                    } catch (err) {
+                        ev = document.createEvent('MouseEvents');
+                        ev.initMouseEvent('click', true, true, window,
+                            0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    }
+                    e.currentTarget.dispatchEvent(ev);
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown' ||
+                           e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var n = els.length;
+                    var next = (e.key === 'ArrowRight' || e.key === 'ArrowDown')
+                        ? (idx + 1) % n : (idx - 1 + n) % n;
+                    els[idx].setAttribute('tabindex', '-1');
+                    els[next].setAttribute('tabindex', '0');
+                    els[next].focus();
+                }
+            });
+        })(els[k], k);
+    }
+}
+
 /* === Theme Management === */
 function initTheme() {
     var saved = localStorage.getItem('sp500-theme');
@@ -16500,6 +16569,14 @@ function setupDualSparklineTooltips() {
                     .attr('opacity', 0.8);
             }
         });
+
+        // Keyboard: radar dimension labels are SVG <text> click-to-sort
+        // surfaces; upgrade them to a roving-tabindex group with the bespoke
+        // SVG treatment (title is a <title> child; no .click() on SVG, so
+        // Enter/Space dispatches a synthetic bubbled click for parity).
+        // Re-render (incl. theme toggle) rebuilds the svg, so the upgrade
+        // re-applies on every render.
+        _kbdUpgradeSvgRoving(svg.node(), '.cmp-radar-dim-label');
 
         // Build legend
         var legendEl = document.getElementById('cmp-radar-legend');
