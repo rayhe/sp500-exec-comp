@@ -2208,6 +2208,7 @@ function sortTableByKey(key, dir) {
     window._activeQuartileFilter = null; // null=off, { tickers: [...], label: "...", communityId: n }
     window._activeCommunityFilter = null; // null=off, { tickers: [...], label: "...", id: n }
     window._activePositionFilter = null; // null=off, { tickers: [...], label: "...", communityId, metric }
+    window._activeCrosstabFilter = null; // null=off, { tickers: [...], label: "..." }
 
     // Reset role chips
     document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
@@ -3166,6 +3167,11 @@ function populateInsights(comp, trends, sectorFilter) {
             document.querySelectorAll('.cb-pos-row-clicked').forEach(function(el) {
                 el.classList.remove('cb-pos-row-clicked');
             });
+        }
+        if (window._activeCrosstabFilter) {
+            window._activeCrosstabFilter = null;
+            var _xfcReset = document.getElementById('crosstab-filter-chip');
+            if (_xfcReset) _xfcReset.remove();
         }
         document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
         var allChip = document.querySelector('.chip');
@@ -6806,6 +6812,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
     if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
     if (window._activePositionFilter) { filterDims++; filterParts.push(window._activePositionFilter.label); }
+    if (window._activeCrosstabFilter) { filterDims++; filterParts.push('Crosstab: ' + window._activeCrosstabFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
@@ -7310,6 +7317,16 @@ function renderTable(companies, options) {
         var _pfTickers = window._activePositionFilter.tickers;
         filtered = filtered.filter(function(c) {
             return _pfTickers.indexOf(c.ticker) >= 0;
+        });
+    }
+
+    // Crosstab filter: filter to the ticker set of a cross-tabulation cell
+    // (Tenure x Gov, Volatility x Gov, SoP x Vol). Same shape as the
+    // peer-dist/community/quartile/position ticker-list filters.
+    if (window._activeCrosstabFilter) {
+        var _xfTickers = window._activeCrosstabFilter.tickers;
+        filtered = filtered.filter(function(c) {
+            return _xfTickers.indexOf(c.ticker) >= 0;
         });
     }
 
@@ -12158,6 +12175,10 @@ function serializeState() {
         params.push('pdtk=' + encodeURIComponent(window._activePeerDistFilter.tickers.join(',')));
         params.push('pdlbl=' + encodeURIComponent(window._activePeerDistFilter.label));
     }
+    if (window._activeCrosstabFilter) {
+        params.push('xtk=' + encodeURIComponent(window._activeCrosstabFilter.tickers.join(',')));
+        params.push('xlbl=' + encodeURIComponent(window._activeCrosstabFilter.label));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -12404,6 +12425,15 @@ function applyHashState(companies) {
         var pdTickers = decodeURIComponent(state.pdtk).split(',').filter(function(t) { return t.length > 0; });
         if (pdTickers.length > 0) {
             window._activePeerDistFilter = { tickers: pdTickers, label: decodeURIComponent(state.pdlbl) };
+        }
+    }
+
+    // Crosstab cell filter (mirror of the peer-dist restore above)
+    if (state.xtk && state.xlbl) {
+        var xTickers = decodeURIComponent(state.xtk).split(',').filter(function(t) { return t.length > 0; });
+        if (xTickers.length > 0) {
+            window._activeCrosstabFilter = { tickers: xTickers, label: decodeURIComponent(state.xlbl) };
+            if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         }
     }
 
@@ -14205,6 +14235,61 @@ function setupDualSparklineTooltips() {
         }
     }
 
+    // --- Crosstab cell filter ---
+    // window.filterTableByTickers was called by the three crosstab click
+    // handlers (Tenure x Gov, Volatility x Gov, SoP x Vol) but never defined,
+    // so clicking a cell scrolled to the table without filtering. This
+    // implements it on the standard window._activeXFilter ticker-list
+    // convention (peer-dist / community / quartile / position): toggle off
+    // when the same cell is clicked again, a clearable chip in the table
+    // controls, summary-bar + URL-state participation.
+    window.filterTableByTickers = function(tickers, label) {
+        var clean = (tickers || []).filter(function(t) { return t; });
+        var lbl = label || (clean.length + ' companies');
+        if (window._activeCrosstabFilter && window._activeCrosstabFilter.label === lbl) {
+            window._activeCrosstabFilter = null;
+        } else {
+            window._activeCrosstabFilter = { tickers: clean, label: lbl };
+        }
+        currentPage = 1;
+        updateCrosstabFilterIndicator();
+        renderTable(companies);
+        pushState();
+        announce(window._activeCrosstabFilter ?
+            'Filtered to ' + clean.length + ' companies (' + lbl + ')' :
+            'Crosstab filter cleared');
+    };
+
+    function updateCrosstabFilterIndicator() {
+        var existing = document.getElementById('crosstab-filter-chip');
+        if (existing) existing.remove();
+        if (window._activeCrosstabFilter) {
+            var xf = window._activeCrosstabFilter;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'crosstab-filter-chip';
+            chip.style.background = 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = 'rgba(0,180,216,0.5)';
+            chip.style.color = '#00b4d8';
+            chip.textContent = xf.label + ' (' + xf.tickers.length + ')';
+            var xSpan = document.createElement('span');
+            xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
+            xSpan.textContent = '\u00d7';
+            chip.appendChild(xSpan);
+            chip.title = 'Click to clear crosstab filter';
+            chip.addEventListener('click', function() {
+                window._activeCrosstabFilter = null;
+                chip.remove();
+                renderTable(companies);
+                pushState();
+                announce('Crosstab filter cleared');
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateCrosstabFilterIndicator = updateCrosstabFilterIndicator;
+
     /* ---- Global Reset All Filters ---- */
     window.resetAllFilters = function() {
         // Core filters
@@ -14235,6 +14320,7 @@ function setupDualSparklineTooltips() {
         window._activeCommunityFilter = null;
         window._activeQuartileFilter = null;
         window._activePositionFilter = null;
+        window._activeCrosstabFilter = null;
 
         // Clear filter chips
         [
@@ -14242,7 +14328,8 @@ function setupDualSparklineTooltips() {
             'ceo-transition-chip', 'team-filter-chip', 'yoy-filter-chip', 'pctile-filter-chip',
             'stock-pct-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
             'gov-filter-chip', 'volatility-filter-chip', 'vol-tenure-chip',
-            'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip'
+            'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip',
+            'crosstab-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -14325,6 +14412,7 @@ function setupDualSparklineTooltips() {
             window._activeVolatilityBucket || window._activeVolTenureBracket ||
             window._activePeerDistFilter || window._activeCommunityFilter ||
             window._activeQuartileFilter || window._activePositionFilter ||
+            window._activeCrosstabFilter ||
             (currentSort && (currentSort.key !== 'total_compensation' || currentSort.dir !== 'desc')));
     };
 

@@ -109,6 +109,27 @@ function _enableDotKeyboard(root, dotSel, cfg) {
 /* Store refs for resize redraw */
 var _chartData = null;
 
+/* Keyboard parity for plain-HTML grid cells that carry a mouse click
+   handler (the three crosstab surfaces below). _enableDotKeyboard is the
+   D3-selection analogue; these cells are plain DOM, so this helper binds
+   keydown directly: Enter/Space replays the exact click path by dispatching
+   a synthetic click, carrying shiftKey so Shift+Enter reaches the
+   Shift+click scatter branch the same way Shift+click does. No visual
+   change; the existing .crosstab-cell:focus-visible ring covers focus. */
+function _enableCellKeyboard(td) {
+    td.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            var clickEvent = null;
+            try {
+                clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, shiftKey: e.shiftKey });
+            } catch (err) { clickEvent = null; }
+            if (clickEvent) td.dispatchEvent(clickEvent);
+            else td.click();
+        }
+    });
+}
+
 function initCharts(companies, trends, compData) {
     _chartData = { companies: companies, trends: trends, compData: compData };
     drawSectorChart(trends, companies);
@@ -11542,15 +11563,18 @@ function drawTenureGovCrossTab(companies) {
     html += '<span class="crosstab-legend-item">Cell color = median CEO pay intensity</span>';
     html += '<span class="crosstab-legend-item"><span style="color:#06d6a0">↑</span> / <span style="color:#ef476f">↓</span> = median YoY pay change</span>';
     html += '<span class="crosstab-legend-item">Governance quartiles: Q1 = bottom 25%, Q4 = top 25% by governance score</span>';
-    html += '<span class="crosstab-legend-item">Click cell = filter table \u00b7 Shift+click = explore top company in scatter</span>';
+    html += '<span class="crosstab-legend-item">Click / Enter = filter table \u00b7 Shift+click / Shift+Enter = explore top company in scatter</span>';
     html += '</div>';
 
     html += '</div>';
     container.innerHTML = html;
 
-    // Click handler: click cell to scroll to & filter main table
+    // Click handler: click cell to scroll to & filter main table.
+    // _enableCellKeyboard gives Enter/Space the same path (Shift+Enter =
+    // Shift+click scatter branch), closing the click-without-keyboard gap.
     container.querySelectorAll('.crosstab-cell[data-tenure]').forEach(function(td) {
         td.style.cursor = 'pointer';
+        _enableCellKeyboard(td);
         td.addEventListener('click', function(e) {
             var tKey = td.getAttribute('data-tenure');
             var gKey = td.getAttribute('data-gov');
@@ -14246,15 +14270,18 @@ function drawVolGovCrossTab(companies) {
     html += '<span class="crosstab-legend-item">Cell color = median volatility intensity (green \u2192 red)</span>';
     html += '<span class="crosstab-legend-item">CV% = coefficient of variation of CEO pay across fiscal years</span>';
     html += '<span class="crosstab-legend-item">Governance quartiles: Q1 = bottom 25%, Q4 = top 25% by governance score</span>';
-    html += '<span class="crosstab-legend-item">Click cell = filter table \u00b7 Shift+click = explore top company in scatter</span>';
+    html += '<span class="crosstab-legend-item">Click / Enter = filter table \u00b7 Shift+click / Shift+Enter = explore top company in scatter</span>';
     html += '</div>';
 
     html += '</div>';
     container.innerHTML = html;
 
-    // Click handler: click cell to scroll to & filter main table
+    // Click handler: click cell to scroll to & filter main table.
+    // _enableCellKeyboard gives Enter/Space the same path (Shift+Enter =
+    // Shift+click scatter branch), closing the click-without-keyboard gap.
     container.querySelectorAll('.crosstab-cell[data-vol]').forEach(function(td) {
         td.style.cursor = 'pointer';
+        _enableCellKeyboard(td);
         td.addEventListener('click', function(e) {
             var vKey = td.getAttribute('data-vol');
             var gKey = td.getAttribute('data-gov');
@@ -14541,7 +14568,8 @@ function drawSopVolCrossTab(companies) {
                 html += 'data-sop-key="' + sb.key + '" data-vol-key="' + vb.key + '" ';
                 html += 'data-sop-min="' + sb.min + '" data-sop-max="' + sb.max + '" ';
                 html += 'data-vol-min="' + vb.min + '" data-vol-max="' + vb.max + '" ';
-                html += 'title="' + count + ' companies: ' + sb.label + ' SoP × ' + vb.label.replace('\n', ' ') + ' volatility. Click to filter table.">';
+                html += 'title="' + count + ' companies: ' + sb.label + ' SoP × ' + vb.label.replace('\n', ' ') + ' volatility. Click or Enter to filter table; Shift+click or Shift+Enter for scatter." ' +
+                    'tabindex="0" role="gridcell">';
                 html += '<div class="crosstab-count">' + count + '</div>';
                 html += '<div class="crosstab-pay">' + formatPay(medPay) + '</div>';
                 html += '<div class="crosstab-meta">SoP ' + medSop.toFixed(1) + '% · CV ' + medVol.toFixed(1) + '%</div>';
@@ -14700,8 +14728,12 @@ function drawSopVolCrossTab(companies) {
 
     container.innerHTML = html;
 
-    // Click handlers for cells
+    // Click handlers for cells; _enableCellKeyboard gives Enter/Space the
+    // same path (Shift+Enter = Shift+click scatter branch), closing the
+    // click-without-keyboard gap (these cells previously had no tabindex
+    // or role at all).
     container.querySelectorAll('.crosstab-cell[data-sop-key]').forEach(function(cell) {
+        _enableCellKeyboard(cell);
         cell.addEventListener('click', function(evt) {
             var sopMin = parseFloat(cell.getAttribute('data-sop-min'));
             var sopMax = parseFloat(cell.getAttribute('data-sop-max'));
