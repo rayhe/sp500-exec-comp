@@ -11681,6 +11681,16 @@ function setupDetailPanel(companies) {
             });
         });
 
+        // Keyboard pilot (2026-10-11 14:00 PT run): the detail panel's peer
+        // navigation/filter surfaces are click-only — peer distribution
+        // histogram columns (click-to-filter), peer pay rows (click to find
+        // the peer in the table), and reach peer tickers. One
+        // roving-tabindex group over detailRow in document order. Zero-count
+        // dist columns carry no click action (empty tickers -> early return)
+        // and self peer-pay rows are unwired, so both are excluded from the
+        // selector (click/no-op parity).
+        _kbdUpgradeRoving(detailRow, '.peer-dist-col[data-peer-tickers]:not([data-peer-tickers=""]), .peer-pay-row[data-ticker]:not(.peer-pay-self), .reach-peer-ticker[data-ticker]');
+
         // Wire up expandable community bridge rows — click to show/hide specific peer tickers
         detailRow.querySelectorAll('.cb-bridge-expandable').forEach(function(row) {
             row.addEventListener('click', function(e) {
