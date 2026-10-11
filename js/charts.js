@@ -11920,6 +11920,8 @@ function drawGERChart(companies) {
 
         // Company label on left
         g.append('text')
+            .attr('class', 'ger-label')
+            .datum(c)
             .attr('x', -4)
             .attr('y', y + bh / 2 + 4)
             .attr('text-anchor', 'end')
@@ -11934,6 +11936,8 @@ function drawGERChart(companies) {
 
         // Tooltip rect overlay
         g.append('rect')
+            .attr('class', 'ger-row-rect')
+            .datum(c)
             .attr('x', 0)
             .attr('y', y)
             .attr('width', width)
@@ -11957,6 +11961,8 @@ function drawGERChart(companies) {
         var scatterIconX = Math.min(xScale(c._gerScore) + 22, width - 10);
         (function(ticker) {
             g.append('text')
+                .attr('class', 'ger-nav-icon')
+                .datum({ ticker: ticker })
                 .attr('x', scatterIconX)
                 .attr('y', y + bh / 2 + 4)
                 .style('fill', mutedColor)
@@ -11975,6 +11981,46 @@ function drawGERChart(companies) {
                 .append('title')
                 .text('View ' + ticker + ' in GER vs Pay scatter');
         })(c.ticker);
+    });
+
+    // Keyboard operability (2026-10-10): the GER rows carried click actions
+    // (row/label = company detail panel, nav icon = GER vs Pay scatter) and
+    // a data-bearing native <title> tooltip but no keyboard path (ger pilot:
+    // roving tabindex, role=button, data-bearing aria-labels). Focus fires
+    // the exact hover path (synthetic mouseover -- the <title> contents are
+    // mirrored in the aria-label since native tooltips do not fire from
+    // synthetic events); Enter/Space replays the click action.
+    function _gerRowLabel(d) {
+        return d.company_name + ' (' + d.ticker + '), CEO ' + d.ceo_name +
+            '. Governance Erosion Risk Score ' + d._gerScore + '/100 (' + d._gerRisk + '). ' +
+            'Components: Tenure Duration ' + (d._gerComponents.tenure || 0) +
+            ', Gov Quality Deficit ' + (d._gerComponents.govDeficit || 0) +
+            ', Pay-Gov Mismatch ' + (d._gerComponents.payMismatch || 0) +
+            ', CEO Concentration ' + (d._gerComponents.concentration || 0) + '. ' +
+            'CEO tenure ' + (d._ceoTenureYears || '?') + ' years. ' +
+            'Press Enter to open the company detail panel.';
+    }
+    function _gerActivateRow(d) {
+        if (typeof window.openDetailPanel === 'function') window.openDetailPanel(d.ticker);
+    }
+    var _gerG = d3.select('#ger-chart');
+    _enableDotKeyboard(_gerG, '.ger-row-rect', {
+        label: _gerRowLabel,
+        activate: _gerActivateRow
+    });
+    _enableDotKeyboard(_gerG, '.ger-label', {
+        label: _gerRowLabel,
+        activate: _gerActivateRow
+    });
+    _enableDotKeyboard(_gerG, '.ger-nav-icon', {
+        label: function(d) {
+            return 'View ' + d.ticker + ' in the GER vs Pay scatter plot. Press Enter.';
+        },
+        activate: function(d) {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_gerScore', 'total_compensation');
+            }
+        }
     });
 
     // Legend
