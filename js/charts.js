@@ -723,7 +723,9 @@ function drawSectorChart(trends, companies) {
         // click targets (dist-boxes/whiskers are visual-only, drawn beneath).
         // Expose them as buttons so keyboard users can filter the table too.
         // Attribute-bound strings only (set via d3 .attr); data never
-        // reaches HTML parsing.
+        // reaches HTML parsing. (2026-10-11: the sparkline hit rects and
+        // distribution hit zones added later got their own _enableDotKeyboard
+        // wiring at the end of this function.)
         .attr('tabindex', '0')
         .attr('role', 'button')
         .attr('aria-label', function(d) {
@@ -859,6 +861,9 @@ function drawSectorChart(trends, companies) {
                 var sectorForClick = d._compSector; // capture for closure (company-vocabulary name)
                 sparkG.append('rect')
                     .attr('class', 'sector-sparkline-hit')
+                    // Keyboard pilot (2026-10-11): bind the tooltip data so
+                    // _enableDotKeyboard can mirror it in the aria-label.
+                    .datum({ sector: sectorForClick, pctChange: pctChange, trendUp: trendUp, years: pts.length - 1 })
                     .attr('width', sparkW + 8).attr('height', sparkH + 6)
                     .attr('x', -4).attr('y', -3)
                     .attr('rx', 4).attr('ry', 4)
@@ -1038,6 +1043,34 @@ function drawSectorChart(trends, companies) {
                     event.stopPropagation();
                     if (window.filterByDistribution) window.filterByDistribution(zd.sector, zd.min, zd.max, zd.label);
                 });
+        }
+    });
+
+    // Keyboard operability (2026-10-11): the sector sparkline hit rects and
+    // the distribution hit zones are click-only surfaces the 2026-10-08 bar
+    // pilot missed. Roving-tabindex buttons via _enableDotKeyboard: focus
+    // fires the exact hover-tooltip path, Enter/Space replays the click path
+    // exactly. Attribute-bound labels only (no innerHTML).
+    _enableDotKeyboard(d3.select('#sector-chart'), '.sector-sparkline-hit', {
+        label: function(zd) {
+            var dir = zd.trendUp ? 'up' : 'down';
+            var pct = (zd.pctChange >= 0 ? '+' : '') + zd.pctChange.toFixed(1);
+            return zd.sector + ' median CEO pay trend: ' + dir + ' ' + pct +
+                '% over ' + zd.years + ' years. Press Enter to explore ' +
+                zd.sector + ' pay anomalies.';
+        },
+        activate: function(zd) {
+            hideChartTooltip();
+            if (typeof window.navigateToPayAnomaly === 'function') window.navigateToPayAnomaly(zd.sector);
+        }
+    });
+    _enableDotKeyboard(d3.select('#sector-chart'), '.dist-hit-zone', {
+        label: function(zd) {
+            return zd.label + ': ' + fmtCurr(zd.min) + ' to ' + fmtCurr(zd.max) +
+                '. Press Enter to filter the table to this zone.';
+        },
+        activate: function(zd) {
+            if (window.filterByDistribution) window.filterByDistribution(zd.sector, zd.min, zd.max, zd.label);
         }
     });
 }
@@ -8255,6 +8288,11 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
         barW = Math.max(barW, 2);
 
         var barRect = g.append('rect')
+            // Keyboard pilot (2026-10-11): the cross-sector sector bars are
+            // click-only (filterBySectorFromBar) and carried no class at all;
+            // classify + bind the sector datum for _enableDotKeyboard below.
+            .attr('class', 'corr-sector-bar')
+            .datum(d)
             .attr('x', barX)
             .attr('y', y + 2)
             .attr('width', barW)
@@ -8336,6 +8374,29 @@ function drawCrossSectorCorrelation(companies, metricIdxX, metricIdxY) {
                 }
             });
         })(d, barRect);
+    });
+
+    // Keyboard operability (2026-10-11): the sector bars are click-only
+    // (click = window.filterBySectorFromBar) and previously had no class.
+    // Roving-tabindex buttons via _enableDotKeyboard; the hover tooltip is
+    // bound to mouseenter/mouseleave, so those are passed as the hover pair.
+    // The aria-label mirrors the tooltip (sector, metric pair, Pearson r,
+    // significance, strength/direction, sample size). Attribute-bound only.
+    _enableDotKeyboard(d3.select('#cross-sector-corr-chart'), '.corr-sector-bar', {
+        hoverIn: 'mouseenter',
+        hoverOut: 'mouseleave',
+        label: function(datum) {
+            var strength = Math.abs(datum.r) >= 0.7 ? 'Strong' : Math.abs(datum.r) >= 0.4 ? 'Moderate' : Math.abs(datum.r) >= 0.2 ? 'Weak' : 'Very weak';
+            var direction = datum.r > 0 ? ' positive' : datum.r < 0 ? ' negative' : '';
+            var rStr = (datum.r >= 0 ? '+' : '') + datum.r.toFixed(2);
+            return datum.sector + ': ' + mX.short + ' vs ' + mY.short + ', Pearson r ' + rStr +
+                ' (' + strength + direction + ', ' + _sigLabel(datum.p) + ', n=' + datum.n + ')' +
+                '. Press Enter to filter the table to this sector.';
+        },
+        activate: function(datum) {
+            hideChartTooltip();
+            if (typeof window.filterBySectorFromBar === 'function') window.filterBySectorFromBar(datum.sector);
+        }
     });
 }
 
@@ -13122,6 +13183,10 @@ function drawVolatilityDistChart(companies) {
         // Pick the company with highest volatility in the bucket (most extreme example)
         var topInBucket = bucketCompanies.sort(function(a, bb) { return (bb._ceoVolatility || 0) - (a._ceoVolatility || 0); })[0];
         g.append('text')
+            // Keyboard pilot (2026-10-11): the one click surface the
+            // volatility-dist pilot missed; classify + bind for wiring below.
+            .attr('class', 'vol-dist-nav-icon')
+            .datum({ ticker: topInBucket.ticker, cv: topInBucket._ceoVolatility })
             .attr('x', x(b.label) + x.bandwidth() - 2)
             .attr('y', y(b.count) + 14)
             .attr('text-anchor', 'end')
@@ -13144,6 +13209,21 @@ function drawVolatilityDistChart(companies) {
                 }
             })
             .text('\u2934');
+    });
+
+    // Keyboard operability (2026-10-11): the per-bucket scatter nav icons
+    // (top company per volatility bucket) were the one surface the
+    // volatility-dist pilot missed. Roving-tabindex buttons via
+    // _enableDotKeyboard; Enter/Space replays the click path exactly
+    // (navigateToScatter on the bucket's most volatile CEO). Attribute-bound
+    // labels only (no innerHTML).
+    _enableDotKeyboard(d3.select('#volatility-dist-chart'), '.vol-dist-nav-icon', {
+        label: function(d) {
+            return 'View ' + d.ticker + ' (' + d.cv.toFixed(1) + '% CV) in the scatter plot. Press Enter to open.';
+        },
+        activate: function(d) {
+            if (typeof window.navigateToScatter === 'function') window.navigateToScatter(d.ticker, '_ceoVolatility', 'total_compensation');
+        }
     });
 
     // Median line
