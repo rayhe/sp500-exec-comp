@@ -30,6 +30,17 @@ node coverage from the live JSONs and asserts the section-desc's "Covers
 N of the M tracked companies" phrase plus the naming of every live gap
 ticker.
 
+History: 2026-10-11 02:00 PT run added section 20 (available_years
+descending order + proxy_fiscal_year == max(available_years)) after the
+data-freshness screen of the FY2025 anchor promotion found 18 companies
+with ascending available_years (a repair script wrote them unsorted; the
+guard never asserted order) and 11 with proxy_fiscal_year stale or bogus
+(5 at 2024 despite FY2025 SCT rows, 5 at 2026 on calendar-FY companies,
+WMT at 2024 on an FY2026 proxy). Semantics per the 2026-09-28 DQ
+batches: proxy_fiscal_year is the source filing's fiscal year (the
+CSV-export fallback for exec rows missing year), NOT the anchor
+fiscal_year - so it must equal the latest year in the filing.
+
 Usage:
   python3 scripts/check_metadata_consistency.py          # manual run
   cp scripts/check_metadata_consistency.py .git/hooks/pre-commit  # install hook
@@ -1165,6 +1176,34 @@ def check_fingerprint_queue(failures):
           f"fingerprint-target edges pending primary-source review: {show}"
           f"{suffix}; {n_verified} verified-genuine (filing-verbatim, "
           f"marked)")
+
+
+def check_available_years_proxy_fy(companies, failures):
+    """Section 20: available_years must be descending; proxy_fiscal_year
+    must equal max(available_years) (the source filing's fiscal year,
+    which is the CSV-export fallback for exec rows missing year)."""
+    bad_order, bad_proxy = [], []
+    for c in companies:
+        y = c.get("available_years")
+        if not y:
+            continue
+        if y != sorted(y, reverse=True):
+            bad_order.append((c.get("ticker"), list(y)))
+        pf = c.get("proxy_fiscal_year")
+        if pf is not None and pf != max(y):
+            bad_proxy.append((c.get("ticker"), pf, max(y)))
+    if bad_order:
+        show = ", ".join(f"{t}={y}" for t, y in bad_order[:10])
+        if len(bad_order) > 10:
+            show += f" (+{len(bad_order) - 10} more)"
+        fail(f"available_years not descending at {len(bad_order)}: {show} "
+             f"(20)", failures)
+    if bad_proxy:
+        show = ", ".join(f"{t}={pf}->want {m}" for t, pf, m in bad_proxy[:10])
+        if len(bad_proxy) > 10:
+            show += f" (+{len(bad_proxy) - 10} more)"
+        fail(f"proxy_fiscal_year != max(available_years) at "
+             f"{len(bad_proxy)}: {show} (20)", failures)
 
 
 def main():
@@ -2804,6 +2843,10 @@ def main():
     #     2026-10-01 12:00 PT: pending/verified split; stale, drifted, and
     #     unmarked repaired-source edges are hard failures).
     check_fingerprint_queue(failures)
+
+    # 20. available_years ordering + proxy_fiscal_year currency
+    #     (2026-10-11 02:00 PT; guards the FY2025-promotion-era DQ classes).
+    check_available_years_proxy_fy(companies, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")
