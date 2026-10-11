@@ -942,6 +942,7 @@ function initNetwork(peerData) {
                 }
             });
         });
+        _kbdUpgradeNetworkLegendControls(panel);
     }
 
     renderGlobalStats();
@@ -2653,6 +2654,7 @@ function initNetwork(peerData) {
                 }
             });
         });
+        _kbdUpgradeNetworkLegendControls(el);
         _refreshVerificationLegendFilterVisuals();
     }
     function _clearVerificationMode() {
@@ -3779,6 +3781,65 @@ function initNetwork(peerData) {
         });
     }
 
+    // Keyboard operability for the network tab's click-only legend surfaces
+    // (2026-10-11 07:30 PT run): the sector/PvP legend items, verification
+    // legend tiers, community legend items, and darling-panel tickers are
+    // non-native spans with click handlers and no keyboard path. This
+    // upgrades them to real keyboard controls, mirroring the convention of
+    // _upgradeInlineOnclickControls (js/app.js): skip anything natively
+    // operable or already wired, set tabindex/role/aria-label, and fire
+    // el.click() on Enter/Space so the keyboard path replays the exact
+    // mouse behavior. The global [data-kbd-upgraded]:focus-visible --accent
+    // ring in css/style.css covers these spans; no new CSS is needed.
+    function _kbdUpgradeNetworkLegendControls(root) {
+        if (!root || !root.querySelectorAll) return;
+        var SEL = '.network-legend .legend-item, ' +
+            '.verification-legend-item[data-tier], ' +
+            '.community-legend-item[data-community], ' +
+            '.ngs-ddp-darling-ticker';
+        root.querySelectorAll(SEL).forEach(function(el) {
+            var tag = (el.tagName || '').toUpperCase();
+            if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' ||
+                tag === 'SELECT' || tag === 'TEXTAREA') return;
+            if (el.hasAttribute('tabindex') || el.hasAttribute('onkeydown') ||
+                el.hasAttribute('data-kbd-upgraded')) return;
+            if (el.getAttribute('role') === 'button') return;
+            // Informational legend entries carry no click action: the orphan
+            // legend item (never gets a handler) and the "+N more" community
+            // overflow item must stay out of the tab order.
+            if (el.getAttribute('data-orphan-legend') === '1') return;
+            if (el.classList.contains('community-legend-more')) return;
+            var title = el.getAttribute('title') || '';
+            var text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+            var label;
+            if (/click to/i.test(title)) {
+                label = title.replace(/click to/gi, 'Press Enter to');
+            } else if (title) {
+                label = title + ' - Press Enter to activate';
+            } else if (el.classList.contains('community-legend-item')) {
+                label = text + ' - Press Enter to filter the table to this community';
+            } else {
+                label = text + ' - Press Enter to filter the graph to this sector';
+            }
+            // Darling tickers: the title names the action but not the ticker,
+            // so keep the visible ticker text in the accessible name.
+            if (el.classList.contains('ngs-ddp-darling-ticker') && label.indexOf(text) !== 0) {
+                label = text + ': ' + label;
+            }
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('data-kbd-upgraded', '1');
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.click();
+                }
+            });
+        });
+    }
+
     // === Network Legend Click-to-Filter ===
     // Clicking a sector in the legend isolates that sector's nodes
     var legendItems = document.querySelectorAll('.network-legend .legend-item');
@@ -3861,6 +3922,7 @@ function initNetwork(peerData) {
             draw();
         });
     });
+    _kbdUpgradeNetworkLegendControls(document.getElementById('network-legend'));
 
     // === PvP coverage ring toggle ===
     // Shared by the "PvP Rings" overflow-menu button and the legend item.
@@ -4454,6 +4516,7 @@ function initNetwork(peerData) {
                 _hideCommunityTooltip();
             });
         });
+        _kbdUpgradeNetworkLegendControls(communityLegendEl);
     }
 
     // === Community Hover Floating Tooltip ===
