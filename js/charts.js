@@ -15787,6 +15787,7 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
 
         // Interactive hover area for tooltip — transparent circle over badge
         overlayG.append('circle')
+            .attr('class', 'scatter-path-step')
             .attr('cx', cx + 8).attr('cy', cy - 8)
             .attr('r', 12)
             .attr('fill', 'transparent')
@@ -15839,6 +15840,28 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
             .on('click', function(event, d) {
                 if (typeof window.findCompanyInTable === 'function') window.findCompanyInTable(d.pt.ticker);
             });
+    });
+
+    // Keyboard pilot (2026-10-10): the path step badges carry a click
+    // action (window.findCompanyInTable) plus a data-bearing hover
+    // tooltip, but had no tabindex/role/keydown. Roving-tabindex button
+    // via _enableDotKeyboard.
+    _enableDotKeyboard(d3.select('#scatter-chart'), '.scatter-path-step', {
+        label: function(d) {
+            var pt = d.pt || {};
+            return 'Step ' + (d.idx + 1) + ' of ' + visiblePath.length + ': ' +
+                d.ticker + ' ' + (pt.company_name || '') + ', CEO ' +
+                (pt.ceo_name || 'unknown') + ', total pay ' +
+                fmtCurr(pt.total_compensation || 0) + ', sector ' +
+                (pt.sector || 'unknown') + '. Press Enter to view ' +
+                d.ticker + ' in the table.';
+        },
+        activate: function(d) {
+            hideChartTooltip();
+            if (typeof window.findCompanyInTable === 'function') {
+                window.findCompanyInTable(d.pt.ticker);
+            }
+        }
     });
 
     // Animate path segments sequentially — staggered stroke draw
