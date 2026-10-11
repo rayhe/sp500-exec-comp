@@ -3840,6 +3840,70 @@ function initNetwork(peerData) {
         });
     }
 
+    // === Network Residual Click Surfaces → Keyboard (2026-10-11 10:00 PT) ===
+    // The last click-only surfaces on the network tab: the community-metrics
+    // table rows (.cm-data), its box-plot quartile zones (.cm-bp-zone) and
+    // pay-trend sparklines (.cm-sparkline), the cluster-stats panel tickers
+    // (.cs-node-ticker), and the path-finder node chips (.path-node-chip).
+    // Same pilot contract as _kbdUpgradeNetworkLegendControls: tabindex="0"
+    // role="button" with a data-bearing aria-label, data-kbd-upgraded="1",
+    // and Enter/Space replays the click (preventDefault + stopPropagation so
+    // a sparkline/zone keypress never also fires its parent row's handler —
+    // the same stopPropagation the mouse click path already uses).
+    function _kbdUpgradeNetworkResidualControls(root) {
+        if (!root || !root.querySelectorAll) return;
+        var SEL = '.cm-data[data-cm-community], ' +
+            '.cm-bp-zone[data-bp-cid], ' +
+            '.cm-sparkline, ' +
+            '.cs-node-ticker[data-ticker], ' +
+            '.path-node-chip[data-ticker]';
+        root.querySelectorAll(SEL).forEach(function(el) {
+            var tag = (el.tagName || '').toUpperCase();
+            if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' ||
+                tag === 'SELECT' || tag === 'TEXTAREA') return;
+            if (el.hasAttribute('tabindex') || el.hasAttribute('onkeydown') ||
+                el.hasAttribute('data-kbd-upgraded')) return;
+            if (el.getAttribute('role') === 'button') return;
+            var text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+            var label = '';
+            if (el.classList.contains('cm-data')) {
+                var nm = el.querySelector('.cm-label');
+                var cname = nm ? nm.textContent.trim()
+                    : ('community ' + el.getAttribute('data-cm-community'));
+                label = cname + ' community - Press Enter to filter the compensation table to this community';
+            } else if (el.classList.contains('cm-bp-zone')) {
+                var zt = el.getAttribute('title') || 'pay range';
+                label = zt + ' - Press Enter to filter the compensation table to this pay range';
+            } else if (el.classList.contains('cm-sparkline')) {
+                var row = el.closest('.cm-data');
+                var rnm = row ? row.querySelector('.cm-label') : null;
+                var rcname = rnm ? rnm.textContent.trim() : 'community';
+                var tt = el.getAttribute('title') || '';
+                label = rcname + ' pay trend' + (tt ? ' (' + tt + ')' : '') +
+                    ' - Press Enter to lock the trend highlight on the graph';
+            } else if (el.classList.contains('cs-node-ticker')) {
+                var roleEl = el.parentElement ? el.parentElement.querySelector('.cs-node-role') : null;
+                var role = roleEl ? roleEl.textContent.trim().replace(/:$/, '') : '';
+                label = (role ? role + ': ' : '') + text +
+                    ' - Press Enter to select this company on the graph';
+            } else if (el.classList.contains('path-node-chip')) {
+                label = text + ' - Press Enter to find this company in the compensation table';
+            }
+            if (!label) return;
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', label);
+            el.setAttribute('data-kbd-upgraded', '1');
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.click();
+                }
+            });
+        });
+    }
+
     // === Network Legend Click-to-Filter ===
     // Clicking a sector in the legend isolates that sector's nodes
     var legendItems = document.querySelectorAll('.network-legend .legend-item');
@@ -5094,6 +5158,8 @@ function initNetwork(peerData) {
                 draw();
             });
         });
+        // Keyboard pilot (2026-10-11 10:00 PT): rows are click-only surfaces
+        _kbdUpgradeNetworkResidualControls(_communityMetricsEl);
 
         // Wire box plot quartile hover zones — highlight matching companies on network graph
         _communityMetricsEl.querySelectorAll('.cm-bp-zone').forEach(function(zone) {
@@ -5212,6 +5278,9 @@ function initNetwork(peerData) {
                 }
             });
         });
+
+        // Keyboard pilot (2026-10-11 10:00 PT): zones are click-only surfaces
+        _kbdUpgradeNetworkResidualControls(_communityMetricsEl);
 
         // Wire trend sparkline hover/click → highlight community companies on graph by YoY pay change direction
         _communityMetricsEl.querySelectorAll('.cm-sparkline').forEach(function(spark) {
@@ -5332,6 +5401,9 @@ function initNetwork(peerData) {
                 }
             });
         });
+
+        // Keyboard pilot (2026-10-11 10:00 PT): sparklines are click-only surfaces
+        _kbdUpgradeNetworkResidualControls(_communityMetricsEl);
 
         // Wire path-finder bridge buttons (two-click: select from → select to → execute)
         _communityMetricsEl.querySelectorAll('.cm-path-btn').forEach(function(btn) {
@@ -6573,6 +6645,8 @@ function initNetwork(peerData) {
                 if (node) selectSearchNode(node);
             });
         });
+        // Keyboard pilot (2026-10-11 10:00 PT): tickers are click-only surfaces
+        _kbdUpgradeNetworkResidualControls(clusterStatsEl);
     }
 
     // === Node Size Legend ===
@@ -7424,6 +7498,8 @@ function initNetwork(peerData) {
                 if (window.findCompanyInTable) window.findCompanyInTable(ticker);
             });
         });
+        // Keyboard pilot (2026-10-11 10:00 PT): chips are click-only surfaces
+        _kbdUpgradeNetworkResidualControls(pfResult);
 
         // "Compare in Detail" button — bridges path finder to full comparison panel
         var epcBtn = pfResult.querySelector('.pf-epc-compare-btn');
