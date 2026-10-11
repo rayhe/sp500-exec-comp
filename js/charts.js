@@ -13318,6 +13318,7 @@ function drawVolatilitySectorChart(companies) {
     g.selectAll('.med-bar')
         .data(sectors)
         .enter().append('rect')
+        .attr('class', 'vol-sector-bar')
         .attr('x', 0)
         .attr('y', function(s) { return y(s.sector) + y.bandwidth() * 0.2; })
         .attr('width', function(s) { return x(s.median); })
@@ -13355,6 +13356,27 @@ function drawVolatilitySectorChart(companies) {
             }
         });
 
+    // Keyboard pilot (2026-10-10): the median bars carry a click action
+    // (filter the main table to the sector via the sector chip, mirroring the
+    // regular-click path) plus a data-bearing hover tooltip, but had no
+    // tabindex/role/keydown. Roving-tabindex button via _enableDotKeyboard.
+    _enableDotKeyboard(d3.select('#volatility-sector-chart'), '.vol-sector-bar', {
+        label: function(s) {
+            return s.sector + ': median CEO pay volatility ' + s.median.toFixed(1) +
+                '%, IQR ' + s.q25.toFixed(1) + '% to ' + s.q75.toFixed(1) + '%, ' +
+                s.count + ' companies. Press Enter to filter the table to this sector.';
+        },
+        activate: function(s) {
+            hideChartTooltip();
+            var chips = document.querySelectorAll('#sector-chips .chip');
+            chips.forEach(function(chip) {
+                if (chip.textContent === s.sector) chip.click();
+            });
+            if (typeof scrollToTable === 'function') scrollToTable();
+            if (typeof announce === 'function') announce('Filtered to ' + s.sector + ' (' + s.count + ' companies)');
+        }
+    });
+
     // Median value labels
     g.selectAll('.med-label')
         .data(sectors)
@@ -13390,6 +13412,8 @@ function drawVolatilitySectorChart(companies) {
         if (sectorCompanies.length === 0) return;
         var topInSector = sectorCompanies[0];
         g.append('text')
+            .attr('class', 'vol-sector-nav-icon')
+            .datum({ ticker: topInSector.ticker, cv: topInSector._ceoVolatility, sector: s.sector })
             .attr('x', x(s.median) + 30)
             .attr('y', function() { return y(s.sector) + y.bandwidth() / 2 + 4; })
             .attr('text-anchor', 'start')
@@ -13412,6 +13436,22 @@ function drawVolatilitySectorChart(companies) {
                 }
             })
             .text('\u2934');
+    });
+
+    // Keyboard pilot (2026-10-10): the per-bar scatter nav icons carry a
+    // click action (navigate to the scatter plot with the sector's most
+    // volatile company) plus a data-bearing hover tooltip, but had no
+    // tabindex/role/keydown. Roving-tabindex button via _enableDotKeyboard.
+    _enableDotKeyboard(d3.select('#volatility-sector-chart'), '.vol-sector-nav-icon', {
+        label: function(d) {
+            return 'View ' + d.ticker + ' (' + d.cv.toFixed(1) + '% CV, ' + d.sector +
+                ' most volatile) in the scatter plot. Press Enter to open the scatter.';
+        },
+        activate: function(d) {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(d.ticker, '_ceoVolatility', 'total_compensation');
+            }
+        }
     });
 }
 
