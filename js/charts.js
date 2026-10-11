@@ -13690,6 +13690,8 @@ function drawVolatilityTenureChart(companies) {
 
         // Median bar
         g.append('rect')
+            .attr('class', 'vol-tenure-bar')
+            .datum(b)
             .attr('x', bx)
             .attr('y', y(b.median))
             .attr('width', bw)
@@ -13754,6 +13756,8 @@ function drawVolatilityTenureChart(companies) {
             var cx = bx + bw / 2 + jitter;
             var cy = y(Math.min(c._ceoVolatility, yMax * 0.98));
             g.append('circle')
+                .attr('class', 'vol-tenure-dot')
+                .datum(c)
                 .attr('cx', cx)
                 .attr('cy', cy)
                 .attr('r', dotR)
@@ -13781,6 +13785,54 @@ function drawVolatilityTenureChart(companies) {
                     }
                 });
         });
+    });
+
+    // Keyboard pilot (2026-10-10): the bracket median bars carry a click
+    // action (regular click filters the main table to the tenure bracket;
+    // Shift+click navigates the scatter to the bracket's most volatile
+    // CEO) plus a data-bearing hover tooltip, but had no tabindex/role/
+    // keydown. Roving-tabindex button via _enableDotKeyboard.
+    _enableDotKeyboard(d3.select('#volatility-tenure-chart'), '.vol-tenure-bar', {
+        label: function(b) {
+            var lbl = b.label.replace('\n', ' ');
+            return lbl + ': median CEO pay volatility ' + b.median.toFixed(1) +
+                '%, mean ' + b.mean.toFixed(1) + '%, IQR ' + b.q25.toFixed(1) +
+                '% to ' + b.q75.toFixed(1) + '%, ' + b.count +
+                ' CEOs. Press Enter to filter the table to this tenure bracket.';
+        },
+        activate: function(b) {
+            hideChartTooltip();
+            window._activeVolTenureBracket = {
+                min: b.min, max: b.max,
+                label: b.label.replace('\n', ' ')
+            };
+            if (typeof renderTable === 'function') renderTable(companies);
+            if (typeof scrollToTable === 'function') scrollToTable();
+            if (typeof announce === 'function') {
+                announce('Filtered to ' + b.count + ' ' +
+                    b.label.replace('\n', ' ') + ' companies');
+            }
+        }
+    });
+
+    // Keyboard pilot (2026-10-10): the per-company jitter dots carry a
+    // click action (window.navigateToScatter with the company's ticker,
+    // '_ceoTenureYears', '_ceoVolatility') plus a data-bearing hover
+    // tooltip, but had no tabindex/role/keydown. Roving-tabindex button
+    // via _enableDotKeyboard.
+    _enableDotKeyboard(d3.select('#volatility-tenure-chart'), '.vol-tenure-dot', {
+        label: function(c) {
+            return c.ticker + ' ' + (c.company_name || '') + ': CEO ' +
+                (c.ceo_name || 'unknown') + ', tenure ' + c._ceoTenureYears +
+                ' years, volatility ' + c._ceoVolatility.toFixed(1) +
+                '% CV. Press Enter to view in the scatter plot.';
+        },
+        activate: function(c) {
+            if (typeof window.navigateToScatter === 'function') {
+                window.navigateToScatter(c.ticker, '_ceoTenureYears',
+                    '_ceoVolatility');
+            }
+        }
     });
 
     // Trend arrow annotation — Pearson correlation
