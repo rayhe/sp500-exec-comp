@@ -517,13 +517,21 @@ function drawSectorChart(trends, companies) {
         ? sectorEdition.data.filter(function(d) { return d.median_pay; })
         : [];
 
-    // Live-label the section description with the resolved study edition's
-    // fiscal year (textContent-only; no raw data reaches the DOM). The
-    // static HTML keeps today's copy as the no-JS fallback.
+    // Live-label the section description with the dataset's primary fiscal
+    // year (textContent-only; no raw data reaches the DOM). The bars below
+    // render the live per-sector medians computed from the current company
+    // dataset (see the median override after the distribution merge), so the
+    // label follows the anchor year, not the FY2024 study edition's. Falls
+    // back to the edition year when metadata is unavailable so no false FY
+    // claim is rendered. The static HTML keeps today's copy as the no-JS
+    // fallback.
     var sectorDesc = document.getElementById('sector-desc');
     if (sectorDesc) {
         var sectorFY = sectorEdition && sectorEdition.fiscal_year ? sectorEdition.fiscal_year : null;
-        sectorDesc.textContent = SECTOR_DESC_BASE + (sectorFY ? ' \u2014 S&P 500, FY' + sectorFY : '');
+        var secMd = _chartData && _chartData.compData ? _chartData.compData.metadata : null;
+        var secPFY = secMd ? secMd.primary_fiscal_year : null;
+        var labelFY = (typeof secPFY === 'number' && secPFY > 0) ? secPFY : sectorFY;
+        sectorDesc.textContent = SECTOR_DESC_BASE + (labelFY ? ' \u2014 S&P 500, FY' + labelFY : '');
     }
 
     // Bridge the sector vocabularies: trends data carries vendor names, company
@@ -567,6 +575,18 @@ function drawSectorChart(trends, companies) {
         if (sectorDist[d._compSector]) {
             d._dist = sectorDist[d._compSector];
         }
+    });
+
+    // 2026-10-11: anchor the bars to the same live per-sector medians the
+    // box-plot overlays are computed from. The 2026-10-06 anchor promotion
+    // moved the company dataset to FY2025 while the trends study edition
+    // stayed at FY2024, so the bars (edition median) and the box-plot median
+    // line (live data) were drawing two different medians on the same row -
+    // up to 35% apart (Utilities). Sectors with no live company coverage
+    // keep the edition median. Idempotent across re-renders (same value
+    // each pass); the edition's sector list and sort below are unchanged.
+    data.forEach(function(d) {
+        if (d._dist && d._dist.median != null) d.median_pay = d._dist.median;
     });
 
     data.sort(function(a, b) { return b.median_pay - a.median_pay; });

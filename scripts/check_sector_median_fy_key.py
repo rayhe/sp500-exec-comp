@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Regression guard: sector chart derives its study edition live.
+"""Regression guard: sector chart derives its study edition live AND anchors
+its bars to the dataset's primary fiscal year.
 
 drawSectorChart() (js/charts.js) read trends.json's sector-median data
 through a hard-coded `median_pay_by_sector_sp500_fy2024` key, and the
@@ -10,10 +11,20 @@ median_pay_by_sector_sp500_fy<YYYY> keys and returns the latest, so a new
 study edition surfaces without a code change; the legacy un-keyed
 median_pay_by_sector_sp500 (a partial edition, 4 sectors) is used only
 when no year-keyed full breakdown exists; with neither, the chart's
-existing "No sector data available" path fires. The section description
-live-labels itself "S&P 500, FY<year>" from the resolved edition's
-fiscal_year via textContent only (static HTML keeps today's copy as the
-no-JS fallback).
+existing "No sector data available" path fires.
+
+2026-10-11 behavior change: the bars no longer render the study edition's
+medians. The 2026-10-06 anchor promotion moved the company dataset to
+FY2025 while the edition stayed at FY2024, so the bars (edition median)
+and the box-plot median lines (live data) were drawing two different
+medians on the same row — up to 35% apart (Utilities). The chart now
+overrides each datum's median_pay with the live per-sector median from
+the same distribution merge that draws the box overlays, so bars, box
+median lines, tooltips, and bar labels all agree; the section
+description live-labels itself "S&P 500, FY<primary_fiscal_year>" from
+compData.metadata.primary_fiscal_year (edition year as fallback when
+metadata is absent), with the static HTML keeping today's copy as the
+no-JS fallback.
 
 Checks:
   A. Static (fast, runs in the pre-commit hook):
@@ -24,14 +35,20 @@ Checks:
         js/*.js file (the helper's regex string never forms that literal).
      S3 drawSectorChart() resolves its data via
         latestSectorMedianKey(trends) and live-labels #sector-desc with
-        textContent only (no innerHTML).
+        textContent only (no innerHTML), deriving the label year from
+        compData.metadata.primary_fiscal_year (edition year fallback).
      S4 index.html carries exactly one id="sector-desc" whose static
         fallback copy equals today's live-rendered copy.
+     S5 drawSectorChart() overrides datum median_pay with the live
+        per-sector median from the distribution merge (bar/box parity).
   B. Render (headless Chromium via playwright, 1440px desktop, d3 shim):
      R1 the sector chart renders the current edition's bar count on
         initial load.
      R2 #sector-desc reads the live-year copy on initial load.
      R3 zero JS page errors.
+     R4 every rendered bar's bound datum carries median_pay equal to its
+        box-overlay live median (_dist.median) when _dist exists —
+        bar/box parity holds in the DOM.
 
 Usage:
   scripts/check_sector_median_fy_key.py              # static + render
@@ -56,6 +73,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
 INDEX_HTML = os.path.join(REPO, "index.html")
 TRENDS_JSON = os.path.join(REPO, "data", "trends.json")
+COMP_JSON = os.path.join(REPO, "data", "compensation.json")
 
 BASE_DESC = ("Median total CEO compensation by sector with distribution range "
              "(box plot). Click distribution ranges to filter the table.")
@@ -75,6 +93,20 @@ def live_sector_edition():
     if years:
         return "median_pay_by_sector_sp500_fy%d" % max(years)
     return "median_pay_by_sector_sp500" if "median_pay_by_sector_sp500" in trends else None
+
+
+def live_label_year():
+    # 2026-10-11: the section description tracks the dataset's primary
+    # fiscal year (what the bars now render), not the study edition's
+    # vintage. Fall back to the edition year when metadata is absent.
+    comp = json.load(open(COMP_JSON, encoding="utf-8"))
+    md = comp.get("metadata") or {}
+    pfy = md.get("primary_fiscal_year")
+    if isinstance(pfy, int) and pfy > 0:
+        return pfy
+    trends = json.load(open(TRENDS_JSON, encoding="utf-8"))
+    key = live_sector_edition()
+    return trends[key].get("fiscal_year") if key else None
 
 
 def static_checks():
@@ -98,30 +130,43 @@ def static_checks():
           s2, "" if s2 else "stale hard-coded field literal still present")
 
     # S3: the chart resolves via the helper and live-labels the desc
-    # with textContent only.
+    # with textContent only, deriving the label year from the dataset's
+    # primary fiscal year (edition year fallback).
     body = re.search(r"function drawSectorChart\(trends, companies\) \{[\s\S]{0,2500}", charts)
     s3 = (body is not None
           and "var sectorKey = latestSectorMedianKey(trends);" in body.group(0)
           and "document.getElementById('sector-desc')" in charts
-          and "sectorDesc.textContent" in charts)
-    cm = re.search(r"var sectorDesc = document\.getElementById\('sector-desc'\)[\s\S]{0,600}?sectorDesc\.textContent",
+          and "sectorDesc.textContent" in charts
+          and "compData.metadata" in charts
+          and "primary_fiscal_year" in charts)
+    cm = re.search(r"var sectorDesc = document\.getElementById\('sector-desc'\)[\s\S]{0,900}?sectorDesc\.textContent",
                    charts)
     s3 = s3 and cm is not None and "innerHTML" not in cm.group(0)
-    check("S3 drawSectorChart() resolves via helper and textContent-live-labels #sector-desc",
+    check("S3 drawSectorChart() resolves via helper and textContent-live-labels #sector-desc from primary_fiscal_year",
           s3, "" if s3 else "chart still hard-codes the field or uses innerHTML")
 
     # S4: static fallback carries today's live copy; the id is unique.
     desc_re = re.search(
         r'<p class="section-desc" id="sector-desc">(.*?)</p>', html, re.S)
-    trends = json.load(open(TRENDS_JSON, encoding="utf-8"))
-    key = live_sector_edition()
-    fy = trends[key].get("fiscal_year") if key else None
+    fy = live_label_year()
     expected_desc = BASE_DESC + (" \u2014 S&P 500, FY%d" % fy if fy else "")
     s4 = (desc_re is not None
           and desc_re.group(1).replace("&amp;", "&") == expected_desc
           and html.count('id="sector-desc"') == 1)
     check("S4 static #sector-desc fallback == live copy and id unique",
           s4, (("fallback %r" % (desc_re.group(1) if desc_re else None,))) if not s4 else "")
+
+    # S5: bar/box parity — the chart overrides each datum's median_pay
+    # with the live per-sector median from the distribution merge, after
+    # the merge loop and before the sort.
+    mo = re.search(
+        r"d\._dist = sectorDist\[d\._compSector\];[\s\S]{0,1200}?data\.sort\(function\(a, b\) \{ return b\.median_pay - a\.median_pay; \}\);",
+        charts)
+    s5 = (mo is not None
+          and "d.median_pay = d._dist.median" in mo.group(0)
+          and "median_pay_by_sector_sp500_fy2024" not in mo.group(0))
+    check("S5 datum median_pay overridden from the live distribution merge before sort",
+          s5, "" if s5 else "median override missing or placed after sort")
 
 
 def get_d3_bytes():
@@ -162,7 +207,7 @@ def render_checks():
     trends = json.load(open(TRENDS_JSON, encoding="utf-8"))
     key = live_sector_edition()
     expected_bars = len([d for d in trends[key]["data"] if d.get("median_pay")])
-    fy = trends[key].get("fiscal_year")
+    fy = live_label_year()
     expected_desc = BASE_DESC + (" \u2014 S&P 500, FY%d" % fy if fy else "")
 
     port = free_port()
@@ -206,6 +251,24 @@ def render_checks():
             # R3: zero JS page errors across the lifecycle.
             check("R3 zero JS page errors", len(errors) == 0,
                   "; ".join(errors[:3]) if errors else "")
+
+            # R4: bar/box parity — every rendered bar's bound datum carries
+            # median_pay equal to its box-overlay live median (_dist.median)
+            # when _dist exists (sectors with no live company coverage keep
+            # the edition median, and still pass).
+            parity = pg.evaluate("""Array.from(document.querySelectorAll('#sector-chart rect.bar')).map(function(el) {
+                var d = el.__data__ || {};
+                return { sector: d._compSector || null,
+                         median_pay: d.median_pay == null ? null : d.median_pay,
+                         dist_median: (d._dist && d._dist.median != null) ? d._dist.median : null };
+            })""")
+            bad = [p for p in parity
+                   if p["dist_median"] is not None and p["median_pay"] != p["dist_median"]]
+            r4 = len(parity) > 0 and len(bad) == 0
+            check("R4 bar datum median_pay == live box-overlay median for all %d bars" % len(parity),
+                  r4, "mismatched sectors: %s" % [p["sector"] for p in bad] if not r4 else "")
+
+            browser.close()
 
             browser.close()
             return all(ok for _, ok, _ in results)
