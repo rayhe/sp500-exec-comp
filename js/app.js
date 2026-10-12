@@ -7441,6 +7441,14 @@ function renderTable(companies, options) {
         if (!isRolePivot && _outlierTop10[c.ticker]) {
             compHtml += ' <span class="outlier-badge top-comp" title="Top 10 highest paid CEO in S&amp;P 500">#' + _outlierTop10[c.ticker] + '</span>';
         }
+        // Grant-date caveat for the CEO comp cell: note-carrying tickers
+        // (REALIZED_COMP_NOTES) display grant-date accounting totals here with
+        // a materially different realized figure in the same filing. Marker
+        // only in the CEO pivot — the note is CEO-specific and does not apply
+        // to role-pivot comp values. Non-note tickers render byte-identical.
+        if (!isRolePivot && REALIZED_COMP_NOTES[c.ticker]) {
+            compHtml += ' <span class="role-top-grantdate" title="' + REALIZED_COMP_NOTES[c.ticker].replace(/"/g, '&quot;') + '">&#183; grant-date figure</span>';
+        }
         // Role benchmark badge when in role view
         if (isRolePivot && _roleFilterMedian && displayComp > 0) {
             var roleDelta = ((displayComp - _roleFilterMedian) / _roleFilterMedian * 100).toFixed(0);
@@ -7522,6 +7530,13 @@ function renderTable(companies, options) {
                 ratioHtml += ' <span class="outlier-badge high-ratio" title="High pay ratio: CEO earns ' + c.pay_ratio.toLocaleString() + 'x the median worker">!</span>';
             } else if (_outlierLowRatio[c.ticker]) {
                 ratioHtml += ' <span class="outlier-badge low-ratio" title="Most equitable: bottom 5 pay ratio in S&amp;P 500">✓</span>';
+            }
+            // Grant-date caveat for the pay-ratio cell: the filing discloses a
+            // materially different realized ratio (REALIZED_COMP_NOTES), so the
+            // accounting ratio shown here must not read as take-home pay.
+            // Non-note tickers render byte-identical.
+            if (REALIZED_COMP_NOTES[c.ticker]) {
+                ratioHtml += ' <span class="role-top-grantdate" title="' + REALIZED_COMP_NOTES[c.ticker].replace(/"/g, '&quot;') + '">&#183; grant-date figure</span>';
             }
         } else {
             ratioHtml = getMissingDataHtml(c.ticker, 'pay_ratio');
