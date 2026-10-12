@@ -1206,6 +1206,56 @@ def check_available_years_proxy_fy(companies, failures):
              f"{len(bad_proxy)}: {show} (20)", failures)
 
 
+# -- Section 21: top-level metadata duplicate parity + README peer-network
+#     headline parity (2026-10-11 22:00 PT) -------------------------------
+# New failure-mode class: hand-typed copies that live NEXT TO a
+# guard-verified value but are never themselves walked by a guard.
+# (1) metadata.verified_total (top-level) drifted to 7046 while the
+# recount-exact data_quality.verified_total was 7045 — the fossil already
+# misled three runs' iteration-log prose (2026-10-11 11:30/15:30/18:02 PT).
+# (2) metadata.total_neos / metadata.companies_with_executives are
+# unchecked duplicates of section-1 recounts. (3) README.md's intro
+# headline ("923 peer network nodes, 7,046 compensation benchmarking
+# edges") sat stale since the 2026-10-05 batch-22 build (live 1,040 /
+# 7,739) — section 10 guards the peer JSON, section 4 guards
+# compensation copy, nobody walked this line.
+def check_top_level_duplicate_parity(companies, meta, failures):
+    n = sum(len(c.get("executives", [])) for c in companies)
+    dq = meta.get("data_quality", {})
+    vt = dq.get("verified_total")
+    if meta.get("verified_total") != vt:
+        fail(f"duplicate parity 21: metadata.verified_total="
+             f"{meta.get('verified_total')} != data_quality.verified_total="
+             f"{vt} (recount-exact per section 3b) -- sync the top-level "
+             f"mirror to the guard-verified value", failures)
+    if meta.get("total_neos") != n:
+        fail(f"duplicate parity 21: metadata.total_neos="
+             f"{meta.get('total_neos')} != live exec-row recount {n} -- "
+             f"sync or drop the duplicate", failures)
+    n_cwe = sum(1 for c in companies if c.get("executives"))
+    if meta.get("companies_with_executives") != n_cwe:
+        fail(f"duplicate parity 21: metadata.companies_with_executives="
+             f"{meta.get('companies_with_executives')} != recount {n_cwe} -- "
+             f"sync or drop the duplicate", failures)
+    # README intro peer-network headline must carry the live counts.
+    with open(PEER_JSON_PATH, encoding="utf-8") as f:
+        peer = json.load(f)
+    nn = len(peer.get("nodes", []))
+    ne = len(peer.get("edges", []))
+    want = f"{nn:,} peer network nodes, {ne:,} compensation benchmarking edges"
+    path = os.path.join(HERE, "..", "README.md")
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        fail(f"duplicate parity 21: cannot read README.md: {e}", failures)
+        return
+    if want not in text:
+        fail(f"duplicate parity 21: README intro peer-network headline drift "
+             f"-- expected {want!r} (live peer-network.json recount); sync "
+             f"README.md before committing", failures)
+
+
 def main():
     failures = []
     with open(JSON_PATH, encoding="utf-8") as f:
@@ -2847,6 +2897,10 @@ def main():
     # 20. available_years ordering + proxy_fiscal_year currency
     #     (2026-10-11 02:00 PT; guards the FY2025-promotion-era DQ classes).
     check_available_years_proxy_fy(companies, failures)
+
+    # 21. top-level metadata duplicate parity + README peer-network
+    #     headline parity (2026-10-11 22:00 PT).
+    check_top_level_duplicate_parity(companies, meta, failures)
 
     if failures:
         print("METADATA CONSISTENCY CHECK FAILED:")

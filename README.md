@@ -2,7 +2,7 @@
 
 **[Live site →](https://rayhe.github.io/sp500-exec-comp)**
 
-A data-driven dashboard tracking executive compensation across all 500 S&P 500 companies, built from primary SEC EDGAR DEF 14A proxy filings. 518 companies, 923 peer network nodes, 7,046 compensation benchmarking edges — under continuous primary-source improvement.
+A data-driven dashboard tracking executive compensation across all 500 S&P 500 companies, built from primary SEC EDGAR DEF 14A proxy filings. 518 companies, 1,040 peer network nodes, 7,739 compensation benchmarking edges — under continuous primary-source improvement.
 
 ## What's Here
 
