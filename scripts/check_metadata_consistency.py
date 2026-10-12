@@ -916,7 +916,10 @@ def check_aggregate_stats(companies, meta, failures):
 # blob computation to the dollar, so this is a recount, not an estimate.
 # DQ batch scripts must increment the fields via hidden_files/phantom_record.py
 # AND re-sync the js/app.js static fallback below — this section fails the
-# commit if the fallback drifts from the metadata.
+# commit if the fallback drifts from the metadata. Sibling guard
+# scripts/check_phantom_delta_sync.py closes the other half: a staged
+# compensation.json change that moves exec totals without bumping
+# phantom_removed.batches (i.e. record_batch() was skipped) fails the commit.
 def check_phantom_metadata(meta, failures):
     pr = meta.get("phantom_removed")
     if not isinstance(pr, dict):
