@@ -1737,7 +1737,12 @@ function populateMetrics(comp, trends) {
         if (sp500Pct) {
             var pctNum = parseFloat(sp500Pct.replace('%', ''));
             animateMetricValue(growthEl, pctNum, function(v) { return '+' + v.toFixed(1) + '%'; }, 900);
-            growthSubEl.textContent = 'S&P 500, ' + (period || '2020\u20132024');
+            // 2026-10-11 18:00 PT run: the no-period fallback still read the
+            // pre-FY2025 '2020-2024' window. trends.json carries period
+            // '2020-2025' (ASCII hyphen); the fallback mirrors the live
+            // data's window and punctuation so a missing-period render
+            // cannot show a stale range.
+            growthSubEl.textContent = 'S&P 500, ' + (period || '2020-2025');
         }
     }
 
