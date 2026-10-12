@@ -8386,6 +8386,47 @@ function renderPvpCoverageDesc(rows) {
     }
     el.textContent = text;
 }
+
+// === PvP method-note coverage clause: live counts, guard-sync'd prose ===
+// The method sentence used to hard-code "498 of 518 roster companies
+// (2,466 company-years; 2026-09-30 wave 38 ...)" - true the day wave 38
+// shipped, but the same stale-count class as the sector-comp and role-comp
+// descriptions: the next PvP wave would silently stale it. The headline
+// counts (covered companies, roster size, company-years) and the wave
+// number now render live from the guard-checked data files (pvp
+// metadata.companies / metadata.company_years, the latest "Wave N" marker
+// in pvp coverage_note, comp metadata.total_companies). The wave-shipment
+// narrative and the exclusion accounting stay as curated prose - their
+// vintage is the wave label, and scripts/check_pvp_method_coverage_sync.py
+// keeps the fallback literals and the wave label in sync with the data.
+// Fallback literals sit on vintage-commented lines only; data wins whenever
+// present, so a failed or partial load leaves the last-known-good text.
+var _PVP_GAP_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+    'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen',
+    'Twenty','Twenty-one','Twenty-two','Twenty-three','Twenty-four','Twenty-five','Twenty-six',
+    'Twenty-seven','Twenty-eight','Twenty-nine','Thirty'];
+function _pvpMethodCoverageClause() {
+    var pvpMd = (typeof pvpData !== 'undefined' && pvpData && pvpData.metadata) ? pvpData.metadata : {};
+    var compMd = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata : {};
+    // Fallback literals are the wave-38 shipped values; the guard fails the
+    // build if the data moves and these are not re-vintaged.
+    var covered = (typeof pvpMd.companies === 'number' && pvpMd.companies > 0) ? pvpMd.companies : 498; // wave 38 (2026-09-30); guard-sync'd
+    var companyYears = (typeof pvpMd.company_years === 'number' && pvpMd.company_years > 0) ? pvpMd.company_years : 2466; // wave 38 (2026-09-30); guard-sync'd
+    var roster = (typeof compMd.total_companies === 'number' && compMd.total_companies > 0) ? compMd.total_companies : 518; // 2026-09-30 roster; guard-sync'd
+    var wave = null;
+    if (pvpMd.coverage_note) {
+        var wm = String(pvpMd.coverage_note).match(/[Ww]ave (\d+)(?!.*[Ww]ave \d+)/s);
+        if (wm) wave = parseInt(wm[1], 10);
+    }
+    if (wave == null || !(wave > 0)) wave = 38; // wave 38 (2026-09-30); guard-sync'd to coverage_note's latest Wave marker
+    var gaps = roster - covered;
+    var gapWord = (gaps >= 0 && gaps < _PVP_GAP_WORDS.length) ? _PVP_GAP_WORDS[gaps] : String(gaps);
+    return 'Coverage: ' + covered + ' of ' + roster + ' roster companies ('
+        + companyYears.toLocaleString('en-US') + ' company-years; 2026-09-30 wave ' + wave
+        + ' shipped the Sep-2026 roster adds ARES, RDDT, XYZ \u2014 RDDT 2 company-years only, '
+        + 'IPO 2024-03-21; XYZ has no company-selected measure per the filer). '
+        + gapWord + ' roster companies are not covered: ';
+}
 function renderPvpComparison() {
     var head = document.getElementById('pvp-comp-head');
     var body = document.getElementById('pvp-comp-tbody');
@@ -8465,7 +8506,7 @@ function renderPvpComparison() {
             + 'Peer TSR uses the primary peer series; JNJ and AMZN file two peer series and the first is used. '
             + 'Company-selected measures are excluded: they are not comparable across companies. '
             + 'Values transcribed from the 402(v) table in each company\u2019s latest DEF 14A and cross-checked against Inline XBRL. '
-            + 'Coverage: 498 of 518 roster companies (2,466 company-years; 2026-09-30 wave 38 shipped the Sep-2026 roster adds ARES, RDDT, XYZ — RDDT 2 company-years only, IPO 2024-03-21; XYZ has no company-selected measure per the filer). Twenty roster companies are not covered: '
+            + _pvpMethodCoverageClause()
             + 'delisted or taken private (8: DAY, HES, JNPR, WBA, IPG, HOLX, K, EA), filer-side Inline XBRL errors '
             + 'that left 402(v) values unverifiable (7: INTC, SYF, COF, RF, HSY, EMN, AMT), 402(v)-exempt filers '
             + '(2: KKR, BX), same-issuer duplicate shipped once (GOOG under GOOGL), deferred until a first '
