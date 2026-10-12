@@ -913,11 +913,17 @@ function computeRadarPercentiles(companies) {
     });
 }
 
-/* Data completeness — reasons for missing pay ratio / median worker pay */
+/* Data completeness — reasons for missing pay ratio / median worker pay.
+   Contract (standing class, 2026-10-11 23:30 PT run): each entry asserts the
+   CURRENT anchor-year data state of that company. A note renders only when
+   the anchor pay_ratio / median_worker_pay is missing, so any entry whose
+   company now HAS the data is a dormant stale claim — remove it when the
+   data arrives (2026-09-17 precedent: TSLA's "no disclosed ratio" note was
+   removed once the 10-K/A ratio shipped; this run removed SOLV/GEV/SW,
+   whose FY2025 pay ratios now ship from the 2026 DEF 14A:
+   SOLV 245:1, GEV 282:1, SW 271:1). scripts/check_missing_data_reasons.py
+   enforces the invariant statically. */
 var MISSING_DATA_REASONS = {
-    'SOLV': 'Solventum spun off from 3M in April 2024 — no full-year proxy data available for FY2024.',
-    'GEV':  'GE Vernova spun off from GE in April 2024 — no full-year proxy data available for FY2024.',
-    'SW':   'Smurfit WestRock formed via merger in July 2024 — no FY2024 pay ratio disclosed.'
 };
 
 /* Filing-verbatim realized-compensation footnotes for headline insight cards.
