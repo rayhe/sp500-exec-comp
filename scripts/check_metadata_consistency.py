@@ -1210,7 +1210,8 @@ def check_available_years_proxy_fy(companies, failures):
 
 
 # -- Section 21: top-level metadata duplicate parity + README peer-network
-#     headline parity (2026-10-11 22:00 PT) -------------------------------
+#     headline parity (2026-10-11 22:00 PT; company-count prefix added
+#     2026-10-12 15:30 PT) ------------------------------------------------
 # New failure-mode class: hand-typed copies that live NEXT TO a
 # guard-verified value but are never themselves walked by a guard.
 # (1) metadata.verified_total (top-level) drifted to 7046 while the
@@ -1222,6 +1223,15 @@ def check_available_years_proxy_fy(companies, failures):
 # edges") sat stale since the 2026-10-05 batch-22 build (live 1,040 /
 # 7,739) — section 10 guards the peer JSON, section 4 guards
 # compensation copy, nobody walked this line.
+# 2026-10-12 15:30 PT: the same class, incompletely covered. The 2026-10-11
+# fix asserted only the nodes/edges suffix of the intro clause; the
+# "518 companies" PREFIX of the very same sentence was never walked.
+# Negative-tested: rewriting the intro to "519 companies" trips no guard
+# (section 21's suffix substring still matches; the provenance-census
+# guard's S2 trips only when the census literals themselves move, which a
+# sloppy intro edit does not). A roster add that updates the census but
+# misses the intro would ship a lying headline with every guard green.
+# The assertion now covers the full clause: company count + nodes + edges.
 def check_top_level_duplicate_parity(companies, meta, failures):
     n = sum(len(c.get("executives", [])) for c in companies)
     dq = meta.get("data_quality", {})
@@ -1240,12 +1250,15 @@ def check_top_level_duplicate_parity(companies, meta, failures):
         fail(f"duplicate parity 21: metadata.companies_with_executives="
              f"{meta.get('companies_with_executives')} != recount {n_cwe} -- "
              f"sync or drop the duplicate", failures)
-    # README intro peer-network headline must carry the live counts.
+    # README intro peer-network headline must carry the live counts —
+    # the FULL clause: roster company count, then nodes, then edges.
     with open(PEER_JSON_PATH, encoding="utf-8") as f:
         peer = json.load(f)
     nn = len(peer.get("nodes", []))
     ne = len(peer.get("edges", []))
-    want = f"{nn:,} peer network nodes, {ne:,} compensation benchmarking edges"
+    n_companies = len(companies)
+    want = (f"{n_companies:,} companies, {nn:,} peer network nodes, "
+            f"{ne:,} compensation benchmarking edges")
     path = os.path.join(HERE, "..", "README.md")
     try:
         with open(path, encoding="utf-8") as f:
