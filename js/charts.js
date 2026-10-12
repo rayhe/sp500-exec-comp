@@ -2942,17 +2942,33 @@ function drawCompositionChart(trends) {
             { label: 'Perks & Other', value: spForDetail.median_perks, yoy: spForDetail.perks_yoy_change, color: '#ffd166', desc: 'Security, travel, insurance, etc.' }
         ];
     } else {
-        // Fallback: 4-segment approximation from aggregate data
-        var stockPct = sp.stock_awards_pct || 71.6;
-        var impliedTotal = sp.median_stock_awards ? sp.median_stock_awards / (stockPct / 100) : 17100000;
-        var salaryPct = sp.median_salary ? (sp.median_salary / impliedTotal * 100) : 7.6;
-        var perksPct = sp.median_perks ? (sp.median_perks / impliedTotal * 100) : 1.7;
+        // Fallback: 4-segment approximation from aggregate data.
+        //
+        // VINTAGE NOTE (2026-10-12): every `||` default below used to be a
+        // bare FY2024 Equilar/AP 2025 edition constant (71.6 / 7.6 / 1.7 /
+        // $17.1M implied total), frozen by the 2026-10-12 FY2025 survey
+        // promotion. This branch never fires against today's dataset (the
+        // granular detail edition exists), but if a future trends.json
+        // ships a top-level block missing these fields the fallback would
+        // silently resurrect FY2024 figures as if they were current -- the
+        // dormant-stale-literal class (cf. MISSING_DATA_REASONS, 2026-10-11).
+        // Defaults now read the year-keyed FY2024 edition live (vintage-
+        // explicit) before falling to raw literals, which are comment-
+        // labeled with their edition so a future promotion revisits them.
+        var fy24 = compComp['s_and_p_500_fy2024'] || {};
+        var stockPct = sp.stock_awards_pct || fy24.stock_awards_pct || 71.6; // FY2024 Equilar/AP 2025; final backstop
+        var medianStock = sp.median_stock_awards || fy24.median_stock_awards;
+        var impliedTotal = medianStock ? medianStock / (stockPct / 100) : 17100000; // FY2024 survey median CEO total; final backstop
+        var medianSalary = sp.median_salary || fy24.median_salary;
+        var medianPerks = sp.median_perks || fy24.median_perks;
+        var salaryPct = medianSalary ? (medianSalary / impliedTotal * 100) : 7.6; // FY2024 edition; final backstop
+        var perksPct = medianPerks ? (medianPerks / impliedTotal * 100) : 1.7; // FY2024 edition; final backstop
         var otherPct = 100 - stockPct - salaryPct - perksPct;
         segments = [
-            { label: 'Stock Awards', value: sp.median_stock_awards || impliedTotal * stockPct / 100, yoy: sp.stock_awards_yoy_change, color: '#00b4d8', desc: 'Equity-based compensation' },
+            { label: 'Stock Awards', value: medianStock || impliedTotal * stockPct / 100, yoy: (sp.stock_awards_yoy_change || fy24.stock_awards_yoy_change), color: '#00b4d8', desc: 'Equity-based compensation' },
             { label: 'Non-Equity Incentive', value: impliedTotal * otherPct / 100, color: '#a78bfa', desc: 'Performance-based cash' },
-            { label: 'Base Salary', value: sp.median_salary || impliedTotal * salaryPct / 100, color: '#06d6a0', desc: 'Fixed annual cash' },
-            { label: 'Perks & Other', value: sp.median_perks || impliedTotal * perksPct / 100, yoy: sp.perks_yoy_change, color: '#ffd166', desc: 'Benefits and perquisites' }
+            { label: 'Base Salary', value: medianSalary || impliedTotal * salaryPct / 100, color: '#06d6a0', desc: 'Fixed annual cash' },
+            { label: 'Perks & Other', value: medianPerks || impliedTotal * perksPct / 100, yoy: (sp.perks_yoy_change || fy24.perks_yoy_change), color: '#ffd166', desc: 'Benefits and perquisites' }
         ];
     }
 
@@ -3165,7 +3181,7 @@ function drawCompositionChart(trends) {
     // Source note
     var sourceNote = document.createElement('div');
     sourceNote.className = 'composition-source';
-    sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2025') + ' · FY' + (compDetailYear || sp.fiscal_year || 2024);
+    sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2026' /* current survey edition as of the 2026-10-12 FY2025 promotion; mirrors trends.json */) + ' · FY' + (compDetailYear || sp.fiscal_year || 2025 /* current top-level edition year; backstop for data missing fiscal_year */);
     wrapper.appendChild(sourceNote);
 }
 
