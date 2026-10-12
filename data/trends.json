@@ -247,14 +247,23 @@
   "compensation_composition": {
     "description": "Breakdown of CEO compensation components",
     "s_and_p_500": {
-      "fiscal_year": 2024,
-      "stock_awards_pct": 71.6,
-      "median_stock_awards": 10300000,
-      "stock_awards_yoy_change": "+14.7%",
+      "fiscal_year": 2025,
+      "stock_awards_pct": 61.6,
+      "stock_awards_pct_method": "median stock awards / median total from the AP/Equilar 2026 survey medians; the survey notes components do not sum to the total, so this share is indicative",
+      "median_total_compensation": 17700000,
+      "total_yoy_change": "+5.9%",
+      "median_stock_awards": 10900000,
+      "stock_awards_yoy_change": "+11.5%",
       "median_salary": 1300000,
-      "median_perks": 286343,
-      "perks_yoy_change": "+21.5%",
-      "source": "Equilar/AP 2025"
+      "salary_yoy_change": "+3.9%",
+      "median_bonus_cash": 2700000,
+      "bonus_yoy_change": "+10.1%",
+      "median_option_awards": 0,
+      "average_option_awards": 2500000,
+      "median_perks": 310369,
+      "perks_yoy_change": "+17.7%",
+      "sample_size": 337,
+      "source": "Equilar/AP 2026 (survey of 337 S&P 500 CEOs in the job at least two years; proxies filed Jan 1-Apr 30, 2026)"
     },
     "equilar_100": {
       "fiscal_year": 2024,
@@ -286,6 +295,16 @@
       "median_neip_payout": 2500000,
       "neip_yoy_change": "flat",
       "source": "Harvard Law School Forum (Dec 2025)"
+    },
+    "s_and_p_500_fy2024": {
+      "fiscal_year": 2024,
+      "stock_awards_pct": 71.6,
+      "median_stock_awards": 10300000,
+      "stock_awards_yoy_change": "+14.7%",
+      "median_salary": 1300000,
+      "median_perks": 286343,
+      "perks_yoy_change": "+21.5%",
+      "source": "Equilar/AP 2025"
     }
   },
   "five_year_trends": {

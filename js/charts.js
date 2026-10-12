@@ -2910,11 +2910,20 @@ function drawCompositionChart(trends) {
         ? latestCompositionDetailKey(compComp) : null;
     var detail = compDetailKey ? compComp[compDetailKey] : null;
 
+    // Detail-year integer once, reused by the description label, the
+    // year-matched aggregate lookup, and the source note below.
+    var compDetailYear = compDetailKey ? parseInt(compDetailKey.replace(/^s_and_p_500_fy(\d{4})_detail$/, '$1'), 10) : null;
+    // Vintage-matched aggregate: the granular detail year's salary/perks
+    // must come from the same-fiscal-year aggregate block
+    // (s_and_p_500_fy<YYYY>), NOT the top-level block, which tracks the
+    // latest survey edition (FY2025 since the 2026-10-12 promotion). Falls
+    // back to the top-level block only when no year-matched edition exists.
+    var spForDetail = (compDetailYear && compComp['s_and_p_500_fy' + compDetailYear]) ? compComp['s_and_p_500_fy' + compDetailYear] : sp;
+
     // Live-label the section description from the resolved detail year
     // (textContent-only; the static HTML carries today's copy as the no-JS
     // fallback).
     if (compDetailKey) {
-        var compDetailYear = parseInt(compDetailKey.replace(/^s_and_p_500_fy(\d{4})_detail$/, '$1'), 10);
         var compDesc = document.getElementById('composition-desc');
         if (compDesc) {
             compDesc.textContent = 'Granular breakdown of median CEO pay components with year-over-year changes — S&P 500, FY' + compDetailYear;
@@ -2929,8 +2938,8 @@ function drawCompositionChart(trends) {
             { label: 'Restricted Stock / RSUs', value: detail.median_restricted_stock, yoy: detail.restricted_stock_yoy_change, color: '#0096c7', desc: 'Time-vesting restricted stock units' },
             { label: 'Discretionary Bonus', value: detail.median_discretionary_bonus, yoy: detail.bonus_yoy_change, color: '#a78bfa', desc: 'Board-approved cash bonuses' },
             { label: 'Non-Equity Incentive', value: detail.median_neip_payout, yoy: detail.neip_yoy_change, color: '#8b5cf6', desc: 'Formula-based incentive plan payouts' },
-            { label: 'Base Salary', value: sp.median_salary, color: '#06d6a0', desc: 'Fixed annual cash compensation' },
-            { label: 'Perks & Other', value: sp.median_perks, yoy: sp.perks_yoy_change, color: '#ffd166', desc: 'Security, travel, insurance, etc.' }
+            { label: 'Base Salary', value: spForDetail.median_salary, color: '#06d6a0', desc: 'Fixed annual cash compensation' },
+            { label: 'Perks & Other', value: spForDetail.median_perks, yoy: spForDetail.perks_yoy_change, color: '#ffd166', desc: 'Security, travel, insurance, etc.' }
         ];
     } else {
         // Fallback: 4-segment approximation from aggregate data
@@ -3156,7 +3165,7 @@ function drawCompositionChart(trends) {
     // Source note
     var sourceNote = document.createElement('div');
     sourceNote.className = 'composition-source';
-    sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2025') + ' · FY' + (sp.fiscal_year || 2024);
+    sourceNote.textContent = 'Source: ' + ((detail && detail.source) || sp.source || 'Equilar/AP 2025') + ' · FY' + (compDetailYear || sp.fiscal_year || 2024);
     wrapper.appendChild(sourceNote);
 }
 
