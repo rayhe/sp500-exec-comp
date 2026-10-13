@@ -57,6 +57,12 @@
 #     (post-commit-hook-sync class: the commit-logging backbone had no
 #     sync assertion; a drifted/deleted/non-executable installed hook
 #     would let commit-without-log-entry recur silently).
+#   2026-10-13 10:00 - check_stub_home_capture.py asserts the canonical
+#     iteration log actually contains the HEAD commit, by hash or by the
+#     hook's subject-dedupe header match (post-commit-stub home-void
+#     class: a commit made with HOME overridden - the IPv6-push recipe's
+#     HOME=$TMPHOME - sends the hook's auto-stub into the throwaway temp
+#     home silently; the manual backfill convention had no verifier).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
