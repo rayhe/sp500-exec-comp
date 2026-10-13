@@ -51,6 +51,12 @@
 #     origin/master at commit time (remote-branch desync class: a partial
 #     push leaves the branches diverged with only the post-push eyeball
 #     check as tripwire); network failure exits 2 (infra advisory).
+#   2026-10-13 07:30 - check_postcommit_hook_sync.py asserts the installed
+#     .git/hooks/post-commit is byte-identical to
+#     scripts/post-commit-iteration-log.sh and executable
+#     (post-commit-hook-sync class: the commit-logging backbone had no
+#     sync assertion; a drifted/deleted/non-executable installed hook
+#     would let commit-without-log-entry recur silently).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
