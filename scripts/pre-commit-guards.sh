@@ -63,6 +63,12 @@
 #     class: a commit made with HOME overridden - the IPv6-push recipe's
 #     HOME=$TMPHOME - sends the hook's auto-stub into the throwaway temp
 #     home silently; the manual backfill convention had no verifier).
+#   2026-10-13 11:30 - check_orphaned_stub_detail.py asserts no bare
+#     [AUTO-STUB] block stays detail-less past its backfill window
+#     (orphaned-stub-detail class: check_stub_home_capture only asserts
+#     the commit is PRESENT, so a bare stub with no backfilled detail
+#     passed every guard silently; bare orphans older than 6h and within
+#     7 days hard-fail, older ones print as advisories).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
