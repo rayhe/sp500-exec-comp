@@ -923,7 +923,16 @@ function computeRadarPercentiles(companies) {
    whose FY2025 pay ratios now ship from the 2026 DEF 14A:
    SOLV 245:1, GEV 282:1, SW 271:1). scripts/check_missing_data_reasons.py
    enforces the invariant statically. */
+/* New failure-mode class (2026-10-12 18:00 PT run): the dict was emptied when every
+   stale FY2024-era entry was removed, but a LIVE stub needs one -- VMRK (zero
+   executive rows, placeholder total_compensation 0) has no post-merger DEF 14A
+   on file yet, so its main-table pay-ratio / median-worker cells rendered a
+   bare "N/A" with no tooltip, and the detail panel's Incomplete-data notice
+   fell back to the generic string. The entry is filing-grounded and static;
+   per the guard's S1, it must stay live only while the anchor row genuinely
+   lacks pay_ratio / median_worker_pay (re-verify at each VMRK DEF 14A watch). */
 var MISSING_DATA_REASONS = {
+    'VMRK': 'Post-merger registrant (AvalonBay/Equity Residential merger closed 2026-08-17; CIK 906107 is now Vivmark Residential); no post-merger DEF 14A on file yet (latest filing: 2026-09-24 Form 3/A, pre-merger) -- so no Summary Compensation Table, pay ratio, or median worker pay is disclosed.'
 };
 
 /* Filing-verbatim realized-compensation footnotes for headline insight cards.
@@ -1374,6 +1383,23 @@ function getMissingDataHtml(ticker, field) {
     if (!reason) return '<span class="data-na">N/A</span>';
     var title = field === 'pay_ratio' ? 'Pay ratio unavailable' : 'Worker pay unavailable';
     return '<span class="data-na" title="' + title + ': ' + reason.replace(/"/g, '&quot;') + '"><span class="data-na-icon">⚠</span> N/A</span>';
+}
+
+/* Coverage-stub comp-cell marker. New failure-mode class (2026-10-12 18:00 PT
+   run): zero-row roster companies (VMRK today -- added at the Sep 2026
+   rebalance with no post-merger DEF 14A on file yet, total_compensation 0 as a
+   placeholder) rendered the main-table comp cell as "$0", which reads as a
+   genuine zero-pay CEO on the site's most-visited surface. Every aggregate
+   layer already excludes stubs (computeCompPercentile nulls them; the Zero Pay
+   insight filters on _hasNeoData), so the main-table cell gets the same
+   treatment: an explicit no-data marker instead of "$0". The reason text
+   reuses MISSING_DATA_REASONS (filing-grounded, static), with the same
+   escaped-content contract as getMissingDataHtml; tickers without an entry
+   (e.g. a future stub before its watch run) get a generic fallback. */
+function stubCompCellHtml(c) {
+    var reason = MISSING_DATA_REASONS[c.ticker] || 'No NEO compensation data on file yet.';
+    var title = ('No compensation data: ' + reason).replace(/"/g, '&quot;');
+    return '<span class="data-na" title="' + title + '"><span class="data-na-icon">&#9888;</span> N/A</span>';
 }
 let currentSort = { key: 'total_compensation', dir: 'desc' };
 let activeSector = null;
@@ -7434,7 +7460,18 @@ function renderTable(companies, options) {
 
         // Compensation value with inline data bar + optional top-10 badge
         var barPct = maxFilteredComp > 0 ? Math.max(0, Math.min(100, displayComp / maxFilteredComp * 100)) : 0;
-        var compHtml = '<div class="comp-bar-cell"><div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(displayComp) + '</span>';
+        // Coverage stub: no NEO rows in the data (no DEF 14A filed yet), so the
+        // placeholder total_compensation of 0 is NOT a filing value. Render the
+        // explicit no-data marker instead of "$0"; every badge branch below is
+        // a no-op for stubs (neo_count 0, no outlier/realized-note entries),
+        // so only the value+bar rendering needs the branch.
+        var _isStub = !(c.executives && c.executives.length);
+        var compHtml = '<div class="comp-bar-cell">';
+        if (_isStub) {
+            compHtml += stubCompCellHtml(c);
+        } else {
+            compHtml += '<div class="comp-bar" style="width:' + barPct.toFixed(1) + '%"></div><span class="comp-value">' + formatCurrency(displayComp) + '</span>';
+        }
         if (!isRolePivot && c.neo_count) {
             compHtml += ' <span class="neo-badge" title="' + c.neo_count + ' Named Executive Officers from SEC EDGAR">' + c.neo_count + ' NEOs</span>';
         }
