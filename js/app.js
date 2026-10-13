@@ -978,7 +978,9 @@ var PVP_EXCLUSIONS = {
 /* Grouping of the standing PvP exclusions by exclusion class, for the
    aggregated exclusion list in the Data Verification modal (2026-09-24).
    Union of tickers must equal Object.keys(PVP_EXCLUSIONS); labels are
-   static presentation strings. Keep in sync with PVP_EXCLUSIONS. */
+   static presentation strings. Keep in sync with PVP_EXCLUSIONS.
+   Guarded: scripts/check_pvp_exclusion_groups_sync.py (72nd guard, S1-S5)
+   asserts the union, the per-group counts, and the reason coverage. */
 var PVP_EXCLUSION_GROUPS = [
     { label: 'Delisted / taken private (8)', tickers: ['DAY', 'HES', 'JNPR', 'WBA', 'IPG', 'HOLX', 'K', 'EA'] },
     { label: 'Filer-side XBRL errors (7)', tickers: ['INTC', 'SYF', 'COF', 'RF', 'HSY', 'EMN', 'AMT'] },
