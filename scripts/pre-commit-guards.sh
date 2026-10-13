@@ -77,6 +77,16 @@
 #     verdict prints a diagnosability WARN; the new guard pins the
 #     enforcement in the hook source (S1) and proves verdict ==> rc==1
 #     dynamically over the suite in full mode (S2)).
+#   2026-10-13 15:30 - check_log_prose_numbers.py asserts the latest full
+#     iteration-log entry's "- Data:" bullet numbers match the data files
+#     when it asserts "Recomputed from data files" (log-prose number-drift
+#     class: per-run entries hand-write the headline audit numbers with
+#     only the standing recompute-each-run hand-convention as tripwire; a
+#     typo or stale copy-paste would make the audit trail lie with no
+#     verifier). Companies/rows, verified_total, the DEF 14A-verified
+#     percentage, peer nodes/edges, PvP companies/company-years,
+#     enriched_count, and last_dq_repair are each checked when claimed;
+#     bullets without the recompute marker print a WARN advisory only.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
