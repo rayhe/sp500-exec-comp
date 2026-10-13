@@ -8415,6 +8415,10 @@ function pvpFmtPct(v) {
 // coverage_note (take-private, delisted, 402(v)-exempt, no DEF 14A,
 // filer-side XBRL errors, no Inline XBRL 402(v) disclosure).
 // scripts/check_pvp_coverage_desc.py guards all of it.
+// scripts/check_pvp_coverage_groups_map_sync.py (73rd guard, S1-S3) pins the
+// coverage-union <-> PVP_EXCLUSIONS membership sync: every clause ticker must
+// carry a map reason, and the map-minus-coverage difference is exactly the
+// same-issuer-duplicate class (GOOG, shipped under GOOGL) - never a drift.
 var PVP_COVERAGE_EXCLUSION_GROUPS = [
     ['take-private', ['DAY', 'EA', 'HOLX', 'K']],
     ['delisted', ['HES', 'IPG', 'JNPR', 'WBA']],
