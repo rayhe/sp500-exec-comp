@@ -69,9 +69,28 @@
 #     the commit is PRESENT, so a bare stub with no backfilled detail
 #     passed every guard silently; bare orphans older than 6h and within
 #     7 days hard-fail, older ones print as advisories).
+#   2026-10-13 14:00 - FAIL-OPEN-ENFORCEMENT in the runner loop plus
+#     check_guard_exit_consistency.py (fail-open-exit class: the runner
+#     blocked on exit code alone, so a guard printing a FAIL verdict yet
+#     exiting 0 would false-green the commit; each guard's output is now
+#     captured and a verdict with rc != 1 loud-blocks, rc 1 with no
+#     verdict prints a diagnosability WARN; the new guard pins the
+#     enforcement in the hook source (S1) and proves verdict ==> rc==1
+#     dynamically over the suite in full mode (S2)).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
-"$TOP/scripts/check_metadata_consistency.py" || exit 1
+# FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
+# scripts/check_guard_exit_consistency.py S1): this runner blocks on exit
+# code alone, so a guard printing a FAIL verdict yet exiting 0 would
+# false-green the commit. A printed verdict REQUIRES rc 1.
+gate_out=$("$TOP/scripts/check_metadata_consistency.py" 2>&1)
+gate_rc=$?
+printf '%s\n' "$gate_out"
+if printf '%s\n' "$gate_out" | grep -qE '(^|[[:space:]])FAIL(ED)?:' && [ "$gate_rc" -ne 1 ]; then
+  echo "FAIL: check_metadata_consistency.py printed a FAIL verdict but exited rc $gate_rc (fail-open exit: verdict/exit-code desync), blocking commit"
+  exit 1
+fi
+[ "$gate_rc" -eq 0 ] || exit 1
 FOUND=0
 for g in "$TOP"/scripts/check_*.py; do
   [ -f "$g" ] || continue
@@ -82,8 +101,19 @@ for g in "$TOP"/scripts/check_*.py; do
     || grep -q -- "'--static-only' in sys.argv" "$g" \
     || grep -qE "add_argument\(.--static-only" "$g"; then
     FOUND=1
-    "$g" --static-only
+    out=$("$g" --static-only 2>&1)
     rc=$?
+    printf '%s\n' "$out"
+    # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
+    # scripts/check_guard_exit_consistency.py S1): a printed FAIL verdict
+    # REQUIRES rc 1, else the commit false-greens on exit code alone.
+    if printf '%s\n' "$out" | grep -qE '(^|[[:space:]])FAIL(ED)?:' && [ "$rc" -ne 1 ]; then
+      echo "FAIL: $g printed a FAIL verdict but exited rc $rc (fail-open exit: verdict/exit-code desync), blocking commit"
+      exit 1
+    fi
+    if [ "$rc" -eq 1 ] && ! printf '%s\n' "$out" | grep -qE '(^|[[:space:]])FAIL(ED)?:'; then
+      echo "WARN: $g exited 1 with no FAIL verdict line (diagnosability gap) - blocking commit, cause in output above"
+    fi
     if [ "$rc" -eq 1 ] || [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ]; then
       if [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ]; then
         echo "FAIL: $g could not be executed (rc $rc - exec bit or shebang broken), blocking commit"
