@@ -47,6 +47,10 @@
 #     scripts/check_*.py is actually SELECTED by the discovery greps above
 #     (discovery-silent-skip class: a guard spelled differently from the
 #     three grep patterns is executable yet never runs at commit).
+#   2026-10-13 06:00 - check_remote_branch_sync.py asserts origin/main ==
+#     origin/master at commit time (remote-branch desync class: a partial
+#     push leaves the branches diverged with only the post-push eyeball
+#     check as tripwire); network failure exits 2 (infra advisory).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
