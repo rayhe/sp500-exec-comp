@@ -43,6 +43,10 @@
 #     of a silent skip (silent-skip class: 03090dd, 2026-10-08
 #     check_composition_fy_detail.py repair); check_guard_exec_bits.py
 #     asserts the exec bit statically for every check_*.py.
+#   2026-10-13 03:30 - check_hook_discovery_sync.py asserts every
+#     scripts/check_*.py is actually SELECTED by the discovery greps above
+#     (discovery-silent-skip class: a guard spelled differently from the
+#     three grep patterns is executable yet never runs at commit).
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 "$TOP/scripts/check_metadata_consistency.py" || exit 1
