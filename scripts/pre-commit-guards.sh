@@ -171,6 +171,9 @@
 #     hidden_files/guard_runs.jsonl on every green run (fail-closed: an
 #     unwritable ledger blocks the commit); a missing marker -> HARD FAIL
 #     naming the unproven commit.
+#   2026-10-14 10:30 - FOUND is now a true discovered-guard count (was a
+#     0/1 flag), so the proof ledger's "guards" field records the real
+#     suite size (discovered + the metadata gate) instead of a constant 2.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
@@ -194,7 +197,7 @@ for g in "$TOP"/scripts/check_*.py; do
   if grep -q -- '"--static-only" in sys.argv' "$g" \
     || grep -q -- "'--static-only' in sys.argv" "$g" \
     || grep -qE "add_argument\(.--static-only" "$g"; then
-    FOUND=1
+    FOUND=$((FOUND + 1))
     out=$("$g" --static-only 2>&1)
     rc=$?
     printf '%s\n' "$out"
@@ -217,7 +220,7 @@ for g in "$TOP"/scripts/check_*.py; do
     if [ "$rc" -eq 2 ]; then echo "WARN: $g --static-only infra problem (exit 2), not blocking"; fi
   fi
 done
-[ "$FOUND" -eq 1 ] || echo "WARN: no --static-only guards discovered under scripts/check_*.py"
+[ "$FOUND" -gt 0 ] || echo "WARN: no --static-only guards discovered under scripts/check_*.py"
 # GUARD-RUN PROOF (2026-10-14 10:00 - check_hook_run_proof.py, 91st guard;
 # hook-bypass class: `git commit --no-verify`, or a clone where the hook was
 # never installed, skips every guard silently). Every guard above passed, so
