@@ -104,6 +104,17 @@
 #     green). Static half asserts input sanity only (local file parses,
 #     URL constant exact) and SKIP-documents the canary-only live half;
 #     clean HTTP errors -> HARD FAIL, transport errors -> exit 2 infra.
+#   2026-10-13 22:00 - check_watch_freshness.py asserts every EDGAR/FY2025
+#     deferral-watch re-verification asserted in the latest full
+#     iteration-log entry is within 24h at commit time (watch-staleness
+#     class: the VMRK post-merger DEF 14A watch, the PSKY/FDXF first-proxy
+#     watches, and the FY2025 granular-detail search watch were
+#     re-verified "periodically" by hand-convention only; a slipped
+#     cadence would let a newly filed DEF 14A sit un-ingested with every
+#     guard green). Each "last checked"/"last search" marker on the
+#     shared candidates line is audited separately; unparseable markers
+#     print a WARN advisory only (prose format not pinned, mirroring
+#     check_log_prose_numbers.py); missing log -> exit 2 infra.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
