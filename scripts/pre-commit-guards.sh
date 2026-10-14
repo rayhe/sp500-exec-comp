@@ -95,6 +95,15 @@
 #     next-run candidates list). Missing/unreadable state -> exit 2 infra
 #     advisory (a deleted state file must not wedge commits); stale ->
 #     HARD FAIL naming the re-run command.
+#   2026-10-13 19:30 - check_live_deploy_currency.py pins the GitHub Pages
+#     deploy to the repo's data fingerprint in full (canary) mode: the
+#     live compensation.json sha256 must equal the local file's
+#     (deploy-staleness class: the post-push live-site currency check was
+#     a manual per-run hand-convention with no fail-closed verifier, so
+#     a failed/wedged Pages build would serve stale data with every guard
+#     green). Static half asserts input sanity only (local file parses,
+#     URL constant exact) and SKIP-documents the canary-only live half;
+#     clean HTTP errors -> HARD FAIL, transport errors -> exit 2 infra.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
