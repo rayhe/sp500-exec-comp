@@ -125,6 +125,14 @@
 #     any hit -> HARD FAIL naming file:line + pattern, value redacted;
 #     binary-safe (errors=replace decode, NUL lines skipped); git
 #     unavailable -> exit 2 infra.
+#   2026-10-14 02:00 - check_git_identity.py asserts the effective commit
+#     author identity is exactly Ray He <rayche@gmail.com> (identity-drift
+#     class: the standing author rule had only the run author's eyeball
+#     ("Git identity verified pre-commit") as tripwire; a wrong-but-valid
+#     gitconfig identity would publish to the public repo with every guard
+#     green). Reads system+global+local config exactly as `git commit`
+#     resolves it; mismatch or unset -> HARD FAIL naming the value and
+#     the fix; git itself broken -> exit 2 infra.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
