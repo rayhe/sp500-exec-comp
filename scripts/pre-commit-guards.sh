@@ -87,6 +87,14 @@
 #     percentage, peer nodes/edges, PvP companies/company-years,
 #     enriched_count, and last_dq_repair are each checked when claimed;
 #     bullets without the recompute marker print a WARN advisory only.
+#   2026-10-13 18:00 - check_canary_freshness.py asserts the last full
+#     drift-canary run is within 48h at commit time (watchdog-staleness
+#     class: the canary's --check-stale mode was documented "cheap enough
+#     for a scheduled drift check" yet invoked by nothing; the full-render
+#     re-run cadence lived only in the iteration log's hand-written
+#     next-run candidates list). Missing/unreadable state -> exit 2 infra
+#     advisory (a deleted state file must not wedge commits); stale ->
+#     HARD FAIL naming the re-run command.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
