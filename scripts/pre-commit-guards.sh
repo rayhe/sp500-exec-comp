@@ -152,6 +152,15 @@
 #     behind; no existing guard asserted local-vs-remote). A lagging ref
 #     -> HARD FAIL naming ref/hash/HEAD; ls-remote failure -> exit 2
 #     infra advisory.
+#   2026-10-14 07:30 - check_new_file_allowlist.py asserts every newly
+#     staged file (git diff --cached --diff-filter=A, exactly the add-A
+#     sweep population) matches the intentional-new-file allowlist
+#     (add-A small-scratch-sweep class: the 88th guard closed only the
+#     >1MiB variant; a small scratch file - fixture leftover, stray
+#     CSV/JSON, editor backup - would be swept into the public repo with
+#     an unrelated commit message, with only the run author's eyeball
+#     on git status as tripwire). A future legitimate new-file class is
+#     fail-closed on purpose: extend the allowlist deliberately.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
