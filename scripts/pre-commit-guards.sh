@@ -183,6 +183,18 @@
 #     HEAD-only missing proof; non-HEAD gaps still hard-fail, and a
 #     genuinely unproven HEAD is caught by the next commit's audit (at
 #     most one commit of grace), so the hook-bypass class stays closed.
+#   2026-10-14 16:05 - check_push_auth_pat.py asserts the github.com PAT
+#     URL is uniquely extractable from ~/.git-credentials by the
+#     order-independent full-shape match (push-auth extraction-fragility
+#     class: the task body's `sed -n '2p'` positional extraction assumes a
+#     stable line order, but the file was observed being rewritten with
+#     different line orders minutes apart mid-run, and it carries a
+#     PAT-userinfo line on the proxy host too - so the match must anchor
+#     scheme ^https:// and host @github.com, not just the userinfo).
+#     Zero or 2+ matches -> HARD FAIL; missing/unreadable file -> exit 2
+#     infra advisory; the token is never printed (scheme/host shapes only);
+#     the credential literal is split per the 86th guard's convention so
+#     staging the guard does not self-trip the secret-leak scan.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
