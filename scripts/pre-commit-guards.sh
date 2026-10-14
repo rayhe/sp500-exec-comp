@@ -161,6 +161,16 @@
 #     an unrelated commit message, with only the run author's eyeball
 #     on git status as tripwire). A future legitimate new-file class is
 #     fail-closed on purpose: extend the allowlist deliberately.
+#   2026-10-14 10:00 - check_hook_run_proof.py asserts every landed commit
+#     newer than the proof ledger's epoch marker carries a (parent, tree)
+#     proof line written by the hook's own green run (hook-bypass class:
+#     `git commit --no-verify`, or a clone where the hook was never
+#     installed - check_hook_copy_sync S1 is only an advisory there -
+#     skips all 90 guards silently with only the run author's
+#     hand-convention as tripwire). The hook appends the proof line to
+#     hidden_files/guard_runs.jsonl on every green run (fail-closed: an
+#     unwritable ledger blocks the commit); a missing marker -> HARD FAIL
+#     naming the unproven commit.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
@@ -208,4 +218,24 @@ for g in "$TOP"/scripts/check_*.py; do
   fi
 done
 [ "$FOUND" -eq 1 ] || echo "WARN: no --static-only guards discovered under scripts/check_*.py"
+# GUARD-RUN PROOF (2026-10-14 10:00 - check_hook_run_proof.py, 91st guard;
+# hook-bypass class: `git commit --no-verify`, or a clone where the hook was
+# never installed, skips every guard silently). Every guard above passed, so
+# record proof that this suite ran for the staged tree. The 91st guard audits
+# the landed history against this ledger on the next commit; a commit with no
+# proof line fails that guard closed. Fail-closed: if the proof cannot be
+# written, the commit must not land unprovable.
+proof_parent="$(git rev-parse HEAD 2>/dev/null || echo root)"
+proof_tree="$(git write-tree 2>/dev/null)" || {
+  echo "FAIL: guard-run proof: git write-tree failed - blocking commit (unprovable)"
+  exit 1
+}
+proof_hook="$(sha256sum "$TOP/.git/hooks/pre-commit" 2>/dev/null | cut -d' ' -f1)"
+proof_ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+printf '{"parent":"%s","tree":"%s","guards":%d,"hook_sha":"%s","ts":"%s"}\n' \
+  "$proof_parent" "$proof_tree" "$((FOUND + 1))" "$proof_hook" "$proof_ts" \
+  >> "$TOP/hidden_files/guard_runs.jsonl" || {
+  echo "FAIL: guard-run proof: cannot append to hidden_files/guard_runs.jsonl - blocking commit (unprovable)"
+  exit 1
+}
 exit 0

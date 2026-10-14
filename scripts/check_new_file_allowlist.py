@@ -73,6 +73,9 @@ ALLOWLIST = [
     re.compile(r"^hidden_files/(apply|sync|repair|phantom|fix|ceo|mark_verified|peer)_[a-z0-9_]+\.py$"),
     # 4. canary full logs teed to hidden_files/ (iteration-log convention)
     re.compile(r"^hidden_files/drift_canary_full_\d{8}_\d{4}\.log$"),
+    # 5. guard-run proof ledger (91st guard: appended by the pre-commit hook
+    #    on every green run; tracked as provenance)
+    re.compile(r"^hidden_files/guard_runs\.jsonl$"),
 ]
 
 results = []
