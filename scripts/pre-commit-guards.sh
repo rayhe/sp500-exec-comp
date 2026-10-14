@@ -174,6 +174,15 @@
 #   2026-10-14 10:30 - FOUND is now a true discovered-guard count (was a
 #     0/1 flag), so the proof ledger's "guards" field records the real
 #     suite size (discovered + the metadata gate) instead of a constant 2.
+#   2026-10-14 11:30 - pending-proof-lag false-positive class: the proof
+#     line for commit N is swept into the committed ledger by the NEXT
+#     commit, so the committed ledger is one commit behind by design and
+#     HEAD hard-failed as "unproven" in a fresh clone (or after the
+#     uncommitted ledger line was dropped) with ledger deletion as the
+#     only remedy. check_hook_run_proof.py S2 now WARNS (rc 0) on
+#     HEAD-only missing proof; non-HEAD gaps still hard-fail, and a
+#     genuinely unproven HEAD is caught by the next commit's audit (at
+#     most one commit of grace), so the hook-bypass class stays closed.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by

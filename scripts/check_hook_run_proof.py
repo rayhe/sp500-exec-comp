@@ -14,13 +14,21 @@ Mechanism (see the GUARD-RUN PROOF tail section of scripts/pre-commit-guards.sh)
 on every green pre-commit run the hook appends one JSON line to
 hidden_files/guard_runs.jsonl recording the staged tree it approved
 (parent HEAD sha + `git write-tree` output + guard count + hook sha256 + UTC
-timestamp). This guard audits the landed history: every commit newer than the
-ledger's first (epoch) marker must have a matching (parent, tree) marker. A
-commit with no marker landed without the suite -> HARD FAIL naming it. The
-(parent, tree) key is sound: a marker for (P, T) proves the hook approved tree
-T on top of parent P, so any commit sharing the key is content-identical to
-what the suite approved (message/timestamp/author metadata is not
-guard-scanned and is out of scope).
+timestamp). The proof line for commit N is written into the WORKING-TREE
+ledger during N's own hook run and swept into the committed ledger by the NEXT
+commit, so the committed ledger is one commit behind by design. This guard
+audits the landed history: every commit newer than the ledger's first (epoch)
+marker must have a matching (parent, tree) marker. A non-HEAD commit with no
+marker landed without the suite -> HARD FAIL naming it. The single exception
+is HEAD itself (pending-proof-lag): in a fresh clone, or after the
+uncommitted ledger line was dropped (checkout --, stash), the committed
+ledger cannot prove HEAD yet, so HEAD-only missing proof is a WARN, not a
+FAIL. The bypass class stays closed: the next commit's hook re-audits, and a
+genuinely unproven HEAD is no longer HEAD then, so it hard-fails there - at
+most one commit of grace. The (parent, tree) key is sound: a marker for
+(P, T) proves the hook approved tree T on top of parent P, so any commit
+sharing the key is content-identical to what the suite approved
+(message/timestamp/author metadata is not guard-scanned and is out of scope).
 
 Checks (all static - git reads and one small file read, no network):
   S1 the proof ledger is readable (working-tree copy first, then HEAD's
@@ -54,6 +62,14 @@ and contains the literal "--static-only" in sys.argv.
 History:
   2026-10-14 10:00 - created (10:00 PT iteration). Closes the hook-bypass
     class; the 91st guard script.
+  2026-10-14 11:30 - S2 HEAD-grace (11:30 PT iteration). Closes the
+    pending-proof-lag false-positive class: the committed ledger is one
+    commit behind by design, so in a fresh clone (or after the uncommitted
+    ledger line is dropped) HEAD was hard-failing as "unproven" with no
+    remedy but ledger deletion. HEAD-only missing proof is now WARN + rc 0;
+    any non-HEAD missing proof still hard-fails, and a genuinely unproven
+    HEAD is caught by the next commit's audit (at most one commit of
+    grace), so the hook-bypass class stays closed.
 """
 import argparse
 import json
@@ -150,7 +166,11 @@ def main():
         triple = fields[i:i + 3]
         if len(triple) != 3:
             break
-        recs.append(tuple(triple))
+        sha, par, tree = triple
+        # git log appends "\n" after each record's trailing %x00, so every
+        # sha after the first arrives as "\n<sha>" - strip it; the subject
+        # lookup and the head_sha comparison below need clean shas.
+        recs.append((sha.strip(), par, tree))
     epoch_idx = None
     for i, (sha, par, tree) in enumerate(recs):
         if (par if par else "root") == ep and tree == et:
@@ -166,10 +186,31 @@ def main():
         return 1
     audited = recs[:epoch_idx]  # commits strictly newer than the epoch
     proof_keys = set((m["parent"], m["tree"]) for m in markers)
+    head_sha = recs[0][0] if recs else None
     missing = []
+    head_only = []
     for sha, par, tree in audited:
         if ((par if par else "root"), tree) not in proof_keys:
-            missing.append(sha)
+            (head_only if sha == head_sha else missing).append(sha)
+    if head_only and not missing:
+        # HEAD-grace for the pending-proof-lag class (2026-10-14 11:30 PT
+        # iteration): the committed ledger is one commit behind by design,
+        # so HEAD is unprovable from committed state alone in a fresh clone
+        # or after the working-tree proof line was dropped. WARN, do not
+        # block: the next commit's hook re-audits and a genuinely unproven
+        # HEAD hard-fails there (no longer HEAD) - at most one commit of
+        # grace, the hook-bypass class stays closed.
+        for sha in head_only:
+            rc2, subj, _ = _git(repo, "log", "-1", "--format=%h %s", sha)
+            print("WARN: hook-run-proof: HEAD %s has no proof line in the committed ledger"
+                  % (subj.strip() if rc2 == 0 else sha))
+        print("WARN: hook-run-proof: expected one-commit sweep lag (the proof line for HEAD")
+        print("WARN: hook-run-proof: is swept into the ledger by the next commit) - not")
+        print("WARN: hook-run-proof: blocking. If HEAD truly bypassed the suite, the next")
+        print("WARN: hook-run-proof: commit's audit catches it (it will no longer be HEAD).")
+        check("all-audited-commits-proven", True,
+              "HEAD-only pending-proof lag (warn, not fail)")
+        return 0
     if missing:
         print("FAIL: hook-run-proof: %d commit(s) landed with no guard-run proof "
               "(bypassed via --no-verify or committed where the hook was not installed):"
