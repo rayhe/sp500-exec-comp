@@ -115,6 +115,16 @@
 #     shared candidates line is audited separately; unparseable markers
 #     print a WARN advisory only (prose format not pinned, mirroring
 #     check_log_prose_numbers.py); missing log -> exit 2 infra.
+#   2026-10-13 23:30 - check_secret_leak.py scans the staged diff's added
+#     lines for high-signal credential patterns (secret-leak class:
+#     `git add -A` sweeps every new file into the commit and this repo is
+#     public, so a pasted PAT/API key/PEM block in a scratch script would
+#     publish to GitHub with every guard green; the only tripwire was the
+#     run author's eyeball). Denylist is concrete prefixes + PEM headers
+#     only (bare `re_` and generic key=value shapes excluded as FP-prone);
+#     any hit -> HARD FAIL naming file:line + pattern, value redacted;
+#     binary-safe (errors=replace decode, NUL lines skipped); git
+#     unavailable -> exit 2 infra.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
