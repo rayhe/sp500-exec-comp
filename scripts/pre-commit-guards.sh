@@ -142,6 +142,16 @@
 #     would commit to the public repo with every guard green and only the
 #     run author's eyeball on `git status` as tripwire). Sizes come from
 #     the staged blob (binary-safe); git failure -> exit 2 infra.
+#   2026-10-14 06:00 - check_pushed_state.py asserts the pre-commit HEAD
+#     (the previous commit) is the tip of BOTH origin/master and
+#     origin/main (silent-push-failure / commit-without-push class: a
+#     failed or partial post-commit push had only the run author's eyeball
+#     on the push output as tripwire - `| tail` exit-code masking, a
+#     proxy reset, or a master-but-not-main partial push let subsequent
+#     commits stack with every guard green while the live Pages site fell
+#     behind; no existing guard asserted local-vs-remote). A lagging ref
+#     -> HARD FAIL naming ref/hash/HEAD; ls-remote failure -> exit 2
+#     infra advisory.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
