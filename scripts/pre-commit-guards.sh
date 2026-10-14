@@ -133,6 +133,15 @@
 #     green). Reads system+global+local config exactly as `git commit`
 #     resolves it; mismatch or unset -> HARD FAIL naming the value and
 #     the fix; git itself broken -> exit 2 infra.
+#   2026-10-14 03:30 - check_staged_size.py asserts no newly staged file
+#     exceeds 1 MiB unless it matches the DQ-batch backup convention
+#     (_backup_YYYYMMDD_HHMM_) (add-A-sweep class: `git add -A` stages
+#     every new file in the tree, .gitignore covers only __pycache__ /
+#     *.pyc (2026-09-18 .pyc sweep precedent), and the 86th guard covers
+#     secrets only - a stray scratch dump / screenshot / editor backup
+#     would commit to the public repo with every guard green and only the
+#     run author's eyeball on `git status` as tripwire). Sizes come from
+#     the staged blob (binary-safe); git failure -> exit 2 infra.
 set -u
 TOP="$(git rev-parse --show-toplevel)"
 # FAIL-OPEN-ENFORCEMENT (do not remove - asserted by
