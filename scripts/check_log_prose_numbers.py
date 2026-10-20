@@ -235,7 +235,13 @@ def claim_pvp():
 
 
 def claim_enriched():
-    m = re.search(r"enriched_count (\d+)", bullet)
+    # Tolerate the alternate "enriched N + 1 VMRK stub" prose form (fail-open
+    # skip class: 160th for companies/rows, 162nd for enriched - the 161st's
+    # "enriched 517 + 1 VMRK stub" phrasing silently skipped the claim).
+    # (?<!un) keeps "unenriched" from matching; the trailing space-number
+    # keeps it from matching "enriched_count" when that form is absent here.
+    m = (re.search(r"\benriched_count (\d+)", bullet)
+         or re.search(r"(?<!un)enriched (\d+)", bullet))
     if m:
         claims.append((
             "enriched_count",
