@@ -173,7 +173,7 @@ claims = []  # (label, log_value_str, truth_value, equal)
 
 
 def claim_comp_rows():
-    m = re.search(r"(\d[\d,]*) companies / (\d[\d,]*) NEO rows", bullet)
+    m = re.search(r"(\d[\d,]*) companies\s*(?:\([^)]*\))?\s*/\s*(\d[\d,]*) NEO rows", bullet)
     if m:
         claims.append((
             "companies / NEO rows",
