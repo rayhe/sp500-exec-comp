@@ -1525,6 +1525,10 @@ header h1 {
 }
 @media (hover: none) and (pointer: coarse) {
     .touch-hint { display: block; }
+    /* Touch devices never trigger :hover, so the metric-card CTA affordance
+       (opacity 0 until hover) would stay invisible even though all 8 cards
+       are tappable entry points. Keep the CTA text visible on touch. */
+    .metric-card-cta { opacity: 1; }
 }
 @media print {
     .touch-hint { display: none !important; }
