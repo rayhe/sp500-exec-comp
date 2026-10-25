@@ -76,6 +76,10 @@ ALLOWLIST = [
     # 5. guard-run proof ledger (91st guard: appended by the pre-commit hook
     #    on every green run; tracked as provenance)
     re.compile(r"^hidden_files/guard_runs\.jsonl$"),
+    # 6. site-root social preview image (217th review, 2026-10-25): the
+    #    deliberate 1200x630 PNG referenced by og:image + twitter:image in
+    #    index.html. A single named asset, not a new file class.
+    re.compile(r"^og-image\.png$"),
 ]
 
 results = []
