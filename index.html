@@ -22,6 +22,73 @@
     <link rel="canonical" href="https://rayhe.github.io/sp500-exec-comp/">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a2e">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "S&P 500 Executive Compensation Tracker",
+      "description": "Executive compensation for 518 S&P 500 companies: 7,078 named executive officer records from SEC DEF 14A proxy statements (Summary Compensation Table totals and components, CEO pay ratios, median employee pay), a 1,040-node / 7,739-edge compensation peer network, and a 498-company / 2,466 company-year pay-versus-performance panel. 99.5% of records verified against DEF 14A filings; fiscal years 2021-2026, primary fiscal year 2025.",
+      "url": "https://rayhe.github.io/sp500-exec-comp/",
+      "creator": {
+        "@type": "Organization",
+        "name": "S&P 500 Executive Compensation Tracker",
+        "url": "https://rayhe.github.io/sp500-exec-comp/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "S&P 500 Executive Compensation Tracker",
+        "url": "https://rayhe.github.io/sp500-exec-comp/"
+      },
+      "dateModified": "2026-10-11",
+      "temporalCoverage": "2021/2026",
+      "spatialCoverage": "United States",
+      "measurementTechnique": "SEC DEF 14A proxy statement Summary Compensation Table extraction with filing-verbatim verification",
+      "variableMeasured": [
+        "Total compensation",
+        "Salary",
+        "Bonus",
+        "Stock awards",
+        "Option awards",
+        "Non-equity incentive plan compensation",
+        "Pension and nonqualified deferred compensation",
+        "All other compensation",
+        "CEO pay ratio",
+        "Median employee pay",
+        "Pay versus performance"
+      ],
+      "keywords": [
+        "executive compensation",
+        "CEO pay",
+        "pay ratio",
+        "pay versus performance",
+        "DEF 14A",
+        "proxy statements",
+        "S&P 500",
+        "compensation peer groups"
+      ],
+      "isAccessibleForFree": true,
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://rayhe.github.io/sp500-exec-comp/data/compensation.json",
+          "name": "Company and named executive officer compensation data"
+        },
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://rayhe.github.io/sp500-exec-comp/data/peer-network.json",
+          "name": "Compensation peer network data"
+        },
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://rayhe.github.io/sp500-exec-comp/data/pay_vs_performance.json",
+          "name": "Pay versus performance panel data"
+        }
+      ]
+    }
+    </script>
     <title>S&P 500 Executive Compensation Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
