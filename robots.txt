@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rayhe.github.io/sp500-exec-comp/sitemap.xml

@@ -33,6 +33,8 @@ Allowlist (intentional new-file classes observed in this repo's history):
      one-off utilities deliberately tracked as provenance.
   4. hidden_files/drift_canary_full_YYYYMMDD_HHMM.log - canary full logs
      teed to hidden_files/ per the iteration-log convention.
+  5. site-root robots.txt + sitemap.xml (220th review) - crawler files
+     for the Pages site, named individually like the og-image precedent.
 
 Checks (all static - one git call, <0.5s):
   S1 enumerate newly staged files
@@ -80,6 +82,12 @@ ALLOWLIST = [
     #    deliberate 1200x630 PNG referenced by og:image + twitter:image in
     #    index.html. A single named asset, not a new file class.
     re.compile(r"^og-image\.png$"),
+    # 7. site-root crawler files (220th review, 2026-10-25): robots.txt +
+    #    sitemap.xml for the Pages site, completing the search surface
+    #    (canonical + description + OG set came in the 212th-219th reviews).
+    #    Two single named files, not a new file class.
+    re.compile(r"^robots\.txt$"),
+    re.compile(r"^sitemap\.xml$"),
 ]
 
 results = []
