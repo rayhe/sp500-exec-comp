@@ -5129,8 +5129,8 @@
    "market_cap_tier": "large"
   },
   {
-   "ticker": "PSKY",
-   "name": "Paramount Skydance Corp",
+   "ticker": "SKYD",
+   "name": "Skydance Corporation",
    "sector": "Communication Services",
    "in_degree": 4,
    "out_degree": 0,
@@ -27873,7 +27873,7 @@
   },
   {
    "source": "FOX",
-   "target": "PSKY",
+   "target": "SKYD",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-09-17"
@@ -27964,7 +27964,7 @@
   },
   {
    "source": "FOXA",
-   "target": "PSKY",
+   "target": "SKYD",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-09-17"
@@ -38800,7 +38800,7 @@
   },
   {
    "source": "CHTR",
-   "target": "PSKY",
+   "target": "SKYD",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-03-12"
@@ -40606,7 +40606,7 @@
   },
   {
    "source": "DIS",
-   "target": "PSKY",
+   "target": "SKYD",
    "year": 2026,
    "group_type": "primary",
    "filing": "DEF 14A 2026-01-22"

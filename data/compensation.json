@@ -90053,7 +90053,7 @@
    "ceo_gender": "M",
    "ceo_name": "David Ellison",
    "cik": "0002041610",
-   "company_name": "Paramount Skydance Corp",
+   "company_name": "Skydance Corporation",
    "data_source": "SEC EDGAR 10-K/A",
    "filing_date": "2026-04-24",
    "filing_url": "https://www.sec.gov/Archives/edgar/data/2041610/000114036126016758/ef20071103_10ka.htm",
@@ -90064,7 +90064,7 @@
    "proxy_fiscal_year": 2025,
    "sector": "Communication Services",
    "source": "SEC 10-K/A 2026 — FY2025 CEO",
-   "ticker": "PSKY",
+   "ticker": "SKYD",
    "total_compensation": 63211569,
    "total_neo_compensation": 238196025,
    "executives": [
@@ -90139,7 +90139,7 @@
      "year": 2025
     }
    ],
-   "_index_note": "Renamed Skydance Corporation on 2026-10-06 (Warner Bros. Discovery acquisition closed; Class B listing moved Nasdaq -> NYSE, ticker PSKY -> SKYD). Tracker key stays PSKY until the roster-rename batch; DEF 14A watch continues under CIK 0002041610. Re-checked 2026-10-25: CIK 0002041610 submissions show no DEF 14A ever filed (EDGAR now lists tickers SKYD/SKYD-WT). FY2025 SCT remains the 2026-04-24 10-K/A Part III."
+   "_index_note": "Renamed Skydance Corporation on 2026-10-06 (Warner Bros. Discovery acquisition closed; Class B listing moved Nasdaq -> NYSE, ticker PSKY -> SKYD). Tracker key updated to SKYD 2026-10-25 (formerly PSKY). DEF 14A watch continues under CIK 0002041610. Re-checked 2026-10-25: CIK 0002041610 submissions show no DEF 14A ever filed (EDGAR now lists tickers SKYD/SKYD-WT). FY2025 SCT remains the 2026-04-24 10-K/A Part III."
   },
   {
    "ticker": "PSX",

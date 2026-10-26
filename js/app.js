@@ -962,7 +962,7 @@ var PVP_EXCLUSIONS = {
     'BX':   '402(v)-exempt filer — no Pay vs Performance disclosure.',
     'GOOG': 'Same issuer as GOOGL — the 402(v) disclosure is filed once and shipped under GOOGL.',
     'AMT':  'Zero numeric Inline XBRL facts in the 402(v) table — nothing to cross-check against.',
-    'PSKY': 'Registrant changed in the Aug 2025 Skydance merger (15-12G filed 2025-08-18); new registrant (CIK 0002041610) has filed no DEF 14A yet — its 2026-04-24 10-K/A Part III carries the FY2025 SCT but no 402(v) Pay vs Performance table. Deferred until its first definitive proxy.',
+    'SKYD': 'Renamed Skydance Corporation 2026-10-06 (ticker PSKY until then; Warner Bros. Discovery acquisition closed; Class B listing moved Nasdaq -> NYSE); new registrant (CIK 0002041610) has filed no DEF 14A yet — its 2026-04-24 10-K/A Part III carries the FY2025 SCT but no 402(v) Pay vs Performance table. Deferred until its first definitive proxy.',
     'DAY':  'Take-private completed 2026-02-04 (Thoma Bravo, $12.3B); delisted via 15-12G.',
     'HES':  'Delisted via 15-12G (Chevron acquisition).',
     'JNPR': 'Delisted via 15-12G (HPE acquisition).',
@@ -972,7 +972,7 @@ var PVP_EXCLUSIONS = {
     'K':    'Take-private closed 2025-12-11 (Mars); not shipped per take-private policy.',
     'EA':   'Take-private; 15-12G filed 2026-08-14.',
     'FDXF': 'New spin-off registrant (FedEx Freight Holding Company, CIK 0002082247) — has filed no DEF 14A (EDGAR: 10-12B, 10-K, 8-Ks only); its 2026-08-05 10-K carries a Summary Compensation Table but zero mentions of "Pay Versus Performance" / "Compensation Actually Paid" / "402(v)". Deferred until its first definitive proxy.',
-    'VMRK': 'No post-merger DEF 14A filed yet (AvalonBay/Equity Residential merger closed 2026-08-17; CIK 906107 now Vivmark Residential) — and therefore no Item 402(v) disclosure. Deferred until its first definitive proxy, same class as PSKY/FDXF. (2026-09-30 03:30 PT)'
+    'VMRK': 'No post-merger DEF 14A filed yet (AvalonBay/Equity Residential merger closed 2026-08-17; CIK 906107 now Vivmark Residential) — and therefore no Item 402(v) disclosure. Deferred until its first definitive proxy, same class as SKYD/FDXF. (2026-09-30 03:30 PT)'
 };
 
 /* Grouping of the standing PvP exclusions by exclusion class, for the
@@ -986,7 +986,7 @@ var PVP_EXCLUSION_GROUPS = [
     { label: 'Filer-side XBRL errors (7)', tickers: ['INTC', 'SYF', 'COF', 'RF', 'HSY', 'EMN', 'AMT'] },
     { label: 'Item 402(v)-exempt (2)', tickers: ['KKR', 'BX'] },
     { label: 'Same-issuer duplicate shipped once (1)', tickers: ['GOOG'] },
-    { label: 'Deferred — no DEF 14A yet (3)', tickers: ['PSKY', 'FDXF', 'VMRK'] }
+    { label: 'Deferred — no DEF 14A yet (3)', tickers: ['SKYD', 'FDXF', 'VMRK'] }
 ];
 
 /* Filing-verbatim realized-comp footnote for any displayed headline figure that is
@@ -7630,7 +7630,7 @@ function renderTable(companies, options) {
 
         // Per-row primary-source link: opens the company's own DEF 14A (or the
         // 10-K Part III Item 11 comp disclosure for the 402(v)-exempt / non-proxy
-        // filers: BX, KKR, PSKY, TSLA, FDXF) on SEC EDGAR in a new tab, without
+        // filers: BX, KKR, SKYD, TSLA, FDXF) on SEC EDGAR in a new tab, without
         // toggling the row's detail panel. 517/518 companies carry a filing_url
         // (VMRK has none: no post-merger DEF 14A exists). The URL is
         // data-derived and lands in innerHTML, so it is scheme-gated to sec.gov
@@ -8423,7 +8423,7 @@ var PVP_COVERAGE_EXCLUSION_GROUPS = [
     ['take-private', ['DAY', 'EA', 'HOLX', 'K']],
     ['delisted', ['HES', 'IPG', 'JNPR', 'WBA']],
     ['402(v)-exempt', ['BX', 'KKR']],
-    ['no DEF 14A filed', ['FDXF', 'PSKY', 'VMRK']],
+    ['no DEF 14A filed', ['FDXF', 'SKYD', 'VMRK']],
     ['filer-side XBRL errors', ['COF', 'EMN', 'HSY', 'RF']],
     ['no Inline XBRL 402(v) disclosure', ['AMT', 'INTC', 'SYF']]
 ];
@@ -8568,7 +8568,7 @@ function renderPvpComparison() {
             + 'delisted or taken private (8: DAY, HES, JNPR, WBA, IPG, HOLX, K, EA), filer-side Inline XBRL errors '
             + 'that left 402(v) values unverifiable (7: INTC, SYF, COF, RF, HSY, EMN, AMT), 402(v)-exempt filers '
             + '(2: KKR, BX), same-issuer duplicate shipped once (GOOG under GOOGL), deferred until a first '
-            + 'definitive proxy (3: PSKY, FDXF, VMRK). '
+            + 'definitive proxy (3: SKYD, FDXF, VMRK). '
             + 'Each excluded ticker’s detail panel states the reason.';
     }
 }
