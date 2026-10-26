@@ -1677,7 +1677,7 @@ function renderSectorCompDesc(comp) {
 
 // === Role-comp description record/company counts ===
 // The "C-Suite Role Compensation" section description hard-coded
-// "benchmarked from 7,078 Named Executive Officer records across 518 proxy
+// "benchmarked from 7,079 Named Executive Officer records across 518 proxy
 // filings" - true today, but the same stale-count class the header
 // company-count badge (2026-09-24), the median-pay FY2025 sublabel
 // (2026-10-07) and the sector-comp description (2026-10-07) fixes addressed:
@@ -1685,7 +1685,7 @@ function renderSectorCompDesc(comp) {
 // (the sector-comp sibling had already drifted to "500" before its fix).
 // Render both counts live from the guard-checked metadata.total_neo_records
 // and metadata.total_companies so the next batch cannot drift it again. The
-// static HTML keeps today's counts ("7,078" / "518") as the no-JS fallback.
+// static HTML keeps today's counts ("7,079" / "518") as the no-JS fallback.
 // textContent-only (no HTML interpolation); no-op without data, so a failed
 // or partial metadata load leaves the fallback untouched.
 function renderRoleCompDesc(comp) {
@@ -18439,13 +18439,13 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
-                '<p>7,046 of 7,078 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,047 of 7,079 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 32 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,834,529,215 of parser-invented compensation removed across 66 re-verification batches since 2026-09-12, partly offset by $550,284,451 of genuine missing NEO rows restored filing-verbatim. Net: $2,284,244,764.</p></div>' +
+                '<p>$2,834,529,215 of parser-invented compensation removed across 67 re-verification batches since 2026-09-12, partly offset by $640,694,652 of genuine missing NEO rows restored filing-verbatim. Net: $2,193,834,563.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-10-06 screen: 102 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 13 near 0.5x, 397 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-10-06 screen: 103 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 13 near 0.5x, 396 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
                 '<p>Deviation sources, spot-verified:</p>' +
                 '<ul class="pvp-exclusion-list">' +
