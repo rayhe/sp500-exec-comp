@@ -39978,7 +39978,8 @@
      "all_other": 71489,
      "total": 3130455,
      "title": "Executive Vice President, Utility Operations and Chief Customer Officer",
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note_20261025": "2026-10-25 DQ: re-verified vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1711269/000114036126011357/ny20059674x1_def14a.htm): stored components and total match the filing verbatim; components sum to 3,130,457 vs printed total 3,130,455 (gap -2) - genuine filer-side rounding gap, $1-2 taxonomy 2026-09-10: stays verified, no correction invented. Filing footnote states totals may not sum due to rounding."
     },
     {
      "name": "Mr. Charles A. Caisley",
@@ -57395,7 +57396,8 @@
      "non_equity_incentive": 1716000,
      "all_other": 372697,
      "total": 16720080,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note_20261025": "2026-10-25 DQ: re-verified vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/1699150/000114036126016726/ny20063676x1_def14a.htm): stored components and total match the filing verbatim; components sum to 16,720,082 vs printed total 16,720,080 (gap -2) - genuine filer-side rounding gap, $1-2 taxonomy 2026-09-10: stays verified, no correction invented. This SCT prints no pension/NQDC column; pension treated as 0."
     },
     {
      "name": "Vicente Reynal",
