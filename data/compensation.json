@@ -166,7 +166,7 @@
   "total_neo_records": 7078,
   "title_coverage": "7078/7078",
   "data_quality": {
-   "component_mismatch": 33,
+   "component_mismatch": 32,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -181,9 +181,9 @@
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
-   "verified": 5630,
+   "verified": 5631,
    "rounding": 0,
-   "verified_total": 7045,
+   "verified_total": 7046,
    "last_audit": "2026-09-28",
    "def14a_verified_20261007": 1
   },
@@ -220,7 +220,7 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "component_mismatch": 33,
+   "component_mismatch": 32,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -235,9 +235,9 @@
    "def14a_verified_20260926": 116,
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
-   "verified": 5630,
+   "verified": 5631,
    "rounding": 0,
-   "verified_total": 7045,
+   "verified_total": 7046,
    "last_audit": "2026-09-28",
    "def14a_verified_20261007": 1
   },
@@ -276,8 +276,8 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-10-11",
-  "verified_total": 7045,
+  "last_dq_repair": "2026-10-26",
+  "verified_total": 7046,
   "total_neos": 7078,
   "phantom_removed": {
    "cumulative": 2284244764,
@@ -5110,12 +5110,13 @@
      "total": 2440430,
      "title": "Executive Vice President and Chief Financial Officer",
      "_original_total": 128941,
-     "_total_source": "component_mismatch",
+     "_total_source": "verified",
      "stock_awards": 985342,
      "all_other": 128941,
      "_parse_note": "Column-shift error: salary values had landed in bonus, stock awards in option_awards, options in non_equity_incentive, total grabbed from the All Other column. $90 filing-side arithmetic error: components sum to 2,440,520 vs printed 2,440,430. Relabeled DEF14A-verified 2026-09-07 -> rounding 2026-09-09: residual delta $-90 remains unexplained after DEF 14A repair; components close to but not exactly the stated total. | Relabeled rounding -> component_mismatch 2026-09-11: filing-side $90 arithmetic error confirmed (components 2,440,520 vs printed 2,440,430; filing values match verbatim), per CDNS/TSCO/RF 2026-09-10 precedent. | 2026-09-25 DQ re-verified against primary DEF 14A SCT (alb-20250327.htm): REPAIRED -- stock_awards 985,432 -> 985,342 (filing prints 985,342; the prior '$90 filing-side arithmetic error' claim was WRONG -- it was a data transcription transposition). Components now foot to printed total 2,440,430 exactly.",
      "_reverify_20260912_0600": "Independent re-verification 2026-09-12 06:00 PT vs primary DEF 14A SCT; components + total match filing verbatim; delta is genuine filing-side arithmetic inconsistency; component_mismatch classification confirmed.",
-     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $2,440,520 vs filing-printed total $2,440,430 (gap $90); filing-side arithmetic quirk, total retained verbatim."
+     "_reverify_20260919_0600": "Re-verified 2026-09-19 06:00 PT against FY2025 DEF 14A SCT: filing-printed components sum to $2,440,520 vs filing-printed total $2,440,430 (gap $90); filing-side arithmetic quirk, total retained verbatim.",
+     "_reverify_20261026_0600": "Re-read 2026-10-26 06:00 PT against the primary DEF 14A SCT (filed 2025-03-27, acc. 0000915913-25-000072, alb-20250327.htm): filing prints salary 551,250, bonus n/a, stock awards 985,342, options 312,508, NEIP 462,389, pension n/a, all other 128,941, total 2,440,430, footing exactly. The historic '$90 filing-side error' was a data transcription transposition (985,432), repaired 2026-09-25; the filing itself always footed. component_mismatch flag retired, relabeled verified."
     },
     {
      "name": "Mark R. Mummert",
@@ -120380,5 +120381,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK)."
   }
  ],
- "last_updated": "2026-10-11"
+ "last_updated": "2026-10-26"
 }
