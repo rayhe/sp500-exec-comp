@@ -9040,7 +9040,7 @@ function setupDetailPanel(companies) {
         html += '<button class="detail-close-btn" title="Close (Esc)" aria-label="Close detail panel">✕</button>';
         html += '</div>';
 
-        // S&P 500 index-status banner: 30 companies carry a curated _index_note
+        // S&P 500 index-status banner: 33 companies carry a curated _index_note
         // removal/rename/merger annotation in compensation.json; surface it at
         // the top of the detail panel so index-removal provenance is visible
         // where the pay figures are read, instead of silently presenting a
