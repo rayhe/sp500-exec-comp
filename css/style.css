@@ -1535,6 +1535,12 @@ header h1 {
        .insight-clickable card is a tappable drill-down entry point.
        Keep the hint visible on touch. */
     .insight-cta { opacity: 1; }
+    /* Same touch-discoverability defect as the metric-card and insight-card
+       CTAs: trend-card drill-down hints (.trend-cta, opacity 0 until hover)
+       would stay invisible on touch devices even though every
+       .trend-clickable card is a tappable drill-down entry point.
+       Keep the hint visible on touch. */
+    .trend-cta { opacity: 1; }
 }
 @media print {
     .touch-hint { display: none !important; }
@@ -6065,6 +6071,10 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
 }
 
 .trend-clickable:hover .trend-cta {
+    opacity: 1;
+}
+
+.trend-clickable:focus-visible .trend-cta {
     opacity: 1;
 }
 
