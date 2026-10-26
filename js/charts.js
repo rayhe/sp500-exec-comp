@@ -16049,7 +16049,7 @@ function _applyScatterPathOverlay(svg, pts, x, yScale, xMetric, yMetric, w, h) {
         var label = document.createElement('div');
         label.className = 'scatter-path-label';
         var pathStr = pathNodes.join(' → ');
-        label.innerHTML = '<span class="spl-icon">🔗</span><span class="spl-text">Peer Path: ' + pathStr + '</span><button class="spl-dismiss" title="Clear path overlay">✕</button>';
+        label.innerHTML = '<span class="spl-icon">🔗</span><span class="spl-text">Peer Path: ' + pathStr + '</span><button class="spl-dismiss" title="Clear path overlay" aria-label="Clear path overlay">✕</button>';
         container.appendChild(label);
         var dismissBtn = label.querySelector('.spl-dismiss');
         if (dismissBtn) {
