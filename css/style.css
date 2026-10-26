@@ -8166,6 +8166,13 @@ footer li::before {
     transition: opacity 0.15s;
 }
 .neo-filing-link:hover { opacity: 1; text-decoration: underline; }
+/* Keyboard parity with .row-filing-link (234th review): the NEO-panel
+   filing link is a real <a> and therefore keyboard-focusable, but until
+   now it brightened only on :hover. A keyboard user tabbing to it saw
+   the browser's default focus indication at 0.8 opacity with no
+   underline, so the link's affordance was weaker exactly when focused.
+   Reveal on focus, same as hover, with the site's --accent ring. */
+.neo-filing-link:focus-visible { opacity: 1; text-decoration: underline; outline: 2px solid var(--accent); outline-offset: 1px; }
 /* Per-row primary-source link in the comp-table company cell: a quiet icon
    that opens the company's DEF 14A (or 10-K) on SEC EDGAR. Opacity-only
    affordance so it stays legible in both themes and never disturbs the
