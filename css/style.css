@@ -1529,6 +1529,12 @@ header h1 {
        (opacity 0 until hover) would stay invisible even though all 8 cards
        are tappable entry points. Keep the CTA text visible on touch. */
     .metric-card-cta { opacity: 1; }
+    /* Same touch-discoverability defect as the metric-card CTA (223rd run):
+       insight-card drill-down hints (.insight-cta, opacity 0 until hover)
+       would stay invisible on touch devices even though every
+       .insight-clickable card is a tappable drill-down entry point.
+       Keep the hint visible on touch. */
+    .insight-cta { opacity: 1; }
 }
 @media print {
     .touch-hint { display: none !important; }
