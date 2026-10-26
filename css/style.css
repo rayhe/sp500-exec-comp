@@ -10928,7 +10928,9 @@ footer li::before {
 [data-theme="light"] .neo-dq-incomplete { background: #ea580c; }
 [data-theme="light"] .neo-dq-bloated { background: #dc2626; }
 [data-theme="light"] .neo-dq-rounding { background: #0284c7; }
-/* Correction audit-trail marker: per-exec _fix_note/_parse_note/_title_note surfaced as hover tooltip (theme-agnostic) */
+/* Correction audit-trail marker: per-exec _fix_note/_parse_note/_title_note surfaced as hover tooltip (theme-agnostic).
+   Keyboard-accessible: tabindex="0" in js/app.js + :focus-visible ring below; aria-label carries the note text so AT
+   users hear the correction history, not just the generic marker label. */
 .neo-audit-note {
     display: inline-block;
     margin-left: 4px;
@@ -10938,6 +10940,7 @@ footer li::before {
     vertical-align: middle;
 }
 .neo-audit-note:hover { opacity: 1; }
+.neo-audit-note:focus-visible { opacity: 1; outline: 2px solid var(--accent); outline-offset: 1px; }
 
 
 /* === Repair diff view (2026-09-28) ===

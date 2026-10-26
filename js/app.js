@@ -10840,7 +10840,7 @@ function setupDetailPanel(companies) {
                     var _auditHtml = '';
                     if (_auditParts.length > 0) {
                         var _auditEsc = _auditParts.join(' ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-                        _auditHtml = ' <span class="neo-audit-note" title="' + _auditEsc + '" aria-label="Correction audit note">\uD83D\uDCDD</span>';
+                        _auditHtml = ' <span class="neo-audit-note" tabindex="0" title="' + _auditEsc + '" aria-label="Correction audit note: ' + _auditEsc + '">\uD83D\uDCDD</span>';
                     }
                     html += '<td class="neo-name">' + (exec.name || '\u2014') + _neoSparkHtml + _auditHtml;
                     // Row-level SCT footnote (multi-year grants, transition-year CEO, pension-swing years)
