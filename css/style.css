@@ -143,6 +143,7 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 }
 [data-theme="light"] .metric-card:hover { background: rgba(0, 119, 182, 0.04); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
 [data-theme="light"] .metric-card:hover .metric-card-cta { color: #0077b6; }
+[data-theme="light"] .metric-card:focus-visible .metric-card-cta { color: #0077b6; }
 [data-theme="light"] .badge { background: #e8e9ee; color: #4b5563; }
 [data-theme="light"] .badge.accent { background: rgba(0,119,182,0.1); color: #0077b6; border-color: rgba(0,119,182,0.25); }
 [data-theme="light"] .chart-tooltip { background: #fff; border-color: rgba(0,0,0,0.12); color: #1a1a2e; }
@@ -427,6 +428,17 @@ header h1 {
     letter-spacing: 0.02em;
 }
 .metric-card:hover .metric-card-cta {
+    opacity: 1;
+    color: var(--accent);
+}
+
+/* Keyboard parity with the insight-card and trend-card CTA reveals
+   (233rd run): metric cards are full keyboard surfaces (tabindex 0,
+   role button, Enter/Space, :focus-visible ring), but until now the
+   CTA text revealed only on :hover (and on touch via the
+   (hover: none) media query). A keyboard user tabbing to a card saw
+   the ring but not the action label. Reveal on focus, same as hover. */
+.metric-card:focus-visible .metric-card-cta {
     opacity: 1;
     color: var(--accent);
 }
