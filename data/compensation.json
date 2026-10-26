@@ -76074,7 +76074,8 @@
      "pension_nqdc": 21932,
      "all_other": 193056,
      "total": 12015250,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_note_20261025": "2026-10-25 DQ: re-verified vs primary DEF 14A SCT (https://www.sec.gov/Archives/edgar/data/36270/000119312526099298/d74790ddef14a.htm): stored components and total match the filing verbatim; components sum to 12,015,248 vs printed total 12,015,250 (gap +2) - genuine filer-side rounding gap, $1-2 taxonomy 2026-09-10: stays verified, no correction invented."
     },
     {
      "name": "René F. Jones",
