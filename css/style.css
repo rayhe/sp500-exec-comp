@@ -4607,7 +4607,13 @@ tbody tr:last-child td { border-bottom: none; }
 .peer-pay-row:not(.peer-pay-self):hover {
     background: rgba(255,255,255,0.04);
 }
+.peer-pay-row:not(.peer-pay-self):focus-visible {
+    background: rgba(255,255,255,0.04);
+}
 [data-theme="light"] .peer-pay-row:not(.peer-pay-self):hover {
+    background: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .peer-pay-row:not(.peer-pay-self):focus-visible {
     background: rgba(0,0,0,0.04);
 }
 .peer-pay-ticker {
@@ -4662,6 +4668,9 @@ tbody tr:last-child td { border-bottom: none; }
     padding-top: 4px;
 }
 .peer-pay-row:not(.peer-pay-self):hover .peer-pay-bar {
+    opacity: 0.6;
+}
+.peer-pay-row:not(.peer-pay-self):focus-visible .peer-pay-bar {
     opacity: 0.6;
 }
 @media print {
