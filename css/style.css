@@ -9499,6 +9499,10 @@ footer li::before {
     transform: scale(1.08);
     box-shadow: 0 0 6px rgba(255,255,255,0.15);
 }
+.asp-tbl-badge-clickable:focus-visible {
+    transform: scale(1.08);
+    box-shadow: 0 0 6px rgba(255,255,255,0.15);
+}
 
 .asp-tbl-high {
     background: rgba(239, 71, 111, 0.15);
@@ -9552,6 +9556,9 @@ footer li::before {
     border-color: rgba(0, 180, 216, 0.2);
 }
 [data-theme="light"] .asp-tbl-badge-clickable:hover {
+    box-shadow: 0 0 6px rgba(0,0,0,0.12);
+}
+[data-theme="light"] .asp-tbl-badge-clickable:focus-visible {
     box-shadow: 0 0 6px rgba(0,0,0,0.12);
 }
 
