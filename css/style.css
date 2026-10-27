@@ -9809,6 +9809,7 @@ footer li::before {
 }
 .eq-tbl-badge-clickable { cursor: pointer; transition: transform 0.12s, box-shadow 0.12s; }
 .eq-tbl-badge-clickable:hover { transform: scale(1.08); box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+.eq-tbl-badge-clickable:focus-visible { transform: scale(1.08); box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
 .eq-tbl-dom { color: #06d6a0; background: rgba(6,214,160,0.12); border: 1px solid rgba(6,214,160,0.25); }
 .eq-tbl-lean { color: #34d399; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25); }
 .eq-tbl-bal { color: #ffd166; background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.25); }
@@ -9820,6 +9821,7 @@ footer li::before {
 [data-theme="light"] .eq-tbl-below { color: #c2410c; background: rgba(194,65,12,0.1); border-color: rgba(194,65,12,0.25); }
 [data-theme="light"] .eq-tbl-cash { color: #be123c; background: rgba(190,18,60,0.1); border-color: rgba(190,18,60,0.25); }
 [data-theme="light"] .eq-tbl-badge-clickable:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+[data-theme="light"] .eq-tbl-badge-clickable:focus-visible { box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
 
 /* === Touch target expansion for interactive histogram bars === */
 /* WCAG 2.5.5: minimum 24×24px touch targets for clickable inline bar charts.
