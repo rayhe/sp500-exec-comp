@@ -4980,6 +4980,11 @@ tbody tr:last-child td { border-bottom: none; }
     transform: scale(1.12);
     box-shadow: 0 1px 6px rgba(251,146,60,0.3);
 }
+.new-ceo-badge-clickable:focus-visible {
+    background: rgba(251,146,60,0.35);
+    transform: scale(1.12);
+    box-shadow: 0 1px 6px rgba(251,146,60,0.3);
+}
 
 /* CEO Transition stat in detail panel */
 .ceo-transition-new {
@@ -8748,6 +8753,10 @@ footer li::before {
     border-color: rgba(234,88,12,0.3);
 }
 [data-theme="light"] .new-ceo-badge-clickable:hover {
+    background: rgba(234,88,12,0.25);
+    box-shadow: 0 1px 6px rgba(234,88,12,0.2);
+}
+[data-theme="light"] .new-ceo-badge-clickable:focus-visible {
     background: rgba(234,88,12,0.25);
     box-shadow: 0 1px 6px rgba(234,88,12,0.2);
 }
