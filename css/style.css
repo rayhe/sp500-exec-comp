@@ -1399,6 +1399,11 @@ header h1 {
 .ngs-ddp-darling:focus-visible {
     outline: 1px solid #00b4d8;
     outline-offset: 1px;
+    background: rgba(255,255,255,0.06);
+}
+.ngs-ddp-darling:focus-visible .ngs-ddp-darling-ticker {
+    color: #00b4d8;
+    text-decoration: underline;
 }
 .ngs-ddp-darling-rank {
     font-size: 0.6rem;
@@ -1513,6 +1518,11 @@ header h1 {
 }
 [data-theme="light"] .ngs-ddp-darling:focus-visible {
     outline-color: #0077b6;
+    background: rgba(0,0,0,0.05);
+}
+[data-theme="light"] .ngs-ddp-darling:focus-visible .ngs-ddp-darling-ticker {
+    color: #0077b6;
+    text-decoration: underline;
 }
 [data-theme="light"] .ngs-ddp-darling-name {
     color: rgba(0,0,0,0.55);
