@@ -6893,7 +6893,9 @@ footer li::before {
 .cmp-div-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 0.7rem; }
 .cmp-div-row-clickable { cursor: pointer; border-radius: 4px; padding: 3px 4px; margin: 0 -4px; transition: background 0.15s; }
 .cmp-div-row-clickable:hover { background: rgba(255,255,255,0.06); }
+.cmp-div-row-clickable:focus-visible { background: rgba(255,255,255,0.06); }
 [data-theme="light"] .cmp-div-row-clickable:hover { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .cmp-div-row-clickable:focus-visible { background: rgba(0,0,0,0.04); }
 .cmp-div-row-clickable .cmp-div-label { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; text-decoration-color: var(--text-secondary); }
 .cmp-radar-dim-label { transition: fill 0.15s; }
 .cmp-radar-dim-label:hover { fill: var(--accent) !important; text-decoration: underline; }
