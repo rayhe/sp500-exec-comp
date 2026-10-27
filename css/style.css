@@ -8821,7 +8821,14 @@ footer li::before {
     transform: scale(1.12);
     box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
 }
+.conc-badge-clickable:focus-visible {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+}
 [data-theme="light"] .conc-badge-clickable:hover {
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .conc-badge-clickable:focus-visible {
     box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
 }
 
