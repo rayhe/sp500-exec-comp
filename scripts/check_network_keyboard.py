@@ -39,6 +39,9 @@ Checks:
      S8 the network quick-jump stopPropagation()s alphanumeric keys (the
         char still types into #network-search; global letter shortcuts
         like 't' must not fire on top).
+     S9 the on-demand a11y help discloses the keyboard routes for the
+        node tooltip's pointer-only Path/PvP shortcuts (Path Finder
+        controls, table row PvP button).
   B. Render (headless Chromium via playwright, 1440px desktop, d3 shim):
      R1 focusing the canvas announces the first node ("Focused
         <TICKER>") and shows the network tooltip with that ticker.
@@ -158,6 +161,16 @@ def static_checks():
           and "ev.preventDefault()" not in qj)
     check("S8 network quick-jump stopPropagation()s (char still types into search)",
           s8, "" if s8 else "quick-jump stopPropagation missing or preventDefault added")
+
+    # S9: the node-tooltip audit (2026-10-26 19:30 PT run). The tooltip's
+    # Path and PvP shortcuts are mousedown-only spans with no keyboard
+    # path (canvas Tab is node cycling, per S3), so the on-demand a11y
+    # help must disclose the keyboard routes: Path Finder controls for
+    # endpoints, the table row's PvP button for Pay vs Performance.
+    s9 = ("need a pointer; from the keyboard, set path endpoints in the Path Finder controls" in network
+          and "reach Pay vs Performance from the company table" in network)
+    check("S9 a11y help discloses keyboard routes for tooltip Path/PvP shortcuts",
+          s9, "" if s9 else "tooltip keyboard-route disclosure missing from a11y help")
 
 
 def get_d3_bytes():

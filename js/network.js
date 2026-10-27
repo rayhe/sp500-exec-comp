@@ -40,7 +40,7 @@ function initNetwork(peerData) {
         a11yHelp.id = 'network-a11y-help';
         a11yHelp.className = 'sr-only';
         a11yHelp.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
-        a11yHelp.textContent = 'Peer network canvas. Focus to enable keyboard navigation. Arrow keys move between companies sorted by influence. Enter or Space opens company detail. Plus and minus zoom. Escape clears focus. When community mode is on, Tab reaches the flow matrix cells which are also keyboard accessible.';
+        a11yHelp.textContent = 'Peer network canvas. Focus to enable keyboard navigation. Arrow keys move between companies sorted by influence. Enter or Space opens company detail. Plus and minus zoom. Escape clears focus. When community mode is on, Tab reaches the flow matrix cells which are also keyboard accessible. The node tooltip\'s Path and Pay vs Performance shortcuts need a pointer; from the keyboard, set path endpoints in the Path Finder controls and reach Pay vs Performance from the company table\'s PvP button.';
         container.appendChild(a11yHelp);
     }
 
