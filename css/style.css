@@ -5568,6 +5568,9 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
 .sector-comp-heatmap td.hm-sector-label:hover {
     background: rgba(0,180,216,0.08);
 }
+.sector-comp-heatmap td.hm-sector-label:focus-visible {
+    background: rgba(0,180,216,0.08);
+}
 .hm-cell {
     border-radius: 6px;
     text-align: center;
@@ -5584,6 +5587,15 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     transform: scale(1.08);
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     z-index: 2;
+}
+.hm-cell:focus-visible {
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    z-index: 2;
+}
+.hm-cell.hm-zero:focus-visible {
+    transform: none;
+    box-shadow: none;
 }
 .hm-cell-val {
     display: block;
@@ -5644,6 +5656,9 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     background: rgba(0,0,0,0.02);
 }
 [data-theme="light"] .sector-comp-heatmap td.hm-sector-label:hover {
+    background: rgba(0,180,216,0.06);
+}
+[data-theme="light"] .sector-comp-heatmap td.hm-sector-label:focus-visible {
     background: rgba(0,180,216,0.06);
 }
 
@@ -5897,6 +5912,9 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
 .rs-sector-label:hover {
     background: rgba(255,255,255,0.06);
 }
+.rs-sector-label:focus-visible {
+    background: rgba(255,255,255,0.06);
+}
 .rs-cell {
     border-radius: 6px;
     padding: 8px 6px;
@@ -5910,6 +5928,15 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     transform: scale(1.08);
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     z-index: 2;
+}
+.rs-cell:focus-visible {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+.rs-cell-empty:focus-visible {
+    transform: none;
+    box-shadow: none;
 }
 .rs-cell-empty {
     opacity: 0.35;
@@ -5956,7 +5983,13 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
 [data-theme="light"] .rs-sector-label:hover {
     background: rgba(0,0,0,0.04);
 }
+[data-theme="light"] .rs-sector-label:focus-visible {
+    background: rgba(0,0,0,0.04);
+}
 [data-theme="light"] .rs-cell:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+[data-theme="light"] .rs-cell:focus-visible {
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
