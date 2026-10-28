@@ -15496,6 +15496,16 @@ body.light-mode .cross-sector-pair-select:focus {
 .pvp-cov-badge:hover {
     background: rgba(0, 180, 216, 0.3);
 }
+/* 258th review (2026-10-28): the PvP coverage badge is a keyboard-operable
+   pilot surface (role="button" tabindex="0" with an inline Enter/Space
+   keydown wired to the same openPvpDetail action as the click), but
+   keyboard focus got only the generic accent outline ring - the hover
+   affordance (deepened background) had no focus-visible mirror. Mirror it
+   with exactly the hover value so a keyboard user sees the same
+   clickability signal. */
+.pvp-cov-badge:focus-visible {
+    background: rgba(0, 180, 216, 0.3);
+}
 [data-theme="light"] .pvp-cov-badge {
     background: rgba(0, 119, 182, 0.1);
     color: #0077b6;
