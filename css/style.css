@@ -9164,6 +9164,9 @@ footer li::before {
 .sbr-row:hover {
     background: rgba(0,180,216,0.06);
 }
+.sbr-row:focus-visible {
+    background: rgba(0,180,216,0.06);
+}
 .sbr-row td:first-child b {
     color: #00b4d8;
 }
@@ -9207,6 +9210,9 @@ footer li::before {
     border-bottom-color: rgba(0,0,0,0.05);
 }
 [data-theme="light"] .sbr-row:hover {
+    background: rgba(0,180,216,0.05);
+}
+[data-theme="light"] .sbr-row:focus-visible {
     background: rgba(0,180,216,0.05);
 }
 [data-theme="light"] .sbr-list-wrap {
