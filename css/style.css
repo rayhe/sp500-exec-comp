@@ -160,11 +160,13 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .detail-panel { background: #f0f1f5; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-nav-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #4b5563; }
 [data-theme="light"] .detail-nav-btn:hover:not(:disabled) { background: #0077b6; color: #fff; border-color: #0077b6; }
+[data-theme="light"] .detail-nav-btn:focus-visible:not(:disabled) { background: #0077b6; color: #fff; border-color: #0077b6; }
 [data-theme="light"] .detail-close-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #6b7280; }
 [data-theme="light"] .detail-close-btn:hover { background: #ef476f; color: #fff; border-color: #ef476f; }
 [data-theme="light"] .detail-close-btn:focus-visible { background: #ef476f; color: #fff; border-color: #ef476f; }
 [data-theme="light"] .detail-compare-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #6b7280; }
 [data-theme="light"] .detail-compare-btn:hover:not(:disabled) { background: rgba(0,119,182,0.08); border-color: #0077b6; color: #0077b6; }
+[data-theme="light"] .detail-compare-btn:focus-visible:not(:disabled) { background: rgba(0,119,182,0.08); border-color: #0077b6; color: #0077b6; }
 [data-theme="light"] .detail-compare-btn.selected { background: rgba(0,119,182,0.10); border-color: #0077b6; color: #0077b6; }
 [data-theme="light"] .detail-stat { background: #fff; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-profile-summary { background: linear-gradient(135deg, rgba(0,119,182,0.06) 0%, rgba(0,119,182,0.02) 100%); border-color: rgba(0,119,182,0.18); color: #4b5563; }
@@ -3534,6 +3536,12 @@ tbody tr:last-child td { border-bottom: none; }
     border-color: var(--accent);
 }
 
+.detail-nav-btn:focus-visible:not(:disabled) {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
 .detail-nav-btn:disabled {
     opacity: 0.25;
     cursor: default;
@@ -3590,6 +3598,11 @@ tbody tr:last-child td { border-bottom: none; }
     height: 28px;
 }
 .detail-compare-btn:hover:not(:disabled) {
+    background: rgba(0,180,216,0.10);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.detail-compare-btn:focus-visible:not(:disabled) {
     background: rgba(0,180,216,0.10);
     border-color: var(--accent);
     color: var(--accent);
