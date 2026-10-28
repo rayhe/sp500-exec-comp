@@ -4768,10 +4768,19 @@ tbody tr:last-child td { border-bottom: none; }
 .peer-dist-col:hover .peer-dist-bar {
     background: #475569;
 }
+.peer-dist-col:focus-visible .peer-dist-bar {
+    background: #475569;
+}
 [data-theme="light"] .peer-dist-col:hover .peer-dist-bar {
     background: #64748b;
 }
+[data-theme="light"] .peer-dist-col:focus-visible .peer-dist-bar {
+    background: #64748b;
+}
 .peer-dist-self-bucket:hover .peer-dist-bar {
+    background: #0096c7;
+}
+.peer-dist-self-bucket:focus-visible .peer-dist-bar {
     background: #0096c7;
 }
 .peer-dist-marker {
@@ -13121,6 +13130,10 @@ body.light-mode .cross-sector-pair-select:focus {
     border-radius: 3px;
 }
 .peer-dist-col[data-peer-tickers]:hover {
+    transform: scaleY(1.08);
+    transition: transform 0.15s ease;
+}
+.peer-dist-col[data-peer-tickers]:focus-visible {
     transform: scaleY(1.08);
     transition: transform 0.15s ease;
 }
