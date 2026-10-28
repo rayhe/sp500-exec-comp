@@ -10204,11 +10204,18 @@ footer li::before {
     color: #fb7185;
     text-decoration-style: solid;
 }
+.tc-missing-link:focus-visible {
+    color: #fb7185;
+    text-decoration-style: solid;
+}
 
 :root[data-theme="light"] .tc-missing-link {
     color: #db2777;
 }
 :root[data-theme="light"] .tc-missing-link:hover {
+    color: #be185d;
+}
+:root[data-theme="light"] .tc-missing-link:focus-visible {
     color: #be185d;
 }
 
