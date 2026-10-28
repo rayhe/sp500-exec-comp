@@ -10618,6 +10618,9 @@ footer li::before {
 .cb-bridge-expandable:hover {
     background: rgba(167,139,250,0.08);
 }
+.cb-bridge-expandable:focus-visible {
+    background: rgba(167,139,250,0.08);
+}
 .cb-bridge-chevron {
     display: inline-block;
     font-size: 0.7rem;
@@ -10705,6 +10708,9 @@ footer li::before {
 
 /* Light theme — expandable bridge */
 [data-theme="light"] .cb-bridge-expandable:hover {
+    background: rgba(124,58,237,0.06);
+}
+[data-theme="light"] .cb-bridge-expandable:focus-visible {
     background: rgba(124,58,237,0.06);
 }
 [data-theme="light"] .cb-bridge-chevron { color: #6b7280; }
