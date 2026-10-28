@@ -14408,7 +14408,15 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(0, 180, 216, 0.1);
     box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.3);
 }
+.detail-trajectory-clickable:focus-visible {
+    background: rgba(0, 180, 216, 0.1);
+    box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.3);
+}
 [data-theme="light"] .detail-trajectory-clickable:hover {
+    background: rgba(0, 119, 182, 0.08);
+    box-shadow: 0 0 0 1px rgba(0, 119, 182, 0.25);
+}
+[data-theme="light"] .detail-trajectory-clickable:focus-visible {
     background: rgba(0, 119, 182, 0.08);
     box-shadow: 0 0 0 1px rgba(0, 119, 182, 0.25);
 }
@@ -14427,6 +14435,9 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #0077b6;
 }
 .detail-trajectory-clickable:hover .detail-trajectory-hint {
+    display: block;
+}
+.detail-trajectory-clickable:focus-visible .detail-trajectory-hint {
     display: block;
 }
 .detail-trajectory-sparkline {
