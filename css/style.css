@@ -13509,12 +13509,26 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(168,85,247,0.18);
     border-color: rgba(168,85,247,0.5);
 }
+/* 259th review (2026-10-28): the community-comparison CSV export button is a
+   native <button> (js/network.js:4862) with a click handler, so it is
+   keyboard-operable (Tab focus + Enter/Space) but keyboard focus got only the
+   UA default outline - the hover affordance (deepened background + brightened
+   border) had no focus-visible mirror. Mirror it with exactly the hover
+   values per theme so a keyboard user sees the same clickability signal. */
+.cm-export-btn:focus-visible {
+    background: rgba(168,85,247,0.18);
+    border-color: rgba(168,85,247,0.5);
+}
 [data-theme="light"] .cm-export-btn {
     background: rgba(124,58,237,0.06);
     border-color: rgba(124,58,237,0.2);
     color: #7c3aed;
 }
 [data-theme="light"] .cm-export-btn:hover {
+    background: rgba(124,58,237,0.14);
+    border-color: rgba(124,58,237,0.35);
+}
+[data-theme="light"] .cm-export-btn:focus-visible {
     background: rgba(124,58,237,0.14);
     border-color: rgba(124,58,237,0.35);
 }
