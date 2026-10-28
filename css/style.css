@@ -4557,6 +4557,10 @@ tbody tr:last-child td { border-bottom: none; }
     color: #00b4d8;
     text-decoration: underline;
 }
+.reach-peer-ticker:focus-visible {
+    color: #00b4d8;
+    text-decoration: underline;
+}
 .reach-peer-pay {
     font-family: 'SF Mono', 'Fira Code', monospace;
     font-size: 0.72rem;
