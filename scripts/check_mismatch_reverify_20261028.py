@@ -24,8 +24,10 @@ pre-merger EQR proxy, acc. 0001193125-26-155007.
 Checks (all static):
   S1 all 10 rows carry a _reverify_20261028 note.
   S2 VMRK _index_note carries the 2026-10-28 recheck stamp.
-  S3 dataset counts unchanged: 518 companies, 7,079 NEO rows,
-     component_mismatch 32, verified_total 7047.
+  S3 dataset counts unchanged: 518 companies, 7,084 NEO rows,
+     component_mismatch 32, verified_total 7052.
+     (Baseline moved 2026-10-29, 270th review: MSFT FY2026 proxy batch
+      added 5 verified NEO rows; 7079->7084, 7047->7052.)
 
 Usage:
   scripts/check_mismatch_reverify_20261028.py
@@ -84,9 +86,11 @@ def static_checks():
     total = sum(len(c.get("executives", [])) for c in d["companies"])
     mismatch = sum(1 for c in d["companies"] for e in c.get("executives", [])
                    if e.get("_total_source") == "component_mismatch")
-    s3 = (len(d["companies"]) == 518 and total == 7079 and mismatch == 32
-          and d["metadata"]["data_quality"]["verified_total"] == 7047)
-    check("S3 counts unchanged (518 / 7079 / mismatch 32 / verified 7047)",
+    # S3 baseline moved 2026-10-29 (270th review): MSFT FY2026 proxy batch
+    # added 5 verified NEO rows -> 7079->7084 rows, verified_total 7047->7052.
+    s3 = (len(d["companies"]) == 518 and total == 7084 and mismatch == 32
+          and d["metadata"]["data_quality"]["verified_total"] == 7052)
+    check("S3 counts unchanged (518 / 7084 / mismatch 32 / verified 7052)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
