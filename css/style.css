@@ -14939,6 +14939,14 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #c4b5fd;
     transform: scale(1.05);
 }
+/* 266th review: keyboard focus now shows the same hover affordance. Fixed
+   rgba hover values are identical across themes, so one rule covers dark. */
+.methodology-info-btn:focus-visible {
+    background: rgba(167,139,250,0.22);
+    border-color: rgba(167,139,250,0.55);
+    color: #c4b5fd;
+    transform: scale(1.05);
+}
 .methodology-info-btn:active { transform: scale(0.95); }
 .methodology-info-btn.ger-method-btn {
     border-color: rgba(239,68,68,0.3);
@@ -14950,12 +14958,32 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(239,68,68,0.5);
     color: #fca5a5;
 }
+/* 266th review: GER (red) variant mirrors its own hover. The transform comes
+   from the base .methodology-info-btn:focus-visible rule, exactly as the
+   hover transform comes from the base :hover rule (the variant hover does
+   not declare its own). */
+.methodology-info-btn.ger-method-btn:focus-visible {
+    background: rgba(239,68,68,0.18);
+    border-color: rgba(239,68,68,0.5);
+    color: #fca5a5;
+}
 [data-theme="light"] .methodology-info-btn {
     border-color: rgba(124,58,237,0.25);
     background: rgba(124,58,237,0.08);
     color: #7c3aed;
 }
 [data-theme="light"] .methodology-info-btn:hover {
+    background: rgba(124,58,237,0.15);
+    border-color: rgba(124,58,237,0.4);
+    color: #6d28d9;
+}
+/* 266th review: light-theme mirror. Placed at the same cascade position as
+   the light :hover rule, so the light-theme GER button keeps its
+   light-theme base styling on focus exactly as it does on hover (the light
+   base rule wins over the earlier dark ger focus-visible rule for
+   background/border-color/color, and the base focus-visible transform still
+   applies) -- there is no light-theme ger :hover rule to mirror. */
+[data-theme="light"] .methodology-info-btn:focus-visible {
     background: rgba(124,58,237,0.15);
     border-color: rgba(124,58,237,0.4);
     color: #6d28d9;
