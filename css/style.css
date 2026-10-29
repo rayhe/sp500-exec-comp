@@ -1833,6 +1833,7 @@ header h1 {
     transition: all 0.2s;
 }
 .path-finder-go:hover:not(:disabled) { background: rgba(168,85,247,0.25); }
+.path-finder-go:focus-visible:not(:disabled) { background: rgba(168,85,247,0.25); }
 .path-finder-go:disabled { opacity: 0.35; cursor: not-allowed; }
 
 .path-finder-clear {
@@ -1945,6 +1946,7 @@ header h1 {
     color: #7e22ce;
 }
 [data-theme="light"] .path-finder-go:hover:not(:disabled) { background: rgba(126,34,206,0.15); }
+[data-theme="light"] .path-finder-go:focus-visible:not(:disabled) { background: rgba(126,34,206,0.15); }
 [data-theme="light"] .path-finder-result {
     background: rgba(126,34,206,0.04);
     border-color: rgba(126,34,206,0.15);
