@@ -156,6 +156,7 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .comparison-chart-container { background: #fff; border-color: rgba(0,0,0,0.08); }
 [data-theme="light"] .comparison-export-btn { border-color: rgba(0,0,0,0.12); color: #4b5563; }
 [data-theme="light"] .comparison-export-btn:hover { border-color: #0077b6; color: #0077b6; }
+[data-theme="light"] .comparison-export-btn:focus-visible { border-color: #0077b6; color: #0077b6; }
 [data-theme="light"] .comparison-export-btn.copied { border-color: #16a34a; color: #16a34a; }
 [data-theme="light"] .detail-panel { background: #f0f1f5; border-color: rgba(0,0,0,0.06); }
 [data-theme="light"] .detail-nav-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #4b5563; }
@@ -6682,6 +6683,10 @@ footer li::before {
     border-color: var(--negative);
     color: var(--negative);
 }
+.comparison-close-btn:focus-visible {
+    border-color: var(--negative);
+    color: var(--negative);
+}
 
 /* Comparison export buttons */
 .comparison-export-btns {
@@ -6708,6 +6713,10 @@ footer li::before {
     border-color: var(--accent);
     color: var(--accent);
 }
+.comparison-export-btn:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+}
 .comparison-export-btn.copied {
     border-color: var(--positive);
     color: var(--positive);
@@ -6723,8 +6732,16 @@ footer li::before {
     box-shadow: 0 0 8px rgba(0,180,216,0.15);
     transform: translateY(-1px);
 }
+.comparison-path-btn:focus-visible {
+    border-color: #00b4d8;
+    color: #00b4d8;
+    background: rgba(0,180,216,0.08);
+    box-shadow: 0 0 8px rgba(0,180,216,0.15);
+    transform: translateY(-1px);
+}
 [data-theme="light"] .comparison-path-btn { border-color: rgba(0,119,182,0.25); color: #0077b6; }
 [data-theme="light"] .comparison-path-btn:hover { border-color: #0077b6; color: #0077b6; background: rgba(0,119,182,0.06); }
+[data-theme="light"] .comparison-path-btn:focus-visible { border-color: #0077b6; color: #0077b6; background: rgba(0,119,182,0.06); }
 
 /* Comparison grid */
 .comparison-grid {
