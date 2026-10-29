@@ -277,6 +277,11 @@ header h1 {
     color: var(--accent);
     background: var(--bg-elevated);
 }
+.theme-toggle:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-elevated);
+}
 /* In dark mode (default): show sun icon, hide moon */
 .theme-icon-sun { display: block; }
 .theme-icon-moon { display: none; }
