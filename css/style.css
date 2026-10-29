@@ -3208,6 +3208,10 @@ header h1 {
     background: rgba(0,180,216,0.18);
     border-color: rgba(0,180,216,0.5);
 }
+.export-csv-btn:focus-visible {
+    background: rgba(0,180,216,0.18);
+    border-color: rgba(0,180,216,0.5);
+}
 .export-csv-btn:active {
     background: rgba(0,180,216,0.25);
 }
@@ -3230,6 +3234,10 @@ header h1 {
     background: rgba(6,214,160,0.18);
     border-color: rgba(6,214,160,0.5);
 }
+.export-btn-group .export-neo-btn:focus-visible {
+    background: rgba(6,214,160,0.18);
+    border-color: rgba(6,214,160,0.5);
+}
 .export-btn-group .export-neo-btn:active {
     background: rgba(6,214,160,0.25);
 }
@@ -3241,6 +3249,11 @@ header h1 {
     background: rgba(251,146,60,0.08);
 }
 .export-btn-group .reset-all-btn:hover {
+    background: rgba(251,146,60,0.18);
+    border-color: rgba(251,146,60,0.6);
+    color: #fdba74;
+}
+.export-btn-group .reset-all-btn:focus-visible {
     background: rgba(251,146,60,0.18);
     border-color: rgba(251,146,60,0.6);
     color: #fdba74;
