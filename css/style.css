@@ -13895,6 +13895,14 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(167,139,250,0.5);
     transform: scale(1.1);
 }
+/* Keyboard focus parity for the path-finder bridge button (269th review):
+   keyboard users reach these buttons via Tab once cm-path-selecting makes
+   them visible, so focus must show the same affordance as hover. */
+.cm-path-btn:focus-visible {
+    background: rgba(167,139,250,0.15);
+    border-color: rgba(167,139,250,0.5);
+    transform: scale(1.1);
+}
 .cm-path-btn.cm-path-from {
     background: rgba(167,139,250,0.2);
     border-color: #a78bfa;
@@ -13906,6 +13914,13 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(124,58,237,0.25);
 }
 [data-theme="light"] .cm-path-btn:hover {
+    background: rgba(124,58,237,0.08);
+    border-color: rgba(124,58,237,0.4);
+}
+/* Keyboard focus parity (269th review): mirrors the light hover tint; the
+   base :focus-visible rule above still supplies transform: scale(1.1) on
+   light, exactly as the dark :hover transform applies on light hover. */
+[data-theme="light"] .cm-path-btn:focus-visible {
     background: rgba(124,58,237,0.08);
     border-color: rgba(124,58,237,0.4);
 }
