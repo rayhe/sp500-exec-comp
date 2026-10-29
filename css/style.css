@@ -6612,6 +6612,13 @@ footer li::before {
     white-space: nowrap;
 }
 .compare-go-btn:hover { background: var(--accent-hover); }
+/* 260th review (2026-10-28): the compare tray's primary "Compare" button is a
+   native <button> (index.html:1049) with a click handler (js/app.js:17408), so
+   it is keyboard-operable (Tab focus + Enter/Space) but keyboard focus got
+   only the UA default outline - the hover affordance had no focus-visible
+   mirror. Mirror it with exactly the hover value; --accent-hover is
+   theme-aware so one rule covers both themes. */
+.compare-go-btn:focus-visible { background: var(--accent-hover); }
 .compare-clear-btn {
     background: transparent;
     color: var(--text-secondary);
