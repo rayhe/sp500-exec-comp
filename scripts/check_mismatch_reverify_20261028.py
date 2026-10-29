@@ -24,10 +24,14 @@ pre-merger EQR proxy, acc. 0001193125-26-155007.
 Checks (all static):
   S1 all 10 rows carry a _reverify_20261028 note.
   S2 VMRK _index_note carries the 2026-10-28 recheck stamp.
-  S3 dataset counts unchanged: 518 companies, 7,084 NEO rows,
-     component_mismatch 32, verified_total 7052.
+  S3 dataset counts unchanged: 518 companies, 7,097 NEO rows,
+     component_mismatch 33, verified_total 7064.
      (Baseline moved 2026-10-29, 270th review: MSFT FY2026 proxy batch
-      added 5 verified NEO rows; 7079->7084, 7047->7052.)
+      added 5 verified NEO rows; 7079->7084, 7047->7052. Baseline moved
+      2026-10-29, 271st review: CSCO + ORCL FY2026 proxy batch added
+      12 verified NEO rows (4 CSCO + 8 ORCL) and 1 component_mismatch
+      row (CSCO Subaiya 2026, $1 filing-side gap kept verbatim);
+      7084->7097, 7052->7064, mismatch 32->33.)
 
 Usage:
   scripts/check_mismatch_reverify_20261028.py
@@ -88,9 +92,12 @@ def static_checks():
                    if e.get("_total_source") == "component_mismatch")
     # S3 baseline moved 2026-10-29 (270th review): MSFT FY2026 proxy batch
     # added 5 verified NEO rows -> 7079->7084 rows, verified_total 7047->7052.
-    s3 = (len(d["companies"]) == 518 and total == 7084 and mismatch == 32
-          and d["metadata"]["data_quality"]["verified_total"] == 7052)
-    check("S3 counts unchanged (518 / 7084 / mismatch 32 / verified 7052)",
+    # S3 baseline moved 2026-10-29 (271st review): CSCO + ORCL FY2026 proxy
+    # batch added 12 verified + 1 mismatch rows -> 7084->7097 rows,
+    # verified_total 7052->7064, mismatch 32->33.
+    s3 = (len(d["companies"]) == 518 and total == 7097 and mismatch == 33
+          and d["metadata"]["data_quality"]["verified_total"] == 7064)
+    check("S3 counts unchanged (518 / 7097 / mismatch 33 / verified 7064)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
