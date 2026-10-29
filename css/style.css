@@ -15053,6 +15053,16 @@ body.light-mode .cross-sector-pair-select:focus {
     color: var(--text-primary);
     border-color: var(--border-hover);
 }
+/* 265th review: mirror the hover affordance on keyboard focus. The modal
+   programmatically focuses this button on open (js/app.js), so the primary
+   keyboard flow (Enter on an info button -> focus lands here) matches
+   :focus-visible; without this rule keyboard users got only the UA default
+   outline while mouse hover showed the elevated background/color/border. */
+.methodology-modal-close:focus-visible {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
 .methodology-modal-body {
     padding: 18px 22px 22px;
     overflow-y: auto;
