@@ -1854,6 +1854,7 @@ header h1 {
     line-height: 1;
 }
 .path-finder-clear:hover { border-color: var(--accent); color: var(--text-primary); }
+.path-finder-clear:focus-visible { border-color: var(--accent); color: var(--text-primary); }
 
 .path-finder-result {
     display: none;
