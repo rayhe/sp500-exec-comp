@@ -12594,6 +12594,11 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(239, 71, 111, 0.4);
 }
 
+.ger-scatter-nav:focus-visible {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+
 /* GER threshold slider for network */
 .ger-threshold-control {
     display: flex;
