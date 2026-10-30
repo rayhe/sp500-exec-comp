@@ -2619,8 +2619,10 @@ def main():
     #     A company trips when NO anchor-year exec row matches ceo_name by
     #     that rule AND no anchor-year row's total equals
     #     company.total_compensation. KNOWN_ANCHOR_TRANSITIONS are the six
-    #     adjudicated 2026-09-14 cases (TMUS, NKE, SWKS, CCI, PSA, MAA) with
-    #     per-company questions in the goal hidden_files review queue
+    #     adjudicated 2026-09-14 cases (TMUS, NKE, SWKS, CCI, PSA, MAA) plus
+    #     CPB (2026-10-29, 272nd review: documented pending adjudication,
+    #     not yet adjudicated), with per-company questions in the goal
+    #     hidden_files review queue
     #     (ceo_anchor_transition_queue_20260914_1000.md); any NEW trip is a
     #     regression signal for the next EDGAR-connected run. The
     #     pay-ratio half of section 11 is a summary-only screen: recompute
@@ -2650,7 +2652,20 @@ def main():
         cf, cl = _anchor_key(ceo_name)
         return bool(rl and rl == cl and rf and (rf == cf or rf[0] == cf[0]))
 
-    KNOWN_ANCHOR_TRANSITIONS = {"TMUS", "NKE", "SWKS", "CCI", "PSA", "MAA"}
+    KNOWN_ANCHOR_TRANSITIONS = {"TMUS", "NKE", "SWKS", "CCI", "PSA", "MAA",
+                                # 2026-10-29 (272nd review): CPB joins the
+                                # known-transition set. The FY2025-pinned
+                                # anchor (Mark A. Clouse, former CEO since
+                                # before FY2023; ct $11,056,404 = his FY2025
+                                # SCT total) has no FY2026 SCT row — the 2026
+                                # proxy's PEO is Beekhuizen. Anchor NOT moved
+                                # in the enrichment batch (271st deferral
+                                # principle); documented in
+                                # ceo_anchor_transition_queue_20260914_1000.md
+                                # for the anchor-promotion batch's
+                                # adjudication (promote to Beekhuizen FY2026
+                                # vs retain Clouse FY2025 pin).
+                                "CPB"}
     anchor_trips = []
     for c in companies:
         ceo = c.get("ceo_name")
