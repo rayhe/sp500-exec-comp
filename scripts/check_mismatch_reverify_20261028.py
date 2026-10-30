@@ -109,9 +109,14 @@ def static_checks():
     # FY2026 proxy batch added 24 verified rows (incl. NWSA Allen 2024
     # gap-fill from the 2026-proxy SCT) -> 7123->7147 rows,
     # verified_total 7088->7112, mismatch unchanged at 35.
-    s3 = (len(d["companies"]) == 518 and total == 7147 and mismatch == 35
-          and d["metadata"]["data_quality"]["verified_total"] == 7112)
-    check("S3 counts unchanged (518 / 7147 / mismatch 35 / verified 7112)",
+    # S3 baseline moved 2026-10-29 (274th review): KLAC/LRCX/STX/WDC/MDT
+    # FY2026 proxy batch added 27 verified rows (25 FY2026 SCT + LRCX
+    # Vahedi 2025/2024 gap-fill from the 2026-proxy SCT) and 3 new
+    # component_mismatch rows (MDT Martha/Pieton/Wall FY2026 $1 gaps)
+    # -> 7147->7174 rows, verified_total 7112->7136, mismatch 35->38.
+    s3 = (len(d["companies"]) == 518 and total == 7174 and mismatch == 38
+          and d["metadata"]["data_quality"]["verified_total"] == 7136)
+    check("S3 counts unchanged (518 / 7174 / mismatch 38 / verified 7136)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 

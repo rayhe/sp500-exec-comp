@@ -25,7 +25,10 @@ Usage from a DQ batch script (repo root as cwd):
 record_batch() rewrites data/compensation.json with the counters incremented
 (cumulative += delta; gross_removed += max(delta,0); restored += -min(delta,0);
 batches += 1; last_updated = stamp) and PRESERVES the canonical serialization
-(indent=1, ensure_ascii=True) byte-identically outside the counter block.
+(indent=1, ensure_ascii=False, trailing newline) byte-identically outside the
+counter block. (2026-10-29: fixed from ensure_ascii=True, which escaped the
+literal em-dashes and reformatted the whole file; and added the missing
+trailing newline.)
 
 After calling it, the batch script must also re-sync the dataq modal's static
 fallback in js/app.js (the "dataq-phantom-block" div): the guard's section 4f
@@ -86,9 +89,10 @@ def record_batch(pre_path, data_path=None, stamp=None):
     if stamp:
         pr["last_updated"] = stamp
 
-    out = json.dumps(d, indent=1, ensure_ascii=True)
+    out = json.dumps(d, indent=1, ensure_ascii=False)
     with open(data_path, "w", encoding="utf-8") as f:
         f.write(out)
+        f.write("\n")
     return delta
 
 

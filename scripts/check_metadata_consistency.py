@@ -2687,7 +2687,19 @@ def main():
                                 # ceo_anchor_transition_queue_20260914_1000.md
                                 # for the anchor-promotion batch's adjudication
                                 # (promote to FY2026 PEO vs retain FY2025 pin).
-                                "EL", "JKHY"}
+                                "EL", "JKHY",
+                                # 2026-10-29 (274th review): WDC joins the
+                                # known-transition set. WDC's FY2025-pinned
+                                # anchor (David V. Goeckeler, former CEO; ct
+                                # $24,931,456 = his FY2025 SCT total) has no
+                                # FY2026 SCT row - the 2026 proxy's PEO is
+                                # Irving Tan ($17,168,701), already CEO-titled
+                                # in the 2025 proxy (succession during FY2025).
+                                # Anchor NOT moved in the enrichment batch
+                                # (271st deferral principle); documented for
+                                # the anchor-promotion batch's adjudication
+                                # (promote to FY2026 PEO vs retain FY2025 pin).
+                                "WDC"}
     anchor_trips = []
     for c in companies:
         ceo = c.get("ceo_name")
