@@ -4958,6 +4958,15 @@ tbody tr:last-child td { border-bottom: none; }
     color: #fff;
     border-color: var(--accent-hover);
 }
+/* Keyboard focus parity (281st review): .detail-network-btn is a native
+   <button> (company detail panel + comparison tray cards, js/app.js), so
+   Tab-reachable and Enter/Space-activatable, but keyboard focus got only the
+   UA default outline. Mirror the hover affordance exactly. */
+.detail-network-btn:focus-visible {
+    background: rgba(0,180,216,0.25);
+    color: #fff;
+    border-color: var(--accent-hover);
+}
 .detail-network-btn svg {
     flex-shrink: 0;
 }
@@ -4978,6 +4987,15 @@ tbody tr:last-child td { border-bottom: none; }
     transition: all 0.2s;
 }
 .detail-table-btn:hover {
+    background: rgba(161,161,170,0.25);
+    color: #fff;
+    border-color: #d4d4d8;
+}
+/* Keyboard focus parity (281st review): .detail-table-btn is a native
+   <button> (comparison tray cards, js/app.js addEventListener click), so
+   Tab-reachable and Enter/Space-activatable, but keyboard focus got only the
+   UA default outline. Mirror the hover affordance exactly. */
+.detail-table-btn:focus-visible {
     background: rgba(161,161,170,0.25);
     color: #fff;
     border-color: #d4d4d8;
