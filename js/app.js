@@ -18439,13 +18439,13 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
-                '<p>7,136 of 7,174 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 38 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,159 of 7,201 NEO rows verified (99.4%): 0 rounding, 0 recomputed, 42 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,834,529,215 of parser-invented compensation removed across 72 re-verification batches since 2026-09-12, partly offset by $2,854,851,885 of genuine missing NEO rows restored filing-verbatim. Net: $-20,322,670.</p></div>' +
+                '<p>$2,834,529,215 of parser-invented compensation removed across 73 re-verification batches since 2026-09-12, partly offset by $3,065,107,194 of genuine missing NEO rows restored filing-verbatim. Net: $-230,577,979.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-10-06 screen: 103 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 13 near 0.5x, 396 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-10-29 screen: 101 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 14 near 0.5x, 397 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
                 '<p>Deviation sources, spot-verified:</p>' +
                 '<ul class="pvp-exclusion-list">' +
