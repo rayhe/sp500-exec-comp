@@ -5304,6 +5304,16 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     color: var(--text-primary);
     background: var(--bg-surface);
 }
+/* Keyboard focus parity (279th review): native <button> elements in the main
+   table pagination are Tab-reachable, so keyboard focus must show the same
+   affordance as hover. Mirrors the :hover declarations exactly, including the
+   :not(.disabled):not(.active) qualifier; the hover uses theme vars so one
+   rule covers both themes. */
+.pagination-btn:focus-visible:not(.disabled):not(.active) {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    background: var(--bg-surface);
+}
 .pagination-btn.active {
     background: rgba(0,180,216,0.18);
     border-color: var(--accent);
