@@ -14186,6 +14186,15 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(168,85,247,0.18);
     border-color: rgba(168,85,247,0.5);
 }
+/* Keyboard focus parity (280th review): native <button> (js/network.js
+   _renderCommunityFlowMatrix), Tab-reachable, so keyboard focus must show the
+   same affordance as hover. Placed adjacent to the :hover rule and BEFORE the
+   state rules so .cf-norm-active/-col/-diff styling still wins over focus
+   exactly as it wins over hover (equal specificity, later rule wins). */
+.cf-normalize-btn:focus-visible {
+    background: rgba(168,85,247,0.18);
+    border-color: rgba(168,85,247,0.5);
+}
 .cf-normalize-btn.cf-norm-active {
     background: rgba(168,85,247,0.22);
     border-color: #a78bfa;
@@ -14207,6 +14216,10 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #7c3aed;
 }
 [data-theme="light"] .cf-normalize-btn:hover {
+    background: rgba(124,58,237,0.12);
+    border-color: rgba(124,58,237,0.4);
+}
+[data-theme="light"] .cf-normalize-btn:focus-visible {
     background: rgba(124,58,237,0.12);
     border-color: rgba(124,58,237,0.4);
 }
@@ -14244,6 +14257,14 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(168,85,247,0.18);
     border-color: rgba(168,85,247,0.5);
 }
+/* Keyboard focus parity (280th review): native <button> (js/network.js
+   _renderCommunityFlowMatrix), Tab-reachable. Adjacent to :hover, before the
+   active-state rule so .cf-transpose-active still wins over focus exactly as
+   it wins over hover (equal specificity, later rule wins). */
+.cf-transpose-btn:focus-visible {
+    background: rgba(168,85,247,0.18);
+    border-color: rgba(168,85,247,0.5);
+}
 .cf-transpose-btn.cf-transpose-active {
     background: rgba(52,211,153,0.18);
     border-color: #34d399;
@@ -14255,6 +14276,10 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #7c3aed;
 }
 [data-theme="light"] .cf-transpose-btn:hover {
+    background: rgba(124,58,237,0.12);
+    border-color: rgba(124,58,237,0.4);
+}
+[data-theme="light"] .cf-transpose-btn:focus-visible {
     background: rgba(124,58,237,0.12);
     border-color: rgba(124,58,237,0.4);
 }
