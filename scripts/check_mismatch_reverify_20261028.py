@@ -119,9 +119,14 @@ def static_checks():
     # component_mismatch rows (SNDK Goeckeler/Shek, LITE Kim/Retort
     # FY2026 $1 filing-side gaps) -> 7174->7201 rows,
     # verified_total 7136->7159, mismatch 38->42.
-    s3 = (len(d["companies"]) == 518 and total == 7201 and mismatch == 42
-          and d["metadata"]["data_quality"]["verified_total"] == 7159)
-    check("S3 counts unchanged (518 / 7201 / mismatch 42 / verified 7159)",
+    # S3 baseline moved 2026-10-30 (276th review): PANW/ADP/AMCR/PAYX
+    # FY2026 proxy batch added 22 verified rows (21 FY2026 SCT rows +
+    # PAYX Ante 2025 gap-fill from the 2026-proxy SCT); TSLA 2026-10-19
+    # DEF 14A overlap cross-check, 0 deltas -> 7201->7223 rows,
+    # verified_total 7159->7181, mismatch unchanged at 42.
+    s3 = (len(d["companies"]) == 518 and total == 7223 and mismatch == 42
+          and d["metadata"]["data_quality"]["verified_total"] == 7181)
+    check("S3 counts unchanged (518 / 7223 / mismatch 42 / verified 7181)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
