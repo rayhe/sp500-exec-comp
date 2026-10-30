@@ -2621,7 +2621,9 @@ def main():
     #     company.total_compensation. KNOWN_ANCHOR_TRANSITIONS are the six
     #     adjudicated 2026-09-14 cases (TMUS, NKE, SWKS, CCI, PSA, MAA) plus
     #     CPB (2026-10-29, 272nd review: documented pending adjudication,
-    #     not yet adjudicated), with per-company questions in the goal
+    #     not yet adjudicated) plus EL and JKHY (2026-10-29, 273rd review:
+    #     documented pending adjudication, not yet adjudicated), with
+    #     per-company questions in the goal
     #     hidden_files review queue
     #     (ceo_anchor_transition_queue_20260914_1000.md); any NEW trip is a
     #     regression signal for the next EDGAR-connected run. The
@@ -2665,7 +2667,27 @@ def main():
                                 # for the anchor-promotion batch's
                                 # adjudication (promote to Beekhuizen FY2026
                                 # vs retain Clouse FY2025 pin).
-                                "CPB"}
+                                "CPB",
+                                # 2026-10-29 (273rd review): EL and JKHY join
+                                # the known-transition set. EL's FY2025-pinned
+                                # anchor (Fabrizio Freda, former CEO; ct
+                                # $17,793,402 = his FY2025 SCT total) has no
+                                # FY2026 SCT row - the 2026 proxy's PEO is
+                                # Stéphane de La Faverie ($20,585,784), who
+                                # already carried the CEO title in the 2025
+                                # proxy (succession during FY2025). JKHY's
+                                # FY2025-pinned anchor (David B. Foss, former
+                                # CEO; ct $3,474,604 = his FY2025 SCT total)
+                                # has no FY2026 SCT row - the 2026 proxy's PEO
+                                # is Gregory R. Adelson ($8,413,970), who
+                                # already carried the CEO title in the 2025
+                                # proxy (succession during FY2025). Anchors NOT
+                                # moved in the enrichment batch (271st deferral
+                                # principle); documented in
+                                # ceo_anchor_transition_queue_20260914_1000.md
+                                # for the anchor-promotion batch's adjudication
+                                # (promote to FY2026 PEO vs retain FY2025 pin).
+                                "EL", "JKHY"}
     anchor_trips = []
     for c in companies:
         ceo = c.get("ceo_name")
@@ -2800,6 +2822,13 @@ def main():
         ("steven tomsic", 2023, "FOX", "FOXA"),
         ("steven tomsic", 2024, "FOX", "FOXA"),
         ("steven tomsic", 2025, "FOX", "FOXA"),
+        # 2026-10-29 19:30 PT (273rd review, FY2026-proxy batch 4): the
+        # same dual-class issuer now has FY2026 SCT rows at both tickers
+        # (byte-identical SCTs, same filing). Same people, do not merge.
+        ("adam ciongoli", 2026, "FOX", "FOXA"),
+        ("john p nallen", 2026, "FOX", "FOXA"),
+        ("lachlan k murdoch", 2026, "FOX", "FOXA"),
+        ("steven tomsic", 2026, "FOX", "FOXA"),
         # 2026-09-24 23:30 PT (backlog #11): genuine spin-off transition —
         # John A. Smith was President/CEO of FedEx Freight (an FDX NEO;
         # FDX FY2025 SCT $5,281,073) through the Jun 1 2026 spin-off, then

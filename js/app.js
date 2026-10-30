@@ -18439,9 +18439,9 @@ function setupDualSparklineTooltips() {
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
-                '<p>7,088 of 7,123 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 35 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,112 of 7,147 NEO rows verified (99.5%): 0 rounding, 0 recomputed, 35 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,834,529,215 of parser-invented compensation removed across 70 re-verification batches since 2026-09-12, partly offset by $2,313,453,955 of genuine missing NEO rows restored filing-verbatim. Net: $521,075,260.</p></div>' +
+                '<p>$2,834,529,215 of parser-invented compensation removed across 71 re-verification batches since 2026-09-12, partly offset by $2,564,004,698 of genuine missing NEO rows restored filing-verbatim. Net: $270,524,517.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
@@ -18456,9 +18456,9 @@ function setupDualSparklineTooltips() {
                 '</ul>' +
                 '<p>A deviation is not a mislabeled figure.</p><div id="dataq-payratio-moves"></div></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
-                '<p id="dataq-transitions-counts">As of the 2026-09-29 screen: 24 (name, fiscal year) tuples appear as NEO rows at two different companies; all 24 triaged by tuple:</p>' +
+                '<p id="dataq-transitions-counts">As of the 2026-10-29 screen: 28 (name, fiscal year) tuples appear as NEO rows at two different companies; all 28 triaged by tuple:</p>' +
                 '<ul class="pvp-exclusion-list">' +
-                '<li><strong>19 genuine</strong>: 8 mid-year executive transitions (e.g. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off; John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 11 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents).</li>' +
+                '<li><strong>23 genuine</strong>: 8 mid-year executive transitions (e.g. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off; John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 15 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents).</li>' +
                 '<li><strong>5 same-name coincidences</strong> (2 people): Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR. Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people.</li>' +
                 '<li><strong>0 suspicious</strong>: the former LULU/WSM Burgoyne pair was a wrong-name misattribution, repaired 2026-09-29 &mdash; the WSM rows were Karalyn Yearout\'s, byte-identical to her filed SCT rows.</li>' +
                 '</ul>' +
