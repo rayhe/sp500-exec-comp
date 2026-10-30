@@ -124,9 +124,18 @@ def static_checks():
     # PAYX Ante 2025 gap-fill from the 2026-proxy SCT); TSLA 2026-10-19
     # DEF 14A overlap cross-check, 0 deltas -> 7201->7223 rows,
     # verified_total 7159->7181, mismatch unchanged at 42.
-    s3 = (len(d["companies"]) == 518 and total == 7223 and mismatch == 42
-          and d["metadata"]["data_quality"]["verified_total"] == 7181)
-    check("S3 counts unchanged (518 / 7223 / mismatch 42 / verified 7181)",
+    # S3 baseline moved 2026-10-30 (277th review): BR/CAG/CAH/CTAS/DRI
+    # FY2026 proxy batch added 30 verified rows (28 FY2026 SCT rows +
+    # CAG McGough 2025/2024 + DRI Burrowes/Martin 2024 + DRI Broad
+    # 2025/2024 gap-fills from the 2026-proxy SCTs) and 2 new
+    # component_mismatch rows (DRI Cardenas 2026 + DRI Broad 2025 $1
+    # filing-side gaps); 7 stored column-shift parse errors repaired
+    # filing-verbatim (CAG O'Mara 2025, CAH 2025 x5, CAH Mayer 2024);
+    # 2 CAG Connolly restatements documented not overwritten ->
+    # 7223->7255 rows, verified_total 7181->7211, mismatch 42->44.
+    s3 = (len(d["companies"]) == 518 and total == 7255 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7211)
+    check("S3 counts unchanged (518 / 7255 / mismatch 44 / verified 7211)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
