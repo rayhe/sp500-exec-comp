@@ -133,9 +133,17 @@ def static_checks():
     # filing-verbatim (CAG O'Mara 2025, CAH 2025 x5, CAH Mayer 2024);
     # 2 CAG Connolly restatements documented not overwritten ->
     # 7223->7255 rows, verified_total 7181->7211, mismatch 42->44.
-    s3 = (len(d["companies"]) == 518 and total == 7255 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7211)
-    check("S3 counts unchanged (518 / 7255 / mismatch 44 / verified 7211)",
+    # S3 baseline moved 2026-10-30 (278th review): GIS/FDX/PG/PH/TPR
+    # FY2026 proxy batch added 37 verified rows (28 FY2026 SCT rows +
+    # GIS Thissen 2025/2024 + PG 2021-22 x5 gap-fills from the 2026/2024
+    # proxies); 12 stored column-shift parse errors repaired
+    # filing-verbatim (FDX Dietrich/Krishnasamy 2024, PH 2024 x4,
+    # PG 2023/2022 x6); PG fiscal-year relabel 2025->2026, 2024->2025
+    # (end-year convention) -> 7255->7286 rows,
+    # verified_total 7211->7242, mismatch unchanged at 44.
+    s3 = (len(d["companies"]) == 518 and total == 7286 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7242)
+    check("S3 counts unchanged (518 / 7286 / mismatch 44 / verified 7242)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
