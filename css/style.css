@@ -6163,6 +6163,10 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     background: rgba(255,255,255,0.06);
     color: var(--text-secondary);
 }
+.rs-mode-btn:focus-visible {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+}
 .rs-mode-btn.active {
     background: rgba(167,139,250,0.15);
     color: #a78bfa;
@@ -6173,6 +6177,9 @@ td .ratio-low { color: var(--positive); font-weight: 600; }
     border-color: rgba(0,0,0,0.1);
 }
 [data-theme="light"] .rs-mode-btn:hover {
+    background: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .rs-mode-btn:focus-visible {
     background: rgba(0,0,0,0.04);
 }
 [data-theme="light"] .rs-mode-btn.active {
@@ -10425,6 +10432,11 @@ footer li::before {
     border-color: rgba(0,180,216,0.3);
     color: #e4e4e7;
 }
+.top10-mode-btn:focus-visible {
+    background: rgba(0,180,216,0.1);
+    border-color: rgba(0,180,216,0.3);
+    color: #e4e4e7;
+}
 .top10-mode-btn.active {
     background: rgba(0,180,216,0.15);
     border-color: rgba(0,180,216,0.5);
@@ -10438,6 +10450,11 @@ footer li::before {
     color: #6b7280;
 }
 [data-theme="light"] .top10-mode-btn:hover {
+    background: rgba(0,180,216,0.08);
+    border-color: rgba(0,180,216,0.3);
+    color: #1a1a2e;
+}
+[data-theme="light"] .top10-mode-btn:focus-visible {
     background: rgba(0,180,216,0.08);
     border-color: rgba(0,180,216,0.3);
     color: #1a1a2e;
@@ -11407,6 +11424,11 @@ footer li::before {
     border-color: rgba(255,255,255,0.2);
     color: #e4e4e7;
 }
+.trend-overlay-btn:focus-visible {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+    color: #e4e4e7;
+}
 .trend-overlay-btn.active[data-series="ceo"] {
     background: rgba(0,180,216,0.15);
     border-color: rgba(0,180,216,0.5);
@@ -11445,6 +11467,11 @@ footer li::before {
     color: #6b7280;
 }
 [data-theme="light"] .trend-overlay-btn:hover {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.2);
+    color: #1a1a2e;
+}
+[data-theme="light"] .trend-overlay-btn:focus-visible {
     background: rgba(0,0,0,0.06);
     border-color: rgba(0,0,0,0.2);
     color: #1a1a2e;
