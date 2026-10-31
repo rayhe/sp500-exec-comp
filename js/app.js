@@ -18445,7 +18445,7 @@ function setupDualSparklineTooltips() {
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-10-30 screen: 102 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 14 near 0.5x, 396 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-10-30 screen: 105 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 14 near 0.5x, 393 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
                 '<p>Deviation sources, spot-verified:</p>' +
                 '<ul class="pvp-exclusion-list">' +

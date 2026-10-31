@@ -38,28 +38,39 @@
    "2026-09-26 19:30 PT column-shift batch: 47 NEO rows across TYL, APO, BRO, CMCSA, ESS, EXR, MKTX, MTB, PLTR, REG, VICI re-read filing-verbatim against 20 primary DEF 14As; phantom compensation removed $185,311,982.",
    "DQ batch 2026-10-07 02:00 PT: full 7,078-row component recompute scan flagged 4 non-footing rows; all re-verified against primary EDGAR SCTs. JCI Julie Brandt FY2023 salary corrected 685,577 -> 336,538 per the ORIGINAL FY2023 DEF 14A (filed 2024-01-19, d554585ddef14a.htm; prorated mid-year hire) - the 2026 proxy reprint erroneously carried her annualized base salary while keeping the filed total, which is what broke the row arithmetic (supersedes the 2026-09-27 'genuine filing-side inconsistency' note, which had only checked the 2026 reprint). Row now foots exactly; relabeled def14a_verified_20261007. SBUX Sara Kelly FY2024 column shift repaired (transposed SCT; option_awards 0->244,292, non_equity_incentive 244,292->70,993, all_other->None); Starbucks' own filed total 3,562,568 still does not foot (components sum 3,704,554) - genuine filing error, flag retained. CDNS Paul Scannell FY2024 (diff 177,535) and BE Maciej Kurzymski FY2025 (total double-counts the $339,200 ACI) confirmed as genuine filing-side arithmetic errors in both original and reprint proxies; filed numbers retained verbatim, flags stand. Buckets: component_mismatch 34->33, verified_total 7,044->7,045 (99.5%). VMRK watch re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107).",
    "274th review (2026-10-29 22:00 PT): KLAC/LRCX/STX/WDC/MDT FY2026 SCTs +25 NEO rows from Oct-2026 proxies; MDT Martha/Piéton/Wall FY2026 + Piéton 2025 $1 filing-side gaps kept verbatim as component_mismatch; PANW/FDX/ADP deferred (main DEF 14A docs 404 on EDGAR Archives, fresh filings not yet replicating). Follow-up adjudication: LRCX Vahedi 2025/2024 gap-filled from 2026 proxy (was not NEO in 2025 proxy); MDT 2026 rows renamed to stored variants Geoffrey S. Martha / Brett A. Wall (all MDT overlaps verbatim after reconciliation); KLAC FY2025 all-other restated upward in 2026 proxy (+$3.9K-12.3K per NEO, no stated reason; stored 2025 rows kept as filed); WDC Tan FY2025 NEIP restated -$369,073 in 2026 proxy (2,123,138->1,754,065; stored row kept as filed); WDC anchor tripwire: Irving Tan is CEO in 2026 proxy, anchor NOT moved (deferred to anchor-promotion batch); STX/KLAC older rows use None (not 0) for present-but-dash SCT columns; totals unaffected, normalization deferred.",
-   "279th review (2026-10-30 10:00 PT): EDGAR Oct-2026 DEF 14A sweep (efts search-index, 284 filings) matched 16 S&P 500 filers, all already ingested with matching filing_dates (0 new). EA/TECH/SMCI re-checked on EDGAR submissions API: no newer DEF 14A than stored (EA 2025-06-24, TECH 2025-09-19, SMCI 2026-03-03) — stored state correct. DAY (Dayforce): taken private by Thoma Bravo ($12.3B, announced 2025-08-21, closed early 2026); no FY2025 DEF 14A exists or will be filed — FY2024 rows remain final. Full 7,286-row component recompute scan: 22 non-footing rows, all already labeled component_mismatch with filing-verbatim notes (0 unlabeled). No CEO-anchor changes."
+   "279th review (2026-10-30 10:00 PT): EDGAR Oct-2026 DEF 14A sweep (efts search-index, 284 filings) matched 16 S&P 500 filers, all already ingested with matching filing_dates (0 new). EA/TECH/SMCI re-checked on EDGAR submissions API: no newer DEF 14A than stored (EA 2025-06-24, TECH 2025-09-19, SMCI 2026-03-03) — stored state correct. DAY (Dayforce): taken private by Thoma Bravo ($12.3B, announced 2025-08-21, closed early 2026); no FY2025 DEF 14A exists or will be filed — FY2024 rows remain final. Full 7,286-row component recompute scan: 22 non-footing rows, all already labeled component_mismatch with filing-verbatim notes (0 unlabeled). No CEO-anchor changes.",
+   "284th review (2026-10-30 19:30 PT): 4-company CEO-anchor promotion batch (CPB/EL/JKHY/WDC) - company anchors moved from the FY2025 CEO to the FY2026 PEO (filing-verbatim SCT totals + pay-ratio disclosures from the Oct-2026 DEF 14As: CPB Beekhuizen $10,965,019 / 152:1 / $72,257; EL de La Faverie $20,585,784 / 601:1 / $34,255; JKHY Adelson $8,413,970 / 87:1 / $96,615; WDC Tan $17,168,701 / 1,457:1 / $11,787); aggregate_stats + sector_medians recomputed (section-17 semantics); ORCL co-CEO stays queued (needs convention)."
   ],
   "aggregate_stats": {
    "total_companies": 518,
    "companies_with_pay_ratio": 514,
-   "median_ceo_pay": 17347291,
-   "mean_ceo_pay": 329638734,
+   "median_ceo_pay": 17346126,
+   "mean_ceo_pay": 329638497,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
    "median_worker_pay": 82701,
    "median_pay_ratio": 196
   },
   "sector_medians": {
-   "Communication Services": {
-    "median_ceo_pay": 32766639,
-    "count": 22,
-    "min": 403019,
-    "max": 165009366,
-    "verified_anchors": 22,
+   "Health Care": {
+    "median_ceo_pay": 18901792,
+    "count": 62,
+    "min": 6380525,
+    "max": 79923350,
+    "verified_anchors": 61,
     "documented_anchors": 0,
-    "undocumented_anchors": 0,
-    "verified_pct": 100.0
+    "undocumented_anchors": 1,
+    "verified_pct": 98.4
+   },
+   "Information Technology": {
+    "median_ceo_pay": 22753330,
+    "count": 88,
+    "min": 442,
+    "max": 247579143,
+    "verified_anchors": 86,
+    "documented_anchors": 0,
+    "undocumented_anchors": 2,
+    "verified_pct": 97.7
    },
    "Consumer Discretionary": {
     "median_ceo_pay": 18292735,
@@ -71,26 +82,6 @@
     "undocumented_anchors": 1,
     "verified_pct": 98.3
    },
-   "Consumer Staples": {
-    "median_ceo_pay": 15101283,
-    "count": 34,
-    "min": 843061,
-    "max": 49122360,
-    "verified_anchors": 34,
-    "documented_anchors": 0,
-    "undocumented_anchors": 0,
-    "verified_pct": 100.0
-   },
-   "Energy": {
-    "median_ceo_pay": 18046118,
-    "count": 22,
-    "min": 9879106,
-    "max": 35838746,
-    "verified_anchors": 22,
-    "documented_anchors": 0,
-    "undocumented_anchors": 0,
-    "verified_pct": 100.0
-   },
    "Financials": {
     "median_ceo_pay": 19291859,
     "count": 70,
@@ -101,35 +92,25 @@
     "undocumented_anchors": 0,
     "verified_pct": 100.0
    },
-   "Health Care": {
-    "median_ceo_pay": 18901792,
-    "count": 62,
-    "min": 6380525,
-    "max": 79923350,
-    "verified_anchors": 61,
-    "documented_anchors": 0,
-    "undocumented_anchors": 1,
-    "verified_pct": 98.4
-   },
-   "Industrials": {
-    "median_ceo_pay": 14962913,
-    "count": 73,
-    "min": 40001,
-    "max": 70547718,
-    "verified_anchors": 73,
+   "Consumer Staples": {
+    "median_ceo_pay": 15101283,
+    "count": 34,
+    "min": 843061,
+    "max": 49122360,
+    "verified_anchors": 34,
     "documented_anchors": 0,
     "undocumented_anchors": 0,
     "verified_pct": 100.0
    },
-   "Information Technology": {
-    "median_ceo_pay": 22882782,
-    "count": 88,
-    "min": 442,
-    "max": 247579143,
-    "verified_anchors": 86,
+   "Utilities": {
+    "median_ceo_pay": 13652630,
+    "count": 31,
+    "min": 2828115,
+    "max": 36601524,
+    "verified_anchors": 31,
     "documented_anchors": 0,
-    "undocumented_anchors": 2,
-    "verified_pct": 97.7
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
    },
    "Materials": {
     "median_ceo_pay": 14945471,
@@ -137,6 +118,16 @@
     "min": 4233336,
     "max": 29770044,
     "verified_anchors": 27,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Industrials": {
+    "median_ceo_pay": 14962913,
+    "count": 73,
+    "min": 40001,
+    "max": 70547718,
+    "verified_anchors": 73,
     "documented_anchors": 0,
     "undocumented_anchors": 0,
     "verified_pct": 100.0
@@ -151,12 +142,22 @@
     "undocumented_anchors": 1,
     "verified_pct": 96.6
    },
-   "Utilities": {
-    "median_ceo_pay": 13652630,
-    "count": 31,
-    "min": 2828115,
-    "max": 36601524,
-    "verified_anchors": 31,
+   "Energy": {
+    "median_ceo_pay": 18046118,
+    "count": 22,
+    "min": 9879106,
+    "max": 35838746,
+    "verified_anchors": 22,
+    "documented_anchors": 0,
+    "undocumented_anchors": 0,
+    "verified_pct": 100.0
+   },
+   "Communication Services": {
+    "median_ceo_pay": 32766639,
+    "count": 22,
+    "min": 403019,
+    "max": 165009366,
+    "verified_anchors": 22,
     "documented_anchors": 0,
     "undocumented_anchors": 0,
     "verified_pct": 100.0
@@ -25736,12 +25737,12 @@
   {
    "ticker": "CPB",
    "company_name": "The Campbell's Company",
-   "ceo_name": "Mark A. Clouse",
-   "total_compensation": 11056404,
+   "ceo_name": "Mick J. Beekhuizen",
+   "total_compensation": 10965019,
    "fiscal_year": 2026,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 77798,
-   "pay_ratio": 128,
+   "source": "SEC DEF 14A 2026 - FY2026 CEO",
+   "median_worker_pay": 72257,
+   "pay_ratio": 152,
    "sector": "Consumer Staples",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000016732",
@@ -37802,12 +37803,12 @@
   {
    "ticker": "EL",
    "company_name": "Estee Lauder Cos Inc",
-   "ceo_name": "Fabrizio Freda",
-   "total_compensation": 17793402,
+   "ceo_name": "Stéphane de La Faverie",
+   "total_compensation": 20585784,
    "fiscal_year": 2026,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 34711,
-   "pay_ratio": 514,
+   "source": "SEC DEF 14A 2026 - FY2026 CEO",
+   "median_worker_pay": 34255,
+   "pay_ratio": 601,
    "sector": "Consumer Staples",
    "executives": [
     {
@@ -38058,10 +38059,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "January",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -61049,12 +61050,12 @@
   {
    "ticker": "JKHY",
    "company_name": "Jack Henry & Associates Inc",
-   "ceo_name": "David B. Foss",
-   "total_compensation": 3474604,
+   "ceo_name": "Gregory R. Adelson",
+   "total_compensation": 8413970,
    "fiscal_year": 2026,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 86594,
-   "pay_ratio": 127,
+   "source": "SEC DEF 14A 2026 - FY2026 CEO",
+   "median_worker_pay": 96615,
+   "pay_ratio": 87,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000779152",
@@ -61277,11 +61278,11 @@
     "source_url": "https://www.sec.gov/Archives/edgar/data/779152/000077915225000121/jkhy-20251112.htm"
    },
    "ceo_tenure": {
-    "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "year": 2024,
+    "month": "July",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -115613,12 +115614,12 @@
   {
    "ticker": "WDC",
    "company_name": "Western Digital Corp",
-   "ceo_name": "David V. Goeckeler",
-   "total_compensation": 24931456,
+   "ceo_name": "Irving Tan",
+   "total_compensation": 17168701,
    "fiscal_year": 2026,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 8740,
-   "pay_ratio": 1321,
+   "source": "SEC DEF 14A 2026 - FY2026 CEO",
+   "median_worker_pay": 11787,
+   "pay_ratio": 1457,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
