@@ -8468,6 +8468,11 @@ footer li::before {
     border-color: var(--accent);
     border-style: solid;
 }
+.neo-smooth-btn:focus-visible {
+    color: var(--text);
+    border-color: var(--accent);
+    border-style: solid;
+}
 .neo-smooth-btn.active {
     color: var(--positive);
     border-color: var(--positive);
@@ -8567,6 +8572,11 @@ footer li::before {
     margin-left: 0.25rem;
 }
 .neo-compare-years-btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    border-style: solid;
+}
+.neo-compare-years-btn:focus-visible {
     color: var(--text);
     border-color: var(--accent);
     border-style: solid;
