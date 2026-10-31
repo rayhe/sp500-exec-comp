@@ -13010,6 +13010,9 @@ body.light-mode .cross-sector-pair-select:focus {
 .anomaly-scatter-nav-btn:hover {
     transform: translateY(-1px);
 }
+.anomaly-scatter-nav-btn:focus-visible {
+    transform: translateY(-1px);
+}
 
 .anomaly-scatter-nav-btn:active {
     transform: translateY(0);
@@ -13024,6 +13027,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(220, 38, 38, 0.15);
     border-color: rgba(220, 38, 38, 0.4);
 }
+.anomaly-scatter-nav-btn.anomaly-critical:focus-visible {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+}
 
 .anomaly-scatter-nav-btn.anomaly-high {
     color: #ef476f;
@@ -13034,6 +13041,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(239, 71, 111, 0.15);
     border-color: rgba(239, 71, 111, 0.4);
 }
+.anomaly-scatter-nav-btn.anomaly-high:focus-visible {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
 
 .anomaly-scatter-nav-btn.anomaly-elevated {
     color: #fb923c;
@@ -13041,6 +13052,10 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(251, 146, 60, 0.2);
 }
 .anomaly-scatter-nav-btn.anomaly-elevated:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
+.anomaly-scatter-nav-btn.anomaly-elevated:focus-visible {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
@@ -13213,6 +13228,9 @@ body.light-mode .cross-sector-pair-select:focus {
 .vol-scatter-nav-btn:hover {
     transform: translateY(-1px);
 }
+.vol-scatter-nav-btn:focus-visible {
+    transform: translateY(-1px);
+}
 
 .vol-scatter-nav-btn:active {
     transform: translateY(0);
@@ -13227,6 +13245,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(239, 71, 111, 0.15);
     border-color: rgba(239, 71, 111, 0.4);
 }
+.vol-scatter-nav-btn.vol-extreme:focus-visible {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
 
 .vol-scatter-nav-btn.vol-very-high {
     color: #f97316;
@@ -13237,6 +13259,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(249, 115, 22, 0.15);
     border-color: rgba(249, 115, 22, 0.4);
 }
+.vol-scatter-nav-btn.vol-very-high:focus-visible {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: rgba(249, 115, 22, 0.4);
+}
 
 .vol-scatter-nav-btn.vol-high {
     color: #fb923c;
@@ -13244,6 +13270,10 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(251, 146, 60, 0.2);
 }
 .vol-scatter-nav-btn.vol-high:hover {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
+.vol-scatter-nav-btn.vol-high:focus-visible {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
