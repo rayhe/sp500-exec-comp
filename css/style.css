@@ -6712,6 +6712,17 @@ footer li::before {
     color: var(--negative);
 }
 
+/* 287th review (2026-10-31): the compare tray's "Clear" button is a native
+   <button> (index.html:1050) with a click handler (js/app.js:17409), so it is
+   keyboard-operable (Tab focus + Enter/Space) but keyboard focus got only the
+   UA default outline - the hover affordance had no focus-visible mirror.
+   Mirror it with exactly the hover values; --negative is theme-aware so one
+   rule covers both themes. */
+.compare-clear-btn:focus-visible {
+    border-color: var(--negative);
+    color: var(--negative);
+}
+
 /* Comparison panel (appears below table) */
 .comparison-section {
     margin-top: 24px;
