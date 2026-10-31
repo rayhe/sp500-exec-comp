@@ -12880,6 +12880,10 @@ body.light-mode .cross-sector-pair-select:focus {
     transform: translateY(-1px);
 }
 
+.scatter-ger-nav-btn:focus-visible {
+    transform: translateY(-1px);
+}
+
 .scatter-ger-nav-btn:active {
     transform: translateY(0);
 }
@@ -12894,6 +12898,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(220, 38, 38, 0.15);
     border-color: rgba(220, 38, 38, 0.4);
 }
+.scatter-ger-nav-btn.ger-risk-critical:focus-visible {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.4);
+}
 
 .scatter-ger-nav-btn.ger-risk-high {
     color: #ef476f;
@@ -12901,6 +12909,10 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(239, 71, 111, 0.25);
 }
 .scatter-ger-nav-btn.ger-risk-high:hover {
+    background: rgba(239, 71, 111, 0.15);
+    border-color: rgba(239, 71, 111, 0.4);
+}
+.scatter-ger-nav-btn.ger-risk-high:focus-visible {
     background: rgba(239, 71, 111, 0.15);
     border-color: rgba(239, 71, 111, 0.4);
 }
@@ -12914,6 +12926,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(251, 146, 60, 0.15);
     border-color: rgba(251, 146, 60, 0.35);
 }
+.scatter-ger-nav-btn.ger-risk-elevated:focus-visible {
+    background: rgba(251, 146, 60, 0.15);
+    border-color: rgba(251, 146, 60, 0.35);
+}
 
 .scatter-ger-nav-btn.ger-risk-moderate {
     color: #ffd166;
@@ -12924,6 +12940,10 @@ body.light-mode .cross-sector-pair-select:focus {
     background: rgba(255, 209, 102, 0.15);
     border-color: rgba(255, 209, 102, 0.35);
 }
+.scatter-ger-nav-btn.ger-risk-moderate:focus-visible {
+    background: rgba(255, 209, 102, 0.15);
+    border-color: rgba(255, 209, 102, 0.35);
+}
 
 .scatter-ger-nav-btn.scatter-ger-nav-all {
     color: var(--text-secondary);
@@ -12931,6 +12951,10 @@ body.light-mode .cross-sector-pair-select:focus {
     border-color: rgba(161, 161, 170, 0.2);
 }
 .scatter-ger-nav-btn.scatter-ger-nav-all:hover {
+    background: rgba(161, 161, 170, 0.08);
+    border-color: rgba(161, 161, 170, 0.35);
+}
+.scatter-ger-nav-btn.scatter-ger-nav-all:focus-visible {
     background: rgba(161, 161, 170, 0.08);
     border-color: rgba(161, 161, 170, 0.35);
 }
