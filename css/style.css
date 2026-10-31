@@ -363,6 +363,9 @@ header h1 {
 .section-nav-link:hover {
     color: var(--text-secondary);
 }
+.section-nav-link:focus-visible {
+    color: var(--text-secondary);
+}
 .section-nav-link.active {
     color: var(--accent);
     border-bottom-color: var(--accent);
