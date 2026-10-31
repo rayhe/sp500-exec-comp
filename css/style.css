@@ -1015,6 +1015,7 @@ header h1 {
     transition: all 0.2s;
 }
 .control-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+.control-btn:focus-visible { border-color: var(--accent); color: var(--text-primary); }
 .control-btn.active {
     background: rgba(0,180,216,0.15);
     border-color: var(--accent);
