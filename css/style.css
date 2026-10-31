@@ -9244,6 +9244,9 @@ footer li::before {
 .sbr-clear:hover {
     background: rgba(239,68,68,0.2);
 }
+.sbr-clear:focus-visible {
+    background: rgba(239,68,68,0.2);
+}
 .sbr-stats {
     display: flex;
     flex-wrap: wrap;
