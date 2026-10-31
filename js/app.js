@@ -18434,18 +18434,18 @@ function setupDualSparklineTooltips() {
                 '<p>Every NEO compensation row traces to the company\'s DEF 14A proxy filing Summary Compensation Table (SCT), parsed and hand-verified. Each row carries a verification label describing its audit state:</p>' +
                 '<ol>' +
                 '<li><strong>verified</strong> — Stored components and total match the filing SCT verbatim. Includes rows re-verified in dedicated audit passes (<code>def14a_verified_YYYYMMDD</code> labels).</li>' +
-                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 327 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
+                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 326 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
-                '<p>7,242 of 7,286 NEO rows verified (99.4%): 0 rounding, 0 recomputed, 44 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
+                '<p>7,257 of 7,302 NEO rows verified (99.4%): 0 rounding, 0 recomputed, 45 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,834,529,215 of parser-invented compensation removed across 76 re-verification batches since 2026-09-12, partly offset by $3,732,552,003 of genuine missing NEO rows restored filing-verbatim. Net: $-898,022,788.</p></div>' +
+                '<p>$2,834,529,215 of parser-invented compensation removed across 77 re-verification batches since 2026-09-12, partly offset by $3,868,533,290 of genuine missing NEO rows restored filing-verbatim. Net: $-1,034,004,075.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +
-                '<p id="dataq-payratio-counts">As of the 2026-10-29 screen: 101 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 14 near 0.5x, 397 differ otherwise.</p>' +
+                '<p id="dataq-payratio-counts">As of the 2026-10-30 screen: 102 of 514 screened companies\' disclosed ratios match <code>total_compensation / median_worker_pay</code> within 3% tolerance; 2 cluster near 2x, 14 near 0.5x, 396 differ otherwise.</p>' +
                 '<p>Ratios are rendered <strong>as disclosed</strong> from proxy Item 402(u) and never recomputed from the SCT total shown on this site. Deviations are a methodology class, not a data error: the disclosed ratio uses the pay-ratio table\'s CEO-pay figure, which can differ from the anchor-year SCT total.</p>' +
                 '<p>Deviation sources, spot-verified:</p>' +
                 '<ul class="pvp-exclusion-list">' +
@@ -18456,7 +18456,7 @@ function setupDualSparklineTooltips() {
                 '</ul>' +
                 '<p>A deviation is not a mislabeled figure.</p><div id="dataq-payratio-moves"></div></div>' +
                 '<div id="dataq-transitions-block"><h4>Executive transitions</h4>' +
-                '<p id="dataq-transitions-counts">As of the 2026-10-29 screen: 28 (name, fiscal year) tuples appear as NEO rows at two different companies; all 28 triaged by tuple:</p>' +
+                '<p id="dataq-transitions-counts">As of the 2026-10-30 screen: 28 (name, fiscal year) tuples appear as NEO rows at two different companies; all 28 triaged by tuple:</p>' +
                 '<ul class="pvp-exclusion-list">' +
                 '<li><strong>23 genuine</strong>: 8 mid-year executive transitions (e.g. David Goeckeler WDC&rarr;SNDK, Feb 2025 Sandisk spin-off; John A. Smith FDX&rarr;FDXF, Jun 2026 FedEx Freight spin-off) plus 15 Fox Corp dual-class FOX/FOXA tuples (byte-identical SCTs, both S&amp;P 500 constituents).</li>' +
                 '<li><strong>5 same-name coincidences</strong> (2 people): Bryan Hanson at CEG/SOLV and John Murphy at KO/PGR. Constellation\'s Bryan Hanson (a 30-year nuclear veteran) and Solventum\'s Bryan Hanson (the ex-Zimmer Biomet CEO) are two different people.</li>' +

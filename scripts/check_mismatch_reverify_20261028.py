@@ -141,9 +141,15 @@ def static_checks():
     # PG 2023/2022 x6); PG fiscal-year relabel 2025->2026, 2024->2025
     # (end-year convention) -> 7255->7286 rows,
     # verified_total 7211->7242, mismatch unchanged at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7286 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7242)
-    check("S3 counts unchanged (518 / 7286 / mismatch 44 / verified 7242)",
+    # S3 baseline moved 2026-10-30 (283rd review): TECH/EA FY2026 + K FY2024
+    # 10-K/A batch added 16 verified rows (6 TECH + 5 EA + 5 K FY2026/FY2024
+    # SCT rows) and relabeled 1 row verified->component_mismatch (TECH
+    # Kelderman 2025, $1 filer-side slip, re-read digit-by-digit from the
+    # raw 10-K/A HTML) -> 7286->7302 rows, verified_total 7242->7257,
+    # mismatch 44->45.
+    s3 = (len(d["companies"]) == 518 and total == 7302 and mismatch == 45
+          and d["metadata"]["data_quality"]["verified_total"] == 7257)
+    check("S3 counts unchanged (518 / 7302 / mismatch 45 / verified 7257)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
