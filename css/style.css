@@ -9144,6 +9144,10 @@ footer li::before {
     border-color: var(--accent);
     color: var(--accent);
 }
+.scatter-preset-btn:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+}
 .scatter-preset-btn.active {
     background: rgba(0,180,216,0.12);
     border-color: var(--accent);
