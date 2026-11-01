@@ -9463,6 +9463,9 @@ footer li::before {
 .sector-analytics-row:hover {
     background: rgba(0,180,216,0.06);
 }
+.sector-analytics-row:focus-visible {
+    background: rgba(0,180,216,0.06);
+}
 .sector-analytics-row.sa-active {
     background: rgba(0,180,216,0.12);
     outline: 1px solid rgba(0,180,216,0.3);
@@ -9620,6 +9623,9 @@ footer li::before {
     outline-color: #0077b6;
 }
 [data-theme="light"] .sector-analytics-row:hover {
+    background: rgba(0,0,0,0.03);
+}
+[data-theme="light"] .sector-analytics-row:focus-visible {
     background: rgba(0,0,0,0.03);
 }
 [data-theme="light"] .sector-analytics-row.sa-active {
