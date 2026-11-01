@@ -45,8 +45,8 @@
   "aggregate_stats": {
    "total_companies": 518,
    "companies_with_pay_ratio": 514,
-   "median_ceo_pay": 17347291,
-   "mean_ceo_pay": 330850023,
+   "median_ceo_pay": 17406705,
+   "mean_ceo_pay": 330928253,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
    "median_worker_pay": 82701,
@@ -84,7 +84,7 @@
     "verified_pct": 98.3
    },
    "Financials": {
-    "median_ceo_pay": 19291859,
+    "median_ceo_pay": 18904935,
     "count": 70,
     "min": 2.75,
     "max": 125641824,
@@ -116,7 +116,7 @@
    "Materials": {
     "median_ceo_pay": 14945471,
     "count": 27,
-    "min": 4233336,
+    "min": 4218225,
     "max": 29770044,
     "verified_anchors": 27,
     "documented_anchors": 0,
@@ -154,7 +154,7 @@
     "verified_pct": 100.0
    },
    "Communication Services": {
-    "median_ceo_pay": 32766639,
+    "median_ceo_pay": 32980954,
     "count": 22,
     "min": 403019,
     "max": 165009366,
@@ -280,7 +280,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-10-30",
+  "last_dq_repair": "2026-11-01",
   "verified_total": 7257,
   "total_neos": 7302,
   "phantom_removed": {
@@ -8811,7 +8811,7 @@
      "non_equity_incentive": 3454360,
      "all_other": 531725,
      "total": 13202517,
-     "title": "CEO",
+     "title": "Chief Executive Officer",
      "_total_source": "verified"
     },
     {
@@ -8851,7 +8851,7 @@
      "non_equity_incentive": 2049840,
      "all_other": 340459,
      "total": 7905055,
-     "title": "Chief Executive Officer",
+     "title": "President",
      "_total_source": "verified"
     },
     {
@@ -8891,7 +8891,7 @@
      "non_equity_incentive": 1002468,
      "all_other": 156596,
      "total": 3044394,
-     "title": "President",
+     "title": "EVP, Chief Financial Officer",
      "_total_source": "verified"
     },
     {
@@ -8903,7 +8903,7 @@
      "non_equity_incentive": 1186250,
      "all_other": 207890,
      "total": 3843889,
-     "title": "Executive Vice President and Chief Financial Officer",
+     "title": "EVP, Exploration",
      "_total_source": "verified"
     },
     {
@@ -8943,7 +8943,7 @@
      "non_equity_incentive": 1151818,
      "all_other": 114071,
      "total": 4157700,
-     "title": "Executive Vice President",
+     "title": "EVP, Chief Legal Officer, and Corporate Secretary",
      "_total_source": "verified"
     },
     {
@@ -8954,7 +8954,7 @@
      "option_awards": 539997,
      "all_other": 1577532,
      "total": 4120572,
-     "title": "Executive Vice President",
+     "title": "Former EVP, Operations",
      "_total_source": "verified"
     },
     {
@@ -12622,8 +12622,8 @@
   {
    "ticker": "BALL",
    "company_name": "Ball Corp",
-   "ceo_name": "Daniel W. Fisher",
-   "total_compensation": 13486942,
+   "ceo_name": "Ronald J. Lewis",
+   "total_compensation": 4218225,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
    "median_worker_pay": 91248,
@@ -12678,7 +12678,7 @@
     },
     {
      "name": "Daniel W. Fisher",
-     "title": "Chairman and Chief Executive Officer",
+     "title": "Former Chairman and Chief Executive Officer",
      "year": 2025,
      "salary": 1269462,
      "bonus": 0,
@@ -12720,7 +12720,7 @@
     },
     {
      "name": "Daniel J. Rabbitt",
-     "title": "Chief Financial Officer",
+     "title": "Senior Vice President, Chief Financial Officer",
      "year": 2025,
      "salary": 433647,
      "bonus": 0,
@@ -12734,7 +12734,7 @@
     },
     {
      "name": "Howard H. Yu",
-     "title": "Chief Financial Officer",
+     "title": "Former Executive Vice President, Chief Financial Officer",
      "year": 2025,
      "salary": 495880,
      "bonus": 0,
@@ -18833,12 +18833,12 @@
   {
    "ticker": "CBOE",
    "company_name": "Cboe Global Markets Inc",
-   "ceo_name": "David Howson",
-   "total_compensation": 6022543,
+   "ceo_name": "Craig S. Donohue",
+   "total_compensation": 18347037,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 182120,
-   "pay_ratio": 18,
+   "median_worker_pay": 197994,
+   "pay_ratio": 102,
    "sector": "Financials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0001374310",
@@ -18853,7 +18853,7 @@
      "non_equity_incentive": 2553699,
      "all_other": 203795,
      "total": 18347037,
-     "title": "CEO",
+     "title": "Chief Executive Officer and President",
      "_total_source": "verified"
     },
     {
@@ -18864,7 +18864,7 @@
      "non_equity_incentive": 1202500,
      "all_other": 116782,
      "total": 4465234,
-     "title": "Chief Executive Officer and President",
+     "title": "Executive Vice President, Chief Financial Officer",
      "_total_source": "verified"
     },
     {
@@ -18898,7 +18898,7 @@
      "non_equity_incentive": 1803750,
      "all_other": 170100,
      "total": 5284997,
-     "title": "Chief Financial Officer",
+     "title": "Executive Vice President, Chief Operating Officer",
      "_total_source": "verified"
     },
     {
@@ -18931,7 +18931,7 @@
      "non_equity_incentive": 999000,
      "all_other": 82922,
      "total": 2930669,
-     "title": "Chief Operating Officer",
+     "title": "Executive Vice President, General Counsel and Corporate Secretary",
      "_total_source": "verified"
     },
     {
@@ -18964,7 +18964,7 @@
      "non_equity_incentive": 823967,
      "all_other": 95314,
      "total": 2170190,
-     "title": "General Counsel and Corporate Secretary",
+     "title": "Executive Vice President, Chief Technology Officer",
      "_total_source": "verified"
     },
     {
@@ -18975,7 +18975,7 @@
      "non_equity_incentive": 1513705,
      "all_other": 302451,
      "total": 11666184,
-     "title": "Chief Technology Officer",
+     "title": "Former Chief Executive Officer",
      "_total_source": "verified"
     },
     {
@@ -19006,7 +19006,7 @@
      "stock_awards": 5499750,
      "all_other": 155842,
      "total": 6022543,
-     "title": "Chief Executive Officer",
+     "title": "Former Executive Vice President, Global President",
      "_total_source": "verified"
     },
     {
@@ -19038,7 +19038,7 @@
      "stock_awards": 2537683,
      "all_other": 106872,
      "total": 3040388,
-     "title": "President",
+     "title": "Former Executive Vice President, Head of Global Derivatives",
      "_total_source": "verified"
     },
     {
@@ -19075,10 +19075,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "May",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -30892,7 +30892,7 @@
      "non_equity_incentive": 342360,
      "all_other": 22377,
      "total": 18596544,
-     "title": "Chief Executive Officer",
+     "title": "Chairman and Chief Executive Officer",
      "_total_source": "verified"
     },
     {
@@ -30926,7 +30926,7 @@
      "non_equity_incentive": 154062,
      "all_other": 10350,
      "total": 5158289,
-     "title": "Chair and Chief Executive Officer",
+     "title": "Executive Vice President, Chief Financial Officer",
      "_total_source": "verified"
     },
     {
@@ -30937,7 +30937,7 @@
      "non_equity_incentive": 489869,
      "all_other": 10350,
      "total": 5682730,
-     "title": "Chief Financial Officer",
+     "title": "Executive Vice President, Chief Revenue Officer",
      "_total_source": "verified"
     },
     {
@@ -30960,7 +30960,7 @@
      "non_equity_incentive": 224246,
      "all_other": 20438,
      "total": 7264382,
-     "title": "Chief Revenue Officer",
+     "title": "Executive Vice President, Chief Customer Officer",
      "_total_source": "verified"
     },
     {
@@ -30993,7 +30993,7 @@
      "non_equity_incentive": 222534,
      "all_other": 10350,
      "total": 9245388,
-     "title": "President and Chief Operating Officer",
+     "title": "President, Chief Operating Officer",
      "_total_source": "verified"
     },
     {
@@ -31026,7 +31026,7 @@
      "non_equity_incentive": 278168,
      "all_other": 10350,
      "total": 8229463,
-     "title": "President and Chief Operating Officer",
+     "title": "Executive Vice President, Chief Strategy, Product, and Technology Officer",
      "_total_source": "verified"
     },
     {
@@ -63600,7 +63600,7 @@
      "non_equity_incentive": 725000,
      "all_other": 28215,
      "total": 7063946,
-     "title": "Chief Executive Officer",
+     "title": "EVP and Global Chief Financial Officer",
      "_total_source": "verified"
     },
     {
@@ -63633,7 +63633,7 @@
      "non_equity_incentive": 583538,
      "all_other": 168688,
      "total": 5921613,
-     "title": "EVP and Global Chief Financial Officer",
+     "title": "EVP and President, North America",
      "_total_source": "verified"
     },
     {
@@ -63656,7 +63656,7 @@
      "non_equity_incentive": 257370,
      "all_other": 25288,
      "total": 3340816,
-     "title": "EVP and President, North America",
+     "title": "EVP and Chief Omnichannel Sales and Asian Emerging Markets Officer",
      "_total_source": "verified"
     },
     {
@@ -63679,7 +63679,7 @@
      "non_equity_incentive": 483600,
      "all_other": 141888,
      "total": 3842471,
-     "title": "EVP, Global Operations",
+     "title": "EVP, Global General Counsel and Corporate Affairs Officer",
      "_total_source": "verified"
     }
    ],
@@ -65096,18 +65096,18 @@
   {
    "ticker": "KMX",
    "company_name": "CarMax Inc",
-   "ceo_name": "William D. Nash",
-   "total_compensation": 14245563,
+   "ceo_name": "David W. McCreight",
+   "total_compensation": 4208674,
    "fiscal_year": 2026,
    "source": "SEC DEF 14A 2026 — FY2026 CEO",
-   "median_worker_pay": 56060,
-   "pay_ratio": 305,
+   "median_worker_pay": 58023,
+   "pay_ratio": 318,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
     {
      "name": "David W. McCreight",
-     "title": "Chief Executive Officer",
+     "title": "Interim President and Chief Executive Officer",
      "year": 2026,
      "salary": 300000,
      "stock_awards": 3599999,
@@ -65333,7 +65333,7 @@
     },
     {
      "name": "William D. Nash",
-     "title": "Chief Executive Officer",
+     "title": "Former President and Chief Executive Officer",
      "year": 2026,
      "salary": 927216,
      "stock_awards": 6024695,
@@ -65396,10 +65396,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "December",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -65987,12 +65987,12 @@
   {
    "ticker": "KVUE",
    "company_name": "Kenvue Inc",
-   "ceo_name": "Thibaut Mongon",
-   "total_compensation": 10916848,
+   "ceo_name": "Kirk Perry",
+   "total_compensation": 7494081,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 72465,
-   "pay_ratio": 182,
+   "median_worker_pay": 70244,
+   "pay_ratio": 116,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A",
    "executives": [
@@ -66096,7 +66096,7 @@
     },
     {
      "name": "Thibaut Mongon",
-     "title": "Chief Executive Officer",
+     "title": "Former Chief Executive Officer",
      "year": 2025,
      "salary": 747145,
      "bonus": 0,
@@ -95518,12 +95518,12 @@
   {
    "ticker": "RJF",
    "company_name": "Raymond James Financial Inc",
-   "ceo_name": "Paul C. Reilly",
-   "total_compensation": 21070760,
+   "ceo_name": "Paul M. Shoukry",
+   "total_compensation": 17277875,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 119044,
-   "pay_ratio": 194,
+   "median_worker_pay": 123007,
+   "pay_ratio": 153,
    "sector": "Financials",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000720005",
@@ -95565,7 +95565,7 @@
     },
     {
      "name": "Paul C. Reilly",
-     "title": "Chief Executive Officer",
+     "title": "Former Chief Executive Officer",
      "year": 2025,
      "salary": 604167,
      "bonus": 8700061,
@@ -95725,10 +95725,10 @@
    "ceo_gender": "M",
    "ceo_tenure": {
     "year": 2025,
-    "month": null,
-    "confidence": "medium",
+    "month": "February",
+    "confidence": "high",
     "sources": [
-     "table"
+     "prose"
     ]
    },
    "board_independence": {
@@ -111568,12 +111568,12 @@
   {
    "ticker": "UNH",
    "company_name": "UnitedHealth Group Inc",
-   "ceo_name": "Andrew Witty",
-   "total_compensation": 24599372,
+   "ceo_name": "Stephen Hemsley",
+   "total_compensation": 60938062,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 75778,
-   "pay_ratio": 348,
+   "median_worker_pay": 81474,
+   "pay_ratio": 748,
    "sector": "Health Care",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "cik": "0000731766",
@@ -111754,11 +111754,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2021,
-    "month": "February",
-    "confidence": "verified",
+    "year": 2025,
+    "month": "May",
+    "confidence": "high",
     "sources": [
-     "manual_verify"
+     "prose"
     ]
    },
    "board_independence": {
@@ -115339,12 +115339,12 @@
   {
    "ticker": "VZ",
    "company_name": "Verizon Communications Inc",
-   "ceo_name": "Anthony Skiadas",
-   "total_compensation": 16008226,
+   "ceo_name": "Daniel Schulman",
+   "total_compensation": 34311016,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 132471,
-   "pay_ratio": 183,
+   "median_worker_pay": 154605,
+   "pay_ratio": 248,
    "sector": "Communication Services",
    "executives": [
     {
@@ -115363,7 +115363,7 @@
     },
     {
      "name": "Anthony Skiadas",
-     "title": "Chief Executive Officer",
+     "title": "Executive Vice President and Chief Financial Officer",
      "year": 2025,
      "salary": 1100000,
      "bonus": 0,
@@ -115405,7 +115405,7 @@
     },
     {
      "name": "Vandana Venkatesh",
-     "title": "Executive Vice President and Group CEO – Verizon Business",
+     "title": "Executive Vice President and Chief Legal Officer",
      "year": 2025,
      "salary": 900000,
      "bonus": 0,
@@ -115433,7 +115433,7 @@
     },
     {
      "name": "Hans Vestberg",
-     "title": "Executive Vice President and Chief Legal Officer",
+     "title": "Former Chairman and Chief Executive Officer",
      "year": 2025,
      "salary": 1500000,
      "bonus": 0,
@@ -115495,11 +115495,11 @@
    },
    "ceo_gender": "M",
    "ceo_tenure": {
-    "year": 2018,
-    "month": "August",
-    "confidence": "verified",
+    "year": 2025,
+    "month": "October",
+    "confidence": "high",
     "sources": [
-     "manual_verify"
+     "prose"
     ]
    },
    "board_independence": {
@@ -120470,14 +120470,14 @@
    "total_compensation": 20861526,
    "fiscal_year": 2025,
    "source": "SEC DEF 14A 2026 — FY2025 CEO",
-   "median_worker_pay": 17160,
-   "pay_ratio": 1440,
+   "median_worker_pay": 15346,
+   "pay_ratio": 1167,
    "sector": "Consumer Discretionary",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "executives": [
     {
      "name": "David W Gibbs",
-     "title": "Chief Executive Officer",
+     "title": "Former Chief Executive Officer of YUM",
      "year": 2025,
      "salary": 1380769,
      "bonus": 0,
@@ -120519,7 +120519,7 @@
     },
     {
      "name": "Chris Turner",
-     "title": "Chief Executive Officer",
+     "title": "Chief Executive Officer of YUM",
      "year": 2025,
      "salary": 1020288,
      "bonus": 0,
@@ -124718,5 +124718,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions)."
   }
  ],
- "last_updated": "2026-10-30"
+ "last_updated": "2026-11-01"
 }
