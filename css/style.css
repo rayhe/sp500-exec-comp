@@ -7936,6 +7936,10 @@ footer li::before {
     opacity: 1;
     border-color: var(--accent);
 }
+.kbd-hint:focus-visible {
+    opacity: 1;
+    border-color: var(--accent);
+}
 .kbd-hint kbd {
     display: inline-block;
     padding: 1px 5px;
