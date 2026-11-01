@@ -3434,6 +3434,7 @@ thead th {
 }
 thead th.sortable { cursor: pointer; }
 thead th.sortable:hover { color: var(--text-primary); }
+thead th.sortable:focus-visible { color: var(--text-primary); }
 thead th.sorted-asc::after { content: ' ▲'; color: var(--accent); font-size: 0.65rem; }
 thead th.sorted-desc::after { content: ' ▼'; color: var(--accent); font-size: 0.65rem; }
 
