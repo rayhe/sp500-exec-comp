@@ -182,6 +182,7 @@ html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoot
 [data-theme="light"] .insight-compare-btn:focus-visible { outline-color: #0077b6; color: #0077b6; border-color: #0077b6; background: rgba(0, 119, 182, 0.08); }
 [data-theme="light"] .insight-compare-btn.selected { color: #059669; border-color: #059669; background: rgba(5, 150, 105, 0.08); }
 [data-theme="light"] .insight-compare-btn.selected:hover { color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.08); }
+[data-theme="light"] .insight-compare-btn.selected:focus-visible { color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.08); }
 [data-theme="light"] .network-search-results { background: #fff; border-color: rgba(0,0,0,0.1); }
 [data-theme="light"] .network-search-result:hover,
 [data-theme="light"] .network-search-result.active { background: #f0f1f5; }
@@ -768,6 +769,12 @@ header h1 {
 }
 
 .insight-compare-btn.selected:hover {
+    border-color: var(--negative);
+    color: var(--negative);
+    background: rgba(239, 71, 111, 0.08);
+}
+
+.insight-compare-btn.selected:focus-visible {
     border-color: var(--negative);
     color: var(--negative);
     background: rgba(239, 71, 111, 0.08);
@@ -6620,12 +6627,20 @@ footer li::before {
     color: var(--accent);
     background: rgba(0,180,216,0.08);
 }
+.compare-btn:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,180,216,0.08);
+}
 .compare-btn.selected {
     border-color: var(--accent);
     background: var(--accent);
     color: #fff;
 }
 .compare-btn.selected:hover {
+    background: var(--accent-hover);
+}
+.compare-btn.selected:focus-visible {
     background: var(--accent-hover);
 }
 
