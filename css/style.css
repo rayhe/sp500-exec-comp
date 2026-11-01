@@ -14904,6 +14904,10 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #e4e4e7;
     background: rgba(255,255,255,0.1);
 }
+.scatter-community-label-dismiss:focus-visible {
+    color: #e4e4e7;
+    background: rgba(255,255,255,0.1);
+}
 [data-theme="light"] .scatter-community-label {
     background: rgba(255,255,255,0.95);
     color: #27272a;
@@ -14929,6 +14933,10 @@ body.light-mode .cross-sector-pair-select:focus {
     color: #6b7280;
 }
 [data-theme="light"] .scatter-community-label-dismiss:hover {
+    color: #27272a;
+    background: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .scatter-community-label-dismiss:focus-visible {
     color: #27272a;
     background: rgba(0,0,0,0.06);
 }
@@ -15160,6 +15168,10 @@ body.light-mode .cross-sector-pair-select:focus {
     transition: opacity 0.15s;
 }
 .scatter-path-label .spl-dismiss:hover {
+    opacity: 1;
+    color: #ef476f;
+}
+.scatter-path-label .spl-dismiss:focus-visible {
     opacity: 1;
     color: #ef476f;
 }
