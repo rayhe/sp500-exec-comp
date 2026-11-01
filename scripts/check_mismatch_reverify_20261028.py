@@ -147,9 +147,14 @@ def static_checks():
     # Kelderman 2025, $1 filer-side slip, re-read digit-by-digit from the
     # raw 10-K/A HTML) -> 7286->7302 rows, verified_total 7242->7257,
     # mismatch 44->45.
-    s3 = (len(d["companies"]) == 518 and total == 7302 and mismatch == 45
-          and d["metadata"]["data_quality"]["verified_total"] == 7257)
-    check("S3 counts unchanged (518 / 7302 / mismatch 45 / verified 7257)",
+    # S3 baseline moved 2026-11-01 (305th review): missing-NEO restoration
+    # batch added 3 verified anchor-year rows (VZ Sampath + Malady 2025,
+    # KVUE Ruh 2025, all filing-verbatim from the 2026 DEF 14A SCTs)
+    # -> 7302->7305 rows, verified_total 7257->7260, mismatch unchanged
+    # at 45.
+    s3 = (len(d["companies"]) == 518 and total == 7305 and mismatch == 45
+          and d["metadata"]["data_quality"]["verified_total"] == 7260)
+    check("S3 counts unchanged (518 / 7305 / mismatch 45 / verified 7260)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
