@@ -39,17 +39,18 @@
    "DQ batch 2026-10-07 02:00 PT: full 7,078-row component recompute scan flagged 4 non-footing rows; all re-verified against primary EDGAR SCTs. JCI Julie Brandt FY2023 salary corrected 685,577 -> 336,538 per the ORIGINAL FY2023 DEF 14A (filed 2024-01-19, d554585ddef14a.htm; prorated mid-year hire) - the 2026 proxy reprint erroneously carried her annualized base salary while keeping the filed total, which is what broke the row arithmetic (supersedes the 2026-09-27 'genuine filing-side inconsistency' note, which had only checked the 2026 reprint). Row now foots exactly; relabeled def14a_verified_20261007. SBUX Sara Kelly FY2024 column shift repaired (transposed SCT; option_awards 0->244,292, non_equity_incentive 244,292->70,993, all_other->None); Starbucks' own filed total 3,562,568 still does not foot (components sum 3,704,554) - genuine filing error, flag retained. CDNS Paul Scannell FY2024 (diff 177,535) and BE Maciej Kurzymski FY2025 (total double-counts the $339,200 ACI) confirmed as genuine filing-side arithmetic errors in both original and reprint proxies; filed numbers retained verbatim, flags stand. Buckets: component_mismatch 34->33, verified_total 7,044->7,045 (99.5%). VMRK watch re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107).",
    "274th review (2026-10-29 22:00 PT): KLAC/LRCX/STX/WDC/MDT FY2026 SCTs +25 NEO rows from Oct-2026 proxies; MDT Martha/Piéton/Wall FY2026 + Piéton 2025 $1 filing-side gaps kept verbatim as component_mismatch; PANW/FDX/ADP deferred (main DEF 14A docs 404 on EDGAR Archives, fresh filings not yet replicating). Follow-up adjudication: LRCX Vahedi 2025/2024 gap-filled from 2026 proxy (was not NEO in 2025 proxy); MDT 2026 rows renamed to stored variants Geoffrey S. Martha / Brett A. Wall (all MDT overlaps verbatim after reconciliation); KLAC FY2025 all-other restated upward in 2026 proxy (+$3.9K-12.3K per NEO, no stated reason; stored 2025 rows kept as filed); WDC Tan FY2025 NEIP restated -$369,073 in 2026 proxy (2,123,138->1,754,065; stored row kept as filed); WDC anchor tripwire: Irving Tan is CEO in 2026 proxy, anchor NOT moved (deferred to anchor-promotion batch); STX/KLAC older rows use None (not 0) for present-but-dash SCT columns; totals unaffected, normalization deferred.",
    "279th review (2026-10-30 10:00 PT): EDGAR Oct-2026 DEF 14A sweep (efts search-index, 284 filings) matched 16 S&P 500 filers, all already ingested with matching filing_dates (0 new). EA/TECH/SMCI re-checked on EDGAR submissions API: no newer DEF 14A than stored (EA 2025-06-24, TECH 2025-09-19, SMCI 2026-03-03) — stored state correct. DAY (Dayforce): taken private by Thoma Bravo ($12.3B, announced 2025-08-21, closed early 2026); no FY2025 DEF 14A exists or will be filed — FY2024 rows remain final. Full 7,286-row component recompute scan: 22 non-footing rows, all already labeled component_mismatch with filing-verbatim notes (0 unlabeled). No CEO-anchor changes.",
-   "284th review (2026-10-30 19:30 PT): 4-company CEO-anchor promotion batch (CPB/EL/JKHY/WDC) - company anchors moved from the FY2025 CEO to the FY2026 PEO (filing-verbatim SCT totals + pay-ratio disclosures from the Oct-2026 DEF 14As: CPB Beekhuizen $10,965,019 / 152:1 / $72,257; EL de La Faverie $20,585,784 / 601:1 / $34,255; JKHY Adelson $8,413,970 / 87:1 / $96,615; WDC Tan $17,168,701 / 1,457:1 / $11,787); aggregate_stats + sector_medians recomputed (section-17 semantics); ORCL co-CEO stays queued (needs convention)."
+   "284th review (2026-10-30 19:30 PT): 4-company CEO-anchor promotion batch (CPB/EL/JKHY/WDC) - company anchors moved from the FY2025 CEO to the FY2026 PEO (filing-verbatim SCT totals + pay-ratio disclosures from the Oct-2026 DEF 14As: CPB Beekhuizen $10,965,019 / 152:1 / $72,257; EL de La Faverie $20,585,784 / 601:1 / $34,255; JKHY Adelson $8,413,970 / 87:1 / $96,615; WDC Tan $17,168,701 / 1,457:1 / $11,787); aggregate_stats + sector_medians recomputed (section-17 semantics); ORCL co-CEO stays queued (needs convention).",
+   "302nd review (2026-11-01 06:30 PT): ORCL co-CEO anchor adjudication - establishes the co-CEO convention (anchor = first-listed co-CEO in the filed SCT; NFLX/KKR precedent) and promotes the FY2026 anchor from Safra A. Catz ($1,113,417 / 11:1 / $98,899) to Clayton M. Magouyrk ($627,472,419 / 6,623:1 / $94,740), all filing-verbatim from the 2026-09-25 DEF 14A (acc. 0001193125-26-402816; Magouyrk first-listed and higher-paid vs Sicilia $256,606,752 / 2,709:1); aggregate_stats + sector_medians recomputed (section-17 semantics); ceo_tenure kept {2025, September, prose} = 2025-09-22 co-CEO appointment."
   ],
   "aggregate_stats": {
    "total_companies": 518,
    "companies_with_pay_ratio": 514,
-   "median_ceo_pay": 17346126,
-   "mean_ceo_pay": 329638497,
+   "median_ceo_pay": 17347291,
+   "mean_ceo_pay": 330850023,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
    "median_worker_pay": 82701,
-   "median_pay_ratio": 196
+   "median_pay_ratio": 197
   },
   "sector_medians": {
    "Health Care": {
@@ -63,10 +64,10 @@
     "verified_pct": 98.4
    },
    "Information Technology": {
-    "median_ceo_pay": 22753330,
+    "median_ceo_pay": 22882782,
     "count": 88,
     "min": 442,
-    "max": 247579143,
+    "max": 627472419,
     "verified_anchors": 86,
     "documented_anchors": 0,
     "undocumented_anchors": 2,
@@ -84504,12 +84505,12 @@
   {
    "ticker": "ORCL",
    "company_name": "Oracle Corp",
-   "ceo_name": "Safra A. Catz",
-   "total_compensation": 1113417,
+   "ceo_name": "Clayton M. Magouyrk",
+   "total_compensation": 627472419,
    "fiscal_year": 2026,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 98899,
-   "pay_ratio": 11,
+   "source": "SEC DEF 14A 2026 - FY2026 CEO",
+   "median_worker_pay": 94740,
+   "pay_ratio": 6623,
    "sector": "Information Technology",
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "executives": [
