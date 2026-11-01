@@ -3318,6 +3318,7 @@ header h1 {
     white-space: nowrap;
 }
 .chip:hover { border-color: var(--accent); color: var(--text-primary); }
+.chip:focus-visible { border-color: var(--accent); color: var(--text-primary); }
 .chip.active {
     background: rgba(0,180,216,0.15);
     border-color: var(--accent);
