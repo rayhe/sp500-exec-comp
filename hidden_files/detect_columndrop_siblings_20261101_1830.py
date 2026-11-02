@@ -128,6 +128,64 @@ already-repaired BALL rows (now carry stock/option values).
   No data changes.
 - Remaining queue: 12 tier-1 (TDG x2, RDDT x2, ORCL x2, C/CHTR/CPB/DVA/
   EFX/FAST/LII/LYV/VRTX singles); tier-2 1,172 stays advisory.
+
+313th-review triage (2026-11-02 05:00 PT):
+- C (1 flagged row: Mason 2024): CONFIRMED, and the corruption ran 5 rows
+  deep -- new sub-family variant G (salary-drop left-shift with filing NEIP
+  parked in option_awards, genuine All Other dropped, filing Total filed
+  into all_other, total recomputed). Fraser/Mason/Morton 2024/2023 repaired
+  filing-verbatim; $104,577,464 phantom removed (batch 86). Structural blind
+  spot: tier-1 requires option_awards == 0, but variant G parks filing NEIP
+  there, so variant-G rows with genuine non-zero NEIP are invisible to it;
+  a total-footing-identity sweep (not the option==0 gate) is the way to find
+  missed siblings dataset-wide.
+- TDG (Lisman 2022, Murphy 2025), RDDT (Huffman 2025/2024), ORCL (Ellison
+  2024/2023): FALSE POSITIVES -- stored rows byte-equal to primary SCTs
+  (TransDigm SCT has no Stock Awards column, options-only equity; Huffman
+  took no 2024-2025 equity; Ellison $1 salary + security-cost All Other).
+- Remaining queue: 8 tier-1 singles
+  (CHTR/CPB/DVA/EFX/FAST/LII/LYV/VRTX); tier-2 1,172 stays advisory.
+
+314th-review triage (2026-11-02 06:30 PT):
+- VRTX (1 flagged row: Kewalramani 2025): CONFIRMED, and the corruption ran
+  12 rows deep (whole-company) -- new sub-family variant H (stock-drop
+  right-shift on an option-less SCT): the 2026 DEF 14A SCT (acc.
+  0000875320-26-000153) has no Option Awards / pension columns; the legacy
+  parse filed Stock Awards -> non_equity_incentive and NEIP -> pension_nqdc
+  with stock_awards = 0 (e.g. Kewalramani 2025: $15,002,270 stock /
+  $4,118,640 NEIP / $423,351 All Other). All 12 rows repaired
+  filing-verbatim as total-neutral relabels (pension_nqdc -> 0). Only
+  Kewalramani 2025 tripped tier-1 (all_other $423,351 >= $300k); the other
+  11 are the documented all_other-gate blind spot class.
+- FAST (1 flagged row: Florness 2025): CONFIRMED on 2 rows (2025 + 2024) --
+  the standalone "(5)" footnote-marker cell on the Salary cell was consumed
+  as a data cell, shifting Option Awards -> non_equity_incentive,
+  NEIP -> all_other, dropping the genuine All Other cell ($2,941 / $2,754)
+  and recomputing the total (Florness 2025 $4,180,387->$4,183,328, 2024
+  $1,693,133->$1,695,887). Florness 2023 was already filing-verbatim
+  (def14a_verified_20260910); all other FAST NEOs have no marker cell and
+  parsed correctly (Watts/Tunnicliff/Lisowski/Miller/Soderberg/Lewis 2025
+  spot-checked byte-equal). $5,695 genuine compensation restored (batch 87,
+  negative delta); FAST aggregates re-anchored (total_neo_compensation
+  $13,202,068->$13,205,009, total_compensation $4,180,387->$4,183,328,
+  aggregate_stats.mean_ceo_pay 330936874->330936879 per section-17).
+- CHTR (Winfrey 2025), CPB (Anderson 2026), DVA (Rodriguez 2023), EFX
+  (Horvath 2025), LII (Maskara 2023), LYV (Rapino 2023): FALSE POSITIVES --
+  stored rows byte-equal to primary SCTs (Winfrey 2025 no equity granted;
+  Anderson 2026 $720,597 All Other is genuine former-CFO severance; CPB SCT
+  has no Option column; Rodriguez 2023 no equity; Horvath 2025 $6,030,075
+  All Other genuine per filing; Maskara 2023 no equity; Rapino 2023 $18.7M
+  NEIP + no equity, filing-verbatim).
+- Remaining queue: 0 tier-1 (all 8 singles adjudicated -- do not
+  re-arbitrate CHTR/CPB/DVA/EFX/FAST/LII/LYV/VRTX, nor ARE/DG/TDG/RDDT/
+  ORCL/PAYC/PYPL/REGN/C); tier-2 1,172 stays advisory. Next: variant-G
+  sweep via total-footing identity (option==0 gate is blind); variant-F
+  sweep (standalone footnote-marker cells); pure-legacy omitted-zero
+  companies (per-filing dash check); VRTX Tatsis 2024 SCT row is absent
+  from the dataset (filing shows $691,154 / $5,250,328 / $1,341,900 /
+  $50,934 / $7,334,316) -- queue for a missing-row batch.
+  Script: hidden_files/apply_vrtx_fast_repair_20261102_0630.py; evidence:
+  goal hidden_files/dq_20261102_0630/.
 """
 import json
 import sys
