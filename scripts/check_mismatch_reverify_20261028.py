@@ -157,9 +157,15 @@ def static_checks():
     # total to $2,622,296 (the component sum); row repaired
     # filing-verbatim and relabeled component_mismatch->verified ->
     # rows unchanged at 7305, verified_total 7260->7261, mismatch 45->44.
-    s3 = (len(d["companies"]) == 518 and total == 7305 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7261)
-    check("S3 counts unchanged (518 / 7305 / mismatch 44 / verified 7261)",
+    # S3 baseline moved 2026-11-01 (310th review): GLW variant-D repair
+    # added 2 verified anchor-company NEO rows (A. Hal Nelson III
+    # 2025/2024, filing-verbatim from the 2026 DEF 14A SCT; the 2024 row
+    # carries the filing's own $1 gap, stored verbatim per taxonomy) ->
+    # 7305->7307 rows, verified_total 7261->7263, mismatch unchanged
+    # at 44.
+    s3 = (len(d["companies"]) == 518 and total == 7307 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7263)
+    check("S3 counts unchanged (518 / 7307 / mismatch 44 / verified 7263)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 

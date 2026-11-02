@@ -47,6 +47,26 @@ already-repaired BALL rows (now carry stock/option values).
   C/CHTR/CPB/DVA/EFX/FAST/LII/LYV/VRTX x1. Prioritize whole-company
   clusters (ELV, GLW) and companies whose other rows carry stock>0.
   Tier-2 (1,169) stays an advisory watch-list for variant-B.
+
+310th-review triage (2026-11-01 22:45 PT):
+- GLW (14 rows, whole-company): CONFIRMED, new sub-family variant D
+  (stock-awards mislabeled as bonus). The legacy parse filed the 2026 DEF
+  14A SCT's Stock Awards column into `bonus` and left `stock_awards`=0 on
+  every GLW row; Corning's SCT has no Bonus column, option awards are $0
+  (Corning grants no options). All other fields were already
+  filing-verbatim. Repaired by relabel (bonus->stock_awards, bonus=0;
+  totals unchanged), filing-verbatim titles, and 2 missing anchor-company
+  NEO rows restored (A. Hal Nelson III 2025/2024; the 2024 row carries the
+  filing's own $1 gap, stored verbatim). Script:
+  hidden_files/apply_glw_stockbonus_relabel_20261101_2245.py; evidence:
+  goal hidden_files/dq_20261101_2245/ (2026 proxy, SCT cell parse,
+  VERIFICATION.md).
+- Post-repair note: GLW Weeks 2024 now reads tier-2-shaped (bonus=0,
+  stock>0, pension=0, option=0, neip>$1M, foots exactly) but is
+  filing-verbatim adjudicated - the filing has no bonus column, so the
+  variant-B tell cannot apply. Do not re-arbitrate GLW.
+- Remaining queue: 31 tier-1 (REGN x6 already false-positived), tier-2
+  1,172 (the +1 is the adjudicated GLW Weeks 2024 row).
 """
 import json
 import sys
