@@ -65,6 +65,16 @@ already-repaired BALL rows (now carry stock/option values).
   stock>0, pension=0, option=0, neip>$1M, foots exactly) but is
   filing-verbatim adjudicated - the filing has no bonus column, so the
   variant-B tell cannot apply. Do not re-arbitrate GLW.
+
+315th-review adjudication (2026-11-02 09:00 PT):
+- BRO (6 tier-2 flags: Powell Brown 2024/2023, Watts 2024/2023,
+  Barrett Brown 2024/2023): FALSE POSITIVES. The 2026 DEF 14A
+  (acc. 0001193125-26-122172) SCT Bonus column is genuinely blank
+  (em-dash) for all FY2023/2024 rows; the FY2025 Bonus values are
+  one-time Accession-acquisition discretionary bonuses (CD&A p.35).
+  All 13 stored BRO rows byte-equal to the primary SCT; Walker
+  2023's stored bonus=300,000 confirms the parse handles a
+  populated Bonus cell correctly. Do not re-arbitrate BRO.
 - Remaining queue: 31 tier-1 (REGN x6 already false-positived), tier-2
   1,172 (the +1 is the adjudicated GLW Weeks 2024 row).
 
