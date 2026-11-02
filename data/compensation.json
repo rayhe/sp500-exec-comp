@@ -170,7 +170,7 @@
   "total_neo_records": 7305,
   "title_coverage": "7305/7305",
   "data_quality": {
-   "component_mismatch": 45,
+   "component_mismatch": 44,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -186,9 +186,9 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5845,
+   "verified": 5846,
    "rounding": 0,
-   "verified_total": 7260,
+   "verified_total": 7261,
    "last_audit": "2026-09-28"
   },
   "median_ceo_pay": 17188658,
@@ -224,7 +224,7 @@
   "governance_coverage": 499,
   "board_independence_coverage": 499,
   "data_quality_detailed": {
-   "component_mismatch": 45,
+   "component_mismatch": 44,
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
@@ -240,9 +240,9 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5845,
+   "verified": 5846,
    "rounding": 0,
-   "verified_total": 7260,
+   "verified_total": 7261,
    "last_audit": "2026-09-28"
   },
   "companies_with_executives": 517,
@@ -281,15 +281,15 @@
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
   "last_dq_repair": "2026-11-01",
-  "verified_total": 7260,
+  "verified_total": 7261,
   "total_neos": 7305,
   "phantom_removed": {
-   "cumulative": -1083330357,
+   "cumulative": -1083330358,
    "gross_removed": 2834529215,
-   "restored": 3917859572,
-   "batches": 79,
+   "restored": 3917859573,
+   "batches": 80,
    "since": "2026-09-12",
-   "last_updated": "2026-11-01 14:45 PT",
+   "last_updated": "2026-11-01 17:00 PT",
    "method": "Sum over the 63 DQ-labeled data-repair commits (2026-09-12 to 2026-09-27) of (parent exec-total sum minus commit exec-total sum), computed per git blob. Parser-invented compensation removed counts positive; genuine missing-NEO rows restored filing-verbatim count negative. See goal hidden_files/phantom-counter/cumulative.json for the per-batch table."
   }
  },
@@ -22190,13 +22190,14 @@
      "salary": 514776,
      "stock_awards": 1599673,
      "non_equity_incentive": 362301,
-     "total": 2622295,
+     "total": 2622296,
      "title": "EVP and Chief Financial Officer",
-     "_total_source": "component_mismatch",
+     "_total_source": "verified",
      "bonus": 0,
      "option_awards": 0,
      "pension_nqdc": 0,
-     "all_other": 145546
+     "all_other": 145546,
+     "_restatement_note_20261101_1700": "2026-11-01 17:00 PT (307th review): 2026 DEF 14A (e26316_clx-def14a.htm, filed 2026-10-07) SCT restates Bellet FY2025 total to $2,622,296 = component sum (514,776 + 1,599,673 + 362,301 + 145,546; pension n/a). The FY2025 proxy printed $2,622,295 ($1 filing-side arithmetic gap, flagged 272nd review); components unchanged. Row now sums exactly; component_mismatch cleared."
     },
     {
      "name": "Eric Reynolds",

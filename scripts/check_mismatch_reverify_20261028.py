@@ -152,9 +152,14 @@ def static_checks():
     # KVUE Ruh 2025, all filing-verbatim from the 2026 DEF 14A SCTs)
     # -> 7302->7305 rows, verified_total 7257->7260, mismatch unchanged
     # at 45.
-    s3 = (len(d["companies"]) == 518 and total == 7305 and mismatch == 45
-          and d["metadata"]["data_quality"]["verified_total"] == 7260)
-    check("S3 counts unchanged (518 / 7305 / mismatch 45 / verified 7260)",
+    # S3 baseline moved 2026-11-01 (307th review): CLX Bellet 2025
+    # restatement resolution - the 2026 DEF 14A SCT restates the FY2025
+    # total to $2,622,296 (the component sum); row repaired
+    # filing-verbatim and relabeled component_mismatch->verified ->
+    # rows unchanged at 7305, verified_total 7260->7261, mismatch 45->44.
+    s3 = (len(d["companies"]) == 518 and total == 7305 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7261)
+    check("S3 counts unchanged (518 / 7305 / mismatch 44 / verified 7261)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
