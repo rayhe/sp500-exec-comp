@@ -163,9 +163,13 @@ def static_checks():
     # carries the filing's own $1 gap, stored verbatim per taxonomy) ->
     # 7305->7307 rows, verified_total 7261->7263, mismatch unchanged
     # at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7307 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7263)
-    check("S3 counts unchanged (518 / 7307 / mismatch 44 / verified 7263)",
+    # S3 baseline moved 2026-11-02 (316th review): VRTX Tatsis 2024
+    # missing-row restoration added 1 verified row (filing-verbatim from
+    # the 2026 DEF 14A SCT) -> 7307->7308 rows, verified_total 7263->7264,
+    # mismatch unchanged at 44.
+    s3 = (len(d["companies"]) == 518 and total == 7308 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7264)
+    check("S3 counts unchanged (518 / 7308 / mismatch 44 / verified 7264)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
