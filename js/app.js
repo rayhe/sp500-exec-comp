@@ -18434,14 +18434,14 @@ function setupDualSparklineTooltips() {
                 '<p>Every NEO compensation row traces to the company\'s DEF 14A proxy filing Summary Compensation Table (SCT), parsed and hand-verified. Each row carries a verification label describing its audit state:</p>' +
                 '<ol>' +
                 '<li><strong>verified</strong> — Stored components and total match the filing SCT verbatim. Includes rows re-verified in dedicated audit passes (<code>def14a_verified_YYYYMMDD</code> labels).</li>' +
-                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 327 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
+                '<li><strong>rounding</strong> — Components don\'t foot the printed total by a small gap; values stored verbatim from the filing. 328 <em>verified</em> rows carry $1&ndash;$2 deltas — that is the filer\'s own rounded-dollar arithmetic, not a parse error, so they stay verified by taxonomy decision (2026-09-10).</li>' +
                 '<li><strong>recomputed</strong> — Filing total missing or implausible; total recomputed from components and flagged.</li>' +
                 '<li><strong>component_mismatch</strong> — The filing\'s own components don\'t sum to its printed total; stored verbatim, flagged for transparency.</li>' +
                 '</ol>' +
                 '<div id="dataq-coverage-block"><h4>Coverage (last audit 2026-09-28)</h4>' +
                 '<p>7,263 of 7,307 NEO rows verified (99.4%): 0 rounding, 0 recomputed, 44 component_mismatch — the remaining rows are honestly labeled, not silently dropped.</p></div>' +
                 '<div id="dataq-phantom-block"><h4>Phantom compensation removed (as of the 2026-09-28 screen)</h4>' +
-                '<p>$2,834,529,215 of parser-invented compensation removed across 83 re-verification batches since 2026-09-12, partly offset by $3,956,436,084 of genuine missing NEO rows restored filing-verbatim. Net: $-1,121,906,869.</p></div>' +
+                '<p>$2,856,183,832 of parser-invented compensation removed across 84 re-verification batches since 2026-09-12, partly offset by $3,956,436,084 of genuine missing NEO rows restored filing-verbatim. Net: $-1,100,252,252.</p></div>' +
                 '<div id="dataq-pvp-block"><h4>Pay vs Performance coverage</h4>' +
                 '<p id="dataq-pvp-counts">Coverage counts render live when the PvP dataset loads. The tickers with principled PvP exclusions (delisted/take-private, filer-side XBRL errors, Item 402(v)-exempt, same-issuer duplicates, and one merger-registrant deferral) are each noted with their filing-grounded reason on the company\'s detail panel.</p></div>' +
                 '<div id="dataq-payratio-block"><h4>Pay ratio methodology</h4>' +

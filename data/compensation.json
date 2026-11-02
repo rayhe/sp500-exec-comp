@@ -280,16 +280,16 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-11-01",
+  "last_dq_repair": "2026-11-02",
   "verified_total": 7263,
   "total_neos": 7307,
   "phantom_removed": {
-   "cumulative": -1121906869,
-   "gross_removed": 2834529215,
+   "cumulative": -1100252252,
+   "gross_removed": 2856183832,
    "restored": 3956436084,
-   "batches": 83,
+   "batches": 84,
    "since": "2026-09-12",
-   "last_updated": "2026-11-01 22:45 PT",
+   "last_updated": "2026-11-02 01:00 PT",
    "method": "Sum over the 63 DQ-labeled data-repair commits (2026-09-12 to 2026-09-27) of (parent exec-total sum minus commit exec-total sum), computed per git blob. Parser-invented compensation removed counts positive; genuine missing-NEO rows restored filing-verbatim count negative. See goal hidden_files/phantom-counter/cumulative.json for the per-batch table."
   }
  },
@@ -94221,7 +94221,7 @@
     },
     {
      "name": "Jamie Miller",
-     "title": "President and CEO",
+     "title": "EVP, Chief Financial and Operating Officer",
      "year": 2025,
      "salary": 863014,
      "bonus": 0,
@@ -94231,11 +94231,12 @@
      "pension_nqdc": 0,
      "all_other": 14000,
      "total": 14034200,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): title repaired filing-verbatim from the 2026 DEF 14A SCT title block (acc. 0001193125-26-145721); components already verified, untouched."
     },
     {
      "name": "Jamie Miller",
-     "title": "President and CEO",
+     "title": "EVP, Chief Financial and Operating Officer",
      "year": 2024,
      "salary": 750000,
      "bonus": 3000000,
@@ -94245,25 +94246,27 @@
      "pension_nqdc": 0,
      "all_other": 13800,
      "total": 12995304,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): title repaired filing-verbatim from the 2026 DEF 14A SCT title block (acc. 0001193125-26-145721); components already verified, untouched."
     },
     {
      "name": "Jamie Miller",
-     "title": "President and CEO",
+     "title": "EVP, Chief Financial and Operating Officer",
      "year": 2023,
-     "salary": 3000000,
-     "bonus": 8825116,
-     "stock_awards": 0,
+     "salary": 100962,
+     "bonus": 3000000,
+     "stock_awards": 8825116,
      "option_awards": 0,
-     "non_equity_incentive": 3462,
+     "non_equity_incentive": 0,
      "pension_nqdc": 0,
-     "all_other": 11929539,
-     "total": 23758117,
-     "_total_source": "verified"
+     "all_other": 3462,
+     "total": 11929539,
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): 2026 DEF 14A SCT (acc. 0001193125-26-145721) shows variant E of the column-drop family (salary-drop left-shift): the legacy parse dropped the Salary cell on this continuation row and shifted bonus->salary, stock->bonus, all_other->NEIP, total->all_other, then recomputed the total. Repaired filing-verbatim; title filing-verbatim from the SCT title block; _total_source ('verified') untouched."
     },
     {
      "name": "Michelle Gill",
-     "title": "Executive Vice President",
+     "title": "EVP, General Manager, Small Business and Financial Services",
      "year": 2025,
      "salary": 787671,
      "bonus": 0,
@@ -94273,11 +94276,12 @@
      "pension_nqdc": 0,
      "all_other": 14000,
      "total": 13032004,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): title repaired filing-verbatim from the 2026 DEF 14A SCT title block (acc. 0001193125-26-145721); components already verified, untouched."
     },
     {
      "name": "Michelle Gill",
-     "title": "Executive Vice President",
+     "title": "EVP, General Manager, Small Business and Financial Services",
      "year": 2024,
      "salary": 750000,
      "bonus": 1000000,
@@ -94287,21 +94291,23 @@
      "pension_nqdc": 0,
      "all_other": 13800,
      "total": 10995304,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): title repaired filing-verbatim from the 2026 DEF 14A SCT title block (acc. 0001193125-26-145721); components already verified, untouched."
     },
     {
      "name": "Michelle Gill",
-     "title": "Executive Vice President",
+     "title": "EVP, General Manager, Small Business and Financial Services",
      "year": 2023,
-     "salary": 1000000,
-     "bonus": 8825116,
-     "stock_awards": 0,
+     "salary": 80769,
+     "bonus": 1000000,
+     "stock_awards": 8825116,
      "option_awards": 0,
-     "non_equity_incentive": 923,
+     "non_equity_incentive": 0,
      "pension_nqdc": 0,
-     "all_other": 9906808,
-     "total": 19732847,
-     "_total_source": "verified"
+     "all_other": 923,
+     "total": 9906808,
+     "_total_source": "verified",
+     "_repair_note_20261102_0100": "2026-11-02 01:00 PT (311th review): 2026 DEF 14A SCT (acc. 0001193125-26-145721) shows variant E of the column-drop family (salary-drop left-shift): the legacy parse dropped the Salary cell on this continuation row and shifted bonus->salary, stock->bonus, all_other->NEIP, total->all_other, then recomputed the total. Repaired filing-verbatim; title filing-verbatim from the SCT title block; _total_source ('verified') untouched."
     },
     {
      "name": "Frank Keller",
@@ -124833,5 +124839,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions)."
   }
  ],
- "last_updated": "2026-11-01"
+ "last_updated": "2026-11-02"
 }

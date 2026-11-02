@@ -67,6 +67,40 @@ already-repaired BALL rows (now carry stock/option values).
   variant-B tell cannot apply. Do not re-arbitrate GLW.
 - Remaining queue: 31 tier-1 (REGN x6 already false-positived), tier-2
   1,172 (the +1 is the adjudicated GLW Weeks 2024 row).
+
+311th-review triage (2026-11-02 01:00 PT):
+- PAYC (3 rows: Richison 2024/2023/2022): FALSE POSITIVES. The 2026 DEF
+  14A SCT (acc. 0001193125-26-140064) shows Richison 2024/2023 with
+  stock_awards = em-dash (no equity granted; Paycom's SCT has no Option
+  Awards column, Paycom grants no options) - stored rows byte-equal.
+  Richison 2022 arbitrated against the 2025 DEF 14A SCT (acc.
+  0001193125-25-072358): 785,953 / -- / -- / 1,538,816 / 813,649 /
+  3,138,418, byte-equal to stored. No data changes. Evidence: goal
+  hidden_files/dq_20261102_0030/ (2026 + 2025 proxies, SCT cell parses).
+- PYPL (3 rows): SPLIT verdict. Chriss 2024 FALSE POSITIVE (filing
+  1,250,000 / -- / -- / 4,975,000 / 433,527 / 6,658,527, byte-equal to
+  stored; PayPal's SCT likewise has no option/pension columns). Miller
+  2023 + Gill 2023 CONFIRMED, new sub-family variant E (salary-drop
+  left-shift): the legacy parse dropped the Salary cell on these two
+  continuation rows and shifted bonus->salary, stock->bonus,
+  all_other->NEIP, total->all_other, then recomputed the total. Repaired
+  filing-verbatim (Miller 2023: 100,962 / 3,000,000 / 8,825,116 / 0 /
+  3,462 / 11,929,539, carries the filing's own $1 gap, stored verbatim;
+  Gill 2023: 80,769 / 1,000,000 / 8,825,116 / 0 / 923 / 9,906,808);
+  filing-verbatim titles on all 6 Miller/Gill rows (Miller "EVP, Chief
+  Financial and Operating Officer", Gill "EVP, General Manager, Small
+  Business and Financial Services"). $21,654,617 parser-invented
+  compensation removed (phantom batch 84, gross_removed
+  $2,856,183,832, net $-1,100,252,252); FY2025-anchored company
+  aggregates untouched. Script:
+  hidden_files/apply_pypl_salarydrop_20261102_0030.py; evidence: goal
+  hidden_files/dq_20261102_0030/ (2026 proxy, SCT TR-parse,
+  VERIFICATION.md).
+- Remaining queue: 25 tier-1 (REGN x6 + PAYC x3 + PYPL Chriss 2024 already
+  adjudicated false-positive; PYPL Miller/Gill 2023 repaired), tier-2
+  1,172. Next clusters: ARE x2, DG x2, TDG x2, RDDT x2, ORCL x2
+  (Ellison - likely false-positive, founder takes no equity; needs
+  filing arbitration), then singles.
 """
 import json
 import sys
