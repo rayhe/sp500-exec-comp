@@ -101,6 +101,33 @@ already-repaired BALL rows (now carry stock/option values).
   1,172. Next clusters: ARE x2, DG x2, TDG x2, RDDT x2, ORCL x2
   (Ellison - likely false-positive, founder takes no equity; needs
   filing arbitration), then singles.
+
+312th-review triage (2026-11-02 02:30 PT):
+- ARE (2 flagged rows): CONFIRMED, and the corruption ran 7 rows deep.
+  Binda 2023 + Kass 2023 were variant E (salary-drop left-shift, the
+  311th-review PYPL sub-family); Marcus 2023 + Moglia 2023 were ALSO
+  variant E but evaded tier-1 because their filing NEIP > 0 kept stored
+  stock_awards > 0 after the shift (and bonus != 0, so tier-2 missed them
+  too) -- a detector blind spot of the same shape as ROL's Gary Rollins
+  2025. Marcus 2025 + Binda 2025 + Cole 2025 were a NEW sub-family,
+  variant F (standalone footnote-marker cell shift): the 2025 SCT rows
+  whose Bonus cell carries a standalone footnote-marker cell ((3) Marcus,
+  (5) Binda, (7) Cole) had the marker consumed as the Stock Awards value,
+  shifting stock->NEIP, NEIP->pension, pension->all_other; the SCT Stock
+  Awards column cross-checks against the Grants of Plan-Based Awards
+  table sums (Marcus 5,004,205 / Binda 4,006,119 / Cole 3,304,425).
+  Marcus 2025 additionally dropped the $197,341 All Other cell and
+  recomputed the total (genuine comp restored). Repaired filing-verbatim;
+  $36,603,281 net phantom removed (batch 85). Script:
+  hidden_files/apply_are_columndrop_20261102_0230.py; evidence: goal
+  hidden_files/dq_20261102_0230/.
+- DG (2 flagged rows: Vasos 2025, Vasos 2024): FALSE POSITIVES. The 2026
+  DEF 14A SCT (acc. 0001104659-26-040394) shows em-dash stock AND option
+  cells for Vasos 2025/2024 (no equity granted; the grants table confirms
+  "--" both years) -- stored rows byte-equal (Paycom/Regeneron pattern).
+  No data changes.
+- Remaining queue: 12 tier-1 (TDG x2, RDDT x2, ORCL x2, C/CHTR/CPB/DVA/
+  EFX/FAST/LII/LYV/VRTX singles); tier-2 1,172 stays advisory.
 """
 import json
 import sys
