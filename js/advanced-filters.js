@@ -421,20 +421,36 @@
     var clearBtn = document.getElementById('af-clear-btn');
     if (clearBtn) clearBtn.addEventListener('click', function(){ clearAdvancedFilters(); });
 
+    // Live company list for AF refreshes. app.js keeps the dataset in a
+    // top-level `let compData` (never a window property), so the old
+    // `window.compData` branches below never fired and _refreshTable()
+    // silently re-rendered nothing: AF select changes updated state and
+    // the badge but left the table rows untouched until an unrelated
+    // action re-rendered. charts.js exposes the same list as
+    // window._chartData.companies (the list every other cross-file
+    // renderTable call site passes), so fall back to it; keep the
+    // window.compData branch first for any future loader that sets it.
+    function getAFCompanies() {
+        if (window.compData && window.compData.companies) return window.compData.companies;
+        if (window._chartData && window._chartData.companies) return window._chartData.companies;
+        return null;
+    }
+
     // Extend _refreshTable to include board filter DOM post-process
     var _originalRefresh = window._refreshTable;
     window._refreshTable = function() {
+        var afCompanies = getAFCompanies();
         if (_originalRefresh) {
             try { _originalRefresh(); } catch(e) {}
-        } else if (window.compData && typeof renderTable === 'function') {
-            try { renderTable(window.compData.companies); } catch(e) {}
+        } else if (afCompanies && typeof renderTable === 'function') {
+            try { renderTable(afCompanies); } catch(e) {}
         }
         if (window._activeBoardFilter) {
             var tbody = document.getElementById('comp-tbody');
-            if (tbody && window.compData && window.compData.companies) {
+            if (tbody && afCompanies) {
                 var mode = window._activeBoardFilter.mode;
                 var lookup = {};
-                window.compData.companies.forEach(function(c){ lookup[c.ticker]=c; });
+                afCompanies.forEach(function(c){ lookup[c.ticker]=c; });
                 Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(tr){
                     var tickerCell = tr.querySelector('td:nth-child(2)');
                     var ticker = tickerCell ? tickerCell.textContent.trim() : (tr.dataset.ticker || '');
