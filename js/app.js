@@ -3190,8 +3190,7 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         if (window._activePeerDistFilter) {
             window._activePeerDistFilter = null;
-            var pdfc = document.getElementById('peerdist-filter-chip');
-            if (pdfc) pdfc.remove();
+            updatePeerDistFilterIndicator();
         }
         if (window._activeCommunityFilter) {
             window._activeCommunityFilter = null;
@@ -8859,6 +8858,46 @@ function _wireScrollHint(el) {
     setTimeout(function() { _updateScrollHint(el); }, 100);
 }
 
+// Peer distribution filter chip — dismissible indicator for the peer-pay
+// distribution histogram filter (peer-dist columns in the detail panel).
+// Previously the filter had no chip at all: clicking a histogram bucket
+// filtered the table with no visible affordance to clear it, and the two
+// reset paths referenced chips that were never created ('peerdist-filter-chip'
+// in insightResetAndSort, 'peer-dist-chip' in resetAllFilters). This indicator
+// uses 'peer-dist-chip', so resetAllFilters' existing removal now works.
+function updatePeerDistFilterIndicator() {
+    var existing = document.getElementById('peer-dist-chip');
+    if (existing) existing.remove();
+    if (window._activePeerDistFilter) {
+        var pf = window._activePeerDistFilter;
+        var chip = document.createElement('button');
+        chip.className = 'chip active combined-filter-chip';
+        chip.id = 'peer-dist-chip';
+        chip.style.background = 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = 'rgba(0,180,216,0.5)';
+        chip.style.color = '#00b4d8';
+        chip.textContent = pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')';
+        var xSpan = document.createElement('span');
+        xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
+        xSpan.textContent = '\u00d7';
+        chip.appendChild(xSpan);
+        chip.title = 'Click to clear peer distribution filter';
+        chip.addEventListener('click', function() {
+            window._activePeerDistFilter = null;
+            chip.remove();
+            var all = null;
+            if (typeof _chartData !== 'undefined' && _chartData && _chartData.companies) all = _chartData.companies;
+            else if (typeof compData !== 'undefined' && compData && compData.companies) all = compData.companies;
+            if (all) renderTable(all);
+            if (typeof pushState === 'function') pushState();
+            if (typeof announce === 'function') announce('Peer distribution filter cleared');
+        });
+        var controls = document.querySelector('.table-controls');
+        if (controls) controls.appendChild(chip);
+    }
+}
+window._updatePeerDistFilterIndicator = updatePeerDistFilterIndicator;
+
 function setupDetailPanel(companies) {
     var tbody = document.getElementById('comp-tbody');
 
@@ -11762,6 +11801,7 @@ function setupDetailPanel(companies) {
                     window._activePeerDistFilter = { tickers: tickers, label: label };
                 }
                 currentPage = 1;
+                updatePeerDistFilterIndicator();
                 renderTable(companies);
                 pushState();
                 scrollToTable();
@@ -12563,6 +12603,7 @@ function applyHashState(companies) {
         var pdTickers = decodeURIComponent(state.pdtk).split(',').filter(function(t) { return t.length > 0; });
         if (pdTickers.length > 0) {
             window._activePeerDistFilter = { tickers: pdTickers, label: decodeURIComponent(state.pdlbl) };
+            if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
         }
     }
 
