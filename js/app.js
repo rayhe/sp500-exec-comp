@@ -4480,6 +4480,20 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (e.name === c.ceo_name && e.year === c.fiscal_year && (e.total || 0) > 0) rCur = e;
                 if (e.name === c.ceo_name && e.year === prevYear && (e.total || 0) > 0) rPrev = e;
             }
+            // Title fallback: headline ceo_name is the common name while SCT
+            // rows carry the filing-legal name, so exact matching alone
+            // silently dropped AMZN ("Andy Jassy" vs "Andrew R. Jassy"), MET
+            // ("Michel A Khalaf" vs "Michel A. Khalaf") and ROP ("Neil Hunn"
+            // vs "L. Neil Hunn") from the YoY pair set (2026-11-03 audit,
+            // 328th review). Same title pattern findCeo/findCeoForYear use.
+            if (!rCur || !rPrev) {
+                for (var j = 0; j < rows.length; j++) {
+                    var e2 = rows[j];
+                    if ((e2.total || 0) <= 0 || !e2.title || !(/chief executive/i.test(e2.title) || /\bceo\b/i.test(e2.title))) continue;
+                    if (!rCur && e2.year === c.fiscal_year) rCur = e2;
+                    if (!rPrev && e2.year === prevYear) rPrev = e2;
+                }
+            }
             if (!rCur || !rPrev) return;
             // Skip stub-scale current-year rows (e.g. SMCI 2025 $442) -- the
             // DQ tripwire's 7b screen flags these as possible All-Other-Comp
