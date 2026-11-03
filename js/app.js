@@ -2812,7 +2812,7 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (scYSel) scYSel.value = 'total_compensation';
                 if (scXSel) scXSel.dispatchEvent(new Event('change'));
                 else if (scYSel) scYSel.dispatchEvent(new Event('change'));
-                var chartPanel = document.getElementById('scatter-panel');
+                var chartPanel = document.getElementById('scatter-chart-panel');
                 if (chartPanel) {
                     var headerHeight = getStickyOffset();
                     var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
@@ -3082,7 +3082,7 @@ function populateInsights(comp, trends, sectorFilter) {
                         if (scXSel) scXSel.dispatchEvent(new Event('change'));
                     }
                 }
-                var chartPanel = document.getElementById('scatter-panel');
+                var chartPanel = document.getElementById('scatter-chart-panel');
                 if (chartPanel) {
                     var headerHeight = getStickyOffset();
                     var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
@@ -4849,7 +4849,7 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (scXSel) scXSel.value = xKey;
                 if (scYSel) scYSel.value = yKey;
                 if (scXSel) scXSel.dispatchEvent(new Event('change'));
-                var chartPanel = document.getElementById('scatter-panel');
+                var chartPanel = document.getElementById('scatter-chart-panel');
                 if (chartPanel) {
                     var headerHeight = getStickyOffset();
                     var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
@@ -12901,7 +12901,7 @@ function setupSparklineTooltips() {
 
 /* === YoY Sparkline Tooltip — interactive hover tooltips for inline table row trend sparkline data points === */
 function setupYoYSparklineTooltips() {
-    var tableWrap = document.getElementById('company-table');
+    var tableWrap = document.getElementById('comp-table');
     if (!tableWrap) return;
 
     // Create reusable tooltip element
@@ -13003,7 +13003,7 @@ function setupYoYSparklineTooltips() {
 
 /* === NEO Sparkline Tooltip — interactive hover tooltips for NEO inline sparklines in detail panel === */
 function setupNeoSparklineTooltips() {
-    var tableWrap = document.getElementById('company-table');
+    var tableWrap = document.getElementById('comp-table');
     if (!tableWrap) return;
 
     var tip = document.createElement('div');
