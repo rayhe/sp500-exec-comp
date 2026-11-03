@@ -167,13 +167,17 @@ def static_checks():
     # missing-row restoration added 1 verified row (filing-verbatim from
     # the 2026 DEF 14A SCT) -> 7307->7308 rows, verified_total 7263->7264,
     # mismatch unchanged at 44.
-    # S3 baseline moved 2026-11-02 (317th review): FDX missing-NEO
+    # S3 baseline moved 2026-11-02 (320th review): ARE Diamond 2024
+# missing-NEO restoration (filing-verbatim from the 2026 DEF 14A
+# SCT) -> 7317->7318 rows, verified_total 7273->7274, mismatch
+# unchanged at 44.
+# S3 baseline moved 2026-11-02 (317th review): FDX missing-NEO
     # restoration added 8 verified rows (Allen x2, Carter x3, Lenz x3,
     # filing-verbatim from the 2024 DEF 14A SCT) -> 7308->7316 rows,
     # verified_total 7264->7272, mismatch unchanged at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7317 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7273)
-    check("S3 counts unchanged (518 / 7317 / mismatch 44 / verified 7273)",
+    s3 = (len(d["companies"]) == 518 and total == 7318 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7274)
+    check("S3 counts unchanged (518 / 7318 / mismatch 44 / verified 7274)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
