@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""2026-11-03 01:00 PT (322nd review): CPRT FY2026 anchor adjudication.
+"""2026-11-03 01:00 PT (323rd review; renumbered from 322nd by the
+numbering-correction commit: the Nov 2 JS-fix iteration already holds
+the 322nd slot in the iteration log): CPRT FY2026 anchor adjudication.
 
 Deferred by the 321st review (apply_anchor_promotion_batch_20261102_2100.py):
 CPRT's FY2026 proxy (DEF 14A, filed 2026-10-22, acc. 0001193125-26-428904)
