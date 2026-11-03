@@ -133,6 +133,23 @@
         updateAfGroupBadges();
     }
 
+    // 329th review: a chart-origin volatility filter (histogram bar click /
+    // keyboard activate in charts.js) overwrites an AF-origin bucket without
+    // touching the af-vol select, so the select kept showing the old AF value
+    // and the badge kept counting it while the table filtered on the chart
+    // bucket -- and after dismissing the chart chip, the panel still claimed
+    // an active filter that was no longer filtering. Chart handlers call
+    // this helper (window-guarded) after setting a chart-origin bucket. It
+    // clears the select WITHOUT dispatching 'change': handleVol('') would
+    // null the just-set chart bucket, so the badge is refreshed directly
+    // instead. Clearing unconditionally is correct: after a chart click the
+    // active bucket is chart-origin by definition, never AF-origin.
+    window._clearAfVolSelect = function() {
+        var sel = document.getElementById('af-vol');
+        if (sel) sel.value = '';
+        updateAfBadge();
+    };
+
     function clearAdvancedFilters() {
         ['af-pay-band','af-sop-tier','af-tenure','af-gov','af-board','af-gender','af-conc','af-vol'].forEach(function(id){
             var el = document.getElementById(id);

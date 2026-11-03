@@ -13183,6 +13183,10 @@ function drawVolatilityDistChart(companies) {
         .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); })
         .on('click', function(event, b) {
             window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            // 329th review: the bucket is now chart-origin, so an af-vol
+            // select value (AF-origin or stale from an earlier reset) no
+            // longer describes the active filter -- clear it + the badge.
+            if (typeof window._clearAfVolSelect === 'function') window._clearAfVolSelect();
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
             if (typeof scrollToTable === 'function') scrollToTable();
@@ -13202,6 +13206,8 @@ function drawVolatilityDistChart(companies) {
         },
         activate: function(b) {
             window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            // 329th review: same af-vol select/badge sync as the click path.
+            if (typeof window._clearAfVolSelect === 'function') window._clearAfVolSelect();
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
             if (typeof scrollToTable === 'function') scrollToTable();
