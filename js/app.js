@@ -2255,17 +2255,22 @@ function sortTableByKey(key, dir) {
     if (firstRoleChip) firstRoleChip.classList.add('active');
     updateRoleColumnHeader();
 
-    // Remove filter chips if present
-    var ratioChip = document.getElementById('ratio-filter-chip');
-    if (ratioChip) ratioChip.remove();
-    var distChip = document.getElementById('dist-filter-chip');
-    if (distChip) distChip.remove();
-    var concChip = document.getElementById('conc-filter-chip');
-    if (concChip) concChip.remove();
-    var tenureChip = document.getElementById('tenure-filter-chip');
-    if (tenureChip) tenureChip.remove();
-    var quartileChip = document.getElementById('quartile-filter-chip');
-    if (quartileChip) quartileChip.remove();
+    // Remove filter chips for every filter whose state was cleared above.
+    // (326th review: this previously removed only ratio/dist/conc/tenure/
+    // quartile, leaving the sop/transition/team/pctile/stockpct/gender/
+    // aspdelta/peer-dist/position/crosstab chips visible with their state
+    // cleared. Gov/volatility/vol-tenure/yoy/board chips are intentionally
+    // kept: sortTableByKey does not clear those filters' state. Community
+    // state is cleared but no community chip is ever rendered.)
+    ['ratio-filter-chip', 'dist-filter-chip', 'peer-dist-chip',
+     'conc-filter-chip', 'sop-filter-chip', 'transition-filter-chip',
+     'team-filter-chip', 'pctile-filter-chip', 'stockpct-filter-chip',
+     'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
+     'quartile-filter-chip', 'position-filter-chip',
+     'crosstab-filter-chip'].forEach(function(id) {
+        var chip = document.getElementById(id);
+        if (chip) chip.remove();
+    });
 
     // Clear search input
     var searchInput = document.getElementById('table-search');
@@ -14506,8 +14511,8 @@ function setupDualSparklineTooltips() {
         // Clear filter chips
         [
             'ratio-filter-chip', 'dist-filter-chip', 'conc-filter-chip', 'sop-filter-chip',
-            'ceo-transition-chip', 'team-filter-chip', 'yoy-filter-chip', 'pctile-filter-chip',
-            'stock-pct-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
+            'transition-filter-chip', 'team-filter-chip', 'yoy-filter-chip', 'pctile-filter-chip',
+            'stockpct-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
             'gov-filter-chip', 'volatility-filter-chip', 'vol-tenure-chip',
             'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip',
             'crosstab-filter-chip'
