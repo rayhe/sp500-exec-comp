@@ -2848,6 +2848,13 @@ def main():
         # (FDXF FY2025 SCT $5,281,073, byte-identical). Same person, do not
         # merge rows.
         ("john a smith", 2025, "FDX", "FDXF"),
+        # 2026-11-02 17:00 PT (319th review): genuine mid-year transition —
+        # James Kehoe was WBA EVP & Global CFO (WBA FY2023 SCT $1,826,108,
+        # part-year) until Aug 2023, then joined FIS as Corporate EVP &
+        # CFO effective Aug 21, 2023 (FIS 2024 DEF 14A footnote (7); FIS
+        # FY2023 SCT $12,852,097, part-year salary $355,469 + $1.7M bonus).
+        # Same person, do not merge rows.
+        ("james kehoe", 2023, "FIS", "WBA"),
     }
     _person_year = {}
     for c in companies:

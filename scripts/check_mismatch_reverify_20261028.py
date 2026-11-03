@@ -171,9 +171,9 @@ def static_checks():
     # restoration added 8 verified rows (Allen x2, Carter x3, Lenz x3,
     # filing-verbatim from the 2024 DEF 14A SCT) -> 7308->7316 rows,
     # verified_total 7264->7272, mismatch unchanged at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7316 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7272)
-    check("S3 counts unchanged (518 / 7316 / mismatch 44 / verified 7272)",
+    s3 = (len(d["companies"]) == 518 and total == 7317 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7273)
+    check("S3 counts unchanged (518 / 7317 / mismatch 44 / verified 7273)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 
