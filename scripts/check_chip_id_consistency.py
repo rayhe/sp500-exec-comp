@@ -169,6 +169,40 @@ def main():
             "C3 sortTableByKey clears state but leaves chips stale: "
             f"{stale}")
 
+    # --- insightResetAndSort ---------------------------------------------
+    # C4 HARD FAIL (327th review): same pairing rule as C3, applied to the
+    # insight-card reset path. Before the 327th fix this path nulled
+    # _activeVolatilityBucket / _activeVolTenureBracket without removing
+    # their chips -- invisible while the chips did not exist, a live stale
+    # chip once the 327th indicators created them. An indicator call counts
+    # as removal (the indicator removes the chip when state is null).
+    ins_body = extract_function_body(app, "function insightResetAndSort")
+    if ins_body is None:
+        print("FAIL: insightResetAndSort function not found in js/app.js")
+        return 1
+    ins_removed = set(re.findall(
+        r"getElementById\('([a-z0-9-]+-chip)'\)", ins_body))
+    ins_removed |= set(re.findall(r"'([a-z0-9-]+-chip)'", ins_body))
+    ins_indicators = set(re.findall(
+        r"(update\w+FilterIndicator)\(\)", ins_body))
+    STATE_TO_INDICATOR = {
+        "_activePeerDistFilter": "updatePeerDistFilterIndicator",
+        "_activeVolatilityBucket": "updateVolatilityFilterIndicator",
+        "_activeVolTenureBracket": "updateVolTenureFilterIndicator",
+        "_activeCrosstabFilter": "updateCrosstabFilterIndicator",
+    }
+    ins_cleared = set(re.findall(
+        r"window\.(_active\w+)\s*=\s*(?:null|false)", ins_body))
+    ins_stale = sorted(
+        STATE_TO_CHIP[s] for s in ins_cleared
+        if s in STATE_TO_CHIP and STATE_TO_CHIP[s] in created
+        and STATE_TO_CHIP[s] not in ins_removed
+        and STATE_TO_INDICATOR.get(s) not in ins_indicators)
+    if ins_stale:
+        failures.append(
+            "C4 insightResetAndSort clears state but leaves chips stale: "
+            f"{ins_stale}")
+
     if failures:
         for f in failures:
             print("FAIL: chip-id-consistency: " + f)

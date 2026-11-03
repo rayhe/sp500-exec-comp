@@ -165,6 +165,10 @@
                 if (bc && bc.parentNode) bc.parentNode.removeChild(bc);
             }
         });
+        // 327th review: the volatility chip is app.js-owned (not dataset.af),
+        // so the loop above skips it; the indicator removes it once state is
+        // nulled (state was cleared above for _isAf buckets).
+        if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
 
         updateAfBadge();
         if (typeof window._refreshTable === 'function') window._refreshTable();
@@ -387,6 +391,7 @@
             if (window._activeVolatilityBucket) window._activeVolatilityBucket = null;
             var chip = document.getElementById('volatility-filter-chip');
             if (chip && chip.dataset && chip.dataset.af === '1') chip.parentNode.removeChild(chip);
+            if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -396,6 +401,7 @@
         var max = parts[1] === '999' ? Infinity : parseFloat(parts[1]);
         var labelMap = { '0-10':'Stable <10%', '10-25':'Moderate 10–25%', '25-50':'Volatile 25–50%', '50-999':'Highly volatile 50%+' };
         window._activeVolatilityBucket = { min: min, max: max, label: labelMap[val] || val, _isAf: true };
+        if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }

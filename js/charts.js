@@ -13183,6 +13183,7 @@ function drawVolatilityDistChart(companies) {
         .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); })
         .on('click', function(event, b) {
             window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
             if (typeof scrollToTable === 'function') scrollToTable();
             if (typeof announce === 'function') announce('Filtered to ' + b.count + ' companies with ' + b.label + ' pay volatility');
@@ -13201,6 +13202,7 @@ function drawVolatilityDistChart(companies) {
         },
         activate: function(b) {
             window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
             if (typeof scrollToTable === 'function') scrollToTable();
             if (typeof announce === 'function') announce('Filtered to ' + b.count + ' companies with ' + b.label + ' pay volatility');
@@ -13873,6 +13875,7 @@ function drawVolatilityTenureChart(companies) {
                 } else {
                     // Filter table to companies in this tenure bracket
                     window._activeVolTenureBracket = { min: b.min, max: b.max, label: b.label.replace('\n', ' ') };
+                    if (typeof window._updateVolTenureFilterIndicator === 'function') window._updateVolTenureFilterIndicator();
                     if (typeof renderTable === 'function') renderTable(companies);
                     if (typeof scrollToTable === 'function') scrollToTable();
                     if (typeof announce === 'function') announce('Filtered to ' + b.count + ' ' + b.label.replace('\n', ' ') + ' companies');
@@ -13955,6 +13958,7 @@ function drawVolatilityTenureChart(companies) {
                 min: b.min, max: b.max,
                 label: b.label.replace('\n', ' ')
             };
+            if (typeof window._updateVolTenureFilterIndicator === 'function') window._updateVolTenureFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
             if (typeof scrollToTable === 'function') scrollToTable();
             if (typeof announce === 'function') {

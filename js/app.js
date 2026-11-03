@@ -3189,9 +3189,11 @@ function populateInsights(comp, trends, sectorFilter) {
         }
         if (window._activeVolatilityBucket) {
             window._activeVolatilityBucket = null;
+            updateVolatilityFilterIndicator();
         }
         if (window._activeVolTenureBracket) {
             window._activeVolTenureBracket = null;
+            updateVolTenureFilterIndicator();
         }
         if (window._activePeerDistFilter) {
             window._activePeerDistFilter = null;
@@ -8904,6 +8906,95 @@ function updatePeerDistFilterIndicator() {
     }
 }
 window._updatePeerDistFilterIndicator = updatePeerDistFilterIndicator;
+
+// 327th review: the volatility histogram (charts.js) and the volatility x
+// tenure bracket chart set window._activeVolatilityBucket /
+// window._activeVolTenureBracket and re-render the table, but neither ever
+// rendered a dismissible chip in .table-controls -- the same missing-chip
+// class the peer-dist fix (323rd review) closed. A filtered table therefore
+// showed no affordance to clear the volatility filter except Reset All
+// Filters. These two indicators follow the peer-dist convention exactly
+// (cyan button chip, textContent-built, x span, click clears state +
+// re-renders + pushes URL state + announces). Volatility state set via the
+// Advanced Filters af-vol select (_isAf) also routes through the indicator
+// (called from handleVol), and dismissing such a chip resets the select via
+// a change dispatch so the AF badge stays in sync.
+function updateVolatilityFilterIndicator() {
+    var existing = document.getElementById('volatility-filter-chip');
+    if (existing) existing.remove();
+    if (window._activeVolatilityBucket) {
+        var vb = window._activeVolatilityBucket;
+        var label = vb.label || '';
+        var text = label.indexOf('Volatility') === 0 ? label : 'Volatility ' + label;
+        var chip = document.createElement('button');
+        chip.className = 'chip active combined-filter-chip';
+        chip.id = 'volatility-filter-chip';
+        chip.style.background = 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = 'rgba(0,180,216,0.5)';
+        chip.style.color = '#00b4d8';
+        chip.textContent = text;
+        var xSpan = document.createElement('span');
+        xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
+        xSpan.textContent = '\u00d7';
+        chip.appendChild(xSpan);
+        chip.title = 'Click to clear volatility filter';
+        chip.addEventListener('click', function() {
+            var wasAf = !!(window._activeVolatilityBucket && window._activeVolatilityBucket._isAf);
+            window._activeVolatilityBucket = null;
+            chip.remove();
+            if (wasAf) {
+                var sel = document.getElementById('af-vol');
+                if (sel) {
+                    sel.value = '';
+                    sel.dispatchEvent(new Event('change'));
+                }
+            } else {
+                var all = null;
+                if (typeof _chartData !== 'undefined' && _chartData && _chartData.companies) all = _chartData.companies;
+                else if (typeof compData !== 'undefined' && compData && compData.companies) all = compData.companies;
+                if (all) renderTable(all);
+                if (typeof pushState === 'function') pushState();
+            }
+            if (typeof announce === 'function') announce('Volatility filter cleared');
+        });
+        var controls = document.querySelector('.table-controls');
+        if (controls) controls.appendChild(chip);
+    }
+}
+window._updateVolatilityFilterIndicator = updateVolatilityFilterIndicator;
+
+function updateVolTenureFilterIndicator() {
+    var existing = document.getElementById('vol-tenure-chip');
+    if (existing) existing.remove();
+    if (window._activeVolTenureBracket) {
+        var vtb = window._activeVolTenureBracket;
+        var chip = document.createElement('button');
+        chip.className = 'chip active combined-filter-chip';
+        chip.id = 'vol-tenure-chip';
+        chip.style.background = 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = 'rgba(0,180,216,0.5)';
+        chip.style.color = '#00b4d8';
+        chip.textContent = 'Volatility \u00d7 Tenure: ' + (vtb.label || '');
+        var xSpan = document.createElement('span');
+        xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
+        xSpan.textContent = '\u00d7';
+        chip.appendChild(xSpan);
+        chip.title = 'Click to clear volatility x tenure filter';
+        chip.addEventListener('click', function() {
+            window._activeVolTenureBracket = null;
+            chip.remove();
+            var all = null;
+            if (typeof _chartData !== 'undefined' && _chartData && _chartData.companies) all = _chartData.companies;
+            else if (typeof compData !== 'undefined' && compData && compData.companies) all = compData.companies;
+            if (all) renderTable(all);
+            if (typeof pushState === 'function') pushState();
+            if (typeof announce === 'function') announce('Volatility x tenure filter cleared');
+        });
+        var controls = document.querySelector('.table-controls');
+        if (controls) controls.appendChild(chip);
+    }
+}
+window._updateVolTenureFilterIndicator = updateVolTenureFilterIndicator;
 
 function setupDetailPanel(companies) {
     var tbody = document.getElementById('comp-tbody');
