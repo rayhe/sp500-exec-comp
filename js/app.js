@@ -5233,6 +5233,7 @@ function buildSectorChips(companies) {
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+        if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
@@ -5264,6 +5265,7 @@ function buildSectorChips(companies) {
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+        if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
@@ -15048,6 +15050,7 @@ function setupDualSparklineTooltips() {
         if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
         if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
         if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+        if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
 
@@ -15570,6 +15573,22 @@ function setupDualSparklineTooltips() {
     // Apply percentile tier filter chip if restored from hash
     if (window._activePctileTier) {
         updatePctileFilterIndicator();
+    }
+
+    // Apply stock-% tier filter chip if restored from hash (324th review:
+    // pushState persists spmin/spmax and applyHashState restores the state,
+    // but no restore site ever rendered the chip, so a shared/bookmarked
+    // equity-filter URL filtered the table with no visible dismiss affordance
+    // — the same missing-chip class as the peer-dist fix)
+    if (window._activeStockPctTier) {
+        if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
+    }
+
+    // Apply say-on-pay filter chip if restored from hash (324th review:
+    // same gap as stock-% above: sopmin/sopmax persisted and restored, chip
+    // never rendered on URL restore)
+    if (window._activeSopFilter) {
+        if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
     }
 
     // === Table horizontal scroll indicator ===
@@ -17758,6 +17777,18 @@ function setupDualSparklineTooltips() {
         // Restore percentile tier filter chip if present in hash state
         if (window._activePctileTier) {
             updatePctileFilterIndicator();
+        }
+
+        // Restore stock-% tier filter chip if present in hash state (324th
+        // review: same missing-chip gap as the init restore site above)
+        if (window._activeStockPctTier) {
+            if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
+        }
+
+        // Restore say-on-pay filter chip if present in hash state (324th
+        // review: same missing-chip gap as the init restore site above)
+        if (window._activeSopFilter) {
+            if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
         }
 
         // Restore or clear comparison set from hash
