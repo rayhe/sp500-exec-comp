@@ -11,12 +11,18 @@ panel-side mirror of the 326th chip bug:
   2. insightResetAndSort nulled the same 7 dims without touching theirs.
   3. sortTableByKey (metric-card click) nulled 5 AF dims (dist/pay-band,
      sop, conc, gender, tenure) without touching theirs.
+  4. (338th review, 2026-11-04) findCompanyInTable (Top 10 chart click)
+     nulled 4 AF dims (dist/pay-band, conc, sop, gender) without
+     touching theirs -- the same class in a path the 330th guard did
+     not cover.
 The fix is window._clearAfSelects in js/advanced-filters.js, called
 (window-guarded) from each path with exactly the selects whose state
 that path nulled. Board is deliberately excluded from every call: none
-of the three paths nulls _activeBoardFilter, so the af-board select and
+of the four paths nulls _activeBoardFilter, so the af-board select and
 its badge count stay truthful. Gov/vol are likewise excluded from the
-sortTableByKey call because that path keeps their state.
+sortTableByKey call because that path keeps their state, and
+tenure/gov/vol/board from the findCompanyInTable call for the same
+reason.
 
 Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: _clearAfSelects is not defined in
@@ -32,6 +38,10 @@ Checks (all static - small JS reads, <2s):
   C4 HARD FAIL: sortTableByKey does not call _clearAfSelects with
      exactly the 5 selects for the AF states it nulls, or includes a
      select whose state it keeps (gov/vol/board).
+  C5 HARD FAIL (338th review): findCompanyInTable does not call
+     _clearAfSelects with exactly the 4 selects for the AF states it
+     nulls, or includes a select whose state it keeps
+     (tenure/gov/vol/board).
 
 State variable -> AF select id, per the Advanced Filters handlers:
   _activeDistFilter -> af-pay-band (pay-band handler sets the dist filter)
@@ -87,6 +97,10 @@ RESET_EXPECTED_STATES = {
 SORT_EXPECTED_STATES = {
     "_activeDistFilter", "_activeSopFilter", "_activeGenderFilter",
     "_activeConcTier", "_activeTenureQuartile",
+}
+FIND_EXPECTED_STATES = {
+    "_activeDistFilter", "_activeConcTier", "_activeSopFilter",
+    "_activeGenderFilter",
 }
 
 
@@ -179,12 +193,14 @@ def main():
                RESET_EXPECTED_STATES, "C3")
     check_path("sortTableByKey", "function sortTableByKey",
                SORT_EXPECTED_STATES, "C4")
+    check_path("findCompanyInTable", "window.findCompanyInTable = function",
+               FIND_EXPECTED_STATES, "C5")
 
     if failures:
         for f in failures:
             print("FAIL: af-select-reset-consistency: " + f)
         return 1
-    print("PASS: af-select-reset-consistency: helper + 3 reset paths "
+    print("PASS: af-select-reset-consistency: helper + 4 reset paths "
           "clear exactly the selects whose state they null")
     return 0
 

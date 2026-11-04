@@ -14868,6 +14868,18 @@ function setupDualSparklineTooltips() {
             var gfChip2 = document.getElementById('gender-filter-chip');
             if (gfChip2) gfChip2.remove();
         }
+        // 338th review: same panel-sync class as the 330th reset paths,
+        // in a fourth path the 330th guard did not cover. Of the states
+        // nulled above, 4 are AF-origin (dist/pay-band, conc, sop,
+        // gender), so clear exactly those selects -- otherwise a Top 10
+        // chart click left the panel showing the old AF values and the
+        // badge counting filters that no longer filtered. Tenure/gov/
+        // vol/board are intentionally kept: this path does not clear
+        // their state, so their selects stay truthful. Not fixed here,
+        // same class, next candidate: the Escape-key clear-all path
+        // nulls dist/conc/sop/gender with no _clearAfSelects call.
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+            ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc']);
         if (window._activeAspDeltaTier) {
             window._activeAspDeltaTier = null;
             var adChip = document.getElementById('aspdelta-filter-chip');
