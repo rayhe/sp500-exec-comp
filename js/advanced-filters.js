@@ -224,6 +224,15 @@
         if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
         if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
         if (typeof window._updateConcFilterIndicator === 'function') window._updateConcFilterIndicator();
+        // 335th review: same app.js-owned-chip class for dist and sop --
+        // the AF pay-band / SoP handlers reuse the app.js chip id and
+        // only overwrite its textContent (never setting dataset.af),
+        // so when an AF value is set over a chart-origin chip the Clear
+        // loop skips it while state is nulled, leaving a stale chip.
+        // The indicators remove chips whose state is null and re-render
+        // ones whose state survived, so calling them here is idempotent.
+        if (typeof window._updateDistFilterIndicator === 'function') window._updateDistFilterIndicator();
+        if (typeof window._updateSopFilterIndicator === 'function') window._updateSopFilterIndicator();
 
         updateAfBadge();
         if (typeof window._refreshTable === 'function') window._refreshTable();
@@ -283,6 +292,12 @@
             if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
             var chip = document.getElementById('dist-filter-chip');
             if (chip && chip.dataset && chip.dataset.af === '1') chip.parentNode.removeChild(chip);
+            // 335th review: same collision as AF Clear -- when an AF
+            // pay band was set over a chart-origin dist chip, the chip
+            // carries no dataset.af, so the removal above skips it
+            // while state was just nulled. The indicator removes it
+            // (mirrors the handleVol('') pattern from the 327th review).
+            if (typeof window._updateDistFilterIndicator === 'function') window._updateDistFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -447,6 +462,12 @@
             if (window._activeConcTier) window._activeConcTier = null;
             var chip = document.getElementById('conc-filter-chip');
             if (chip && chip.dataset && chip.dataset.af === '1') chip.parentNode.removeChild(chip);
+            // 335th review: the conc chip is app.js-owned (no
+            // dataset.af), so the removal above skips it while state
+            // was just nulled -- the 334th review fixed this shape for
+            // AF Clear only, not for this individual-clear path. The
+            // indicator removes the chip now that state is null.
+            if (typeof window._updateConcFilterIndicator === 'function') window._updateConcFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;

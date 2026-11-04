@@ -25,6 +25,13 @@ Checks (all static - small reads, <2s):
      window._updateGovFilterIndicator (the 334th fix's exposure line).
   C3 HARD FAIL: handleTenure() does not call _updateTenureFilterIndicator
      or handleGov() does not call _updateGovFilterIndicator.
+  C4 HARD FAIL (335th review): handlePayBand() does not call
+     _updateDistFilterIndicator, or handleConc() does not call
+     _updateConcFilterIndicator, on their individual-clear paths.
+     The 334th fix covered AF Clear only; the '' branches had the
+     same hole (AF value set over a chart-origin chip leaves a chip
+     with no dataset.af, skipped by the removal check, while state
+     was just nulled).
 
 Usage:
   scripts/check_af_clear_indicators.py
@@ -48,6 +55,12 @@ INDICATORS = [
     "_updateTenureFilterIndicator",
     "_updateGovFilterIndicator",
     "_updateConcFilterIndicator",
+    # 335th review: dist and sop complete the set -- their AF handlers
+    # reuse the app.js chip id and only overwrite its textContent
+    # (never setting dataset.af), so AF Clear's removal loop skips a
+    # chart-origin-collided chip while state is nulled.
+    "_updateDistFilterIndicator",
+    "_updateSopFilterIndicator",
 ]
 
 
@@ -115,12 +128,31 @@ def main():
                         "_updateGovFilterIndicator (AF-origin gov grade "
                         "hides behind a stale chart-origin chip)")
 
+    pay_body = _function_body(af, "handlePayBand")
+    if pay_body is None:
+        failures.append("C4 handlePayBand() not found in "
+                        "js/advanced-filters.js")
+    elif "_updateDistFilterIndicator" not in pay_body:
+        failures.append("C4 handlePayBand() never calls "
+                        "_updateDistFilterIndicator (AF pay band cleared "
+                        "over a chart-origin dist chip leaves a stale chip)")
+
+    conc_body = _function_body(af, "handleConc")
+    if conc_body is None:
+        failures.append("C4 handleConc() not found in "
+                        "js/advanced-filters.js")
+    elif "_updateConcFilterIndicator" not in conc_body:
+        failures.append("C4 handleConc() never calls "
+                        "_updateConcFilterIndicator (AF conc cleared "
+                        "individually leaves the app.js-owned chip stale)")
+
     if failures:
         for f in failures:
             print("FAIL: %s" % f)
         return 1
     print("PASS: AF Clear refreshes all app.js-owned chips; "
-          "tenure/gov setters refresh theirs; gov indicator exposed")
+          "tenure/gov setters refresh theirs; pay-band/conc "
+          "individual clears refresh theirs; gov indicator exposed")
     return 0
 
 
