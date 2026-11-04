@@ -17927,6 +17927,38 @@ function setupDualSparklineTooltips() {
         window._activeCeoTransitionFilter = false;
         window._activeTeamCompletenessFilter = null;
         window._activeYoYBucket = null;
+        // 341st review: applyHashState is additive -- it only sets a
+        // filter when its hash key is present. Every hash-serialized
+        // filter NOT nulled here survived a back/forward navigation
+        // that dropped it from the URL: conc kept filtering with its
+        // chip already removed (a stuck, invisible filter), and sop /
+        // gender / tenure / gov / pctile / stockpct / aspdelta /
+        // peerdist / crosstab / pvponly / role kept filtering with
+        // stale chips, toggles, or role chips while the URL no longer
+        // described the view. Null them all; applyHashState restores
+        // exactly the ones the new hash carries. Vol / board /
+        // community / quartile / position are NOT hash-serialized, so
+        // a hash change cannot drop them -- they stay session-local
+        // by design and are intentionally not reset here.
+        window._activeConcTier = null;
+        window._activeSopFilter = null;
+        window._activeGenderFilter = null;
+        window._isAfGender = false;
+        window._activeTenureQuartile = null;
+        window._activeGovGrade = null;
+        window._activePctileTier = null;
+        window._activeStockPctTier = null;
+        window._activeAspDeltaTier = null;
+        window._activePeerDistFilter = null;
+        window._activeCrosstabFilter = null;
+        window._activePvpOnlyFilter = false;
+        // Same class, navigation state rather than a filter: the
+        // section deep-link is hash-serialized too, so a hash change
+        // that drops section= must not leave it to be re-serialized
+        // by the next pushState (applyHashState's section branch
+        // scrolls from state.section directly and never sets this).
+        window._activeSectionDeepLink = null;
+        activeRole = null;
         _expandedDetailTicker = null;
         _activeDiffKey = null;
         // Close any open detail panel
@@ -17950,6 +17982,38 @@ function setupDualSparklineTooltips() {
         if (cc4) cc4.remove();
         var yc5 = document.getElementById('yoy-filter-chip');
         if (yc5) yc5.remove();
+        // 341st review: chips for the newly-nulled serialized filters
+        // (their indicator updaters re-create them in applyHashState
+        // when the new hash carries the filter, so removal here is
+        // safe and required -- otherwise a dropped filter's chip
+        // would linger with no state behind it).
+        ['sop-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip',
+         'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
+         'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip'
+        ].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.remove();
+        });
+        // 341st review: the nulled dims include 6 AF-mapped ones
+        // (dist/pay-band was already nulled above, plus conc, sop,
+        // tenure, gov, gender), so their panel selects must be cleared
+        // too -- the 330th-review panel-sync rule, applied to this
+        // reset path. No change dispatch (handlers would re-null
+        // already-nulled state). Vol is excluded: not nulled here.
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+            ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
+             'af-gender', 'af-conc']);
+        // PvP toggle renders from state; re-render it off now so a
+        // dropped pvponly=1 does not leave the toggle visually on
+        // (applyHashState + the restore block re-render it on when
+        // the new hash carries the flag).
+        if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
+        // Role chips render from activeRole; reset to the CEO default
+        // (applyHashState re-activates the hashed role when present).
+        document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+        var firstRoleChip = document.querySelector('.role-chip');
+        if (firstRoleChip) firstRoleChip.classList.add('active');
+        updateRoleColumnHeader();
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
