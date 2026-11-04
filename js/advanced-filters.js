@@ -181,15 +181,21 @@
             var el = document.getElementById(id);
             if (el) el.value = '';
         });
+        // 336th review: AF Clear nulls the dist filter ONLY when it is
+        // AF-origin (_isAfPay). The old else-branch sniffed the label
+        // for 'M' to guess AF-origin, but chart-origin dist labels are
+        // '$X.XM' too (histogram/sector clicks), so Clear silently
+        // killed chart filters from an AF-scoped button -- inconsistent
+        // with chart-origin tenure/conc/vol, which survive Clear (their
+        // state is nulled only for _isAf values). Origin is already
+        // tracked cleanly (_isAfPay is set only by handlePayBand), so
+        // the heuristic was redundant as well as wrong. A surviving
+        // chart dist chip is re-rendered by _updateDistFilterIndicator
+        // below (335th), so chip and state agree either way. Remaining
+        // asymmetry, noted not fixed here: gov/gender/sop carry no
+        // origin flag, so Clear still nulls them unconditionally --
+        // that needs an origin-tracking change, not a label sniff.
         if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
-        else if (window._activeDistFilter && document.getElementById('af-pay-band') && !document.getElementById('af-pay-band').value) {
-            // If pay band was the dist filter, clear it
-            var payVal = document.getElementById('af-pay-band') ? document.getElementById('af-pay-band').value : '';
-            if (!payVal && window._activeDistFilter) {
-                // Only clear if it was set via AF (heuristic: check label contains 'M')
-                if (window._activeDistFilter.label && window._activeDistFilter.label.indexOf('M') >= 0) window._activeDistFilter = null;
-            }
-        }
         if (window._activeSopFilter) window._activeSopFilter = null;
         if (window._activeTenureQuartile && window._activeTenureQuartile._isAf) window._activeTenureQuartile = null;
         if (window._activeGovGrade) window._activeGovGrade = null;

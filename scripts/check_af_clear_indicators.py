@@ -32,6 +32,14 @@ Checks (all static - small reads, <2s):
      same hole (AF value set over a chart-origin chip leaves a chip
      with no dataset.af, skipped by the removal check, while state
      was just nulled).
+  C5 HARD FAIL (336th review): clearAdvancedFilters() still nulls
+     the dist filter via a label heuristic (indexOf('M')), or nulls
+     it without gating on _isAfPay. Chart-origin dist labels are
+     '$X.XM' too, so the heuristic killed chart filters from an
+     AF-scoped button -- inconsistent with chart-origin tenure/conc/
+     vol, which survive Clear. Origin is tracked cleanly (_isAfPay
+     set only by handlePayBand), so Clear must gate on it and let
+     the 335th indicator refresh re-render a surviving chart chip.
 
 Usage:
   scripts/check_af_clear_indicators.py
@@ -145,6 +153,19 @@ def main():
         failures.append("C4 handleConc() never calls "
                         "_updateConcFilterIndicator (AF conc cleared "
                         "individually leaves the app.js-owned chip stale)")
+
+    if clear_body is not None:
+        if "indexOf('M')" in clear_body or 'indexOf("M")' in clear_body:
+            failures.append("C5 clearAdvancedFilters() still sniffs the "
+                            "dist label for 'M' (chart-origin dist "
+                            "labels are '$X.XM' too -- Clear would kill "
+                            "chart filters from an AF-scoped button)")
+        if "_activeDistFilter._isAfPay) window._activeDistFilter = null" \
+                not in clear_body:
+            failures.append("C5 clearAdvancedFilters() does not gate "
+                            "its dist nulling on _isAfPay (chart-origin "
+                            "dist must survive Clear like chart-origin "
+                            "tenure/conc/vol)")
 
     if failures:
         for f in failures:
