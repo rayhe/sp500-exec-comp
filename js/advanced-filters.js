@@ -150,6 +150,11 @@
         updateAfBadge();
     };
 
+    // 331st review: chart-origin setters and chip-dismiss handlers in
+    // app.js also call this helper with the single select whose state
+    // they overwrite/null (pay-band, sop-tier, tenure, gov, gender,
+    // conc), closing the same panel-sync gap on the chart path that
+    // the 329th vol fix closed for volatility alone.
     // 330th review: reset paths in app.js (resetAllFilters,
     // insightResetAndSort, sortTableByKey) null AF-origin filter state
     // without touching the af-* selects, so the panel kept showing the
@@ -393,7 +398,9 @@
     function handleGender(val) {
         if (!val) {
             if (window._activeGenderFilter) {
-                if (window.filterByGender) window.filterByGender(window._activeGenderFilter);
+                // 331st review: pass fromAf so filterByGender skips its
+                // chart-origin af-gender clear (the select is already '').
+                if (window.filterByGender) window.filterByGender(window._activeGenderFilter, true);
                 else window._activeGenderFilter = null;
             }
             if (typeof window._refreshTable === 'function') window._refreshTable();
@@ -401,7 +408,9 @@
             return;
         }
         if (window._activeGenderFilter !== val) {
-            if (window.filterByGender) window.filterByGender(val);
+            // 331st review: pass fromAf so filterByGender skips its
+            // chart-origin af-gender clear, which would wipe this value.
+            if (window.filterByGender) window.filterByGender(val, true);
             else window._activeGenderFilter = val;
         }
     }

@@ -13540,6 +13540,11 @@ function setupDualSparklineTooltips() {
             window._activeDistFilter = { sector: sector, min: minComp, max: maxComp, label: label };
         }
 
+        // 331st review: a chart-origin distribution filter overwrites an
+        // AF-origin pay band; clear af-pay-band (no change dispatch --
+        // handlePayBand('') would null this just-set chart filter).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-pay-band']);
+
         // Set sector to the clicked sector
         setActiveSector(window._activeDistFilter ? sector : null);
         searchTerm = '';
@@ -13609,6 +13614,10 @@ function setupDualSparklineTooltips() {
             chip.title = isCombined ? 'Click to clear combined sector + bracket filter' : 'Click to clear distribution filter';
             chip.addEventListener('click', function() {
                 window._activeDistFilter = null;
+                // 331st review: dismissing the (possibly sector-rebuilt)
+                // dist chip must also clear af-pay-band, or the panel
+                // keeps claiming a pay-band filter that no longer filters.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-pay-band']);
                 setActiveSector(null);
                 chip.remove();
                 document.querySelectorAll('.chip').forEach(function(c) {
@@ -13635,6 +13644,11 @@ function setupDualSparklineTooltips() {
         } else {
             window._activeDistFilter = { sector: null, min: minComp, max: maxComp, label: label };
         }
+
+        // 331st review: a chart-origin bracket filter overwrites an
+        // AF-origin pay band; clear af-pay-band (no change dispatch --
+        // handlePayBand('') would null this just-set chart filter).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-pay-band']);
 
         // Clear ratio filter (mutually exclusive histogram-style filters)
         currentPage = 1;
@@ -13805,6 +13819,11 @@ function setupDualSparklineTooltips() {
             window._activeConcTier = { min: minPct, max: maxPct, tag: tag, label: label };
         }
 
+        // 331st review: a chart-origin concentration tier overwrites an
+        // AF-origin conc value; clear af-conc (no change dispatch --
+        // handleConc('') would null this just-set chart tier).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-conc']);
+
         currentPage = 1;
 
         // Sort by CEO concentration descending
@@ -13835,6 +13854,10 @@ function setupDualSparklineTooltips() {
         } else {
             window._activeSopFilter = { min: minPct, max: maxPct, label: minPct + '-' + maxPct + '%' };
         }
+        // 331st review: a chart-origin SoP bucket overwrites an AF-origin
+        // SoP tier; clear af-sop-tier (no change dispatch -- handleSopTier('')
+        // would null this just-set chart bucket).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-sop-tier']);
         currentPage = 1;
         currentSort = { key: '_sopApproval', dir: 'asc' };
         document.querySelectorAll('th.sortable').forEach(function(t) {
@@ -13870,6 +13893,9 @@ function setupDualSparklineTooltips() {
             chip.title = isCombined ? 'Click to clear combined sector + SoP filter' : 'Click to clear say-on-pay filter';
             chip.addEventListener('click', function() {
                 window._activeSopFilter = null;
+                // 331st review: dismissing the (possibly sector-rebuilt)
+                // SoP chip must also clear af-sop-tier.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-sop-tier']);
                 chip.remove();
                 if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
                 renderTable(companies);
@@ -13900,6 +13926,9 @@ function setupDualSparklineTooltips() {
             chip.title = isCombined ? 'Click to clear combined sector + concentration filter' : 'Click to clear concentration tier filter';
             chip.addEventListener('click', function() {
                 window._activeConcTier = null;
+                // 331st review: the conc chip is app.js-owned even for
+                // AF-origin tiers, so dismiss must clear af-conc too.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-conc']);
                 chip.remove();
                 renderTable(companies);
             });
@@ -14286,7 +14315,7 @@ function setupDualSparklineTooltips() {
     window._updateTeamCompletenessFilterIndicator = updateTeamCompletenessFilterIndicator;
 
     /* ---- Gender Filter (click-to-filter from gender chart) ---- */
-    window.filterByGender = function(gender) {
+    window.filterByGender = function(gender, fromAf) {
         // gender: 'F' = female CEOs, 'M' = male CEOs
         // Toggle off if same gender re-clicked
         if (window._activeGenderFilter === gender) {
@@ -14294,6 +14323,11 @@ function setupDualSparklineTooltips() {
         } else {
             window._activeGenderFilter = gender;
         }
+        // 331st review: chart/insight-origin gender filters overwrite an
+        // AF-origin gender value; clear af-gender (no change dispatch).
+        // AF-origin calls pass fromAf and skip this: handleGender owns
+        // the select, and clearing here would wipe its just-chosen value.
+        if (!fromAf && typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gender']);
         currentPage = 1;
 
         // Sort by total compensation descending when activating
@@ -14347,6 +14381,9 @@ function setupDualSparklineTooltips() {
             chip.title = isCombined ? 'Click to clear combined sector + gender filter' : 'Click to clear gender filter';
             chip.addEventListener('click', function() {
                 window._activeGenderFilter = null;
+                // 331st review: the gender chip is app.js-owned even for
+                // AF-origin values, so dismiss must clear af-gender too.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gender']);
                 chip.remove();
                 renderTable(companies);
                 pushState();
@@ -14437,6 +14474,11 @@ function setupDualSparklineTooltips() {
             window._activeTenureQuartile = { min: minYrs, max: maxYrs, tag: tag, label: label };
         }
 
+        // 331st review: a chart-origin tenure quartile overwrites an
+        // AF-origin tenure value; clear af-tenure (no change dispatch --
+        // handleTenure('') would null this just-set chart quartile).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-tenure']);
+
         currentPage = 1;
 
         // Sort by CEO tenure descending
@@ -14474,6 +14516,9 @@ function setupDualSparklineTooltips() {
             chip.title = 'Click to clear tenure filter';
             chip.addEventListener('click', function() {
                 window._activeTenureQuartile = null;
+                // 331st review: the tenure chip is app.js-owned even for
+                // AF-origin values, so dismiss must clear af-tenure too.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-tenure']);
                 chip.remove();
                 renderTable(companies);
             });
@@ -14501,6 +14546,10 @@ function setupDualSparklineTooltips() {
         } else {
             window._activeGovGrade = { grade: grade, min: min, max: max };
         }
+        // 331st review: a chart-origin gov grade overwrites an AF-origin
+        // gov value; clear af-gov (no change dispatch -- handleGov('')
+        // would null this just-set chart grade).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gov']);
         currentPage = 1;
         currentSort = { key: '_govScore', dir: 'desc' };
         document.querySelectorAll('th.sortable').forEach(function(t) {
@@ -14534,6 +14583,9 @@ function setupDualSparklineTooltips() {
             chip.title = 'Click to clear governance filter';
             chip.addEventListener('click', function() {
                 window._activeGovGrade = null;
+                // 331st review: the gov chip is app.js-owned even for
+                // AF-origin values, so dismiss must clear af-gov too.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gov']);
                 chip.remove();
                 renderTable(companies);
             });
