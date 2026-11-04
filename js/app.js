@@ -14875,9 +14875,9 @@ function setupDualSparklineTooltips() {
         // chart click left the panel showing the old AF values and the
         // badge counting filters that no longer filtered. Tenure/gov/
         // vol/board are intentionally kept: this path does not clear
-        // their state, so their selects stay truthful. Not fixed here,
-        // same class, next candidate: the Escape-key clear-all path
-        // nulls dist/conc/sop/gender with no _clearAfSelects call.
+        // their state, so their selects stay truthful. 339th review:
+        // the Escape-key clear-all path named here as the next
+        // candidate is now fixed the same way (fifth caller).
         if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
             ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc']);
         if (window._activeAspDeltaTier) {
@@ -18254,6 +18254,17 @@ function setupDualSparklineTooltips() {
                     var gfcEsc = document.getElementById('gender-filter-chip');
                     if (gfcEsc) gfcEsc.remove();
                 }
+                // 339th review: same panel-sync class as the 330th reset
+                // paths, in a fifth path the 330th guard did not cover.
+                // Of the states nulled above, 4 are AF-mapped
+                // (dist/pay-band, conc, sop, gender), so clear exactly
+                // those selects -- otherwise pressing Escape left the
+                // panel showing the old AF values and the badge counting
+                // filters that no longer filtered. Tenure/gov/vol/board
+                // are intentionally kept: this path does not clear
+                // their state, so their selects stay truthful.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+                    ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc']);
                 document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
                 var allChip = document.querySelector('.chip');
                 if (allChip) allChip.classList.add('active');

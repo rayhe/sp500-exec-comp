@@ -15,14 +15,18 @@ panel-side mirror of the 326th chip bug:
      nulled 4 AF dims (dist/pay-band, conc, sop, gender) without
      touching theirs -- the same class in a path the 330th guard did
      not cover.
+  5. (339th review, 2026-11-04) the global Escape-key clear-all path
+     (document keydown handler in js/app.js) nulled the same 4 AF dims
+     without touching theirs -- the same class in a path neither the
+     330th guard nor the 338th fix covered.
 The fix is window._clearAfSelects in js/advanced-filters.js, called
 (window-guarded) from each path with exactly the selects whose state
 that path nulled. Board is deliberately excluded from every call: none
-of the four paths nulls _activeBoardFilter, so the af-board select and
+of the five paths nulls _activeBoardFilter, so the af-board select and
 its badge count stay truthful. Gov/vol are likewise excluded from the
 sortTableByKey call because that path keeps their state, and
-tenure/gov/vol/board from the findCompanyInTable call for the same
-reason.
+tenure/gov/vol/board from the findCompanyInTable and Escape calls for
+the same reason.
 
 Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: _clearAfSelects is not defined in
@@ -42,6 +46,12 @@ Checks (all static - small JS reads, <2s):
      _clearAfSelects with exactly the 4 selects for the AF states it
      nulls, or includes a select whose state it keeps
      (tenure/gov/vol/board).
+  C6 HARD FAIL (339th review): the Escape-key clear-all branch does
+     not call _clearAfSelects with exactly the same 4 selects, or
+     includes a select whose state it keeps (tenure/gov/vol/board).
+     The branch lives inside an anonymous document keydown listener,
+     so it is located by its "// Clear all filters and search" comment
+     rather than a function name.
 
 State variable -> AF select id, per the Advanced Filters handlers:
   _activeDistFilter -> af-pay-band (pay-band handler sets the dist filter)
@@ -102,6 +112,11 @@ FIND_EXPECTED_STATES = {
     "_activeDistFilter", "_activeConcTier", "_activeSopFilter",
     "_activeGenderFilter",
 }
+# The Escape clear-all branch nulls exactly the same 4 AF-mapped states
+# (plus non-AF states: sector, search, role, ratio, transition, team,
+# yoy -- none of which has an af-* select, so they drop out of the
+# STATE_TO_AF_SELECT filter below).
+ESC_EXPECTED_STATES = FIND_EXPECTED_STATES
 
 
 def extract_function_body(src, start_marker):
@@ -186,7 +201,7 @@ def main():
                 f"(missing = stale panel value; extra = cleared select "
                 f"whose filter is still active)")
 
-    # --- C2/C3/C4 ---------------------------------------------------------
+    # --- C2/C3/C4/C5 -----------------------------------------------------
     check_path("resetAllFilters", "window.resetAllFilters = function",
                RESET_EXPECTED_STATES, "C2")
     check_path("insightResetAndSort", "function insightResetAndSort",
@@ -196,11 +211,46 @@ def main():
     check_path("findCompanyInTable", "window.findCompanyInTable = function",
                FIND_EXPECTED_STATES, "C5")
 
+    # --- C6: Escape-key clear-all branch (anonymous listener) -----------
+    esc_start = app.find("// Clear all filters and search")
+    esc_end = app.find("// If in search, blur it", esc_start)
+    if esc_start < 0 or esc_end < 0 or esc_end <= esc_start:
+        failures.append("C6 Escape clear-all branch markers not found in "
+                        "js/app.js (guard markers drifted -- update the "
+                        "guard, do not silence it)")
+    else:
+        esc_body = app[esc_start:esc_end]
+        nulled = set(re.findall(
+            r"window\.(_active\w+)\s*=\s*(?:null|false)", esc_body))
+        af_nulled = {s for s in nulled if s in STATE_TO_AF_SELECT}
+        if af_nulled != ESC_EXPECTED_STATES:
+            failures.append(
+                f"C6 Escape clear-all nulls AF states {sorted(af_nulled)}; "
+                f"expected {sorted(ESC_EXPECTED_STATES)} (guard expectation "
+                f"drifted -- update the guard, do not silence it)")
+        else:
+            expected_selects = {STATE_TO_AF_SELECT[s]
+                                for s in ESC_EXPECTED_STATES}
+            calls = clear_calls(esc_body)
+            if not calls:
+                failures.append(
+                    "C6 Escape clear-all never calls _clearAfSelects "
+                    "(state nulled, panel selects left stale)")
+            elif len(calls) > 1:
+                failures.append(
+                    f"C6 Escape clear-all calls _clearAfSelects "
+                    f"{len(calls)} times (expected exactly one)")
+            elif calls[0] != expected_selects:
+                failures.append(
+                    f"C6 Escape clear-all clears selects "
+                    f"{sorted(calls[0])}; expected exactly "
+                    f"{sorted(expected_selects)}")
+
     if failures:
         for f in failures:
             print("FAIL: af-select-reset-consistency: " + f)
         return 1
-    print("PASS: af-select-reset-consistency: helper + 4 reset paths "
+    print("PASS: af-select-reset-consistency: helper + 5 reset paths "
           "clear exactly the selects whose state they null")
     return 0
 

@@ -158,7 +158,8 @@
     // 330th review: reset paths in app.js (resetAllFilters,
     // insightResetAndSort, sortTableByKey) null AF-origin filter state
     // (338th review: findCompanyInTable is a fourth such caller, for
-    // the 4 AF dims it nulls)
+    // the 4 AF dims it nulls; 339th review: the global Escape-key
+    // clear-all path is a fifth such caller, for the same 4 AF dims)
     // without touching the af-* selects, so the panel kept showing the
     // old value and the badge kept counting a filter that no longer
     // filtered -- the panel-side mirror of the 326th chip bug. Callers
