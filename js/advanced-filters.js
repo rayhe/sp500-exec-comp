@@ -191,16 +191,25 @@
         // tracked cleanly (_isAfPay is set only by handlePayBand), so
         // the heuristic was redundant as well as wrong. A surviving
         // chart dist chip is re-rendered by _updateDistFilterIndicator
-        // below (335th), so chip and state agree either way. Remaining
-        // asymmetry, noted not fixed here: gov/gender/sop carry no
-        // origin flag, so Clear still nulls them unconditionally --
-        // that needs an origin-tracking change, not a label sniff.
+        // below (335th), so chip and state agree either way.
+        // 337th review: closes the 336th run's remaining asymmetry the
+        // same way, not with a label sniff. SoP already carried _isAf
+        // (handleSopTier sets it; the chart setter and URL restore do
+        // not), so Clear now gates on it. Gov gains a copied _isAf flag
+        // in handleGov (a copy, not the shared gradeMap object). Gender
+        // state is a bare 'F'/'M' string with no object to hang a flag
+        // on, so it gains a parallel window._isAfGender boolean written
+        // by filterByGender (fromAf) and the URL restore (false: a
+        // restored filter is not AF-origin). Board has no chart setter
+        // and is still nulled unconditionally, correctly. Surviving
+        // chart gov/gender/sop chips are re-rendered by the indicator
+        // calls below (334th/335th), so chip and state agree either way.
         if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
-        if (window._activeSopFilter) window._activeSopFilter = null;
+        if (window._activeSopFilter && window._activeSopFilter._isAf) window._activeSopFilter = null;
         if (window._activeTenureQuartile && window._activeTenureQuartile._isAf) window._activeTenureQuartile = null;
-        if (window._activeGovGrade) window._activeGovGrade = null;
+        if (window._activeGovGrade && window._activeGovGrade._isAf) window._activeGovGrade = null;
         if (window._activeBoardFilter) window._activeBoardFilter = null;
-        if (window._activeGenderFilter) window._activeGenderFilter = null;
+        if (window._activeGenderFilter && window._isAfGender) { window._activeGenderFilter = null; window._isAfGender = false; }
         if (window._activeConcTier && window._activeConcTier._isAf) window._activeConcTier = null;
         if (window._activeVolatilityBucket && window._activeVolatilityBucket._isAf) window._activeVolatilityBucket = null;
 
@@ -406,7 +415,16 @@
             'D': { min: 35, max: 49.999, grade: 'D' },
             'F': { min: 0, max: 34.999, grade: 'F' }
         };
-        window._activeGovGrade = gradeMap[val];
+        // 337th review: copy (do NOT assign the shared gradeMap object)
+        // and stamp _isAf, so AF Clear can preserve chart-origin grades
+        // the way it already preserves chart-origin tenure/conc/vol/
+        // dist. Assigning gradeMap[val] directly would alias the shared
+        // map entry, so stamping a flag on it would pollute every later
+        // AF gov selection; the copy keeps the flag on this selection
+        // only. The chart setter (filterByGovGrade) and URL restore
+        // build flag-less objects, so they read as chart-origin.
+        var g = gradeMap[val];
+        window._activeGovGrade = { min: g.min, max: g.max, grade: g.grade, _isAf: true };
         // 334th review: refresh the app.js-owned chip so an AF-origin
         // grade replaces (not hides behind) a stale chart-origin tag.
         if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();

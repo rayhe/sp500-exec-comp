@@ -12698,6 +12698,11 @@ function applyHashState(companies) {
     // Gender filter
     if (state.gender === 'F' || state.gender === 'M') {
         window._activeGenderFilter = state.gender;
+        // 337th review: a URL-restored filter is not AF-origin, so it
+        // must survive AF Clear -- and must not inherit a stale true
+        // flag left by an earlier AF gender selection that a global
+        // reset nulled without touching the flag.
+        window._isAfGender = false;
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
     }
 
@@ -14323,10 +14328,22 @@ function setupDualSparklineTooltips() {
     window.filterByGender = function(gender, fromAf) {
         // gender: 'F' = female CEOs, 'M' = male CEOs
         // Toggle off if same gender re-clicked
+        // 337th review: gender state is a bare string, so origin rides
+        // a parallel window._isAfGender flag (AF handler passes fromAf;
+        // chart/insight callers pass nothing). AF Clear gates on it, so
+        // chart-origin gender survives Clear like chart-origin
+        // tenure/conc/vol/dist/sop/gov now do. Every set path writes
+        // the flag, so a stale true with a null filter (global resets
+        // null the filter without touching the flag) is inert: the next
+        // set overwrites it before Clear can ever read it against a
+        // live filter. The one set-without-flag path, URL restore, sets
+        // it false explicitly at its own site below.
         if (window._activeGenderFilter === gender) {
             window._activeGenderFilter = null;
+            window._isAfGender = false;
         } else {
             window._activeGenderFilter = gender;
+            window._isAfGender = !!fromAf;
         }
         // 331st review: chart/insight-origin gender filters overwrite an
         // AF-origin gender value; clear af-gender (no change dispatch).

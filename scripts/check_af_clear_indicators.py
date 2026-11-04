@@ -40,6 +40,15 @@ Checks (all static - small reads, <2s):
      vol, which survive Clear. Origin is tracked cleanly (_isAfPay
      set only by handlePayBand), so Clear must gate on it and let
      the 335th indicator refresh re-render a surviving chart chip.
+  C6 HARD FAIL (337th review): clearAdvancedFilters() still nulls
+     the sop, gov or gender filter unconditionally, closing the
+     336th run's remaining asymmetry. SoP already carries _isAf
+     (handleSopTier sets it; chart setter / URL restore do not), so
+     Clear must gate on it. Gov must gain a copied _isAf flag in
+     handleGov (a copy, never the shared gradeMap object, so the
+     flag cannot pollute later selections). Gender state is a bare
+     string, so filterByGender must write a parallel _isAfGender
+     flag from its fromAf argument, and Clear must gate on it.
 
 Usage:
   scripts/check_af_clear_indicators.py
@@ -166,6 +175,40 @@ def main():
                             "its dist nulling on _isAfPay (chart-origin "
                             "dist must survive Clear like chart-origin "
                             "tenure/conc/vol)")
+        if "_activeSopFilter._isAf) window._activeSopFilter = null" \
+                not in clear_body:
+            failures.append("C6 clearAdvancedFilters() does not gate "
+                            "its sop nulling on _isAf (chart-origin SoP "
+                            "must survive Clear like chart-origin dist)")
+        if "_activeGovGrade._isAf) window._activeGovGrade = null" \
+                not in clear_body:
+            failures.append("C6 clearAdvancedFilters() does not gate "
+                            "its gov nulling on _isAf (chart-origin gov "
+                            "must survive Clear like chart-origin dist)")
+        if "_activeGenderFilter && window._isAfGender" not in clear_body:
+            failures.append("C6 clearAdvancedFilters() does not gate "
+                            "its gender nulling on _isAfGender "
+                            "(chart-origin gender must survive Clear "
+                            "like chart-origin dist)")
+
+    if gov_body is not None:
+        if "_isAf: true" not in gov_body:
+            failures.append("C6 handleGov() never stamps _isAf on the "
+                            "gov grade (AF Clear cannot tell AF-origin "
+                            "grades from chart-origin ones)")
+        if "window._activeGovGrade = gradeMap[val];" in gov_body:
+            failures.append("C6 handleGov() still assigns the shared "
+                            "gradeMap object (stamping _isAf on it "
+                            "would pollute every later AF gov "
+                            "selection -- it must assign a copy)")
+
+    # filterByGender lives in js/app.js as a window assignment, not a
+    # plain function declaration, so check the whole file for the flag
+    # write tied to its fromAf argument.
+    if "window._isAfGender = !!fromAf" not in app:
+        failures.append("C6 filterByGender() never writes _isAfGender "
+                        "from fromAf (AF Clear cannot tell AF-origin "
+                        "gender from chart-origin gender)")
 
     if failures:
         for f in failures:
@@ -173,7 +216,8 @@ def main():
         return 1
     print("PASS: AF Clear refreshes all app.js-owned chips; "
           "tenure/gov setters refresh theirs; pay-band/conc "
-          "individual clears refresh theirs; gov indicator exposed")
+          "individual clears refresh theirs; gov indicator exposed; "
+          "AF Clear preserves chart-origin sop/gov/gender")
     return 0
 
 
