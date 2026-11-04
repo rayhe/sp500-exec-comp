@@ -12088,7 +12088,10 @@ function setupDetailPanel(companies) {
                     var tableControls = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
                     if (tableControls) tableControls.appendChild(_emptyChip);
                     else {
-                        var _alt = document.getElementById('comp-table-wrapper');
+                        // Fallback anchor is the real table wrapper (index.html);
+                        // the previous fallback id never existed in the markup,
+                        // so this branch silently dropped the chip (333rd review).
+                        var _alt = document.getElementById('table-wrapper');
                         if (_alt) _alt.parentNode.insertBefore(_emptyChip, _alt);
                     }
                     if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
@@ -12135,7 +12138,9 @@ function setupDetailPanel(companies) {
                 var tc = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
                 if (tc) tc.appendChild(_pfChip);
                 else {
-                    var _alt2 = document.getElementById('comp-table-wrapper');
+                    // Same fallback anchor as the empty-filter branch above:
+                    // the real table wrapper id in index.html.
+                    var _alt2 = document.getElementById('table-wrapper');
                     if (_alt2) _alt2.parentNode.insertBefore(_pfChip, _alt2);
                 }
 
