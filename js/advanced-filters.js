@@ -150,6 +150,27 @@
         updateAfBadge();
     };
 
+    // 330th review: reset paths in app.js (resetAllFilters,
+    // insightResetAndSort, sortTableByKey) null AF-origin filter state
+    // without touching the af-* selects, so the panel kept showing the
+    // old value and the badge kept counting a filter that no longer
+    // filtered -- the panel-side mirror of the 326th chip bug. Callers
+    // pass exactly the selects whose state they nulled. Board is
+    // deliberately excluded from every caller: none of those paths nulls
+    // _activeBoardFilter, so the af-board select and its badge count
+    // stay truthful. Like _clearAfVolSelect, this sets .value directly
+    // WITHOUT dispatching 'change': the handlers would re-null
+    // already-nulled state and trigger extra table refreshes. The badge
+    // (plus summary, toggle class, and group badges) is refreshed
+    // directly via updateAfBadge().
+    window._clearAfSelects = function(ids) {
+        (ids || []).forEach(function(id){
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        updateAfBadge();
+    };
+
     function clearAdvancedFilters() {
         ['af-pay-band','af-sop-tier','af-tenure','af-gov','af-board','af-gender','af-conc','af-vol'].forEach(function(id){
             var el = document.getElementById(id);

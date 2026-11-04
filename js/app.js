@@ -2272,6 +2272,15 @@ function sortTableByKey(key, dir) {
         if (chip) chip.remove();
     });
 
+    // 330th review: same panel-sync class -- of the states nulled above,
+    // 5 are AF-origin (dist/pay-band, sop, conc, gender, tenure), so
+    // clear exactly those selects. Gov/vol/board are intentionally kept:
+    // this path does not clear their state, so their selects stay
+    // truthful.
+    if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+        ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc',
+         'af-tenure']);
+
     // Clear search input
     var searchInput = document.getElementById('table-search');
     if (searchInput) searchInput.value = '';
@@ -3234,6 +3243,13 @@ function populateInsights(comp, trends, sectorFilter) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === sortKey) t.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
         });
+        // 330th review: same panel-sync class as resetAllFilters -- the
+        // state nulled above includes the 7 AF-origin dims (dist/pay-band,
+        // sop, tenure, gov, gender, conc, vol), so clear their selects
+        // (board excluded: its state is never nulled on this path).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+            ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
+             'af-gender', 'af-conc', 'af-vol']);
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -14625,6 +14641,18 @@ function setupDualSparklineTooltips() {
             var el = document.getElementById(id);
             if (el) el.remove();
         });
+
+        // 330th review: the state nulled above includes 7 AF-origin dims
+        // (dist/pay-band, sop, tenure, gov, gender, conc, vol), so their
+        // panel selects must be cleared too -- otherwise the panel kept
+        // showing the old value and the badge kept counting a filter
+        // that no longer filtered. Board is deliberately excluded: this
+        // path never nulls _activeBoardFilter, so af-board stays
+        // truthful. Selects are cleared without dispatching 'change'
+        // (see window._clearAfSelects).
+        if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
+            ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
+             'af-gender', 'af-conc', 'af-vol']);
 
         // Reset search input
         var searchInput = document.getElementById('table-search');
