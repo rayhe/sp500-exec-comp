@@ -14598,6 +14598,10 @@ function setupDualSparklineTooltips() {
             if (controls) controls.appendChild(chip);
         }
     }
+    // 334th review: gov is the only filter indicator never exposed on
+    // window (tenure/gender/conc/dist/sop all are), so the AF panel could
+    // not refresh the gov chip -- it now can, like the others.
+    window._updateGovFilterIndicator = updateGovFilterIndicator;
 
     // --- Crosstab cell filter ---
     // window.filterTableByTickers was called by the three crosstab click

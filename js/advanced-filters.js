@@ -212,6 +212,18 @@
         // so the loop above skips it; the indicator removes it once state is
         // nulled (state was cleared above for _isAf buckets).
         if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
+        // 334th review: same app.js-owned-chip class for gender, tenure,
+        // gov and conc -- their chips are not dataset.af either, so the
+        // loop above skips them while their state was just nulled
+        // (gender/gov unconditionally, tenure/conc for _isAf values),
+        // leaving stale chips after AF Clear. The indicators remove
+        // chips whose state is null and re-render ones whose state
+        // survived (chart-origin tenure/conc), so calling them here is
+        // idempotent for the surviving filters.
+        if (typeof window._updateGenderFilterIndicator === 'function') window._updateGenderFilterIndicator();
+        if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
+        if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
+        if (typeof window._updateConcFilterIndicator === 'function') window._updateConcFilterIndicator();
 
         updateAfBadge();
         if (typeof window._refreshTable === 'function') window._refreshTable();
@@ -334,6 +346,11 @@
             if (window._activeTenureQuartile) window._activeTenureQuartile = null;
             var chip = document.getElementById('tenure-filter-chip');
             if (chip) chip.parentNode.removeChild(chip);
+            // 334th review: the tenure chip is app.js-owned (not
+            // dataset.af), so refresh the indicator -- it removes the
+            // chip now that state is null, instead of leaving a stale
+            // chip like the pre-327th volatility path did.
+            if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -343,6 +360,9 @@
         var max = parts[1] === '999' ? Infinity : parseFloat(parts[1]);
         var labelMap = { '0-3':'New (<3 yrs)', '3-10':'Mid (3–10 yrs)', '10-20':'Established (10–20 yrs)', '20-999':'Veteran 20+ yrs' };
         window._activeTenureQuartile = { min: min, max: max, tag: labelMap[val] || val, label: labelMap[val] || val, _isAf: true };
+        // 334th review: refresh the app.js-owned chip so an AF-origin
+        // value replaces (not hides behind) a stale chart-origin tag.
+        if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
@@ -350,6 +370,10 @@
     function handleGov(val) {
         if (!val) {
             if (window._activeGovGrade) window._activeGovGrade = null;
+            // 334th review: same app.js-owned-chip refresh as tenure --
+            // the gov chip is not dataset.af, so only the indicator
+            // removes it once state is null.
+            if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -362,6 +386,9 @@
             'F': { min: 0, max: 34.999, grade: 'F' }
         };
         window._activeGovGrade = gradeMap[val];
+        // 334th review: refresh the app.js-owned chip so an AF-origin
+        // grade replaces (not hides behind) a stale chart-origin tag.
+        if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
