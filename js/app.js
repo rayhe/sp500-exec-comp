@@ -2765,11 +2765,30 @@ function populateInsights(comp, trends, sectorFilter) {
                     ];
                     var maxTenureBracket = Math.max.apply(null, tenureBrackets.map(function(b) { return b.count; }));
                     var tHtml = '<div class="tenure-dist-histogram"><div class="tenure-dist-bars">';
+                    // 353rd review: draw-time active styling, the comp-dist
+                    // convention -- the tenure histogram was the last inline
+                    // histogram with no isActive state, so a tenure filter
+                    // (chart click, insight bracket, AF select, deep link)
+                    // filtered the table with zero feedback on the bars
+                    // themselves. Match on exact min/max; the AF tenure
+                    // bands ('0-3','3-10','10-20','20-999') are the same
+                    // ranges as the chart brackets, so AF-origin filters
+                    // highlight correctly too (unlike gov/vol). data-min /
+                    // data-max / data-color / data-base-title let the
+                    // in-place highlight re-apply the same state at click
+                    // time, since populateInsights only re-runs on load
+                    // and sector change.
+                    var activeTq = window._activeTenureQuartile;
                     tenureBrackets.forEach(function(b) {
                         var barH = maxTenureBracket > 0 ? Math.max(3, Math.round(b.count / maxTenureBracket * 26)) : 3;
-                        tHtml += '<span class="tenure-dist-bar-group clickable-bar" title="' + b.tag + ': ' + b.count + ' companies" onclick="filterByTenureQuartile(' + b.min + ',' + b.max + ',\'' + b.tag.replace(/'/g, "\\'") + '\',\'' + b.tagShort.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">';
-                        tHtml += '<span class="tenure-dist-bar-label">' + b.count + '</span>';
-                        tHtml += '<span class="tenure-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';"></span>';
+                        var isActive = !!(activeTq && activeTq.min === b.min && (activeTq.max === Infinity ? b.max === 'Infinity' : activeTq.max === b.max));
+                        var isDimmed = !!(activeTq && !isActive);
+                        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+                        var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
+                        var baseTitle = b.tag + ': ' + b.count + ' companies';
+                        tHtml += '<span class="tenure-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + baseTitle + ' \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" data-min="' + b.min + '" data-max="' + b.max + '" data-color="' + b.color + '" data-base-title="' + baseTitle + '" onclick="filterByTenureQuartile(' + b.min + ',' + b.max + ',\'' + b.tag.replace(/'/g, "\\'") + '\',\'' + b.tagShort.replace(/'/g, "\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+                        tHtml += '<span class="tenure-dist-bar-label" style="' + dimStyle + '">' + b.count + '</span>';
+                        tHtml += '<span class="tenure-dist-bar" style="height:' + barH + 'px;background:' + b.color + ';' + dimStyle + '"></span>';
                         tHtml += '<span class="tenure-dist-bracket-label">' + b.label + '</span>';
                         tHtml += '</span>';
                     });
@@ -3217,6 +3236,9 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeTenureQuartile = null;
             var tqc = document.getElementById('tenure-filter-chip');
             if (tqc) tqc.remove();
+            // 353rd review: insight actions must clear the bar highlight
+            // too, like the YoY branch above does for its chart.
+            if (window.highlightTenureBucket) window.highlightTenureBucket(null, null);
         }
         if (window._activeGovGrade) {
             window._activeGovGrade = null;
@@ -14689,8 +14711,55 @@ function setupDualSparklineTooltips() {
 
         updateTenureFilterIndicator();
         renderTable(companies);
+        // 353rd review: apply the highlight with the post-toggle state,
+        // like filterByGovGrade does -- a toggle-off click clears instead
+        // of re-highlighting.
+        if (window.highlightTenureBucket) window.highlightTenureBucket(
+            window._activeTenureQuartile ? window._activeTenureQuartile.min : null,
+            window._activeTenureQuartile ? window._activeTenureQuartile.max : null
+        );
         pushState();
         announce(window._activeTenureQuartile ? 'Filtered to ' + tag + ' tenure (' + label + ')' : 'Tenure filter cleared');
+    };
+
+    // 353rd review: in-place highlight for the tenure-dist histogram in
+    // the CEO Tenure insight card. populateInsights only re-runs on load
+    // and sector change, so draw-time styling alone would not show at
+    // click time -- this is the second half of the pattern (draw-time in
+    // the builder + in-place here), the same split comp-dist uses.
+    // Groups carry data-min / data-max / data-color / data-base-title
+    // from the builder; match on exact min/max. A null min clears every
+    // group: Reset All already calls this behind a typeof guard (now
+    // live), and the chip dismiss / insight reset / AF clear paths call
+    // it below. Escape keeps tenure by design (339th review), so it
+    // needs no call here -- the highlight correctly stays with the
+    // kept filter.
+    window.highlightTenureBucket = function(min, max) {
+        var groups = document.querySelectorAll('.tenure-dist-bar-group');
+        groups.forEach(function(g) {
+            var bar = g.querySelector('.tenure-dist-bar');
+            var label = g.querySelector('.tenure-dist-bar-label');
+            var gMin = parseFloat(g.getAttribute('data-min'));
+            var gMaxRaw = g.getAttribute('data-max');
+            var gMax = gMaxRaw === 'Infinity' ? Infinity : parseFloat(gMaxRaw);
+            var isActive = (min != null && gMin === min && gMax === max);
+            var isDimmed = (min != null && !isActive);
+            if (isActive) {
+                g.classList.add('active-bracket');
+                g.style.outline = '2px solid ' + (g.getAttribute('data-color') || '#06d6a0');
+                g.style.outlineOffset = '2px';
+                g.style.borderRadius = '3px';
+            } else {
+                g.classList.remove('active-bracket');
+                g.style.outline = '';
+                g.style.outlineOffset = '';
+                g.style.borderRadius = '';
+            }
+            if (bar) bar.style.opacity = isDimmed ? '0.3' : '';
+            if (label) label.style.opacity = isDimmed ? '0.3' : '';
+            var baseTitle = g.getAttribute('data-base-title');
+            if (baseTitle) g.setAttribute('title', baseTitle + ' \u2014 click to ' + (isActive ? 'clear' : 'filter'));
+        });
     };
 
     function updateTenureFilterIndicator() {
@@ -14716,6 +14785,9 @@ function setupDualSparklineTooltips() {
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-tenure']);
                 chip.remove();
                 renderTable(companies);
+                // 353rd review: dismiss must clear the bar highlight too,
+                // or the bracket stays ringed while the filter is gone.
+                if (window.highlightTenureBucket) window.highlightTenureBucket(null, null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);

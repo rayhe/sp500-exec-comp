@@ -386,6 +386,8 @@
             // chip now that state is null, instead of leaving a stale
             // chip like the pre-327th volatility path did.
             if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
+            // 353rd review: AF clear must clear the bar highlight too.
+            if (typeof window.highlightTenureBucket === 'function') window.highlightTenureBucket(null, null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -398,6 +400,10 @@
         // 334th review: refresh the app.js-owned chip so an AF-origin
         // value replaces (not hides behind) a stale chart-origin tag.
         if (typeof window._updateTenureFilterIndicator === 'function') window._updateTenureFilterIndicator();
+        // 353rd review: the AF tenure bands match the chart brackets
+        // exactly, so highlight the matching bracket like the
+        // chart-origin setter does (unlike gov/vol, no band mismatch).
+        if (typeof window.highlightTenureBucket === 'function') window.highlightTenureBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
