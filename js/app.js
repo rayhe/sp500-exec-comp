@@ -14785,6 +14785,19 @@ function setupDualSparklineTooltips() {
         if (window.highlightTenureBucket) window.highlightTenureBucket(null);
         if (window.highlightGovChart) window.highlightGovChart(null);
         if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null);
+        // 345th review: the CEO/CFO premium chart was the one highlight
+        // this path never cleared -- highlightCeoCfoBucket is the only
+        // window.highlight*/clear*Highlight function absent from this
+        // list, and its toggle state (_activeCeoCfoBucket, charts.js)
+        // is read by the next bar click. A Reset that kept it left the
+        // premium bars dimmed with a white-stroked "active" bar behind
+        // the unconditional 'All filters reset' announcement, and the
+        // next click on that same bar silently nulled state instead of
+        // highlighting (a no-op click from the user's view). Clear the
+        // visual and null the toggle state together: either alone
+        // leaves the other half stale.
+        if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
+        window._activeCeoCfoBucket = null;
         if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
         if (window.clearCommunityHighlight) window.clearCommunityHighlight();
         if (window.clearQuartileHighlight) window.clearQuartileHighlight();
