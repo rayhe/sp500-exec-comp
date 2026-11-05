@@ -6137,7 +6137,23 @@ function drawCeoCfoChart(companies) {
         .attr('height', function(b) { return height - y(b.count); })
         .attr('fill', function(b) { return b.color; })
         .attr('rx', 3).attr('ry', 3)
-        .attr('opacity', 0.8)
+        .attr('opacity', function(b) {
+            // 349th review: re-apply the active-bucket highlight at draw
+            // time (resize / theme toggle rebuild via redrawAllCharts),
+            // the pattern drawRatioChart/drawYoYDistChart/drawCompDistChart/
+            // drawConcDistChart/drawSopDistChart already use -- previously
+            // every bar redrew at a flat 0.8, so the active filter's
+            // highlight silently dropped while the table stayed filtered.
+            var ab = window._activeCeoCfoBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.25;
+            return 0.8;
+        })
+        .each(function(b) {
+            var ab = window._activeCeoCfoBucket;
+            if (ab && b.min === ab.min && b.max === ab.max) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
             d3.select(this).attr('opacity', 1);
@@ -6158,7 +6174,19 @@ function drawCeoCfoChart(companies) {
             showChartTooltip(event, html);
         })
         .on('mousemove', positionChartTooltip)
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.8); hideChartTooltip(); })
+        .on('mouseout', function(event, b) {
+            // 349th review: restore the draw-time highlight, not a flat
+            // 0.8 -- the old reset dropped the active bar to 0.8 after a
+            // hover and lifted a hovered inactive bar to 0.8 instead
+            // of its dimmed 0.25.
+            var ab = window._activeCeoCfoBucket;
+            var isActive = ab && b.min === ab.min && b.max === ab.max;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (ab ? 0.25 : 0.8))
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
+            hideChartTooltip();
+        })
         .on('click', function(event, b) {
             hideChartTooltip();
             // 347th review: the bar click filters the table (the
@@ -6221,6 +6249,13 @@ function drawCeoCfoChart(companies) {
         .attr('fill', textColor)
         .attr('font-size', '11px').attr('font-weight', '600')
         .attr('font-family', 'Inter, system-ui, sans-serif')
+        .attr('opacity', function(b) {
+            // 349th review: dim inactive count labels with the bucket,
+            // the same convention as the ratio/YoY/comp/conc highlights.
+            var ab = window._activeCeoCfoBucket;
+            if (ab) return (b.min === ab.min && b.max === ab.max) ? 1 : 0.4;
+            return 1;
+        })
         .text(function(b) { return b.count > 0 ? b.count : ''; });
 
     // Median annotation
@@ -6262,16 +6297,27 @@ function drawCeoCfoChart(companies) {
 /* Highlight/dim CEO-CFO chart bars when a bucket is active */
 window.highlightCeoCfoBucket = function(minRatio, maxRatio) {
     var bars = d3.selectAll('.cfo-bar');
+    // 349th review: the clear path used to reset opacity only, leaving
+    // the ring on the previously active bar (a phantom ring after chip
+    // dismiss / Reset All / Escape / toggle-off). It now clears the
+    // stroke too, and the ring uses chartStrokeColor() at 1.5 so the
+    // draw-time application in drawCeoCfoChart and this function agree
+    // -- the same convention as the other histogram highlights.
     if (minRatio == null) {
-        bars.attr('opacity', 0.8);
+        bars.attr('opacity', 0.8).attr('stroke', 'none').attr('stroke-width', 0);
+        d3.selectAll('.cfo-count').attr('opacity', 1);
         return;
     }
     bars.each(function(b) {
         var match = b.min === minRatio && b.max === maxRatio;
         d3.select(this)
             .attr('opacity', match ? 1 : 0.25)
-            .attr('stroke', match ? '#fff' : 'none')
-            .attr('stroke-width', match ? 2 : 0);
+            .attr('stroke', match ? chartStrokeColor() : 'none')
+            .attr('stroke-width', match ? 1.5 : 0);
+    });
+    d3.selectAll('.cfo-count').each(function(b) {
+        if (!b) return;
+        d3.select(this).attr('opacity', (b.min === minRatio && b.max === maxRatio) ? 1 : 0.4);
     });
 };
 
