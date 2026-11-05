@@ -2909,9 +2909,29 @@ function populateInsights(comp, trends, sectorFilter) {
                 value: longestSec.name + ' leads',
                 detail: secTenureDetail,
                 action: function() {
+                    // 348th review: filter through the real sector state
+                    // (setActiveSector), not a one-shot renderTable subset
+                    // plus a write to a dead window-level slot nothing
+                    // ever read (the slot name is deliberately not spelled
+                    // here, so a future dead-state grep cannot false-pass
+                    // on this prose -- 343rd-review lesson). The one-shot
+                    // sector chip, no summary-bar entry, no URL state,
+                    // and no announcement (all of those read activeSector,
+                    // which stayed null), and the next renderTable(companies)
+                    // from any other interaction silently dropped the
+                    // restriction. State now persists like every other
+                    // sector-filter entry point (sector chip, sector
+                    // analytics row); renderTable's own pushState carries
+                    // it into the hash.
                     insightResetAndSort('_ceoTenureYears', 'desc');
-                    window._activeSectorFilter = longestSec.name;
-                    renderTable(companies.filter(function(c) { return c.sector === longestSec.name; }), {});
+                    setActiveSector(longestSec.name);
+                    currentPage = 1;
+                    renderTable(companies);
+                    document.querySelectorAll('.chip').forEach(function(chip) {
+                        chip.classList.remove('active');
+                        if (chip.textContent === longestSec.name) chip.classList.add('active');
+                    });
+                    if (window.highlightSectorBar) window.highlightSectorBar(longestSec.name);
                     scrollToTable();
                 },
                 actionHint: 'Filter to ' + longestSec.name
@@ -3695,9 +3715,22 @@ function populateInsights(comp, trends, sectorFilter) {
                 value: lowestSec.abbr + ' ' + lowestSec.median.toFixed(1) + '% low',
                 detail: secSopDetail,
                 action: function() {
+                    // 348th review: same one-shot-subset fix as the Sector
+                    // Tenure card above -- filter through setActiveSector
+                    // so the restriction is real state (chip, summary bar,
+                    // URL, announcement) instead of an invisible subset
+                    // that the next renderTable(companies) drops, and drop
+                    // the dead window-level write (name not spelled here,
+                    // same 343rd-review reason as above).
                     insightResetAndSort('_sopApproval', 'asc');
-                    window._activeSectorFilter = lowestSec.name;
-                    renderTable(companies.filter(function(c) { return c.sector === lowestSec.name; }), {});
+                    setActiveSector(lowestSec.name);
+                    currentPage = 1;
+                    renderTable(companies);
+                    document.querySelectorAll('.chip').forEach(function(chip) {
+                        chip.classList.remove('active');
+                        if (chip.textContent === lowestSec.name) chip.classList.add('active');
+                    });
+                    if (window.highlightSectorBar) window.highlightSectorBar(lowestSec.name);
                     scrollToTable();
                 },
                 actionHint: 'Filter to ' + lowestSec.name
