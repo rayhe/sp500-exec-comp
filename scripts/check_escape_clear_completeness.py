@@ -31,6 +31,11 @@ sop/gender, so:
   The gate therefore covers 14 dims now (13 + CeoCfoBucket) and the
   highlight-clear list gains highlightCeoCfoBucket(null, null).
 
+  347th review (2026-11-05): the bar click now filters the table,
+  so CeoCfoBucket is a real filter dim with a dismissible chip; the
+  gate and highlight-clear entries above are unchanged, and the chip
+  removal in this branch is pinned by check_ceocfo_filter_table.py.
+
 Deliberately NOT required here (339th-review scoping, unchanged):
 tenure / gov / vol / board / community / quartile / position /
 vol-tenure / pvponly are AF-panel or section dims this path does not

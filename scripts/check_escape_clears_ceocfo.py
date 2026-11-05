@@ -40,6 +40,13 @@ visual, mirroring the 345th review's Reset All fix. The scoped
 announcement is unchanged: the premium bucket is highlight-only,
 not a filtering dim, so it must never join the keptEsc list.
 
+347th review (2026-11-05): the bar click now filters the table
+(filterByCeoCfoBucket), so the bucket is a real filter dim with a
+dismissible chip. The Escape invariants this guard pins are
+unchanged -- gate mention, null, highlight clear, and never
+joining keptEsc (it is nulled here, not kept) -- and the chip
+removal in this branch is pinned by check_ceocfo_filter_table.py.
+
 Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: the Escape clear-all branch cannot be located
      (marker "// Clear all filters and search" through
@@ -54,10 +61,10 @@ Checks (all static - small JS reads, <2s):
      highlightCeoCfoBucket(null, null) (state nulled, bars stay
      dimmed until the next chart redraw).
   C5 HARD FAIL: the scoped announcement was changed, or the
-     premium bucket joined the keptEsc list (it is highlight-only,
-     not a filtering dim -- clearing it needs no announcement
-     change, and listing it as "still active" would mislabel a
-     highlight as a filter).
+     premium bucket joined the keptEsc list (it is nulled here,
+     not kept -- clearing it needs no announcement change, and
+     listing it as "still active" would claim a cleared filter
+     still filters).
 
 Usage:
   scripts/check_escape_clears_ceocfo.py
@@ -116,7 +123,7 @@ if not gate_lines:
     fail("C2: Escape gate condition line not found in branch")
 elif "window._activeCeoCfoBucket" not in gate_lines[0]:
     fail("C2: Escape gate does not mention _activeCeoCfoBucket "
-         "(highlight-only state never fires the branch)")
+         "(filter state never fires the branch)")
 
 # C3: toggle state nulled in the branch. (The 346th comment block in
 # app.js deliberately never spells the assignment, so a plain
@@ -144,7 +151,7 @@ else:
     for ln in kept_block.splitlines():
         if "keptEsc.push" in ln and "ceocfo" in ln.lower():
             fail("C5: premium bucket joined the keptEsc list (it is "
-                 "highlight-only, not a filtering dim)")
+                 "nulled here, never kept)")
             break
     if ANNOUNCE not in branch:
         fail("C5: Escape announcement no longer reads 'Filters "

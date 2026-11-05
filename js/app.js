@@ -2238,6 +2238,7 @@ function sortTableByKey(key, dir) {
     window._activeSopFilter = null;
     window._activeCeoTransitionFilter = false;
     window._activeTeamCompletenessFilter = null; // null=off, 'missing'=missing expected roles, 'complete'=4+ roles
+    window._activeCeoCfoBucket = null; // null=off, { min, max, label }
     window._activePctileTier = null; // null=off, { min, max, label, color }
     window._activeStockPctTier = null; // null=off, { min, max, label, color }
     window._activeGenderFilter = null; // null=off, 'F'=female CEOs, 'M'=male CEOs
@@ -2267,7 +2268,7 @@ function sortTableByKey(key, dir) {
      'team-filter-chip', 'pctile-filter-chip', 'stockpct-filter-chip',
      'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
      'quartile-filter-chip', 'position-filter-chip',
-     'crosstab-filter-chip'].forEach(function(id) {
+     'crosstab-filter-chip', 'ceocfo-filter-chip'].forEach(function(id) {
         var chip = document.getElementById(id);
         if (chip) chip.remove();
     });
@@ -3139,6 +3140,12 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeConcTier = null;
             var cc = document.getElementById('conc-filter-chip');
             if (cc) cc.remove();
+        }
+        if (window._activeCeoCfoBucket) {
+            window._activeCeoCfoBucket = null;
+            var cfc = document.getElementById('ceocfo-filter-chip');
+            if (cfc) cfc.remove();
+            if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
         }
         if (window._activeSopFilter) {
             window._activeSopFilter = null;
@@ -6887,6 +6894,7 @@ function renderSummaryBar(filtered, allCompanies) {
     }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
+    if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO ' + window._activeCeoCfoBucket.label); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
     if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
@@ -7287,6 +7295,12 @@ function renderTable(companies, options) {
         var ct = window._activeConcTier;
         filtered = filtered.filter(function(c) {
             return c._ceoConcPct != null && c._ceoConcPct >= ct.min && c._ceoConcPct < ct.max;
+        });
+    }
+    if (window._activeCeoCfoBucket) {
+        var cfb = window._activeCeoCfoBucket;
+        filtered = filtered.filter(function(c) {
+            return c._ceoCfoPremium != null && c._ceoCfoPremium >= cfb.min && c._ceoCfoPremium < cfb.max;
         });
     }
     if (window._activeSopFilter) {
@@ -7834,6 +7848,7 @@ function renderTable(companies, options) {
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
+    if (window._activeCeoCfoBucket) announceMsg += ', CEO/CFO premium: ' + window._activeCeoCfoBucket.label;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
     if (window._activePvpOnlyFilter) announceMsg += ', Pay vs Performance covered only';
     if (window._activeTeamCompletenessFilter) announceMsg += ', ' + (window._activeTeamCompletenessFilter === 'missing' ? 'missing expected roles' : 'complete teams');
@@ -12433,6 +12448,11 @@ function serializeState() {
         params.push('cttag=' + encodeURIComponent(window._activeConcTier.tag));
         params.push('ctlbl=' + encodeURIComponent(window._activeConcTier.label));
     }
+    if (window._activeCeoCfoBucket) {
+        params.push('cfomin=' + window._activeCeoCfoBucket.min);
+        params.push('cfomax=' + (window._activeCeoCfoBucket.max === Infinity ? 'inf' : window._activeCeoCfoBucket.max));
+        params.push('cfolbl=' + encodeURIComponent(window._activeCeoCfoBucket.label));
+    }
     if (window._activeCeoTransitionFilter) {
         params.push('ceotrans=1');
     }
@@ -12638,6 +12658,16 @@ function applyHashState(companies) {
             max: parseFloat(state.ctmax),
             tag: state.cttag || 'Filtered',
             label: state.ctlbl || ''
+        };
+    }
+
+    // CEO/CFO premium bucket filter
+    if (state.cfomin != null && state.cfomax != null) {
+        var cfoMax = state.cfomax === 'inf' ? Infinity : parseFloat(state.cfomax);
+        window._activeCeoCfoBucket = {
+            min: parseFloat(state.cfomin),
+            max: cfoMax,
+            label: state.cfolbl || ''
         };
     }
 
@@ -13948,6 +13978,80 @@ function setupDualSparklineTooltips() {
     }
     window._updateConcFilterIndicator = updateConcFilterIndicator;
 
+    // CEO/CFO premium bucket filter -- filter table by clicking bars in
+    // the CEO/CFO premium histogram (347th review: the click used to
+    // only highlight the bar while the tooltip promised "Click to
+    // filter table"; it now filters, like every other histogram).
+    window._activeCeoCfoBucket = null;
+
+    window.filterByCeoCfoBucket = function(minRatio, maxRatio, label) {
+        // Toggle off if same bucket clicked again
+        if (window._activeCeoCfoBucket && window._activeCeoCfoBucket.min === minRatio && window._activeCeoCfoBucket.max === maxRatio) {
+            window._activeCeoCfoBucket = null;
+        } else {
+            window._activeCeoCfoBucket = { min: minRatio, max: maxRatio, label: label };
+        }
+
+        currentPage = 1;
+
+        // Sort by CEO/CFO premium descending
+        currentSort = { key: '_ceoCfoPremium', dir: 'desc' };
+        document.querySelectorAll('th.sortable').forEach(function(t) {
+            t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === '_ceoCfoPremium') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
+        });
+
+        updateCeoCfoFilterIndicator();
+        renderTable(companies);
+        if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(
+            window._activeCeoCfoBucket ? window._activeCeoCfoBucket.min : null,
+            window._activeCeoCfoBucket ? window._activeCeoCfoBucket.max : null
+        );
+        pushState();
+        announce(window._activeCeoCfoBucket ? 'Filtered to CEO/CFO premium ' + label : 'CEO/CFO premium filter cleared');
+
+        // Scroll to the table section
+        var section = document.getElementById('compensation-table-section');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
+        }
+    };
+
+    function updateCeoCfoFilterIndicator() {
+        var existing = document.getElementById('ceocfo-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeCeoCfoBucket) {
+            var cb = window._activeCeoCfoBucket;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × CEO/CFO ' + cb.label : 'CEO/CFO: ' + cb.label;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'ceocfo-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(167,139,250,0.12)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(167,139,250,0.4)';
+            chip.style.color = '#a78bfa';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + CEO/CFO premium filter' : 'Click to clear CEO/CFO premium filter';
+            chip.addEventListener('click', function() {
+                window._activeCeoCfoBucket = null;
+                chip.remove();
+                if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateCeoCfoFilterIndicator = updateCeoCfoFilterIndicator;
+
     // YoY bucket filter — filter table by clicking bars in YoY distribution chart
     window._activeYoYBucket = null;
 
@@ -14722,7 +14826,7 @@ function setupDualSparklineTooltips() {
             'stockpct-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
             'gov-filter-chip', 'volatility-filter-chip', 'vol-tenure-chip',
             'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip',
-            'crosstab-filter-chip', 'board-filter-chip'
+            'crosstab-filter-chip', 'ceocfo-filter-chip', 'board-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -14796,6 +14900,9 @@ function setupDualSparklineTooltips() {
         // highlighting (a no-op click from the user's view). Clear the
         // visual and null the toggle state together: either alone
         // leaves the other half stale.
+        // 347th review: the bar click now filters the table, so the
+        // dismissible ceocfo-filter-chip joins the removal list
+        // above; the null + highlight clear below are unchanged.
         if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
         window._activeCeoCfoBucket = null;
         if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
@@ -14823,6 +14930,7 @@ function setupDualSparklineTooltips() {
     window._hasActiveFilters = function() {
         return !!(activeSector || searchTerm || (activeRole && activeRole !== 'CEO') ||
             window._activeRatioBucket || window._activeDistFilter || window._activeConcTier ||
+            window._activeCeoCfoBucket ||
             window._activeSopFilter || window._activeCeoTransitionFilter ||
             window._activePvpOnlyFilter ||
             window._activeTeamCompletenessFilter || window._activeYoYBucket ||
@@ -14870,6 +14978,11 @@ function setupDualSparklineTooltips() {
             window._activeConcTier = null;
             var cc2 = document.getElementById('conc-filter-chip');
             if (cc2) cc2.remove();
+        }
+        if (window._activeCeoCfoBucket) {
+            window._activeCeoCfoBucket = null;
+            var cfc2 = document.getElementById('ceocfo-filter-chip');
+            if (cfc2) cfc2.remove();
         }
         if (window._activeTeamCompletenessFilter) {
             window._activeTeamCompletenessFilter = null;
@@ -14930,6 +15043,7 @@ function setupDualSparklineTooltips() {
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
@@ -15807,6 +15921,11 @@ function setupDualSparklineTooltips() {
         window.highlightConcDistBucket(window._activeConcTier.min, window._activeConcTier.max);
     }
 
+    // Apply CEO/CFO premium bucket highlight if restored from hash
+    if (window._activeCeoCfoBucket && window.highlightCeoCfoBucket) {
+        window.highlightCeoCfoBucket(window._activeCeoCfoBucket.min, window._activeCeoCfoBucket.max);
+    }
+
     // Apply YoY filter chip if restored from hash
     if (window._activeYoYBucket) {
         updateYoYFilterIndicator();
@@ -15911,6 +16030,11 @@ function setupDualSparklineTooltips() {
     // Update conc filter chip UI if restored from hash
     if (window._activeConcTier) {
         updateConcFilterIndicator();
+    }
+
+    // Update CEO/CFO premium filter chip UI if restored from hash
+    if (window._activeCeoCfoBucket) {
+        updateCeoCfoFilterIndicator();
     }
 
     // === CSV Export ===
@@ -17970,6 +18094,7 @@ function setupDualSparklineTooltips() {
         // a hash change cannot drop them -- they stay session-local
         // by design and are intentionally not reset here.
         window._activeConcTier = null;
+        window._activeCeoCfoBucket = null;
         window._activeSopFilter = null;
         window._activeGenderFilter = null;
         window._isAfGender = false;
@@ -18018,7 +18143,8 @@ function setupDualSparklineTooltips() {
         // would linger with no state behind it).
         ['sop-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip',
          'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
-         'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip'
+         'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip',
+         'ceocfo-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -18074,6 +18200,11 @@ function setupDualSparklineTooltips() {
         // Restore conc dist bucket highlight from hash state
         if (window._activeConcTier && window.highlightConcDistBucket) {
             window.highlightConcDistBucket(window._activeConcTier.min, window._activeConcTier.max);
+        }
+        // Restore CEO/CFO premium bucket highlight + chip from hash state
+        if (window._activeCeoCfoBucket) {
+            if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(window._activeCeoCfoBucket.min, window._activeCeoCfoBucket.max);
+            updateCeoCfoFilterIndicator();
         }
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
@@ -18347,26 +18478,18 @@ function setupDualSparklineTooltips() {
                     var gfcEsc = document.getElementById('gender-filter-chip');
                     if (gfcEsc) gfcEsc.remove();
                 }
-                // 346th review: the CEO/CFO premium highlight is the
-                // one chart highlight this branch never cleared -- it
-                // is highlight-only (the click never filters the
-                // table), so it is not in the 339th deliberately-kept
-                // list, yet it was absent from the gate, the nulls,
-                // and the trailing highlight clears. With only a
-                // premium bar highlighted, Escape did nothing at all
-                // (the gate did not fire); with a filter plus a
-                // highlight active, Escape announced the filters
-                // cleared while the bars stayed dimmed with a
-                // white-stroked "active" bar. And the stale toggle
-                // state made the next click on that same bar a silent
-                // no-op (the toggle reads the stale state as active
-                // and nulls it instead of highlighting -- the 345th
-                // review's second facet, now on this path). Null the
-                // toggle state here and clear the visual with the
-                // other highlight clears below; either alone leaves
-                // the other half stale.
+                // 347th review: the CEO/CFO premium bucket is now a
+                // real table filter (the 346th fix covered it here as
+                // a highlight-only state, when the bar click never
+                // filtered). Null the state and remove the
+                // dismissible chip, like every other chart filter
+                // above; the trailing highlight clear below still
+                // handles the visual, and the bucket never joins the
+                // keptEsc list because it is nulled here.
                 if (window._activeCeoCfoBucket) {
                     window._activeCeoCfoBucket = null;
+                    var cfcEsc = document.getElementById('ceocfo-filter-chip');
+                    if (cfcEsc) cfcEsc.remove();
                 }
                 // 342nd review: same chart-filter family as the dims
                 // above, but this branch predates them and never

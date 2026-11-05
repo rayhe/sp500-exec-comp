@@ -78,6 +78,7 @@ STATE_TO_CHIP = {
     "_activeQuartileFilter": "quartile-filter-chip",
     "_activePositionFilter": "position-filter-chip",
     "_activeCrosstabFilter": "crosstab-filter-chip",
+    "_activeCeoCfoBucket": "ceocfo-filter-chip",
 }
 
 # No created-chip exception remains: since the 344th review

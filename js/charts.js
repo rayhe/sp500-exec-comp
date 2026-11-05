@@ -6161,24 +6161,30 @@ function drawCeoCfoChart(companies) {
         .on('mouseout', function() { d3.select(this).attr('opacity', 0.8); hideChartTooltip(); })
         .on('click', function(event, b) {
             hideChartTooltip();
-            // Use the configurable scatter axes to show CEO comp vs CEO-CFO premium
-            // For now, just notify the label in the chart
-            // Highlight active bucket
-            var isActive = window._activeCeoCfoBucket &&
-                window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
-            if (isActive) {
-                window._activeCeoCfoBucket = null;
+            // 347th review: the bar click filters the table (the
+            // tooltip has always promised that); the setter toggles
+            // the bucket, re-sorts, re-renders, and highlights.
+            // Fall back to the old highlight-only toggle if the
+            // app.js setter is unavailable.
+            if (window.filterByCeoCfoBucket) {
+                window.filterByCeoCfoBucket(b.min, b.max, b.label);
             } else {
-                window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+                var isActive = window._activeCeoCfoBucket &&
+                    window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
+                if (isActive) {
+                    window._activeCeoCfoBucket = null;
+                } else {
+                    window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+                }
+                highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
             }
-            highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
         });
 
     // Count labels above bars
 
-    // Keyboard operability (2026-10-10): the premium bars are click-to-highlight
-    // controls (histogram-bar pilot). Enter/Space replays the same toggle the
-    // click handler runs.
+    // Keyboard operability (2026-10-10; 347th review: the premium bars
+    // are click-to-filter controls now, like every other histogram).
+    // Enter/Space replays the same setter the click handler runs.
     _enableDotKeyboard(d3.select('#ceo-cfo-chart'), '.cfo-bar', {
         label: function(b) {
             var pct = (b.count / withPremium.length * 100).toFixed(1);
@@ -6189,17 +6195,21 @@ function drawCeoCfoChart(companies) {
             }).join(', ');
             return b.label + ' CEO-to-CFO pay premium: ' + b.count + ' companies (' + pct + '%)' +
                 (topCompanies ? '. Highest: ' + topCompanies : '') +
-                '. Press Enter to highlight this bucket.';
+                '. Press Enter to filter the table to this bucket.';
         },
         activate: function(b) {
-            var isActive = window._activeCeoCfoBucket &&
-                window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
-            if (isActive) {
-                window._activeCeoCfoBucket = null;
+            if (window.filterByCeoCfoBucket) {
+                window.filterByCeoCfoBucket(b.min, b.max, b.label);
             } else {
-                window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+                var isActive = window._activeCeoCfoBucket &&
+                    window._activeCeoCfoBucket.min === b.min && window._activeCeoCfoBucket.max === b.max;
+                if (isActive) {
+                    window._activeCeoCfoBucket = null;
+                } else {
+                    window._activeCeoCfoBucket = { min: b.min, max: b.max, label: b.label };
+                }
+                highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
             }
-            highlightCeoCfoBucket(window._activeCeoCfoBucket ? b.min : null, window._activeCeoCfoBucket ? b.max : null);
         }
     });
     g.selectAll('.cfo-count')

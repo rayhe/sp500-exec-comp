@@ -81,6 +81,7 @@ CHIP_IDS = [
     "tenure-filter-chip", "gov-filter-chip", "pctile-filter-chip",
     "stockpct-filter-chip", "peer-dist-chip", "crosstab-filter-chip",
     "transition-filter-chip", "team-filter-chip", "yoy-filter-chip",
+    "ceocfo-filter-chip",
 ]
 
 # AF selects for exactly the AF-mapped dims nulled in the reset block.

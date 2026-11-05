@@ -16,7 +16,9 @@ pilot) to nine bucket-bar surfaces in js/charts.js:
   #yoy-dist-chart .yoy-bar rect          -> window.filterByYoYBucket
                                           (mouseenter/mouseleave handlers,
                                            so hoverIn/hoverOut are overridden)
-  #ceo-cfo-chart .cfo-bar               -> bucket-highlight toggle
+  #ceo-cfo-chart .cfo-bar               -> window.filterByCeoCfoBucket
+                                          (347th review: was a highlight-only
+                                           toggle; the click now filters)
   #conc-dist-chart .conc-dist-bar rect,
                   .conc-sector-bar rect  -> filterByConcTier
   #sop-dist-chart .sop-bar               -> window.highlightSopBucket
