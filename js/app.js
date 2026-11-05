@@ -18378,7 +18378,30 @@ function setupDualSparklineTooltips() {
                         t.setAttribute('aria-sort', 'descending');
                     }
                 });
-                announce('All filters cleared');
+                // 343rd review: the announcement here used to be an
+                // unconditional "All filters cleared", which is false
+                // whenever an AF-panel/session dim this branch
+                // deliberately keeps (tenure/gov/vol/board/community/
+                // quartile/position/vol-tenure/pvponly, 339th review)
+                // is still active -- Escape then announced everything
+                // clear while the kept filter kept filtering with no
+                // audible trace. Scope it: "All filters cleared"
+                // only when nothing remains, else name the dims
+                // still filtering. These states are never nulled
+                // above, so reading them here is the post-clear
+                // state; labels match the filter vocabulary used
+                // elsewhere (tenure, governance, PvP-covered).
+                var keptEsc = [];
+                if (window._activeTenureQuartile) keptEsc.push('tenure');
+                if (window._activeGovGrade) keptEsc.push('governance');
+                if (window._activeVolatilityBucket) keptEsc.push('volatility');
+                if (window._activeVolTenureBracket) keptEsc.push('volatility-tenure');
+                if (window._activeBoardFilter) keptEsc.push('board');
+                if (window._activeCommunityFilter) keptEsc.push('community');
+                if (window._activeQuartileFilter) keptEsc.push('quartile');
+                if (window._activePositionFilter) keptEsc.push('position');
+                if (window._activePvpOnlyFilter) keptEsc.push('PvP-covered');
+                announce(keptEsc.length ? 'Filters cleared; still active: ' + keptEsc.join(', ') : 'All filters cleared');
                 renderTable(companies);
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
                 if (window.highlightRatioBucket) window.highlightRatioBucket(null);
