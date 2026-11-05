@@ -18266,7 +18266,7 @@ function setupDualSparklineTooltips() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || window._activePctileTier || window._activeStockPctTier || window._activeAspDeltaTier || window._activePeerDistFilter || window._activeCrosstabFilter || (activeRole && activeRole !== 'CEO')) {
                 setActiveSector(null);
                 searchTerm = '';
                 activeRole = null;
@@ -18318,6 +18318,43 @@ function setupDualSparklineTooltips() {
                     var gfcEsc = document.getElementById('gender-filter-chip');
                     if (gfcEsc) gfcEsc.remove();
                 }
+                // 342nd review: same chart-filter family as the dims
+                // above, but this branch predates them and never
+                // covered them -- Escape was a no-op with only a
+                // pctile/stockpct/aspdelta/peerdist/crosstab filter
+                // active, and announced "All filters cleared" while
+                // one kept filtering when paired with a covered
+                // filter. Null + chip-remove exactly these five;
+                // tenure/gov/vol/board/community/quartile/position/
+                // vol-tenure/pvponly stay deliberately kept per the
+                // 339th review (AF-panel/session dims, not chart
+                // filters), so their selects/chips stay truthful and
+                // the AF-select list below is unchanged.
+                if (window._activePctileTier) {
+                    window._activePctileTier = null;
+                    var ptcEsc = document.getElementById('pctile-filter-chip');
+                    if (ptcEsc) ptcEsc.remove();
+                }
+                if (window._activeStockPctTier) {
+                    window._activeStockPctTier = null;
+                    var spcEsc = document.getElementById('stockpct-filter-chip');
+                    if (spcEsc) spcEsc.remove();
+                }
+                if (window._activeAspDeltaTier) {
+                    window._activeAspDeltaTier = null;
+                    var adcEsc = document.getElementById('aspdelta-filter-chip');
+                    if (adcEsc) adcEsc.remove();
+                }
+                if (window._activePeerDistFilter) {
+                    window._activePeerDistFilter = null;
+                    var pdcEsc = document.getElementById('peer-dist-chip');
+                    if (pdcEsc) pdcEsc.remove();
+                }
+                if (window._activeCrosstabFilter) {
+                    window._activeCrosstabFilter = null;
+                    var ctcEsc = document.getElementById('crosstab-filter-chip');
+                    if (ctcEsc) ctcEsc.remove();
+                }
                 // 339th review: same panel-sync class as the 330th reset
                 // paths, in a fifth path the 330th guard did not cover.
                 // Of the states nulled above, 4 are AF-mapped
@@ -18349,6 +18386,22 @@ function setupDualSparklineTooltips() {
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
                 if (window.highlightYoYBucket) window.highlightYoYBucket(null);
                 if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+                // 342nd review: highlight clears for the newly nulled
+                // dims that have one (gender was already nulled here
+                // but its chart highlight was never cleared; pctile/
+                // crosstab have none -- their visuals re-render from
+                // state, as in resetAllFilters), plus the two
+                // persistence/visibility steps resetAllFilters already
+                // does: pushState so a refresh does not resurrect the
+                // pre-Escape filters from the URL, and the Reset All
+                // button visibility refresh so it hides once nothing
+                // is active.
+                if (window.highlightGenderChart) window.highlightGenderChart(null);
+                if (window.highlightStockPctBucket) window.highlightStockPctBucket(null);
+                if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null);
+                if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
+                if (typeof pushState === 'function') pushState();
+                if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
                 e.preventDefault();
                 return;
             }
