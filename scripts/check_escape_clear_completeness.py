@@ -20,6 +20,17 @@ sop/gender, so:
   * the branch never refreshed Reset All button visibility, so the
     button stayed shown after Escape cleared everything.
 
+  346th review (2026-11-05): the CEO/CFO premium highlight was the
+  one remaining highlight this branch never cleared -- highlight-only
+  (the click never filters the table), not in the 339th deliberately
+  kept list, but absent from the gate, the nulls, and the trailing
+  highlight clears. With only a premium bar highlighted Escape did
+  nothing at all; with a filter plus a highlight active it announced
+  the filters cleared while the bars stayed dimmed; and the stale
+  toggle state made the next click on that same bar a silent no-op.
+  The gate therefore covers 14 dims now (13 + CeoCfoBucket) and the
+  highlight-clear list gains highlightCeoCfoBucket(null, null).
+
 Deliberately NOT required here (339th-review scoping, unchanged):
 tenure / gov / vol / board / community / quartile / position /
 vol-tenure / pvponly are AF-panel or section dims this path does not
@@ -32,16 +43,18 @@ Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: the Escape clear-all branch cannot be located
      (marker "// Clear all filters and search" through
      "// If in search, blur it").
-  C2 HARD FAIL: the gate condition does not mention one of the 13
+  C2 HARD FAIL: the gate condition does not mention one of the 14
      chart/core dims (8 pre-existing + pctile/stockpct/aspdelta/
-     peerdist/crosstab). The gate line itself is checked, not the
+     peerdist/crosstab + CeoCfoBucket, the 346th review's
+     highlight-only state). The gate line itself is checked, not the
      whole branch, or the null blocks below would mask a gate gap.
   C3 HARD FAIL: one of the 5 newly covered dims is not nulled in the
      branch or its chip id is not removed there.
   C4 HARD FAIL: a highlight clear is missing for a nulled dim that
-     has one (gender, stockpct, aspdelta, peerdist). Pctile/crosstab
-     have no highlight-clear function (their visuals re-render from
-     state, as in resetAllFilters, which clears neither either).
+     has one (gender, stockpct, aspdelta, peerdist, CeoCfoBucket).
+     Pctile/crosstab have no highlight-clear function (their visuals
+     re-render from state, as in resetAllFilters, which clears
+     neither either).
   C5 HARD FAIL: the branch does not call pushState() or does not
      refresh Reset All button visibility.
   C6 HARD FAIL: the branch's _clearAfSelects call does not list
@@ -74,7 +87,7 @@ GATE_DIMS = [
     "RatioBucket", "DistFilter", "ConcTier", "CeoTransitionFilter",
     "TeamCompletenessFilter", "YoYBucket", "SopFilter", "GenderFilter",
     "PctileTier", "StockPctTier", "AspDeltaTier", "PeerDistFilter",
-    "CrosstabFilter",
+    "CrosstabFilter", "CeoCfoBucket",
 ]
 # The 5 dims added by the 342nd review (state suffix -> chip id).
 NEW_DIMS = [
@@ -90,6 +103,7 @@ HIGHLIGHT_CLEARS = [
     "highlightStockPctBucket(null)",
     "highlightAspDeltaBucket(null)",
     "clearPeerDistHighlight()",
+    "highlightCeoCfoBucket(null, null)",
 ]
 AF_SELECTS = ["af-pay-band", "af-sop-tier", "af-gender", "af-conc"]
 

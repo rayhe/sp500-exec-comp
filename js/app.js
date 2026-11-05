@@ -18295,7 +18295,7 @@ function setupDualSparklineTooltips() {
                 return;
             }
             // Clear all filters and search
-            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || window._activePctileTier || window._activeStockPctTier || window._activeAspDeltaTier || window._activePeerDistFilter || window._activeCrosstabFilter || (activeRole && activeRole !== 'CEO')) {
+            if (activeSector || searchTerm || window._activeRatioBucket || window._activeDistFilter || window._activeConcTier || window._activeCeoTransitionFilter || window._activeTeamCompletenessFilter || window._activeYoYBucket || window._activeSopFilter || window._activeGenderFilter || window._activePctileTier || window._activeStockPctTier || window._activeAspDeltaTier || window._activePeerDistFilter || window._activeCrosstabFilter || window._activeCeoCfoBucket || (activeRole && activeRole !== 'CEO')) {
                 setActiveSector(null);
                 searchTerm = '';
                 activeRole = null;
@@ -18346,6 +18346,27 @@ function setupDualSparklineTooltips() {
                     window._activeGenderFilter = null;
                     var gfcEsc = document.getElementById('gender-filter-chip');
                     if (gfcEsc) gfcEsc.remove();
+                }
+                // 346th review: the CEO/CFO premium highlight is the
+                // one chart highlight this branch never cleared -- it
+                // is highlight-only (the click never filters the
+                // table), so it is not in the 339th deliberately-kept
+                // list, yet it was absent from the gate, the nulls,
+                // and the trailing highlight clears. With only a
+                // premium bar highlighted, Escape did nothing at all
+                // (the gate did not fire); with a filter plus a
+                // highlight active, Escape announced the filters
+                // cleared while the bars stayed dimmed with a
+                // white-stroked "active" bar. And the stale toggle
+                // state made the next click on that same bar a silent
+                // no-op (the toggle reads the stale state as active
+                // and nulls it instead of highlighting -- the 345th
+                // review's second facet, now on this path). Null the
+                // toggle state here and clear the visual with the
+                // other highlight clears below; either alone leaves
+                // the other half stale.
+                if (window._activeCeoCfoBucket) {
+                    window._activeCeoCfoBucket = null;
                 }
                 // 342nd review: same chart-filter family as the dims
                 // above, but this branch predates them and never
@@ -18438,6 +18459,7 @@ function setupDualSparklineTooltips() {
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
                 if (window.highlightYoYBucket) window.highlightYoYBucket(null);
                 if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+                if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
                 // 342nd review: highlight clears for the newly nulled
                 // dims that have one (gender was already nulled here
                 // but its chart highlight was never cleared; pctile/
