@@ -23,10 +23,11 @@ Checks (all static - small JS reads, <2s):
      but uncreated id is the 326th-review bug class: the removal
      silently no-ops (getElementById returns null) while the real chip
      survives.
-  C2 HARD FAIL: resetAllFilters' removal list omits a created chip id,
-     except board-filter-chip: the board filter is Advanced-Filters
-     owned (state + chip cleared by clearAdvancedFilters in
-     js/advanced-filters.js), so resetAllFilters must not claim it.
+  C2 HARD FAIL: resetAllFilters' removal list omits a created chip id.
+     (344th review: the old board-filter-chip exception is gone --
+     resetAllFilters now nulls board state, so it must remove the
+     board chip like every other created chip; the chip is
+     Advanced-Filters owned but Reset All claims it too.)
   C3 HARD FAIL: sortTableByKey nulls a filter's state without removing
      that filter's chip. Only chips that are actually created somewhere
      are required (community/volatility/vol-tenure states have no chip
@@ -79,8 +80,9 @@ STATE_TO_CHIP = {
     "_activeCrosstabFilter": "crosstab-filter-chip",
 }
 
-# Created-chip exception for C2: Advanced-Filters owned, cleared elsewhere.
-C2_EXCEPTION = {"board-filter-chip"}
+# No created-chip exception remains: since the 344th review
+# resetAllFilters nulls board state and removes board-filter-chip,
+# so the old AF-owned carve-out is deleted rather than kept stale.
 # Defensive no-ops tolerated in resetAllFilters' list for C1.
 C1_DEFENSIVE = {"volatility-filter-chip", "vol-tenure-chip",
                 "community-filter-chip"}
@@ -140,8 +142,8 @@ def main():
             "C1 phantom resetAllFilters ids (created nowhere, removal "
             f"no-ops while the real chip survives): {phantom}")
 
-    # C2: every created chip (except AF-owned board) must be removed.
-    missing = sorted((created - C2_EXCEPTION) - reset_removed)
+    # C2: every created chip must be removed.
+    missing = sorted(created - reset_removed)
     if missing:
         failures.append(
             "C2 resetAllFilters omits created chips (state cleared, chip "

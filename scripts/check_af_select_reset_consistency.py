@@ -21,9 +21,11 @@ panel-side mirror of the 326th chip bug:
      330th guard nor the 338th fix covered.
 The fix is window._clearAfSelects in js/advanced-filters.js, called
 (window-guarded) from each path with exactly the selects whose state
-that path nulled. Board is deliberately excluded from every call: none
-of the five paths nulls _activeBoardFilter, so the af-board select and
-its badge count stay truthful. Gov/vol are likewise excluded from the
+that path nulled. Board is deliberately excluded from every call
+except resetAllFilters (344th review: resetAllFilters nulls
+_activeBoardFilter, so it clears af-board too); the other paths
+still keep board state, so their af-board select and badge count
+stay truthful. Gov/vol are likewise excluded from the
 sortTableByKey call because that path keeps their state, and
 tenure/gov/vol/board from the findCompanyInTable and Escape calls for
 the same reason.
@@ -36,7 +38,10 @@ Checks (all static - small JS reads, <2s):
      table refreshes; the 329th _clearAfVolSelect precedent sets values
      directly instead).
   C2 HARD FAIL: resetAllFilters does not call _clearAfSelects with
-     exactly the 7 selects for the AF states it nulls.
+     exactly the 8 selects for the AF states it nulls (344th review:
+     resetAllFilters now nulls _activeBoardFilter too, so af-board
+     joins the 330th 7; the other paths below still exclude board
+     because they still keep its state).
   C3 HARD FAIL: insightResetAndSort does not call _clearAfSelects with
      exactly the same 7 selects.
   C4 HARD FAIL: sortTableByKey does not call _clearAfSelects with
@@ -61,7 +66,8 @@ State variable -> AF select id, per the Advanced Filters handlers:
   _activeGenderFilter -> af-gender
   _activeConcTier -> af-conc
   _activeVolatilityBucket -> af-vol
-  _activeBoardFilter -> af-board (excluded everywhere: never nulled)
+  _activeBoardFilter -> af-board (nulled only by resetAllFilters since
+     the 344th review; still kept by the other four paths)
 
 Usage:
   scripts/check_af_select_reset_consistency.py
@@ -98,12 +104,14 @@ STATE_TO_AF_SELECT = {
 }
 
 # AF states each reset path nulls (read from the function bodies below
-# and cross-checked against this expectation; board never nulled).
+# and cross-checked against this expectation; board is nulled only by
+# resetAllFilters since the 344th review, still kept by the rest).
 RESET_EXPECTED_STATES = {
     "_activeDistFilter", "_activeSopFilter", "_activeTenureQuartile",
     "_activeGovGrade", "_activeGenderFilter", "_activeConcTier",
     "_activeVolatilityBucket",
 }
+RESET_ALL_EXPECTED_STATES = RESET_EXPECTED_STATES | {"_activeBoardFilter"}
 SORT_EXPECTED_STATES = {
     "_activeDistFilter", "_activeSopFilter", "_activeGenderFilter",
     "_activeConcTier", "_activeTenureQuartile",
@@ -203,7 +211,7 @@ def main():
 
     # --- C2/C3/C4/C5 -----------------------------------------------------
     check_path("resetAllFilters", "window.resetAllFilters = function",
-               RESET_EXPECTED_STATES, "C2")
+               RESET_ALL_EXPECTED_STATES, "C2")
     check_path("insightResetAndSort", "function insightResetAndSort",
                RESET_EXPECTED_STATES, "C3")
     check_path("sortTableByKey", "function sortTableByKey",

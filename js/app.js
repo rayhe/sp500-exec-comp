@@ -14684,7 +14684,7 @@ function setupDualSparklineTooltips() {
         currentSort = { key: 'total_compensation', dir: 'desc' };
         currentPage = 1;
 
-        // Clear all 17 filter dimensions
+        // Clear all filter dimensions
         window._activeRatioBucket = null;
         window._activeDistFilter = null;
         window._activeConcTier = null;
@@ -14706,6 +14706,14 @@ function setupDualSparklineTooltips() {
         window._activeQuartileFilter = null;
         window._activePositionFilter = null;
         window._activeCrosstabFilter = null;
+        // 344th review: board was the one dimension this path never
+        // cleared -- the AF panel's own Clear nulls it unconditionally,
+        // so a global Reset that kept it was strictly weaker than the
+        // scoped button, and the unconditional 'All filters reset'
+        // announcement below was false while a board filter kept
+        // hiding rows (via _refreshTable's post-process). Null it
+        // here like every other dimension.
+        window._activeBoardFilter = null;
 
         // Clear filter chips
         [
@@ -14714,7 +14722,7 @@ function setupDualSparklineTooltips() {
             'stockpct-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
             'gov-filter-chip', 'volatility-filter-chip', 'vol-tenure-chip',
             'peer-dist-chip', 'community-filter-chip', 'quartile-filter-chip', 'position-filter-chip',
-            'crosstab-filter-chip'
+            'crosstab-filter-chip', 'board-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -14724,13 +14732,15 @@ function setupDualSparklineTooltips() {
         // (dist/pay-band, sop, tenure, gov, gender, conc, vol), so their
         // panel selects must be cleared too -- otherwise the panel kept
         // showing the old value and the badge kept counting a filter
-        // that no longer filtered. Board is deliberately excluded: this
-        // path never nulls _activeBoardFilter, so af-board stays
-        // truthful. Selects are cleared without dispatching 'change'
+        // that no longer filtered. 344th review: board joins them --
+        // this path now nulls _activeBoardFilter as well (see above),
+        // so af-board is cleared here too; the other reset paths still
+        // keep board and still exclude it (their own comments stand).
+        // Selects are cleared without dispatching 'change'
         // (see window._clearAfSelects).
         if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
             ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
-             'af-gender', 'af-conc', 'af-vol']);
+             'af-gender', 'af-conc', 'af-vol', 'af-board']);
 
         // Reset search input
         var searchInput = document.getElementById('table-search');
@@ -14810,6 +14820,12 @@ function setupDualSparklineTooltips() {
             window._activePeerDistFilter || window._activeCommunityFilter ||
             window._activeQuartileFilter || window._activePositionFilter ||
             window._activeCrosstabFilter ||
+            // 344th review: board is a real filter dimension (it hides
+            // rows via _refreshTable), so a board-only state must show
+            // the Reset button -- previously the button hid while a
+            // board filter was still active, leaving no Reset
+            // affordance for exactly that state.
+            window._activeBoardFilter ||
             (currentSort && (currentSort.key !== 'total_compensation' || currentSort.dir !== 'desc')));
     };
 
