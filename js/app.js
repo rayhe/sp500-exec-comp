@@ -3293,6 +3293,10 @@ function populateInsights(comp, trends, sectorFilter) {
         // both nulls; this was the one reset path that did not.
         if (window.highlightGovChart) window.highlightGovChart(null);
         if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null);
+        // 352nd review: same stale-highlight class for gender -- this
+        // path nulls _activeGenderFilter above (and Reset All / Escape
+        // already clear it); this was the one reset path that did not.
+        if (window.highlightGenderChart) window.highlightGenderChart(null);
         if (window._refreshInsights) window._refreshInsights(null);
         scrollToTable();
     }
@@ -14522,6 +14526,15 @@ function setupDualSparklineTooltips() {
 
         updateGenderFilterIndicator();
         renderTable(companies);
+        // 352nd review: the gender bars never showed which filter was
+        // active (no highlightGenderChart existed) -- apply it here, like
+        // filterByGovGrade does, using the post-toggle state so a
+        // toggle-off click clears instead of re-highlighting. 'M' has no
+        // bar to ring, so only 'F' highlights; anything else restores
+        // the defaults.
+        if (window.highlightGenderChart) window.highlightGenderChart(
+            window._activeGenderFilter === 'F' ? 'F' : null
+        );
         pushState();
 
         var genderLabel = gender === 'F' ? 'Female' : 'Male';
@@ -14562,6 +14575,11 @@ function setupDualSparklineTooltips() {
                 // AF-origin values, so dismiss must clear af-gender too.
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gender']);
                 chip.remove();
+                // 352nd review: dismiss must clear the chart highlight
+                // too (same class the 350th review fixed for gov) --
+                // otherwise the female bars stay ringed while the filter
+                // is gone.
+                if (window.highlightGenderChart) window.highlightGenderChart(null);
                 renderTable(companies);
                 pushState();
                 announce('Gender filter cleared');
@@ -15108,6 +15126,11 @@ function setupDualSparklineTooltips() {
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
         if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
+        // 352nd review: this path nulls _activeGenderFilter above (gov /
+        // vol state is intentionally kept here, per the 338th review, so
+        // they need no clear) -- without this the female bars stayed
+        // ringed behind the Top 10 chart click's unfiltered table.
+        if (window.highlightGenderChart) window.highlightGenderChart(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');

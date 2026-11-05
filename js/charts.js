@@ -5763,13 +5763,21 @@ function drawGenderPayChart(trends) {
 
     // Overall bars
     barGroups.append('rect')
+        .attr('class', 'gender-bar-overall')
         .attr('x', function() { return x1('overall'); })
         .attr('y', function(d) { return y(d.overall_median_pay); })
         .attr('width', x1.bandwidth())
         .attr('height', function(d) { return h - y(d.overall_median_pay); })
         .attr('fill', overallColor)
         .attr('rx', 3).attr('ry', 3)
-        .attr('opacity', 0.85)
+        .attr('opacity', function() {
+            // 352nd review: re-apply the active-gender highlight at draw
+            // time (resize / theme toggle rebuild via redrawAllCharts) --
+            // the pattern drawVolatilityDistChart/drawGovDistChart use.
+            // When the female filter is active the overall bars dim to
+            // 0.25; otherwise the chart's existing unfiltered 0.85.
+            return window._activeGenderFilter === 'F' ? 0.25 : 0.85;
+        })
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1);
             showChartTooltip(event, '<div class="ct-title">All CEOs — FY' + d.fiscal_year + '</div>' +
@@ -5777,7 +5785,14 @@ function drawGenderPayChart(trends) {
                 '<div class="ct-row"><span class="ct-label">Total CEOs</span><span class="ct-val">' + d.total_ceos_in_study + '</span></div>');
         })
         .on('mousemove', positionChartTooltip)
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); });
+        .on('mouseout', function() {
+            // 352nd review: restore the draw-time highlight, not a flat
+            // 0.85 -- same class the 350th review fixed on the vol chart:
+            // hovering an overall bar while 'F' is active lifted it to 1
+            // and dropped it back to 0.85 instead of its dimmed 0.25.
+            d3.select(this).attr('opacity', window._activeGenderFilter === 'F' ? 0.25 : 0.85);
+            hideChartTooltip();
+        });
 
     // Female bars
     barGroups.append('rect')
@@ -5788,7 +5803,17 @@ function drawGenderPayChart(trends) {
         .attr('height', function(d) { return h - y(d.female_median_pay); })
         .attr('fill', femaleColor)
         .attr('rx', 3).attr('ry', 3)
-        .attr('opacity', 0.85)
+        .attr('opacity', function() {
+            // 352nd review: re-apply the active-gender highlight at draw
+            // time -- the female bars are the active ones when the filter
+            // is 'F' (opacity 1), otherwise the chart's 0.85 default.
+            return window._activeGenderFilter === 'F' ? 1 : 0.85;
+        })
+        .each(function() {
+            if (window._activeGenderFilter === 'F') {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1);
@@ -5802,7 +5827,15 @@ function drawGenderPayChart(trends) {
                 '<div class="ct-row ct-sub" style="margin-top:4px;font-size:10px;color:' + mutedColor + '">Click to filter table to female CEOs</div>');
         })
         .on('mousemove', positionChartTooltip)
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); })
+        .on('mouseout', function() {
+            // 352nd review: restore the draw-time highlight, not a flat
+            // 0.85 -- a hovered active female bar dropped to 0.85 after
+            // mouseout, reading as un-highlighted while its ring stayed
+            // (same class as the overall-bar fix above and the 350th
+            // vol fix).
+            d3.select(this).attr('opacity', window._activeGenderFilter === 'F' ? 1 : 0.85);
+            hideChartTooltip();
+        })
         .on('click', function() {
             hideChartTooltip();
             if (window.filterByGender) window.filterByGender('F');
@@ -5836,15 +5869,23 @@ function drawGenderPayChart(trends) {
 
     // Bar value labels
     barGroups.append('text')
+        .attr('class', 'gender-label-overall')
         .attr('x', function() { return x1('overall') + x1.bandwidth() / 2; })
         .attr('y', function(d) { return y(d.overall_median_pay) - 6; })
         .attr('text-anchor', 'middle')
+        .attr('opacity', function() {
+            // 352nd review: overall value labels dim with their bar
+            // (active 'F' 0.4 / none 1), the same convention as the
+            // other histogram highlights.
+            return window._activeGenderFilter === 'F' ? 0.4 : 1;
+        })
         .attr('fill', overallColor)
         .attr('font-size', '11px').attr('font-weight', '600')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text(function(d) { return '$' + (d.overall_median_pay / 1e6).toFixed(1) + 'M'; });
 
     barGroups.append('text')
+        .attr('class', 'gender-label-female')
         .attr('x', function() { return x1('female') + x1.bandwidth() / 2; })
         .attr('y', function(d) { return y(d.female_median_pay) - 6; })
         .attr('text-anchor', 'middle')
@@ -6032,6 +6073,35 @@ function drawGenderPayChart(trends) {
     }
 }
 
+/* Update gender pay gap chart bar highlighting without full redraw */
+/* 352nd review: the gender chart had NO highlight function at all -- its
+ * click/keyboard paths call filterByGender('F'), which filtered the table
+ * and raised a chip but never showed which bars were active (the Reset All
+ * and Escape paths already called highlightGenderChart(null) behind a
+ * typeof guard, a no-op until now; insightResetAndSort and
+ * findCompanyInTable likewise null the gender state without clearing a
+ * highlight). Follows the highlightVolatilityBucket convention exactly:
+ * null / 'M' restores defaults (0.85, no ring, labels 1), 'F' rings the
+ * female bars (opacity 1 + the theme-aware chartStrokeColor() 1.5px ring)
+ * and dims the overall bars to 0.25 with their labels at 0.4. 'M' has no
+ * bar to ring, so the function keys on 'F' only. Unlike gov/vol, the
+ * AF-origin gender filter IS exact ('F'), so an AF-origin 'F' highlights
+ * correctly -- no band-mismatch gap here. */
+window.highlightGenderChart = function(gender) {
+    var femaleBars = d3.selectAll('.gender-bar');
+    var overallBars = d3.selectAll('.gender-bar-overall');
+    if (gender !== 'F') {
+        femaleBars.attr('opacity', 0.85).attr('stroke', 'none').attr('stroke-width', 0);
+        overallBars.attr('opacity', 0.85);
+        d3.selectAll('.gender-label-overall').attr('opacity', 1);
+        d3.selectAll('.gender-label-female').attr('opacity', 1);
+        return;
+    }
+    femaleBars.attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+    overallBars.attr('opacity', 0.25);
+    d3.selectAll('.gender-label-overall').attr('opacity', 0.4);
+    d3.selectAll('.gender-label-female').attr('opacity', 1);
+};
 
 /* ========================================================================
    CEO-to-CFO Pay Premium Chart (histogram)
