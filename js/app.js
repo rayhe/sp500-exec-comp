@@ -3284,6 +3284,15 @@ function populateInsights(comp, trends, sectorFilter) {
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
+        // 350th review: this path nulls _activeGovGrade and
+        // _activeVolatilityBucket above but never cleared their chart
+        // highlights -- an insight action left the gov/vol bars ringed
+        // and dimmed behind a table that was no longer filtered (same
+        // stale-highlight class the 345th review fixed for CEO/CFO on
+        // the Reset path). The Reset All and Escape paths already call
+        // both nulls; this was the one reset path that did not.
+        if (window.highlightGovChart) window.highlightGovChart(null);
+        if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null);
         if (window._refreshInsights) window._refreshInsights(null);
         scrollToTable();
     }
@@ -9019,6 +9028,10 @@ function updateVolatilityFilterIndicator() {
         chip.addEventListener('click', function() {
             var wasAf = !!(window._activeVolatilityBucket && window._activeVolatilityBucket._isAf);
             window._activeVolatilityBucket = null;
+            // 350th review: dismiss must clear the chart highlight too
+            // (same class the CEO/CFO chip dismiss already handles) --
+            // otherwise the vol bar stays ringed while the filter is gone.
+            if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null, null);
             chip.remove();
             if (wasAf) {
                 var sel = document.getElementById('af-vol');
@@ -12791,8 +12804,13 @@ function applyHashState(companies) {
 
     // Governance grade filter
     if (state.govgrade && state.govmin != null && state.govmax != null) {
-        var govMin = parseInt(state.govmin);
-        var govMax = parseInt(state.govmax);
+        // 350th review: parseFloat, not parseInt -- the A bucket's max is
+        // 100.1, and parseInt truncated it to 100, so the restored state
+        // no longer matched any chart bucket and the draw-time gov
+        // highlight never fired on a deep link (the table filter itself
+        // was unaffected in practice: gov scores top out at 100).
+        var govMin = parseFloat(state.govmin);
+        var govMax = parseFloat(state.govmax);
         if (!isNaN(govMin) && !isNaN(govMax)) {
             window._activeGovGrade = { grade: state.govgrade, min: govMin, max: govMax };
             updateGovFilterIndicator();
@@ -14721,6 +14739,14 @@ function setupDualSparklineTooltips() {
         });
         updateGovFilterIndicator();
         renderTable(companies);
+        // 350th review: the gov-dist bars never showed which bucket was
+        // active (no highlightGovChart existed) -- apply it here, like
+        // filterByCeoCfoBucket does, using the post-toggle state so a
+        // toggle-off click clears instead of re-highlighting.
+        if (window.highlightGovChart) window.highlightGovChart(
+            window._activeGovGrade ? window._activeGovGrade.min : null,
+            window._activeGovGrade ? window._activeGovGrade.max : null
+        );
         pushState();
         announce(window._activeGovGrade ? 'Filtered to governance Grade ' + grade : 'Governance filter cleared');
     };
@@ -14746,6 +14772,11 @@ function setupDualSparklineTooltips() {
                 // AF-origin values, so dismiss must clear af-gov too.
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-gov']);
                 chip.remove();
+                // 350th review: dismiss must clear the chart highlight
+                // too (same class the CEO/CFO chip dismiss already
+                // handles) -- otherwise the gov bar stays ringed while
+                // the filter is gone.
+                if (window.highlightGovChart) window.highlightGovChart(null, null);
                 renderTable(companies);
             });
             var controls = document.querySelector('.table-controls');

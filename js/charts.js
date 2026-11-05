@@ -9065,6 +9065,23 @@ function drawGovDistChart(companies) {
         .attr('width', x.bandwidth())
         .attr('height', function(b) { return height - y(b.count); })
         .attr('fill', function(b) { return b.color; })
+        .attr('opacity', function(b) {
+            // 350th review: re-apply the active-grade highlight at draw
+            // time (resize / theme toggle rebuild via redrawAllCharts) --
+            // previously the bars drew with no opacity at all, so a gov
+            // filter restored from a deep link (govmin/govmax are restored
+            // before chart init) showed no highlight on load. Gov bars
+            // keep their unfiltered default of 1 (no opacity attr).
+            var gf = window._activeGovGrade;
+            if (gf) return (b.min === gf.min && b.max === gf.max) ? 1 : 0.3;
+            return 1;
+        })
+        .each(function(b) {
+            var gf = window._activeGovGrade;
+            if (gf && b.min === gf.min && b.max === gf.max) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .attr('rx', 3)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
@@ -9114,6 +9131,14 @@ function drawGovDistChart(companies) {
         .attr('x', function(b) { return x(b.label) + x.bandwidth() / 2; })
         .attr('y', function(b) { return y(b.count) - 5; })
         .attr('text-anchor', 'middle')
+        .attr('opacity', function(b) {
+            // 350th review: count labels dim with their bar (active 1 /
+            // inactive 0.4 / none 1), the same convention as the other
+            // histogram highlights.
+            var gf = window._activeGovGrade;
+            if (!gf) return 1;
+            return (b.min === gf.min && b.max === gf.max) ? 1 : 0.4;
+        })
         .style('fill', chartStrokeColor())
         .style('font-size', '11px')
         .style('font-weight', '600')
@@ -9151,6 +9176,43 @@ function drawGovDistChart(companies) {
         .style('opacity', 0.7)
         .text(statsText);
 }
+
+/* Update governance distribution chart bar highlighting without full redraw */
+/* 350th review: the gov-dist chart had NO highlight function at all -- its
+ * click/keyboard paths call filterByGovGrade, which filtered the table and
+ * raised a chip but never showed which bar was active (the Reset All and
+ * Escape paths already called highlightGovChart(null) behind a typeof
+ * guard, a no-op until now). Follows the highlightCeoCfoBucket convention:
+ * null restores defaults (opacity 1 -- gov bars never had an opacity attr
+ * -- no ring, labels 1), the active bucket gets opacity 1 + the
+ * theme-aware chartStrokeColor() 1.5px ring, inactive buckets dim to 0.3
+ * with labels at 0.4. Match is by score-range min/max, the same key the
+ * table filter predicate uses (the grade letter alone cannot key it: the
+ * chart's 'F/D' bucket has no single grade letter, and the click passes
+ * the first company's letter). Exact min/max match, like the other
+ * histogram highlights -- so an AF-origin gov filter (af-gov bands
+ * 80-100/65-79.999/... differ from the chart buckets 80-100.1/65-80/...)
+ * still shows no highlight, the same known gap highlightConcDistBucket
+ * has for af-conc; a shared overlap-match fix is a later run's job. */
+window.highlightGovChart = function(min, max) {
+    var bars = d3.selectAll('.gov-bar');
+    if (min == null) {
+        bars.attr('opacity', 1).attr('stroke', 'none').attr('stroke-width', 0);
+        d3.selectAll('.gov-count-label').attr('opacity', 1);
+        return;
+    }
+    bars.each(function(b) {
+        var match = b.min === min && b.max === max;
+        d3.select(this)
+            .attr('opacity', match ? 1 : 0.3)
+            .attr('stroke', match ? chartStrokeColor() : 'none')
+            .attr('stroke-width', match ? 1.5 : 0);
+    });
+    d3.selectAll('.gov-count-label').each(function(b) {
+        if (!b) return;
+        d3.select(this).attr('opacity', (b.min === min && b.max === max) ? 1 : 0.4);
+    });
+};
 
 /* ========================================================================
    Sector Governance Score Chart — horizontal bar chart showing median 
@@ -13226,7 +13288,25 @@ function drawVolatilityDistChart(companies) {
         .attr('width', x.bandwidth())
         .attr('height', function(b) { return chartH - y(b.count); })
         .attr('fill', function(b) { return getVolColor(b); })
-        .attr('opacity', 0.85)
+        .attr('opacity', function(b) {
+            // 350th review: re-apply the active-bucket highlight at draw
+            // time (resize / theme toggle rebuild via redrawAllCharts),
+            // the pattern drawCeoCfoChart/drawRatioChart/drawYoYDistChart/
+            // drawCompDistChart/drawConcDistChart/drawSopDistChart already
+            // use -- previously every bar redrew at a flat 0.85, so the
+            // active filter's highlight silently dropped while the table
+            // stayed filtered. Vol default is 0.85 (not 0.8) to match the
+            // chart's existing unfiltered look.
+            var vb = window._activeVolatilityBucket;
+            if (vb) return (b.min === vb.min && b.max === vb.max) ? 1 : 0.25;
+            return 0.85;
+        })
+        .each(function(b) {
+            var vb = window._activeVolatilityBucket;
+            if (vb && b.min === vb.min && b.max === vb.max) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .attr('rx', 3)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
@@ -13236,7 +13316,20 @@ function drawVolatilityDistChart(companies) {
                 '<div style="color:#a1a1aa;font-size:11px;margin-top:4px;">' + b.tag + ' volatility tier</div>');
         })
         .on('mousemove', function(event) { positionChartTooltip(event); })
-        .on('mouseout', function() { d3.select(this).attr('opacity', 0.85); hideChartTooltip(); })
+        .on('mouseout', function(event, b) {
+            // 350th review: restore the draw-time highlight, not a flat
+            // 0.85 -- the old reset dropped the active bar to 0.85 after a
+            // hover and lifted a hovered inactive bar to 0.85 instead of
+            // its dimmed 0.25 (same class the 349th review fixed on the
+            // CEO/CFO chart).
+            var vb = window._activeVolatilityBucket;
+            var isActive = vb && b.min === vb.min && b.max === vb.max;
+            d3.select(this)
+                .attr('opacity', isActive ? 1 : (vb ? 0.25 : 0.85))
+                .attr('stroke', isActive ? chartStrokeColor() : 'none')
+                .attr('stroke-width', isActive ? 1.5 : 0);
+            hideChartTooltip();
+        })
         .on('click', function(event, b) {
             window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
             // 329th review: the bucket is now chart-origin, so an af-vol
@@ -13245,6 +13338,10 @@ function drawVolatilityDistChart(companies) {
             if (typeof window._clearAfVolSelect === 'function') window._clearAfVolSelect();
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
+            // 350th review: the click used to leave the bars exactly as
+            // drawn (no highlight mechanism at all), so the table filtered
+            // with zero visual feedback on the chart itself.
+            if (typeof highlightVolatilityBucket === 'function') highlightVolatilityBucket(b.min, b.max);
             if (typeof scrollToTable === 'function') scrollToTable();
             if (typeof announce === 'function') announce('Filtered to ' + b.count + ' companies with ' + b.label + ' pay volatility');
         });
@@ -13266,6 +13363,8 @@ function drawVolatilityDistChart(companies) {
             if (typeof window._clearAfVolSelect === 'function') window._clearAfVolSelect();
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
             if (typeof renderTable === 'function') renderTable(companies);
+            // 350th review: same highlight as the click path.
+            if (typeof highlightVolatilityBucket === 'function') highlightVolatilityBucket(b.min, b.max);
             if (typeof scrollToTable === 'function') scrollToTable();
             if (typeof announce === 'function') announce('Filtered to ' + b.count + ' companies with ' + b.label + ' pay volatility');
         }
@@ -13278,6 +13377,14 @@ function drawVolatilityDistChart(companies) {
         .attr('y', function(b) { return y(b.count) - 6; })
         .attr('text-anchor', 'middle')
         .attr('fill', textColor)
+        .attr('opacity', function(b) {
+            // 350th review: count labels dim with their bar (active 1 /
+            // inactive 0.4 / none 1), the same convention as the other
+            // histogram highlights.
+            var vb = window._activeVolatilityBucket;
+            if (!vb) return 1;
+            return (b.min === vb.min && b.max === vb.max) ? 1 : 0.4;
+        })
         .style('font-size', '11px')
         .style('font-weight', '600')
         .text(function(b) { return b.count > 0 ? b.count : ''; });
@@ -13381,6 +13488,39 @@ function drawVolatilityDistChart(companies) {
     // Cross-chart navigation strip: top 3 most volatile companies → scatter
     _renderVolatilityScatterNav(withVol, container);
 }
+
+/* Update volatility distribution chart bar highlighting without full redraw */
+/* 350th review: the volatility chart had NO highlight function at all -- its
+ * click/keyboard setters set _activeVolatilityBucket and re-rendered the
+ * table, but the bars never showed which bucket was active (the Reset All
+ * and Escape paths already called highlightVolatilityBucket(null) behind
+ * a typeof guard, a no-op until now). Follows the highlightCeoCfoBucket
+ * convention exactly: null restores defaults (0.85, no ring, labels 1),
+ * the active bucket gets opacity 1 + the theme-aware chartStrokeColor()
+ * 1.5px ring, inactive buckets dim to 0.25 with labels at 0.4. Exact
+ * min/max match, like the other histogram highlights -- so an AF-origin
+ * volatility filter (af-vol bands 0-10/10-25/25-50/50+ span chart buckets)
+ * still shows no highlight, the same known gap highlightConcDistBucket
+ * has for af-conc; a shared overlap-match fix is a later run's job. */
+window.highlightVolatilityBucket = function(min, max) {
+    var bars = d3.selectAll('.vol-bar');
+    if (min == null) {
+        bars.attr('opacity', 0.85).attr('stroke', 'none').attr('stroke-width', 0);
+        d3.selectAll('.vol-count').attr('opacity', 1);
+        return;
+    }
+    bars.each(function(b) {
+        var match = b.min === min && b.max === max;
+        d3.select(this)
+            .attr('opacity', match ? 1 : 0.25)
+            .attr('stroke', match ? chartStrokeColor() : 'none')
+            .attr('stroke-width', match ? 1.5 : 0);
+    });
+    d3.selectAll('.vol-count').each(function(b) {
+        if (!b) return;
+        d3.select(this).attr('opacity', (b.min === min && b.max === max) ? 1 : 0.4);
+    });
+};
 
 /**
  * Render scatter navigation strip below the volatility distribution chart.
