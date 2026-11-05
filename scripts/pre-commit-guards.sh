@@ -249,7 +249,11 @@ done
 # the landed history against this ledger on the next commit; a commit with no
 # proof line fails that guard closed. Fail-closed: if the proof cannot be
 # written, the commit must not land unprovable.
-proof_parent="$(git rev-parse HEAD 2>/dev/null || echo root)"
+# --verify (351st review, 2026-11-05): bare `git rev-parse HEAD` on an
+# unborn branch prints the literal word HEAD to stdout before failing, so
+# the fallback would capture "HEAD\nroot" and write a corrupt (multi-line)
+# marker. --verify fails silently instead, so the fallback yields "root".
+proof_parent="$(git rev-parse --verify HEAD 2>/dev/null || echo root)"
 proof_tree="$(git write-tree 2>/dev/null)" || {
   echo "FAIL: guard-run proof: git write-tree failed - blocking commit (unprovable)"
   exit 1
