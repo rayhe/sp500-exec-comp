@@ -6746,8 +6746,18 @@ function renderSopSortSummary(companies) {
 
     html += '<div class="sop-dist-histogram"><div class="sop-dist-bars">';
     buckets.forEach(function(b) {
-        if (b.count === 0) return;
-        var h = maxBucket > 0 ? Math.max(2, Math.round(b.count / maxBucket * 28)) : 2;
+        // 363rd review: when a SoP filter is active the filtered set has
+        // zero companies in every non-overlapping bucket, so skipping
+        // zero-count buckets collapsed the histogram to the overlapping
+        // buckets only and the bar could not switch buckets. Render
+        // zero-count buckets at min height, dimmed (opacity is already
+        // 0.3 for non-active bars) and clickable so the filter can be
+        // switched; unfiltered view unchanged (no SoP filter active means
+        // zero-count buckets are still skipped). Same pattern as the
+        // 362nd eq/asp fix; the gate predicate here is the SoP filter
+        // itself (AF-origin range overlap, not an exact tier).
+        if (b.count === 0 && !window._activeSopFilter) return;
+        var h = b.count === 0 ? 2 : (maxBucket > 0 ? Math.max(2, Math.round(b.count / maxBucket * 28)) : 2);
         // 357th review: overlap match, not exact -- an AF-origin SoP tier
         // (50-70 / 70-85 / 90-101) spans two chart buckets, so the exact
         // match left every mini-bar dimmed with none outlined. Inline
@@ -6771,7 +6781,9 @@ function renderSopSortSummary(companies) {
     html += '</div>';
     html += '<div class="sop-dist-bracket-labels">';
     buckets.forEach(function(b) {
-        if (b.count === 0) return;
+        // 363rd review: same gate as the bar loop above, so labels stay
+        // in sync with the bars in a filtered SoP histogram.
+        if (b.count === 0 && !window._activeSopFilter) return;
         html += '<span class="sop-dist-bracket-label">' + b.label + '</span>';
     });
     html += '</div></div>';
