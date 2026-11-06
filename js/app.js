@@ -12710,6 +12710,13 @@ function _openDiffFromHash(detailTicker, diffStr) {
 }
 
 function applyHashState(companies) {
+    // 359th review: parseHash decodes every key and value exactly
+    // once, so the branches below use the state values directly.
+    // A second decode throws on any label holding a literal
+    // percent sign -- every YoY and stock-% label does -- which
+    // aborted the whole restore (and the hashchange handler) for
+    // those deep links, and silently corrupts values holding
+    // percent-escapes.
     var state = parseHash();
     if (!state) return;
 
@@ -12788,7 +12795,7 @@ function applyHashState(companies) {
 
     // Team completeness filter
     if (state.teamfilter) {
-        var tfVal = decodeURIComponent(state.teamfilter);
+        var tfVal = state.teamfilter;
         if (tfVal === 'missing' || tfVal === 'complete') {
             window._activeTeamCompletenessFilter = tfVal;
         }
@@ -12799,7 +12806,7 @@ function applyHashState(companies) {
         var yMin = parseFloat(state.ymin);
         var yMax = state.ymax === 'inf' ? Infinity : parseFloat(state.ymax);
         if (!isNaN(yMin) && (yMax === Infinity || !isNaN(yMax))) {
-            window._activeYoYBucket = { min: yMin, max: yMax, label: decodeURIComponent(state.ylbl) };
+            window._activeYoYBucket = { min: yMin, max: yMax, label: state.ylbl };
         }
     }
 
@@ -12808,7 +12815,7 @@ function applyHashState(companies) {
         var ptMin = parseFloat(state.ptmin);
         var ptMax = parseFloat(state.ptmax);
         if (!isNaN(ptMin) && !isNaN(ptMax)) {
-            window._activePctileTier = { min: ptMin, max: ptMax, label: decodeURIComponent(state.ptlbl), tag: state.pttag ? decodeURIComponent(state.pttag) : '' };
+            window._activePctileTier = { min: ptMin, max: ptMax, label: state.ptlbl, tag: state.pttag ? state.pttag : '' };
         }
     }
 
@@ -12817,7 +12824,7 @@ function applyHashState(companies) {
         var spMin = parseFloat(state.spmin);
         var spMax = parseFloat(state.spmax);
         if (!isNaN(spMin) && !isNaN(spMax)) {
-            window._activeStockPctTier = { min: spMin, max: spMax, label: decodeURIComponent(state.splbl), tag: state.sptag ? decodeURIComponent(state.sptag) : '' };
+            window._activeStockPctTier = { min: spMin, max: spMax, label: state.splbl, tag: state.sptag ? state.sptag : '' };
         }
     }
 
@@ -12846,7 +12853,7 @@ function applyHashState(companies) {
         var adMin = state.admin === '-inf' ? -Infinity : parseFloat(state.admin);
         var adMax = state.admax === 'inf' ? Infinity : parseFloat(state.admax);
         if (!isNaN(adMin) || adMin === -Infinity) {
-            window._activeAspDeltaTier = { min: adMin, max: adMax, tag: decodeURIComponent(state.adtag) };
+            window._activeAspDeltaTier = { min: adMin, max: adMax, tag: state.adtag };
             if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         }
     }
@@ -12856,7 +12863,7 @@ function applyHashState(companies) {
         var tqMin = parseFloat(state.tqmin);
         var tqMax = state.tqmax === 'inf' ? Infinity : parseFloat(state.tqmax);
         if (!isNaN(tqMin)) {
-            window._activeTenureQuartile = { min: tqMin, max: tqMax, tag: decodeURIComponent(state.tqtag), label: state.tqlbl ? decodeURIComponent(state.tqlbl) : '' };
+            window._activeTenureQuartile = { min: tqMin, max: tqMax, tag: state.tqtag, label: state.tqlbl ? state.tqlbl : '' };
             if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
         }
     }
@@ -12872,24 +12879,32 @@ function applyHashState(companies) {
         var govMax = parseFloat(state.govmax);
         if (!isNaN(govMin) && !isNaN(govMax)) {
             window._activeGovGrade = { grade: state.govgrade, min: govMin, max: govMax };
-            updateGovFilterIndicator();
+            // 359th review: the bare call threw ReferenceError --
+            // updateGovFilterIndicator is a function declaration nested
+            // inside the data-load callback (line ~14961), not visible
+            // to top-level applyHashState, so every gov deep link and
+            // every back/forward navigation into a gov hash aborted
+            // applyHashState mid-way (and the whole hashchange handler
+            // with it). The exposure already exists on window (line
+            // ~14996), like the other five indicators; call it guarded.
+            if (window._updateGovFilterIndicator) window._updateGovFilterIndicator();
         }
     }
 
     // Peer distribution filter
     if (state.pdtk && state.pdlbl) {
-        var pdTickers = decodeURIComponent(state.pdtk).split(',').filter(function(t) { return t.length > 0; });
+        var pdTickers = state.pdtk.split(',').filter(function(t) { return t.length > 0; });
         if (pdTickers.length > 0) {
-            window._activePeerDistFilter = { tickers: pdTickers, label: decodeURIComponent(state.pdlbl) };
+            window._activePeerDistFilter = { tickers: pdTickers, label: state.pdlbl };
             if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
         }
     }
 
     // Crosstab cell filter (mirror of the peer-dist restore above)
     if (state.xtk && state.xlbl) {
-        var xTickers = decodeURIComponent(state.xtk).split(',').filter(function(t) { return t.length > 0; });
+        var xTickers = state.xtk.split(',').filter(function(t) { return t.length > 0; });
         if (xTickers.length > 0) {
-            window._activeCrosstabFilter = { tickers: xTickers, label: decodeURIComponent(state.xlbl) };
+            window._activeCrosstabFilter = { tickers: xTickers, label: state.xlbl };
             if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         }
     }
@@ -12897,7 +12912,7 @@ function applyHashState(companies) {
     // Role filter
     if (state.role) {
         var validRoles = ['CFO', 'COO', 'GC/CLO', 'CTO', 'CHRO', 'CIO'];
-        var roleParsed = decodeURIComponent(state.role);
+        var roleParsed = state.role;
         if (validRoles.indexOf(roleParsed) >= 0) {
             activeRole = roleParsed;
             updateRoleColumnHeader();
@@ -12912,11 +12927,11 @@ function applyHashState(companies) {
     // Scatter axis selections (restore before chart init)
     if (state.scx) {
         var scXEl = document.getElementById('scatter-x-metric');
-        if (scXEl) scXEl.value = decodeURIComponent(state.scx);
+        if (scXEl) scXEl.value = state.scx;
     }
     if (state.scy) {
         var scYEl = document.getElementById('scatter-y-metric');
-        if (scYEl) scYEl.value = decodeURIComponent(state.scy);
+        if (scYEl) scYEl.value = state.scy;
     }
     // Scatter trend line toggle
     if (state.sct === '0') {
@@ -12933,7 +12948,7 @@ function applyHashState(companies) {
 
     // Deep-link: open detail panel for specified ticker (after table is rendered)
     if (state.detail) {
-        var detailTicker = decodeURIComponent(state.detail).toUpperCase();
+        var detailTicker = state.detail.toUpperCase();
         _expandedDetailTicker = detailTicker;
         // Use search to find the company if not visible on current page
         var companyExists = companies.some(function(c) { return c.ticker === detailTicker; });
@@ -16238,6 +16253,39 @@ function setupDualSparklineTooltips() {
         window.highlightCeoCfoBucket(window._activeCeoCfoBucket.min, window._activeCeoCfoBucket.max);
     }
 
+    // Apply gov / gender / tenure / SoP / asp-delta / stock-% bucket
+    // highlights if restored from hash (359th review: the restore block
+    // covered only sector / ratio / YoY / comp-dist / conc / CEO-CFO,
+    // so a deep link carrying one of these six filtered the table and
+    // raised its chip but left the chart un-ringed until a redraw; the
+    // charts draw before applyHashState, so the draw-time application
+    // never saw the state). Vol is excluded deliberately: it is not
+    // hash-serialized and stays session-local. Pctile / peer-dist /
+    // crosstab have no highlight function to call. Stock-% and
+    // asp-delta groups live in the sort-contextual summary, which
+    // renderSummaryBar only renders when unfiltered, so those two calls
+    // are no-ops on a filtered deep link today (the filter-stats summary
+    // replaces the mini-histograms) and go live when the sort-summary
+    // gate renders summaries alongside filters.
+    if (window._activeGovGrade && window.highlightGovChart) {
+        window.highlightGovChart(window._activeGovGrade.min, window._activeGovGrade.max);
+    }
+    if (window._activeGenderFilter && window.highlightGenderChart) {
+        window.highlightGenderChart(window._activeGenderFilter);
+    }
+    if (window._activeTenureQuartile && window.highlightTenureBucket) {
+        window.highlightTenureBucket(window._activeTenureQuartile.min, window._activeTenureQuartile.max);
+    }
+    if (window._activeSopFilter && window.highlightSopDistBucket) {
+        window.highlightSopDistBucket(window._activeSopFilter.min, window._activeSopFilter.max);
+    }
+    if (window._activeAspDeltaTier && window.highlightAspDeltaBucket) {
+        window.highlightAspDeltaBucket(window._activeAspDeltaTier.min, window._activeAspDeltaTier.max);
+    }
+    if (window._activeStockPctTier && window.highlightStockPctBucket) {
+        window.highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max);
+    }
+
     // Apply YoY filter chip if restored from hash
     if (window._activeYoYBucket) {
         updateYoYFilterIndicator();
@@ -18338,7 +18386,7 @@ function setupDualSparklineTooltips() {
     (function restoreCompareFromHash() {
         var state = parseHash();
         if (!state || !state.cmp) return;
-        var tickers = state.cmp.split(',').map(decodeURIComponent).filter(function(t) {
+        var tickers = state.cmp.split(',').filter(function(t) {
             return t && companies.some(function(c) { return c.ticker === t; });
         }).slice(0, MAX_COMPARE);
         if (tickers.length === 0) return;
@@ -18518,6 +18566,72 @@ function setupDualSparklineTooltips() {
         if (window._activeCeoCfoBucket) {
             if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(window._activeCeoCfoBucket.min, window._activeCeoCfoBucket.max);
             updateCeoCfoFilterIndicator();
+        } else if (window.highlightCeoCfoBucket) {
+            // 359th review: the restore had no else-clear, so a
+            // back/forward navigation that dropped cfomin left the ring
+            // on the bar while the chip was already removed (same stale
+            // class as the ratio / YoY else branches above).
+            window.highlightCeoCfoBucket(null, null);
+        }
+        // Restore gov / gender / tenure / SoP / asp-delta / stock-%
+        // bucket highlights from hash state (359th review: same gap as
+        // the init restore site -- no chart redraw happens on
+        // hashchange, so the draw-time application never fires for a
+        // back/forward navigation into one of these filters; the else
+        // branches clear the ring when the new hash drops the filter,
+        // mirroring the ratio / YoY pattern, or a dropped filter's ring
+        // would linger with its chip already removed. Vol is excluded
+        // deliberately: not hash-serialized, stays session-local, and
+        // the handler never nulls it, so its highlight persists.
+        // Pctile / peer-dist / crosstab have no highlight function.
+        // Stock-% / asp-delta groups live in the sort-contextual
+        // summary, which renderSummaryBar only renders when unfiltered,
+        // so those two calls are no-ops when the new hash carries a
+        // filter (the summary re-renders as filter stats) and go live
+        // when the sort-summary gate renders summaries alongside
+        // filters; the highlight functions are null-safe no-ops when
+        // no groups exist.)
+        if (window.highlightGovChart) {
+            if (window._activeGovGrade) {
+                window.highlightGovChart(window._activeGovGrade.min, window._activeGovGrade.max);
+            } else {
+                window.highlightGovChart(null);
+            }
+        }
+        if (window.highlightGenderChart) {
+            if (window._activeGenderFilter) {
+                window.highlightGenderChart(window._activeGenderFilter);
+            } else {
+                window.highlightGenderChart(null);
+            }
+        }
+        if (window.highlightTenureBucket) {
+            if (window._activeTenureQuartile) {
+                window.highlightTenureBucket(window._activeTenureQuartile.min, window._activeTenureQuartile.max);
+            } else {
+                window.highlightTenureBucket(null, null);
+            }
+        }
+        if (window.highlightSopDistBucket) {
+            if (window._activeSopFilter) {
+                window.highlightSopDistBucket(window._activeSopFilter.min, window._activeSopFilter.max);
+            } else {
+                window.highlightSopDistBucket(null);
+            }
+        }
+        if (window.highlightAspDeltaBucket) {
+            if (window._activeAspDeltaTier) {
+                window.highlightAspDeltaBucket(window._activeAspDeltaTier.min, window._activeAspDeltaTier.max);
+            } else {
+                window.highlightAspDeltaBucket(null, null);
+            }
+        }
+        if (window.highlightStockPctBucket) {
+            if (window._activeStockPctTier) {
+                window.highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max);
+            } else {
+                window.highlightStockPctBucket(null, null);
+            }
         }
         // Restore CEO transition filter chip if present in hash state
         if (window._activeCeoTransitionFilter) {
@@ -18559,7 +18673,7 @@ function setupDualSparklineTooltips() {
         // Restore or clear comparison set from hash
         var hashState = parseHash();
         var hashCmp = hashState && hashState.cmp
-            ? hashState.cmp.split(',').map(decodeURIComponent).filter(function(t) {
+            ? hashState.cmp.split(',').filter(function(t) {
                 return t && companies.some(function(c) { return c.ticker === t; });
             }).slice(0, MAX_COMPARE)
             : [];
