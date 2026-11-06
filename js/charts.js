@@ -428,20 +428,27 @@ window.highlightYoYBucket = function(minPct, maxPct) {
 };
 
 /* Update SoP distribution chart bar highlighting without full redraw */
+/* 357th review: match is now rangesOverlap (see the shared helper above
+ * drawConcDistChart), so an AF-origin SoP tier highlights every chart
+ * bucket it spans (50-70 lights 50-60 and 60-70; 70-85 lights 70-80 and
+ * 80-85; 90-101 lights 90-95 and 95-100.1) instead of showing nothing;
+ * a chart-origin tier still matches exactly one. The null / non-match
+ * branches also reset stroke-width to 0 (355th conc C11 class -- the
+ * old branches left a stale 1.5 width on a stroke='none' bar). */
 window.highlightSopDistBucket = function(minPct, maxPct) {
     d3.selectAll('#sop-dist-chart .sop-bar').each(function(d) {
         if (!d) return;
         if (minPct == null) {
-            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
-        } else if (d.min === minPct && d.max === maxPct) {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none').attr('stroke-width', 0);
+        } else if (rangesOverlap(d.min, d.max, minPct, maxPct)) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
         } else {
-            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none').attr('stroke-width', 0);
         }
     });
     d3.selectAll('#sop-dist-chart .sop-count-label').each(function(d) {
         if (!d) return;
-        d3.select(this).attr('opacity', minPct == null || (d.min === minPct && d.max === maxPct) ? 1 : 0.4);
+        d3.select(this).attr('opacity', minPct == null || rangesOverlap(d.min, d.max, minPct, maxPct) ? 1 : 0.4);
     });
 };
 
@@ -7006,6 +7013,23 @@ function drawSopDistChart(companies) {
         .attr('height', function(b) { return height - y(b.count); })
         .attr('fill', function(b) { return b.color; })
         .attr('rx', 3)
+        .attr('opacity', function(b) {
+            // 357th review: re-apply the active SoP filter at draw time
+            // (resize / theme toggle rebuild via redrawAllCharts), the
+            // conc/vol/gov pattern -- previously every bar redrew at a
+            // flat 1, so the active filter's highlight silently dropped
+            // while the table stayed filtered. 0.8 matches the highlight
+            // function's unfiltered restore.
+            var sf = window._activeSopFilter;
+            if (sf) return rangesOverlap(b.min, b.max, sf.min, sf.max) ? 1 : 0.3;
+            return 0.8;
+        })
+        .each(function(b) {
+            var sf = window._activeSopFilter;
+            if (sf && rangesOverlap(b.min, b.max, sf.min, sf.max)) {
+                d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
+            }
+        })
         .style('cursor', 'pointer')
         .on('mouseover', function(event, b) {
             var compList = b.companies.slice(0, 8).map(function(c) {
@@ -7049,6 +7073,14 @@ function drawSopDistChart(companies) {
         .style('fill', chartStrokeColor())
         .style('font-size', '11px')
         .style('font-weight', '600')
+        .attr('opacity', function(b) {
+            // 357th review: draw-time label dimming matches the bars
+            // above -- an AF-origin tier spanning two buckets dims the
+            // other labels instead of leaving them all at full strength.
+            var sf = window._activeSopFilter;
+            if (sf) return rangesOverlap(b.min, b.max, sf.min, sf.max) ? 1 : 0.4;
+            return 1;
+        })
         .text(function(b) { return b.count; });
 
     // Median line

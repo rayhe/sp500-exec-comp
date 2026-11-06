@@ -6735,11 +6735,23 @@ function renderSopSortSummary(companies) {
     buckets.forEach(function(b) {
         if (b.count === 0) return;
         var h = maxBucket > 0 ? Math.max(2, Math.round(b.count / maxBucket * 28)) : 2;
-        var isActive = window._activeSopFilter && window._activeSopFilter.min === b.min && window._activeSopFilter.max === b.max;
+        // 357th review: overlap match, not exact -- an AF-origin SoP tier
+        // (50-70 / 70-85 / 90-101) spans two chart buckets, so the exact
+        // match left every mini-bar dimmed with none outlined. Inline
+        // strict predicate (same as rangesOverlap in charts.js, which
+        // app.js cannot call at parse time -- charts.js loads after it).
+        var sf = window._activeSopFilter;
+        var isActive = sf && b.min < sf.max && b.max > sf.min;
         var opacity = window._activeSopFilter ? (isActive ? 1 : 0.3) : 0.8;
-        var outline = isActive ? ';outline:2px solid ' + b.color : '';
-        html += '<div class="sop-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies" style="cursor:pointer;opacity:' + opacity + '" onclick="if(window.highlightSopBucket)window.highlightSopBucket(' + b.min + ',' + b.max + ')">';
-        html += '<div class="sop-dist-bar" style="height:' + h + 'px;background:' + b.color + outline + '"></div>';
+        // 357th review, second half: the outline used to ride the inner
+        // bar in the bar's own color with no offset -- invisible even
+        // when isActive was true (a chart-origin exact match showed
+        // nothing either). It now rides the group with a 1px offset,
+        // the 354th eq/asp sort-summary pattern, so the active bucket
+        // actually reads as ringed.
+        var outline = isActive ? ';outline:2px solid ' + b.color + ';outline-offset:1px' : '';
+        html += '<div class="sop-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies" style="cursor:pointer;opacity:' + opacity + outline + '" onclick="if(window.highlightSopBucket)window.highlightSopBucket(' + b.min + ',' + b.max + ')">';
+        html += '<div class="sop-dist-bar" style="height:' + h + 'px;background:' + b.color + '"></div>';
         html += '<div class="sop-dist-bar-label">' + b.count + '</div>';
         html += '</div>';
     });

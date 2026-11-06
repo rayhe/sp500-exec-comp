@@ -218,6 +218,10 @@
         var clearedAfGov = !!(window._activeGovGrade && window._activeGovGrade._isAf);
         var clearedAfConc = !!(window._activeConcTier && window._activeConcTier._isAf);
         var clearedAfVol = !!(window._activeVolatilityBucket && window._activeVolatilityBucket._isAf);
+        // 357th review: SoP joins the 355th's gated-clear set -- AF Clear
+        // nulls an AF-origin SoP tier above, so its chart ring must go
+        // too; a chart-origin SoP bucket survives Clear and keeps its ring.
+        var clearedAfSop = !!(window._activeSopFilter && window._activeSopFilter._isAf);
         if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
         if (window._activeSopFilter && window._activeSopFilter._isAf) window._activeSopFilter = null;
         if (window._activeTenureQuartile && window._activeTenureQuartile._isAf) window._activeTenureQuartile = null;
@@ -229,6 +233,7 @@
         if (clearedAfGov && typeof window.highlightGovChart === 'function') window.highlightGovChart(null);
         if (clearedAfConc && typeof window.highlightConcDistBucket === 'function') window.highlightConcDistBucket(null, null);
         if (clearedAfVol && typeof window.highlightVolatilityBucket === 'function') window.highlightVolatilityBucket(null);
+        if (clearedAfSop && typeof window.highlightSopDistBucket === 'function') window.highlightSopDistBucket(null, null);
 
         // Remove chips created by AF
         ['dist-filter-chip','sop-filter-chip','tenure-filter-chip','gov-filter-chip','board-filter-chip','gender-filter-chip','conc-filter-chip','volatility-filter-chip'].forEach(function(cid){
@@ -361,6 +366,11 @@
             if (window._activeSopFilter) window._activeSopFilter = null;
             var chip = document.getElementById('sop-filter-chip');
             if (chip) chip.parentNode.removeChild(chip);
+            // 357th review: same phantom-highlight class as handleGov /
+            // handleVol / handleConc (355th) -- the AF SoP band now
+            // highlights its chart buckets, so clear the ring on select
+            // clear.
+            if (typeof window.highlightSopDistBucket === 'function') window.highlightSopDistBucket(null, null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -370,6 +380,13 @@
         var max = parseFloat(parts[1]);
         if (max === 101) max = Infinity;
         window._activeSopFilter = { min: min, max: max, label: 'SoP ' + min + '–' + (max===Infinity?'∞':max) + '%', _isAf: true };
+        // 357th review: highlight the chart buckets the AF band overlaps
+        // (rangesOverlap in charts.js) -- the AF SoP bands (0-50 / 50-70 /
+        // 70-85 / 85-90 / 90-101) differ from the chart buckets (0-50 /
+        // 50-60 / 60-70 / 70-80 / 80-85 / 85-90 / 90-95 / 95-100.1), so
+        // the exact-match highlight showed nothing for 50-70, 70-85 and
+        // 90-101.
+        if (typeof window.highlightSopDistBucket === 'function') window.highlightSopDistBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
         var existing = document.getElementById('sop-filter-chip');
