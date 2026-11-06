@@ -14054,6 +14054,14 @@ function setupDualSparklineTooltips() {
                 // AF-origin tiers, so dismiss must clear af-conc too.
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-conc']);
                 chip.remove();
+                // 355th review: dismiss must clear the chart highlight
+                // too (same class the gov/vol chip dismisses fixed in
+                // the 350th review) -- the AF conc band now highlights
+                // its chart buckets, so without this the bars stay
+                // ringed while the filter is gone. This was also the
+                // one conc clear path missing the call for
+                // chart-origin tiers.
+                if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
                 renderTable(companies);
             });
             var controls = document.querySelector('.table-controls');

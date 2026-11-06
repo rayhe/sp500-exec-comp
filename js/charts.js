@@ -6395,6 +6395,24 @@ window.highlightCeoCfoBucket = function(minRatio, maxRatio) {
    CEO Pay Concentration Distribution Chart (histogram)
    Shows how concentrated CEO pay is relative to total NEO compensation.
    ======================================================================== */
+/* 355th review: shared range-overlap predicate for the gov / volatility /
+ * concentration highlight family. The AF select bands differ from the
+ * chart buckets (af-gov A 80-100 vs chart 80-100.1; af-vol 0-10 spans
+ * chart 0-5 and 5-10; af-conc 0-30 spans chart 0-25 and 25-30; af-conc
+ * 60+ vs chart 60-101), so the exact min/max match the highlight
+ * functions and draw-time styling used showed nothing for AF-origin
+ * filters. Overlap is the correct key: a filter range highlights every
+ * chart bucket it intersects, and a chart-origin range still matches
+ * exactly one bucket (buckets are contiguous and half-open, so a
+ * [65,80] range cannot overlap its [50,65] or [80,100.1] neighbours).
+ * Strict inequalities on both sides; Infinity filter ends work because
+ * bucketMin < Infinity is true and the bucketMax > filterMin side
+ * decides. Null-safe: a null filter end matches nothing. */
+function rangesOverlap(bucketMin, bucketMax, filterMin, filterMax) {
+    if (filterMin == null || filterMax == null) return false;
+    return bucketMin < filterMax && bucketMax > filterMin;
+}
+
 function drawConcDistChart(companies) {
     var container = document.getElementById('conc-dist-chart');
     if (!container) return;
@@ -6555,11 +6573,11 @@ function drawConcDistChart(companies) {
         .attr('rx', 3)
         .attr('opacity', function(b) {
             if (hasSectorOverlay) return 0.5;
-            if (activeTier) return (b.min === activeTier.min && b.max === activeTier.max) ? 1 : 0.3;
+            if (activeTier) return rangesOverlap(b.min, b.max, activeTier.min, activeTier.max) ? 1 : 0.3;
             return 0.8;
         })
         .each(function(b) {
-            if (!hasSectorOverlay && activeTier && b.min === activeTier.min && b.max === activeTier.max) {
+            if (!hasSectorOverlay && activeTier && rangesOverlap(b.min, b.max, activeTier.min, activeTier.max)) {
                 d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
@@ -6624,7 +6642,7 @@ function drawConcDistChart(companies) {
         .style('font-size', '11px')
         .style('font-weight', '600')
         .attr('opacity', function(b) {
-            if (activeTier && !hasSectorOverlay) return (b.min === activeTier.min && b.max === activeTier.max) ? 1 : 0.4;
+            if (activeTier && !hasSectorOverlay) return rangesOverlap(b.min, b.max, activeTier.min, activeTier.max) ? 1 : 0.4;
             return 1;
         })
         .text(function(b) { return b.count; });
@@ -6873,20 +6891,29 @@ function drawConcDistChart(companies) {
 }
 
 /* Update CEO concentration distribution chart bar highlighting */
+/* 355th review: match is now rangesOverlap (see the shared helper above
+ * drawConcDistChart), so an AF-origin conc tier highlights every chart
+ * bucket it spans (0-30 lights 0-25 and 25-30; 60+ lights 60-101) instead
+ * of showing nothing; a chart-origin tier still matches exactly one. */
 window.highlightConcDistBucket = function(minPct, maxPct) {
     d3.selectAll('#conc-dist-chart .conc-dist-bar rect').each(function(d) {
         if (!d) return;
         if (minPct == null) {
-            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none');
-        } else if (d.min === minPct && d.max === maxPct) {
+            d3.select(this).attr('opacity', 0.8).attr('stroke', 'none').attr('stroke-width', 0);
+        } else if (rangesOverlap(d.min, d.max, minPct, maxPct)) {
             d3.select(this).attr('opacity', 1).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
         } else {
-            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none');
+            // 355th review: reset stroke-width too, not just the stroke
+            // -- the old else branch left a stale 1.5 width on a
+            // stroke='none' bar, so the DOM claimed a ring the eye
+            // could not see (caught by this run's render check: the
+            // 0-30 highlight's widths survived the 60+ re-highlight).
+            d3.select(this).attr('opacity', 0.3).attr('stroke', 'none').attr('stroke-width', 0);
         }
     });
     d3.selectAll('#conc-dist-chart .conc-dist-bar text.conc-count-label').each(function(d) {
         if (!d) return;
-        d3.select(this).attr('opacity', minPct == null || (d.min === minPct && d.max === maxPct) ? 1 : 0.4);
+        d3.select(this).attr('opacity', minPct == null || rangesOverlap(d.min, d.max, minPct, maxPct) ? 1 : 0.4);
     });
 };
 
@@ -9143,12 +9170,12 @@ function drawGovDistChart(companies) {
             // before chart init) showed no highlight on load. Gov bars
             // keep their unfiltered default of 1 (no opacity attr).
             var gf = window._activeGovGrade;
-            if (gf) return (b.min === gf.min && b.max === gf.max) ? 1 : 0.3;
+            if (gf) return rangesOverlap(b.min, b.max, gf.min, gf.max) ? 1 : 0.3;
             return 1;
         })
         .each(function(b) {
             var gf = window._activeGovGrade;
-            if (gf && b.min === gf.min && b.max === gf.max) {
+            if (gf && rangesOverlap(b.min, b.max, gf.min, gf.max)) {
                 d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
@@ -9207,7 +9234,7 @@ function drawGovDistChart(companies) {
             // histogram highlights.
             var gf = window._activeGovGrade;
             if (!gf) return 1;
-            return (b.min === gf.min && b.max === gf.max) ? 1 : 0.4;
+            return rangesOverlap(b.min, b.max, gf.min, gf.max) ? 1 : 0.4;
         })
         .style('fill', chartStrokeColor())
         .style('font-size', '11px')
@@ -9256,14 +9283,15 @@ function drawGovDistChart(companies) {
  * null restores defaults (opacity 1 -- gov bars never had an opacity attr
  * -- no ring, labels 1), the active bucket gets opacity 1 + the
  * theme-aware chartStrokeColor() 1.5px ring, inactive buckets dim to 0.3
- * with labels at 0.4. Match is by score-range min/max, the same key the
- * table filter predicate uses (the grade letter alone cannot key it: the
- * chart's 'F/D' bucket has no single grade letter, and the click passes
- * the first company's letter). Exact min/max match, like the other
- * histogram highlights -- so an AF-origin gov filter (af-gov bands
- * 80-100/65-79.999/... differ from the chart buckets 80-100.1/65-80/...)
- * still shows no highlight, the same known gap highlightConcDistBucket
- * has for af-conc; a shared overlap-match fix is a later run's job. */
+ * with labels at 0.4. Match is by score-range overlap (rangesOverlap):
+ * the grade letter alone cannot key it (the chart's 'F/D' bucket has no
+ * single grade letter, and the click passes the first company's letter),
+ * and the AF gov bands differ from the chart buckets (A 80-100 vs chart
+ * 80-100.1; F 0-34.999 spans chart 0-20 and 20-35), so an AF-origin gov
+ * filter now lights every bucket it intersects instead of showing
+ * nothing -- the gap the 350th review left for a shared overlap-match
+ * fix, closed by the 355th. A chart-origin bucket still matches exactly
+ * one bar. */
 window.highlightGovChart = function(min, max) {
     var bars = d3.selectAll('.gov-bar');
     if (min == null) {
@@ -9272,7 +9300,7 @@ window.highlightGovChart = function(min, max) {
         return;
     }
     bars.each(function(b) {
-        var match = b.min === min && b.max === max;
+        var match = rangesOverlap(b.min, b.max, min, max);
         d3.select(this)
             .attr('opacity', match ? 1 : 0.3)
             .attr('stroke', match ? chartStrokeColor() : 'none')
@@ -9280,7 +9308,7 @@ window.highlightGovChart = function(min, max) {
     });
     d3.selectAll('.gov-count-label').each(function(b) {
         if (!b) return;
-        d3.select(this).attr('opacity', (b.min === min && b.max === max) ? 1 : 0.4);
+        d3.select(this).attr('opacity', rangesOverlap(b.min, b.max, min, max) ? 1 : 0.4);
     });
 };
 
@@ -13368,12 +13396,12 @@ function drawVolatilityDistChart(companies) {
             // stayed filtered. Vol default is 0.85 (not 0.8) to match the
             // chart's existing unfiltered look.
             var vb = window._activeVolatilityBucket;
-            if (vb) return (b.min === vb.min && b.max === vb.max) ? 1 : 0.25;
+            if (vb) return rangesOverlap(b.min, b.max, vb.min, vb.max) ? 1 : 0.25;
             return 0.85;
         })
         .each(function(b) {
             var vb = window._activeVolatilityBucket;
-            if (vb && b.min === vb.min && b.max === vb.max) {
+            if (vb && rangesOverlap(b.min, b.max, vb.min, vb.max)) {
                 d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
             }
         })
@@ -13393,7 +13421,10 @@ function drawVolatilityDistChart(companies) {
             // its dimmed 0.25 (same class the 349th review fixed on the
             // CEO/CFO chart).
             var vb = window._activeVolatilityBucket;
-            var isActive = vb && b.min === vb.min && b.max === vb.max;
+            // 355th review: overlap match, so a hovered bar belonging to
+            // an AF-origin band restores to its ringed/dimmed state, not
+            // to a flat 0.85.
+            var isActive = vb && rangesOverlap(b.min, b.max, vb.min, vb.max);
             d3.select(this)
                 .attr('opacity', isActive ? 1 : (vb ? 0.25 : 0.85))
                 .attr('stroke', isActive ? chartStrokeColor() : 'none')
@@ -13453,7 +13484,7 @@ function drawVolatilityDistChart(companies) {
             // histogram highlights.
             var vb = window._activeVolatilityBucket;
             if (!vb) return 1;
-            return (b.min === vb.min && b.max === vb.max) ? 1 : 0.4;
+            return rangesOverlap(b.min, b.max, vb.min, vb.max) ? 1 : 0.4;
         })
         .style('font-size', '11px')
         .style('font-weight', '600')
@@ -13567,11 +13598,13 @@ function drawVolatilityDistChart(companies) {
  * a typeof guard, a no-op until now). Follows the highlightCeoCfoBucket
  * convention exactly: null restores defaults (0.85, no ring, labels 1),
  * the active bucket gets opacity 1 + the theme-aware chartStrokeColor()
- * 1.5px ring, inactive buckets dim to 0.25 with labels at 0.4. Exact
- * min/max match, like the other histogram highlights -- so an AF-origin
- * volatility filter (af-vol bands 0-10/10-25/25-50/50+ span chart buckets)
- * still shows no highlight, the same known gap highlightConcDistBucket
- * has for af-conc; a shared overlap-match fix is a later run's job. */
+ * 1.5px ring, inactive buckets dim to 0.25 with labels at 0.4. Match is
+ * by range overlap (rangesOverlap): the af-vol bands (0-10/10-25/25-50/
+ * 50+) span chart buckets (0-5, 5-10, 10-20, 20-40, 40-60, 60-80, 80+),
+ * so an AF-origin volatility filter now lights every bucket it
+ * intersects instead of showing nothing -- the gap the 350th review
+ * left for a shared overlap-match fix, closed by the 355th. A
+ * chart-origin bucket still matches exactly one bar. */
 window.highlightVolatilityBucket = function(min, max) {
     var bars = d3.selectAll('.vol-bar');
     if (min == null) {
@@ -13580,7 +13613,7 @@ window.highlightVolatilityBucket = function(min, max) {
         return;
     }
     bars.each(function(b) {
-        var match = b.min === min && b.max === max;
+        var match = rangesOverlap(b.min, b.max, min, max);
         d3.select(this)
             .attr('opacity', match ? 1 : 0.25)
             .attr('stroke', match ? chartStrokeColor() : 'none')
@@ -13588,7 +13621,7 @@ window.highlightVolatilityBucket = function(min, max) {
     });
     d3.selectAll('.vol-count').each(function(b) {
         if (!b) return;
-        d3.select(this).attr('opacity', (b.min === min && b.max === max) ? 1 : 0.4);
+        d3.select(this).attr('opacity', rangesOverlap(b.min, b.max, min, max) ? 1 : 0.4);
     });
 };
 

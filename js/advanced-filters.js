@@ -209,6 +209,15 @@
         // and is still nulled unconditionally, correctly. Surviving
         // chart gov/gender/sop chips are re-rendered by the indicator
         // calls below (334th/335th), so chip and state agree either way.
+        // 355th review: AF Clear nulls state directly (it does not route
+        // through the handle*('') paths), so it must clear the chart
+        // highlights for exactly the dims it nulled -- and only those.
+        // A chart-origin gov/vol/conc filter survives Clear (its state
+        // is not _isAf), so its ring must survive too; capturing the
+        // AF-origin flags before nulling keeps the two cases apart.
+        var clearedAfGov = !!(window._activeGovGrade && window._activeGovGrade._isAf);
+        var clearedAfConc = !!(window._activeConcTier && window._activeConcTier._isAf);
+        var clearedAfVol = !!(window._activeVolatilityBucket && window._activeVolatilityBucket._isAf);
         if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
         if (window._activeSopFilter && window._activeSopFilter._isAf) window._activeSopFilter = null;
         if (window._activeTenureQuartile && window._activeTenureQuartile._isAf) window._activeTenureQuartile = null;
@@ -217,6 +226,9 @@
         if (window._activeGenderFilter && window._isAfGender) { window._activeGenderFilter = null; window._isAfGender = false; }
         if (window._activeConcTier && window._activeConcTier._isAf) window._activeConcTier = null;
         if (window._activeVolatilityBucket && window._activeVolatilityBucket._isAf) window._activeVolatilityBucket = null;
+        if (clearedAfGov && typeof window.highlightGovChart === 'function') window.highlightGovChart(null);
+        if (clearedAfConc && typeof window.highlightConcDistBucket === 'function') window.highlightConcDistBucket(null, null);
+        if (clearedAfVol && typeof window.highlightVolatilityBucket === 'function') window.highlightVolatilityBucket(null);
 
         // Remove chips created by AF
         ['dist-filter-chip','sop-filter-chip','tenure-filter-chip','gov-filter-chip','board-filter-chip','gender-filter-chip','conc-filter-chip','volatility-filter-chip'].forEach(function(cid){
@@ -415,6 +427,11 @@
             // the gov chip is not dataset.af, so only the indicator
             // removes it once state is null.
             if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
+            // 355th review: AF clear must clear the bar highlight too
+            // (tenure pattern, 353rd) -- the AF gov band now highlights
+            // its chart buckets, so clearing the select without clearing
+            // the ring would leave a phantom highlight.
+            if (typeof window.highlightGovChart === 'function') window.highlightGovChart(null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -439,6 +456,11 @@
         // 334th review: refresh the app.js-owned chip so an AF-origin
         // grade replaces (not hides behind) a stale chart-origin tag.
         if (typeof window._updateGovFilterIndicator === 'function') window._updateGovFilterIndicator();
+        // 355th review: highlight the chart buckets the AF band overlaps
+        // (rangesOverlap in charts.js) -- the AF gov bands (80-100 /
+        // 65-79.999 / ...) differ from the chart buckets (80-100.1 /
+        // 65-80 / ...), so the exact-match highlight showed nothing.
+        if (typeof window.highlightGovChart === 'function') window.highlightGovChart(g.min, g.max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
@@ -503,6 +525,10 @@
             // AF Clear only, not for this individual-clear path. The
             // indicator removes the chip now that state is null.
             if (typeof window._updateConcFilterIndicator === 'function') window._updateConcFilterIndicator();
+            // 355th review: same phantom-highlight class as handleGov /
+            // handleVol below -- the AF conc band now highlights its
+            // chart buckets, so clear the ring on select clear.
+            if (typeof window.highlightConcDistBucket === 'function') window.highlightConcDistBucket(null, null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -512,6 +538,11 @@
         var max = parts[1] === '100' ? Infinity : parseFloat(parts[1]);
         var tagMap = { '0-30':'Low <30%', '30-40':'30–40%', '40-50':'40–50%', '50-60':'50–60%', '60-100':'High 60%+' };
         window._activeConcTier = { min: min, max: max, tag: tagMap[val] || val, label: tagMap[val] || val, _isAf: true };
+        // 355th review: highlight the chart buckets the AF band overlaps
+        // (rangesOverlap in charts.js) -- the AF conc bands (0-30 /
+        // 30-40 / ...) differ from the chart buckets (0-25 / 25-30 /
+        // ...), so the exact-match highlight showed nothing.
+        if (typeof window.highlightConcDistBucket === 'function') window.highlightConcDistBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
@@ -522,6 +553,10 @@
             var chip = document.getElementById('volatility-filter-chip');
             if (chip && chip.dataset && chip.dataset.af === '1') chip.parentNode.removeChild(chip);
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
+            // 355th review: same phantom-highlight class as handleGov /
+            // handleConc -- the AF vol band now highlights its chart
+            // buckets, so clear the ring on select clear.
+            if (typeof window.highlightVolatilityBucket === 'function') window.highlightVolatilityBucket(null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -532,6 +567,12 @@
         var labelMap = { '0-10':'Stable <10%', '10-25':'Moderate 10–25%', '25-50':'Volatile 25–50%', '50-999':'Highly volatile 50%+' };
         window._activeVolatilityBucket = { min: min, max: max, label: labelMap[val] || val, _isAf: true };
         if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
+        // 355th review: highlight the chart buckets the AF band overlaps
+        // (rangesOverlap in charts.js) -- the AF vol bands (0-10 /
+        // 10-25 / 25-50 / 50+) span chart buckets (0-5 / 5-10 / 10-20 /
+        // 20-40 / 40-60 / 60-80 / 80+), so the exact-match highlight
+        // showed nothing.
+        if (typeof window.highlightVolatilityBucket === 'function') window.highlightVolatilityBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
     }
