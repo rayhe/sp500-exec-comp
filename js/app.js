@@ -5903,8 +5903,20 @@ function renderRatioSortSummary(companies) {
     html += '<span class="summary-stat-label">Distribution</span>';
     html += '<span class="ratio-dist-bars">';
     buckets.forEach(function(b) {
-        if (b.count === 0) return; // skip empty buckets
-        var barH = maxBucketCount > 0 ? Math.max(4, Math.round(b.count / maxBucketCount * 24)) : 4;
+        // 364th review: when a ratio-bucket filter is active the filtered
+        // set has zero companies in every non-overlapping bucket, so
+        // skipping zero-count buckets collapsed the histogram to the active
+        // bucket only and the bar could not switch buckets. Render
+        // zero-count buckets at min height (4px, this histogram's minimum),
+        // dimmed (isDimmed is already 0.3 for non-active bars) and
+        // clickable so the filter can be switched; unfiltered view
+        // unchanged (no ratio filter active means zero-count buckets are
+        // still skipped). Same pattern as the 362nd eq/asp and 363rd SoP
+        // fixes; the gate predicate here is the ratio filter itself
+        // (activeRB is an exact bucket match). Closes queued candidate
+        // (2) from the 363rd list.
+        if (b.count === 0 && !activeRB) return;
+        var barH = b.count === 0 ? 4 : (maxBucketCount > 0 ? Math.max(4, Math.round(b.count / maxBucketCount * 24)) : 4);
         var isActive = (activeRB && activeRB.min === b.min && activeRB.max === b.max);
         var isDimmed = (activeRB && !isActive);
         var dimStyle = isDimmed ? 'opacity:0.3;' : '';
