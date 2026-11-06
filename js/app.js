@@ -6119,8 +6119,15 @@ function renderStockPctSortSummary(companies) {
     var activeT = window._activeStockPctTier;
     html += '<div class="eq-dist-histogram"><div class="eq-dist-bars">';
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
-        var h = maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2;
+        // 362nd review: when a tier filter is active the filtered set has
+        // zero companies in every other tier, so skipping zero-count tiers
+        // collapsed the histogram to the active tier only and the bar could
+        // not switch tiers. Render zero-count tiers at min height, dimmed
+        // (barOpacity is already 0.3 for non-active bars) and clickable so
+        // the tier can be switched; unfiltered view unchanged (no tier
+        // filter active means zero-count tiers are still skipped).
+        if (t.count === 0 && !activeT) return;
+        var h = t.count === 0 ? 2 : (maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2);
         var isActive = activeT && activeT.min === t.min && activeT.max === t.max;
         var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:1px;' : '';
         var barOpacity = activeT ? (isActive ? 1 : 0.3) : 1;
@@ -6133,7 +6140,7 @@ function renderStockPctSortSummary(companies) {
     html += '</div>';
     html += '<div class="eq-dist-bracket-labels">';
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
+        if (t.count === 0 && !activeT) return;
         html += '<span class="eq-dist-bracket-label">' + t.label + '</span>';
     });
     html += '</div></div>';
@@ -6871,8 +6878,14 @@ function renderAspDeltaSortSummary(companies) {
 
     html += '<div class="asp-dist-histogram"><div class="asp-dist-bars">';
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
-        var h = maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2;
+        // 362nd review: same zero-count collapse as the eq histogram (see
+        // renderStockPctSortSummary) -- when an asp-delta tier filter is
+        // active every other tier is empty in the filtered set, so the
+        // histogram collapsed to the active tier and could not switch tiers.
+        // Render zero-count tiers at min height, dimmed and clickable when
+        // a tier filter is active; unfiltered view unchanged.
+        if (t.count === 0 && !window._activeAspDeltaTier) return;
+        var h = t.count === 0 ? 2 : (maxTier > 0 ? Math.max(2, Math.round(t.count / maxTier * 28)) : 2);
         var isActive = window._activeAspDeltaTier && window._activeAspDeltaTier.min === t.min && window._activeAspDeltaTier.max === t.max;
         var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:1px;' : '';
         var barOpacity = window._activeAspDeltaTier ? (isActive ? 1 : 0.3) : 1;
@@ -6886,7 +6899,7 @@ function renderAspDeltaSortSummary(companies) {
     html += '</div>';
     html += '<div class="asp-dist-bracket-labels">';
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
+        if (t.count === 0 && !window._activeAspDeltaTier) return;
         html += '<span class="asp-dist-bracket-label">' + t.label + '</span>';
     });
     html += '</div></div>';
