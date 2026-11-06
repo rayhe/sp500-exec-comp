@@ -18540,8 +18540,6 @@ function setupDualSparklineTooltips() {
                 window.highlightRatioBucket(window._activeRatioBucket.min, window._activeRatioBucket.max);
             } else {
                 window.highlightRatioBucket(null);
-                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
-    if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
             }
         }
         // Restore YoY bucket highlight from hash state
@@ -18557,10 +18555,31 @@ function setupDualSparklineTooltips() {
             updateDistFilterIndicator();
             // 358th review: pass max too (overlap match).
             if (window.highlightCompDistBucket) window.highlightCompDistBucket(window._activeDistFilter.min, window._activeDistFilter.max);
+        } else if (window.highlightCompDistBucket) {
+            // 360th review: the restore had no else-clear -- the
+            // last if-only restore block in the handler (every other
+            // dim has one since the 359th). The ring is currently
+            // wiped anyway by the sector-aware redraw that the
+            // setActiveSector(null) at the top of this handler
+            // triggers, so this is defense-in-depth, not a live
+            // stale ring today: if setActiveSector ever gains an
+            // early return for an unchanged sector, or comp-dist
+            // leaves the sector-aware set, the dropped filter's ring
+            // would linger with its chip already removed (same class
+            // as the 359th CEO-CFO fix), and the incidental clear
+            // nested in the ratio else branch above is being removed,
+            // so this is the dim's only clear.
+            window.highlightCompDistBucket(null);
         }
         // Restore conc dist bucket highlight from hash state
         if (window._activeConcTier && window.highlightConcDistBucket) {
             window.highlightConcDistBucket(window._activeConcTier.min, window._activeConcTier.max);
+        } else if (window.highlightConcDistBucket) {
+            // 360th review: same gap as the dist block above -- no
+            // else-clear, and the only clear was the incidental one
+            // nested in the ratio else branch, skipped whenever the
+            // new hash carries a ratio bucket.
+            window.highlightConcDistBucket(null, null);
         }
         // Restore CEO/CFO premium bucket highlight + chip from hash state
         if (window._activeCeoCfoBucket) {
