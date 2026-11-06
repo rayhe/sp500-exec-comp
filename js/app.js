@@ -3270,6 +3270,14 @@ function populateInsights(comp, trends, sectorFilter) {
             document.querySelectorAll('.community-legend-active').forEach(function(el) {
                 el.classList.remove('community-legend-active');
             });
+            // 356th review: the legend classes above are only two of the
+            // three stale visuals -- the scatter crosshairs + floating
+            // label also survive this path (same class as the Reset All
+            // gap clearCommunityHighlight fixes). The shared clear nulls
+            // the scatter ticker set and redraws the scatter when one
+            // was showing; the class removals above stay (they predate
+            // the shared function).
+            if (window.clearCommunityHighlight) window.clearCommunityHighlight();
         }
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;
@@ -15016,6 +15024,41 @@ function setupDualSparklineTooltips() {
         }
     }
     window._updateCrosstabFilterIndicator = updateCrosstabFilterIndicator;
+
+    // 356th review: the community filter's visuals were the one dim Reset
+    // All never cleared -- its clearCommunityHighlight() call below
+    // targeted a function that was never defined, so the typeof guard
+    // silently no-op'd while the network legend kept
+    // .community-legend-active, the community-metrics quartile zone kept
+    // .cm-bp-zone-clicked, and the scatter kept its median crosshairs +
+    // floating "Community: X" label. All three live outside the table,
+    // so renderTable's tbody wipe never touches them, and neither reset
+    // path redraws the scatter. (The insight path already removed the
+    // two classes inline but also never redrew the scatter or nulled the
+    // ticker set.) Define the function the call sites already expect:
+    // clear the visuals, null the scatter ticker set, and redraw the
+    // scatter only when a community scatter was actually showing -- a
+    // blind redraw on every Reset would clobber brush/zoom state.
+    // Callers own the filter state + chip; this owns the visuals.
+    // Escape deliberately keeps community (343rd review), so it must
+    // NOT call this.
+    window.clearCommunityHighlight = function() {
+        var hadScatter = !!(window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0);
+        var hadLegend = !!document.querySelector('.community-legend-active');
+        var hadZone = !!document.querySelector('.cm-bp-zone-clicked');
+        document.querySelectorAll('.community-legend-active').forEach(function(el) {
+            el.classList.remove('community-legend-active');
+        });
+        document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
+            el.classList.remove('cm-bp-zone-clicked');
+        });
+        window._activeCommunityScatterTickers = null;
+        if ((hadScatter || hadLegend || hadZone) && typeof drawScatterChart === 'function' && window._chartData && window._chartData.companies) {
+            var scEl = document.getElementById('scatter-chart');
+            if (scEl) scEl.innerHTML = '';
+            drawScatterChart(window._chartData.companies);
+        }
+    };
 
     /* ---- Global Reset All Filters ---- */
     window.resetAllFilters = function() {
