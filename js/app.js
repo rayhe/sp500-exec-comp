@@ -12845,12 +12845,21 @@ function applyHashState(companies) {
     }
 
     // Distribution filter
-    if (state.dmin != null && state.dmax != null && state.dsec) {
+    // 365th review: a non-sector bracket filter serializes dsec as an
+    // empty value (filterByCompBracket and the AF pay band set
+    // sector:null), so a truthy dsec gate dropped the filter on reload
+    // and back/forward. The table unfiltered with no chip and no ring
+    // while the URL still carried dmin/dmax. The gate is key presence,
+    // not truthiness, and an empty dsec restores sector:null. The init
+    // restore block and the hashchange handler already restore the chip
+    // and the comp-dist highlight whenever _activeDistFilter is set, so
+    // this gate was the only break in the round trip.
+    if (state.dmin != null && state.dmax != null && state.dsec != null) {
         window._activeDistFilter = {
             min: parseFloat(state.dmin),
             max: parseFloat(state.dmax),
-            sector: state.dsec,
-            label: state.dlbl || state.dsec + ' (filtered)'
+            sector: state.dsec || null,
+            label: state.dlbl || (state.dsec ? state.dsec + ' (filtered)' : 'Filtered')
         };
     }
 
