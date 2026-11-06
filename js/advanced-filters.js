@@ -222,6 +222,10 @@
         // nulls an AF-origin SoP tier above, so its chart ring must go
         // too; a chart-origin SoP bucket survives Clear and keeps its ring.
         var clearedAfSop = !!(window._activeSopFilter && window._activeSopFilter._isAf);
+        // 358th review: pay band joins the gated-clear set -- AF Clear
+        // nulls an AF-origin pay band below, so its chart ring must go
+        // too; a chart-origin dist bracket survives Clear and keeps its ring.
+        var clearedAfPay = !!(window._activeDistFilter && window._activeDistFilter._isAfPay);
         if (window._activeDistFilter && window._activeDistFilter._isAfPay) window._activeDistFilter = null;
         if (window._activeSopFilter && window._activeSopFilter._isAf) window._activeSopFilter = null;
         if (window._activeTenureQuartile && window._activeTenureQuartile._isAf) window._activeTenureQuartile = null;
@@ -234,6 +238,7 @@
         if (clearedAfConc && typeof window.highlightConcDistBucket === 'function') window.highlightConcDistBucket(null, null);
         if (clearedAfVol && typeof window.highlightVolatilityBucket === 'function') window.highlightVolatilityBucket(null);
         if (clearedAfSop && typeof window.highlightSopDistBucket === 'function') window.highlightSopDistBucket(null, null);
+        if (clearedAfPay && typeof window.highlightCompDistBucket === 'function') window.highlightCompDistBucket(null, null);
 
         // Remove chips created by AF
         ['dist-filter-chip','sop-filter-chip','tenure-filter-chip','gov-filter-chip','board-filter-chip','gender-filter-chip','conc-filter-chip','volatility-filter-chip'].forEach(function(cid){
@@ -335,6 +340,10 @@
             // while state was just nulled. The indicator removes it
             // (mirrors the handleVol('') pattern from the 327th review).
             if (typeof window._updateDistFilterIndicator === 'function') window._updateDistFilterIndicator();
+            // 358th review: same phantom-highlight class as handleSopTier
+            // (357th) -- the AF pay band now highlights its chart
+            // buckets, so clear the ring on select clear.
+            if (typeof window.highlightCompDistBucket === 'function') window.highlightCompDistBucket(null, null);
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
             return;
@@ -343,6 +352,12 @@
         var min = parseInt(parts[0],10);
         var max = parts[1] === '9999999999' ? Infinity : parseInt(parts[1],10);
         window._activeDistFilter = { min: min, max: max, label: '$' + (min/1000000) + 'M–$' + (max===Infinity?'∞':(max/1000000)+'M'), _isAfPay: true, sector: null };
+        // 358th review: highlight the chart buckets the AF band overlaps
+        // (rangesOverlap in charts.js) -- the AF bands (15-25M / 25-50M /
+        // 50M+) differ from the chart buckets (15-20M / 20-30M / 30-50M /
+        // 50-75M / 75M+), so the exact-min highlight showed nothing for
+        // $25-50M and only half the range for $15-25M / $50M+.
+        if (typeof window.highlightCompDistBucket === 'function') window.highlightCompDistBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
         var existing = document.getElementById('dist-filter-chip');

@@ -2596,13 +2596,17 @@ function drawCompDistChart(companies) {
         .attr('opacity', function(b) {
             if (hasSectorOverlay) return 0.5;
             var af = window._activeDistFilter;
-            if (af && !af.sector) return (b.min === af.min) ? 1 : 0.3;
+            // 358th review: overlap match, not exact min -- an AF pay
+            // band (15-25M / 25-50M / 50M+) spans chart buckets, so
+            // exact-min left the $25-50M band with every bar dimmed
+            // and no ring (same class as the 355th/357th SoP/gov fixes).
+            if (af && !af.sector) return rangesOverlap(b.min, b.max, af.min, af.max) ? 1 : 0.3;
             return 0.8;
         })
         .each(function(b) {
             if (!hasSectorOverlay) {
                 var af = window._activeDistFilter;
-                if (af && !af.sector && b.min === af.min) {
+                if (af && !af.sector && rangesOverlap(b.min, b.max, af.min, af.max)) {
                     d3.select(this).attr('stroke', chartStrokeColor()).attr('stroke-width', 1.5);
                 }
             }
@@ -2625,7 +2629,8 @@ function drawCompDistChart(companies) {
         .on('mouseout', function(event, b) {
             if (hasSectorOverlay) return;
             var af = window._activeDistFilter;
-            var isActive = af && !af.sector && b.min === af.min;
+            // 358th review: overlap match (see bar opacity above).
+            var isActive = af && !af.sector && rangesOverlap(b.min, b.max, af.min, af.max);
             d3.select(this)
                 .attr('opacity', isActive ? 1 : (af && !af.sector ? 0.3 : 0.8))
                 .attr('stroke', isActive ? chartStrokeColor() : 'none')
@@ -2670,7 +2675,8 @@ function drawCompDistChart(companies) {
         .attr('opacity', function(b) {
             if (hasSectorOverlay) return 0.6;
             var af = window._activeDistFilter;
-            if (af && !af.sector) return (b.min === af.min) ? 1 : 0.4;
+            // 358th review: overlap match (see bar opacity above).
+            if (af && !af.sector) return rangesOverlap(b.min, b.max, af.min, af.max) ? 1 : 0.4;
             return 1;
         });
 
@@ -2873,14 +2879,21 @@ function drawCompDistChart(companies) {
 }
 
 /* Highlight compensation distribution chart bars when filter is active */
-window.highlightCompDistBucket = function(minComp) {
+window.highlightCompDistBucket = function(minComp, maxComp) {
     d3.selectAll('#comp-dist-chart .comp-dist-bar rect').each(function(d) {
         if (!d) return;
         if (minComp == null) {
             // Clear: restore all to default
             d3.select(this).attr('opacity', 0.8).attr('stroke', 'none').attr('stroke-width', 0);
         } else {
-            var isActive = d.min === minComp;
+            // 358th review: overlap match, not exact min -- the AF pay
+            // bands (15-25M / 25-50M / 50M+) span the chart buckets
+            // (15-20M / 20-30M / 30-50M / 50-75M / 75M+), so an
+            // exact-min match left the $25-50M band highlighting nothing
+            // at all (no bucket starts at 25M) and the $15-25M / $50M+
+            // bands lighting only half their range. Single-arg callers
+            // keep the old exact-min behavior.
+            var isActive = (maxComp == null) ? (d.min === minComp) : rangesOverlap(d.min, d.max, minComp, maxComp);
             d3.select(this)
                 .attr('opacity', isActive ? 1 : 0.3)
                 .attr('stroke', isActive ? chartStrokeColor() : 'none')
@@ -2893,7 +2906,9 @@ window.highlightCompDistBucket = function(minComp) {
         if (minComp == null) {
             d3.select(this).attr('opacity', 1);
         } else {
-            d3.select(this).attr('opacity', d.min === minComp ? 1 : 0.4);
+            // 358th review: same overlap match as the bars above.
+            var isActive = (maxComp == null) ? (d.min === minComp) : rangesOverlap(d.min, d.max, minComp, maxComp);
+            d3.select(this).attr('opacity', isActive ? 1 : 0.4);
         }
     });
 };

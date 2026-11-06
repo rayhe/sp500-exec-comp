@@ -5630,7 +5630,13 @@ function renderCompDistSummary(companies) {
     brackets.forEach(function(b) {
         var barH = maxBracketCount > 0 ? Math.max(3, Math.round(b.count / maxBracketCount * 24)) : 3;
         var maxVal = b.max === Infinity ? 1e15 : b.max;
-        var isActive = (activeMin !== null && b.min === activeMin && maxVal === activeMax);
+        // 358th review: overlap match, not exact min/max -- an AF pay
+        // band (15-25M / 25-50M / 50M+) spans these buckets, so the
+        // exact match left the $25-50M band with every mini-bar dimmed
+        // and none outlined (357th SoP pattern; inline strict predicate
+        // because app.js loads before charts.js and cannot call
+        // rangesOverlap at parse time).
+        var isActive = (activeMin !== null && b.min < activeMax && maxVal > activeMin);
         var isDimmed = (activeMin !== null && !isActive);
         var dimStyle = isDimmed ? 'opacity:0.3;' : '';
         var activeOutline = isActive ? 'outline:2px solid ' + b.color + ';outline-offset:2px;border-radius:3px;' : '';
@@ -13769,6 +13775,11 @@ function setupDualSparklineTooltips() {
                     if (c.textContent === 'All') c.classList.add('active');
                 });
                 renderTable(companies);
+                // 358th review: dismissing the dist chip must clear the
+                // comp-dist highlight too -- the bars stay ringed while
+                // the filter is gone otherwise (SoP chip-dismiss pin
+                // from the 357th review, same class).
+                if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
                 if (window.highlightSectorBar) window.highlightSectorBar(null);
             });
             var controls = document.querySelector('.table-controls');
@@ -13816,7 +13827,9 @@ function setupDualSparklineTooltips() {
         pushState();
         // Highlight the active bucket in the compensation distribution chart
         if (window.highlightCompDistBucket) {
-            window.highlightCompDistBucket(window._activeDistFilter ? window._activeDistFilter.min : null);
+            // 358th review: pass max too -- the highlight matches by
+            // overlap now, and a min-only call falls back to exact-min.
+            window.highlightCompDistBucket(window._activeDistFilter ? window._activeDistFilter.min : null, window._activeDistFilter ? window._activeDistFilter.max : null);
         }
         announce(window._activeDistFilter ? 'Filtered to ' + label + ' compensation bracket' : 'Filter cleared');
     };
@@ -16211,7 +16224,8 @@ function setupDualSparklineTooltips() {
 
     // Apply comp dist bracket highlight if restored from hash
     if (window._activeDistFilter && window.highlightCompDistBucket) {
-        window.highlightCompDistBucket(window._activeDistFilter.min);
+        // 358th review: pass max too (overlap match).
+        window.highlightCompDistBucket(window._activeDistFilter.min, window._activeDistFilter.max);
     }
 
     // Apply conc dist bucket highlight if restored from hash
@@ -18493,7 +18507,8 @@ function setupDualSparklineTooltips() {
         // Restore dist filter chip if present in hash state
         if (window._activeDistFilter) {
             updateDistFilterIndicator();
-            if (window.highlightCompDistBucket) window.highlightCompDistBucket(window._activeDistFilter.min);
+            // 358th review: pass max too (overlap match).
+            if (window.highlightCompDistBucket) window.highlightCompDistBucket(window._activeDistFilter.min, window._activeDistFilter.max);
         }
         // Restore conc dist bucket highlight from hash state
         if (window._activeConcTier && window.highlightConcDistBucket) {
