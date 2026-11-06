@@ -3221,6 +3221,11 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeStockPctTier = null;
             var spf = document.getElementById('stockpct-filter-chip');
             if (spf) spf.remove();
+            // 354th review: same stale-highlight class the 350th/352nd/
+            // 353rd reviews fixed here for gov/vol/gender/tenure -- this
+            // path nulled the tier but never cleared its histogram
+            // highlight (Reset All / Escape already call it).
+            if (window.highlightStockPctBucket) window.highlightStockPctBucket(null, null);
         }
         if (window._activeGenderFilter) {
             window._activeGenderFilter = null;
@@ -3231,6 +3236,8 @@ function populateInsights(comp, trends, sectorFilter) {
             window._activeAspDeltaTier = null;
             var adc = document.getElementById('aspdelta-filter-chip');
             if (adc) adc.remove();
+            // 354th review: asp-delta twin of the stockpct clear above.
+            if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null, null);
         }
         if (window._activeTenureQuartile) {
             window._activeTenureQuartile = null;
@@ -6104,7 +6111,7 @@ function renderStockPctSortSummary(companies) {
         var activeOutline = isActive ? 'outline:2px solid ' + t.color + ';outline-offset:1px;' : '';
         var barOpacity = activeT ? (isActive ? 1 : 0.3) : 1;
         var tMaxStr = t.max > 100 ? '100.1' : t.max;
-        html += '<div class="eq-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByStockPctTier(' + t.min + ',' + tMaxStr + ',\'' + t.label.replace(/'/g, "\\\\'") + '\',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<div class="eq-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" data-min="' + t.min + '" data-max="' + tMaxStr + '" data-color="' + t.color + '" data-base-title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByStockPctTier(' + t.min + ',' + tMaxStr + ',\'' + t.label.replace(/'/g, "\\\\'") + '\',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
         html += '<div class="eq-dist-bar" style="height:' + h + 'px;background:' + t.color + ';opacity:' + barOpacity + '"></div>';
         html += '<div class="eq-dist-bar-label">' + t.count + '</div>';
         html += '</div>';
@@ -6845,7 +6852,7 @@ function renderAspDeltaSortSummary(companies) {
         var barOpacity = window._activeAspDeltaTier ? (isActive ? 1 : 0.3) : 1;
         var tMinStr = t.min === -Infinity ? '-Infinity' : t.min;
         var tMaxStr = t.max === Infinity ? 'Infinity' : t.max;
-        html += '<div class="asp-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByAspDeltaTier(' + tMinStr + ',' + tMaxStr + ',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
+        html += '<div class="asp-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" data-min="' + tMinStr + '" data-max="' + tMaxStr + '" data-color="' + t.color + '" data-base-title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies" title="' + t.tag + ' (' + t.label + '): ' + t.count + ' companies \u2014 click to ' + (isActive ? 'clear' : 'filter') + '" onclick="filterByAspDeltaTier(' + tMinStr + ',' + tMaxStr + ',\'' + t.tag.replace(/'/g, "\\\\'") + '\')" style="cursor:pointer;' + activeOutline + '">';
         html += '<div class="asp-dist-bar" style="height:' + h + 'px;background:' + t.color + ';opacity:' + barOpacity + '"></div>';
         html += '<div class="asp-dist-bar-label">' + t.count + '</div>';
         html += '</div>';
@@ -14282,6 +14289,41 @@ function setupDualSparklineTooltips() {
         announce(window._activeStockPctTier ? 'Filtered to ' + tag + ' (' + label + ')' : 'Equity tier filter cleared');
     };
 
+    // 354th review: in-place highlight for the equity-mix tier histogram
+    // in the sort-contextual summary. The render bakes the active tier in
+    // (outline + dimmed bars), so a click re-render shows it -- but the
+    // Reset All and Escape paths already called highlightStockPctBucket
+    // (null) behind a typeof guard, a no-op until now, and
+    // insightResetAndSort nulled _activeStockPctTier without clearing
+    // anything. Groups carry data-min / data-max / data-color /
+    // data-base-title from the renderer; match on exact min/max. A null
+    // min clears every group. Outline offset 1px and bar-only dimming
+    // replicate the render-time styling exactly (unlike tenure, the
+    // labels are never dimmed here), so a highlight call and a
+    // re-render of the same state look identical.
+    window.highlightStockPctBucket = function(min, max) {
+        var groups = document.querySelectorAll('.eq-dist-bar-group');
+        groups.forEach(function(g) {
+            var bar = g.querySelector('.eq-dist-bar');
+            var gMin = parseFloat(g.getAttribute('data-min'));
+            var gMax = parseFloat(g.getAttribute('data-max'));
+            var isActive = (min != null && gMin === min && gMax === max);
+            var isDimmed = (min != null && !isActive);
+            if (isActive) {
+                g.classList.add('active-bracket');
+                g.style.outline = '2px solid ' + (g.getAttribute('data-color') || '#06d6a0');
+                g.style.outlineOffset = '1px';
+            } else {
+                g.classList.remove('active-bracket');
+                g.style.outline = '';
+                g.style.outlineOffset = '';
+            }
+            if (bar) bar.style.opacity = isDimmed ? '0.3' : '';
+            var baseTitle = g.getAttribute('data-base-title');
+            if (baseTitle) g.setAttribute('title', baseTitle + ' \u2014 click to ' + (isActive ? 'clear' : 'filter'));
+        });
+    };
+
     function updateStockPctFilterIndicator() {
         var existing = document.getElementById('stockpct-filter-chip');
         if (existing) existing.remove();
@@ -14649,6 +14691,40 @@ function setupDualSparklineTooltips() {
             var sectionTop = section.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
             window.scrollTo({ top: sectionTop, behavior: getScrollBehavior() });
         }
+    };
+
+    // 354th review: in-place highlight for the peer-delta tier histogram
+    // in the sort-contextual summary -- the asp-delta twin of
+    // highlightStockPctBucket above. Same story: the render bakes the
+    // active tier in, but Reset All / Escape already called
+    // highlightAspDeltaBucket(null) behind a typeof guard (a no-op until
+    // now) and insightResetAndSort nulled _activeAspDeltaTier without
+    // clearing anything. Groups carry data-min / data-max / data-color /
+    // data-base-title from the renderer; match on exact min/max, with
+    // Infinity / -Infinity tiers parsed from their string form. A null
+    // min clears every group. Styling replicates the render-time state
+    // exactly (2px tier-color outline, 1px offset, bar-only 0.3 dim).
+    window.highlightAspDeltaBucket = function(min, max) {
+        var groups = document.querySelectorAll('.asp-dist-bar-group');
+        groups.forEach(function(g) {
+            var bar = g.querySelector('.asp-dist-bar');
+            var gMin = parseFloat(g.getAttribute('data-min'));
+            var gMax = parseFloat(g.getAttribute('data-max'));
+            var isActive = (min != null && gMin === min && gMax === max);
+            var isDimmed = (min != null && !isActive);
+            if (isActive) {
+                g.classList.add('active-bracket');
+                g.style.outline = '2px solid ' + (g.getAttribute('data-color') || '#fb923c');
+                g.style.outlineOffset = '1px';
+            } else {
+                g.classList.remove('active-bracket');
+                g.style.outline = '';
+                g.style.outlineOffset = '';
+            }
+            if (bar) bar.style.opacity = isDimmed ? '0.3' : '';
+            var baseTitle = g.getAttribute('data-base-title');
+            if (baseTitle) g.setAttribute('title', baseTitle + ' \u2014 click to ' + (isActive ? 'clear' : 'filter'));
+        });
     };
 
     function updateAspDeltaFilterIndicator() {
