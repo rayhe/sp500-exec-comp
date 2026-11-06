@@ -6962,6 +6962,38 @@ function renderSummaryBar(filtered, allCompanies) {
         return;
     }
 
+    // 361st review: the sort-contextual summary (mini-histograms with the
+    // active-bucket ring and click-to-clear bars) is only rendered when
+    // unfiltered, so a filtered deep link or back/forward navigation into
+    // a stock-% or asp-delta tier left the hash-restore highlight calls as
+    // no-ops (no bar groups in the DOM: the 359th review flagged those two
+    // calls, and the 360th review carried the gate as the next fix). When
+    // the active filter's dim matches the sort key, render the
+    // sort-contextual summary alongside the filter stats below, so the
+    // histogram and its ring are present and the highlight calls have
+    // groups to ring. Sector is excluded deliberately: a sector-filtered
+    // set has one sector, so the sector distribution degenerates to a
+    // single bar (and the sector-vs-benchmark block below already covers
+    // it); median_worker_pay and ceo_name have no filter dim at all.
+    var sortCtxMatchesFilter = false;
+    if (currentSort.key === 'total_compensation' || currentSort.key === 'rank') {
+        sortCtxMatchesFilter = !!(window._activeDistFilter && !window._activeDistFilter.sector);
+    } else if (currentSort.key === '_ceoYoYSort') {
+        sortCtxMatchesFilter = !!window._activeYoYBucket;
+    } else if (currentSort.key === 'pay_ratio') {
+        sortCtxMatchesFilter = !!window._activeRatioBucket;
+    } else if (currentSort.key === '_ceoStockPctSort') {
+        sortCtxMatchesFilter = !!window._activeStockPctTier;
+    } else if (currentSort.key === '_compPercentile') {
+        sortCtxMatchesFilter = !!window._activePctileTier;
+    } else if (currentSort.key === '_ceoConcPct') {
+        sortCtxMatchesFilter = !!window._activeConcTier;
+    } else if (currentSort.key === '_sopApproval') {
+        sortCtxMatchesFilter = !!window._activeSopFilter;
+    } else if (currentSort.key === '_aspDelta') {
+        sortCtxMatchesFilter = !!window._activeAspDeltaTier;
+    }
+
     // Compute statistics — use role-specific comp when role filter is active
     var comps = filtered.map(function(c) { return getEffectiveComp(c); });
     var totalComp = comps.reduce(function(s, v) { return s + v; }, 0);
@@ -7086,7 +7118,9 @@ function renderSummaryBar(filtered, allCompanies) {
     html += '</span>';
 
     // Append sort-contextual YoY stats when filtered AND sorted by YoY
-    if (currentSort.key === '_ceoYoYSort') {
+    // (361st review: skipped when the full YoY sort summary renders below,
+    // which carries the same up/down/median numbers plus the histogram)
+    if (currentSort.key === '_ceoYoYSort' && !sortCtxMatchesFilter) {
         var fYoY = filtered.filter(function(c) { return c._ceoYoY != null; });
         if (fYoY.length > 0) {
             var fInc = fYoY.filter(function(c) { return c._ceoYoY.pct > 0; }).length;
@@ -7102,7 +7136,9 @@ function renderSummaryBar(filtered, allCompanies) {
     }
 
     // Append sort-contextual Stock % stats when filtered AND sorted by Stock %
-    if (currentSort.key === '_ceoStockPctSort') {
+    // (361st review: skipped when the full equity sort summary renders below,
+    // which carries the same median plus the tier histogram)
+    if (currentSort.key === '_ceoStockPctSort' && !sortCtxMatchesFilter) {
         var fSP = filtered.filter(function(c) { return c._ceoStockPct != null; });
         if (fSP.length > 0) {
             var fAbove80 = fSP.filter(function(c) { return c._ceoStockPct >= 80; }).length;
@@ -7117,7 +7153,9 @@ function renderSummaryBar(filtered, allCompanies) {
     }
 
     // Append CEO Concentration stats when filtered AND sorted by concentration
-    if (currentSort.key === '_ceoConcPct') {
+    // (361st review: skipped when the full conc sort summary renders below,
+    // which carries the same counts/median plus the tier histogram)
+    if (currentSort.key === '_ceoConcPct' && !sortCtxMatchesFilter) {
         var fConc = filtered.filter(function(c) { return c._ceoConcPct != null; });
         if (fConc.length > 0) {
             var fAbove50 = fConc.filter(function(c) { return c._ceoConcPct >= 50; }).length;
@@ -7343,6 +7381,22 @@ function renderSummaryBar(filtered, allCompanies) {
             html += '<span class="summary-stat-label">Highest Paid</span>';
             html += '<span class="summary-stat-value">' + topRole._roleExecs[activeRole].name + ' (' + topRole.ticker + ') ' + formatCurrency(topRole._roleViewComp) + '</span>';
             html += '</span>';
+        }
+    }
+
+    // 361st review: render the sort-contextual summary alongside the filter
+    // stats when the active filter's dim matches the sort key (see the
+    // sortCtxMatchesFilter predicate above). The summary is computed from
+    // the filtered set, so its stats stay truthful to the filtered view and
+    // its histogram rings the active bucket at render time; the hash-restore
+    // highlight calls (stock-%, asp-delta) now find their bar groups instead
+    // of no-oping. The compact YoY / Stock % / Conc blocks above are
+    // suppressed in exactly this case, so no number is shown twice.
+    if (sortCtxMatchesFilter) {
+        var sortCtxHtml = renderSortContextSummary(filtered);
+        if (sortCtxHtml) {
+            html += '<span class="summary-divider"></span>';
+            html += sortCtxHtml;
         }
     }
 
@@ -16263,10 +16317,10 @@ function setupDualSparklineTooltips() {
     // hash-serialized and stays session-local. Pctile / peer-dist /
     // crosstab have no highlight function to call. Stock-% and
     // asp-delta groups live in the sort-contextual summary, which
-    // renderSummaryBar only renders when unfiltered, so those two calls
-    // are no-ops on a filtered deep link today (the filter-stats summary
-    // replaces the mini-histograms) and go live when the sort-summary
-    // gate renders summaries alongside filters.
+    // renderSummaryBar renders alongside the filter stats when the active
+    // filter's dim matches the sort key (361st review), so those two calls
+    // find their groups on a filtered deep link; the highlight functions
+    // stay null-safe no-ops when no groups exist.
     if (window._activeGovGrade && window.highlightGovChart) {
         window.highlightGovChart(window._activeGovGrade.min, window._activeGovGrade.max);
     }
@@ -18604,12 +18658,11 @@ function setupDualSparklineTooltips() {
         // the handler never nulls it, so its highlight persists.
         // Pctile / peer-dist / crosstab have no highlight function.
         // Stock-% / asp-delta groups live in the sort-contextual
-        // summary, which renderSummaryBar only renders when unfiltered,
-        // so those two calls are no-ops when the new hash carries a
-        // filter (the summary re-renders as filter stats) and go live
-        // when the sort-summary gate renders summaries alongside
-        // filters; the highlight functions are null-safe no-ops when
-        // no groups exist.)
+        // summary, which renderSummaryBar renders alongside the filter
+        // stats when the active filter's dim matches the sort key (361st
+        // review), so those two calls find their groups when the new hash
+        // carries a filter; the highlight functions are null-safe no-ops
+        // when no groups exist.)
         if (window.highlightGovChart) {
             if (window._activeGovGrade) {
                 window.highlightGovChart(window._activeGovGrade.min, window._activeGovGrade.max);
