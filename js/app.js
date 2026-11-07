@@ -13303,6 +13303,31 @@ function applyHashState(companies) {
                     if (te && te.textContent.trim() === detailTicker) targetRow = r;
                 });
                 if (!targetRow && needSearch) {
+                    // 375th review: a ticker-list filter (peer-dist,
+                    // community, quartile, position, crosstab) that
+                    // excludes the target makes the search trick yield
+                    // zero rows -- the filter ANDs with the search, so
+                    // the table empties, no panel opens, and the hash
+                    // keeps detail= for a panel that does not exist (a
+                    // reload repeats the empty table). Skip the search
+                    // entirely in that case: the filtered table (plus
+                    // its chip and, for peer-dist, the strip) stays
+                    // visible, the pair is nulled, and pushState drops
+                    // detail= (and diff=) from the URL immediately --
+                    // the same pair-null invariant as the 371st Reset
+                    // All, 372nd Escape-close, and 374th filter-click
+                    // fixes. A ticker-list filter that INCLUDES the
+                    // target, or no ticker-list filter at all, still
+                    // takes the search path below.
+                    var _tickerListFilters = [window._activePeerDistFilter, window._activeCommunityFilter, window._activeQuartileFilter, window._activePositionFilter, window._activeCrosstabFilter];
+                    var _excludedByTickerFilter = _tickerListFilters.some(function(f) { return f && f.tickers && f.tickers.indexOf(detailTicker) < 0; });
+                    if (_excludedByTickerFilter) {
+                        _expandedDetailTicker = null;
+                        _activeDiffKey = null;
+                        pushState();
+                        announce('Detail panel not opened: ' + detailTicker + ' is outside the active filter');
+                        return;
+                    }
                     // Force search filter to show the ticker
                     searchTerm = detailTicker;
                     document.getElementById('table-search').value = detailTicker;
