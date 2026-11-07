@@ -14,7 +14,10 @@ panel-side mirror of the 326th chip bug:
   4. (338th review, 2026-11-04) findCompanyInTable (Top 10 chart click)
      nulled 4 AF dims (dist/pay-band, conc, sop, gender) without
      touching theirs -- the same class in a path the 330th guard did
-     not cover.
+     not cover. (376th review, 2026-11-07) it now nulls all 8 AF dims
+     (tenure, gov, vol, board join the 338th 4): a kept AF state can
+     hide the target row, which breaks the path's "ensure company is
+     visible" contract, so state and selects are cleared together.
   5. (339th review, 2026-11-04) the global Escape-key clear-all path
      (document keydown handler in js/app.js) nulled the same 4 AF dims
      without touching theirs -- the same class in a path neither the
@@ -23,12 +26,12 @@ The fix is window._clearAfSelects in js/advanced-filters.js, called
 (window-guarded) from each path with exactly the selects whose state
 that path nulled. Board is deliberately excluded from every call
 except resetAllFilters (344th review: resetAllFilters nulls
-_activeBoardFilter, so it clears af-board too); the other paths
-still keep board state, so their af-board select and badge count
-stay truthful. Gov/vol are likewise excluded from the
-sortTableByKey call because that path keeps their state, and
-tenure/gov/vol/board from the findCompanyInTable and Escape calls for
-the same reason.
+_activeBoardFilter, so it clears af-board too) and findCompanyInTable
+(376th review: it nulls _activeBoardFilter too, so it clears af-board
+as well); the other paths still keep board state, so their af-board
+select and badge count stay truthful. Gov/vol are likewise excluded
+from the sortTableByKey call because that path keeps their state, and
+tenure/gov/vol/board from the Escape call for the same reason.
 
 Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: _clearAfSelects is not defined in
@@ -47,10 +50,9 @@ Checks (all static - small JS reads, <2s):
   C4 HARD FAIL: sortTableByKey does not call _clearAfSelects with
      exactly the 5 selects for the AF states it nulls, or includes a
      select whose state it keeps (gov/vol/board).
-  C5 HARD FAIL (338th review): findCompanyInTable does not call
-     _clearAfSelects with exactly the 4 selects for the AF states it
-     nulls, or includes a select whose state it keeps
-     (tenure/gov/vol/board).
+  C5 HARD FAIL (338th review, revised 376th): findCompanyInTable
+     does not call _clearAfSelects with exactly the 8 selects for the
+     AF states it nulls, or includes a select whose state it keeps.
   C6 HARD FAIL (339th review): the Escape-key clear-all branch does
      not call _clearAfSelects with exactly the same 4 selects, or
      includes a select whose state it keeps (tenure/gov/vol/board).
@@ -66,8 +68,9 @@ State variable -> AF select id, per the Advanced Filters handlers:
   _activeGenderFilter -> af-gender
   _activeConcTier -> af-conc
   _activeVolatilityBucket -> af-vol
-  _activeBoardFilter -> af-board (nulled only by resetAllFilters since
-     the 344th review; still kept by the other four paths)
+  _activeBoardFilter -> af-board (nulled by resetAllFilters since
+     the 344th review and by findCompanyInTable since the 376th;
+     still kept by insightResetAndSort, sortTableByKey, and Escape)
 
 Usage:
   scripts/check_af_select_reset_consistency.py
@@ -104,8 +107,9 @@ STATE_TO_AF_SELECT = {
 }
 
 # AF states each reset path nulls (read from the function bodies below
-# and cross-checked against this expectation; board is nulled only by
-# resetAllFilters since the 344th review, still kept by the rest).
+# and cross-checked against this expectation; board is nulled by
+# resetAllFilters since the 344th review and by findCompanyInTable
+# since the 376th, still kept by the rest).
 RESET_EXPECTED_STATES = {
     "_activeDistFilter", "_activeSopFilter", "_activeTenureQuartile",
     "_activeGovGrade", "_activeGenderFilter", "_activeConcTier",
@@ -116,15 +120,24 @@ SORT_EXPECTED_STATES = {
     "_activeDistFilter", "_activeSopFilter", "_activeGenderFilter",
     "_activeConcTier", "_activeTenureQuartile",
 }
+# 376th review: findCompanyInTable now nulls all 8 AF-mapped states --
+# the 338th 4 plus tenure, gov, vol, board -- because a kept AF state
+# can hide the target row and break the path's visibility contract.
 FIND_EXPECTED_STATES = {
+    "_activeDistFilter", "_activeConcTier", "_activeSopFilter",
+    "_activeGenderFilter", "_activeTenureQuartile", "_activeGovGrade",
+    "_activeVolatilityBucket", "_activeBoardFilter",
+}
+# The Escape clear-all branch still nulls exactly the 338th 4 AF-mapped
+# states (plus non-AF states: sector, search, role, ratio, transition,
+# team, yoy -- none of which has an af-* select, so they drop out of
+# the STATE_TO_AF_SELECT filter below). It deliberately keeps
+# tenure/gov/vol/board (339th review), so it must NOT share the
+# findCompanyInTable expectation above.
+ESC_EXPECTED_STATES = {
     "_activeDistFilter", "_activeConcTier", "_activeSopFilter",
     "_activeGenderFilter",
 }
-# The Escape clear-all branch nulls exactly the same 4 AF-mapped states
-# (plus non-AF states: sector, search, role, ratio, transition, team,
-# yoy -- none of which has an af-* select, so they drop out of the
-# STATE_TO_AF_SELECT filter below).
-ESC_EXPECTED_STATES = FIND_EXPECTED_STATES
 
 
 def extract_function_body(src, start_marker):

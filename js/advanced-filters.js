@@ -158,17 +158,19 @@
     // 330th review: reset paths in app.js (resetAllFilters,
     // insightResetAndSort, sortTableByKey) null AF-origin filter state
     // (338th review: findCompanyInTable is a fourth such caller, for
-    // the 4 AF dims it nulls; 339th review: the global Escape-key
-    // clear-all path is a fifth such caller, for the same 4 AF dims;
+    // the 4 AF dims it nulled; 376th review: it now nulls all 8 AF
+    // dims, board included, so it passes 'af-board' as well; 339th
+    // review: the global Escape-key clear-all path is a fifth such
+    // caller, for the same 4 AF dims;
     // 344th review: resetAllFilters is the exception -- it nulls
     // _activeBoardFilter too, so it passes 'af-board' as well.)
     // without touching the af-* selects, so the panel kept showing the
     // old value and the badge kept counting a filter that no longer
     // filtered -- the panel-side mirror of the 326th chip bug. Callers
     // pass exactly the selects whose state they nulled. Board is
-    // excluded from every caller except resetAllFilters: none of the
-    // other paths nulls _activeBoardFilter, so for them the af-board
-    // select and its badge count stay truthful. Like _clearAfVolSelect, this sets .value directly
+    // excluded from every caller except resetAllFilters and (376th)
+    // findCompanyInTable: no other path nulls _activeBoardFilter, so
+    // for them the af-board select and its badge count stay truthful. Like _clearAfVolSelect, this sets .value directly
     // WITHOUT dispatching 'change': the handlers would re-null
     // already-nulled state and trigger extra table refreshes. The badge
     // (plus summary, toggle class, and group badges) is refreshed

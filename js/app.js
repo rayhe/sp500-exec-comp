@@ -15797,22 +15797,121 @@ function setupDualSparklineTooltips() {
             var gfChip2 = document.getElementById('gender-filter-chip');
             if (gfChip2) gfChip2.remove();
         }
-        // 338th review: same panel-sync class as the 330th reset paths,
-        // in a fourth path the 330th guard did not cover. Of the states
-        // nulled above, 4 are AF-origin (dist/pay-band, conc, sop,
-        // gender), so clear exactly those selects -- otherwise a Top 10
-        // chart click left the panel showing the old AF values and the
-        // badge counting filters that no longer filtered. Tenure/gov/
-        // vol/board are intentionally kept: this path does not clear
-        // their state, so their selects stay truthful. 339th review:
-        // the Escape-key clear-all path named here as the next
-        // candidate is now fixed the same way (fifth caller).
+        // 376th review: this path's contract is "Clear filters to
+        // ensure company is visible", but it cleared only 12 of the
+        // 25 row-hiding dimensions -- every dimension below ANDs with
+        // the forced searchTerm = ticker in renderTable, so any of them
+        // could hide the target row and the setTimeout auto-click
+        // below silently found nothing: no panel, no announcement,
+        // stale chips still claiming a live filter. Same failure class
+        // as the 375th review's hash deep-link fix, in the other
+        // "show me this company" path (Top 10 chart clicks, insight
+        // cards, peer navigation -- ~20 call sites). The blocks mirror
+        // insightResetAndSort, the canonical clear-all path: null the
+        // state, remove the chip, clear the chart highlight or call
+        // the indicator that owns the chip.
+        if (window._activeStockPctTier) {
+            window._activeStockPctTier = null;
+            var spf2 = document.getElementById('stockpct-filter-chip');
+            if (spf2) spf2.remove();
+            if (window.highlightStockPctBucket) window.highlightStockPctBucket(null, null);
+        }
+        if (window._activeTenureQuartile) {
+            window._activeTenureQuartile = null;
+            var tqf2 = document.getElementById('tenure-filter-chip');
+            if (tqf2) tqf2.remove();
+            if (window.highlightTenureBucket) window.highlightTenureBucket(null, null);
+        }
+        if (window._activeGovGrade) {
+            window._activeGovGrade = null;
+            var gvf2 = document.getElementById('gov-filter-chip');
+            if (gvf2) gvf2.remove();
+        }
+        if (window._activeVolatilityBucket) {
+            window._activeVolatilityBucket = null;
+            updateVolatilityFilterIndicator();
+        }
+        if (window._activeVolTenureBracket) {
+            window._activeVolTenureBracket = null;
+            updateVolTenureFilterIndicator();
+        }
+        if (window._activePeerDistFilter) {
+            window._activePeerDistFilter = null;
+            updatePeerDistFilterIndicator();
+        }
+        if (window._activeCommunityFilter) {
+            window._activeCommunityFilter = null;
+            document.querySelectorAll('.community-legend-active').forEach(function(el) {
+                el.classList.remove('community-legend-active');
+            });
+            if (window.clearCommunityHighlight) window.clearCommunityHighlight();
+        }
+        if (window._activeQuartileFilter) {
+            window._activeQuartileFilter = null;
+            var qff2 = document.getElementById('quartile-filter-chip');
+            if (qff2) qff2.remove();
+            document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
+                el.classList.remove('cm-bp-zone-clicked');
+            });
+        }
+        if (window._activePositionFilter) {
+            window._activePositionFilter = null;
+            var pff2 = document.getElementById('position-filter-chip');
+            if (pff2) pff2.remove();
+            document.querySelectorAll('.cb-pos-row-clicked').forEach(function(el) {
+                el.classList.remove('cb-pos-row-clicked');
+            });
+        }
+        if (window._activeCrosstabFilter) {
+            window._activeCrosstabFilter = null;
+            var xff2 = document.getElementById('crosstab-filter-chip');
+            if (xff2) xff2.remove();
+        }
+        if (window._activeCeoTransitionFilter) {
+            window._activeCeoTransitionFilter = false;
+            var tcf2 = document.getElementById('transition-filter-chip');
+            if (tcf2) tcf2.remove();
+        }
+        if (window._activePvpOnlyFilter) {
+            window._activePvpOnlyFilter = false;
+            if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
+        }
+        // Board is the one dimension renderTable does NOT apply (it
+        // filters only via the AF _refreshTable / _sp500RenderTable
+        // paths), so it cannot hide the target row here -- but its chip
+        // and the AF badge would keep claiming a live filter while the
+        // table shows unfiltered rows, the inverse of the 330th
+        // review's stale-badge class. Null it with the rest so chip,
+        // badge, and table agree.
+        if (window._activeBoardFilter) {
+            window._activeBoardFilter = null;
+            var bff2 = document.getElementById('board-filter-chip');
+            if (bff2) bff2.remove();
+        }
+        // 338th review (revised 376th): same panel-sync class as the
+        // 330th reset paths. The 338th review cleared only the 4
+        // AF-origin selects whose state this path nulled, and kept
+        // tenure/gov/vol/board state so their selects stayed truthful
+        // -- but kept state can hide the target row, which breaks this
+        // path's contract. The 376th fix nulls those states too, so
+        // their selects are cleared here as well: state and select are
+        // cleared together, which is what keeps the panel truthful
+        // (the _clearAfSelects badge refresh runs on the cleared
+        // values). 339th review: the Escape-key clear-all path named
+        // here as the next candidate is now fixed the same way (fifth
+        // caller).
         if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
-            ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc']);
+            ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
+             'af-gender', 'af-conc', 'af-vol', 'af-board']);
         if (window._activeAspDeltaTier) {
             window._activeAspDeltaTier = null;
             var adChip = document.getElementById('aspdelta-filter-chip');
             if (adChip) adChip.remove();
+            // 376th review: same stale-highlight class the 354th
+            // review fixed on the insight path -- this path nulled the
+            // tier but never cleared its histogram highlight, so the
+            // asp-delta bars stayed ringed behind the unfiltered table.
+            if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null, null);
         }
         document.getElementById('table-search').value = ticker;
         searchTerm = ticker;
@@ -15831,11 +15930,18 @@ function setupDualSparklineTooltips() {
         if (window.highlightYoYBucket) window.highlightYoYBucket(null);
         if (window.highlightSopDistBucket) window.highlightSopDistBucket(null);
         if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
-        // 352nd review: this path nulls _activeGenderFilter above (gov /
-        // vol state is intentionally kept here, per the 338th review, so
-        // they need no clear) -- without this the female bars stayed
-        // ringed behind the Top 10 chart click's unfiltered table.
+        // 352nd review (revised 376th): this path nulls
+        // _activeGenderFilter above -- without this the female bars
+        // stayed ringed behind the Top 10 chart click's unfiltered
+        // table. The 376th fix nulls gov/vol state too (see above),
+        // so their highlights join the tail clear like the insight
+        // path's: gov/vol bars no longer stay ringed and dimmed
+        // behind a table that is no longer filtered on them. Stockpct,
+        // asp-delta, tenure, and crosstab are cleared inline in their
+        // blocks above, matching the insight path.
         if (window.highlightGenderChart) window.highlightGenderChart(null);
+        if (window.highlightGovChart) window.highlightGovChart(null);
+        if (window.highlightVolatilityBucket) window.highlightVolatilityBucket(null);
 
         // Scroll to the table section
         var section = document.getElementById('compensation-table-section');
