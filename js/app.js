@@ -11342,7 +11342,15 @@ function setupDetailPanel(companies) {
             var dqHasIssues = dqCounts.recomputed > 0 || dqCounts.incomplete > 0 || dqCounts.bloated > 0 || dqCounts.rounding > 0;
 
             html += '<div class="neo-source">';
-            html += 'Source: SEC EDGAR DEF 14A' + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '');
+            // Form-aware source line (369th review): the anchor filing is a
+            // 10-K / 10-K/A for the 402(v)-exempt filers (BX, KKR, SKYD, TSLA,
+            // FDXF, EA, TECH, K), so hard-coding "DEF 14A" mislabeled their
+            // NEO panels - and contradicted the data_source provenance badge
+            // rendered just above. data_source is the canonical provenance
+            // field; strip the " + AFL-CIO" suffix the Paywatch-enriched
+            // rows carry. Falls back to DEF 14A when data_source is absent.
+            var _neoSrcForm = (company.data_source || '').replace(' + AFL-CIO', '') || 'SEC EDGAR DEF 14A';
+            html += 'Source: ' + _neoSrcForm + (company.filing_date ? ' (filed ' + company.filing_date + ')' : '');
             if (dqHasIssues) {
                 html += ' · <span class="neo-dq-summary" title="Data quality: ' + (dqCounts.verified + dqCounts.filingVerified) + ' verified (' + dqCounts.filingVerified + ' filing-verified against primary DEF 14As), ' + dqCounts.recomputed + ' recomputed, ' + dqCounts.incomplete + ' incomplete components, ' + dqCounts.bloated + ' flagged, ' + dqCounts.rounding + ' rounding gaps">';
                 html += '<span class="neo-dq-dot neo-dq-verified"></span>' + (dqCounts.verified + dqCounts.filingVerified);

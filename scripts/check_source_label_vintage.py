@@ -27,12 +27,17 @@ Checks (all static - small JSON read, <2s):
      names a 10-K form (the reverse form disagreement).
 
 Skips: empty `source` (VMRK stub - no anchor filing yet) and companies
-with no proxy_fiscal_year. TSLA is intentionally NOT covered by a
-URL-vs-source check: its rows are 10-K/A-sourced (2026-04-30) while its
-filing_url points at the 2026-10-19 DEF 14A, which also carries the
-FY2025 SCT; deciding between repointing the URL and relabeling the
-source needs SCT verification against the Oct-19 DEF 14A (queued in the
-368th review notes), so no URL-form assertion is made here.
+with no proxy_fiscal_year. No URL-vs-source check is made: most
+filing_url filenames are form-opaque (e.g. "a-20260203.htm",
+"k-20241228.htm"), so a filename-form assertion would false-positive on
+~290 companies (verified 369th review, 2026-11-06). TSLA's URL-vs-source
+mismatch was resolved the same run by repointing its filing_url /
+filing_date to the 2026-04-30 10-K/A (acc. 0001104659-26-053166), the
+verified provenance of its stored SCT rows (Musk 2025 re-verified
+2026-09-29; the 10-K/A SCT carries 158,359,009,867 / Taneja / 62,786
+median). The Oct-19 DEF 14A also carries an FY2025 SCT, but the 276th
+review deliberately kept the 10-K/A rows, so repointing (not relabeling)
+was the right direction.
 
 Usage:
   scripts/check_source_label_vintage.py
