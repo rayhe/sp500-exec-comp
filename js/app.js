@@ -8119,6 +8119,13 @@ function renderTable(companies, options) {
     // Persist state to URL hash
     pushState();
     if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
+    // 374th review: renderTable wipes the tbody, so any open detail panel
+    // dies here -- including the panel whose histogram bucket was just
+    // clicked. The strip is the filter's persistent home, so refresh it
+    // after every table render; it no-ops when no peer-dist filter is
+    // active, and its live-DOM hide rule keeps it out of the way while
+    // a source panel is actually open.
+    if (window._activePeerDistFilter && typeof updatePeerDistStrip === 'function') updatePeerDistStrip();
 }
 
 function buildPageNumbers(current, total, maxVisible) {
@@ -9154,8 +9161,177 @@ function updatePeerDistFilterIndicator() {
         var controls = document.querySelector('.table-controls');
         if (controls) controls.appendChild(chip);
     }
+    // 374th review: the strip is the filter's persistent home -- refresh
+    // it on every indicator call (set via click / hash restore, cleared
+    // via chip / insight reset) so it can never disagree with the chip.
+    if (typeof updatePeerDistStrip === 'function') updatePeerDistStrip();
 }
 window._updatePeerDistFilterIndicator = updatePeerDistFilterIndicator;
+
+// 374th review: the peer-dist filter's persistent home outside the
+// detail panel. The histogram that produces the filter lives inside a
+// company detail row, so closing that row (close button, Escape, or a
+// back/forward navigation that drops detail=) left the chip + filtered
+// table with no visible source -- the bucket label is only a pay range,
+// and the buckets are built from the source company's peer group, so
+// the label alone cannot reconstruct the histogram. This strip rebuilds
+// the source company's histogram above the table from the recorded
+// source ticker (pdsrc= in the hash), with the active bucket ringed in
+// the same language as the detail histogram. It hides while the source
+// company's own detail panel is open (that panel already shows its
+// histogram) and degrades to nothing for old links without a source.
+// Bucket math mirrors the detail renderer exactly (same peer list,
+// same bucket count, same min/max including self); the strip columns
+// are clickable with the same toggle semantics, plus Enter/Space.
+function updatePeerDistStrip() {
+    var strip = document.getElementById('peer-dist-strip');
+    if (!strip) return;
+    // Preserve keyboard focus across the rebuild: a strip column that had
+    // focus is re-focused on its rebuilt twin (same bucket label).
+    var focusedLabel = null;
+    var activeEl = document.activeElement;
+    if (activeEl && strip.contains(activeEl)) {
+        focusedLabel = activeEl.getAttribute('data-peer-label');
+    }
+    strip.innerHTML = '';
+    var pf = window._activePeerDistFilter;
+    if (!pf || !pf.source) return;
+    // Hide while the source company's detail panel is actually open in
+    // the DOM -- that panel already shows its histogram. This is a live
+    // DOM check, not the _expandedDetailTicker variable: renderTable
+    // wipes the tbody (killing the panel) on every filter/sort/page
+    // change while leaving the variable set, so the variable alone
+    // would keep the strip hidden after the panel is already gone.
+    var openDetail = document.querySelector('#comp-tbody .detail-row');
+    if (openDetail && openDetail.getAttribute('data-ticker') === pf.source) return;
+    // 374th review: companies is NOT a global -- the table functions
+    // take it as a parameter. Resolve the loaded list the same way the
+    // peer-dist chip dismiss does (compData, falling back to _chartData).
+    var allCompanies = null;
+    if (typeof _chartData !== 'undefined' && _chartData && _chartData.companies) allCompanies = _chartData.companies;
+    else if (typeof compData !== 'undefined' && compData && compData.companies) allCompanies = compData.companies;
+    if (!allCompanies) return;
+    var srcCompany = null;
+    allCompanies.forEach(function(c) { if (c.ticker === pf.source) srcCompany = c; });
+    if (!srcCompany) return;
+    var peerInfo = (typeof getPeerInfo === 'function') ? getPeerInfo(pf.source) : null;
+    if (!peerInfo || (peerInfo.selectedBy.length === 0 && peerInfo.selects.length === 0)) return;
+    var peerAllTickers = [];
+    peerInfo.selects.forEach(function(t) { if (peerAllTickers.indexOf(t) < 0) peerAllTickers.push(t); });
+    peerInfo.selectedBy.forEach(function(t) { if (peerAllTickers.indexOf(t) < 0) peerAllTickers.push(t); });
+    var peerCompList = [];
+    peerAllTickers.forEach(function(t) {
+        var peer = allCompanies.find(function(c2) { return c2.ticker === t; });
+        if (peer && peer.total_compensation > 0) {
+            peerCompList.push({ ticker: t, total: peer.total_compensation, name: peer.ceo_name || '', isSelf: false });
+        }
+    });
+    if (peerCompList.length < 2) return;
+    peerCompList.push({ ticker: pf.source, total: srcCompany.total_compensation || 0, name: srcCompany.ceo_name || '', isSelf: true });
+    peerCompList.sort(function(a, b) { return b.total - a.total; });
+    // The detail renderer only draws the histogram at 5+ rows (self incl.).
+    if (peerCompList.length < 5) return;
+    var phPeers = peerCompList.filter(function(p) { return !p.isSelf; });
+    var phSelfPay = srcCompany.total_compensation || 0;
+    var phMin = Math.min.apply(null, phPeers.map(function(p) { return p.total; }));
+    var phMax = Math.max.apply(null, phPeers.map(function(p) { return p.total; }));
+    if (phSelfPay < phMin) phMin = phSelfPay;
+    if (phSelfPay > phMax) phMax = phSelfPay;
+    var phBucketCount = Math.min(8, Math.max(4, Math.ceil(phPeers.length / 3)));
+    var phRange = phMax - phMin;
+    var phBucketWidth = phRange > 0 ? phRange / phBucketCount : 1;
+    var phBuckets = [];
+    for (var bi = 0; bi < phBucketCount; bi++) {
+        phBuckets.push({ min: phMin + bi * phBucketWidth, max: phMin + (bi + 1) * phBucketWidth, count: 0, tickers: [] });
+    }
+    phPeers.forEach(function(p) {
+        var idx = Math.min(phBucketCount - 1, Math.max(0, Math.floor((p.total - phMin) / phBucketWidth)));
+        phBuckets[idx].count++;
+        phBuckets[idx].tickers.push(p.ticker);
+    });
+    var phMaxCount = Math.max.apply(null, phBuckets.map(function(b) { return b.count; }));
+    var phSelfBucket = Math.min(phBucketCount - 1, Math.max(0, Math.floor((phSelfPay - phMin) / phBucketWidth)));
+    var phBelow = phPeers.filter(function(p) { return p.total < phSelfPay; }).length;
+    var phPctile = phPeers.length > 0 ? Math.round(phBelow / phPeers.length * 100) : 50;
+    var phPctileLabel = phPctile >= 90 ? 'top 10%' : phPctile >= 75 ? 'top quartile' : phPctile >= 50 ? 'upper half' : phPctile >= 25 ? 'lower half' : 'bottom quartile';
+    var html = '<div class="peer-dist-section">';
+    html += '<div class="peer-dist-header">';
+    html += '<span class="peer-dist-title">Peer Pay Distribution &mdash; ' + pf.source + ' peers (filter source)</span>';
+    html += '<span class="peer-dist-pctile">' + phPctileLabel + ' (' + phPctile + 'th percentile)</span>';
+    html += '</div>';
+    html += '<div class="peer-dist-chart">';
+    phBuckets.forEach(function(b, i) {
+        var barH = phMaxCount > 0 ? Math.max(3, Math.round(b.count / phMaxCount * 48)) : 3;
+        var isSelfBucket = (i === phSelfBucket);
+        var bucketLabel = formatCompact(b.min) + '\u2013' + formatCompact(b.max);
+        var tipText = b.count + ' peer' + (b.count !== 1 ? 's' : '') + ': ' + bucketLabel;
+        if (b.tickers.length > 0 && b.tickers.length <= 5) tipText += ' (' + b.tickers.join(', ') + ')';
+        else if (b.tickers.length > 5) tipText += ' (' + b.tickers.slice(0, 4).join(', ') + ' +' + (b.tickers.length - 4) + ')';
+        var isActiveFilter = pf.label === bucketLabel;
+        var isDimmedPeer = pf.label && !isActiveFilter;
+        var dimStyle = isDimmedPeer ? 'opacity:0.3;' : '';
+        var activeOutline = isActiveFilter ? 'outline:2px solid var(--accent, #00b4d8);outline-offset:2px;border-radius:3px;' : '';
+        var clickTip = b.count > 0 ? ' \u2014 click to ' + (isActiveFilter ? 'clear' : 'filter table') : '';
+        var tickerData = b.tickers.join(',');
+        // 374th review: empty buckets are inert (the click handler
+        // early-returns on empty tickers), so they stay out of the tab
+        // order -- the same exclusion the detail panel's keyboard pilot
+        // applies to its peer-dist columns.
+        var tabAttr = b.tickers.length > 0 ? ' tabindex="0" role="button"' : '';
+        html += '<div class="peer-dist-col' + (isSelfBucket ? ' peer-dist-self-bucket' : '') + (isActiveFilter ? ' peer-dist-active-bucket' : '') + '"' + tabAttr + ' aria-label="' + (tipText + clickTip).replace(/"/g, '&quot;') + '" title="' + (tipText + clickTip).replace(/"/g, '&quot;') + '" style="cursor:pointer;' + activeOutline + '" data-peer-tickers="' + tickerData + '" data-peer-label="' + bucketLabel.replace(/"/g, '&quot;') + '">';
+        html += '<div class="peer-dist-count" style="' + dimStyle + '">' + (b.count > 0 ? b.count : '') + '</div>';
+        html += '<div class="peer-dist-bar" style="height:' + barH + 'px;' + dimStyle + '"></div>';
+        if (isSelfBucket) {
+            html += '<div class="peer-dist-marker" title="' + pf.source + ': ' + formatCurrency(phSelfPay) + '">\u25B2</div>';
+        }
+        html += '</div>';
+    });
+    html += '</div>';
+    html += '<div class="peer-dist-labels">';
+    html += '<span>' + formatCompact(phMin) + '</span>';
+    html += '<span>' + formatCompact(phMax) + '</span>';
+    html += '</div>';
+    html += '</div>'; // peer-dist-section
+    strip.innerHTML = html;
+    // Strip columns switch the filter like the detail columns do, keeping
+    // the same source so the strip rebuilds from the same peer group.
+    strip.querySelectorAll('.peer-dist-col[data-peer-tickers]').forEach(function(col) {
+        var applyStripFilter = function() {
+            var tickerStr = col.getAttribute('data-peer-tickers');
+            var label = col.getAttribute('data-peer-label');
+            if (!tickerStr || tickerStr.length === 0) return;
+            var tickers = tickerStr.split(',');
+            if (window._activePeerDistFilter && window._activePeerDistFilter.label === label) {
+                window._activePeerDistFilter = null;
+            } else {
+                window._activePeerDistFilter = { tickers: tickers, label: label, source: pf.source };
+            }
+            // 374th review: same panel-death nulling as the detail click
+            // handler -- a strip click re-renders the table, wiping any
+            // open detail panel, so the hash must not keep its detail=.
+            _expandedDetailTicker = null;
+            _activeDiffKey = null;
+            currentPage = 1;
+            updatePeerDistFilterIndicator();
+            renderTable(allCompanies);
+            pushState();
+            scrollToTable();
+            if (typeof announce === 'function') {
+                announce(window._activePeerDistFilter ? 'Filtered to ' + tickers.length + ' peer companies in ' + label + ' range' : 'Peer distribution filter cleared');
+            }
+        };
+        col.addEventListener('click', function(e) { e.stopPropagation(); applyStripFilter(); });
+        col.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); applyStripFilter(); }
+        });
+    });
+    // Restore focus to the rebuilt twin of the column that had it.
+    if (focusedLabel) {
+        var twin = strip.querySelector('.peer-dist-col[data-peer-label="' + focusedLabel.replace(/"/g, '\\"') + '"]');
+        if (twin) twin.focus();
+    }
+}
+window.updatePeerDistStrip = updatePeerDistStrip;
 
 // 327th review: the volatility histogram (charts.js) and the volatility x
 // tenure bracket chart set window._activeVolatilityBucket /
@@ -11986,6 +12162,10 @@ function setupDetailPanel(companies) {
         // Track expanded detail for URL hash deep-linking
         _expandedDetailTicker = ticker;
         pushState();
+        // 374th review: a panel opening over the strip's source hides the
+        // strip (the panel shows the same histogram); opening any other
+        // company's panel leaves it visible as the filter's provenance.
+        if (typeof updatePeerDistStrip === 'function') updatePeerDistStrip();
 
         // Wire up NEO year tabs — switch between fiscal years
         detailRow.querySelectorAll('.neo-year-tab').forEach(function(tab) {
@@ -12158,8 +12338,23 @@ function setupDetailPanel(companies) {
                 if (window._activePeerDistFilter && window._activePeerDistFilter.label === label) {
                     window._activePeerDistFilter = null;
                 } else {
-                    window._activePeerDistFilter = { tickers: tickers, label: label };
+                    // 374th review: record the source ticker -- the
+                    // buckets are built from THIS company's peer group,
+                    // so the label alone (a pay range) is meaningless
+                    // once the panel closes. The strip above the table
+                    // rebuilds the histogram from the source.
+                    window._activePeerDistFilter = { tickers: tickers, label: label, source: ticker };
                 }
+                // 374th review: renderTable below wipes the tbody, so
+                // this panel dies with the click -- null the expanded
+                // ticker (and diff key) with it, or the hash keeps
+                // detail=<source> for a panel that no longer exists and
+                // a reload tries to re-open it against a filtered table
+                // that excludes the source (the search trick then yields
+                // zero rows). Same pair-null invariant as the 371st
+                // Reset All and 372nd Escape-close fixes.
+                _expandedDetailTicker = null;
+                _activeDiffKey = null;
                 currentPage = 1;
                 updatePeerDistFilterIndicator();
                 renderTable(companies);
@@ -12449,6 +12644,10 @@ function setupDetailPanel(companies) {
             // the same pair-null invariant.
             _activeDiffKey = null;
             pushState();
+            // 374th review: the panel just closed, so the strip (hidden
+            // while the source panel was open) must reappear as the
+            // filter's persistent home.
+            if (typeof updatePeerDistStrip === 'function') updatePeerDistStrip();
         });
 
         // Wire up detail panel compare button
@@ -12728,6 +12927,11 @@ function serializeState() {
     if (window._activePeerDistFilter) {
         params.push('pdtk=' + encodeURIComponent(window._activePeerDistFilter.tickers.join(',')));
         params.push('pdlbl=' + encodeURIComponent(window._activePeerDistFilter.label));
+        // 374th review: the source ticker is what the strip above the
+        // table rebuilds the histogram from -- without it a restored
+        // filter (old link, or a key-less caller) still filters via
+        // tickers but shows no source histogram.
+        if (window._activePeerDistFilter.source) params.push('pdsrc=' + encodeURIComponent(window._activePeerDistFilter.source));
     }
     if (window._activeCrosstabFilter) {
         params.push('xtk=' + encodeURIComponent(window._activeCrosstabFilter.tickers.join(',')));
@@ -13026,7 +13230,9 @@ function applyHashState(companies) {
     if (state.pdtk && state.pdlbl) {
         var pdTickers = state.pdtk.split(',').filter(function(t) { return t.length > 0; });
         if (pdTickers.length > 0) {
-            window._activePeerDistFilter = { tickers: pdTickers, label: state.pdlbl };
+            // 374th review: pdsrc is optional -- links minted before it
+            // restore exactly as before (chip + filtered table, no strip).
+            window._activePeerDistFilter = { tickers: pdTickers, label: state.pdlbl, source: state.pdsrc || null };
             if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
         }
     }
@@ -15187,6 +15393,12 @@ function setupDualSparklineTooltips() {
         } else {
             window._activeCrosstabFilter = { tickers: clean, label: lbl, cellKey: key };
         }
+        // 374th review: same panel-death nulling as the peer-dist click
+        // handlers -- renderTable below wipes the tbody, so any open
+        // detail panel dies with the click and the hash must not keep
+        // its detail= (same stale-detail class as the 371st/372nd fixes).
+        _expandedDetailTicker = null;
+        _activeDiffKey = null;
         currentPage = 1;
         updateCrosstabFilterIndicator();
         if (window.highlightCrosstabCell) window.highlightCrosstabCell(window._activeCrosstabFilter ? window._activeCrosstabFilter.cellKey : null);
@@ -15364,6 +15576,10 @@ function setupDualSparklineTooltips() {
             var el = document.getElementById(id);
             if (el) el.remove();
         });
+        // 374th review: the strip is a persistent container, not a chip --
+        // empty it, never remove it, so a later filter can re-fill it by id.
+        var pdsReset = document.getElementById('peer-dist-strip');
+        if (pdsReset) pdsReset.innerHTML = '';
 
         // 330th review: the state nulled above includes 7 AF-origin dims
         // (dist/pay-band, sop, tenure, gov, gender, conc, vol), so their
@@ -18749,6 +18965,11 @@ function setupDualSparklineTooltips() {
             var el = document.getElementById(id);
             if (el) el.remove();
         });
+        // 374th review: the strip is a persistent container, not a chip --
+        // empty it, never remove it (applyHashState re-fills it via the
+        // indicator when the new hash carries a peer-dist filter).
+        var pdsHash = document.getElementById('peer-dist-strip');
+        if (pdsHash) pdsHash.innerHTML = '';
         // 341st review: the nulled dims include 6 AF-mapped ones
         // (dist/pay-band was already nulled above, plus conc, sop,
         // tenure, gov, gender), so their panel selects must be cleared
@@ -19125,6 +19346,10 @@ function setupDualSparklineTooltips() {
                 _expandedDetailTicker = null;
                 _activeDiffKey = null;
                 pushState();
+                // 374th review: same strip-reveal as the close-button
+                // path -- the panel just closed, so the strip must
+                // reappear as the filter's persistent home.
+                if (typeof updatePeerDistStrip === 'function') updatePeerDistStrip();
                 e.preventDefault();
                 return;
             }
@@ -19246,6 +19471,10 @@ function setupDualSparklineTooltips() {
                     window._activePeerDistFilter = null;
                     var pdcEsc = document.getElementById('peer-dist-chip');
                     if (pdcEsc) pdcEsc.remove();
+                    // 374th review: the strip is the chip's sibling visual
+                    // for this filter -- a filter clear must remove both.
+                    var pdsEsc = document.getElementById('peer-dist-strip');
+                    if (pdsEsc) pdsEsc.innerHTML = '';
                 }
                 if (window._activeCrosstabFilter) {
                     window._activeCrosstabFilter = null;

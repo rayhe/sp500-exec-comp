@@ -4885,6 +4885,11 @@ tbody tr:last-child td { border-bottom: none; }
     .peer-dist-section { padding: 8px 10px 6px; }
     .peer-dist-chart { height: 48px; gap: 2px; }
 }
+/* 374th review: the peer-dist strip above the table is the filter's
+   persistent home -- the left accent marks it as a filter source, not
+   a second copy of the detail histogram. */
+#peer-dist-strip:empty { display: none; }
+#peer-dist-strip .peer-dist-section { border-left: 3px solid #00b4d8; margin-bottom: 10px; }
 
 .detail-peers {
     border-top: 1px solid var(--border);
