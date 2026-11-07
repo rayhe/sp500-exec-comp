@@ -6405,12 +6405,20 @@ function renderPercentileSortSummary(companies) {
 
     // Tier-specific stats
     tiers.forEach(function(t) {
-        if (t.count === 0) return;
-        var minComp = Math.min.apply(null, t.comps);
-        var maxComp = Math.max.apply(null, t.comps);
-        html += '<span class="summary-stat">';
+        // 367th review: when a pctile tier filter is active the filtered
+        // set has zero companies in every other tier, so skipping
+        // zero-count tiers collapsed the stats to the active tier only
+        // while the histogram above keeps all four tiers visible at 0.
+        // Render zero-count tiers dimmed with a bare "0" (no comp range,
+        // the tier has no companies) when a tier filter is active;
+        // unfiltered view unchanged (zero-count tiers still skipped).
+        if (t.count === 0 && !activeTier) return;
+        var isDimmed = (activeTier && !(activeTier.min === t.min && activeTier.max === t.max));
+        var dimStyle = isDimmed ? 'opacity:0.3;' : '';
+        var rangeText = t.count === 0 ? '' : ' (' + formatCurrency(Math.min.apply(null, t.comps)) + '\u2013' + formatCurrency(Math.max.apply(null, t.comps)) + ')';
+        html += '<span class="summary-stat" style="' + dimStyle + '">';
         html += '<span class="summary-stat-label"><span class="pctile-badge ' + t.cls + '" style="font-size:0.65rem">' + t.label + '</span></span>';
-        html += '<span class="summary-stat-value">' + t.count + ' (' + formatCurrency(minComp) + '\u2013' + formatCurrency(maxComp) + ')</span>';
+        html += '<span class="summary-stat-value">' + t.count + rangeText + '</span>';
         html += '</span>';
     });
 
