@@ -12437,6 +12437,12 @@ function setupDetailPanel(companies) {
             }
             _detailTriggerRow = null;
             _expandedDetailTicker = null;
+            // 372nd review: the diff key died with the panel too -- the
+            // toggle-off and reset paths already null it with the
+            // ticker, and serializeState only emits diff= together
+            // with detail=, so this keeps all three close paths on
+            // the same pair-null invariant.
+            _activeDiffKey = null;
             pushState();
         });
 
@@ -15293,6 +15299,13 @@ function setupDualSparklineTooltips() {
         // hashchange-clear path nulls together.
         _expandedDetailTicker = null;
         _activeDiffKey = null;
+        // 372nd review: the renderTable call below destroys the
+        // detail row via its tbody wipe, so the trigger row this
+        // points at is detached after a reset -- every reader
+        // guards with isConnected, so this was latent, not live,
+        // but null it with the other navigation state so no reset
+        // path leaves a dangling reference behind.
+        _detailTriggerRow = null;
 
         // Clear filter chips
         [
@@ -18636,6 +18649,11 @@ function setupDualSparklineTooltips() {
         activeRole = null;
         _expandedDetailTicker = null;
         _activeDiffKey = null;
+        // 372nd review: same dangling-reference class as the reset
+        // path -- the .detail-row removal below detaches the trigger
+        // row this points at. Null it with the pair; the restore
+        // below re-expands via a row click, which sets it fresh.
+        _detailTriggerRow = null;
         // Close any open detail panel
         var existingDetail = document.querySelector('#comp-tbody .detail-row');
         if (existingDetail) existingDetail.remove();
@@ -19001,12 +19019,28 @@ function setupDualSparklineTooltips() {
             if (detailRow) {
                 detailRow.remove();
                 document.querySelectorAll('tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+                document.querySelectorAll('tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
                 announce('Detail panel closed');
                 // Return focus to the row that opened the detail panel
                 if (_detailTriggerRow && _detailTriggerRow.isConnected) {
                     _detailTriggerRow.focus();
-                    _detailTriggerRow = null;
                 }
+                // 372nd review: the close-button path already nulls the
+                // trigger row unconditionally and the expanded ticker
+                // with a pushState, but this branch did neither -- it
+                // only nulled the trigger row inside the isConnected
+                // check, left aria-expanded="true" on the trigger row,
+                // and left _expandedDetailTicker / _activeDiffKey set
+                // with no pushState, so the hash kept detail= (and
+                // diff=) until the next pushState and a reload
+                // re-expanded the panel -- the same class as the 371st
+                // Reset All bug, in milder form. Null the pair and the
+                // trigger row here, and pushState so the URL drops
+                // detail= (and diff= with it) immediately.
+                _detailTriggerRow = null;
+                _expandedDetailTicker = null;
+                _activeDiffKey = null;
+                pushState();
                 e.preventDefault();
                 return;
             }
