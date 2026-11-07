@@ -13328,6 +13328,20 @@ function applyHashState(companies) {
                         announce('Detail panel not opened: ' + detailTicker + ' is outside the active filter');
                         return;
                     }
+                    // 377th review: a NON-ticker-list filter (sector,
+                    // ratio bucket, dist, conc tier, CEO/CFO bucket,
+                    // volatility, role, gov/gender/tenure/SoP, ...) can
+                    // still exclude the target -- the 375th guard only
+                    // covers filters that carry a tickers list, and
+                    // these others have no tickers list to test. The
+                    // forced search then yields zero rows, no panel
+                    // opens, and the hash keeps detail= for a panel
+                    // that does not exist (a reload repeats the empty
+                    // table). Save the pre-search state so the
+                    // re-query below can restore it when the target
+                    // still is not found.
+                    var _prevSearchTerm = searchTerm;
+                    var _prevPage = currentPage;
                     // Force search filter to show the ticker
                     searchTerm = detailTicker;
                     document.getElementById('table-search').value = detailTicker;
@@ -13337,9 +13351,11 @@ function applyHashState(companies) {
                     setTimeout(function() {
                         var tbody2 = document.getElementById('comp-tbody');
                         var rows2 = tbody2.querySelectorAll('tr:not(.detail-row):not(.skeleton-table-row-tr)');
+                        var _foundTarget = false;
                         rows2.forEach(function(r) {
                             var te = r.querySelector('.ticker');
                             if (te && te.textContent.trim() === detailTicker) {
+                                _foundTarget = true;
                                 r.click();
                                 setTimeout(function() {
                                     r.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
@@ -13349,6 +13365,28 @@ function applyHashState(companies) {
                                 _openDiffFromHash(detailTicker, state.diff);
                             }
                         });
+                        if (!_foundTarget) {
+                            // 377th review: the target is outside the
+                            // active non-ticker-list filter -- the
+                            // forced search emptied the table. Revert
+                            // it: restore the pre-search term, input,
+                            // and page, re-render the filtered table
+                            // the user actually asked for, null the
+                            // pair, and pushState so detail= (and
+                            // diff=) drops immediately -- the same
+                            // pair-null invariant as the 371st Reset
+                            // All, 372nd Escape-close, 374th
+                            // filter-click, and 375th ticker-list
+                            // fixes.
+                            searchTerm = _prevSearchTerm;
+                            document.getElementById('table-search').value = _prevSearchTerm || '';
+                            currentPage = _prevPage;
+                            renderTable(companies);
+                            _expandedDetailTicker = null;
+                            _activeDiffKey = null;
+                            pushState();
+                            announce('Detail panel not opened: ' + detailTicker + ' is outside the active filter');
+                        }
                     }, 50);
                 } else if (targetRow) {
                     targetRow.click();
