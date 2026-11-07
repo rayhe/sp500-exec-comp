@@ -42,17 +42,18 @@
    "284th review (2026-10-30 19:30 PT): 4-company CEO-anchor promotion batch (CPB/EL/JKHY/WDC) - company anchors moved from the FY2025 CEO to the FY2026 PEO (filing-verbatim SCT totals + pay-ratio disclosures from the Oct-2026 DEF 14As: CPB Beekhuizen $10,965,019 / 152:1 / $72,257; EL de La Faverie $20,585,784 / 601:1 / $34,255; JKHY Adelson $8,413,970 / 87:1 / $96,615; WDC Tan $17,168,701 / 1,457:1 / $11,787); aggregate_stats + sector_medians recomputed (section-17 semantics); ORCL co-CEO stays queued (needs convention).",
    "302nd review (2026-11-01 06:30 PT): ORCL co-CEO anchor adjudication - establishes the co-CEO convention (anchor = first-listed co-CEO in the filed SCT; NFLX/KKR precedent) and promotes the FY2026 anchor from Safra A. Catz ($1,113,417 / 11:1 / $98,899) to Clayton M. Magouyrk ($627,472,419 / 6,623:1 / $94,740), all filing-verbatim from the 2026-09-25 DEF 14A (acc. 0001193125-26-402816; Magouyrk first-listed and higher-paid vs Sicilia $256,606,752 / 2,709:1); aggregate_stats + sector_medians recomputed (section-17 semantics); ceo_tenure kept {2025, September, prose} = 2025-09-22 co-CEO appointment.",
    "321st review (2026-11-02 21:00 PT): 12-company CEO-anchor promotion batch (AZO/CLX/CSCO/FDS/FOX/FOXA/KLAC/LRCX/MDT/MSFT/NWSA/STX) - company anchors moved from the FY2025 CEO to the FY2026 PEO (filing-verbatim SCT totals + pay-ratio disclosures from fresh Aug-Oct 2026 DEF 14As: AZO Daniele $11,236,964 / 381:1 / $29,450; CLX Rendle $14,000,460 / 168:1 / $83,267; CSCO Robbins $48,527,813 / 217:1 / $223,675; FDS Viswanathan $62,046,674 / 3,370:1 / $18,413 (headline ratio; 833:1 ex make-whole also filed; succeeded Snow 2025-09-08, tenure {2025, September, prose}); FOX/FOXA Murdoch $31,019,117 / 295:1 / $104,998; KLAC Wallace $29,954,476 / 300:1 / $99,696; LRCX Archer $40,354,475 / 500:1 / $80,764; MDT Martha $22,940,252 / 303:1 / $75,587; MSFT Nadella $90,628,977 / 421:1 / $215,057; NWSA Thomson $19,745,396 / 205:1 / $96,277; STX Mosley $26,918,702 / 2,145:1 / $12,550); aggregate_stats + sector_medians recomputed (section-17 semantics). CPRT DEFERRED: FY2026 SCT names Adair (Executive Chairman and CEO, $351,386) as current CEO but the filed pay-ratio disclosure is computed on former CEO Liaw (42:1 / $48,661) - needs a transition adjudication, not a blind promotion. Screens clean: full footing scan (only $1 rounding + 4 documented $2 gaps + 44 labeled component_mismatch rows); ENPH/DLR/ROP small-NEO sets verified filing-verbatim; EDGAR Oct 30-Nov 2 DEF 14A sweep found 0 S&P 500 filers.",
-   "323rd review (2026-11-03 01:00 PT): CPRT FY2026 anchor adjudication (321st-review deferral resolved) - anchor stays Jeffrey Liaw and promotes to his FY2026 figures ($2,064,740 / 42:1 / $48,661) from the 2026-10-22 DEF 14A (acc. 0001193125-26-428904): Liaw was CEO for FY2026 except its last day (Adair appointed CEO effective July 31, 2026, the fiscal year-end date; Liaw stepped down and resigned from the Board the same day), the filed pay-ratio disclosure is computed on Liaw, and the PvP footnote treats Adair as a non-PEO NEO for FY2026, so Liaw is the FY2026 PEO by the filing's own terms. Promoting to Adair ($351,386) would have broken the filed 42:1 ratio or required inventing a 7:1 ratio. Anchor-total screen now empty (CPRT was the sole company whose anchor total disagreed with its anchor-year row). ceo_tenure unchanged (tracks anchor person Liaw, April 2024); next promotion (FY2027 proxy) must move the anchor to Adair with tenure July 2026. aggregate_stats + sector_medians recomputed (section-17 semantics); pay-ratio band counts unchanged (CPRT within tolerance before and after), so the js/app.js 4d fallback copy needs no change. Numbering: this review was called 322nd in commit 43816b3; renumbered to 323rd because the Nov 2 JS-fix iteration already holds the 322nd slot in the iteration log. No data change in the renumbering."
+   "323rd review (2026-11-03 01:00 PT): CPRT FY2026 anchor adjudication (321st-review deferral resolved) - anchor stays Jeffrey Liaw and promotes to his FY2026 figures ($2,064,740 / 42:1 / $48,661) from the 2026-10-22 DEF 14A (acc. 0001193125-26-428904): Liaw was CEO for FY2026 except its last day (Adair appointed CEO effective July 31, 2026, the fiscal year-end date; Liaw stepped down and resigned from the Board the same day), the filed pay-ratio disclosure is computed on Liaw, and the PvP footnote treats Adair as a non-PEO NEO for FY2026, so Liaw is the FY2026 PEO by the filing's own terms. Promoting to Adair ($351,386) would have broken the filed 42:1 ratio or required inventing a 7:1 ratio. Anchor-total screen now empty (CPRT was the sole company whose anchor total disagreed with its anchor-year row). ceo_tenure unchanged (tracks anchor person Liaw, April 2024); next promotion (FY2027 proxy) must move the anchor to Adair with tenure July 2026. aggregate_stats + sector_medians recomputed (section-17 semantics); pay-ratio band counts unchanged (CPRT within tolerance before and after), so the js/app.js 4d fallback copy needs no change. Numbering: this review was called 322nd in commit 43816b3; renumbered to 323rd because the Nov 2 JS-fix iteration already holds the 322nd slot in the iteration log. No data change in the renumbering.",
+   "SNDK (Sandisk): FY2026 median worker pay $56,823 and pay ratio 267 to 1 added 2026-11-06 from the 2026 DEF 14A CEO Pay Ratio disclosure (acc. 0001308179-26-000423); CEO $15,181,160 cross-checks the stored SCT total exactly. The filing PvP reconciliation table understates the PEO SCT total ($10,456,161) by omitting the $4,725,000 non-equity incentive; SCT total $15,181,160 stands. FDXF re-checked 2026-11-06: still 0 DEF 14A. VMRK re-checked 2026-11-06: still no post-merger DEF 14A."
   ],
   "aggregate_stats": {
    "total_companies": 518,
-   "companies_with_pay_ratio": 514,
+   "companies_with_pay_ratio": 515,
    "median_ceo_pay": 17499399,
    "mean_ceo_pay": 331068843,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
-   "median_worker_pay": 82703,
-   "median_pay_ratio": 197
+   "median_worker_pay": 82463,
+   "median_pay_ratio": 198
   },
   "sector_medians": {
    "Health Care": {
@@ -71,8 +72,8 @@
     "min": 442,
     "max": 627472419,
     "verified_anchors": 85,
-    "documented_anchors": 0,
-    "undocumented_anchors": 3,
+    "documented_anchors": 1,
+    "undocumented_anchors": 2,
     "verified_pct": 96.6
    },
    "Consumer Discretionary": {
@@ -168,7 +169,7 @@
   },
   "edgar_coverage": 517,
   "total_companies": 518,
-  "last_updated": "2026-10-30",
+  "last_updated": "2026-11-06",
   "total_neo_records": 7318,
   "title_coverage": "7318/7318",
   "data_quality": {
@@ -249,14 +250,14 @@
   },
   "companies_with_executives": 517,
   "board_independence_any": 499,
-  "median_worker_pay": 82224,
-  "median_pay_ratio": 196,
+  "median_worker_pay": 82463,
+  "median_pay_ratio": 198,
   "last_verified": "2026-09-01T09:08:43Z",
   "total_executives": 7318,
   "board_independence_count": 499,
   "board_independence_full": 499,
   "last_audit": "2026-09-18",
-  "companies_with_pay_ratio": 512,
+  "companies_with_pay_ratio": 515,
   "enriched_count": 517,
   "multiyear_fill_20260902_1400": {
    "date": "2026-09-02",
@@ -282,7 +283,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-11-02",
+  "last_dq_repair": "2026-11-06",
   "verified_total": 7274,
   "total_neos": 7318,
   "phantom_removed": {
@@ -100167,7 +100168,10 @@
      "pension_nqdc": 0,
      "all_other": 91810,
      "total": 15181160,
-     "_total_source": "component_mismatch"
+     "_total_source": "component_mismatch",
+     "_accession": "0001308179-26-000423",
+     "_filing_url": "https://www.sec.gov/Archives/edgar/data/2023554/000130817926000423/sndk-20261005.htm",
+     "_note": "SCT (proxy p.56), FY2026 (ended July 3, 2026). Filing-side $1 footing difference: components sum to $15,181,161 vs filed total $15,181,160 (rounded underlying values); total kept verbatim as filed. Salary reflects 27 payroll periods. No Option/Pension columns in this SCT (keys 0). CEO total cross-checked by the CEO Pay Ratio disclosure (median $56,823, 267 to 1)."
     },
     {
      "name": "Luis F. Visoso",
@@ -100181,7 +100185,10 @@
      "pension_nqdc": 0,
      "all_other": 10950,
      "total": 8430409,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_accession": "0001308179-26-000423",
+     "_filing_url": "https://www.sec.gov/Archives/edgar/data/2023554/000130817926000423/sndk-20261005.htm",
+     "_note": "SCT (proxy p.56), FY2026. Components foot exactly to filed total."
     },
     {
      "name": "Alper Ilkbahar",
@@ -100195,7 +100202,10 @@
      "pension_nqdc": 0,
      "all_other": 11442,
      "total": 3807651,
-     "_total_source": "verified"
+     "_total_source": "verified",
+     "_accession": "0001308179-26-000423",
+     "_filing_url": "https://www.sec.gov/Archives/edgar/data/2023554/000130817926000423/sndk-20261005.htm",
+     "_note": "SCT (proxy p.56), FY2026. Components foot exactly to filed total."
     },
     {
      "name": "Bernard Shek",
@@ -100209,9 +100219,15 @@
      "pension_nqdc": 0,
      "all_other": 7816,
      "total": 2630464,
-     "_total_source": "component_mismatch"
+     "_total_source": "component_mismatch",
+     "_accession": "0001308179-26-000423",
+     "_filing_url": "https://www.sec.gov/Archives/edgar/data/2023554/000130817926000423/sndk-20261005.htm",
+     "_note": "SCT (proxy p.56), FY2026. Filing-side $1 footing difference: components sum to $2,630,463 vs filed total $2,630,464 (rounded underlying values); total kept verbatim as filed."
     }
-   ]
+   ],
+   "median_worker_pay": 56823,
+   "pay_ratio": 267,
+   "_index_note": "Pay ratio and median worker pay from the 2026 DEF 14A (acc. 0001308179-26-000423, filed 2026-10-06), CEO Pay Ratio section p.62: median employee annual total compensation $56,823, CEO $15,181,160, ratio 267 to 1. CEO figure cross-checks the stored FY2026 SCT total exactly. Filing-side quirk for the next pay-vs-performance wave: the proxy PvP reconciliation table reports the PEO SCT total as $10,456,161, which omits the $4,725,000 non-equity incentive (salary plus stock plus all-other only); the SCT total is $15,181,160, do not ingest $10,456,161 as the SCT total."
   },
   {
    "ticker": "SNPS",
@@ -123951,7 +123967,7 @@
      "_note": "FY2026 SEC 10-K 2026 SCT, Michael Rodgers 2026 row. Components foot exactly"
     }
    ],
-   "_index_note": "FedEx Freight spin-off completed 2026-06-01; first standalone filing 2026-08-05 10-K Part III carries the FY2025/FY2026 SCTs. No DEF 14A filed yet. Re-checked 2026-10-25: CIK 0002082247 submissions show 0 DEF 14A. Queued for enrichment when its first definitive proxy files. Re-checked 2026-10-26: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 8-K/13G/4 only). Re-checked 2026-10-27: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 8-K/4/13G only). Re-checked 2026-10-29: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 13G/A, 8-K, 4 only)."
+   "_index_note": "FedEx Freight spin-off completed 2026-06-01; first standalone filing 2026-08-05 10-K Part III carries the FY2025/FY2026 SCTs. No DEF 14A filed yet. Re-checked 2026-10-25: CIK 0002082247 submissions show 0 DEF 14A. Queued for enrichment when its first definitive proxy files. Re-checked 2026-10-26: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 8-K/13G/4 only). Re-checked 2026-10-27: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 8-K/4/13G only). Re-checked 2026-10-29: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 13G/A, 8-K, 4 only). Re-checked 2026-11-06: CIK 0002082247 submissions still show 0 DEF 14A (recent filings 10-Q/8-K Oct 29 only)."
   },
   {
    "company_name": "Illumina, Inc.",
@@ -125135,5 +125151,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions). Re-checked 2026-11-03: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR submissions window still ends 2026-09-24, latest filings 3/A and 144; no post-merger proxy expected before the spring 2027 proxy season. Re-checked 2026-11-05: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings today 2026-11-05 are a 144 and an 8-K only). Re-checked 2026-11-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings 2026-11-05 are a 144 and an 8-K, and 2026-11-06 a 144 only, acc. 0001959173-26-007823). EDGAR DEF 14A sweep Nov 1-6 (42 filings) and 10-K/A sweep Nov 1-6 (19 filings) found zero roster matches, so no FY2026 proxy enrichment this week."
   }
  ],
- "last_updated": "2026-11-03"
+ "last_updated": "2026-11-06"
 }
