@@ -12497,6 +12497,14 @@ body.light-mode .cross-sector-pair-select:focus {
     outline: 2px solid #00b4d8;
     outline-offset: 2px;
 }
+/* 373rd review: active-filter ring -- mirrors :focus-visible so the
+   cell that filtered the table is unmistakable in either theme. */
+.crosstab-cell.crosstab-active {
+    outline: 2px solid #00b4d8;
+    outline-offset: 2px;
+    z-index: 2;
+    position: relative;
+}
 .crosstab-danger {
     border: 2px solid rgba(239, 68, 68, 0.5);
     box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.2);

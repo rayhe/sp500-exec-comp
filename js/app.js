@@ -3334,6 +3334,11 @@ function populateInsights(comp, trends, sectorFilter) {
         // path nulls _activeGenderFilter above (and Reset All / Escape
         // already clear it); this was the one reset path that did not.
         if (window.highlightGenderChart) window.highlightGenderChart(null);
+        // 373rd review: same stale-highlight class for crosstab --
+        // this path nulls _activeCrosstabFilter above, and its cells
+        // live outside the table, so the renderTable call never
+        // clears the ring; Reset All / Escape already clear it.
+        if (window.highlightCrosstabCell) window.highlightCrosstabCell(null);
         if (window._refreshInsights) window._refreshInsights(null);
         scrollToTable();
     }
@@ -12727,6 +12732,10 @@ function serializeState() {
     if (window._activeCrosstabFilter) {
         params.push('xtk=' + encodeURIComponent(window._activeCrosstabFilter.tickers.join(',')));
         params.push('xlbl=' + encodeURIComponent(window._activeCrosstabFilter.label));
+        // 373rd review: the cell key is what the highlight matches on --
+        // without it a restored filter (from an old link, or a key-less
+        // caller) still filters via tickers but rings no cell.
+        if (window._activeCrosstabFilter.cellKey) params.push('xkey=' + encodeURIComponent(window._activeCrosstabFilter.cellKey));
     }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
@@ -13026,7 +13035,7 @@ function applyHashState(companies) {
     if (state.xtk && state.xlbl) {
         var xTickers = state.xtk.split(',').filter(function(t) { return t.length > 0; });
         if (xTickers.length > 0) {
-            window._activeCrosstabFilter = { tickers: xTickers, label: state.xlbl };
+            window._activeCrosstabFilter = { tickers: xTickers, label: state.xlbl, cellKey: state.xkey || null };
             if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         }
     }
@@ -15133,6 +15142,30 @@ function setupDualSparklineTooltips() {
     window._updateGovFilterIndicator = updateGovFilterIndicator;
 
     // --- Crosstab cell filter ---
+    // 373rd review: crosstab cells are the last chart surface with no
+    // highlight function -- pctile / peer-dist visuals re-render from
+    // state, and every other chart dim has a highlight* function, but
+    // clicking a crosstab cell filtered the table and raised a chip
+    // while leaving the cell itself unmarked, and a deep link /
+    // back-forward navigation into a crosstab filter showed no active
+    // cell at all. highlightCrosstabCell is the in-place highlight
+    // for all three crosstabs, keyed by the data-crosstab-key the draw
+    // functions stamp on each data cell (tenure-gov: / vol-gov: /
+    // sop-vol: prefixes keep the three tables' keys disjoint). Null
+    // clears every active cell; a key rings exactly that cell. The
+    // lookup iterates and compares getAttribute rather than building
+    // an attribute selector, so a key can never break out of the
+    // selector. Null-safe when the crosstabs have not drawn yet.
+    window.highlightCrosstabCell = function(cellKey) {
+        document.querySelectorAll('.crosstab-cell.crosstab-active').forEach(function(el) {
+            el.classList.remove('crosstab-active');
+        });
+        if (!cellKey) return;
+        document.querySelectorAll('.crosstab-cell[data-crosstab-key]').forEach(function(el) {
+            if (el.getAttribute('data-crosstab-key') === cellKey) el.classList.add('crosstab-active');
+        });
+    };
+
     // window.filterTableByTickers was called by the three crosstab click
     // handlers (Tenure x Gov, Volatility x Gov, SoP x Vol) but never defined,
     // so clicking a cell scrolled to the table without filtering. This
@@ -15140,16 +15173,23 @@ function setupDualSparklineTooltips() {
     // convention (peer-dist / community / quartile / position): toggle off
     // when the same cell is clicked again, a clearable chip in the table
     // controls, summary-bar + URL-state participation.
-    window.filterTableByTickers = function(tickers, label) {
+    window.filterTableByTickers = function(tickers, label, cellKey) {
         var clean = (tickers || []).filter(function(t) { return t; });
         var lbl = label || (clean.length + ' companies');
-        if (window._activeCrosstabFilter && window._activeCrosstabFilter.label === lbl) {
+        var key = cellKey || null;
+        // 373rd review: toggle off by cell key when one is given -- the
+        // count-based default label collides across cells with equal
+        // counts (the SoP x Vol table used to pass no label at all), so
+        // a second cell could toggle the first one's filter off. The
+        // label comparison stays as the fallback for key-less callers.
+        if (window._activeCrosstabFilter && ((key && window._activeCrosstabFilter.cellKey === key) || (!key && window._activeCrosstabFilter.label === lbl))) {
             window._activeCrosstabFilter = null;
         } else {
-            window._activeCrosstabFilter = { tickers: clean, label: lbl };
+            window._activeCrosstabFilter = { tickers: clean, label: lbl, cellKey: key };
         }
         currentPage = 1;
         updateCrosstabFilterIndicator();
+        if (window.highlightCrosstabCell) window.highlightCrosstabCell(window._activeCrosstabFilter ? window._activeCrosstabFilter.cellKey : null);
         renderTable(companies);
         pushState();
         announce(window._activeCrosstabFilter ?
@@ -15177,6 +15217,11 @@ function setupDualSparklineTooltips() {
             chip.addEventListener('click', function() {
                 window._activeCrosstabFilter = null;
                 chip.remove();
+                // 373rd review: the chip owns the dismiss affordance,
+                // so it must clear the cell ring too -- otherwise the
+                // crosstab keeps showing an active cell for a filter
+                // that no longer filters.
+                if (window.highlightCrosstabCell) window.highlightCrosstabCell(null);
                 renderTable(companies);
                 pushState();
                 announce('Crosstab filter cleared');
@@ -15397,11 +15442,17 @@ function setupDualSparklineTooltips() {
         // deleted, not defined -- their visuals live in the detail
         // row, which the renderTable call below destroys via its
         // tbody wipe, so they re-render from state on the next open
-        // (same class as pctile/crosstab per the 342nd review).
+        // (same class as pctile per the 342nd review; crosstab
+        // keeps its own clear below since its cells live outside
+        // the table and never re-render from state).
         // Quartile keeps its call: its zone lives outside the
         // table, so it needs the real clear defined above.
         if (window.clearCommunityHighlight) window.clearCommunityHighlight();
         if (window.clearQuartileHighlight) window.clearQuartileHighlight();
+        // 373rd review: crosstab cells live outside the table, so the
+        // renderTable tbody wipe below never clears the ring -- unlike
+        // pctile / peer-dist, whose visuals re-render from state.
+        if (window.highlightCrosstabCell) window.highlightCrosstabCell(null);
 
         // Update filter indicator chips
         if (window._updateMetricsStrip) window._updateMetricsStrip(null);
@@ -16434,8 +16485,9 @@ function setupDualSparklineTooltips() {
     // raised its chip but left the chart un-ringed until a redraw; the
     // charts draw before applyHashState, so the draw-time application
     // never saw the state). Vol is excluded deliberately: it is not
-    // hash-serialized and stays session-local. Pctile / peer-dist /
-    // crosstab have no highlight function to call. Stock-% and
+    // hash-serialized and stays session-local. Pctile / peer-dist
+    // have no highlight function to call (their visuals re-render
+    // from state). Stock-% and
     // asp-delta groups live in the sort-contextual summary, which
     // renderSummaryBar renders alongside the filter stats when the active
     // filter's dim matches the sort key (361st review), so those two calls
@@ -16458,6 +16510,15 @@ function setupDualSparklineTooltips() {
     }
     if (window._activeStockPctTier && window.highlightStockPctBucket) {
         window.highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max);
+    }
+
+    // 373rd review: crosstab cells are drawn before applyHashState, so
+    // the draw-time application never sees a restored filter -- apply
+    // it here like the six dims above. Pctile / peer-dist need no such
+    // call: their visuals re-render from state on the renderTable in
+    // applyHashState.
+    if (window._activeCrosstabFilter && window.highlightCrosstabCell) {
+        window.highlightCrosstabCell(window._activeCrosstabFilter.cellKey);
     }
 
     // Apply YoY filter chip if restored from hash
@@ -18713,6 +18774,15 @@ function setupDualSparklineTooltips() {
             if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
         });
         applyHashState(companies);
+        // 373rd review: applyHashState early-returns when parseHash
+        // yields null (empty hash), skipping its trailing renderTable
+        // -- so a back/forward navigation to a hashless URL nulled
+        // every filter and removed every chip, yet left the stale
+        // filtered rows and footer on screen until the next user
+        // action re-rendered (the render check caught it in R3).
+        // Render here when the hash is empty; a non-empty hash
+        // already rendered inside applyHashState.
+        if (!parseHash()) renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
         if (window.highlightRatioBucket) {
             if (window._activeRatioBucket) {
@@ -18781,7 +18851,8 @@ function setupDualSparklineTooltips() {
         // would linger with its chip already removed. Vol is excluded
         // deliberately: not hash-serialized, stays session-local, and
         // the handler never nulls it, so its highlight persists.
-        // Pctile / peer-dist / crosstab have no highlight function.
+        // Pctile / peer-dist have no highlight function (their
+        // visuals re-render from state).
         // Stock-% / asp-delta groups live in the sort-contextual
         // summary, which renderSummaryBar renders alongside the filter
         // stats when the active filter's dim matches the sort key (361st
@@ -18828,6 +18899,19 @@ function setupDualSparklineTooltips() {
                 window.highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max);
             } else {
                 window.highlightStockPctBucket(null, null);
+            }
+        }
+        // 373rd review: crosstab cell highlight restore -- no chart
+        // redraw happens on hashchange, so without this a back/forward
+        // navigation into a crosstab deep link filtered the table and
+        // raised the chip with no active cell; the else branch clears
+        // the ring when the new hash drops the filter, mirroring the
+        // ratio / YoY pattern.
+        if (window.highlightCrosstabCell) {
+            if (window._activeCrosstabFilter) {
+                window.highlightCrosstabCell(window._activeCrosstabFilter.cellKey);
+            } else {
+                window.highlightCrosstabCell(null);
             }
         }
         // Restore CEO transition filter chip if present in hash state
@@ -19225,21 +19309,24 @@ function setupDualSparklineTooltips() {
                 if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
                 // 342nd review: highlight clears for the newly nulled
                 // dims that have one (gender was already nulled here
-                // but its chart highlight was never cleared; pctile/
-                // crosstab have none -- their visuals re-render from
-                // state, as in resetAllFilters), plus the two
-                // persistence/visibility steps resetAllFilters already
-                // does: pushState so a refresh does not resurrect the
-                // pre-Escape filters from the URL, and the Reset All
-                // button visibility refresh so it hides once nothing
-                // is active.
-                // 370th review: peer-dist joins pctile/crosstab as
-                // no-clear -- its histogram lives in the detail row,
-                // destroyed by the renderTable call above, and the
-                // dead clear call this branch used to carry is deleted.
+                // but its chart highlight was never cleared; pctile
+                // has none -- its visual re-renders from state, as in
+                // resetAllFilters), plus the two persistence/visibility
+                // steps resetAllFilters already does: pushState so a
+                // refresh does not resurrect the pre-Escape filters
+                // from the URL, and the Reset All button visibility
+                // refresh so it hides once nothing is active.
+                // 370th review: peer-dist joins pctile as no-clear --
+                // its histogram lives in the detail row, destroyed by
+                // the renderTable call above, and the dead clear call
+                // this branch used to carry is deleted.
+                // 373rd review: crosstab leaves the no-clear set --
+                // its cells live outside the table, so the tbody wipe
+                // never clears the ring; clear it like the other dims.
                 if (window.highlightGenderChart) window.highlightGenderChart(null);
                 if (window.highlightStockPctBucket) window.highlightStockPctBucket(null);
                 if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null);
+                if (window.highlightCrosstabCell) window.highlightCrosstabCell(null);
                 if (typeof pushState === 'function') pushState();
                 if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
                 e.preventDefault();

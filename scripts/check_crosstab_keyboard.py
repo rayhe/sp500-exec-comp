@@ -87,7 +87,11 @@ def static_checks():
     charts = open(CHARTS_JS, encoding="utf-8").read()
     css = open(CSS, encoding="utf-8").read()
 
-    s1 = "window.filterTableByTickers = function(tickers, label)" in app
+    # 373rd review: the signature gained an optional third cellKey
+    # argument (the cell identity for the active-cell highlight), so
+    # match the definition with the optional parameter rather than
+    # the exact 2-arg form.
+    s1 = re.search(r"window\.filterTableByTickers = function\(tickers, label(, cellKey)?\)", app) is not None
     check("S1 window.filterTableByTickers defined in js/app.js",
           s1, "" if s1 else "definition missing")
 

@@ -11816,6 +11816,7 @@ function drawTenureGovCrossTab(companies) {
 
             html += '<td class="crosstab-cell" style="background:' + bgColor + ';color:' + cellTextColor + '" ' +
                 'data-tenure="' + tb.key + '" data-gov="' + gb.key + '" ' +
+                'data-crosstab-key="tenure-gov:' + tb.key + '-' + gb.key + '" ' +
                 'title="' + tooltip.replace(/"/g, '&quot;') + '" tabindex="0" role="gridcell">';
             if (cell.count === 0) {
                 html += '<span class="crosstab-empty">—</span>';
@@ -11963,7 +11964,7 @@ function drawTenureGovCrossTab(companies) {
             // Build ticker list and filter the main table
             var tickers = cell.members.map(function(c) { return c.ticker; });
             if (typeof window.filterTableByTickers === 'function') {
-                window.filterTableByTickers(tickers, 'Tenure: ' + tKey + ' × Gov: ' + gKey);
+                window.filterTableByTickers(tickers, 'Tenure: ' + tKey + ' × Gov: ' + gKey, 'tenure-gov:' + cellKey);
             }
             // Scroll to table
             var tableSection = document.getElementById('compensation-table-section');
@@ -11975,6 +11976,13 @@ function drawTenureGovCrossTab(companies) {
 
     // Render danger-zone scatter navigation strip
     _renderCrosstabScatterNav(cells, container);
+
+    // 373rd review: draw-time application of the active-cell
+    // highlight -- a redraw (theme toggle, sector re-filter) must
+    // keep the ring on the cell that filtered the table. On a fresh
+    // deep-link load the charts draw before applyHashState, so the
+    // init restore call applies it there instead.
+    if (typeof window.highlightCrosstabCell === 'function') window.highlightCrosstabCell(window._activeCrosstabFilter ? window._activeCrosstabFilter.cellKey : null);
 }
 
 /* Render a navigation strip below the crosstab showing danger-zone companies
@@ -14631,6 +14639,7 @@ function drawVolGovCrossTab(companies) {
 
             html += '<td class="crosstab-cell" style="background:' + bgColor + ';color:' + cellTextColor + '" ' +
                 'data-vol="' + vb.key + '" data-gov="' + gb.key + '" ' +
+                'data-crosstab-key="vol-gov:' + vb.key + '-' + gb.key + '" ' +
                 'title="' + tooltip.replace(/"/g, '&quot;') + '" tabindex="0" role="gridcell">';
             if (cell.count === 0) {
                 html += '<span class="crosstab-empty">\u2014</span>';
@@ -14782,7 +14791,7 @@ function drawVolGovCrossTab(companies) {
             // Build ticker list and filter the main table
             var tickers = cell.members.map(function(c) { return c.ticker; });
             if (typeof window.filterTableByTickers === 'function') {
-                window.filterTableByTickers(tickers, 'Vol: ' + vKey + ' \u00D7 Gov: ' + gKey);
+                window.filterTableByTickers(tickers, 'Vol: ' + vKey + ' \u00D7 Gov: ' + gKey, 'vol-gov:' + cellKey);
             }
             var tableSection = document.getElementById('compensation-table-section');
             if (tableSection) {
@@ -14793,6 +14802,13 @@ function drawVolGovCrossTab(companies) {
 
     // Render danger-zone scatter navigation strip
     _renderVolGovScatterNav(cells, container);
+
+    // 373rd review: draw-time application of the active-cell
+    // highlight -- a redraw (theme toggle, sector re-filter) must
+    // keep the ring on the cell that filtered the table. On a fresh
+    // deep-link load the charts draw before applyHashState, so the
+    // init restore call applies it there instead.
+    if (typeof window.highlightCrosstabCell === 'function') window.highlightCrosstabCell(window._activeCrosstabFilter ? window._activeCrosstabFilter.cellKey : null);
 }
 
 /* Render navigation strip below the vol×gov crosstab showing danger-zone companies
@@ -15047,6 +15063,7 @@ function drawSopVolCrossTab(companies) {
 
                 html += '<td class="' + cellClass + '" style="background:' + bg + ';cursor:pointer;" ';
                 html += 'data-sop-key="' + sb.key + '" data-vol-key="' + vb.key + '" ';
+                html += 'data-crosstab-key="sop-vol:' + sb.key + '-' + vb.key + '" ';
                 html += 'data-sop-min="' + sb.min + '" data-sop-max="' + sb.max + '" ';
                 html += 'data-vol-min="' + vb.min + '" data-vol-max="' + vb.max + '" ';
                 html += 'title="' + count + ' companies: ' + sb.label + ' SoP × ' + vb.label.replace('\n', ' ') + ' volatility. Click or Enter to filter table; Shift+click or Shift+Enter for scatter." ' +
@@ -15237,7 +15254,14 @@ function drawSopVolCrossTab(companies) {
                            c._ceoVolatility >= volMin && c._ceoVolatility < volMax;
                 }).map(function(c) { return c.ticker; });
                 if (typeof window.filterTableByTickers === 'function' && tickers.length > 0) {
-                    window.filterTableByTickers(tickers);
+                    // 373rd review: pass the cell label and key like the
+                    // other two crosstabs -- the bare call defaulted the
+                    // chip label to "N companies" (no cell identity) and
+                    // left the toggle-off comparing a count, so two
+                    // cells with equal counts could toggle each other.
+                    var sopKey = cell.getAttribute('data-sop-key');
+                    var volKey = cell.getAttribute('data-vol-key');
+                    window.filterTableByTickers(tickers, 'SoP: ' + sopKey + ' \u00D7 Vol: ' + volKey, 'sop-vol:' + sopKey + '-' + volKey);
                 }
                 if (typeof scrollToTable === 'function') scrollToTable();
             }
@@ -15270,6 +15294,13 @@ function drawSopVolCrossTab(companies) {
             });
         container.parentNode.insertBefore(strip, container.nextSibling);
     }
+
+    // 373rd review: draw-time application of the active-cell
+    // highlight -- a redraw (theme toggle, sector re-filter) must
+    // keep the ring on the cell that filtered the table. On a fresh
+    // deep-link load the charts draw before applyHashState, so the
+    // init restore call applies it there instead.
+    if (typeof window.highlightCrosstabCell === 'function') window.highlightCrosstabCell(window._activeCrosstabFilter ? window._activeCrosstabFilter.cellKey : null);
 }
 
 /* === Pay Structure by SoP Tier === */
