@@ -15281,6 +15281,18 @@ function setupDualSparklineTooltips() {
         // hiding rows (via _refreshTable's post-process). Null it
         // here like every other dimension.
         window._activeBoardFilter = null;
+        // 371st review: the expanded detail panel is navigation state,
+        // not a filter -- but it IS hash-serialized (detail=, and diff=
+        // only together with it), and the renderTable call below destroys
+        // the detail row via its tbody wipe. The old trailing block only
+        // inspected the variable and never nulled it, so pushState kept
+        // re-serializing detail=<ticker> after Reset All and a reload
+        // re-expanded the panel for the old ticker. Null both here, with
+        // the other state nulls and before pushState, so the hash drops
+        // detail= (and diff= with it) on reset -- the same pair the
+        // hashchange-clear path nulls together.
+        _expandedDetailTicker = null;
+        _activeDiffKey = null;
 
         // Clear filter chips
         [
@@ -15388,10 +15400,12 @@ function setupDualSparklineTooltips() {
         if (window._refreshInsights) window._refreshInsights(null);
         announce('All filters reset');
 
-        // Close detail panel if open
-        if (typeof _expandedDetailTicker !== 'undefined' && _expandedDetailTicker) {
-            // Keep panel open? Per UX, reset should not necessarily close — but clear highlight
-        }
+        // 371st review: no detail-close step here -- the renderTable call
+        // above already destroyed the detail row via its tbody wipe, and
+        // _expandedDetailTicker / _activeDiffKey were nulled with the
+        // other state above so pushState dropped detail= (and diff=).
+        // The old block only inspected the variable and never nulled it,
+        // which is what let a reload re-expand the old panel.
     };
 
     // Visibility toggle for Reset All button
