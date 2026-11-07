@@ -56,10 +56,12 @@ Checks (all static - small JS reads, <2s):
   C3 HARD FAIL: one of the 5 newly covered dims is not nulled in the
      branch or its chip id is not removed there.
   C4 HARD FAIL: a highlight clear is missing for a nulled dim that
-     has one (gender, stockpct, aspdelta, peerdist, CeoCfoBucket).
-     Pctile/crosstab have no highlight-clear function (their visuals
-     re-render from state, as in resetAllFilters, which clears
-     neither either).
+     has one (gender, stockpct, aspdelta, CeoCfoBucket).
+     Pctile/crosstab/peerdist have no highlight-clear function (their
+     visuals live in the detail row, destroyed by renderTable's tbody
+     wipe -- the 370th review deletes the dead peerdist clear call
+     this branch used to carry, as in resetAllFilters, which clears
+     none of the three either).
   C5 HARD FAIL: the branch does not call pushState() or does not
      refresh Reset All button visibility.
   C6 HARD FAIL: the branch's _clearAfSelects call does not list
@@ -103,11 +105,13 @@ NEW_DIMS = [
     ("CrosstabFilter", "crosstab-filter-chip"),
 ]
 # Highlight clears for nulled dims that have one (call snippet as written).
+# Peer-dist is deliberately absent: its histogram lives in the detail row,
+# destroyed by renderTable's tbody wipe (370th review) -- there is no
+# highlight to clear, same class as pctile/crosstab.
 HIGHLIGHT_CLEARS = [
     "highlightGenderChart(null)",
     "highlightStockPctBucket(null)",
     "highlightAspDeltaBucket(null)",
-    "clearPeerDistHighlight()",
     "highlightCeoCfoBucket(null, null)",
 ]
 AF_SELECTS = ["af-pay-band", "af-sop-tier", "af-gender", "af-conc"]

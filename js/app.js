@@ -15216,6 +15216,32 @@ function setupDualSparklineTooltips() {
         }
     };
 
+    // 370th review: the quartile filter's visual is the one sibling
+    // the 356th review misfiled as self-correcting. Its clicked zone
+    // (.cm-bp-zone-clicked) lives in the network graph's community
+    // metrics panel (network.js), not in the detail panel, so
+    // renderTable's tbody wipe never touches it -- and neither reset
+    // path redraws that panel. Until now the zone only cleared
+    // incidentally: the community clear above sweeps the class
+    // document-wide and Reset All calls it one line before the
+    // quartile call, so the dead call looked covered. That coupling
+    // is undocumented and misattributed (only the quartile click
+    // ever adds the class -- the community row click adds
+    // .community-legend-active and .cm-active, never the zone
+    // class), so define the function the call site already
+    // expects: clear the visual; the caller owns the filter state
+    // + chip. The community clear's own zone sweep stays as
+    // belt-and-braces (its guard pins it); the two removals are
+    // idempotent. No scatter redraw: the scatter never reads the
+    // quartile filter (charts.js reads only the community scatter
+    // set), so there is nothing to redraw. Escape deliberately
+    // keeps quartile (339th review), so it must NOT call this.
+    window.clearQuartileHighlight = function() {
+        document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
+            el.classList.remove('cm-bp-zone-clicked');
+        });
+    };
+
     /* ---- Global Reset All Filters ---- */
     window.resetAllFilters = function() {
         // Core filters
@@ -15342,10 +15368,15 @@ function setupDualSparklineTooltips() {
         // above; the null + highlight clear below are unchanged.
         if (window.highlightCeoCfoBucket) window.highlightCeoCfoBucket(null, null);
         window._activeCeoCfoBucket = null;
-        if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
+        // 370th review: the peer-dist and position dead calls are
+        // deleted, not defined -- their visuals live in the detail
+        // row, which the renderTable call below destroys via its
+        // tbody wipe, so they re-render from state on the next open
+        // (same class as pctile/crosstab per the 342nd review).
+        // Quartile keeps its call: its zone lives outside the
+        // table, so it needs the real clear defined above.
         if (window.clearCommunityHighlight) window.clearCommunityHighlight();
         if (window.clearQuartileHighlight) window.clearQuartileHighlight();
-        if (window.clearPositionHighlight) window.clearPositionHighlight();
 
         // Update filter indicator chips
         if (window._updateMetricsStrip) window._updateMetricsStrip(null);
@@ -19154,10 +19185,13 @@ function setupDualSparklineTooltips() {
                 // pre-Escape filters from the URL, and the Reset All
                 // button visibility refresh so it hides once nothing
                 // is active.
+                // 370th review: peer-dist joins pctile/crosstab as
+                // no-clear -- its histogram lives in the detail row,
+                // destroyed by the renderTable call above, and the
+                // dead clear call this branch used to carry is deleted.
                 if (window.highlightGenderChart) window.highlightGenderChart(null);
                 if (window.highlightStockPctBucket) window.highlightStockPctBucket(null);
                 if (window.highlightAspDeltaBucket) window.highlightAspDeltaBucket(null);
-                if (window.clearPeerDistHighlight) window.clearPeerDistHighlight();
                 if (typeof pushState === 'function') pushState();
                 if (window._updateResetAllButtonVisibility) window._updateResetAllButtonVisibility();
                 e.preventDefault();
