@@ -3456,38 +3456,48 @@ thead th:nth-child(8) { text-align: right; }
    implicitly since thead th z-index (10) beats tbody sticky cells (6).
    Opaque backgrounds are required so scrolled content cannot show through;
    hover/selected states are reproduced with layered translucent gradients over
-   the same solid base so the tint matches non-frozen cells exactly. */
-#comp-table thead th:nth-child(-n+3),
-#comp-table tbody td:nth-child(-n+3) {
+   the same solid base so the tint matches non-frozen cells exactly.
+   380th review: these selectors MUST use child combinators (>). As
+   descendant selectors they also matched the nested tables inside the
+   detail panel (NEO + PvP tables live in a colspan cell of #comp-table),
+   freezing and resizing their first three columns to the identity
+   widths: the NEO NAME column was forced to 84px (needs 137px for
+   "Vaibhav Taneja"), TITLE to 76px (needs 129px for "Chief Financial
+   Officer"), SALARY to 200px -- measured on the live TSLA panel, where
+   every NEO name/title rendered truncated. The detail row's own td is
+   a direct child, so it still matches (its sticky rule stays inert on
+   a colspan cell, as the panel's own sticky-left pin now handles it). */
+#comp-table > thead > tr > th:nth-child(-n+3),
+#comp-table > tbody > tr > td:nth-child(-n+3) {
     position: sticky;
 }
-#comp-table thead th:nth-child(1),
-#comp-table tbody td:nth-child(1) {
+#comp-table > thead > tr > th:nth-child(1),
+#comp-table > tbody > tr > td:nth-child(1) {
     left: 0;
     width: 84px;
     min-width: 84px;
     max-width: 84px;
 }
-#comp-table thead th:nth-child(2),
-#comp-table tbody td:nth-child(2) {
+#comp-table > thead > tr > th:nth-child(2),
+#comp-table > tbody > tr > td:nth-child(2) {
     left: 84px;
     width: 76px;
     min-width: 76px;
     max-width: 76px;
 }
-#comp-table thead th:nth-child(3),
-#comp-table tbody td:nth-child(3) {
+#comp-table > thead > tr > th:nth-child(3),
+#comp-table > tbody > tr > td:nth-child(3) {
     left: 160px;
     width: 200px;
     min-width: 200px;
     max-width: 200px;
     border-right: 1px solid var(--border-hover);
 }
-#comp-table tbody td:nth-child(-n+3) {
+#comp-table > tbody > tr > td:nth-child(-n+3) {
     background: var(--bg-secondary);
     z-index: 6;
 }
-#comp-table td:nth-child(3) .company {
+#comp-table > tbody > tr > td:nth-child(3) .company {
     display: inline-block;
     max-width: 172px; /* 200px column minus 2x14px cell padding */
     overflow: hidden;
@@ -3495,28 +3505,29 @@ thead th:nth-child(8) { text-align: right; }
     white-space: nowrap;
     vertical-align: middle;
 }
-#comp-table tbody tr:hover td:nth-child(-n+3) {
+#comp-table > tbody > tr:hover > td:nth-child(-n+3) {
     background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), var(--bg-secondary);
 }
-#comp-table tbody tr.selected td:nth-child(-n+3) {
+#comp-table > tbody > tr.selected > td:nth-child(-n+3) {
     background: linear-gradient(rgba(0, 180, 216, 0.06), rgba(0, 180, 216, 0.06)), var(--bg-secondary);
 }
-[data-theme="light"] #comp-table tbody tr:hover td:nth-child(-n+3) {
+[data-theme="light"] #comp-table > tbody > tr:hover > td:nth-child(-n+3) {
     background: linear-gradient(rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.03)), var(--bg-secondary);
 }
-[data-theme="light"] #comp-table tbody tr.selected td:nth-child(-n+3) {
+[data-theme="light"] #comp-table > tbody > tr.selected > td:nth-child(-n+3) {
     background: linear-gradient(rgba(0, 119, 182, 0.06), rgba(0, 119, 182, 0.06)), var(--bg-secondary);
 }
 
 /* On narrow screens keep the frozen pane narrower so scrollable columns remain reachable */
 @media (max-width: 768px) {
-    #comp-table thead th:nth-child(3),
-    #comp-table tbody td:nth-child(3) {
+    /* 380th review: child combinators, same nested-table leak as above. */
+    #comp-table > thead > tr > th:nth-child(3),
+    #comp-table > tbody > tr > td:nth-child(3) {
         width: 140px;
         min-width: 140px;
         max-width: 140px;
     }
-    #comp-table td:nth-child(3) .company { max-width: 112px; } /* 140px minus 2x14px padding */
+    #comp-table > tbody > tr > td:nth-child(3) .company { max-width: 112px; } /* 140px minus 2x14px padding */
 }
 
 tbody td {
@@ -3546,16 +3557,35 @@ tbody tr:last-child td { border-bottom: none; }
     border-radius: 0 var(--radius) var(--radius) 0;
     padding: 16px 20px;
     margin: 4px 0;
-    /* The panel lives in a colspan=18 cell of the horizontally-scrolling
-       18-column table. Unconstrained it stretches to the full table width,
-       so on viewports narrower than the table its text runs off-screen
-       (verified at 360px: profile summary clipped mid-word). Cap it at the
-       viewport width; inner wide tables keep their own overflow-x wrappers.
-       The panel's natural left edge sits ~31px in (page padding + the
-       colspan cell's padding), so 100vw-24px still bled 7px past the right
-       edge at 360px (re-verified 2026-10-05): subtract the measured offset
-       for a 12px right margin. */
-    max-width: calc(100vw - 43px);
+    /* 380th review: the panel lives in a colspan=18 cell of the
+       horizontally-scrolling 18-column table, so it inherits the full
+       table width (1,768px) -- and the old cap, calc(100vw - 43px),
+       assumed the panel's left edge sits ~31px in, which is only true
+       below the 600px breakpoint (16px section padding + 1px wrapper
+       border + 14px cell padding). At desktop widths the section is a
+       centered 1,440px container with 32px padding, so at a 1,920px
+       viewport the panel starts at x=287 and the 1,740px-wide panel
+       ends at x=2,027 -- 107px past the viewport edge, with the NEO
+       table's TOTAL column and the right-hand stat cards clipped
+       (verified with Playwright rects at 1920/1440/1280/1024/768/390;
+       the cap also overshoots by 4px at every width where it binds,
+       because the real desktop left offset is 47px, not 31px). Cap the
+       panel at the table wrapper's visible width instead: the wrapper
+       is min(1,376px, 100vw - 64px) at desktop section padding, so the
+       panel gets min(1,349px, 100vw - 91px) -- the wrapper width minus
+       14px cell padding on each side and a 12px right margin. The
+       600px media query below overrides the vw term to 100vw - 59px
+       for the 16px section padding there. The panel is also sticky-left
+       now: the colspan cell does NOT stick (its sticky first-column
+       rule is inert on a colspan cell -- measured: scrolling the
+       wrapper 394px moves the cell from x=273 to x=-121), so without
+       this the panel slides off the left edge whenever the table is
+       scrolled right. left:0 pins it to the wrapper's visible left
+       edge; at scrollLeft=0 its natural left (287px at 1,920px) is
+       already right of the pin, so the unscrolled layout is unchanged. */
+    position: sticky;
+    left: 0;
+    max-width: min(calc(100vw - 91px), 1349px);
 }
 
 .detail-header {
@@ -6507,7 +6537,10 @@ footer li::before {
     .node-size-legend-label { font-size: 0.64rem; }
     .node-size-sample-text { font-size: 0.58rem; }
     /* Detail panel responsive — 2-column stat grid on medium mobile */
-    .detail-panel { padding: 12px 14px; }
+    /* 380th review: same wrapper-width cap as the base rule, with the
+       vw term re-derived for the 16px section padding at this breakpoint
+       (wrapper is 100vw - 32px, minus 27px cell padding + border + margin). */
+    .detail-panel { padding: 12px 14px; max-width: min(calc(100vw - 59px), 1349px); }
     .detail-stats {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -7662,15 +7695,16 @@ footer li::before {
         color: #111 !important;
     }
     /* Frozen identity columns: disable in print so full company names print */
-    #comp-table thead th:nth-child(-n+3),
-    #comp-table tbody td:nth-child(-n+3) {
+    /* 380th review: child combinators, same nested-table leak as the screen rules. */
+    #comp-table > thead > tr > th:nth-child(-n+3),
+    #comp-table > tbody > tr > td:nth-child(-n+3) {
         position: static !important;
         width: auto !important;
         min-width: 0 !important;
         max-width: none !important;
         border-right: none !important;
     }
-    #comp-table td:nth-child(3) .company { max-width: none !important; }
+    #comp-table > tbody > tr > td:nth-child(3) .company { max-width: none !important; }
     tbody tr:hover { background: transparent !important; }
     tbody tr.selected { background: transparent !important; }
     .detail-row { display: none !important; }
