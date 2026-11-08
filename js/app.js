@@ -6997,6 +6997,15 @@ function renderAspDeltaSortSummary(companies) {
     return html;
 }
 
+// 385th review: board-mode -> display label, shared by the board chip
+// (updateBoardFilterIndicator), the combined-filter badge and the
+// screen-reader announcement so all three name the dim identically
+// ('Board ≥80%' / 'Board 60–80%' / 'Board <60%').
+function boardFilterLabel(mode) {
+    var map = { high: 'Board ≥80%', mid: 'Board 60–80%', low: 'Board <60%' };
+    return map[mode] || mode;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -7092,6 +7101,11 @@ function renderSummaryBar(filtered, allCompanies) {
     // the SoP dim went unnamed (chip label is 'SoP: ' + label, so the
     // badge part matches it).
     if (window._activeSopFilter) { filterDims++; filterParts.push('SoP: ' + window._activeSopFilter.label); }
+    // 385th review: board was the only filter dim missing from this list,
+    // so board plus any second filter showed a combined badge that never
+    // named the board part (the badge part matches the chip label via the
+    // shared boardFilterLabel helper).
+    if (window._activeBoardFilter) { filterDims++; filterParts.push(boardFilterLabel(window._activeBoardFilter.mode)); }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO ' + window._activeCeoCfoBucket.label); }
@@ -8084,6 +8098,9 @@ function renderTable(companies, options) {
     // 382nd review: same omission as the combined-filter badge -- the
     // announcement named every other dim, never SoP.
     if (window._activeSopFilter) announceMsg += ', say-on-pay: ' + window._activeSopFilter.label;
+    // 385th review: same omission as the combined-filter badge -- the
+    // announcement named every other dim, never board.
+    if (window._activeBoardFilter) announceMsg += ', board independence: ' + boardFilterLabel(window._activeBoardFilter.mode);
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoCfoBucket) announceMsg += ', CEO/CFO premium: ' + window._activeCeoCfoBucket.label;
@@ -14561,8 +14578,9 @@ function setupDualSparklineTooltips() {
 
         if (window._activeBoardFilter) {
             var bf = window._activeBoardFilter;
-            var labelMap = { high: 'Board ≥80%', mid: 'Board 60–80%', low: 'Board <60%' };
-            var label = labelMap[bf.mode] || bf.mode;
+            // 385th review: label via the shared boardFilterLabel helper
+            // (same string the badge and announcement use).
+            var label = boardFilterLabel(bf.mode);
             var isCombined = !!activeSector;
             var chipLabel = isCombined ? activeSector + ' × ' + label : label;
             var chip = document.createElement('button');
