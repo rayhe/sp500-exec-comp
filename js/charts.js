@@ -281,6 +281,14 @@ function setupChartResize() {
 }
 
 function redrawAllCharts() {
+    // 381st review: no-op when d3 failed to load or charts never
+    // initialized. toggleTheme calls this on every theme switch, and the
+    // body dereferences _chartData.trends on its first draw -- with d3
+    // unavailable initCharts never runs, _chartData stays null, and the
+    // toggle threw (theme still switched, since the attribute is set
+    // first, but the error aborted the network/comparison redraws after
+    // it). Same d3-outage class as the highlight guards.
+    if (typeof d3 === 'undefined' || !_chartData) return;
     var ids = ['sector-chart', 'trend-chart', 'ratio-chart', 'comp-dist-chart', 'lorenz-chart', 'top10-chart', 'composition-chart', 'quartile-comp-chart', 'scatter-chart', 'yoy-dist-chart', 'gender-pay-chart', 'ceo-cfo-chart', 'sop-dist-chart', 'sop-scatter-chart', 'comp-treemap-chart', 'correlation-matrix-chart', 'cross-sector-corr-chart', 'sector-corr-deepdive-chart', 'conc-dist-chart', 'gov-dist-chart', 'sector-gov-chart', 'gov-quartile-comp-chart', 'gov-pay-scatter-chart', 'pay-anomaly-chart', 'tenure-pay-growth-chart', 'tenure-gov-crosstab-chart', 'ger-chart', 'volatility-dist-chart', 'volatility-sector-chart', 'volatility-tenure-chart', 'vol-gov-crosstab-chart', 'sop-vol-crosstab-chart', 'sop-tier-comp-chart'];
     ids.forEach(function(id) {
         var el = document.getElementById(id);
@@ -325,6 +333,12 @@ function redrawAllCharts() {
 
 /* Redraw only sector-aware charts (comp dist + Lorenz) on sector filter change */
 window._redrawSectorAwareCharts = function() {
+    // 381st review: no-op when the d3 CDN bundle failed to load. This
+    // redraws the comp-dist, Lorenz, scatter and Top 10 charts, and
+    // setActiveSector calls it before the table re-renders, so an
+    // unguarded call aborted sector filtering the same way an unguarded
+    // highlight call aborted the ratio-bar setter.
+    if (typeof d3 === 'undefined') return;
     if (!_chartData) return;
     var sector = window._activeSector || null;
     // Update chart headers to reflect sector context
@@ -387,6 +401,11 @@ window._redrawSectorAwareCharts = function() {
 
 /* Update ratio histogram bar highlighting without full redraw */
 window.highlightRatioBucket = function(minRatio, maxRatio) {
+    // 381st review: no-op when the d3 CDN bundle failed to load. This
+    // function dereferences d3 on its first statement, and filter setters
+    // call it before renderTable, so an unguarded call aborted the setter
+    // (a ratio-bar click set state but never re-rendered the table).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#ratio-chart .hist-bar rect').each(function(d) {
         if (!d) return;
         if (minRatio == null) {
@@ -408,6 +427,8 @@ window.highlightRatioBucket = function(minRatio, maxRatio) {
 
 /* Update YoY distribution chart bar highlighting without full redraw */
 window.highlightYoYBucket = function(minPct, maxPct) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#yoy-dist-chart .yoy-bar rect').each(function(d) {
         if (!d) return;
         if (minPct == null) {
@@ -436,6 +457,8 @@ window.highlightYoYBucket = function(minPct, maxPct) {
  * branches also reset stroke-width to 0 (355th conc C11 class -- the
  * old branches left a stale 1.5 width on a stroke='none' bar). */
 window.highlightSopDistBucket = function(minPct, maxPct) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#sop-dist-chart .sop-bar').each(function(d) {
         if (!d) return;
         if (minPct == null) {
@@ -454,6 +477,8 @@ window.highlightSopDistBucket = function(minPct, maxPct) {
 
 /* Update sector chart bar highlighting without full redraw */
 window.highlightSectorBar = function(sectorName) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#sector-chart .bar').each(function(d) {
         if (!d || !d._compSector) return;
         if (!sectorName) {
@@ -2880,6 +2905,8 @@ function drawCompDistChart(companies) {
 
 /* Highlight compensation distribution chart bars when filter is active */
 window.highlightCompDistBucket = function(minComp, maxComp) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#comp-dist-chart .comp-dist-bar rect').each(function(d) {
         if (!d) return;
         if (minComp == null) {
@@ -6110,6 +6137,8 @@ function drawGenderPayChart(trends) {
  * AF-origin gender filter IS exact ('F'), so an AF-origin 'F' highlights
  * correctly -- no band-mismatch gap here. */
 window.highlightGenderChart = function(gender) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     var femaleBars = d3.selectAll('.gender-bar');
     var overallBars = d3.selectAll('.gender-bar-overall');
     if (gender !== 'F') {
@@ -6388,6 +6417,8 @@ function drawCeoCfoChart(companies) {
 
 /* Highlight/dim CEO-CFO chart bars when a bucket is active */
 window.highlightCeoCfoBucket = function(minRatio, maxRatio) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     var bars = d3.selectAll('.cfo-bar');
     // 349th review: the clear path used to reset opacity only, leaving
     // the ring on the previously active bar (a phantom ring after chip
@@ -6918,6 +6949,8 @@ function drawConcDistChart(companies) {
  * bucket it spans (0-30 lights 0-25 and 25-30; 60+ lights 60-101) instead
  * of showing nothing; a chart-origin tier still matches exactly one. */
 window.highlightConcDistBucket = function(minPct, maxPct) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     d3.selectAll('#conc-dist-chart .conc-dist-bar rect').each(function(d) {
         if (!d) return;
         if (minPct == null) {
@@ -9340,6 +9373,8 @@ function drawGovDistChart(companies) {
  * fix, closed by the 355th. A chart-origin bucket still matches exactly
  * one bar. */
 window.highlightGovChart = function(min, max) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     var bars = d3.selectAll('.gov-bar');
     if (min == null) {
         bars.attr('opacity', 1).attr('stroke', 'none').attr('stroke-width', 0);
@@ -13661,6 +13696,8 @@ function drawVolatilityDistChart(companies) {
  * left for a shared overlap-match fix, closed by the 355th. A
  * chart-origin bucket still matches exactly one bar. */
 window.highlightVolatilityBucket = function(min, max) {
+    // 381st review: no-op when d3 failed to load (see highlightRatioBucket).
+    if (typeof d3 === 'undefined') return;
     var bars = d3.selectAll('.vol-bar');
     if (min == null) {
         bars.attr('opacity', 0.85).attr('stroke', 'none').attr('stroke-width', 0);

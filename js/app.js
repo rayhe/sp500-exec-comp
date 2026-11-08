@@ -1545,6 +1545,13 @@ async function loadData() {
         fetch('data/pay_vs_performance.json').then(r => r.json()).catch(() => null)
     ]);
     compData = comp;
+    // 381st review: expose the dataset on window. advanced-filters.js
+    // refreshes the table from window.compData (falling back to the
+    // chart-layer window._chartData), but app.js kept compData in a
+    // top-level let, so window.compData never existed; with d3
+    // unavailable initCharts never runs, _chartData stays unset, and
+    // every AF select silently re-rendered nothing.
+    window.compData = comp;
     trendsData = trends;
     peerData = peer;
     pvpData = pvp;
