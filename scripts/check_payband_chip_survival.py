@@ -142,9 +142,16 @@ def static_checks():
               c3_ok,
               "" if c3_ok else "no gated setActiveSector in "
               "updateDistFilterIndicator")
+        # 388th review: the inline chip sweep moved into the
+        # updateSectorChipStates helper; accept the helper call gated
+        # on hadSector in either the old block form or the one-liner
+        # form (the pre-388th tree used the inline sweep inside an
+        # 'if (hadSector) {' block).
         gated_block = extract_function_body(ind_body, "if (hadSector) {")
-        c4_ok = (gated_block is not None
-                 and "querySelectorAll('.chip')" in gated_block
+        c4_ok = (("if (hadSector) updateSectorChipStates(null);" in ind_body
+                 or (gated_block is not None
+                     and ("querySelectorAll('.chip')" in gated_block
+                          or "updateSectorChipStates(null)" in gated_block)))
                  and "if (hadSector && window.highlightSectorBar) "
                      "window.highlightSectorBar(null);" in ind_body)
         check("C4 sector chip-state reset and bar ring gated the same way",

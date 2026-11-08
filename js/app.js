@@ -5348,6 +5348,25 @@ function populateTrends(trends, companies) {
     });
 }
 
+// 388th review: sector-chip state updates must touch only the sector
+// chips in #sector-chips -- the old document-wide '.chip' sweep also
+// stripped 'active' from indicator chips (the gender and asp-delta
+// chips live inside #sector-chips itself, the rest in
+// .table-controls), and the updaters for gender, vol-tenure, tenure,
+// board, SoP and stock-pct are NOT called on the sector path, so the
+// chip kept filtering while looking inactive. Indicator chips all
+// carry combined-filter-chip; sector chips do not, so the :not()
+// keeps them out of the sweep. Full-reset paths keep their
+// document-wide sweep: they null all filter state and remove the
+// indicator chips by id, so the sweep there is consistent.
+function updateSectorChipStates(activeSectorName) {
+    document.querySelectorAll('#sector-chips .chip:not(.combined-filter-chip)').forEach(function(chip) {
+        chip.classList.remove('active');
+        if (!activeSectorName && chip.textContent === 'All') chip.classList.add('active');
+        else if (chip.textContent === activeSectorName) chip.classList.add('active');
+    });
+}
+
 function buildSectorChips(companies) {
     var sectorSet = {};
     companies.forEach(function(c) { if (c.sector) sectorSet[c.sector] = true; });
@@ -5360,8 +5379,9 @@ function buildSectorChips(companies) {
     allChip.addEventListener('click', function() {
         setActiveSector(null);
         currentPage = 1;
-        document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-        allChip.classList.add('active');
+        // 388th review: scoped sector-chip reset (was a document-wide
+        // '.chip' sweep that also stripped indicator chips' 'active').
+        updateSectorChipStates(null);
         // Refresh combined filter chips to remove sector context
         if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
         if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
@@ -5392,8 +5412,9 @@ function buildSectorChips(companies) {
         chip.addEventListener('click', function() {
             setActiveSector(s);
             currentPage = 1;
-            document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-            chip.classList.add('active');
+            // 388th review: scoped sector-chip reset (was a document-wide
+            // '.chip' sweep that also stripped indicator chips' 'active').
+            updateSectorChipStates(s);
             // Refresh combined filter chips to include sector context
             if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
             if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
@@ -14147,11 +14168,9 @@ function setupDualSparklineTooltips() {
         currentPage = 1;
 
         // Update sector chip active states
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (!sectorName && chip.textContent === 'All') chip.classList.add('active');
-            else if (chip.textContent === sectorName) chip.classList.add('active');
-        });
+        // 388th review: scoped helper (was a document-wide '.chip'
+        // sweep that also stripped indicator chips' 'active').
+        updateSectorChipStates(sectorName || null);
 
         // Refresh filter chips to show/hide sector context
         updateDistFilterIndicator();
@@ -14224,11 +14243,9 @@ function setupDualSparklineTooltips() {
         });
 
         // Update sector chip active states
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (window._activeDistFilter && chip.textContent === sector) chip.classList.add('active');
-            else if (!window._activeDistFilter && chip.textContent === 'All') chip.classList.add('active');
-        });
+        // 388th review: scoped helper (was a document-wide '.chip'
+        // sweep that also stripped indicator chips' 'active').
+        updateSectorChipStates(window._activeDistFilter ? sector : null);
 
         // Update distribution filter indicator chip
         updateDistFilterIndicator();
@@ -14285,12 +14302,10 @@ function setupDualSparklineTooltips() {
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-pay-band']);
                 if (hadSector) setActiveSector(null);
                 chip.remove();
-                if (hadSector) {
-                    document.querySelectorAll('.chip').forEach(function(c) {
-                        c.classList.remove('active');
-                        if (c.textContent === 'All') c.classList.add('active');
-                    });
-                }
+                // 388th review: scoped helper (was a document-wide
+                // '.chip' sweep that also stripped indicator chips'
+                // 'active').
+                if (hadSector) updateSectorChipStates(null);
                 renderTable(companies);
                 // 358th review: dismissing the dist chip must clear the
                 // comp-dist highlight too -- the bars stay ringed while
@@ -14362,11 +14377,9 @@ function setupDualSparklineTooltips() {
         currentPage = 1;
 
         // Update sector chip active states
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (!activeSector && chip.textContent === 'All') chip.classList.add('active');
-            else if (chip.textContent === activeSector) chip.classList.add('active');
-        });
+        // 388th review: scoped helper (was a document-wide '.chip'
+        // sweep that also stripped indicator chips' 'active').
+        updateSectorChipStates(activeSector);
 
         // Refresh filter chips to show/hide sector context
         updateDistFilterIndicator();
