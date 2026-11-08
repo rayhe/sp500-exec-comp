@@ -13398,6 +13398,27 @@ function applyHashState(companies) {
                     _openDiffFromHash(detailTicker, state.diff);
                 }
             }, 50);
+        } else {
+            // 378th review: detail= names a ticker that is not in the
+            // roster at all (typo, delisted name, stale link) -- the
+            // assignment above already set _expandedDetailTicker, and
+            // with no companyExists branch nothing ever nulled it, so
+            // the hash kept detail= for a panel that can never open
+            // (a reload repeats the stale deep link forever). Null
+            // the pair synchronously so no later serializeState can
+            // re-emit detail= (or diff=), then pushState on a short
+            // delay: pushState is a no-op until _stateInitialized
+            // flips true right after applyHashState returns at boot,
+            // so the push must wait past init -- the same deferred
+            // pattern the existing-ticker setTimeout(50) path uses.
+            // On a hashchange restore _stateInitialized is already
+            // true, so the same delay is harmless there.
+            _expandedDetailTicker = null;
+            _activeDiffKey = null;
+            setTimeout(function() {
+                pushState();
+                announce('Detail panel not opened: ' + detailTicker + ' is not in the S&P 500 roster');
+            }, 50);
         }
     }
 
