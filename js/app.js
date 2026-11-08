@@ -7611,6 +7611,19 @@ function renderTable(companies, options) {
         });
     }
 
+    // Board independence filter (384th review: board was the only
+    // AF-origin dim applied solely as a DOM post-process in the AF
+    // _refreshTable wrapper, never in this data path -- so a sort,
+    // page change or search called renderTable directly and the rows
+    // came back unfiltered while state, select and badge still
+    // claimed the filter was live. Every other AF dim filters here;
+    // board now does too, via the AF helper, so the footer count is
+    // truthful as well (419 for high, not 518). The wrapper's
+    // post-process is removed with it -- single source of truth.)
+    if (window._activeBoardFilter && typeof window._applyBoardFilter === 'function') {
+        filtered = window._applyBoardFilter(filtered);
+    }
+
     // Volatility × Tenure bracket filter
     if (window._activeVolTenureBracket) {
         var vtb = window._activeVolTenureBracket;
@@ -14531,6 +14544,51 @@ function setupDualSparklineTooltips() {
     }
     window._updateSopFilterIndicator = updateSopFilterIndicator;
 
+    // Board independence filter indicator (384th review: board was
+    // the last AF dim still appending its own span chip to
+    // #table-summary-bar -- renderSummaryBar rebuilds that bar via
+    // innerHTML on every renderTable, so the chip was wiped the moment
+    // handleBoard's own _refreshTable ran; the chip never survived
+    // its own selection, and the span was click-only, not keyboard
+    // focusable. Same delegation as pay-band (383rd) and SoP
+    // (382nd): a button chip in .table-controls, removed and
+    // re-rendered by id, so re-selecting a mode re-renders correctly.
+    // Board has no chart setter by design, so the dismiss only nulls
+    // AF state -- no sector gating like the dist chip needs.)
+    function updateBoardFilterIndicator() {
+        var existing = document.getElementById('board-filter-chip');
+        if (existing) existing.remove();
+
+        if (window._activeBoardFilter) {
+            var bf = window._activeBoardFilter;
+            var labelMap = { high: 'Board ≥80%', mid: 'Board 60–80%', low: 'Board <60%' };
+            var label = labelMap[bf.mode] || bf.mode;
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × ' + label : label;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'board-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(17,138,178,0.12)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(17,138,178,0.4)';
+            chip.style.color = isCombined ? '#a78bfa' : '#118ab2';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + board independence filter' : 'Click to clear board independence filter';
+            chip.addEventListener('click', function() {
+                window._activeBoardFilter = null;
+                // 331st review: dismissing the chip must also clear
+                // af-board, or the panel keeps claiming a board filter
+                // that no longer filters.
+                if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-board']);
+                chip.remove();
+                renderTable(companies);
+                pushState();
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateBoardFilterIndicator = updateBoardFilterIndicator;
+
     function updateConcFilterIndicator() {
         var existing = document.getElementById('conc-filter-chip');
         if (existing) existing.remove();
@@ -15656,7 +15714,7 @@ function setupDualSparklineTooltips() {
         // so a global Reset that kept it was strictly weaker than the
         // scoped button, and the unconditional 'All filters reset'
         // announcement below was false while a board filter kept
-        // hiding rows (via _refreshTable's post-process). Null it
+        // hiding rows (via renderTable's data path). Null it
         // here like every other dimension.
         window._activeBoardFilter = null;
         // 371st review: the expanded detail panel is navigation state,
@@ -15819,7 +15877,7 @@ function setupDualSparklineTooltips() {
             window._activeQuartileFilter || window._activePositionFilter ||
             window._activeCrosstabFilter ||
             // 344th review: board is a real filter dimension (it hides
-            // rows via _refreshTable), so a board-only state must show
+            // rows via renderTable), so a board-only state must show
             // the Reset button -- previously the button hid while a
             // board filter was still active, leaving no Reset
             // affordance for exactly that state.
@@ -15984,13 +16042,13 @@ function setupDualSparklineTooltips() {
             window._activePvpOnlyFilter = false;
             if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
         }
-        // Board is the one dimension renderTable does NOT apply (it
-        // filters only via the AF _refreshTable / _sp500RenderTable
-        // paths), so it cannot hide the target row here -- but its chip
-        // and the AF badge would keep claiming a live filter while the
-        // table shows unfiltered rows, the inverse of the 330th
-        // review's stale-badge class. Null it with the rest so chip,
-        // badge, and table agree.
+        // Board filters in renderTable's data path like every other
+        // dim (384th review: it used to filter only via the AF
+        // _refreshTable post-process, so it could not hide the target
+        // row here) -- but its chip and the AF badge would keep
+        // claiming a live filter while the table shows unfiltered
+        // rows, the inverse of the 330th review's stale-badge class.
+        // Null it with the rest so chip, badge, and table agree.
         if (window._activeBoardFilter) {
             window._activeBoardFilter = null;
             var bff2 = document.getElementById('board-filter-chip');

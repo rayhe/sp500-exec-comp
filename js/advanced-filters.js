@@ -277,6 +277,12 @@
         // ones whose state survived, so calling them here is idempotent.
         if (typeof window._updateDistFilterIndicator === 'function') window._updateDistFilterIndicator();
         if (typeof window._updateSopFilterIndicator === 'function') window._updateSopFilterIndicator();
+        // 384th review: same app.js-owned-chip class for board -- the
+        // chip is a button in .table-controls now (no dataset.af), so
+        // the loop above leaves it alone and only this indicator call
+        // removes it once state is nulled (the loop's board else-if
+        // branch still removes a legacy span chip by id if one exists).
+        if (typeof window._updateBoardFilterIndicator === 'function') window._updateBoardFilterIndicator();
 
         updateAfBadge();
         if (typeof window._refreshTable === 'function') window._refreshTable();
@@ -501,28 +507,30 @@
     function handleBoard(val) {
         if (!val) {
             window._activeBoardFilter = null;
-            var chip = document.getElementById('board-filter-chip');
-            if (chip) chip.parentNode.removeChild(chip);
+            // 384th review: the board chip is app.js-owned now (see
+            // the indicator), so refresh it -- it removes the chip now
+            // that state is null, instead of leaving a stale chip.
+            if (typeof window._updateBoardFilterIndicator === 'function') window._updateBoardFilterIndicator();
             if (typeof window._refreshTable === 'function') window._refreshTable();
             else triggerTableRefresh();
             return;
         }
         window._activeBoardFilter = { mode: val };
-        var labelMap = { high: 'Board ≥80%', mid: 'Board 60–80%', low: 'Board <60%' };
-        var existing = document.getElementById('board-filter-chip');
-        if (!existing) {
-            var chip = document.createElement('span');
-            chip.className = 'chip active';
-            chip.id = 'board-filter-chip';
-            chip.dataset.af = '1';
-            chip.textContent = (labelMap[val] || val) + ' ✕';
-            chip.title = 'Click to clear board independence filter';
-            chip.onclick = function(){ document.getElementById('af-board').value=''; handleBoard(''); updateAfBadge(); };
-            var summaryBar = document.getElementById('table-summary-bar');
-            if (summaryBar) summaryBar.appendChild(chip);
-        } else {
-            existing.textContent = (labelMap[val] || val) + ' ✕';
-        }
+        // 384th review: delegate the chip to the app.js indicator
+        // instead of appending a span to #table-summary-bar --
+        // renderSummaryBar rebuilds that bar via innerHTML on every
+        // renderTable, wiping the AF chip the moment this handler's
+        // own _refreshTable ran (the chip never even survived its own
+        // selection; proven pre-fix: board high filtered to 39 visible
+        // rows on page 1 with no chip anywhere, and a sort click then
+        // restored all 50 rows while state, select and badge still
+        // claimed the filter was live). The indicator renders a button
+        // chip in .table-controls with a proper dismiss (nulls state,
+        // clears af-board, pushState); it removes any existing chip by
+        // id first, so re-selecting a mode re-renders correctly. The
+        // filtering itself now lives in renderTable's data path, so a
+        // sort/page/search can no longer silently drop it.
+        if (typeof window._updateBoardFilterIndicator === 'function') window._updateBoardFilterIndicator();
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else triggerTableRefresh();
     }
@@ -646,7 +654,12 @@
         return null;
     }
 
-    // Extend _refreshTable to include board filter DOM post-process
+    // Extend _refreshTable to refresh the AF badge after a render.
+    // 384th review: the board filter DOM post-process that used to
+    // live here is gone -- board now filters in renderTable's data
+    // path like every other AF dim, so hiding rows here was both
+    // redundant and the reason a sort/page/search (which call
+    // renderTable directly) silently dropped the filter.
     var _originalRefresh = window._refreshTable;
     window._refreshTable = function() {
         var afCompanies = getAFCompanies();
@@ -654,32 +667,6 @@
             try { _originalRefresh(); } catch(e) {}
         } else if (afCompanies && typeof renderTable === 'function') {
             try { renderTable(afCompanies); } catch(e) {}
-        }
-        if (window._activeBoardFilter) {
-            var tbody = document.getElementById('comp-tbody');
-            if (tbody && afCompanies) {
-                var mode = window._activeBoardFilter.mode;
-                var lookup = {};
-                afCompanies.forEach(function(c){ lookup[c.ticker]=c; });
-                Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(tr){
-                    var tickerCell = tr.querySelector('td:nth-child(2)');
-                    var ticker = tickerCell ? tickerCell.textContent.trim() : (tr.dataset.ticker || '');
-                    var comp = lookup[ticker];
-                    if (!comp) return;
-                    var bi = comp.board_independence;
-                    var pct = bi ? bi.independence_pct : null;
-                    var keep = true;
-                    if (pct == null) {
-                        if (mode === 'high' || mode === 'mid') keep = false;
-                    } else {
-                        if (mode === 'high') keep = pct >= 80;
-                        else if (mode === 'mid') keep = pct >= 60 && pct < 80;
-                        else if (mode === 'low') keep = pct < 60;
-                    }
-                    if (!keep) tr.style.display = 'none';
-                    else tr.style.display = '';
-                });
-            }
         }
         updateAfBadge();
     };
