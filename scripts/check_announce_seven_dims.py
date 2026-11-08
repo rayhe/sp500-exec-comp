@@ -248,7 +248,11 @@ def render_checks():
             a1 = last_announce()
             r1_ok = (n1 == 1 and b1 is not None and a1 is not None
                      and "Volatility: 0-100%" in b1
-                     and "Tenure: 0-99 yrs" in b1
+                     # 387th review: the vol-tenure badge part is now
+                     # 'Volatility x Tenure: 0-99 yrs'; the bare
+                     # 'Tenure: 0-99 yrs' substring would pass vacuously
+                     # on the new text, so assert the full part.
+                     and "Volatility \u00d7 Tenure: 0-99 yrs" in b1
                      and "Peers: Peers $10-20M" in b1
                      and "Community: Cluster 3" in b1
                      and "Cluster 3 Upper Quartile (1)" in b1

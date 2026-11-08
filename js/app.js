@@ -7120,7 +7120,12 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
     if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
     if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
-    if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Tenure: ' + window._activeVolTenureBracket.label); }
+    // 387th review: vol-tenure used the same 'Tenure: ' prefix as the
+    // tenure quartile (7120), so both dims active showed two 'Tenure: ...'
+    // parts in the badge and the reader could not tell which was which.
+    // The badge part now matches the chip wording ('Volatility × Tenure: ',
+    // updateVolTenureFilterIndicator) and the announcement (8131).
+    if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Volatility × Tenure: ' + window._activeVolTenureBracket.label); }
     if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
     if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
     if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
