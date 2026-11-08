@@ -2293,12 +2293,11 @@ function sortTableByKey(key, dir) {
     var searchInput = document.getElementById('table-search');
     if (searchInput) searchInput.value = '';
 
-    // Clear sector chips
-    document.querySelectorAll('.chip').forEach(function(chip) {
-        chip.classList.remove('active');
-    });
-    var allChip = document.querySelector('.chip[data-sector="all"]');
-    if (allChip) allChip.classList.add('active');
+    // 389th review: scope the chip reset to sector chips only --
+    // gov/vol/vol-tenure/yoy/board state is intentionally kept on
+    // this path (see the chip-removal comment above), so the old
+    // document-wide sweep stripped 'active' from their live chips.
+    updateSectorChipStates(null);
 
     // Update sort header indicators
     document.querySelectorAll('th.sortable').forEach(function(t) {
@@ -2953,10 +2952,11 @@ function populateInsights(comp, trends, sectorFilter) {
                     setActiveSector(longestSec.name);
                     currentPage = 1;
                     renderTable(companies);
-                    document.querySelectorAll('.chip').forEach(function(chip) {
-                        chip.classList.remove('active');
-                        if (chip.textContent === longestSec.name) chip.classList.add('active');
-                    });
+                    // 389th review: scope to sector chips -- the old
+                    // document-wide sweep stripped 'active' from any
+                    // live indicator chip (board is kept by
+                    // insightResetAndSort above).
+                    updateSectorChipStates(longestSec.name);
                     if (window.highlightSectorBar) window.highlightSectorBar(longestSec.name);
                     scrollToTable();
                 },
@@ -3307,9 +3307,11 @@ function populateInsights(comp, trends, sectorFilter) {
             var _xfcReset = document.getElementById('crosstab-filter-chip');
             if (_xfcReset) _xfcReset.remove();
         }
-        document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-        var allChip = document.querySelector('.chip');
-        if (allChip) allChip.classList.add('active');
+        // 389th review: scope the chip reset to sector chips only --
+        // board state is never nulled on this path (see the
+        // _clearAfSelects comment below), so the old document-wide
+        // sweep stripped 'active' from its live chip.
+        updateSectorChipStates(null);
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
             if (t.dataset.sort === sortKey) t.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
@@ -3788,10 +3790,11 @@ function populateInsights(comp, trends, sectorFilter) {
                     setActiveSector(lowestSec.name);
                     currentPage = 1;
                     renderTable(companies);
-                    document.querySelectorAll('.chip').forEach(function(chip) {
-                        chip.classList.remove('active');
-                        if (chip.textContent === lowestSec.name) chip.classList.add('active');
-                    });
+                    // 389th review: scope to sector chips -- the old
+                    // document-wide sweep stripped 'active' from any
+                    // live indicator chip (board is kept by
+                    // insightResetAndSort above).
+                    updateSectorChipStates(lowestSec.name);
                     if (window.highlightSectorBar) window.highlightSectorBar(lowestSec.name);
                     scrollToTable();
                 },
@@ -4557,10 +4560,11 @@ function populateInsights(comp, trends, sectorFilter) {
                 if (ySel && sp) ySel.value = sp.y;
                 if (topSector !== 'S&P 500' && typeof setActiveSector === 'function') {
                     setActiveSector(topSector);
-                    document.querySelectorAll('.chip').forEach(function(chip) {
-                        chip.classList.remove('active');
-                        if (chip.textContent === topSector) chip.classList.add('active');
-                    });
+                    // 389th review: scope to sector chips -- this
+                    // action performs no reset, so the old
+                    // document-wide sweep stripped 'active' from every
+                    // live indicator chip while it kept filtering.
+                    updateSectorChipStates(topSector);
                 }
                 var scEl = document.getElementById('scatter-chart');
                 if (scEl) scEl.innerHTML = '';
@@ -13152,10 +13156,11 @@ function applyHashState(companies) {
     // Sector
     if (state.sector) {
         setActiveSector(state.sector);
-        document.querySelectorAll('.chip').forEach(function(chip) {
-            chip.classList.remove('active');
-            if (chip.textContent === state.sector) chip.classList.add('active');
-        });
+        // 389th review: scope to sector chips -- vol/board/community/
+        // quartile/position are session-local (not hash-serialized) and
+        // survive a hash change, so the old document-wide sweep
+        // stripped 'active' from their live chips.
+        updateSectorChipStates(state.sector);
     }
 
     // Search
@@ -16542,12 +16547,11 @@ function setupDualSparklineTooltips() {
 
                 renderTable(companies);
 
-                // Update sector chip active states
-                document.querySelectorAll('.chip').forEach(function(chip) {
-                    chip.classList.remove('active');
-                    if (!activeSector && chip.textContent === 'All') chip.classList.add('active');
-                    else if (chip.textContent === activeSector) chip.classList.add('active');
-                });
+                // 389th review: scope to sector chips -- the indicator
+                // updaters above re-render their chips with 'active',
+                // and the old document-wide sweep stripped the class
+                // right back off them.
+                updateSectorChipStates(activeSector);
 
                 if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
 
@@ -19285,9 +19289,12 @@ function setupDualSparklineTooltips() {
         document.querySelectorAll('#comp-tbody tr.selected').forEach(function(r) { r.classList.remove('selected'); });
         document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
-        document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-        var allChip = document.querySelector('.chip');
-        if (allChip && allChip.textContent === 'All') allChip.classList.add('active');
+        // 389th review: scope the chip reset to sector chips only --
+        // vol/board/community/quartile/position are intentionally not
+        // reset here (not hash-serialized; see the comment above), so
+        // the old document-wide sweep stripped 'active' from their
+        // live chips. applyHashState restores the hashed sector below.
+        updateSectorChipStates(null);
         var rc = document.getElementById('ratio-filter-chip');
         if (rc) rc.remove();
         var dc = document.getElementById('dist-filter-chip');
@@ -19840,9 +19847,13 @@ function setupDualSparklineTooltips() {
                 // their state, so their selects stay truthful.
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
                     ['af-pay-band', 'af-sop-tier', 'af-gender', 'af-conc']);
-                document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-                var allChip = document.querySelector('.chip');
-                if (allChip) allChip.classList.add('active');
+                // 389th review: scope the chip reset to sector chips
+                // only -- tenure/gov/vol/vol-tenure/board/community/
+                // quartile/position/PvP-covered are intentionally kept
+                // on this path (keptEsc below), so the old
+                // document-wide sweep stripped 'active' from their
+                // live chips.
+                updateSectorChipStates(null);
                 currentSort = { key: 'total_compensation', dir: 'desc' };
                 document.querySelectorAll('th.sortable').forEach(function(t) {
                     t.classList.remove('sorted-asc', 'sorted-desc');

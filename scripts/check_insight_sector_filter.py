@@ -38,7 +38,9 @@ Checks (all static - small JS reads, <2s):
      sector variable's .name (longestSec / lowestSec) followed by
      renderTable(companies).
   C4 HARD FAIL: either action does not sync the .chip active class to
-     its sector name or does not call highlightSectorBar with it.
+     its sector name (inline `chip.textContent === <var>.name` sweep
+     or the shared updateSectorChipStates(<var>.name) helper call,
+     389th review) or does not call highlightSectorBar with it.
   C5 HARD FAIL: any _activeSectorFilter reference remains anywhere in
      js/*.js (the dead state must be fully gone, not just moved).
 
@@ -126,7 +128,13 @@ def main():
                 fail(f"C3: '{label}' action does not call "
                      f"renderTable(companies) after setActiveSector")
 
-        if f"chip.textContent === {var}.name" not in block:
+        # 389th review: the inline .chip sweep moved into the shared
+        # updateSectorChipStates helper (scoped to '#sector-chips
+        # .chip:not(.combined-filter-chip)', same textContent === name
+        # match inside). Accept either form; the helper call is the
+        # current one. A missing sync of both forms still fails.
+        if (f"chip.textContent === {var}.name" not in block
+                and f"updateSectorChipStates({var}.name)" not in block):
             fail(f"C4: '{label}' action does not sync the .chip active "
                  f"class to {var}.name")
         if f"highlightSectorBar({var}.name)" not in block:
