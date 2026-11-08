@@ -362,20 +362,19 @@
         if (typeof window.highlightCompDistBucket === 'function') window.highlightCompDistBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
-        var existing = document.getElementById('dist-filter-chip');
-        if (!existing) {
-            var chip = document.createElement('span');
-            chip.className = 'chip active';
-            chip.id = 'dist-filter-chip';
-            chip.dataset.af = '1';
-            chip.textContent = 'Pay: ' + (min/1000000) + '–' + (max===Infinity?'∞':(max/1000000)) + 'M ✕';
-            chip.title = 'Click to clear pay band filter';
-            chip.onclick = function(){ document.getElementById('af-pay-band').value=''; handlePayBand(''); updateAfBadge(); };
-            var summaryBar = document.getElementById('table-summary-bar');
-            if (summaryBar) summaryBar.appendChild(chip);
-        } else {
-            existing.textContent = 'Pay: ' + (min/1000000) + '–' + (max===Infinity?'∞':(max/1000000)) + 'M ✕';
-        }
+        // 383rd review: delegate the chip to the app.js indicator
+        // instead of appending a span to #table-summary-bar --
+        // renderSummaryBar rebuilds that bar via innerHTML on every
+        // renderTable, wiping the AF chip while the filter stayed active
+        // (footer kept the filtered count, no dismiss affordance
+        // remained). The indicator renders a button chip in
+        // .table-controls with a proper dismiss; it removes any existing
+        // chip by id first, so re-selecting a band re-renders correctly.
+        // The AF label is already chart-style ('$15M-$25M'), matching
+        // the combined-filter badge, which pushes _activeDistFilter.label
+        // raw. (SoP chip wipe, same class, was fixed the same way in
+        // the 382nd review.)
+        if (typeof window._updateDistFilterIndicator === 'function') window._updateDistFilterIndicator();
     }
 
     function handleSopTier(val) {

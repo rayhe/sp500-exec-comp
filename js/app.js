@@ -14219,24 +14219,35 @@ function setupDualSparklineTooltips() {
             chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
             chip.title = isCombined ? 'Click to clear combined sector + bracket filter' : 'Click to clear distribution filter';
             chip.addEventListener('click', function() {
+                // 383rd review: the dist filter carries a sector only
+                // for the chart-origin distribution filter (filterBy-
+                // Distribution sets both); an AF pay band or a comp
+                // bracket carries sector null, and the sector is an
+                // independent dim then -- dismissing the dist chip
+                // must not clear it (or its chip state / bar ring).
+                // The old AF pay-band chip only nulled the band, so
+                // the delegated chip must keep that dismiss semantic.
+                var hadSector = !!df.sector;
                 window._activeDistFilter = null;
                 // 331st review: dismissing the (possibly sector-rebuilt)
                 // dist chip must also clear af-pay-band, or the panel
                 // keeps claiming a pay-band filter that no longer filters.
                 if (typeof window._clearAfSelects === 'function') window._clearAfSelects(['af-pay-band']);
-                setActiveSector(null);
+                if (hadSector) setActiveSector(null);
                 chip.remove();
-                document.querySelectorAll('.chip').forEach(function(c) {
-                    c.classList.remove('active');
-                    if (c.textContent === 'All') c.classList.add('active');
-                });
+                if (hadSector) {
+                    document.querySelectorAll('.chip').forEach(function(c) {
+                        c.classList.remove('active');
+                        if (c.textContent === 'All') c.classList.add('active');
+                    });
+                }
                 renderTable(companies);
                 // 358th review: dismissing the dist chip must clear the
                 // comp-dist highlight too -- the bars stay ringed while
                 // the filter is gone otherwise (SoP chip-dismiss pin
                 // from the 357th review, same class).
                 if (window.highlightCompDistBucket) window.highlightCompDistBucket(null);
-                if (window.highlightSectorBar) window.highlightSectorBar(null);
+                if (hadSector && window.highlightSectorBar) window.highlightSectorBar(null);
             });
             var controls = document.querySelector('.table-controls');
             if (controls) controls.appendChild(chip);
