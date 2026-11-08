@@ -396,7 +396,11 @@
         var min = parseFloat(parts[0]);
         var max = parseFloat(parts[1]);
         if (max === 101) max = Infinity;
-        window._activeSopFilter = { min: min, max: max, label: 'SoP ' + min + '–' + (max===Infinity?'∞':max) + '%', _isAf: true };
+        // 382nd review: chart-style label ('90-101%'), matching the
+        // hash-restore and highlightSopBucket formats -- the old label
+        // carried its own 'SoP ' prefix, so the chip read 'SoP: SoP ...'
+        // and the combined-filter badge would too.
+        window._activeSopFilter = { min: min, max: max, label: min + '-' + parts[1] + '%', _isAf: true };
         // 357th review: highlight the chart buckets the AF band overlaps
         // (rangesOverlap in charts.js) -- the AF SoP bands (0-50 / 50-70 /
         // 70-85 / 85-90 / 90-101) differ from the chart buckets (0-50 /
@@ -406,20 +410,16 @@
         if (typeof window.highlightSopDistBucket === 'function') window.highlightSopDistBucket(min, max);
         if (typeof window._refreshTable === 'function') window._refreshTable();
         else if (window.compData) { try { renderTable(window.compData.companies); } catch(e){} }
-        var existing = document.getElementById('sop-filter-chip');
-        if (!existing) {
-            var chip = document.createElement('span');
-            chip.className = 'chip active';
-            chip.id = 'sop-filter-chip';
-            chip.dataset.af = '1';
-            chip.textContent = 'SoP: ' + min + '–' + (max===Infinity?'100+':max) + '% ✕';
-            chip.title = 'Click to clear SoP filter';
-            chip.onclick = function(){ document.getElementById('af-sop-tier').value=''; handleSopTier(''); updateAfBadge(); };
-            var summaryBar = document.getElementById('table-summary-bar');
-            if (summaryBar) summaryBar.appendChild(chip);
-        } else {
-            existing.textContent = 'SoP: ' + min + '–' + (max===Infinity?'100+':max) + '% ✕';
-        }
+        // 382nd review: delegate the chip to the app.js indicator
+        // instead of appending a span to #table-summary-bar --
+        // renderSummaryBar rebuilds that bar via innerHTML on every
+        // renderTable, wiping the AF chip while the filter stayed active
+        // (footer kept the filtered count, no dismiss affordance
+        // remained). The indicator renders a button chip in
+        // .table-controls with a proper dismiss (nulls state, clears
+        // af-sop-tier, pushState); it removes any existing chip by id
+        // first, so re-selecting a tier re-renders correctly.
+        if (typeof window._updateSopFilterIndicator === 'function') window._updateSopFilterIndicator();
     }
 
     function handleTenure(val) {

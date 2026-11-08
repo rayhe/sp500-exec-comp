@@ -6805,7 +6805,12 @@ function renderSopSortSummary(companies) {
         // the 354th eq/asp sort-summary pattern, so the active bucket
         // actually reads as ringed.
         var outline = isActive ? ';outline:2px solid ' + b.color + ';outline-offset:1px' : '';
-        html += '<div class="sop-dist-bar-group" title="' + b.label + ': ' + b.count + ' companies" style="cursor:pointer;opacity:' + opacity + outline + '" onclick="if(window.highlightSopBucket)window.highlightSopBucket(' + b.min + ',' + b.max + ')">';
+        // 382nd review: the SoP histogram was the only dist histogram
+        // whose bar group carried neither clickable-bar nor the
+        // conditional active-bracket class -- the 381st spot-check had
+        // to probe the inline outline for SoP because the class was
+        // absent. Same pattern as every other dist histogram.
+        html += '<div class="sop-dist-bar-group clickable-bar' + (isActive ? ' active-bracket' : '') + '" title="' + b.label + ': ' + b.count + ' companies" style="cursor:pointer;opacity:' + opacity + outline + '" onclick="if(window.highlightSopBucket)window.highlightSopBucket(' + b.min + ',' + b.max + ')">';
         html += '<div class="sop-dist-bar" style="height:' + h + 'px;background:' + b.color + '"></div>';
         html += '<div class="sop-dist-bar-label">' + b.count + '</div>';
         html += '</div>';
@@ -7082,6 +7087,11 @@ function renderSummaryBar(filtered, allCompanies) {
         var rb = window._activeRatioBucket;
         filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
     }
+    // 382nd review: SoP was the only filter dim missing from this list,
+    // so SoP plus any second filter showed no combined badge at all and
+    // the SoP dim went unnamed (chip label is 'SoP: ' + label, so the
+    // badge part matches it).
+    if (window._activeSopFilter) { filterDims++; filterParts.push('SoP: ' + window._activeSopFilter.label); }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
     if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO ' + window._activeCeoCfoBucket.label); }
@@ -8058,6 +8068,9 @@ function renderTable(companies, options) {
     if (activeSector) announceMsg += ', filtered to ' + activeSector;
     if (searchTerm) announceMsg += ', search: ' + searchTerm;
     if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
+    // 382nd review: same omission as the combined-filter badge -- the
+    // announcement named every other dim, never SoP.
+    if (window._activeSopFilter) announceMsg += ', say-on-pay: ' + window._activeSopFilter.label;
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
     if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
     if (window._activeCeoCfoBucket) announceMsg += ', CEO/CFO premium: ' + window._activeCeoCfoBucket.label;
