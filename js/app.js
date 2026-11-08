@@ -15810,6 +15810,24 @@ function setupDualSparklineTooltips() {
         // Clear filters to ensure company is visible
         setActiveSector(null);
         searchTerm = '';
+        // 379th review: the role view is a row-hiding dimension --
+        // renderTable filters to companies with _roleExecs[activeRole],
+        // so a CFO/COO/CTO view hides any target company lacking that
+        // role's exec (31 lack a CFO, 365 a COO, 476 a CTO of 518), and
+        // the setTimeout auto-click below silently found no row: no
+        // panel, no announcement, role chips still claiming a live
+        // view. Same failure class as the 376th review's 25-dimension
+        // clear, in the one dimension it missed. Reset to the CEO
+        // default like insightResetAndSort and resetAllFilters do,
+        // with the same chip + column-header refresh, so the contract
+        // in the comment above holds for every role view.
+        if (activeRole) {
+            activeRole = null;
+            document.querySelectorAll('.role-chip').forEach(function(rc) { rc.classList.remove('active'); });
+            var firstRoleChip = document.querySelector('.role-chip');
+            if (firstRoleChip) firstRoleChip.classList.add('active');
+            updateRoleColumnHeader();
+        }
         if (window._activeRatioBucket) {
             window._activeRatioBucket = null;
             var rc = document.getElementById('ratio-filter-chip');
