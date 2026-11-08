@@ -8114,6 +8114,21 @@ function renderTable(companies, options) {
     if (window._activeAspDeltaTier) announceMsg += ', peer delta: ' + window._activeAspDeltaTier.tag;
     if (window._activeTenureQuartile) announceMsg += ', tenure: ' + window._activeTenureQuartile.tag;
     if (window._activeGovGrade) announceMsg += ', governance: Grade ' + window._activeGovGrade.grade;
+    // 386th review: the announcement named 19 of the 26 badge dims --
+    // the seven network/volatility dims below were in the combined-filter
+    // badge (filterParts) but never in this list, the exact 382nd/385th
+    // class (SoP, board). A screen-reader user hearing this announcement
+    // was told the table was filtered to the sector only, while the badge
+    // showed eight dims. The vol-tenure part uses the chip's wording
+    // ('volatility × tenure') so it cannot collide with the tenure
+    // quartile's ', tenure: ' part. Order matches the badge (7122-7128).
+    if (window._activeVolatilityBucket) announceMsg += ', volatility: ' + window._activeVolatilityBucket.label;
+    if (window._activeVolTenureBracket) announceMsg += ', volatility × tenure: ' + window._activeVolTenureBracket.label;
+    if (window._activePeerDistFilter) announceMsg += ', peers: ' + window._activePeerDistFilter.label;
+    if (window._activeCommunityFilter) announceMsg += ', community: ' + window._activeCommunityFilter.label;
+    if (window._activeQuartileFilter) announceMsg += ', quartile: ' + window._activeQuartileFilter.label;
+    if (window._activePositionFilter) announceMsg += ', position: ' + window._activePositionFilter.label;
+    if (window._activeCrosstabFilter) announceMsg += ', crosstab: ' + window._activeCrosstabFilter.label;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
     _lastTableAnnounce = announceMsg;

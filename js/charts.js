@@ -13522,7 +13522,14 @@ function drawVolatilityDistChart(companies) {
             hideChartTooltip();
         })
         .on('click', function(event, b) {
-            window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            // 386th review: the state label is the bare bucket label
+            // ('0–5%'), matching the AF-origin shape ('Stable <10%').
+            // The old 'Volatility ' + b.label doubled the prefix in the
+            // two sites that prepend their own ('Volatility: ' + label in
+            // the badge, ', volatility: ' + label in the announcement),
+            // while the chip's prefix logic already adds 'Volatility '
+            // when absent -- so the chip text is unchanged by this.
+            window._activeVolatilityBucket = { min: b.min, max: b.max, label: b.label };
             // 329th review: the bucket is now chart-origin, so an af-vol
             // select value (AF-origin or stale from an earlier reset) no
             // longer describes the active filter -- clear it + the badge.
@@ -13549,7 +13556,10 @@ function drawVolatilityDistChart(companies) {
                 '. ' + b.tag + ' volatility tier. Press Enter to filter the table.';
         },
         activate: function(b) {
-            window._activeVolatilityBucket = { min: b.min, max: b.max, label: 'Volatility ' + b.label };
+            // 386th review: bare bucket label, same as the click path
+            // above -- the 'Volatility ' prefix used to double in the
+            // badge and the announcement, which prepend their own.
+            window._activeVolatilityBucket = { min: b.min, max: b.max, label: b.label };
             // 329th review: same af-vol select/badge sync as the click path.
             if (typeof window._clearAfVolSelect === 'function') window._clearAfVolSelect();
             if (typeof window._updateVolatilityFilterIndicator === 'function') window._updateVolatilityFilterIndicator();
