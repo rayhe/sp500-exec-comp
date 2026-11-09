@@ -4614,6 +4614,12 @@ function populateInsights(comp, trends, sectorFilter) {
                     if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
                     if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
                     if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
+                    // 394th review: quartile and position join the
+                    // refresh -- their chips were inline-built with
+                    // no updater, so a sector change left their
+                    // labels lone.
+                    if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+                    if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
                 }
                 var scEl = document.getElementById('scatter-chart');
                 if (scEl) scEl.innerHTML = '';
@@ -5460,6 +5466,11 @@ function buildSectorChips(companies) {
         if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
         if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
+        // 394th review: quartile and position join the refresh --
+        // their chips were inline-built with no updater, so a sector
+        // change left their labels lone.
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -5504,6 +5515,11 @@ function buildSectorChips(companies) {
         if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
         if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
+        // 394th review: quartile and position join the refresh --
+        // their chips were inline-built with no updater, so a sector
+        // change left their labels lone.
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -9341,6 +9357,62 @@ function updatePeerDistFilterIndicator() {
 }
 window._updatePeerDistFilterIndicator = updatePeerDistFilterIndicator;
 
+// 394th review: the position chip was inline-built inside
+// handlePosFilter (setupDetailPanel) with no updater to re-run, so a
+// later sector change left its label lone while the table was
+// filtered to a sector + position bucket -- the same stale-label
+// class the 393rd review closed for the other nineteen updaters.
+// The updater re-renders the chip from the stored state on every
+// sector path (all six sites call it) and at set time, so the chip
+// is born combined when a sector is already active. The lone styling
+// keeps the dim's own violet (rgba(139,92,246,...), as the inline
+// build had it); the combined state uses the established purple.
+// The stored label already carries the count for a non-empty filter
+// ('... (12)'); only the empty filter ('-- no above') needs the
+// ' (0)' suffix, as the inline build did. The dismiss glyph moves
+// from a leading '✕ ' (textContent) to the trailing × span every
+// other chip uses. The chip keeps its original anchor chain
+// (.controls-left, then .table-controls, then the #table-wrapper
+// fallback from the 333rd review).
+function updatePositionFilterIndicator() {
+    var existing = document.getElementById('position-filter-chip');
+    if (existing) existing.remove();
+    if (window._activePositionFilter) {
+        var pf = window._activePositionFilter;
+        var isCombined = !!activeSector;
+        var suffix = (pf.tickers && pf.tickers.length === 0) ? ' (0)' : '';
+        var chipLabel = isCombined ? activeSector + ' × ' + pf.label + suffix : pf.label + suffix;
+        var chip = document.createElement('button');
+        chip.className = 'chip active combined-filter-chip';
+        chip.id = 'position-filter-chip';
+        chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(139,92,246,0.15)';
+        chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(139,92,246,0.5)';
+        chip.style.color = isCombined ? '#a78bfa' : '';
+        chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+        chip.title = isCombined ? 'Click to clear combined sector + position filter' : 'Click to clear position filter';
+        chip.addEventListener('click', function() {
+            window._activePositionFilter = null;
+            chip.remove();
+            // The detail row that set this filter may have closed
+            // since; clear the clicked row wherever it lives now
+            // (only one detail panel is open at a time).
+            document.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
+            var all = null;
+            if (typeof _chartData !== 'undefined' && _chartData && _chartData.companies) all = _chartData.companies;
+            else if (typeof compData !== 'undefined' && compData && compData.companies) all = compData.companies;
+            if (all) renderTable(all);
+            if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
+        });
+        var controls = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
+        if (controls) controls.appendChild(chip);
+        else {
+            var alt = document.getElementById('table-wrapper');
+            if (alt) alt.parentNode.insertBefore(chip, alt);
+        }
+    }
+}
+window._updatePositionFilterIndicator = updatePositionFilterIndicator;
+
 // 374th review: the peer-dist filter's persistent home outside the
 // detail panel. The histogram that produces the filter lives inside a
 // company detail row, so closing that row (close button, Escape, or a
@@ -12684,29 +12756,9 @@ function setupDetailPanel(companies) {
                     var emptyLabel = communityLabel + ' ' + metric + ' #' + rank + ' — no ' + direction;
                     window._activePositionFilter = { tickers: emptyTickers, label: emptyLabel, communityId: communityId, metric: metric, rank: rank, direction: direction };
                     // Add chip even for empty so user can clear
-                    var _emptyChip = document.createElement('button');
-                    _emptyChip.className = 'chip active combined-filter-chip';
-                    _emptyChip.id = 'position-filter-chip';
-                    _emptyChip.style.background = 'rgba(139,92,246,0.15)';
-                    _emptyChip.style.borderColor = 'rgba(139,92,246,0.5)';
-                    _emptyChip.textContent = '✕ ' + emptyLabel + ' (0)';
-                    _emptyChip.title = 'Click to clear position filter';
-                    _emptyChip.addEventListener('click', function() {
-                        window._activePositionFilter = null;
-                        _emptyChip.remove();
-                        detailRow.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
-                        if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
-                        if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
-                    });
-                    var tableControls = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
-                    if (tableControls) tableControls.appendChild(_emptyChip);
-                    else {
-                        // Fallback anchor is the real table wrapper (index.html);
-                        // the previous fallback id never existed in the markup,
-                        // so this branch silently dropped the chip (333rd review).
-                        var _alt = document.getElementById('table-wrapper');
-                        if (_alt) _alt.parentNode.insertBefore(_emptyChip, _alt);
-                    }
+                    // (394th review: through the updater, so the chip
+                    // is born combined when a sector is already active).
+                    updatePositionFilterIndicator();
                     if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
                     announce(emptyLabel + ' — no companies in that direction');
                     return;
@@ -12730,32 +12782,9 @@ function setupDetailPanel(companies) {
                 posRow.classList.add('cb-pos-row-clicked');
                 if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
 
-                // Add dismissible position filter chip to table controls
-                var _oldPfc = document.getElementById('position-filter-chip');
-                if (_oldPfc) _oldPfc.remove();
-                var _pfChip = document.createElement('button');
-                _pfChip.className = 'chip active combined-filter-chip';
-                _pfChip.id = 'position-filter-chip';
-                _pfChip.style.background = 'rgba(139,92,246,0.15)';
-                _pfChip.style.borderColor = 'rgba(139,92,246,0.5)';
-                _pfChip.textContent = '✕ ' + filterLabel;
-                _pfChip.title = 'Click to clear position filter';
-                _pfChip.addEventListener('click', function() {
-                    window._activePositionFilter = null;
-                    _pfChip.remove();
-                    detailRow.querySelectorAll('.cb-pos-row-clicked').forEach(function(r) { r.classList.remove('cb-pos-row-clicked'); });
-                    if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
-                    if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
-                });
-
-                var tc = document.querySelector('.table-controls .controls-left') || document.querySelector('.table-controls');
-                if (tc) tc.appendChild(_pfChip);
-                else {
-                    // Same fallback anchor as the empty-filter branch above:
-                    // the real table wrapper id in index.html.
-                    var _alt2 = document.getElementById('table-wrapper');
-                    if (_alt2) _alt2.parentNode.insertBefore(_pfChip, _alt2);
-                }
+                // 394th review: render the chip through the updater
+                // (sector prefix when a sector is already active).
+                updatePositionFilterIndicator();
 
                 if (typeof renderTable === 'function' && window._chartData) renderTable(window._chartData.companies);
                 // Scroll to table to show filtered results
@@ -13352,7 +13381,13 @@ function applyHashState(companies) {
         var spMin = parseFloat(state.spmin);
         var spMax = parseFloat(state.spmax);
         if (!isNaN(spMin) && !isNaN(spMax)) {
-            window._activeStockPctTier = { min: spMin, max: spMax, label: state.splbl, tag: state.sptag ? state.sptag : '' };
+            // 394th review: a tag-less link (minted before sptag, or
+            // hand-built) restored tag:'' and the chip read ' (0-50%)'
+            // -- the lone label is tag + ' (' + label + ')'. Fall back
+            // to the dim name, matching the combined label ('Equity: ')
+            // and the badge ('Equity: '), so the chip reads
+            // 'Equity (0-50%)'.
+            window._activeStockPctTier = { min: spMin, max: spMax, label: state.splbl, tag: state.sptag ? state.sptag : 'Equity' };
         }
     }
 
@@ -14303,6 +14338,15 @@ function setupDualSparklineTooltips() {
         updateCrosstabFilterIndicator();
         updateVolatilityFilterIndicator();
         updateVolTenureFilterIndicator();
+        // 394th review: quartile and position join the refresh --
+        // their chips were inline-built with no updater, so a sector
+        // change left their labels lone. Position is a top-level
+        // app.js function, so the bare call matches this list;
+        // quartile lives in network.js (a separate script), so its
+        // call is guarded -- a bare call would throw if that script
+        // failed to load. Twenty-two updaters re-run here now.
+        updatePositionFilterIndicator();
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -14528,6 +14572,12 @@ function setupDualSparklineTooltips() {
         updateCrosstabFilterIndicator();
         updateVolatilityFilterIndicator();
         updateVolTenureFilterIndicator();
+        // 394th review: quartile and position join the refresh (same
+        // shape as filterBySector above: position bare, quartile
+        // guarded -- it lives in network.js). Twenty-two updaters
+        // re-run here now.
+        updatePositionFilterIndicator();
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -16709,6 +16759,11 @@ function setupDualSparklineTooltips() {
         if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
         if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
         if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
+        // 394th review: quartile and position join the refresh --
+        // their chips were inline-built with no updater, so a sector
+        // change left their labels lone.
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
 
                 renderTable(companies);
 

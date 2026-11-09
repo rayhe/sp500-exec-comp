@@ -4733,6 +4733,48 @@ function initNetwork(peerData) {
         return { min: s[0], q1: q(0.25), median: q(0.5), q3: q(0.75), max: s[n - 1] };
     }
 
+    // 394th review: the quartile chip was inline-built in the box-plot
+    // zone click handler below with no updater to re-run, so a later
+    // sector change left its label lone while the table was filtered
+    // to a sector + quartile bucket -- the same stale-label class the
+    // 393rd review closed for the other nineteen updaters. The updater
+    // re-renders the chip from the stored state on every sector path
+    // (all six app.js sites call it via window, guarded: this file is
+    // a separate script, so a bare call would throw if it failed to
+    // load) and at set time, so the chip is born combined when a
+    // sector is already active. The lone styling is already the
+    // combined purple, so only the label gains the sector prefix.
+    function updateQuartileFilterIndicator() {
+        var existing = document.getElementById('quartile-filter-chip');
+        if (existing) existing.remove();
+        if (window._activeQuartileFilter) {
+            var qf = window._activeQuartileFilter;
+            var isCombined = !!window._activeSector;
+            var chipLabel = isCombined ? window._activeSector + ' × ' + qf.label : qf.label;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'quartile-filter-chip';
+            chip.style.background = 'rgba(167,139,250,0.15)';
+            chip.style.borderColor = 'rgba(167,139,250,0.5)';
+            chip.style.color = '#a78bfa';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + quartile filter' : 'Click to clear quartile filter';
+            chip.addEventListener('click', function() {
+                window._activeQuartileFilter = null;
+                chip.remove();
+                if (_communityMetricsEl) _communityMetricsEl.querySelectorAll('.cm-bp-zone-clicked').forEach(function(z) { z.classList.remove('cm-bp-zone-clicked'); });
+                if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                var scEl = document.getElementById('scatter-chart');
+                if (scEl) scEl.innerHTML = '';
+                if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                if (typeof announce === 'function') announce('Quartile filter cleared');
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateQuartileFilterIndicator = updateQuartileFilterIndicator;
+
     function _renderCommunityMetrics() {
         // Remove old panel
         if (_communityMetricsEl && _communityMetricsEl.parentNode) {
@@ -5237,31 +5279,9 @@ function initNetwork(peerData) {
                     window._activeQuartileFilter = { tickers: tickers, label: filterLabel, communityId: cid, _lo: lo, _hi: hi };
                     zone.classList.add('cm-bp-zone-clicked');
                     if (typeof window._clearPersistentScatterHighlight === 'function') window._clearPersistentScatterHighlight();
-                    // Add dismissible quartile filter chip to table controls
-                    var _oldQfc = document.getElementById('quartile-filter-chip');
-                    if (_oldQfc) _oldQfc.remove();
-                    var _qfChip = document.createElement('button');
-                    _qfChip.className = 'chip active combined-filter-chip';
-                    _qfChip.id = 'quartile-filter-chip';
-                    _qfChip.style.background = 'rgba(167,139,250,0.15)';
-                    _qfChip.style.borderColor = 'rgba(167,139,250,0.5)';
-                    _qfChip.style.color = '#a78bfa';
-                    _qfChip.innerHTML = filterLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
-                    _qfChip.title = 'Click to clear quartile filter';
-                    _qfChip.addEventListener('click', function() {
-                        window._activeQuartileFilter = null;
-                        _qfChip.remove();
-                        _communityMetricsEl.querySelectorAll('.cm-bp-zone-clicked').forEach(function(z2) {
-                            z2.classList.remove('cm-bp-zone-clicked');
-                        });
-                        if (typeof renderTable === 'function') renderTable(window._chartData.companies);
-                        var _scR = document.getElementById('scatter-chart');
-                        if (_scR) _scR.innerHTML = '';
-                        if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
-                        if (typeof announce === 'function') announce('Quartile filter cleared');
-                    });
-                    var _qfControls = document.querySelector('.table-controls');
-                    if (_qfControls) _qfControls.appendChild(_qfChip);
+                    // 394th review: render the chip through the updater
+                    // (sector prefix when a sector is already active).
+                    updateQuartileFilterIndicator();
                     if (typeof renderTable === 'function') renderTable(window._chartData.companies);
                     var scEl2 = document.getElementById('scatter-chart');
                     if (scEl2) scEl2.innerHTML = '';

@@ -33,6 +33,16 @@ lone; applyHashState restores ceo-cfo / sop / stock-pct state without
 calling their updaters, so a deep link into those filters may show no
 chip at all (a missing-chip gap, not a stale-label one).
 
+Update (394th review, 2026-11-09): the quartile/position half is now
+closed -- updateQuartileFilterIndicator (network.js) and
+updatePositionFilterIndicator (app.js) exist and are called from all
+six sector paths, pinned by scripts/check_quartile_position_sector_prefix.py
+(this guard still pins only the nineteen app.js updaters; together
+the two guards pin all twenty-one chips). The applyHashState half
+was verified closed by the 394th run's audit: both restore sites
+(init and hashchange) render the ceo-cfo chip, and the sop /
+stock-pct chips were fixed at both sites in the 324th review.
+
 Checks (static - file reads, <1s):
   C1  HARD FAIL: all 19 update*FilterIndicator bodies contain an
       isCombined assignment reading activeSector AND a combined label
