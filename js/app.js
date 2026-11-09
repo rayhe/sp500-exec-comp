@@ -3311,10 +3311,19 @@ function populateInsights(comp, trends, sectorFilter) {
         // board state is never nulled on this path (see the
         // _clearAfSelects comment below), so the old document-wide
         // sweep stripped 'active' from its live chip.
+        // 392nd review: the header loop also keeps aria-sort in sync --
+        // the sibling sort paths (sortTableByKey, setupSorting.activateSort
+        // and the chart-bucket handlers) set class AND aria-sort, but this
+        // loop only toggled the class, so a screen reader heard 'none' on
+        // a header the eye saw as sorted-desc (391st R7 observation).
         updateSectorChipStates(null);
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
-            if (t.dataset.sort === sortKey) t.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === sortKey) {
+                t.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                t.setAttribute('aria-sort', sortDir === 'asc' ? 'ascending' : 'descending');
+            }
         });
         // 330th review: same panel-sync class as resetAllFilters -- the
         // state nulled above includes the 7 AF-origin dims (dist/pay-band,
@@ -13162,10 +13171,16 @@ function applyHashState(companies) {
     if (state.sort) {
         currentSort.key = state.sort;
         currentSort.dir = state.dir || 'desc';
+        // 392nd review: same aria-sort class as insightResetAndSort --
+        // a shared sort= deep link left aria-sort stale (the restore set
+        // the class only). Mirror the sibling sort paths: 'none' on every
+        // header, ascending/descending on the matched one.
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
+            t.setAttribute('aria-sort', 'none');
             if (t.dataset.sort === state.sort) {
                 t.classList.add(currentSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                t.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
             }
         });
     }
@@ -14447,10 +14462,17 @@ function setupDualSparklineTooltips() {
     if (window.highlightConcDistBucket) window.highlightConcDistBucket(null, null);
 
         // Sort by pay ratio descending
+        // 392nd review: same aria-sort class as insightResetAndSort --
+        // clicking a ratio-dist bar left aria-sort 'none' on the
+        // pay_ratio header while showing sorted-desc.
         currentSort = { key: 'pay_ratio', dir: 'desc' };
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
-            if (t.dataset.sort === 'pay_ratio') t.classList.add('sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === 'pay_ratio') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
         });
 
         // Update ratio filter indicator
@@ -19362,9 +19384,18 @@ function setupDualSparklineTooltips() {
         var firstRoleChip = document.querySelector('.role-chip');
         if (firstRoleChip) firstRoleChip.classList.add('active');
         updateRoleColumnHeader();
+        // 392nd review: same aria-sort class as insightResetAndSort --
+        // the default reset set the class only, so after a hash change
+        // to a hashless URL the total_compensation header showed
+        // sorted-desc while aria-sort kept whatever the previous sort
+        // left ('none' after a header click).
         document.querySelectorAll('th.sortable').forEach(function(t) {
             t.classList.remove('sorted-asc', 'sorted-desc');
-            if (t.dataset.sort === 'total_compensation') t.classList.add('sorted-desc');
+            t.setAttribute('aria-sort', 'none');
+            if (t.dataset.sort === 'total_compensation') {
+                t.classList.add('sorted-desc');
+                t.setAttribute('aria-sort', 'descending');
+            }
         });
         applyHashState(companies);
         // 373rd review: applyHashState early-returns when parseHash
