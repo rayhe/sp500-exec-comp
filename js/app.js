@@ -3358,34 +3358,60 @@ function populateInsights(comp, trends, sectorFilter) {
     // (found 2026-10-09 22:00 PT by the compare/bridge keyboard guard's R3).
     window.insightResetAndSort = insightResetAndSort;
 
+    // 390th review: insight-card actions were assigned by numeric index
+    // (insights[11] = 'C-Suite Pay Gap', insights[13] = 'Pay Inequality'),
+    // but the pushes above are conditional, so the runtime order shifts
+    // whenever a card is absent ('Highest Paid', 'vs S&P 500', 'Zero Pay'
+    // and 'Percentile Concentration' are all absent at runtime). The
+    // drift put 'View role analysis' on CEO Tenure, 'Filter missing
+    // roles' on Tenure vs Pay (clobbering its 'View scatter plot'
+    // action), 'View distribution' on Sector Tenure (clobbering its
+    // filter-to-longest-sector action), 'Sort by percentile' on
+    // Top 1% vs Bottom 50%, and left C-Suite Pay Gap, Team
+    // Completeness, Pay Inequality and Data Quality with no action at
+    // all. Assign by label instead: a missing or reordered card can
+    // never steal another card's action, and a label with no card at
+    // runtime simply gets no action.
+    function findInsight(label) {
+        for (var i = 0; i < insights.length; i++) {
+            if (insights[i].label === label) return insights[i];
+        }
+        return null;
+    }
+    function setInsightAction(label, action, hint) {
+        var card = findInsight(label);
+        if (card) {
+            card.action = action;
+            card.actionHint = hint;
+        }
+    }
+
     // 1. Pay Concentration → sort by comp desc, show top earners
-    insights[0].action = function() { insightResetAndSort('total_compensation', 'desc'); };
-    insights[0].actionHint = 'View top earners';
+    setInsightAction('Pay Concentration', function() { insightResetAndSort('total_compensation', 'desc'); }, 'View top earners');
 
     // 2. $50M+ Club → find the #1 earner in the table with detail panel
     var topTicker = sorted[0] ? sorted[0].ticker : null;
-    insights[1].action = function() {
+    setInsightAction('$50M+ Club', function() {
         if (topTicker && window.findCompanyInTable) window.findCompanyInTable(topTicker);
-    };
-    insights[1].actionHint = 'Explore top CEO';
+    }, 'Explore top CEO');
 
     // 3. Extreme Ratios → filter to ratio > 1000:1
-    insights[2].action = function() {
+    setInsightAction('Extreme Ratios', function() {
         if (window.filterByRatioBucket) window.filterByRatioBucket(1000, Infinity);
-    };
-    insights[2].actionHint = 'Filter extreme ratios';
+    }, 'Filter extreme ratios');
 
     // 4. Sector Spread or vs S&P 500 → navigate
-    if (insights[3]) {
-        if (insights[3]._topSector) {
-            var spreadSector = insights[3]._topSector;
-            insights[3].action = function() {
+    var spreadCard = findInsight('Sector Spread') || findInsight('vs S&P 500');
+    if (spreadCard) {
+        if (spreadCard._topSector) {
+            var spreadSector = spreadCard._topSector;
+            spreadCard.action = function() {
                 if (spreadSector && window.filterBySector) window.filterBySector(spreadSector);
             };
-            insights[3].actionHint = 'Filter by sector';
+            spreadCard.actionHint = 'Filter by sector';
         } else {
             // Sector-mode: scroll to sector chart for context
-            insights[3].action = function() {
+            spreadCard.action = function() {
                 var chartPanel = document.getElementById('sector-chart-panel');
                 if (chartPanel) {
                     var headerHeight = getStickyOffset();
@@ -3393,60 +3419,43 @@ function populateInsights(comp, trends, sectorFilter) {
                     window.scrollTo({ top: top, behavior: getScrollBehavior() });
                 }
             };
-            insights[3].actionHint = 'View sector comparison';
+            spreadCard.actionHint = 'View sector comparison';
         }
     }
 
     // 5. Zero Pay / Below $1M → sort by comp asc to show lowest-paid
-    if (insights[4]) {
+    var lowPayCard = findInsight('Zero Pay') || findInsight('Below $1M');
+    if (lowPayCard) {
         if (zeroPay.length > 0 && zeroPay.length <= 3) {
             // Search for first zero-pay CEO
             var zeroTicker = zeroPay[0].ticker;
-            insights[4].action = function() {
+            lowPayCard.action = function() {
                 if (window.findCompanyInTable) window.findCompanyInTable(zeroTicker);
             };
-            insights[4].actionHint = 'View details';
+            lowPayCard.actionHint = 'View details';
         } else {
-            insights[4].action = function() { insightResetAndSort('total_compensation', 'asc'); };
-            insights[4].actionHint = 'View lowest paid';
+            lowPayCard.action = function() { insightResetAndSort('total_compensation', 'asc'); };
+            lowPayCard.actionHint = 'View lowest paid';
         }
     }
 
     // 6. Pay Range → sort by comp asc to show from minimum
-    if (insights[5]) {
-        insights[5].action = function() { insightResetAndSort('total_compensation', 'asc'); };
-        insights[5].actionHint = 'View full range';
-    }
+    setInsightAction('Pay Range', function() { insightResetAndSort('total_compensation', 'asc'); }, 'View full range');
 
     // 7. Biggest Pay Swing → sort by YoY desc to show biggest increases first
-    if (insights[6]) {
-        insights[6].action = function() { insightResetAndSort('_ceoYoYSort', 'desc'); };
-        insights[6].actionHint = 'Sort by YoY change';
-    }
+    setInsightAction('Biggest Pay Swing', function() { insightResetAndSort('_ceoYoYSort', 'desc'); }, 'Sort by YoY change');
 
     // 8. Equity-Heavy Pay → sort by stock % desc
-    if (insights[7]) {
-        insights[7].action = function() { insightResetAndSort('_ceoStockPctSort', 'desc'); };
-        insights[7].actionHint = 'Sort by equity %';
-    }
+    setInsightAction('Equity-Heavy Pay', function() { insightResetAndSort('_ceoStockPctSort', 'desc'); }, 'Sort by equity %');
 
     // 9. Percentile Concentration → sort by percentile descending
-    if (insights[8]) {
-        insights[8].action = function() { insightResetAndSort('_compPercentile', 'desc'); };
-        insights[8].actionHint = 'Sort by percentile';
-    }
+    setInsightAction('Percentile Concentration', function() { insightResetAndSort('_compPercentile', 'desc'); }, 'Sort by percentile');
 
     // 10. CEO Concentration → sort by total comp desc (concentrated CEOs tend to be at the top)
-    if (insights[9]) {
-        insights[9].action = function() { insightResetAndSort('total_compensation', 'desc'); };
-        insights[9].actionHint = 'View top CEOs';
-    }
+    setInsightAction('CEO Concentration', function() { insightResetAndSort('total_compensation', 'desc'); }, 'View top CEOs');
 
     // 11. CEO Turnover → sort by YoY (new CEOs often have big YoY swings)
-    if (insights[10]) {
-        insights[10].action = function() { if (window.filterByCeoTransition) window.filterByCeoTransition(); };
-        insights[10].actionHint = 'Filter to CEO transitions';
-    }
+    setInsightAction('CEO Turnover', function() { if (window.filterByCeoTransition) window.filterByCeoTransition(); }, 'Filter to CEO transitions');
 
     // 12. C-Suite Pay Gap insight card
     if (_roleBenchmarks && _roleBenchmarks['CEO'] && _roleBenchmarks['CFO']) {
@@ -3464,17 +3473,14 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     }
 
-    if (insights[11]) {
-        insights[11].action = function() {
-            var section = document.getElementById('role-comp-chart');
-            if (section) {
-                var headerHeight = getStickyOffset();
-                var top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
-                window.scrollTo({ top: top, behavior: getScrollBehavior() });
-            }
-        };
-        insights[11].actionHint = 'View role analysis';
-    }
+    setInsightAction('C-Suite Pay Gap', function() {
+        var section = document.getElementById('role-comp-chart');
+        if (section) {
+            var headerHeight = getStickyOffset();
+            var top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+            window.scrollTo({ top: top, behavior: getScrollBehavior() });
+        }
+    }, 'View role analysis');
 
     // 13. Team Completeness insight card
     (function() {
@@ -3501,13 +3507,10 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     })();
 
-    if (insights[12]) {
-        insights[12].action = function() {
-            // Toggle team completeness filter to show companies missing expected roles
-            if (window.filterByTeamCompleteness) window.filterByTeamCompleteness('missing');
-        };
-        insights[12].actionHint = 'Filter missing roles';
-    }
+    setInsightAction('Team Completeness', function() {
+        // Toggle team completeness filter to show companies missing expected roles
+        if (window.filterByTeamCompleteness) window.filterByTeamCompleteness('missing');
+    }, 'Filter missing roles');
 
     // 14. Pay Inequality insight card (Gini coefficient + concentration stats)
     (function() {
@@ -3590,19 +3593,20 @@ function populateInsights(comp, trends, sectorFilter) {
         }
     })();
 
-    if (insights[13]) {
-        insights[13].action = function() {
-            insightResetAndSort('total_compensation', 'desc');
-            // Scroll to the comp dist chart
-            var chartPanel = document.getElementById('comp-dist-panel');
-            if (chartPanel) {
-                var headerHeight = getStickyOffset();
-                var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-                window.scrollTo({ top: top, behavior: getScrollBehavior() });
-            }
-        };
-        insights[13].actionHint = 'View distribution';
-    }
+    // 14. Pay Inequality (card #14, added with the comp-distribution
+    // chart in fc1120f) → sort by comp desc, scroll to the distribution
+    // chart. Data Quality, pushed just above, never had an assignment
+    // and stays action-less.
+    setInsightAction('Pay Inequality', function() {
+        insightResetAndSort('total_compensation', 'desc');
+        // Scroll to the comp dist chart
+        var chartPanel = document.getElementById('comp-dist-panel');
+        if (chartPanel) {
+            var headerHeight = getStickyOffset();
+            var top = chartPanel.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top: top, behavior: getScrollBehavior() });
+        }
+    }, 'View distribution');
 
     // 16. Gender Representation
     var femaleCeos = companies.filter(function(c) { return c.ceo_gender === 'F'; });
