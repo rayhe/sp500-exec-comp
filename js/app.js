@@ -14881,7 +14881,17 @@ function setupDualSparklineTooltips() {
         if (window._activeConcTier) {
             var ct = window._activeConcTier;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × ' + ct.tag : ct.tag + ' (' + ct.label + ')';
+            // 398th review: the combined form dropped the range
+            // parenthetical -- the lone chip reads 'Concentrated
+            // (>=50%)' and the badge part reads the same, but the
+            // combined chip read bare 'Concentrated', losing the
+            // quantitative content of the tier. The dim label is the
+            // lone form, unchanged; the combined form is sector +
+            // ' × ' + that dim label, so it reads 'Information
+            // Technology × Concentrated (>=50%)' and agrees with the
+            // lone chip, the badge part and the announce.
+            var dimLabel = ct.tag + ' (' + ct.label + ')';
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var tierColor = ct.min >= 50 ? '#ef476f' : (ct.min >= 35 ? '#ffd166' : '#06d6a0');
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
