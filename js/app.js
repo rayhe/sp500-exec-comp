@@ -7230,7 +7230,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeBoardFilter) { filterDims++; filterParts.push(boardFilterLabel(window._activeBoardFilter.mode)); }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
     if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
-    if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO ' + window._activeCeoCfoBucket.label); }
+    if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO: ' + window._activeCeoCfoBucket.label); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
     if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
@@ -14982,7 +14982,18 @@ function setupDualSparklineTooltips() {
         if (window._activeCeoCfoBucket) {
             var cb = window._activeCeoCfoBucket;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × CEO/CFO ' + cb.label : 'CEO/CFO: ' + cb.label;
+            // 401st review: the dim label is factored as the lone
+            // form ('CEO/CFO: ' + label) so the combined chip keeps
+            // the colon the lone chip and the badge both carry -- the
+            // old combined form ('Sector x CEO/CFO ' + label) dropped
+            // it, the same chip-wording-must-match-badge class the
+            // 400th review closed for YoY and the 399th for SoP, and
+            // the first item of the queued candidate (2) the 400th
+            // review named explicitly. The badge half of this fix is
+            // in the combined-filter badge builder (same file), which
+            // also pushed 'CEO/CFO ' + label without the colon.
+            var dimLabel = 'CEO/CFO: ' + cb.label;
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'ceocfo-filter-chip';

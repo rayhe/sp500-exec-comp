@@ -193,7 +193,10 @@ def main():
         failures.append("C6 hash restore does not read cfomin/cfolbl")
 
     # --- C7: badge + announcement name the filter --------------------
-    if "filterParts.push('CEO/CFO '" not in app:
+    # 401st review: the badge part now carries the colon ('CEO/CFO: '
+    # + label) so it matches the lone chip -- the old pinned literal
+    # 'CEO/CFO ' (no colon) was the defect this review fixed.
+    if "filterParts.push('CEO/CFO: '" not in app:
         failures.append("C7 combined-filter badge does not name the "
                         "CEO/CFO premium filter")
     if "announceMsg += ', CEO/CFO premium: '" not in app:
