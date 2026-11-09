@@ -15049,7 +15049,16 @@ function setupDualSparklineTooltips() {
         if (window._activeYoYBucket) {
             var yb = window._activeYoYBucket;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × YoY ' + yb.label : 'YoY: ' + yb.label;
+            // 400th review: the dim label is factored as the lone
+            // form ('YoY: ' + label) so the combined chip keeps the
+            // colon the lone chip and the badge both carry -- the
+            // old combined form ('Sector x YoY ' + label) dropped
+            // it, the same chip-wording-must-match-badge class the
+            // 399th review closed for SoP and the 398th for
+            // concentration, and the second half of the queued
+            // candidate (2) the 398th review named explicitly.
+            var dimLabel = 'YoY: ' + yb.label;
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'yoy-filter-chip';
