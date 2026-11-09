@@ -4591,6 +4591,29 @@ function populateInsights(comp, trends, sectorFilter) {
                     // document-wide sweep stripped 'active' from every
                     // live indicator chip while it kept filtering.
                     updateSectorChipStates(topSector);
+                    // 393rd review: this action sets a sector without
+                    // resetting filters, so the live indicator chips
+                    // must re-render with the sector context here too
+                    // (same refresh the sector-chip paths run).
+                    if (window._updateDistFilterIndicator) window._updateDistFilterIndicator();
+                    if (window._updateRatioFilterIndicator) window._updateRatioFilterIndicator();
+                    if (window._updateConcFilterIndicator) window._updateConcFilterIndicator();
+                    if (window._updateCeoTransitionFilterIndicator) window._updateCeoTransitionFilterIndicator();
+                    if (window._updateTeamCompletenessFilterIndicator) window._updateTeamCompletenessFilterIndicator();
+                    if (window._updateYoYFilterIndicator) window._updateYoYFilterIndicator();
+                    if (window._updatePctileFilterIndicator) window._updatePctileFilterIndicator();
+                    if (window._updateSopFilterIndicator) window._updateSopFilterIndicator();
+                    if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
+                    if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
+                    if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
+                    if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
+                    if (window._updateBoardFilterIndicator) window._updateBoardFilterIndicator();
+                    if (window._updateCeoCfoFilterIndicator) window._updateCeoCfoFilterIndicator();
+                    if (window._updateGovFilterIndicator) window._updateGovFilterIndicator();
+                    if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
+                    if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
+                    if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
+                    if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
                 }
                 var scEl = document.getElementById('scatter-chart');
                 if (scEl) scEl.innerHTML = '';
@@ -5426,6 +5449,17 @@ function buildSectorChips(companies) {
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
+        // 393rd review: these seven never re-ran on the sector path
+        // (board/ceo-cfo already had the combined label; gov,
+        // peer-dist, crosstab, volatility and vol-tenure gain it this
+        // run), so their chips kept lone-filter labels while combined.
+        if (window._updateBoardFilterIndicator) window._updateBoardFilterIndicator();
+        if (window._updateCeoCfoFilterIndicator) window._updateCeoCfoFilterIndicator();
+        if (window._updateGovFilterIndicator) window._updateGovFilterIndicator();
+        if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
+        if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
+        if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
+        if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
         if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -5459,6 +5493,17 @@ function buildSectorChips(companies) {
         if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
+        // 393rd review: these seven never re-ran on the sector path
+        // (board/ceo-cfo already had the combined label; gov,
+        // peer-dist, crosstab, volatility and vol-tenure gain it this
+        // run), so their chips kept lone-filter labels while combined.
+        if (window._updateBoardFilterIndicator) window._updateBoardFilterIndicator();
+        if (window._updateCeoCfoFilterIndicator) window._updateCeoCfoFilterIndicator();
+        if (window._updateGovFilterIndicator) window._updateGovFilterIndicator();
+        if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
+        if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
+        if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
+        if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
             if (window.highlightRatioBucket) window.highlightRatioBucket(null);
@@ -9257,18 +9302,25 @@ function updatePeerDistFilterIndicator() {
     if (existing) existing.remove();
     if (window._activePeerDistFilter) {
         var pf = window._activePeerDistFilter;
+        // 393rd review: combined-sector label (the purple treatment
+        // the other indicator updaters use) -- this updater never read
+        // activeSector and was never re-run on the sector path, so the
+        // peer-dist chip kept its lone-filter label while the table
+        // was filtered to a sector + peer bucket.
+        var isCombined = !!activeSector;
+        var chipLabel = isCombined ? activeSector + ' × ' + pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')' : pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')';
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'peer-dist-chip';
-        chip.style.background = 'rgba(0,180,216,0.15)';
-        chip.style.borderColor = 'rgba(0,180,216,0.5)';
-        chip.style.color = '#00b4d8';
-        chip.textContent = pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')';
+        chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+        chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+        chip.textContent = chipLabel;
         var xSpan = document.createElement('span');
         xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
         xSpan.textContent = '\u00d7';
         chip.appendChild(xSpan);
-        chip.title = 'Click to clear peer distribution filter';
+        chip.title = isCombined ? 'Click to clear combined sector + peer distribution filter' : 'Click to clear peer distribution filter';
         chip.addEventListener('click', function() {
             window._activePeerDistFilter = null;
             chip.remove();
@@ -9473,18 +9525,23 @@ function updateVolatilityFilterIndicator() {
         var vb = window._activeVolatilityBucket;
         var label = vb.label || '';
         var text = label.indexOf('Volatility') === 0 ? label : 'Volatility ' + label;
+        // 393rd review: combined-sector label (same purple treatment
+        // the other indicator updaters use) -- the vol chip kept its
+        // lone-filter label when a sector filter was combined with it.
+        var isCombined = !!activeSector;
+        var chipLabel = isCombined ? activeSector + ' × ' + text : text;
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'volatility-filter-chip';
-        chip.style.background = 'rgba(0,180,216,0.15)';
-        chip.style.borderColor = 'rgba(0,180,216,0.5)';
-        chip.style.color = '#00b4d8';
-        chip.textContent = text;
+        chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+        chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+        chip.textContent = chipLabel;
         var xSpan = document.createElement('span');
         xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
         xSpan.textContent = '\u00d7';
         chip.appendChild(xSpan);
-        chip.title = 'Click to clear volatility filter';
+        chip.title = isCombined ? 'Click to clear combined sector + volatility filter' : 'Click to clear volatility filter';
         chip.addEventListener('click', function() {
             var wasAf = !!(window._activeVolatilityBucket && window._activeVolatilityBucket._isAf);
             window._activeVolatilityBucket = null;
@@ -9519,18 +9576,26 @@ function updateVolTenureFilterIndicator() {
     if (existing) existing.remove();
     if (window._activeVolTenureBracket) {
         var vtb = window._activeVolTenureBracket;
+        // 393rd review: combined-sector label (same purple treatment
+        // the other indicator updaters use) -- the vol-tenure chip
+        // kept its lone-filter label when a sector filter was combined
+        // with it. The combined label reads 'Sector × Volatility ×
+        // Tenure: ...' -- the middle '×' is the dim's own separator
+        // (392nd-review badge-joiner note), not a second join.
+        var isCombined = !!activeSector;
+        var chipLabel = isCombined ? activeSector + ' × Volatility × Tenure: ' + (vtb.label || '') : 'Volatility × Tenure: ' + (vtb.label || '');
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'vol-tenure-chip';
-        chip.style.background = 'rgba(0,180,216,0.15)';
-        chip.style.borderColor = 'rgba(0,180,216,0.5)';
-        chip.style.color = '#00b4d8';
-        chip.textContent = 'Volatility \u00d7 Tenure: ' + (vtb.label || '');
+        chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+        chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+        chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+        chip.textContent = chipLabel;
         var xSpan = document.createElement('span');
         xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
         xSpan.textContent = '\u00d7';
         chip.appendChild(xSpan);
-        chip.title = 'Click to clear volatility x tenure filter';
+        chip.title = isCombined ? 'Click to clear combined sector + volatility x tenure filter' : 'Click to clear volatility x tenure filter';
         chip.addEventListener('click', function() {
             window._activeVolTenureBracket = null;
             chip.remove();
@@ -14219,6 +14284,25 @@ function setupDualSparklineTooltips() {
         updateYoYFilterIndicator();
         updatePctileFilterIndicator();
         updateAspDeltaFilterIndicator();
+        // 393rd review: this list was the stalest of the sector
+        // paths -- sop, stock-pct, gender and tenure were missing
+        // entirely (their chips kept lone-filter labels after any
+        // chart sector-bar click), as were board, ceo-cfo, gov,
+        // peer-dist, crosstab, volatility and vol-tenure (board /
+        // ceo-cfo already had the combined label; the other five gain
+        // it this run). All twenty indicator updaters now re-run here,
+        // matching the sector-chip paths.
+        updateSopFilterIndicator();
+        updateStockPctFilterIndicator();
+        updateGenderFilterIndicator();
+        updateTenureFilterIndicator();
+        updateBoardFilterIndicator();
+        updateCeoCfoFilterIndicator();
+        updateGovFilterIndicator();
+        updatePeerDistFilterIndicator();
+        updateCrosstabFilterIndicator();
+        updateVolatilityFilterIndicator();
+        updateVolTenureFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -14428,6 +14512,22 @@ function setupDualSparklineTooltips() {
         updateYoYFilterIndicator();
         updatePctileFilterIndicator();
         updateAspDeltaFilterIndicator();
+        // 393rd review: same stale list as filterBySector above --
+        // sop, stock-pct, gender, tenure, board, ceo-cfo, gov,
+        // peer-dist, crosstab, volatility and vol-tenure were all
+        // missing, so their chips kept lone-filter labels after a
+        // sector-bar click. All twenty indicator updaters now re-run.
+        updateSopFilterIndicator();
+        updateStockPctFilterIndicator();
+        updateGenderFilterIndicator();
+        updateTenureFilterIndicator();
+        updateBoardFilterIndicator();
+        updateCeoCfoFilterIndicator();
+        updateGovFilterIndicator();
+        updatePeerDistFilterIndicator();
+        updateCrosstabFilterIndicator();
+        updateVolatilityFilterIndicator();
+        updateVolTenureFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -15585,14 +15685,20 @@ function setupDualSparklineTooltips() {
             var gf = window._activeGovGrade;
             var gradeColors = { A: '#00b4d8', B: '#06d6a0', C: '#ffd166', D: '#fb923c', F: '#ef476f' };
             var color = gradeColors[gf.grade] || '#94a3b8';
+            // 393rd review: combined-sector label (same purple
+            // treatment the other indicator updaters use) -- the gov
+            // chip kept its lone-filter label when a sector filter was
+            // combined with it.
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × Gov: Grade ' + gf.grade : 'Gov: Grade ' + gf.grade;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'gov-filter-chip';
-            chip.style.background = hexToChipBg(color);
-            chip.style.borderColor = hexToChipBorder(color);
-            chip.style.color = color;
-            chip.innerHTML = 'Gov: Grade ' + gf.grade + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
-            chip.title = 'Click to clear governance filter';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : hexToChipBg(color);
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : hexToChipBorder(color);
+            chip.style.color = isCombined ? '#a78bfa' : color;
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">\u00d7</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + governance filter' : 'Click to clear governance filter';
             chip.addEventListener('click', function() {
                 window._activeGovGrade = null;
                 // 331st review: the gov chip is app.js-owned even for
@@ -15682,18 +15788,24 @@ function setupDualSparklineTooltips() {
         if (existing) existing.remove();
         if (window._activeCrosstabFilter) {
             var xf = window._activeCrosstabFilter;
+            // 393rd review: combined-sector label (same purple
+            // treatment the other indicator updaters use) -- the
+            // crosstab chip kept its lone-filter label when a sector
+            // filter was combined with it.
+            var isCombined = !!activeSector;
+            var chipLabel = isCombined ? activeSector + ' × ' + xf.label + ' (' + xf.tickers.length + ')' : xf.label + ' (' + xf.tickers.length + ')';
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'crosstab-filter-chip';
-            chip.style.background = 'rgba(0,180,216,0.15)';
-            chip.style.borderColor = 'rgba(0,180,216,0.5)';
-            chip.style.color = '#00b4d8';
-            chip.textContent = xf.label + ' (' + xf.tickers.length + ')';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+            chip.textContent = chipLabel;
             var xSpan = document.createElement('span');
             xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
             xSpan.textContent = '\u00d7';
             chip.appendChild(xSpan);
-            chip.title = 'Click to clear crosstab filter';
+            chip.title = isCombined ? 'Click to clear combined sector + crosstab filter' : 'Click to clear crosstab filter';
             chip.addEventListener('click', function() {
                 window._activeCrosstabFilter = null;
                 chip.remove();
@@ -16583,6 +16695,20 @@ function setupDualSparklineTooltips() {
         if (window._updateStockPctFilterIndicator) window._updateStockPctFilterIndicator();
         if (window._updateAspDeltaFilterIndicator) window._updateAspDeltaFilterIndicator();
         if (window._updateTenureFilterIndicator) window._updateTenureFilterIndicator();
+        // 393rd review: gender was missing from this site's list
+        // (the sector-analytics row), and these seven never re-ran
+        // on any sector path (board/ceo-cfo already had the combined
+        // label; gov, peer-dist, crosstab, volatility and vol-tenure
+        // gain it this run), so their chips kept lone-filter labels
+        // while combined.
+        if (window._updateGenderFilterIndicator) window._updateGenderFilterIndicator();
+        if (window._updateBoardFilterIndicator) window._updateBoardFilterIndicator();
+        if (window._updateCeoCfoFilterIndicator) window._updateCeoCfoFilterIndicator();
+        if (window._updateGovFilterIndicator) window._updateGovFilterIndicator();
+        if (window._updatePeerDistFilterIndicator) window._updatePeerDistFilterIndicator();
+        if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
+        if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
+        if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
 
                 renderTable(companies);
 
