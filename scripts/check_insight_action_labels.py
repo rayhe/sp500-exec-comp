@@ -30,10 +30,13 @@ card is absent. Render-proved at runtime (39 cards):
 
 The fix: findInsight(label) / setInsightAction(label, action, hint)
 inside populateInsights; every index assignment is now a label
-lookup. A label with no card at runtime (Percentile Concentration)
-simply gets no action, and a missing or reordered card can never
-steal another card's action. Data Quality never had an assignment
-and stays action-less by design.
+lookup. A label with no card at runtime simply gets no action, and a
+missing or reordered card can never steal another card's action.
+(391st review: the 'Percentile Concentration' entry was such a no-op
+-- no card carries that label; the section pushes 'Top 1% vs Bottom
+50%', so the sort-by-percentile action is now assigned to that
+label.) Data Quality never had an assignment and stays action-less
+by design.
 
 Checks:
   C1  HARD FAIL: findInsight / setInsightAction helpers missing.
@@ -65,8 +68,11 @@ Render (headless Chromium, d3 shim from the goal hidden_files cache):
   R5 Pay Inequality is clickable and scrolls to the comp-dist panel.
      Pre-fix: not clickable at all.
   R6 Data Quality stays non-clickable (it never had an action).
-  R7 Top 1% vs Bottom 50% is non-clickable (its accidental
-     'Sort by percentile' action is gone).
+  R7 Top 1% vs Bottom 50% is clickable and sorts by percentile
+     (391st review: the accidental action is now the intended one --
+     the 'Percentile Concentration' label it was assigned to never
+     existed; the card lost the action in the 390th label conversion
+     and regains it here, retargeted to its real label).
   R8 zero page errors across the render half.
 
 Usage:
@@ -101,7 +107,7 @@ LABEL_ACTIONS = [
     ("Pay Range", "View full range"),
     ("Biggest Pay Swing", "Sort by YoY change"),
     ("Equity-Heavy Pay", "Sort by equity %"),
-    ("Percentile Concentration", "Sort by percentile"),
+    ("Top 1% vs Bottom 50%", "Sort by percentile"),
     ("CEO Concentration", "View top CEOs"),
     ("CEO Turnover", "Filter to CEO transitions"),
     ("C-Suite Pay Gap", "View role analysis"),
@@ -357,16 +363,32 @@ def render_checks():
             check("R5 Pay Inequality clickable, scrolls to comp-dist panel",
                   r5_ok, "clickable=%r panel=%r" % (ineq, dist))
 
-            # R6/R7: cards that never had an action stay non-clickable,
-            # and the accidental percentile action is gone.
+            # R6: a card that never had an action stays non-clickable.
+            # R7 (391st review): Top 1% vs Bottom 50% regains its
+            # sort-by-percentile action, retargeted from the phantom
+            # 'Percentile Concentration' label -- clicking it must sort
+            # the table by _compPercentile desc (header marker + a P99
+            # badge on the first row).
             load()
             dq = card_info("Data Quality")
-            top1 = card_info("Top 1% vs Bottom 50%")
             r6_ok = dq is not None and not dq["clickable"]
             check("R6 Data Quality stays non-clickable (never had an action)",
                   r6_ok, "card=%r" % (dq,))
-            r7_ok = top1 is not None and not top1["clickable"]
-            check("R7 Top 1% vs Bottom 50% lost its accidental percentile action",
+            top1 = card_info("Top 1% vs Bottom 50%")
+            click_card("Top 1% vs Bottom 50%")
+            pctile_hdr = pg.evaluate("""() => {
+                const th = document.querySelector('th.sortable[data-sort="_compPercentile"]');
+                return th ? { sortedDesc: th.classList.contains('sorted-desc'),
+                              ariaSort: th.getAttribute('aria-sort') } : null;
+            }""")
+            first_badge = pg.evaluate("""() => {
+                const b = document.querySelector('#comp-tbody > tr .pctile-badge');
+                return b ? b.textContent.trim() : null;
+            }""")
+            r7_ok = (top1 is not None and top1["clickable"]
+                     and pctile_hdr is not None and pctile_hdr["sortedDesc"]
+                     and first_badge == "P99")
+            check("R7 Top 1%% vs Bottom 50%% clickable, sorts by percentile desc (hdr=%r firstBadge=%r)" % (pctile_hdr, first_badge),
                   r7_ok, "card=%r" % (top1,))
 
             r8_ok = len(errors) == 0

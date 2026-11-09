@@ -2680,7 +2680,7 @@ function populateInsights(comp, trends, sectorFilter) {
         });
     }
 
-    // 9. Percentile Concentration — top 1% vs bottom 50%
+    // 9. Top 1% vs Bottom 50% — percentile concentration
     var pctileSorted = companies.slice().sort(function(a, b) { return b.total_compensation - a.total_compensation; });
     var top1PctCount = Math.max(1, Math.round(companies.length * 0.01));
     var bottom50PctCount = Math.floor(companies.length * 0.50);
@@ -3361,17 +3361,21 @@ function populateInsights(comp, trends, sectorFilter) {
     // 390th review: insight-card actions were assigned by numeric index
     // (insights[11] = 'C-Suite Pay Gap', insights[13] = 'Pay Inequality'),
     // but the pushes above are conditional, so the runtime order shifts
-    // whenever a card is absent ('Highest Paid', 'vs S&P 500', 'Zero Pay'
-    // and 'Percentile Concentration' are all absent at runtime). The
-    // drift put 'View role analysis' on CEO Tenure, 'Filter missing
-    // roles' on Tenure vs Pay (clobbering its 'View scatter plot'
-    // action), 'View distribution' on Sector Tenure (clobbering its
+    // whenever a card is absent ('Highest Paid', 'vs S&P 500' and
+    // 'Zero Pay' are all absent at runtime). The drift put
+    // 'View role analysis' on CEO Tenure, 'Filter missing roles' on
+    // Tenure vs Pay (clobbering its 'View scatter plot' action),
+    // 'View distribution' on Sector Tenure (clobbering its
     // filter-to-longest-sector action), 'Sort by percentile' on
     // Top 1% vs Bottom 50%, and left C-Suite Pay Gap, Team
     // Completeness, Pay Inequality and Data Quality with no action at
     // all. Assign by label instead: a missing or reordered card can
     // never steal another card's action, and a label with no card at
     // runtime simply gets no action.
+    // 391st review: the 'Percentile Concentration' assignment below
+    // was a no-op -- no card carries that label; the section pushes
+    // 'Top 1% vs Bottom 50%', so the sort-by-percentile action is
+    // assigned to that label instead.
     function findInsight(label) {
         for (var i = 0; i < insights.length; i++) {
             if (insights[i].label === label) return insights[i];
@@ -3455,8 +3459,10 @@ function populateInsights(comp, trends, sectorFilter) {
     // 8. Equity-Heavy Pay → sort by stock % desc
     setInsightAction('Equity-Heavy Pay', function() { insightResetAndSort('_ceoStockPctSort', 'desc'); }, 'Sort by equity %');
 
-    // 9. Percentile Concentration → sort by percentile descending
-    setInsightAction('Percentile Concentration', function() { insightResetAndSort('_compPercentile', 'desc'); }, 'Sort by percentile');
+    // 9. Top 1% vs Bottom 50% → sort by percentile descending
+    // (391st review: was 'Percentile Concentration', a label no card
+    // carries -- the section pushes 'Top 1% vs Bottom 50%'.)
+    setInsightAction('Top 1% vs Bottom 50%', function() { insightResetAndSort('_compPercentile', 'desc'); }, 'Sort by percentile');
 
     // 10. CEO Concentration → sort by total comp desc (concentrated CEOs tend to be at the top)
     setInsightAction('CEO Concentration', function() { insightResetAndSort('total_compensation', 'desc'); }, 'View top CEOs');
