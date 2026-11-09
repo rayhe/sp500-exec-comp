@@ -7258,7 +7258,13 @@ function renderSummaryBar(filtered, allCompanies) {
     if (filterDims >= 2) {
         html += '<span class="summary-stat combined-filter-badge">';
         html += '<span class="combined-filter-icon">⧉</span>';
-        html += '<span class="summary-stat-label">' + filterParts.join(' × ') + '</span>';
+        // 396th review: each part renders in its own span so the part
+        // boundary is structural, not textual. The joiner ' × ' also
+        // occurs inside the vol-tenure part ('Volatility × Tenure: ...'),
+        // so splitting the badge text on the joiner broke the part
+        // boundary (2 parts read as 3 pieces). The visible text is
+        // unchanged -- the separator spans carry the same ' × '.
+        html += '<span class="summary-stat-label">' + filterParts.map(function(p) { return '<span class="combined-filter-part">' + p + '</span>'; }).join('<span class="combined-filter-sep"> × </span>') + '</span>';
         html += '</span>';
         html += '<span class="summary-divider"></span>';
     }
