@@ -21,7 +21,7 @@ table was filtered to a sector + that dim. The audit found two halves:
      sector-analytics row click, and the Correlation Anomalies scatter
      action -- and filterBySector's list was the stalest (9 calls: it
      also lacked sop, stock-pct, gender and tenure). All six sites now
-     call all twenty indicator updaters (19 chips + the PvP toggle).
+     call all twenty-two indicator updaters (21 chips + the PvP toggle).
      The insight-card sector actions need no call: insightResetAndSort
      nulls every filter and removes every chip before setActiveSector,
      so there is no live chip to go stale.
@@ -42,6 +42,18 @@ the two guards pin all twenty-one chips). The applyHashState half
 was verified closed by the 394th run's audit: both restore sites
 (init and hashchange) render the ceo-cfo chip, and the sop /
 stock-pct chips were fixed at both sites in the 324th review.
+
+Update (395th review, 2026-11-09): the "all twenty at six sites"
+count in this docstring was stale twice over -- the 394th review
+added quartile + position as the 20th and 21st chips (twenty-two
+updaters with the toggle), and the Correlation Anomalies scatter
+action never called the toggle (twenty-one, not twenty-two). The
+395th review adds the toggle call to the scatter action (its render
+is sector-independent -- the count comes from the full companies
+list, so the call is uniformity-only) and corrects the count here
+and in the two "All twenty" comments in js/app.js to twenty-two.
+scripts/check_position_chip_lone_text.py pins the scatter-action
+toggle call and the corrected count claims.
 
 Checks (static - file reads, <1s):
   C1  HARD FAIL: all 19 update*FilterIndicator bodies contain an

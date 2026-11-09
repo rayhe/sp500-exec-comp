@@ -4620,6 +4620,16 @@ function populateInsights(comp, trends, sectorFilter) {
                     // labels lone.
                     if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
                     if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
+                    // 395th review: the PvP toggle joins the refresh
+                    // for uniformity -- the other five sector paths
+                    // re-run all twenty-two updaters (21 chips + the
+                    // toggle) and this one re-ran twenty-one. Its
+                    // render is sector-independent (the count comes
+                    // from the full companies list and the label
+                    // carries no sector part), so the call is a no-op
+                    // in effect; the 393rd "all twenty at six sites"
+                    // claim is corrected to twenty-two.
+                    if (window._updatePvpOnlyToggle) window._updatePvpOnlyToggle();
                 }
                 var scEl = document.getElementById('scatter-chart');
                 if (scEl) scEl.innerHTML = '';
@@ -9367,6 +9377,10 @@ window._updatePeerDistFilterIndicator = updatePeerDistFilterIndicator;
 // is born combined when a sector is already active. The lone styling
 // keeps the dim's own violet (rgba(139,92,246,...), as the inline
 // build had it); the combined state uses the established purple.
+// 395th review: the lone TEXT was accent-cyan inherited from
+// .chip.active (the color assignment was ''), the only blank lone
+// color in the codebase -- fixed here to the dim's own violet
+// #8b5cf6, matching the background/border.
 // The stored label already carries the count for a non-empty filter
 // ('... (12)'); only the empty filter ('-- no above') needs the
 // ' (0)' suffix, as the inline build did. The dismiss glyph moves
@@ -9387,7 +9401,7 @@ function updatePositionFilterIndicator() {
         chip.id = 'position-filter-chip';
         chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(139,92,246,0.15)';
         chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(139,92,246,0.5)';
-        chip.style.color = isCombined ? '#a78bfa' : '';
+        chip.style.color = isCombined ? '#a78bfa' : '#8b5cf6';
         chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
         chip.title = isCombined ? 'Click to clear combined sector + position filter' : 'Click to clear position filter';
         chip.addEventListener('click', function() {
@@ -14325,7 +14339,7 @@ function setupDualSparklineTooltips() {
         // chart sector-bar click), as were board, ceo-cfo, gov,
         // peer-dist, crosstab, volatility and vol-tenure (board /
         // ceo-cfo already had the combined label; the other five gain
-        // it this run). All twenty indicator updaters now re-run here,
+        // it this run). All twenty-two indicator updaters now re-run here,
         // matching the sector-chip paths.
         updateSopFilterIndicator();
         updateStockPctFilterIndicator();
@@ -14560,7 +14574,7 @@ function setupDualSparklineTooltips() {
         // sop, stock-pct, gender, tenure, board, ceo-cfo, gov,
         // peer-dist, crosstab, volatility and vol-tenure were all
         // missing, so their chips kept lone-filter labels after a
-        // sector-bar click. All twenty indicator updaters now re-run.
+        // sector-bar click. All twenty-two indicator updaters now re-run.
         updateSopFilterIndicator();
         updateStockPctFilterIndicator();
         updateGenderFilterIndicator();
