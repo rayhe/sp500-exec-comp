@@ -3391,9 +3391,16 @@ function populateInsights(comp, trends, sectorFilter) {
 
     // 2. $50M+ Club → find the #1 earner in the table with detail panel
     var topTicker = sorted[0] ? sorted[0].ticker : null;
-    setInsightAction('$50M+ Club', function() {
+    var exploreTopCeo = function() {
         if (topTicker && window.findCompanyInTable) window.findCompanyInTable(topTicker);
-    }, 'Explore top CEO');
+    };
+    setInsightAction('$50M+ Club', exploreTopCeo, 'Explore top CEO');
+    // 'Highest Paid' is the no-$50M+ alternative for the same slot
+    // (else branch of the over50M check) -- under the old index code
+    // it sat at index 1 and got this action too. Unreachable at
+    // runtime (there ARE $50M+ CEOs) but the label fix must not
+    // silently drop it in that world.
+    setInsightAction('Highest Paid', exploreTopCeo, 'Explore top CEO');
 
     // 3. Extreme Ratios → filter to ratio > 1000:1
     setInsightAction('Extreme Ratios', function() {

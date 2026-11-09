@@ -46,6 +46,11 @@ Checks:
       is gone (clobbered) or a label assignment targets it.
   C18 HARD FAIL: Sector Tenure's inline 'Filter to <sector>' action
       is gone (clobbered) or a label assignment targets it.
+  C19 HARD FAIL: 'Highest Paid' -- the no-$50M+ alternative for the
+      $50M+ Club slot (same index under the old code) -- does not
+      share the top-CEO action. It is unreachable at runtime (there
+      ARE $50M+ CEOs) but the label fix must not silently drop the
+      action the old index assignment gave it in that world.
 Render (headless Chromium, d3 shim from the goal hidden_files cache):
   R1 Sector Tenure click filters to the longest-tenure sector (active
      sector chip is a real sector, footer < 518, hash has sector=).
@@ -193,6 +198,14 @@ def static_checks():
           li >= 0 and "actionHint: 'Filter to ' + longestSec.name" in st
           and "setInsightAction('Sector Tenure'" not in pop,
           "inline action missing or clobbered by a label assignment")
+
+    # C19: 'Highest Paid' is the else-branch alternative to '$50M+ Club'
+    # for the same slot -- under the old index code it sat at index 1
+    # and got the top-CEO action. The label fix must carry it over.
+    check("C19 'Highest Paid' shares the $50M+ Club top-CEO action",
+          "setInsightAction('Highest Paid'," in pop
+          and "setInsightAction('Highest Paid', exploreTopCeo, 'Explore top CEO')" in pop,
+          "'Highest Paid' has no top-CEO action (dropped in the label conversion)")
 
     return 0
 
