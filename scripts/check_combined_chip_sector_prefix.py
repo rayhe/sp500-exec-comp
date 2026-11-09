@@ -58,9 +58,11 @@ toggle call and the corrected count claims.
 Checks (static - file reads, <1s):
   C1  HARD FAIL: all 19 update*FilterIndicator bodies contain an
       isCombined assignment reading activeSector AND a combined label
-      built as activeSector + '...'. The dist updater's form is
-      `activeSector && !df.sector` (sector-scoped dist), the rest are
-      `!!activeSector`; the check accepts either.
+      built as activeSector + '...' -- or, since the 397th review,
+      as a part span whose textContent is activeSector (the
+      vol-tenure chip renders its parts in spans). The dist
+      updater's form is `activeSector && !df.sector` (sector-scoped
+      dist), the rest are `!!activeSector`; the check accepts either.
   C2a HARD FAIL: the All-chip click handler re-runs all 19 updaters.
   C2b HARD FAIL: the sector-chip click handler re-runs all 19 updaters.
   C2c HARD FAIL: filterBySector re-runs all 19 updaters (bare calls).
@@ -172,12 +174,16 @@ def static_checks():
     # builds a combined label from it. The check looks for the code
     # pattern, not the bare word -- the 393rd comments say "combined
     # label" but never assign isCombined, so prose cannot false-pass.
+    # The label may be a string concat (activeSector + '...') or,
+    # since the 397th review, a part span whose textContent is
+    # activeSector (the vol-tenure chip renders parts in spans).
     missing = []
     for name in UPDATERS:
         body = fn_body(app, "function update%sFilterIndicator(" % name)
         ok = (body is not None
               and re.search(r"var isCombined\s*=.*activeSector", body)
-              and "activeSector + '" in body)
+              and ("activeSector + '" in body
+                   or "textContent = activeSector" in body))
         if not ok:
             missing.append(name)
     check("C1 all 19 indicator updaters build a combined sector label",

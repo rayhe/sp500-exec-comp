@@ -92,9 +92,12 @@ def static_checks():
     # C1/C2: the badge construction line maps parts to spans and
     # carries the separator spans. Pin all three markers to the one
     # summary-stat-label line so a stray span elsewhere cannot
-    # satisfy the checks.
+    # satisfy the checks -- since the 397th review the vol-tenure
+    # chip also carries .combined-filter-part spans, so the search
+    # must require the summary-stat-label marker too.
     badge_lines = [ln for ln in app.splitlines()
-                   if "combined-filter-part" in ln]
+                   if "combined-filter-part" in ln
+                   and "summary-stat-label" in ln]
     line = badge_lines[0] if badge_lines else ""
     ok_c1 = (len(badge_lines) == 1
              and "filterParts.map(function(p)" in line

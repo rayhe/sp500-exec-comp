@@ -9675,14 +9675,34 @@ function updateVolTenureFilterIndicator() {
         // Tenure: ...' -- the middle '×' is the dim's own separator
         // (392nd-review badge-joiner note), not a second join.
         var isCombined = !!activeSector;
-        var chipLabel = isCombined ? activeSector + ' × Volatility × Tenure: ' + (vtb.label || '') : 'Volatility × Tenure: ' + (vtb.label || '');
+        // 397th review: each part renders in its own span (the same
+        // structural fix the 396th review made to the badge) -- the
+        // combined label reads 'Sector × Volatility × Tenure: ...'
+        // and the dim's own ' × ' is not a part boundary, so a
+        // single text node would split into three pieces. The dim
+        // part keeps its internal ' × ' (structural fix only, no
+        // relabel); the close-button span below is untouched.
+        var dimLabel = 'Volatility × Tenure: ' + (vtb.label || '');
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'vol-tenure-chip';
         chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
         chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
         chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
-        chip.textContent = chipLabel;
+        if (isCombined) {
+            var sectorSpan = document.createElement('span');
+            sectorSpan.className = 'combined-filter-part';
+            sectorSpan.textContent = activeSector;
+            chip.appendChild(sectorSpan);
+            var sepSpan = document.createElement('span');
+            sepSpan.className = 'combined-filter-sep';
+            sepSpan.textContent = ' × ';
+            chip.appendChild(sepSpan);
+        }
+        var dimSpan = document.createElement('span');
+        dimSpan.className = 'combined-filter-part';
+        dimSpan.textContent = dimLabel;
+        chip.appendChild(dimSpan);
         var xSpan = document.createElement('span');
         xSpan.style.cssText = 'margin-left:4px;font-weight:700;';
         xSpan.textContent = '\u00d7';
