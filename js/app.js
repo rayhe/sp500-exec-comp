@@ -14803,7 +14803,14 @@ function setupDualSparklineTooltips() {
         if (window._activeSopFilter) {
             var sf = window._activeSopFilter;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × SoP ' + sf.label : 'SoP: ' + sf.label;
+            // 399th review: the dim label is factored as the lone
+            // form ('SoP: ' + label) so the combined chip keeps the
+            // colon the lone chip and the badge both carry -- the
+            // old combined form ('Sector x SoP ' + label) dropped
+            // it, the same chip-wording-must-match-badge class the
+            // 398th review closed for concentration.
+            var dimLabel = 'SoP: ' + sf.label;
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'sop-filter-chip';
