@@ -7239,7 +7239,10 @@ function renderSummaryBar(filtered, allCompanies) {
     // matching the lone chip and the announce -- the bare label dropped the
     // tag, the same class the 401st review closed for CEO/CFO.
     if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.tag + ' (' + window._activePctileTier.label + ')'); }
-    if (window._activeStockPctTier) { filterDims++; filterParts.push('Equity: ' + window._activeStockPctTier.label); }
+    // 403rd review: the badge part now carries the tag ('Equity-dominant (80–100%)'),
+    // matching the lone chip and the announce -- the bare 'Equity: ' + label
+    // dropped the tag, the same class the 402nd review closed for percentile.
+    if (window._activeStockPctTier) { filterDims++; filterParts.push(window._activeStockPctTier.tag + ' (' + window._activeStockPctTier.label + ')'); }
     if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
     if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
     if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
@@ -15233,7 +15236,19 @@ function setupDualSparklineTooltips() {
         if (window._activeStockPctTier) {
             var sp = window._activeStockPctTier;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' \u00d7 Equity: ' + sp.label : sp.tag + ' (' + sp.label + ')';
+            // 403rd review: the dim label is factored as the lone
+            // form (tag + ' (' + label + ')') so the combined chip
+            // keeps the tag the lone chip and the badge both carry --
+            // the old combined form ('Sector x Equity: ' + label)
+            // dropped it, the same chip-wording-must-match-badge
+            // class the 402nd review closed for percentile and the
+            // 401st for CEO/CFO, and the remaining item of the
+            // queued candidate (2) the 401st review named
+            // explicitly. The badge half of this fix is in the
+            // combined-filter badge builder (same file), which also
+            // pushed 'Equity: ' + label with no tag.
+            var dimLabel = sp.tag + ' (' + sp.label + ')';
+            var chipLabel = isCombined ? activeSector + ' \u00d7 ' + dimLabel : dimLabel;
             var tierColor = sp.color || '#a1a1aa';
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
