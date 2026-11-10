@@ -13292,6 +13292,28 @@ function serializeState() {
         if (window._activePositionFilter.rank != null) params.push('psr=' + window._activePositionFilter.rank);
         if (window._activePositionFilter.direction) params.push('psd=' + encodeURIComponent(window._activePositionFilter.direction));
     }
+    // 411th review: the quartile filter was the last ticker-list
+    // filter without a hash carrier -- a shared link into a
+    // quartile-filtered view dropped the filter on load (table
+    // unfiltered, no chip) while the URL described nothing, and a
+    // back/forward navigation could not drop it either (it was
+    // session-local by design). Mirror the position carrier:
+    // tickers + label, plus the composite toggle key (communityId,
+    // _lo, _hi) so a restored filter toggles off on a second click
+    // of the same zone (the zone click handler compares
+    // communityId + _lo + _hi) and the zone re-marks itself. The
+    // gate is the label, not the ticker list: an empty zone filter
+    // (no company total in range) still restores its chip + empty
+    // table. _lo/_hi serialize as plain JS numbers and parseFloat
+    // round-trips them exactly, so the restored key matches the
+    // zone's data-bp-lo / data-bp-hi doubles bit-for-bit.
+    if (window._activeQuartileFilter) {
+        params.push('qtk=' + encodeURIComponent(window._activeQuartileFilter.tickers.join(',')));
+        params.push('qlbl=' + encodeURIComponent(window._activeQuartileFilter.label));
+        if (window._activeQuartileFilter.communityId != null) params.push('qcid=' + window._activeQuartileFilter.communityId);
+        if (window._activeQuartileFilter._lo != null) params.push('qlo=' + window._activeQuartileFilter._lo);
+        if (window._activeQuartileFilter._hi != null) params.push('qhi=' + window._activeQuartileFilter._hi);
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -13418,12 +13440,13 @@ function applyHashState(companies) {
     // Sector
     if (state.sector) {
         setActiveSector(state.sector);
-        // 389th review: scope to sector chips -- vol/board/quartile
+        // 389th review: scope to sector chips -- vol/board
         // are session-local (not hash-serialized) and
         // survive a hash change, so the old document-wide sweep
-        // stripped 'active' from their live chips. (Community and
-        // position used to be on this list; they joined the
-        // serialized set in the 409th and 410th reviews.)
+        // stripped 'active' from their live chips. (Community,
+        // position and quartile used to be on this list; they
+        // joined the serialized set in the 409th, 410th and
+        // 411th reviews.)
         updateSectorChipStates(state.sector);
     }
 
@@ -13661,6 +13684,38 @@ function applyHashState(companies) {
         var psRank = state.psr != null ? parseInt(state.psr, 10) : NaN;
         window._activePositionFilter = { tickers: psTickers, label: state.pslbl, communityId: isNaN(psCid) ? null : psCid, metric: state.psm, rank: isNaN(psRank) ? null : psRank, direction: state.psd || 'above' };
         if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
+    }
+
+    // Quartile filter (mirror of the position restore above --
+    // 411th review). The tickers are the filter; the composite key
+    // (communityId/_lo/_hi) is what the zone-click toggle compares,
+    // so a restored filter without it would re-set instead of
+    // clearing on a second click of the same zone. A hand-built link
+    // without the key parts still restores the table filter and
+    // chip (nulls, same as a key-less position link). The gate is
+    // the label, not the ticker list: an empty zone filter (no
+    // company total in range) has zero tickers and must still
+    // restore its chip + empty table. The chip is created by the
+    // indicator call, so both restore sites (init + hashchange) get
+    // it, like position. The zone re-marks itself when the metrics
+    // panel is built (build-time marking in network.js) or, when
+    // the panel is already rendered, right here via a guarded
+    // query (community mode is off at boot, so the zones usually
+    // do not exist yet at restore time -- the build-time marking
+    // is the path that fires). No scatter redraw: the scatter never
+    // reads the quartile filter.
+    if (state.qlbl) {
+        var qTickers = state.qtk ? state.qtk.split(',').filter(function(t) { return t.length > 0; }) : [];
+        var qCid = state.qcid != null ? parseInt(state.qcid, 10) : NaN;
+        var qLo = state.qlo != null ? parseFloat(state.qlo) : NaN;
+        var qHi = state.qhi != null ? parseFloat(state.qhi) : NaN;
+        window._activeQuartileFilter = { tickers: qTickers, label: state.qlbl, communityId: isNaN(qCid) ? null : qCid, _lo: isNaN(qLo) ? null : qLo, _hi: isNaN(qHi) ? null : qHi };
+        if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (!isNaN(qCid) && !isNaN(qLo) && !isNaN(qHi)) {
+            document.querySelectorAll('.cm-bp-zone[data-bp-cid="' + qCid + '"]').forEach(function(z) {
+                if (parseFloat(z.dataset.bpLo) === qLo && parseFloat(z.dataset.bpHi) === qHi) z.classList.add('cm-bp-zone-clicked');
+            });
+        }
     }
 
     // Role filter
@@ -19754,14 +19809,16 @@ function setupDualSparklineTooltips() {
         // peerdist / crosstab / pvponly / role kept filtering with
         // stale chips, toggles, or role chips while the URL no longer
         // described the view. Null them all; applyHashState restores
-        // exactly the ones the new hash carries. Vol / board /
-        // quartile are NOT hash-serialized, so
+        // exactly the ones the new hash carries. Vol / board
+        // are NOT hash-serialized, so
         // a hash change cannot drop them -- they stay session-local
         // by design and are intentionally not reset here. Community
         // joined the serialized set in the 409th review (cmtk/cmlbl/
         // cmid), so it IS nulled below like the other serialized dims.
         // Position joined it in the 410th review (pstk/pslbl/pscid/
-        // psm/psr/psd), so it IS nulled below too.
+        // psm/psr/psd), so it IS nulled below too. Quartile joined it
+        // in the 411th review (qtk/qlbl/qcid/qlo/qhi), so it IS
+        // nulled below too.
         window._activeConcTier = null;
         window._activeCeoCfoBucket = null;
         window._activeSopFilter = null;
@@ -19789,6 +19846,11 @@ function setupDualSparklineTooltips() {
         // the filter survives with its chip removed (the 341st
         // stuck-filter class).
         window._activePositionFilter = null;
+        // 411th review: quartile is hash-serialized now (qtk), so a
+        // hash change that drops it must null the filter -- otherwise
+        // the filter survives with its chip removed (the 341st
+        // stuck-filter class).
+        window._activeQuartileFilter = null;
         window._activePvpOnlyFilter = false;
         // Same class, navigation state rather than a filter: the
         // section deep-link is hash-serialized too, so a hash change
@@ -19811,14 +19873,15 @@ function setupDualSparklineTooltips() {
         document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
         // 389th review: scope the chip reset to sector chips only --
-        // vol/board/quartile are intentionally not reset
+        // vol/board are intentionally not reset
         // here (not hash-serialized; see the comment above), so the
         // old document-wide sweep stripped 'active' from their live
         // chips. Community IS hash-serialized since the 409th review
-        // and position since the 410th, and both are removed by id
+        // and position since the 410th, and quartile since the 411th,
+        // and all three are removed by id
         // in the chip list above, with the community legend /
-        // metrics-row highlights and the position clicked row
-        // cleared alongside.
+        // metrics-row highlights, the position clicked row and the
+        // quartile clicked zone cleared alongside.
         // applyHashState restores the hashed sector below.
         updateSectorChipStates(null);
         var rc = document.getElementById('ratio-filter-chip');
@@ -19842,7 +19905,7 @@ function setupDualSparklineTooltips() {
          'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
          'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip',
          'ceocfo-filter-chip', 'community-filter-chip',
-         'position-filter-chip'
+         'position-filter-chip', 'quartile-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -19865,6 +19928,15 @@ function setupDualSparklineTooltips() {
         // the filter and the panel re-opens, so clearing here is safe.
         document.querySelectorAll('.cb-pos-row-clicked').forEach(function(el) {
             el.classList.remove('cb-pos-row-clicked');
+        });
+        // 411th review: same class as the position clear above -- a
+        // dropped quartile filter must not leave its box-plot zone
+        // marked clicked (the chip-click path clears it). The zone
+        // re-marks itself when the new hash carries the filter
+        // (restore-time query above, or build-time marking in
+        // network.js), so clearing here is safe.
+        document.querySelectorAll('.cm-bp-zone-clicked').forEach(function(el) {
+            el.classList.remove('cm-bp-zone-clicked');
         });
         // 374th review: the strip is a persistent container, not a chip --
         // empty it, never remove it (applyHashState re-fills it via the

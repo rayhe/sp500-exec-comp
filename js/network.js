@@ -5068,7 +5068,24 @@ function initNetwork(peerData) {
                         var c = _compLookup[t];
                         if (c && c.total != null && c.total >= z.lo && c.total <= z.hi) zCount++;
                     });
-                    html += '<div class="cm-bp-zone" data-bp-cid="' + r.id + '" data-bp-lo="' + z.lo + '" data-bp-hi="' + z.hi + '" data-bp-color="' + r.color + '" title="' + z.label + ': ' + _fmtComp(z.lo) + ' \u2013 ' + _fmtComp(z.hi) + ' \u00b7 ' + zCount + ' companies" style="left:' + zLeft.toFixed(1) + '%;width:' + zW.toFixed(1) + '%"></div>';
+                    // 411th review: mark the active quartile's zone at
+                    // build time, like the community legend / metrics
+                    // rows (409th review C13/C14). The metrics panel
+                    // re-renders on community-mode toggle and column
+                    // sort, which rebuilds the zone HTML from scratch
+                    // -- without this a restored quartile filter (deep
+                    // link, or a back/forward navigation) would keep
+                    // filtering with no zone marked clicked once the
+                    // panel re-rendered. The toggle key is the same
+                    // composite (communityId + _lo + _hi) the zone
+                    // click handler compares; the restore-time query
+                    // in applyHashState covers the already-rendered
+                    // case (community mode on during a hashchange).
+                    var _isActiveQ = window._activeQuartileFilter &&
+                        window._activeQuartileFilter.communityId === r.id &&
+                        window._activeQuartileFilter._lo === z.lo &&
+                        window._activeQuartileFilter._hi === z.hi;
+                    html += '<div class="cm-bp-zone' + (_isActiveQ ? ' cm-bp-zone-clicked' : '') + '" data-bp-cid="' + r.id + '" data-bp-lo="' + z.lo + '" data-bp-hi="' + z.hi + '" data-bp-color="' + r.color + '" title="' + z.label + ': ' + _fmtComp(z.lo) + ' \u2013 ' + _fmtComp(z.hi) + ' \u00b7 ' + zCount + ' companies" style="left:' + zLeft.toFixed(1) + '%;width:' + zW.toFixed(1) + '%"></div>';
                 });
                 html += '</div>';
             } else {

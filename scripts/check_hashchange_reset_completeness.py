@@ -20,7 +20,7 @@ this guard -- update the handler, do not silence the guard.
 
 Deliberately NOT required here (and asserted absent from the AF-select
 list, so a future edit cannot silently widen the reset):
-  vol / board / quartile -- NOT hash-serialized,
+  vol / board -- NOT hash-serialized,
   so a hash change cannot drop them; they stay session-local by design
   (same reasoning as resetAllFilters keeping _activeBoardFilter).
   Community was on this list until the 409th review (2026-11-10),
@@ -28,6 +28,9 @@ list, so a future edit cannot silently widen the reset):
   the nulled set + CHIP_IDS below. Position was on it until the
   410th review (2026-11-10), when it gained hash serialization
   (pstk/pslbl/pscid/psm/psr/psd) and joined the same way.
+  Quartile was on it until the 411th review (2026-11-10), when it
+  gained hash serialization (qtk/qlbl/qcid/qlo/qhi) and joined the
+  same way.
   _compareSet -- synced separately in the handler's restore block
   (compareSet.length = 0 + hash cmp refill), not nulled in reset.
   _expandedDetailTicker / _activeDiffKey -- already nulled pre-fix.
@@ -87,7 +90,7 @@ CHIP_IDS = [
     "stockpct-filter-chip", "peer-dist-chip", "crosstab-filter-chip",
     "transition-filter-chip", "team-filter-chip", "yoy-filter-chip",
     "ceocfo-filter-chip", "community-filter-chip",
-    "position-filter-chip",
+    "position-filter-chip", "quartile-filter-chip",
 ]
 
 # AF selects for exactly the AF-mapped dims nulled in the reset block.
