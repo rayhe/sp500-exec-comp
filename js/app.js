@@ -9346,7 +9346,20 @@ function updatePeerDistFilterIndicator() {
         // peer-dist chip kept its lone-filter label while the table
         // was filtered to a sector + peer bucket.
         var isCombined = !!activeSector;
-        var chipLabel = isCombined ? activeSector + ' × ' + pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')' : pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')';
+        // 405th review: the chip dropped the 'Peers: ' prefix the
+        // badge ('Peers: ' + label) and the announce ('Filtered to
+        // N peer companies in ... range') both carry -- the bare pay
+        // range ('$8M-$12M (42)') read as an anonymous range filter
+        // with no indication it is the peer-distribution dimension.
+        // The dim label is factored once and used in both the lone
+        // and combined forms; the count suffix is kept (quantitative
+        // content, also in the announce), so no relabel, no new
+        // wording. Same chip-wording-must-match-badge class the
+        // 404th review closed for tenure, the 403rd for equity-mix,
+        // the 402nd for percentile, the 401st for CEO/CFO, the 400th
+        // for YoY, the 399th for SoP, and the 398th for concentration.
+        var dimLabel = 'Peers: ' + pf.label + ' (' + (pf.tickers ? pf.tickers.length : 0) + ')';
+        var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'peer-dist-chip';
