@@ -7235,7 +7235,10 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
     if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
     if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
-    if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.label); }
+    // 402nd review: the badge part now carries the tag ('Top Decile (P90+)'),
+    // matching the lone chip and the announce -- the bare label dropped the
+    // tag, the same class the 401st review closed for CEO/CFO.
+    if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.tag + ' (' + window._activePctileTier.label + ')'); }
     if (window._activeStockPctTier) { filterDims++; filterParts.push('Equity: ' + window._activeStockPctTier.label); }
     if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
     if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
@@ -15126,7 +15129,18 @@ function setupDualSparklineTooltips() {
         if (window._activePctileTier) {
             var pt = window._activePctileTier;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' \u00d7 ' + pt.label : pt.tag + ' (' + pt.label + ')';
+            // 402nd review: the dim label is factored as the lone
+            // form (tag + ' (' + label + ')') so the combined chip
+            // keeps the tag the lone chip and the badge both carry --
+            // the old combined form ('Sector x ' + label) dropped
+            // it, the same chip-wording-must-match-badge class the
+            // 401st review closed for CEO/CFO and the 400th for YoY,
+            // and the first item of the queued candidate (2) the
+            // 401st review named explicitly. The badge half of this
+            // fix is in the combined-filter badge builder (same
+            // file), which also pushed the bare label.
+            var dimLabel = pt.tag + ' (' + pt.label + ')';
+            var chipLabel = isCombined ? activeSector + ' \u00d7 ' + dimLabel : dimLabel;
             var tierColor = pt.color || '#a1a1aa';
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
