@@ -4742,8 +4742,14 @@ function initNetwork(peerData) {
     // (all six app.js sites call it via window, guarded: this file is
     // a separate script, so a bare call would throw if it failed to
     // load) and at set time, so the chip is born combined when a
-    // sector is already active. The lone styling is already the
-    // combined purple, so only the label gains the sector prefix.
+    // sector is already active.
+    // 406th review: the lone styling was the combined purple too, so a
+    // lone quartile chip was visually identical to a combined one --
+    // the only indicator whose lone/combined states differed by label
+    // alone (every app.js updater conditions bg/border/color on
+    // isCombined). The lone state now uses the network cyan (#00b4d8)
+    // the peer-dist / volatility / dist siblings use; purple stays
+    // reserved for the combined state.
     function updateQuartileFilterIndicator() {
         var existing = document.getElementById('quartile-filter-chip');
         if (existing) existing.remove();
@@ -4754,9 +4760,9 @@ function initNetwork(peerData) {
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'quartile-filter-chip';
-            chip.style.background = 'rgba(167,139,250,0.15)';
-            chip.style.borderColor = 'rgba(167,139,250,0.5)';
-            chip.style.color = '#a78bfa';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
             chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
             chip.title = isCombined ? 'Click to clear combined sector + quartile filter' : 'Click to clear quartile filter';
             chip.addEventListener('click', function() {
