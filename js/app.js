@@ -16237,8 +16237,21 @@ function setupDualSparklineTooltips() {
             // treatment the other indicator updaters use) -- the
             // crosstab chip kept its lone-filter label when a sector
             // filter was combined with it.
+            // 414th review: the chip was the only surface that dropped
+            // the 'Crosstab: ' dimension prefix -- the badge part
+            // pushes 'Crosstab: ' + label (js/app.js) and the
+            // renderTable announce names it ('crosstab: ' + label),
+            // so the chip read 'Tenure: 0-5 x Gov: A (12)' with no
+            // indication it is the crosstab filter. Same
+            // chip-wording-must-match-badge class the 405th review
+            // closed for peer-dist ('Peers: '), the 404th for tenure,
+            // the 403rd for equity-mix, the 402nd for percentile.
+            // Factor the dim label as the badge form plus the count
+            // suffix (quantitative content the filterTableByTickers
+            // announce also carries) and use it in both forms.
+            var dimLabel = 'Crosstab: ' + xf.label + ' (' + xf.tickers.length + ')';
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × ' + xf.label + ' (' + xf.tickers.length + ')' : xf.label + ' (' + xf.tickers.length + ')';
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'crosstab-filter-chip';
