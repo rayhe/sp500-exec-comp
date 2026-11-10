@@ -21,10 +21,20 @@ table was filtered to a sector + that dim. The audit found two halves:
      sector-analytics row click, and the Correlation Anomalies scatter
      action -- and filterBySector's list was the stalest (9 calls: it
      also lacked sop, stock-pct, gender and tenure). All six sites now
-     call all twenty-two indicator updaters (21 chips + the PvP toggle).
+     call all twenty-three indicator updaters (22 chips + the PvP toggle).
      The insight-card sector actions need no call: insightResetAndSort
      nulls every filter and removes every chip before setActiveSector,
      so there is no live chip to go stale.
+
+Update (407th review, 2026-11-10): the community filter gains a chip
+(updateCommunityFilterIndicator, js/network.js) as the 22nd chip, so
+the six sector paths now call all twenty-three indicator updaters (22
+chips + the toggle). The count claims above are corrected to
+twenty-three; the 394th paragraph's "together the two guards pin all
+twenty-one chips" is now three guards pinning all twenty-two chips
+(the new scripts/check_community_chip_combined_label.py pins the
+community chip). scripts/check_position_chip_lone_text.py C5 is
+updated in the same commit to pin the corrected phrase.
 
 Out of scope (next-run candidates, not pinned here): the quartile and
 position chips are inline-built in network.js / the detail panel with

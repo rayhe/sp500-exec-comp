@@ -30,12 +30,17 @@ Checks (all static - small JS reads, <2s):
      Advanced-Filters owned but Reset All claims it too.)
   C3 HARD FAIL: sortTableByKey nulls a filter's state without removing
      that filter's chip. Only chips that are actually created somewhere
-     are required (community/volatility/vol-tenure states have no chip
-     rendered, so their absence from the removal set is not a bug).
+     are required; since the 327th review (volatility/vol-tenure) and
+     the 407th review (community) all three formerly chipless states
+     have chips, so no dim is exempt from the removal set anymore.
 
 Documented defensive no-ops in resetAllFilters' list (kept, not bugs):
   volatility-filter-chip, vol-tenure-chip, community-filter-chip -
-  ids for states whose chip is never rendered; the removals no-op.
+  formerly ids for states whose chip was never rendered; all three
+  are created now (volatility/vol-tenure since the 327th review,
+  community since the 407th), so the set currently excuses nothing
+  and is kept only so a future chipless dim can rejoin it without a
+  code change.
 
 Usage:
   scripts/check_chip_id_consistency.py              # same checks

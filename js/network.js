@@ -4538,6 +4538,7 @@ function initNetwork(peerData) {
                     if (scEl) scEl.innerHTML = '';
                     if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     if (typeof announce === 'function') announce('Community filter cleared');
+                    updateCommunityFilterIndicator();
                 } else {
                     // Set community filter
                     item.classList.add('community-legend-active');
@@ -4558,6 +4559,7 @@ function initNetwork(peerData) {
                         window.scrollTo({ top: top, behavior: typeof getScrollBehavior === 'function' ? getScrollBehavior() : 'smooth' });
                     }
                     if (typeof announce === 'function') announce('Filtered to ' + cs.tickers.length + ' companies in ' + cs.label);
+                    updateCommunityFilterIndicator();
                 }
             });
 
@@ -4780,6 +4782,53 @@ function initNetwork(peerData) {
         }
     }
     window._updateQuartileFilterIndicator = updateQuartileFilterIndicator;
+
+    // 407th review: the community filter was the only filter dim with
+    // no chip at all -- the combined badge named it ('Community: ' +
+    // label, js/app.js) and the announce named it, but the table
+    // controls showed no dismiss chip, so a reader on the table tab
+    // could not clear the filter without returning to the network tab
+    // and re-clicking the community. This mirrors the quartile chip
+    // (same file): lone label is the badge form ('Community: ' +
+    // label), combined gains the sector prefix, lone is network cyan,
+    // combined is purple.
+    function updateCommunityFilterIndicator() {
+        var existing = document.getElementById('community-filter-chip');
+        if (existing) existing.remove();
+        if (window._activeCommunityFilter) {
+            var cf = window._activeCommunityFilter;
+            var dimLabel = 'Community: ' + cf.label;
+            var isCombined = !!window._activeSector;
+            var chipLabel = isCombined ? window._activeSector + ' × ' + dimLabel : dimLabel;
+            var chip = document.createElement('button');
+            chip.className = 'chip active combined-filter-chip';
+            chip.id = 'community-filter-chip';
+            chip.style.background = isCombined ? 'rgba(167,139,250,0.15)' : 'rgba(0,180,216,0.15)';
+            chip.style.borderColor = isCombined ? 'rgba(167,139,250,0.5)' : 'rgba(0,180,216,0.5)';
+            chip.style.color = isCombined ? '#a78bfa' : '#00b4d8';
+            chip.innerHTML = chipLabel + ' <span style="margin-left:4px;font-weight:700;">×</span>';
+            chip.title = isCombined ? 'Click to clear combined sector + community filter' : 'Click to clear community filter';
+            chip.addEventListener('click', function() {
+                window._activeCommunityFilter = null;
+                window._activeCommunityScatterTickers = null;
+                chip.remove();
+                document.querySelectorAll('.community-legend-active').forEach(function(el) {
+                    el.classList.remove('community-legend-active');
+                });
+                document.querySelectorAll('.cm-data.cm-active').forEach(function(r) {
+                    r.classList.remove('cm-active');
+                });
+                if (typeof renderTable === 'function') renderTable(window._chartData.companies);
+                var scEl = document.getElementById('scatter-chart');
+                if (scEl) scEl.innerHTML = '';
+                if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
+                if (typeof announce === 'function') announce('Community filter cleared');
+            });
+            var controls = document.querySelector('.table-controls');
+            if (controls) controls.appendChild(chip);
+        }
+    }
+    window._updateCommunityFilterIndicator = updateCommunityFilterIndicator;
 
     function _renderCommunityMetrics() {
         // Remove old panel
@@ -5158,6 +5207,7 @@ function initNetwork(peerData) {
                     if (scEl) scEl.innerHTML = '';
                     if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     if (typeof announce === 'function') announce('Community filter cleared');
+                    updateCommunityFilterIndicator();
                     // Update row highlight
                     _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(r) { r.classList.remove('cm-active'); });
                 } else {
@@ -5175,6 +5225,7 @@ function initNetwork(peerData) {
                         if (legendItem) legendItem.classList.add('community-legend-active');
                     }
                     if (typeof announce === 'function') announce('Filtered to ' + cs.tickers.length + ' companies in ' + cs.label);
+                    updateCommunityFilterIndicator();
                     // Update row highlight
                     _communityMetricsEl.querySelectorAll('.cm-data').forEach(function(r) { r.classList.remove('cm-active'); });
                     row.classList.add('cm-active');
@@ -6232,6 +6283,7 @@ function initNetwork(peerData) {
                     if (scEl) scEl.innerHTML = '';
                     if (typeof drawScatterChart === 'function' && window._chartData) drawScatterChart(window._chartData.companies);
                     if (typeof announce === 'function') announce('Filtered to ' + fromCs.tickers.length + ' companies in ' + fromCs.label);
+                    updateCommunityFilterIndicator();
                 } else {
                     var fromTickers = new Set(fromCs.tickers);
                     var toTickers = new Set(toCs.tickers);

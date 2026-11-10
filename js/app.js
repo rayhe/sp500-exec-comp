@@ -2269,13 +2269,15 @@ function sortTableByKey(key, dir) {
     // aspdelta/peer-dist/position/crosstab chips visible with their state
     // cleared. Gov/volatility/vol-tenure/yoy/board chips are intentionally
     // kept: sortTableByKey does not clear those filters' state. Community
-    // state is cleared but no community chip is ever rendered.)
+    // joins the removal list in the 407th review: the community chip
+    // exists now (network.js), so clearing its state must remove it.)
     ['ratio-filter-chip', 'dist-filter-chip', 'peer-dist-chip',
      'conc-filter-chip', 'sop-filter-chip', 'transition-filter-chip',
      'team-filter-chip', 'pctile-filter-chip', 'stockpct-filter-chip',
      'gender-filter-chip', 'aspdelta-filter-chip', 'tenure-filter-chip',
      'quartile-filter-chip', 'position-filter-chip',
-     'crosstab-filter-chip', 'ceocfo-filter-chip'].forEach(function(id) {
+     'crosstab-filter-chip', 'ceocfo-filter-chip',
+     'community-filter-chip'].forEach(function(id) {
         var chip = document.getElementById(id);
         if (chip) chip.remove();
     });
@@ -3277,6 +3279,10 @@ function populateInsights(comp, trends, sectorFilter) {
             document.querySelectorAll('.community-legend-active').forEach(function(el) {
                 el.classList.remove('community-legend-active');
             });
+            // 407th review: the community chip exists now (network.js),
+            // so this path must remove it like the quartile block below.
+            var cff = document.getElementById('community-filter-chip');
+            if (cff) cff.remove();
             // 356th review: the legend classes above are only two of the
             // three stale visuals -- the scatter crosshairs + floating
             // label also survive this path (same class as the Reset All
@@ -4619,7 +4625,11 @@ function populateInsights(comp, trends, sectorFilter) {
                     // no updater, so a sector change left their
                     // labels lone.
                     if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+                    if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
                     if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
+                    // 407th review: community joins the refresh as
+                    // the 22nd chip, so the count is now twenty-three
+                    // (22 chips + the toggle).
                     // 395th review: the PvP toggle joins the refresh
                     // for uniformity -- the other five sector paths
                     // re-run all twenty-two updaters (21 chips + the
@@ -5480,6 +5490,7 @@ function buildSectorChips(companies) {
         // their chips were inline-built with no updater, so a sector
         // change left their labels lone.
         if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
         if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(null);
@@ -5529,6 +5540,7 @@ function buildSectorChips(companies) {
         // their chips were inline-built with no updater, so a sector
         // change left their labels lone.
         if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
         if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
             renderTable(companies);
             if (window.highlightSectorBar) window.highlightSectorBar(s);
@@ -14384,7 +14396,7 @@ function setupDualSparklineTooltips() {
         // chart sector-bar click), as were board, ceo-cfo, gov,
         // peer-dist, crosstab, volatility and vol-tenure (board /
         // ceo-cfo already had the combined label; the other five gain
-        // it this run). All twenty-two indicator updaters now re-run here,
+        // it this run). All twenty-three indicator updaters now re-run here,
         // matching the sector-chip paths.
         updateSopFilterIndicator();
         updateStockPctFilterIndicator();
@@ -14403,9 +14415,10 @@ function setupDualSparklineTooltips() {
         // app.js function, so the bare call matches this list;
         // quartile lives in network.js (a separate script), so its
         // call is guarded -- a bare call would throw if that script
-        // failed to load. Twenty-two updaters re-run here now.
+        // failed to load. Twenty-three updaters re-run here now.
         updatePositionFilterIndicator();
         if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
 
         renderTable(companies);
         pushState();
@@ -14619,7 +14632,7 @@ function setupDualSparklineTooltips() {
         // sop, stock-pct, gender, tenure, board, ceo-cfo, gov,
         // peer-dist, crosstab, volatility and vol-tenure were all
         // missing, so their chips kept lone-filter labels after a
-        // sector-bar click. All twenty-two indicator updaters now re-run.
+        // sector-bar click. All twenty-three indicator updaters now re-run.
         updateSopFilterIndicator();
         updateStockPctFilterIndicator();
         updateGenderFilterIndicator();
@@ -14633,10 +14646,11 @@ function setupDualSparklineTooltips() {
         updateVolTenureFilterIndicator();
         // 394th review: quartile and position join the refresh (same
         // shape as filterBySector above: position bare, quartile
-        // guarded -- it lives in network.js). Twenty-two updaters
+        // guarded -- it lives in network.js). Twenty-three updaters
         // re-run here now.
         updatePositionFilterIndicator();
         if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
 
         renderTable(companies);
         if (window.highlightSectorBar) window.highlightSectorBar(activeSector);
@@ -16400,6 +16414,10 @@ function setupDualSparklineTooltips() {
                 el.classList.remove('community-legend-active');
             });
             if (window.clearCommunityHighlight) window.clearCommunityHighlight();
+            // 407th review: the community chip exists now (network.js),
+            // so this path must remove it like the quartile block below.
+            var cff2 = document.getElementById('community-filter-chip');
+            if (cff2) cff2.remove();
         }
         if (window._activeQuartileFilter) {
             window._activeQuartileFilter = null;
@@ -16895,6 +16913,7 @@ function setupDualSparklineTooltips() {
         // their chips were inline-built with no updater, so a sector
         // change left their labels lone.
         if (window._updateQuartileFilterIndicator) window._updateQuartileFilterIndicator();
+        if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
         if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
 
                 renderTable(companies);

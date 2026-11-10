@@ -22,6 +22,13 @@ and corrects the count claims ("all twenty at six sites" in the
 393rd guard docstring and the two "All twenty" comments in
 js/app.js) to twenty-two.
 
+Update (407th review, 2026-11-10): the community filter gains a chip
+as the 22nd chip, so the six sector paths now call all twenty-three
+indicator updaters (22 chips + the PvP toggle). The count claims are
+corrected to twenty-three here, in the 393rd guard's docstring, and
+in the four present-tense "twenty-two updaters" comments in
+js/app.js; C5 below pins the corrected phrase.
+
 Checks (static - file reads, <1s):
   C1  HARD FAIL: updatePositionFilterIndicator sets the lone color to
       '#8b5cf6' (the combined branch keeps '#a78bfa').
@@ -38,9 +45,10 @@ Checks (static - file reads, <1s):
       the guarded form's text contains the bare call as a substring,
       so a plain substring check would pass vacuously (394th review).
   C5  HARD FAIL: the count claims are corrected -- the 393rd guard's
-      docstring says "twenty-two indicator updaters (21 chips + the
+      docstring says "twenty-three indicator updaters (22 chips + the
       PvP toggle)" and js/app.js carries no "All twenty indicator
-      updaters" (the stale phrase).
+      updaters" (the stale phrase). (407th review: community is the
+      22nd chip, so the count moved from twenty-two to twenty-three.)
 Render (headless Chromium, real d3 shim -- the scatter action redraws
 the scatter chart):
   R1  Position filter via evaluate + updater (deterministic AAPL /
@@ -205,13 +213,14 @@ def static_checks():
                 False)
 
     # C5: the count claims are corrected (the 393rd "all twenty at
-    # six sites" is now twenty-two everywhere it is asserted).
-    ok_doc = ("twenty-two indicator updaters (21 chips + the PvP toggle)"
+    # six sites" is now twenty-three everywhere it is asserted --
+    # 407th review: community is the 22nd chip).
+    ok_doc = ("twenty-three indicator updaters (22 chips + the PvP toggle)"
               in guard393)
     ok_app = "All twenty indicator updaters" not in app
-    check("C5 count claims corrected to twenty-two (21 chips + toggle)",
+    check("C5 count claims corrected to twenty-three (22 chips + toggle)",
           ok_doc and ok_app,
-          ("393rd guard docstring still says twenty; " if not ok_doc else "")
+          ("393rd guard docstring still says twenty-two; " if not ok_doc else "")
           + ("stale 'All twenty' comment in app.js" if not ok_app else ""))
 
     return 0
