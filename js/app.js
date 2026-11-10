@@ -7154,6 +7154,20 @@ function positionFilterLabel(pf) {
     return pf.label + suffix;
 }
 
+// 410th review: the combined-filter badge HTML, shared by the normal
+// path and the zero-row path in renderSummaryBar below. Each part
+// renders in its own span so the part boundary is structural, not
+// textual (396th review: the joiner ' × ' also occurs inside the
+// vol-tenure part, so splitting the badge text on the joiner broke
+// the part boundary). The visible text is unchanged -- the separator
+// spans carry the same ' × '.
+function combinedFilterBadgeHtml(filterParts) {
+    return '<span class="summary-stat combined-filter-badge">'
+        + '<span class="combined-filter-icon">⧉</span>'
+        + '<span class="summary-stat-label">' + filterParts.map(function(p) { return '<span class="combined-filter-part">' + p + '</span>'; }).join('<span class="combined-filter-sep"> × </span>') + '</span>'
+        + '</span>';
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -7176,8 +7190,70 @@ function renderSummaryBar(filtered, allCompanies) {
         return;
     }
 
+    // Combined filter indicator when 2+ filter dimensions are active
+    var filterDims = 0;
+    var filterParts = [];
+    if (activeSector) { filterDims++; filterParts.push(activeSector); }
+    if (window._activeDistFilter && !window._activeDistFilter.sector) { filterDims++; filterParts.push(window._activeDistFilter.label); }
+    if (window._activeRatioBucket) {
+        filterDims++;
+        var rb = window._activeRatioBucket;
+        filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
+    }
+    // 382nd review: SoP was the only filter dim missing from this list,
+    // so SoP plus any second filter showed no combined badge at all and
+    // the SoP dim went unnamed (chip label is 'SoP: ' + label, so the
+    // badge part matches it).
+    if (window._activeSopFilter) { filterDims++; filterParts.push('SoP: ' + window._activeSopFilter.label); }
+    // 385th review: board was the only filter dim missing from this list,
+    // so board plus any second filter showed a combined badge that never
+    // named the board part (the badge part matches the chip label via the
+    // shared boardFilterLabel helper).
+    if (window._activeBoardFilter) { filterDims++; filterParts.push(boardFilterLabel(window._activeBoardFilter.mode)); }
+    if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
+    if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
+    if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO: ' + window._activeCeoCfoBucket.label); }
+    if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
+    if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
+    if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
+    if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
+    // 402nd review: the badge part now carries the tag ('Top Decile (P90+)'),
+    // matching the lone chip and the announce -- the bare label dropped the
+    // tag, the same class the 401st review closed for CEO/CFO.
+    if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.tag + ' (' + window._activePctileTier.label + ')'); }
+    // 403rd review: the badge part now carries the tag ('Equity-dominant (80–100%)'),
+    // matching the lone chip and the announce -- the bare 'Equity: ' + label
+    // dropped the tag, the same class the 402nd review closed for percentile.
+    if (window._activeStockPctTier) { filterDims++; filterParts.push(window._activeStockPctTier.tag + ' (' + window._activeStockPctTier.label + ')'); }
+    if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
+    if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
+    if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
+    if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
+    if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
+    // 387th review: vol-tenure used the same 'Tenure: ' prefix as the
+    // tenure quartile (7120), so both dims active showed two 'Tenure: ...'
+    // parts in the badge and the reader could not tell which was which.
+    // The badge part now matches the chip wording ('Volatility × Tenure: ',
+    // updateVolTenureFilterIndicator) and the announcement (8131).
+    if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Volatility × Tenure: ' + window._activeVolTenureBracket.label); }
+    if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
+    if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
+    if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
+    if (window._activePositionFilter) { filterDims++; filterParts.push(positionFilterLabel(window._activePositionFilter)); }
+    if (window._activeCrosstabFilter) { filterDims++; filterParts.push('Crosstab: ' + window._activeCrosstabFilter.label); }
+    if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
+
     if (filtered.length === 0) {
-        bar.innerHTML = '<span class="summary-stat"><span class="summary-stat-label">No companies match current filters</span></span>';
+        // 410th review: the zero-row path used to return before the
+        // badge computation, so an empty filter showed only 'No
+        // companies match current filters' with no dim naming -- the
+        // combined badge (chip-wording parity, 396th/402nd/403rd/
+        // 408th reviews) renders here too, from the same hoisted
+        // parts as the normal path.
+        var emptyHtml = '';
+        if (filterDims >= 2) emptyHtml += combinedFilterBadgeHtml(filterParts);
+        emptyHtml += '<span class="summary-stat"><span class="summary-stat-label">No companies match current filters</span></span>';
+        bar.innerHTML = emptyHtml;
         return;
     }
 
@@ -7234,70 +7310,9 @@ function renderSummaryBar(filtered, allCompanies) {
     // Build HTML
     var html = '';
 
-    // Combined filter indicator when 2+ filter dimensions are active
-    var filterDims = 0;
-    var filterParts = [];
-    if (activeSector) { filterDims++; filterParts.push(activeSector); }
-    if (window._activeDistFilter && !window._activeDistFilter.sector) { filterDims++; filterParts.push(window._activeDistFilter.label); }
-    if (window._activeRatioBucket) {
-        filterDims++;
-        var rb = window._activeRatioBucket;
-        filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
-    }
-    // 382nd review: SoP was the only filter dim missing from this list,
-    // so SoP plus any second filter showed no combined badge at all and
-    // the SoP dim went unnamed (chip label is 'SoP: ' + label, so the
-    // badge part matches it).
-    if (window._activeSopFilter) { filterDims++; filterParts.push('SoP: ' + window._activeSopFilter.label); }
-    // 385th review: board was the only filter dim missing from this list,
-    // so board plus any second filter showed a combined badge that never
-    // named the board part (the badge part matches the chip label via the
-    // shared boardFilterLabel helper).
-    if (window._activeBoardFilter) { filterDims++; filterParts.push(boardFilterLabel(window._activeBoardFilter.mode)); }
-    if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
-    if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
-    if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO: ' + window._activeCeoCfoBucket.label); }
-    if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
-    if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
-    if (window._activeTeamCompletenessFilter) { filterDims++; filterParts.push(window._activeTeamCompletenessFilter === 'missing' ? 'Missing Roles' : 'Complete Teams'); }
-    if (window._activeYoYBucket) { filterDims++; filterParts.push('YoY: ' + window._activeYoYBucket.label); }
-    // 402nd review: the badge part now carries the tag ('Top Decile (P90+)'),
-    // matching the lone chip and the announce -- the bare label dropped the
-    // tag, the same class the 401st review closed for CEO/CFO.
-    if (window._activePctileTier) { filterDims++; filterParts.push(window._activePctileTier.tag + ' (' + window._activePctileTier.label + ')'); }
-    // 403rd review: the badge part now carries the tag ('Equity-dominant (80–100%)'),
-    // matching the lone chip and the announce -- the bare 'Equity: ' + label
-    // dropped the tag, the same class the 402nd review closed for percentile.
-    if (window._activeStockPctTier) { filterDims++; filterParts.push(window._activeStockPctTier.tag + ' (' + window._activeStockPctTier.label + ')'); }
-    if (window._activeGenderFilter) { filterDims++; filterParts.push(window._activeGenderFilter === 'F' ? '♀ Female CEOs' : '♂ Male CEOs'); }
-    if (window._activeAspDeltaTier) { filterDims++; filterParts.push('Peer Δ: ' + window._activeAspDeltaTier.tag); }
-    if (window._activeTenureQuartile) { filterDims++; filterParts.push('Tenure: ' + window._activeTenureQuartile.tag); }
-    if (window._activeGovGrade) { filterDims++; filterParts.push('Gov: Grade ' + window._activeGovGrade.grade); }
-    if (window._activeVolatilityBucket) { filterDims++; filterParts.push('Volatility: ' + window._activeVolatilityBucket.label); }
-    // 387th review: vol-tenure used the same 'Tenure: ' prefix as the
-    // tenure quartile (7120), so both dims active showed two 'Tenure: ...'
-    // parts in the badge and the reader could not tell which was which.
-    // The badge part now matches the chip wording ('Volatility × Tenure: ',
-    // updateVolTenureFilterIndicator) and the announcement (8131).
-    if (window._activeVolTenureBracket) { filterDims++; filterParts.push('Volatility × Tenure: ' + window._activeVolTenureBracket.label); }
-    if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
-    if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
-    if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
-    if (window._activePositionFilter) { filterDims++; filterParts.push(positionFilterLabel(window._activePositionFilter)); }
-    if (window._activeCrosstabFilter) { filterDims++; filterParts.push('Crosstab: ' + window._activeCrosstabFilter.label); }
-    if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
     if (filterDims >= 2) {
-        html += '<span class="summary-stat combined-filter-badge">';
-        html += '<span class="combined-filter-icon">⧉</span>';
-        // 396th review: each part renders in its own span so the part
-        // boundary is structural, not textual. The joiner ' × ' also
-        // occurs inside the vol-tenure part ('Volatility × Tenure: ...'),
-        // so splitting the badge text on the joiner broke the part
-        // boundary (2 parts read as 3 pieces). The visible text is
-        // unchanged -- the separator spans carry the same ' × '.
-        html += '<span class="summary-stat-label">' + filterParts.map(function(p) { return '<span class="combined-filter-part">' + p + '</span>'; }).join('<span class="combined-filter-sep"> × </span>') + '</span>';
-        html += '</span>';
+        html += combinedFilterBadgeHtml(filterParts);
         html += '<span class="summary-divider"></span>';
     }
 
@@ -13256,6 +13271,27 @@ function serializeState() {
         params.push('cmlbl=' + encodeURIComponent(window._activeCommunityFilter.label));
         if (window._activeCommunityFilter.id != null) params.push('cmid=' + window._activeCommunityFilter.id);
     }
+    // 410th review: the position filter was the last ticker-list
+    // filter without a hash carrier -- a shared link into a
+    // position-filtered view dropped the filter on load (table
+    // unfiltered, no chip) while the URL described nothing, and a
+    // back/forward navigation could not drop it either (it was
+    // session-local by design). Mirror the community carrier:
+    // tickers + label, plus the composite toggle key (communityId,
+    // metric, rank, direction) so a restored filter toggles off on
+    // a second click of the same row and the detail render re-marks
+    // the row (isActivePos compares communityId + metric + rank).
+    // Empty filters (no peers in that direction) serialize too:
+    // pstk= is empty but pslbl/psm carry the state, and the restore
+    // gates on the label, not the ticker list.
+    if (window._activePositionFilter) {
+        params.push('pstk=' + encodeURIComponent(window._activePositionFilter.tickers.join(',')));
+        params.push('pslbl=' + encodeURIComponent(window._activePositionFilter.label));
+        if (window._activePositionFilter.communityId != null) params.push('pscid=' + window._activePositionFilter.communityId);
+        if (window._activePositionFilter.metric) params.push('psm=' + encodeURIComponent(window._activePositionFilter.metric));
+        if (window._activePositionFilter.rank != null) params.push('psr=' + window._activePositionFilter.rank);
+        if (window._activePositionFilter.direction) params.push('psd=' + encodeURIComponent(window._activePositionFilter.direction));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -13382,10 +13418,12 @@ function applyHashState(companies) {
     // Sector
     if (state.sector) {
         setActiveSector(state.sector);
-        // 389th review: scope to sector chips -- vol/board/community/
-        // quartile/position are session-local (not hash-serialized) and
+        // 389th review: scope to sector chips -- vol/board/quartile
+        // are session-local (not hash-serialized) and
         // survive a hash change, so the old document-wide sweep
-        // stripped 'active' from their live chips.
+        // stripped 'active' from their live chips. (Community and
+        // position used to be on this list; they joined the
+        // serialized set in the 409th and 410th reviews.)
         updateSectorChipStates(state.sector);
     }
 
@@ -13601,6 +13639,28 @@ function applyHashState(companies) {
                 if (cmRow) cmRow.classList.add('cm-active');
             }
         }
+    }
+
+    // Position filter (mirror of the community restore above --
+    // 410th review). The tickers are the filter; the composite key
+    // (communityId/metric/rank/direction) is what the row-click
+    // toggle compares, so a restored filter without it would re-set
+    // instead of clearing on a second click. A hand-built link
+    // without the key parts still restores the table filter and
+    // chip (nulls, same as a key-less community link). The gate is
+    // the label, not the ticker list: an empty filter (no peers in
+    // that direction) has zero tickers and must still restore its
+    // chip + empty table. The chip is created by the indicator
+    // call, so both restore sites (init + hashchange) get it, like
+    // community. No scatter redraw: the scatter never reads the
+    // position filter. The clicked row re-marks itself when its
+    // detail panel re-opens (isActivePos reads this filter).
+    if (state.pslbl && state.psm) {
+        var psTickers = state.pstk ? state.pstk.split(',').filter(function(t) { return t.length > 0; }) : [];
+        var psCid = state.pscid != null ? parseInt(state.pscid, 10) : NaN;
+        var psRank = state.psr != null ? parseInt(state.psr, 10) : NaN;
+        window._activePositionFilter = { tickers: psTickers, label: state.pslbl, communityId: isNaN(psCid) ? null : psCid, metric: state.psm, rank: isNaN(psRank) ? null : psRank, direction: state.psd || 'above' };
+        if (window._updatePositionFilterIndicator) window._updatePositionFilterIndicator();
     }
 
     // Role filter
@@ -19695,11 +19755,13 @@ function setupDualSparklineTooltips() {
         // stale chips, toggles, or role chips while the URL no longer
         // described the view. Null them all; applyHashState restores
         // exactly the ones the new hash carries. Vol / board /
-        // quartile / position are NOT hash-serialized, so
+        // quartile are NOT hash-serialized, so
         // a hash change cannot drop them -- they stay session-local
         // by design and are intentionally not reset here. Community
         // joined the serialized set in the 409th review (cmtk/cmlbl/
         // cmid), so it IS nulled below like the other serialized dims.
+        // Position joined it in the 410th review (pstk/pslbl/pscid/
+        // psm/psr/psd), so it IS nulled below too.
         window._activeConcTier = null;
         window._activeCeoCfoBucket = null;
         window._activeSopFilter = null;
@@ -19722,6 +19784,11 @@ function setupDualSparklineTooltips() {
         var hadCommScatter = !!(window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0);
         window._activeCommunityFilter = null;
         window._activeCommunityScatterTickers = null;
+        // 410th review: position is hash-serialized now (pstk), so a
+        // hash change that drops it must null the filter -- otherwise
+        // the filter survives with its chip removed (the 341st
+        // stuck-filter class).
+        window._activePositionFilter = null;
         window._activePvpOnlyFilter = false;
         // Same class, navigation state rather than a filter: the
         // section deep-link is hash-serialized too, so a hash change
@@ -19744,12 +19811,14 @@ function setupDualSparklineTooltips() {
         document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
         // 389th review: scope the chip reset to sector chips only --
-        // vol/board/quartile/position are intentionally not reset
+        // vol/board/quartile are intentionally not reset
         // here (not hash-serialized; see the comment above), so the
         // old document-wide sweep stripped 'active' from their live
         // chips. Community IS hash-serialized since the 409th review
-        // and is removed by id in the chip list above, with its
-        // legend / metrics-row highlights cleared alongside.
+        // and position since the 410th, and both are removed by id
+        // in the chip list above, with the community legend /
+        // metrics-row highlights and the position clicked row
+        // cleared alongside.
         // applyHashState restores the hashed sector below.
         updateSectorChipStates(null);
         var rc = document.getElementById('ratio-filter-chip');
@@ -19772,7 +19841,8 @@ function setupDualSparklineTooltips() {
         ['sop-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip',
          'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
          'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip',
-         'ceocfo-filter-chip', 'community-filter-chip'
+         'ceocfo-filter-chip', 'community-filter-chip',
+         'position-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -19787,6 +19857,14 @@ function setupDualSparklineTooltips() {
         });
         document.querySelectorAll('.cm-data.cm-active').forEach(function(r) {
             r.classList.remove('cm-active');
+        });
+        // 410th review: same class as the legend clear above -- a
+        // dropped position filter must not leave its detail row
+        // marked clicked (the chip-click path clears it). The
+        // detail render re-marks the row when the new hash carries
+        // the filter and the panel re-opens, so clearing here is safe.
+        document.querySelectorAll('.cb-pos-row-clicked').forEach(function(el) {
+            el.classList.remove('cb-pos-row-clicked');
         });
         // 374th review: the strip is a persistent container, not a chip --
         // empty it, never remove it (applyHashState re-fills it via the

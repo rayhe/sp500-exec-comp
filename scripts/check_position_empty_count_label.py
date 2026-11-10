@@ -31,11 +31,12 @@ Checks:
 Render (headless Chromium, d3 shim from the goal hidden_files cache):
   R1  Non-empty position filter + Information Technology sector:
       badge, chip and announce all carry the '(1)' count.
-  R2  Empty position filter + the same sector: the chip and the
-      announcement carry the helper's ' (0)'; the table is empty, so
-      the summary bar shows the zero-row message and no badge renders
-      (pre-existing zero-row early return -- the badge part is pinned
-      statically by C2 and renders live in R1's form).
+  R2  Empty position filter + the same sector: the chip, the badge
+      and the announcement carry the helper's ' (0)'; the table is
+      empty, so the summary bar shows the zero-row message alongside
+      the combined badge. (410th review: the badge used to be skipped
+      by the zero-row early return in renderSummaryBar -- the badge
+      parts are now hoisted above it and render in both paths.)
   R3  zero page errors across the render half.
 
 Usage:
@@ -210,11 +211,11 @@ def render_checks():
                   % (b1, chip1, a1, want1))
 
             # R2: empty position filter (no peers in that direction).
-            # The chip and the announcement carry the helper's ' (0)';
-            # the table is empty, so the summary bar shows the zero-row
-            # message and no badge renders at all (pre-existing zero-row
-            # early return in renderSummaryBar -- the badge part is
-            # pinned statically by C2 and renders live in R1's form).
+            # The chip, the badge and the announcement carry the
+            # helper's ' (0)'; the table is empty, so the summary bar
+            # shows the zero-row message alongside the combined badge
+            # (410th review: the badge used to be skipped by the
+            # zero-row early return).
             pg.evaluate("""() => {
                 window._activePositionFilter = { tickers: [],
                     label: 'Cluster 3 pay #2 \\u2014 no above',
@@ -233,12 +234,13 @@ def render_checks():
                 "() => { const b = document.getElementById('table-summary-bar');"
                 " return b ? b.textContent : null; }")
             want2 = "Cluster 3 pay #2 \u2014 no above (0)"
-            r2_ok = (b2 is None and chip2 is not None and a2 is not None
+            r2_ok = (b2 is not None and want2 in b2 and chip2 is not None
+                     and a2 is not None
                      and want2 in chip2 and ("position: " + want2) in a2
                      and bar2 is not None and "No companies match" in bar2)
-            check("R2 empty position filter keeps ' (0)' in chip and announce (zero-row bar, no badge)",
+            check("R2 empty position filter keeps ' (0)' in chip, badge and announce (zero-row bar keeps the badge)",
                   r2_ok,
-                  "badge=%r chip=%r announce=%r bar=%r (want %r in chip and announce)"
+                  "badge=%r chip=%r announce=%r bar=%r (want %r in chip, badge and announce)"
                   % (b2, chip2, a2, bar2, want2))
 
             r3_ok = len(errors) == 0
