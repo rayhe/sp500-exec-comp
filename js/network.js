@@ -4499,7 +4499,13 @@ function initNetwork(peerData) {
                     .replace('Real Estate', 'Real Est');
                 return shortName + ' ' + s.count;
             }).join(', ');
-            html += '<span class="community-legend-item" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + escapeHtml(cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ')) + '">';
+            // 409th review: a restored community filter (hash deep
+            // link) must show its legend row active on every legend
+            // build, not just at restore time -- the legend is
+            // re-populated on mode toggles, which would otherwise
+            // drop the marking.
+            var isActiveComm = window._activeCommunityFilter && window._activeCommunityFilter.id === cs.id;
+            html += '<span class="community-legend-item' + (isActiveComm ? ' community-legend-active' : '') + '" data-community="' + cs.id + '" title="' + cs.size + ' companies — top sectors: ' + escapeHtml(cs.sectors.slice(0, 3).map(function(s) { return s.name + ' (' + s.count + ')'; }).join(', ')) + '">';
             html += '<span class="legend-dot" style="background:' + cs.color + '"></span>';
             html += '<span class="community-legend-label">' + cs.label + '</span>';
             html += '<span class="community-legend-size">' + cs.size + '</span>';
@@ -4974,7 +4980,10 @@ function initNetwork(peerData) {
         rows.forEach(function(r) { if (r.payDist && r.payDist.max > globalMaxPay) globalMaxPay = r.payDist.max; });
 
         rows.forEach(function(r, ri) {
-            html += '<div class="cm-row cm-data" data-cm-community="' + r.id + '" data-cm-idx="' + ri + '">';
+            // 409th review: same as the legend build -- a restored
+            // community filter marks its metrics row on every render.
+            var isActiveCmRow = window._activeCommunityFilter && window._activeCommunityFilter.id === r.id;
+            html += '<div class="cm-row cm-data' + (isActiveCmRow ? ' cm-active' : '') + '" data-cm-community="' + r.id + '" data-cm-idx="' + ri + '">';
             // Community name cell with color dot + path button
             html += '<div class="cm-cell cm-name-cell">';
             html += '<span class="cm-dot" style="background:' + r.color + '"></span>';

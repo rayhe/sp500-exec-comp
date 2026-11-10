@@ -41,7 +41,11 @@ Checks (static - file reads, <1s):
       set/clear sites in network.js (bare calls, not the definition).
   C6  HARD FAIL: all six sector-refresh sites in js/app.js re-run
       the community updater (guarded window._ calls), so the chip
-      never keeps a lone label while combined.
+      never keeps a lone label while combined. Update (409th review,
+      2026-11-10): a seventh guarded call exists -- the applyHashState
+      restore site, which raises the chip on a community deep link --
+      so the count is now seven, six sector-refresh sites + the
+      restore site.
 Render (headless Chromium, d3 shim from the goal hidden_files cache):
   R1  Lone community filter (no sector): the chip reads
       'Community: Info Tech' with computed background
@@ -117,7 +121,7 @@ def static_checks():
             "C3 community chip lone styling is network cyan, combined stays purple",
             "C4 exactly one community chip construction site",
             "C5 updater called at all five community set/clear sites",
-            "C6 all six sector-refresh sites re-run the community updater",
+            "C6 all six sector-refresh sites re-run the community updater (+ restore site)",
         ):
             check(name, False, "updateCommunityFilterIndicator not found")
         return 0
@@ -163,11 +167,15 @@ def static_checks():
 
     # C6: all six sector-refresh sites in app.js re-run the updater
     # (guarded window._ calls), so the chip never keeps a lone label
-    # while combined (the 394th-review defect class).
+    # while combined (the 394th-review defect class). Update (409th
+    # review, 2026-11-10): the applyHashState restore site adds a
+    # seventh guarded call, which raises the chip on a community deep
+    # link -- the six sector-refresh sites are unchanged, the count
+    # is now seven.
     n_sites = app.count("if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();")
-    check("C6 all six sector-refresh sites re-run the community updater",
-          n_sites == 6,
-          "%d sector-refresh call sites" % n_sites if n_sites != 6 else "")
+    check("C6 all six sector-refresh sites re-run the community updater (+ restore site)",
+          n_sites == 7,
+          "%d sector-refresh call sites" % n_sites if n_sites != 7 else "")
 
     return 0
 

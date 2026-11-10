@@ -154,9 +154,16 @@ def static_checks():
 
     # C5: hashchange handler default reset to total_compensation desc.
     # The handler has no named function; scope to the window after the
-    # 'hashchange' listener registration.
+    # 'hashchange' listener registration. Update (409th review,
+    # 2026-11-10): the window was 8000 chars and the community
+    # hash-serialization additions to the reset block (nulls, chip
+    # removal, legend/metrics clearing) pushed the aria-sort loop
+    # from ~7000 to ~8640 chars past the listener -- the loop itself
+    # is untouched, only the window was too small. 12000 still ends
+    # inside the handler (the next listener registration is ~20000
+    # chars out), so the scope is unchanged.
     i = app.find("window.addEventListener('hashchange'")
-    seg = app[i:i + 8000] if i >= 0 else ""
+    seg = app[i:i + 12000] if i >= 0 else ""
     check("C5 hashchange default reset sets aria-sort 'descending'",
           i >= 0 and "t.setAttribute('aria-sort', 'none');" in seg
           and "t.setAttribute('aria-sort', 'descending');" in seg

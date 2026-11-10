@@ -13244,6 +13244,18 @@ function serializeState() {
         // caller) still filters via tickers but rings no cell.
         if (window._activeCrosstabFilter.cellKey) params.push('xkey=' + encodeURIComponent(window._activeCrosstabFilter.cellKey));
     }
+    // 409th review: the community filter was the last ticker-list
+    // filter without a hash carrier -- a shared link into a
+    // community-filtered view dropped the filter on load (table
+    // unfiltered, no chip) while the URL described nothing. Mirror
+    // the peer-dist / crosstab carrier: tickers + label, plus the
+    // Louvain id so the legend and metrics-row toggles match the
+    // restored filter (both compare filter.id to the community id).
+    if (window._activeCommunityFilter) {
+        params.push('cmtk=' + encodeURIComponent(window._activeCommunityFilter.tickers.join(',')));
+        params.push('cmlbl=' + encodeURIComponent(window._activeCommunityFilter.label));
+        if (window._activeCommunityFilter.id != null) params.push('cmid=' + window._activeCommunityFilter.id);
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -13559,6 +13571,35 @@ function applyHashState(companies) {
         if (xTickers.length > 0) {
             window._activeCrosstabFilter = { tickers: xTickers, label: state.xlbl, cellKey: state.xkey || null };
             if (window._updateCrosstabFilterIndicator) window._updateCrosstabFilterIndicator();
+        }
+    }
+
+    // Community filter (mirror of the peer-dist / crosstab restores
+    // above -- 409th review). The tickers are the filter; the id is
+    // what the legend / metrics-row toggles compare against, so a
+    // restored filter without it would re-set instead of clearing on
+    // a second click. A hand-built link without cmid still restores
+    // the table filter and chip (id null, same as a key-less
+    // peer-dist link restoring without its source). The scatter
+    // tickers are set too -- drawScatterChart reads them at draw
+    // time -- and the legend item / metrics row are re-marked when
+    // they exist (initNetwork runs before this restore at boot; on a
+    // hashchange both are already built). The chip is created by the
+    // indicator call, so both restore sites (init + hashchange) get
+    // it, like peer-dist.
+    if (state.cmtk && state.cmlbl) {
+        var cmTickers = state.cmtk.split(',').filter(function(t) { return t.length > 0; });
+        if (cmTickers.length > 0) {
+            var cmId = state.cmid != null ? parseInt(state.cmid, 10) : NaN;
+            window._activeCommunityFilter = { tickers: cmTickers, label: state.cmlbl, id: isNaN(cmId) ? null : cmId };
+            window._activeCommunityScatterTickers = new Set(cmTickers);
+            if (window._updateCommunityFilterIndicator) window._updateCommunityFilterIndicator();
+            if (!isNaN(cmId)) {
+                var cmLegendItem = document.querySelector('.community-legend-item[data-community="' + cmId + '"]');
+                if (cmLegendItem) cmLegendItem.classList.add('community-legend-active');
+                var cmRow = document.querySelector('.cm-data[data-cm-community="' + cmId + '"]');
+                if (cmRow) cmRow.classList.add('cm-active');
+            }
         }
     }
 
@@ -17477,6 +17518,19 @@ function setupDualSparklineTooltips() {
         window.highlightCrosstabCell(window._activeCrosstabFilter.cellKey);
     }
 
+    // 409th review: redraw the scatter when a community filter was
+    // restored from the hash -- drawScatterChart reads
+    // _activeCommunityScatterTickers at draw time, and the charts draw
+    // before applyHashState, so without this the restored filter
+    // filtered the table and raised its chip with no community
+    // highlight on the scatter (same draw-before-restore class as the
+    // 359th/373rd gaps above).
+    if (window._activeCommunityFilter && typeof drawScatterChart === 'function' && window._chartData) {
+        var scEl = document.getElementById('scatter-chart');
+        if (scEl) scEl.innerHTML = '';
+        drawScatterChart(window._chartData.companies);
+    }
+
     // Apply YoY filter chip if restored from hash
     if (window._activeYoYBucket) {
         updateYoYFilterIndicator();
@@ -19641,9 +19695,11 @@ function setupDualSparklineTooltips() {
         // stale chips, toggles, or role chips while the URL no longer
         // described the view. Null them all; applyHashState restores
         // exactly the ones the new hash carries. Vol / board /
-        // community / quartile / position are NOT hash-serialized, so
+        // quartile / position are NOT hash-serialized, so
         // a hash change cannot drop them -- they stay session-local
-        // by design and are intentionally not reset here.
+        // by design and are intentionally not reset here. Community
+        // joined the serialized set in the 409th review (cmtk/cmlbl/
+        // cmid), so it IS nulled below like the other serialized dims.
         window._activeConcTier = null;
         window._activeCeoCfoBucket = null;
         window._activeSopFilter = null;
@@ -19656,6 +19712,16 @@ function setupDualSparklineTooltips() {
         window._activeAspDeltaTier = null;
         window._activePeerDistFilter = null;
         window._activeCrosstabFilter = null;
+        // 409th review: community is hash-serialized now (cmtk), so a
+        // hash change that drops it must null the filter and its
+        // scatter tickers -- otherwise the filter survives with its
+        // chip removed (the 341st stuck-filter class). Capture whether
+        // a community scatter was showing first: the handler redraws
+        // the scatter below only when the community state actually
+        // changed across the navigation.
+        var hadCommScatter = !!(window._activeCommunityScatterTickers && window._activeCommunityScatterTickers.size > 0);
+        window._activeCommunityFilter = null;
+        window._activeCommunityScatterTickers = null;
         window._activePvpOnlyFilter = false;
         // Same class, navigation state rather than a filter: the
         // section deep-link is hash-serialized too, so a hash change
@@ -19678,10 +19744,13 @@ function setupDualSparklineTooltips() {
         document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
         // 389th review: scope the chip reset to sector chips only --
-        // vol/board/community/quartile/position are intentionally not
-        // reset here (not hash-serialized; see the comment above), so
-        // the old document-wide sweep stripped 'active' from their
-        // live chips. applyHashState restores the hashed sector below.
+        // vol/board/quartile/position are intentionally not reset
+        // here (not hash-serialized; see the comment above), so the
+        // old document-wide sweep stripped 'active' from their live
+        // chips. Community IS hash-serialized since the 409th review
+        // and is removed by id in the chip list above, with its
+        // legend / metrics-row highlights cleared alongside.
+        // applyHashState restores the hashed sector below.
         updateSectorChipStates(null);
         var rc = document.getElementById('ratio-filter-chip');
         if (rc) rc.remove();
@@ -19703,10 +19772,21 @@ function setupDualSparklineTooltips() {
         ['sop-filter-chip', 'gender-filter-chip', 'aspdelta-filter-chip',
          'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
          'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip',
-         'ceocfo-filter-chip'
+         'ceocfo-filter-chip', 'community-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
+        });
+        // 409th review: same class as the chip removal above -- a
+        // dropped community filter must not leave its legend row or
+        // metrics row highlighted (the chip-click path clears both).
+        // applyHashState re-marks them when the new hash carries the
+        // filter, so clearing here is safe.
+        document.querySelectorAll('.community-legend-active').forEach(function(el) {
+            el.classList.remove('community-legend-active');
+        });
+        document.querySelectorAll('.cm-data.cm-active').forEach(function(r) {
+            r.classList.remove('cm-active');
         });
         // 374th review: the strip is a persistent container, not a chip --
         // empty it, never remove it (applyHashState re-fills it via the
@@ -19885,6 +19965,23 @@ function setupDualSparklineTooltips() {
                 window.highlightCrosstabCell(window._activeCrosstabFilter.cellKey);
             } else {
                 window.highlightCrosstabCell(null);
+            }
+        }
+        // 409th review: community scatter highlight restore/clear --
+        // the scatter reads _activeCommunityScatterTickers at draw
+        // time and no chart redraw happens on hashchange, so without
+        // this a back/forward navigation into a community deep link
+        // filtered the table and raised the chip with no community
+        // highlight, and a navigation away left the highlight on a
+        // dropped filter (same stale class as the 359th ring fixes).
+        // Redraw only when the community state actually changed
+        // across the navigation (hadCommScatter captured before the
+        // nulls above, or a filter restored by applyHashState).
+        if (hadCommScatter || window._activeCommunityFilter) {
+            if (typeof drawScatterChart === 'function' && window._chartData) {
+                var scElH = document.getElementById('scatter-chart');
+                if (scElH) scElH.innerHTML = '';
+                drawScatterChart(window._chartData.companies);
             }
         }
         // Restore CEO transition filter chip if present in hash state
