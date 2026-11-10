@@ -18,6 +18,12 @@ after the governance line and before the role line. The vol-tenure
 part uses the chip's wording ('volatility x tenure') so it cannot
 collide with the tenure quartile's ', tenure: ' part.
 
+408th review: the position line now uses the shared
+positionFilterLabel helper instead of the bare stored label, so the
+empty position filter's ' (0)' count survives into the announcement
+(the chip and the badge use the same helper). The pinned line above
+tracks that form; non-empty labels are unchanged.
+
 Companion fix: the chart-origin volatility state label was
 'Volatility ' + b.label, which doubled the prefix in both sites that
 prepend their own ('Volatility: ' + label in the badge, ', volatility: '
@@ -89,7 +95,7 @@ ANNOUNCE_LINES = [
      "+ window._activeQuartileFilter.label;"),
     ("position",
      "if (window._activePositionFilter) announceMsg += ', position: ' "
-     "+ window._activePositionFilter.label;"),
+     "+ positionFilterLabel(window._activePositionFilter);"),
     ("crosstab",
      "if (window._activeCrosstabFilter) announceMsg += ', crosstab: ' "
      "+ window._activeCrosstabFilter.label;"),

@@ -7140,6 +7140,20 @@ function boardFilterLabel(mode) {
     return map[mode] || mode;
 }
 
+// 408th review: the position chip appends ' (0)' for the empty filter
+// (no peers in that direction -- the stored label carries no count,
+// unlike the non-empty form which embeds '(N)'), but the combined-
+// filter badge part and the ARIA announcement both used the bare
+// stored label, so the badge/announce read '... — no above' while
+// the chip read '... — no above (0)' -- the same chip-wording-must-
+// match-badge class the 402nd/403rd reviews closed for percentile
+// and equity-mix. One helper, used by the chip, the badge and the
+// announce, so the three can never drift again.
+function positionFilterLabel(pf) {
+    var suffix = (pf.tickers && pf.tickers.length === 0) ? ' (0)' : '';
+    return pf.label + suffix;
+}
+
 function renderSummaryBar(filtered, allCompanies) {
     var bar = document.getElementById('table-summary-bar');
     if (!bar) return;
@@ -7269,7 +7283,7 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activePeerDistFilter) { filterDims++; filterParts.push('Peers: ' + window._activePeerDistFilter.label); }
     if (window._activeCommunityFilter) { filterDims++; filterParts.push('Community: ' + window._activeCommunityFilter.label); }
     if (window._activeQuartileFilter) { filterDims++; filterParts.push(window._activeQuartileFilter.label); }
-    if (window._activePositionFilter) { filterDims++; filterParts.push(window._activePositionFilter.label); }
+    if (window._activePositionFilter) { filterDims++; filterParts.push(positionFilterLabel(window._activePositionFilter)); }
     if (window._activeCrosstabFilter) { filterDims++; filterParts.push('Crosstab: ' + window._activeCrosstabFilter.label); }
     if (activeRole && activeRole !== 'CEO') { filterDims++; filterParts.push(activeRole + ' View'); }
 
@@ -8278,7 +8292,7 @@ function renderTable(companies, options) {
     if (window._activePeerDistFilter) announceMsg += ', peers: ' + window._activePeerDistFilter.label;
     if (window._activeCommunityFilter) announceMsg += ', community: ' + window._activeCommunityFilter.label;
     if (window._activeQuartileFilter) announceMsg += ', quartile: ' + window._activeQuartileFilter.label;
-    if (window._activePositionFilter) announceMsg += ', position: ' + window._activePositionFilter.label;
+    if (window._activePositionFilter) announceMsg += ', position: ' + positionFilterLabel(window._activePositionFilter);
     if (window._activeCrosstabFilter) announceMsg += ', crosstab: ' + window._activeCrosstabFilter.label;
     if (activeRole && activeRole !== 'CEO') announceMsg += ', viewing ' + activeRole + ' role';
     if (totalPages > 1) announceMsg += '. Page ' + currentPage + ' of ' + totalPages;
@@ -9431,8 +9445,11 @@ function updatePositionFilterIndicator() {
     if (window._activePositionFilter) {
         var pf = window._activePositionFilter;
         var isCombined = !!activeSector;
-        var suffix = (pf.tickers && pf.tickers.length === 0) ? ' (0)' : '';
-        var chipLabel = isCombined ? activeSector + ' × ' + pf.label + suffix : pf.label + suffix;
+        // 408th review: label via the shared positionFilterLabel helper
+        // (was inline ' (0)' suffix logic here only) -- the badge part
+        // and the announcement now use the same helper, so the chip,
+        // badge and announce agree on the empty filter's count.
+        var chipLabel = isCombined ? activeSector + ' × ' + positionFilterLabel(pf) : positionFilterLabel(pf);
         var chip = document.createElement('button');
         chip.className = 'chip active combined-filter-chip';
         chip.id = 'position-filter-chip';
