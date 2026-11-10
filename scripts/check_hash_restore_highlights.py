@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard: hash-restored gov/gender/tenure/SoP/asp-delta/stock-% filters
+"""Guard: hash-restored gov/gender/tenure/SoP/asp-delta/stock-%/vol filters
 must highlight their chart buckets at init and on back/forward.
 
 Background (359th review, 2026-11-06): the init restore block and the
@@ -10,37 +10,37 @@ stock-% -- filtered the table and raised their chips on a deep link or
 a back/forward navigation, but left their charts un-ringed: the charts
 draw before applyHashState at init, and no chart redraw happens on
 hashchange, so the draw-time application never saw the restored state.
-Vol is excluded deliberately (not hash-serialized, stays session-local,
-and the handler never nulls it, so its highlight persists); pctile,
-peer-dist and crosstab have no highlight function to call. The same
-block also had a missing else-clear for CEO/CFO: a navigation that
+Vol joined the serialized set in the 412th review (2026-11-10), so its
+highlight is restored/cleared with the rest; vol-tenure / board /
+pctile, peer-dist and crosstab have no highlight function to call. The
+same block also had a missing else-clear for CEO/CFO: a navigation that
 dropped cfomin left the ring while the chip was already removed.
 
 Checks (all static - small JS reads, <2s):
-  C1-C6 HARD FAIL: the init restore block (after applyHashState, before
+  C1-C7 HARD FAIL: the init restore block (after applyHashState, before
      the table-scroll-indicator setup) does not restore the gov /
-     gender / tenure / SoP / asp-delta / stock-% highlight from the
-     restored state.
-  C7-C12 HARD FAIL: the hashchange handler does not restore the gov /
-     gender / tenure / SoP / asp-delta / stock-% highlight when the
-     new hash carries the filter, or does not clear it when the new
+     gender / tenure / SoP / asp-delta / stock-% / vol highlight from
+     the restored state.
+  C8-C14 HARD FAIL: the hashchange handler does not restore the gov /
+     gender / tenure / SoP / asp-delta / stock-% / vol highlight when
+     the new hash carries the filter, or does not clear it when the new
      hash drops the filter (a dropped filter's ring would linger with
      its chip already removed -- the ratio / YoY else-branch class).
-  C13 HARD FAIL: the hashchange handler does not clear the CEO/CFO
+  C15 HARD FAIL: the hashchange handler does not clear the CEO/CFO
      highlight when the new hash drops cfomin (same stale-ring class).
-  C14 HARD FAIL: applyHashState calls the gov chip indicator bare
+  C16 HARD FAIL: applyHashState calls the gov chip indicator bare
      (updateGovFilterIndicator is nested inside the data-load
      callback, invisible to top-level applyHashState) instead of via
      the guarded window accessor -- a gov deep link or a back/forward
      navigation into a gov hash throws ReferenceError and aborts
      applyHashState (and the whole hashchange handler) mid-way, so no
      later dim restores, no renderTable, and no highlight restores run.
-  C15 HARD FAIL: applyHashState decodes a hash value a second time
+  C17 HARD FAIL: applyHashState decodes a hash value a second time
      (parseHash already decoded every key/value once) -- a label
      holding a literal percent sign throws URIError and aborts the
      whole restore; every YoY and stock-% label holds one, so those
      deep links never restored at all.
-  C16 HARD FAIL: a comparison restore still maps decodeURIComponent
+  C18 HARD FAIL: a comparison restore still maps decodeURIComponent
      over tickers parseHash already decoded -- same double-decode
      class (harmless for tickers today, a trap for the next value
      format).
@@ -100,6 +100,8 @@ DIMS = [
      "highlightAspDeltaBucket(null, null)"),
     ("stock-%", "highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max)",
      "highlightStockPctBucket(null, null)"),
+    ("vol", "highlightVolatilityBucket(window._activeVolatilityBucket.min, window._activeVolatilityBucket.max)",
+     "highlightVolatilityBucket(null, null)"),
 ]
 
 
@@ -112,7 +114,7 @@ def main():
 
     failures = []
 
-    # --- C1-C6: init restore block restores all six highlights ------
+    # --- C1-C7: init restore block restores all seven highlights -----
     init_start = app.find("applyHashState(companies);\n    _stateInitialized = true;")
     if init_start < 0:
         failures.append("C1 init restore anchor (applyHashState + "
@@ -136,7 +138,7 @@ def main():
                                 f"the filter filters the table and raises "
                                 f"the chip but leaves the chart un-ringed")
 
-    # --- C7-C12: hashchange handler restores and clears -------------
+    # --- C8-C14: hashchange handler restores and clears ------------
     handler = extract_function_body(
         app, "window.addEventListener('hashchange', function() {")
     if handler is None:
@@ -144,34 +146,34 @@ def main():
     else:
         for i, (label, restore, clear) in enumerate(DIMS):
             if restore not in handler:
-                failures.append(f"C{i + 7} hashchange handler does not "
+                failures.append(f"C{i + 8} hashchange handler does not "
                                 f"restore the {label} chart highlight "
                                 f"from the new hash -- a back/forward "
                                 f"navigation into the filter leaves the "
                                 f"chart un-ringed (no redraw happens on "
                                 f"hashchange)")
             if clear not in handler:
-                failures.append(f"C{i + 7} hashchange handler does not "
+                failures.append(f"C{i + 8} hashchange handler does not "
                                 f"clear the {label} chart highlight when "
                                 f"the new hash drops the filter -- the "
                                 f"ring lingers with its chip already "
                                 f"removed")
 
-    # --- C13: hashchange handler clears CEO/CFO when dropped --------
+    # --- C15: hashchange handler clears CEO/CFO when dropped --------
     if handler is not None and "highlightCeoCfoBucket(null, null)" not in handler:
-        failures.append("C13 hashchange handler does not clear the "
+        failures.append("C15 hashchange handler does not clear the "
                         "CEO/CFO highlight when the new hash drops "
                         "cfomin -- a back/forward navigation out of the "
                         "filter leaves a stale ring")
 
-    # --- C14: applyHashState calls the gov indicator via window -----
+    # --- C16: applyHashState calls the gov indicator via window -----
     import re
     apply = extract_function_body(app, "function applyHashState(companies)")
     if apply is None:
-        failures.append("C14 applyHashState function not found in js/app.js")
+        failures.append("C16 applyHashState function not found in js/app.js")
     else:
         if "window._updateGovFilterIndicator()" not in apply:
-            failures.append("C14 applyHashState does not call the gov "
+            failures.append("C16 applyHashState does not call the gov "
                             "chip indicator via window._updateGovFilterIndicator "
                             "-- the nested declaration is invisible here")
         # A bare call at line start (not inside a comment) throws
@@ -179,22 +181,22 @@ def main():
         # callback, not at top level. The legit bare call inside
         # filterByGovGrade is in another function body, not this one.
         if re.search(r"(?m)^\s*updateGovFilterIndicator\(\);", apply):
-            failures.append("C14 applyHashState still calls "
+            failures.append("C16 applyHashState still calls "
                             "updateGovFilterIndicator() bare -- a gov deep "
                             "link or a navigation into a gov hash throws "
                             "ReferenceError and aborts the restore mid-way")
 
-    # --- C15: no second decode of hash values in applyHashState ----
+    # --- C17: no second decode of hash values in applyHashState ----
     if apply is not None and "decodeURIComponent(state." in apply:
-        failures.append("C15 applyHashState still decodes a hash value a "
+        failures.append("C17 applyHashState still decodes a hash value a "
                         "second time -- parseHash already decoded it once, "
                         "so a label holding a literal percent sign (every "
                         "YoY and stock-% label) throws URIError and aborts "
                         "the whole restore")
 
-    # --- C16: comparison restores do not double-decode -------------
+    # --- C18: comparison restores do not double-decode -------------
     if ".map(decodeURIComponent)" in app:
-        failures.append("C16 a comparison restore still maps "
+        failures.append("C18 a comparison restore still maps "
                         "decodeURIComponent over tickers parseHash already "
                         "decoded -- same double-decode class (harmless for "
                         "tickers today, a trap for the next value format)")
@@ -205,7 +207,7 @@ def main():
         return 1
     print("PASS: hash-restore-highlights: init restore block and "
           "hashchange handler restore gov/gender/tenure/SoP/asp-delta/"
-          "stock-% chart highlights from hash state and clear them when "
+          "stock-%/vol chart highlights from hash state and clear them when "
           "the hash drops the filter; CEO/CFO else-clear present; "
           "applyHashState calls the gov indicator via the guarded "
           "window accessor and never decodes a hash value twice; "

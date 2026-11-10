@@ -168,9 +168,13 @@
     // old value and the badge kept counting a filter that no longer
     // filtered -- the panel-side mirror of the 326th chip bug. Callers
     // pass exactly the selects whose state they nulled. Board is
-    // excluded from every caller except resetAllFilters and (376th)
-    // findCompanyInTable: no other path nulls _activeBoardFilter, so
-    // for them the af-board select and its badge count stay truthful. Like _clearAfVolSelect, this sets .value directly
+    // excluded from every caller except resetAllFilters, (376th)
+    // findCompanyInTable, and (412th) the hashchange handler: no
+    // other path nulls _activeBoardFilter, so for them the af-board
+    // select and its badge count stay truthful. Vol is likewise
+    // excluded everywhere except those three callers (the hashchange
+    // handler joined them in the 412th review, when vol became
+    // hash-serialized). Like _clearAfVolSelect, this sets .value directly
     // WITHOUT dispatching 'change': the handlers would re-null
     // already-nulled state and trigger extra table refreshes. The badge
     // (plus summary, toggle class, and group badges) is refreshed

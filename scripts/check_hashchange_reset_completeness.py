@@ -18,11 +18,9 @@ The serialized set is derived from serializeState itself, so adding a
 new hash-serialized filter without a matching hashchange reset trips
 this guard -- update the handler, do not silence the guard.
 
-Deliberately NOT required here (and asserted absent from the AF-select
-list, so a future edit cannot silently widen the reset):
-  vol / board -- NOT hash-serialized,
-  so a hash change cannot drop them; they stay session-local by design
-  (same reasoning as resetAllFilters keeping _activeBoardFilter).
+Deliberately NOT required here:
+  (none -- every hash-serialized filter is nulled; the last
+  session-local holdouts joined in the 412th review, below).
   Community was on this list until the 409th review (2026-11-10),
   when it gained hash serialization (cmtk/cmlbl/cmid) and joined
   the nulled set + CHIP_IDS below. Position was on it until the
@@ -30,7 +28,11 @@ list, so a future edit cannot silently widen the reset):
   (pstk/pslbl/pscid/psm/psr/psd) and joined the same way.
   Quartile was on it until the 411th review (2026-11-10), when it
   gained hash serialization (qtk/qlbl/qcid/qlo/qhi) and joined the
-  same way.
+  same way. Volatility, vol-tenure and board were on it until the
+  412th review (2026-11-10), when they gained hash serialization
+  (vmin/vmax/vlbl, vtmin/vtmax/vtlbl, board) and joined the same
+  way -- and their AF selects (af-vol, af-board) joined the
+  _clearAfSelects list with them (330th-review panel-sync rule).
   _compareSet -- synced separately in the handler's restore block
   (compareSet.length = 0 + hash cmp refill), not nulled in reset.
   _expandedDetailTicker / _activeDiffKey -- already nulled pre-fix.
@@ -50,10 +52,12 @@ Checks (all static - small JS reads, <2s):
      literal). applyHashState's indicator updaters re-create chips
      for filters the new hash carries, so removal here is safe.
   C4 HARD FAIL: the reset block does not call window._clearAfSelects
-     with exactly the 6 selects for the nulled AF-mapped dims
+     with exactly the 8 selects for the nulled AF-mapped dims
      (af-pay-band, af-sop-tier, af-tenure, af-gov, af-gender,
-     af-conc) -- the 330th-review panel-sync rule for this path.
-     af-vol and af-board must NOT appear (vol/board not nulled here).
+     af-conc, af-vol, af-board) -- the 330th-review panel-sync rule
+     for this path. af-vol and af-board joined the list in the
+     412th review, when vol/board became hash-serialized (and
+     therefore nulled here).
   C5 HARD FAIL: the reset block does not re-render the PvP toggle
      off (_updatePvpOnlyToggle) or does not reset the role chips
      (.role-chip active classes + updateRoleColumnHeader).
@@ -91,14 +95,14 @@ CHIP_IDS = [
     "transition-filter-chip", "team-filter-chip", "yoy-filter-chip",
     "ceocfo-filter-chip", "community-filter-chip",
     "position-filter-chip", "quartile-filter-chip",
+    "volatility-filter-chip", "vol-tenure-chip", "board-filter-chip",
 ]
 
 # AF selects for exactly the AF-mapped dims nulled in the reset block.
 EXPECTED_AF_SELECTS = {
     "af-pay-band", "af-sop-tier", "af-tenure", "af-gov",
-    "af-gender", "af-conc",
+    "af-gender", "af-conc", "af-vol", "af-board",
 }
-FORBIDDEN_AF_SELECTS = {"af-vol", "af-board"}
 
 # window._active* names serializeState references that need no reset.
 SERIALIZE_ALLOWLIST = {"_compareSet"}
@@ -161,9 +165,6 @@ def main():
     if selects != EXPECTED_AF_SELECTS:
         return fail(f"C4: _clearAfSelects selects {sorted(selects)} != "
                     f"expected {sorted(EXPECTED_AF_SELECTS)}")
-    bad = selects & FORBIDDEN_AF_SELECTS
-    if bad:
-        return fail(f"C4: forbidden selects in hashchange clear: {sorted(bad)}")
 
     # C5: PvP toggle re-render + role-chip reset.
     if "_updatePvpOnlyToggle" not in block:

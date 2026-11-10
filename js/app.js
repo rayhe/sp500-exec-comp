@@ -13314,6 +13314,34 @@ function serializeState() {
         if (window._activeQuartileFilter._lo != null) params.push('qlo=' + window._activeQuartileFilter._lo);
         if (window._activeQuartileFilter._hi != null) params.push('qhi=' + window._activeQuartileFilter._hi);
     }
+    // 412th review: the volatility bucket, vol-tenure bracket and
+    // board filter were the last three session-local filters without
+    // a hash carrier -- a shared link into a volatility- or
+    // board-filtered view dropped the filter on load (table
+    // unfiltered, no chip) while the URL described nothing, and a
+    // back/forward navigation could not drop it either (it was
+    // session-local by design). Mirror the quartile carrier:
+    // min/max + label for the two range filters ('inf' for the
+    // open-ended top bucket, like ratio/YoY), mode for board.
+    // parseFloat round-trips the integer bounds exactly, so the
+    // restored filter matches the chart bucket bit-for-bit. The
+    // restored filters are hash-origin, not AF-origin (337th-review
+    // gender precedent): no _isAf flag, no AF select sync -- the
+    // chip dismiss takes the non-AF branch (null + render +
+    // pushState) and the panel shows no stale band.
+    if (window._activeVolatilityBucket) {
+        params.push('vmin=' + window._activeVolatilityBucket.min);
+        params.push('vmax=' + (window._activeVolatilityBucket.max === Infinity ? 'inf' : window._activeVolatilityBucket.max));
+        params.push('vlbl=' + encodeURIComponent(window._activeVolatilityBucket.label));
+    }
+    if (window._activeVolTenureBracket) {
+        params.push('vtmin=' + window._activeVolTenureBracket.min);
+        params.push('vtmax=' + (window._activeVolTenureBracket.max === Infinity ? 'inf' : window._activeVolTenureBracket.max));
+        params.push('vtlbl=' + encodeURIComponent(window._activeVolTenureBracket.label));
+    }
+    if (window._activeBoardFilter) {
+        params.push('board=' + encodeURIComponent(window._activeBoardFilter.mode));
+    }
     if (activeRole && activeRole !== 'CEO') {
         params.push('role=' + encodeURIComponent(activeRole));
     }
@@ -13440,13 +13468,15 @@ function applyHashState(companies) {
     // Sector
     if (state.sector) {
         setActiveSector(state.sector);
-        // 389th review: scope to sector chips -- vol/board
-        // are session-local (not hash-serialized) and
-        // survive a hash change, so the old document-wide sweep
-        // stripped 'active' from their live chips. (Community,
-        // position and quartile used to be on this list; they
-        // joined the serialized set in the 409th, 410th and
-        // 411th reviews.)
+        // 389th review: scope to sector chips -- a hash change
+        // must not strip 'active' from live chips of filters the
+        // new hash does not carry. (Community, position and
+        // quartile used to be on this list; they joined the
+        // serialized set in the 409th, 410th and 411th reviews,
+        // and volatility / vol-tenure / board in the 412th --
+        // their chips are removed by id in the hashchange handler
+        // and re-created by the indicator calls below when the
+        // new hash carries them.)
         updateSectorChipStates(state.sector);
     }
 
@@ -13715,6 +13745,52 @@ function applyHashState(companies) {
             document.querySelectorAll('.cm-bp-zone[data-bp-cid="' + qCid + '"]').forEach(function(z) {
                 if (parseFloat(z.dataset.bpLo) === qLo && parseFloat(z.dataset.bpHi) === qHi) z.classList.add('cm-bp-zone-clicked');
             });
+        }
+    }
+
+    // Volatility bucket filter (412th review: mirror of the
+    // quartile restore above). The gate is min/max + label; an
+    // AF-origin bucket restores as hash-origin (no _isAf -- see
+    // the serialize comment), so its chip dismiss takes the
+    // non-AF branch. The chip is created by the indicator call,
+    // so both restore sites (init + hashchange) get it. The chart
+    // ring is re-applied by the init restore block below and the
+    // hashchange highlight section (highlightVolatilityBucket
+    // overlaps AF bands against chart buckets, so a restored AF
+    // band lights every bucket it intersects).
+    if (state.vmin != null && state.vmax != null && state.vlbl) {
+        var vMin = parseFloat(state.vmin);
+        var vMax = state.vmax === 'inf' ? Infinity : parseFloat(state.vmax);
+        if (!isNaN(vMin) && (vMax === Infinity || !isNaN(vMax))) {
+            window._activeVolatilityBucket = { min: vMin, max: vMax, label: state.vlbl };
+            if (window._updateVolatilityFilterIndicator) window._updateVolatilityFilterIndicator();
+        }
+    }
+
+    // Volatility x Tenure bracket filter (412th review: same
+    // mirror). min/max are tenure-year bounds (0-3 / 3-10 /
+    // 10-20 / 20+), not volatility bounds. No chart highlight
+    // function exists for the vol-tenure bars (like pctile /
+    // peer-dist), so a deep link filters the table and raises
+    // its chip with the bars un-ringed.
+    if (state.vtmin != null && state.vtmax != null && state.vtlbl) {
+        var vtMin = parseFloat(state.vtmin);
+        var vtMax = state.vtmax === 'inf' ? Infinity : parseFloat(state.vtmax);
+        if (!isNaN(vtMin) && (vtMax === Infinity || !isNaN(vtMax))) {
+            window._activeVolTenureBracket = { min: vtMin, max: vtMax, label: state.vtlbl };
+            if (window._updateVolTenureFilterIndicator) window._updateVolTenureFilterIndicator();
+        }
+    }
+
+    // Board independence filter (412th review: same mirror).
+    // The mode is validated against the three AF modes -- a
+    // hand-built link with anything else restores nothing, so a
+    // typo cannot leave a filter with no chip behind it.
+    if (state.board) {
+        var bdModes = ['high', 'mid', 'low'];
+        if (bdModes.indexOf(state.board) >= 0) {
+            window._activeBoardFilter = { mode: state.board };
+            if (window._updateBoardFilterIndicator) window._updateBoardFilterIndicator();
         }
     }
 
@@ -17596,10 +17672,10 @@ function setupDualSparklineTooltips() {
     // so a deep link carrying one of these six filtered the table and
     // raised its chip but left the chart un-ringed until a redraw; the
     // charts draw before applyHashState, so the draw-time application
-    // never saw the state). Vol is excluded deliberately: it is not
-    // hash-serialized and stays session-local. Pctile / peer-dist
-    // have no highlight function to call (their visuals re-render
-    // from state). Stock-% and
+    // never saw the state). Vol joined the serialized set in the 412th
+    // review, so its highlight is applied with the rest below.
+    // Vol-tenure / board / pctile / peer-dist have no highlight
+    // function to call (their visuals re-render from state). Stock-% and
     // asp-delta groups live in the sort-contextual summary, which
     // renderSummaryBar renders alongside the filter stats when the active
     // filter's dim matches the sort key (361st review), so those two calls
@@ -17622,6 +17698,12 @@ function setupDualSparklineTooltips() {
     }
     if (window._activeStockPctTier && window.highlightStockPctBucket) {
         window.highlightStockPctBucket(window._activeStockPctTier.min, window._activeStockPctTier.max);
+    }
+    // 412th review: volatility joined the serialized set, so a deep
+    // link carrying a vol bucket must ring its chart bars like the
+    // six dims above (the draw-time application never saw the state).
+    if (window._activeVolatilityBucket && window.highlightVolatilityBucket) {
+        window.highlightVolatilityBucket(window._activeVolatilityBucket.min, window._activeVolatilityBucket.max);
     }
 
     // 373rd review: crosstab cells are drawn before applyHashState, so
@@ -19809,16 +19891,15 @@ function setupDualSparklineTooltips() {
         // peerdist / crosstab / pvponly / role kept filtering with
         // stale chips, toggles, or role chips while the URL no longer
         // described the view. Null them all; applyHashState restores
-        // exactly the ones the new hash carries. Vol / board
-        // are NOT hash-serialized, so
-        // a hash change cannot drop them -- they stay session-local
-        // by design and are intentionally not reset here. Community
+        // exactly the ones the new hash carries. Community
         // joined the serialized set in the 409th review (cmtk/cmlbl/
         // cmid), so it IS nulled below like the other serialized dims.
         // Position joined it in the 410th review (pstk/pslbl/pscid/
         // psm/psr/psd), so it IS nulled below too. Quartile joined it
         // in the 411th review (qtk/qlbl/qcid/qlo/qhi), so it IS
-        // nulled below too.
+        // nulled below too. Volatility, vol-tenure and board joined
+        // it in the 412th review (vmin/vmax/vlbl, vtmin/vtmax/vtlbl,
+        // board), so they ARE nulled below too.
         window._activeConcTier = null;
         window._activeCeoCfoBucket = null;
         window._activeSopFilter = null;
@@ -19851,6 +19932,14 @@ function setupDualSparklineTooltips() {
         // the filter survives with its chip removed (the 341st
         // stuck-filter class).
         window._activeQuartileFilter = null;
+        // 412th review: volatility / vol-tenure / board are
+        // hash-serialized now (vmin, vtmin, board), so a hash change
+        // that drops them must null the filters -- otherwise the
+        // filter survives with its chip removed (the 341st
+        // stuck-filter class).
+        window._activeVolatilityBucket = null;
+        window._activeVolTenureBracket = null;
+        window._activeBoardFilter = null;
         window._activePvpOnlyFilter = false;
         // Same class, navigation state rather than a filter: the
         // section deep-link is hash-serialized too, so a hash change
@@ -19873,15 +19962,14 @@ function setupDualSparklineTooltips() {
         document.querySelectorAll('#comp-tbody tr[aria-expanded]').forEach(function(r) { r.removeAttribute('aria-expanded'); });
         document.getElementById('table-search').value = '';
         // 389th review: scope the chip reset to sector chips only --
-        // vol/board are intentionally not reset
-        // here (not hash-serialized; see the comment above), so the
-        // old document-wide sweep stripped 'active' from their live
-        // chips. Community IS hash-serialized since the 409th review
-        // and position since the 410th, and quartile since the 411th,
-        // and all three are removed by id
-        // in the chip list above, with the community legend /
-        // metrics-row highlights, the position clicked row and the
-        // quartile clicked zone cleared alongside.
+        // the old document-wide sweep stripped 'active' from live
+        // chips of filters that survive a hash change. Community IS
+        // hash-serialized since the 409th review and position since
+        // the 410th, quartile since the 411th, and volatility /
+        // vol-tenure / board since the 412th, and all six are
+        // removed by id in the chip list above, with the community
+        // legend / metrics-row highlights, the position clicked row
+        // and the quartile clicked zone cleared alongside.
         // applyHashState restores the hashed sector below.
         updateSectorChipStates(null);
         var rc = document.getElementById('ratio-filter-chip');
@@ -19905,7 +19993,8 @@ function setupDualSparklineTooltips() {
          'tenure-filter-chip', 'gov-filter-chip', 'pctile-filter-chip',
          'stockpct-filter-chip', 'peer-dist-chip', 'crosstab-filter-chip',
          'ceocfo-filter-chip', 'community-filter-chip',
-         'position-filter-chip', 'quartile-filter-chip'
+         'position-filter-chip', 'quartile-filter-chip',
+         'volatility-filter-chip', 'vol-tenure-chip', 'board-filter-chip'
         ].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.remove();
@@ -19943,15 +20032,16 @@ function setupDualSparklineTooltips() {
         // indicator when the new hash carries a peer-dist filter).
         var pdsHash = document.getElementById('peer-dist-strip');
         if (pdsHash) pdsHash.innerHTML = '';
-        // 341st review: the nulled dims include 6 AF-mapped ones
+        // 341st review: the nulled dims include 8 AF-mapped ones
         // (dist/pay-band was already nulled above, plus conc, sop,
-        // tenure, gov, gender), so their panel selects must be cleared
-        // too -- the 330th-review panel-sync rule, applied to this
-        // reset path. No change dispatch (handlers would re-null
-        // already-nulled state). Vol is excluded: not nulled here.
+        // tenure, gov, gender, vol and board -- the last two joined
+        // the nulled set in the 412th review), so their panel selects
+        // must be cleared too -- the 330th-review panel-sync rule,
+        // applied to this reset path. No change dispatch (handlers
+        // would re-null already-nulled state).
         if (typeof window._clearAfSelects === 'function') window._clearAfSelects(
             ['af-pay-band', 'af-sop-tier', 'af-tenure', 'af-gov',
-             'af-gender', 'af-conc']);
+             'af-gender', 'af-conc', 'af-vol', 'af-board']);
         // PvP toggle renders from state; re-render it off now so a
         // dropped pvponly=1 does not leave the toggle visually on
         // (applyHashState + the restore block re-render it on when
@@ -20044,6 +20134,18 @@ function setupDualSparklineTooltips() {
             // class as the ratio / YoY else branches above).
             window.highlightCeoCfoBucket(null, null);
         }
+        // 412th review: volatility joined the serialized set, so a
+        // back/forward navigation into a vol deep link must ring its
+        // bars, and a navigation that drops it must clear the ring
+        // (same ratio / YoY pattern -- otherwise the ring would
+        // linger with its chip already removed).
+        if (window.highlightVolatilityBucket) {
+            if (window._activeVolatilityBucket) {
+                window.highlightVolatilityBucket(window._activeVolatilityBucket.min, window._activeVolatilityBucket.max);
+            } else {
+                window.highlightVolatilityBucket(null, null);
+            }
+        }
         // Restore gov / gender / tenure / SoP / asp-delta / stock-%
         // bucket highlights from hash state (359th review: same gap as
         // the init restore site -- no chart redraw happens on
@@ -20051,11 +20153,11 @@ function setupDualSparklineTooltips() {
         // back/forward navigation into one of these filters; the else
         // branches clear the ring when the new hash drops the filter,
         // mirroring the ratio / YoY pattern, or a dropped filter's ring
-        // would linger with its chip already removed. Vol is excluded
-        // deliberately: not hash-serialized, stays session-local, and
-        // the handler never nulls it, so its highlight persists.
-        // Pctile / peer-dist have no highlight function (their
-        // visuals re-render from state).
+        // would linger with its chip already removed. Vol joined the
+        // serialized set in the 412th review, so its highlight is
+        // restored/cleared with the rest (the block after the CEO/CFO
+        // one below). Vol-tenure / board / pctile / peer-dist have no
+        // highlight function (their visuals re-render from state).
         // Stock-% / asp-delta groups live in the sort-contextual
         // summary, which renderSummaryBar renders alongside the filter
         // stats when the active filter's dim matches the sort key (361st

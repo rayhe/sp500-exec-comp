@@ -17,14 +17,23 @@ from live indicator chips whose state the path deliberately keeps:
   Correlation Anomalies     insight action: performs NO reset at all,
   insight action            so the sweep stripped EVERY live indicator
                             chip while all of them kept filtering.
-  applyHashState sector     vol/board/community/quartile/position are
+  applyHashState sector     vol/board/community/quartile/position were
   branch                    session-local (not hash-serialized) and
-                            survive a hash change -- the sweep stripped
+                            survived a hash change -- the sweep stripped
                             their chips on every back/forward navigation.
+                            (Vol/vol-tenure/board joined the serialized
+                            set in the 412th review, so the restore
+                            below re-creates their chips; the sweep
+                            must stay scoped for the sector chip
+                            itself and for any dim without a restore.)
   sector-analytics row      calls twelve indicator updaters (which
   click                     re-render their chips WITH 'active') and
                             then swept the class right back off them.
-  hashchange handler        same session-local kept dims as above.
+  hashchange handler        same dims as above (vol/vol-tenure/board
+                            hash-serialized since the 412th, so the
+                            reset nulls them and removes their chips
+                            by id; the sweep stays scoped to sector
+                            chips all the same).
   Escape handler            keeps tenure/gov/vol/vol-tenure/board/
                             community/quartile/position/PvP-covered
                             (its own keptEsc list says so).
@@ -60,10 +69,13 @@ Render (headless Chromium, d3 shim from the goal hidden_files cache):
      then a sector-analytics row is clicked -- the vol chip keeps
      'active' and the clicked sector chip is active. Pre-fix: the
      sweep stripped the vol chip (and every updater re-render).
-  R4 hash change keeps the vol chip: vol 0-5pct active, then the hash
-     gains sector=Information Technology -- the vol chip keeps
-     'active' and the IT sector chip is active. Pre-fix: both the
-     hashchange sweep and the applyHashState sector sweep stripped it.
+  R4 (412th review) hash change drops the vol filter: vol 0-5pct
+     active, then the hash gains sector=Information Technology --
+     the vol chip is gone, state is null, the footer is the
+     sector-only count and the IT sector chip is active. Pre-412th
+     vol was session-local and the chip survived the navigation;
+     now that it is hash-serialized, a hash that drops vmin must
+     drop the filter (341st stuck-filter class).
   R5 Sector SoP insight card keeps the board chip: board low
      active, then the card is clicked -- the board chip keeps
      'active' and the lowest-SoP sector chip is active. Pre-fix: the
@@ -391,25 +403,37 @@ def render_checks():
                   "active before+after, a sector chip active, >= 1 row)"
                   % (v_before, v_after, any_sector_active, n3))
 
-            # R4: a hash change to a sector deep link must not strip a
-            # live vol chip (vol is session-local, not hash-serialized).
+            # R4 (412th review): vol joined the serialized set, so a
+            # hash change to a sector-only link must DROP the vol
+            # filter -- chip gone, state null, footer the sector-only
+            # count -- the 341st stuck-filter class: a filter the URL
+            # no longer describes must not survive the navigation.
+            # Pre-412th vol was session-local and the chip survived.
             load()
             set_vol()
             v_before = chip_state(chip_id="volatility-filter-chip")
+            n_vol = footer_count()
             pg.evaluate("() => { location.hash = '#sector=Information%20Technology'; }")
             pg.wait_for_timeout(1500)
             n4 = footer_count()
             v_after = chip_state(chip_id="volatility-filter-chip")
+            f4 = pg.evaluate("() => window._activeVolatilityBucket || null")
             it_chip = chip_state(text="Information Technology")
+            # IT-only count from a fresh load of the same sector link.
+            pg.goto("http://127.0.0.1:%d/index.html#sector=Information%%20Technology" % port,
+                    timeout=60000)
+            pg.wait_for_selector(
+                "#comp-tbody > tr:not(.skeleton-table-row-tr)", timeout=30000)
+            pg.wait_for_timeout(800)
+            n_it = footer_count()
             r4_ok = (v_before is not None and v_before["active"]
-                     and v_after is not None and v_after["active"]
+                     and v_after is None and f4 is None
                      and it_chip is not None and it_chip["active"]
-                     and n4 >= 1)
-            check("R4 vol chip keeps 'active' across a hash change to a sector link",
+                     and n4 == n_it and n4 >= 1 and n4 != n_vol)
+            check("R4 hash change to a sector link drops the vol filter (chip gone, state null, footer = sector-only count)",
                   r4_ok,
-                  "before=%r after=%r it=%r footer=%s (want vol active "
-                  "before+after, IT active, >= 1 row)"
-                  % (v_before, v_after, it_chip, n4))
+                  "before=%r after=%r state=%r it=%r footer=%s it_only=%s vol_only=%s (want vol active before, chip + state gone after, IT active, footer == IT-only count)"
+                  % (v_before, v_after, f4, it_chip, n4, n_it, n_vol))
 
             # R5: the Sector SoP insight card must not strip a live
             # board chip (insightResetAndSort keeps board state).

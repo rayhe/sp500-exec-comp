@@ -27,7 +27,9 @@ to these state variables exists outside the allowlist in C4):
   board         -> NO chart setter exists (337th review); the only
                    non-null assignment is handleBoard in
                    advanced-filters.js, so af-board is never stale
-                   from a chart path.
+                   from a chart path. The applyHashState hash restore
+                   (412th review) is the one other allowed assignment
+                   site (a URL restore, not a setter).
 Every other chart click routes through one of these setters (charts.js
 calls filterByDistribution / filterByCompBracket / filterByConcTier /
 highlightSopBucket / filterByGender); the vol-tenure bracket setters
@@ -36,7 +38,10 @@ touch no AF-mapped variable, so they are excluded, not covered.
 applyHashState (URL restore) is allowlisted but not covered: at
 initial load the selects start empty, so a restored flag-less
 (chart-origin) state cannot disagree with a select; the popstate path
-is a separate question and is deliberately out of scope here.
+is a separate question and is deliberately out of scope here. Its
+restores can sit more than 300 lines below its header (vol/board in
+the 412th review), so C4's enclosing-function lookup falls back to a
+brace-aware scan past the window.
 
 Checks (all static - small JS reads, <2s):
   C1 HARD FAIL: _clearAfSelects or _clearAfVolSelect is not defined in
@@ -58,7 +63,8 @@ Checks (all static - small JS reads, <2s):
      before C2/C3 run -- update the guard with the new setter, do not
      silence it.
   C5 HARD FAIL: any non-null assignment to _activeBoardFilter outside
-     handleBoard in js/advanced-filters.js (board has no chart setter).
+     handleBoard in js/advanced-filters.js or the applyHashState hash
+     restore in js/app.js (board has no chart setter).
 
 State variable -> AF select id, per the Advanced Filters handlers:
   _activeDistFilter -> af-pay-band
@@ -162,6 +168,42 @@ def enclosing_function(lines, idx):
             lines[j])
         if m:
             return m.group(1) or m.group(2) or m.group(3)
+    # 412th review: applyHashState is ~500 lines long, so a restore
+    # assignment near its end (vol at +326, board at +353) sits more
+    # than 300 lines below its header -- the window above returns
+    # None for a line that really is inside an allowlisted function.
+    # Fall back to a brace-aware scan: the nearest preceding named
+    # header whose brace-matched body contains the line. The
+    # containment check keeps a top-level assignment past a long
+    # function from being misattributed to it (the failure a bare
+    # window bump would introduce).
+    src = "\n".join(lines)
+    offsets = [0]
+    for ln in lines:
+        offsets.append(offsets[-1] + len(ln) + 1)
+    for j in range(idx, max(0, idx - 1500), -1):
+        m = re.search(
+            r"(?:window\.([A-Za-z0-9_]+)|function ([A-Za-z0-9_]+))"
+            r"\s*=\s*function|function ([A-Za-z0-9_]+)\s*\(",
+            lines[j])
+        if not m:
+            continue
+        name = m.group(1) or m.group(2) or m.group(3)
+        brace = src.find("{", offsets[j])
+        if brace < 0:
+            continue
+        depth = 0
+        end = None
+        for k in range(brace, len(src)):
+            if src[k] == "{":
+                depth += 1
+            elif src[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    end = k
+                    break
+        if end is not None and brace <= offsets[idx] <= end:
+            return name
     return None
 
 
@@ -272,11 +314,17 @@ def main():
                         f"the guard, do not silence it)")
 
     # --- C5: board has no chart setter ----------------------------------
+    # 412th review: the applyHashState hash restore is the one other
+    # allowed site (a URL restore, not a setter -- the same
+    # allowlisting C4 gives it); every other non-null assignment
+    # outside handleBoard still fails.
     for fname, src in (("app.js", app), ("charts.js", charts)):
-        for i, ln in enumerate(src.split("\n")):
+        lines = src.split("\n")
+        for i, ln in enumerate(lines):
             if (re.search(r"_activeBoardFilter\s*=\s*[^=]", ln)
                     and not re.search(r"_activeBoardFilter\s*=\s*"
-                                      r"(null|false)\b", ln)):
+                                      r"(null|false)\b", ln)
+                    and enclosing_function(lines, i) != "applyHashState"):
                 failures.append(f"C5 {fname}:{i + 1} assigns "
                                 "_activeBoardFilter outside handleBoard "
                                 "(board has no chart setter by design)")
