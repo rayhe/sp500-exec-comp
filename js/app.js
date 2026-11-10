@@ -15762,7 +15762,20 @@ function setupDualSparklineTooltips() {
         if (window._activeTenureQuartile) {
             var tq = window._activeTenureQuartile;
             var isCombined = !!activeSector;
-            var chipLabel = isCombined ? activeSector + ' × ' + tq.tag : tq.tag;
+            // 404th review: the dim label is factored as the badge form
+            // ('Tenure: ' + tag) so the chip keeps the dimension prefix
+            // the badge and the announce both carry -- the bare tag
+            // dropped it, the same chip-wording-must-match-badge class
+            // the 403rd review closed for equity-mix, the 402nd for
+            // percentile, the 401st for CEO/CFO, the 400th for YoY,
+            // the 399th for SoP, and the 398th for concentration.
+            // The 387th review already established the 'Tenure: '
+            // prefix matters (vol-tenure vs tenure in the badge); the
+            // chip was the remaining surface that lacked it. The tag
+            // itself ('New CEOs (<3 yrs)') is unchanged -- only the
+            // prefix is regained, so no relabel, no new wording.
+            var dimLabel = 'Tenure: ' + tq.tag;
+            var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var chip = document.createElement('button');
             chip.className = 'chip active combined-filter-chip';
             chip.id = 'tenure-filter-chip';
