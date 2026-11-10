@@ -299,8 +299,19 @@ def render_checks():
             pg.route("**/fonts.gstatic.com/**", lambda r: r.abort())
 
             def load(url=None):
-                pg.goto(url or "http://127.0.0.1:%d/index.html" % port,
-                        timeout=60000)
+                if url is not None and pg.url == url:
+                    # goto() to the identical hash URL is a
+                    # same-document navigation in Chromium -- no
+                    # reload, no restore, so the checks below would
+                    # pass vacuously on the pre-reload state (411th
+                    # probe: window.__probe survives goto(same hash
+                    # URL) but not goto(same bare URL) or reload()).
+                    # Force a real reload for the round trip.
+                    # (413th review: vacuous-reload fix.)
+                    pg.reload(timeout=60000)
+                else:
+                    pg.goto(url or "http://127.0.0.1:%d/index.html" % port,
+                            timeout=60000)
                 pg.wait_for_selector(
                     "#comp-tbody > tr:not(.skeleton-table-row-tr)",
                     timeout=30000)
