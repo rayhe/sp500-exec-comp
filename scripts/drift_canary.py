@@ -22,6 +22,13 @@ Usage:
                                                  # file)
     python3 scripts/drift_canary.py --no-log      # run, do not write a
                                                  # per-run log file
+    python3 scripts/drift_canary.py --help       # print this usage, run nothing
+
+Unknown flags, bare positional arguments, and value-taking flags given
+no value (--state, --log-dir, --shard) are rejected with exit 2 and no
+guard runs: before the 426th review an unrecognized flag was silently
+ignored and the run proceeded as a full canary (a bare --help launched
+a ~15-minute full run in the 425th review).
 
 Every run (full or shard) writes a per-run log file
 (canary_YYYYMMDD_HHMM_shardNofM.log / canary_YYYYMMDD_HHMM_full.log) next
@@ -90,6 +97,14 @@ the pre-commit hook.
     shard-1 logs -- shards 2-4 ran but left no per-run trace, so the
     state file was the only evidence. Every run now writes its own
     log (shard_log_name / write_run_log) next to the state file.
+  2026-11-11 13:00 - --help / unknown-flag handling (426th review):
+    the hand-rolled argv loop silently ignored any flag it did not
+    recognize, so a bare --help (or a typo, or --shard with a missing
+    COUNT) launched a full ~15-minute canary run -- the 425th review
+    started one by accident and killed it at ~3 min. -h/--help now
+    prints the usage and exits 0 with no run; unknown flags, bare
+    positional arguments, and value-taking flags given no value exit 2
+    with usage and no run.
 """
 import datetime
 import hashlib
@@ -340,6 +355,24 @@ def write_run_log(log_dir, name, lines):
     return path
 
 
+def print_usage(out):
+    """Print the documented CLI usage (426th review).
+
+    The text is the module docstring's Usage block, so the printed help
+    can never drift from the documented flags; a docstring that lost
+    the block falls back to a one-line summary instead of crashing.
+    """
+    doc = __doc__ or ""
+    start = doc.find("Usage:\n")
+    end = doc.find("\n\nEvery run", start) if start >= 0 else -1
+    if start >= 0 and end > start:
+        print(doc[start:end].rstrip(), file=out)
+    else:
+        print("Usage: python3 scripts/drift_canary.py [--no-state] "
+              "[--state PATH] [--check-stale] [--shard N M] "
+              "[--log-dir DIR] [--no-log]", file=out)
+
+
 def main(argv):
     write_state = True
     write_log = True
@@ -356,23 +389,56 @@ def main(argv):
         print(msg, flush=True)
         log_lines.append(msg)
 
-    for i, a in enumerate(argv):
-        if a == "--no-state":
+    # CLI parsing (426th review): the old for/enumerate loop silently
+    # ignored anything it did not recognize -- --help, a typoed flag, a
+    # bare positional, or --state/--log-dir/--shard with no value -- and
+    # the run then proceeded as a full canary. Every unrecognized or
+    # malformed argument now exits 2 with usage before any guard runs;
+    # -h/--help prints usage and exits 0. Values are consumed explicitly
+    # so a value-taking flag's value is never re-read as a flag.
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print_usage(sys.stdout)
+            return 0
+        elif a == "--no-state":
             write_state = False
         elif a == "--no-log":
             write_log = False
         elif a == "--check-stale":
             check_stale_only = True
-        elif a == "--state" and i + 1 < len(argv):
-            state_path = argv[i + 1]
-        elif a == "--log-dir" and i + 1 < len(argv):
-            log_dir = argv[i + 1]
-        elif a == "--shard" and i + 2 < len(argv):
+        elif a in ("--state", "--log-dir"):
+            if i + 1 >= len(argv) or argv[i + 1].startswith("-"):
+                print("canary: INFRA - %s needs a PATH value" % a)
+                print_usage(sys.stdout)
+                return 2
+            if a == "--state":
+                state_path = argv[i + 1]
+            else:
+                log_dir = argv[i + 1]
+            i += 1
+        elif a == "--shard":
+            if i + 2 >= len(argv):
+                print("canary: INFRA - --shard needs integer INDEX COUNT")
+                print_usage(sys.stdout)
+                return 2
             try:
                 shard = (int(argv[i + 1]), int(argv[i + 2]))
             except ValueError:
                 print("canary: INFRA - --shard needs integer INDEX COUNT")
+                print_usage(sys.stdout)
                 return 2
+            i += 2
+        elif a.startswith("-"):
+            print("canary: INFRA - unknown flag '%s'" % a)
+            print_usage(sys.stdout)
+            return 2
+        else:
+            print("canary: INFRA - unexpected argument '%s'" % a)
+            print_usage(sys.stdout)
+            return 2
+        i += 1
 
     if check_stale_only:
         # Read-only staleness poll: cheap enough for a scheduled drift check.
