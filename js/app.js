@@ -7198,7 +7198,14 @@ function renderSummaryBar(filtered, allCompanies) {
     if (window._activeRatioBucket) {
         filterDims++;
         var rb = window._activeRatioBucket;
-        filterParts.push('Ratio ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
+        // 415th review: the badge part dropped the colon ('Ratio
+        // 100-200:1') while the chip carries 'Ratio: '
+        // (updateRatioFilterIndicator) -- the same chip-wording-must-
+        // match-badge class the 414th review closed for crosstab,
+        // the 405th for peer-dist, the 404th for tenure, the 403rd
+        // for equity-mix and the 402nd for percentile. The badge now
+        // matches the chip exactly.
+        filterParts.push('Ratio: ' + rb.min + (rb.max === Infinity ? '+' : '–' + rb.max) + ':1');
     }
     // 382nd review: SoP was the only filter dim missing from this list,
     // so SoP plus any second filter showed no combined badge at all and
@@ -8274,7 +8281,15 @@ function renderTable(companies, options) {
     var announceMsg = 'Showing ' + (startIdx + 1) + ' to ' + Math.min(startIdx + PAGE_SIZE, filtered.length) + ' of ' + filtered.length + ' companies';
     if (activeSector) announceMsg += ', filtered to ' + activeSector;
     if (searchTerm) announceMsg += ', search: ' + searchTerm;
-    if (window._activeRatioBucket) announceMsg += ', pay ratio filter active';
+    if (window._activeRatioBucket) {
+        // 415th review: the announcement named the dim but dropped
+        // the bucket -- every other dim carries its value (SoP label,
+        // board label, dist label, ...). A screen-reader user heard
+        // 'pay ratio filter active' with no range. Now matches the
+        // chip/badge value.
+        var arb = window._activeRatioBucket;
+        announceMsg += ', pay ratio: ' + arb.min + (arb.max === Infinity ? '+' : '–' + arb.max) + ':1';
+    }
     // 382nd review: same omission as the combined-filter badge -- the
     // announcement named every other dim, never SoP.
     if (window._activeSopFilter) announceMsg += ', say-on-pay: ' + window._activeSopFilter.label;
