@@ -1569,6 +1569,7 @@ async function loadData() {
         pvpCountEl.textContent = pvpN ? '(' + pvpN + ')' : '';
     }
     renderFooterVintage(comp);
+    renderJsonLdDateModified(comp);
     renderHeaderSubtitle(comp);
     renderHeaderCompanyCount(comp);
     renderSectorCompDesc(comp);
@@ -1623,6 +1624,34 @@ function renderFooterVintage(comp) {
         parts.push(countStr);
     }
     if (parts.length) el.textContent = 'Built with D3.js · ' + parts.join(' · ');
+}
+
+// === JSON-LD dateModified ===
+// The Dataset JSON-LD block hard-coded "dateModified": "2026-11-02" and
+// drifted stale when DQ batches bumped metadata.last_updated to 2026-11-06
+// (419th review: the live crawl still showed "Updated: 2026-11-02" - the
+// date search engines and dataset consumers use). Render it live from the
+// guard-checked metadata at load, same pattern as renderFooterVintage.
+// Only the dateModified value is rewritten (regex on the raw text, so the
+// block's formatting is preserved); the rest of the block is untouched,
+// and any parse failure or missing field leaves the static block exactly
+// as-is. The static value in index.html stays as the no-JS fallback.
+// Date source: metadata.last_updated, falling back to the top-level
+// last_updated, then metadata.last_dq_repair (same fallback chain as the
+// footer's "Last repair" label).
+function renderJsonLdDateModified(comp) {
+    var el = document.getElementById('dataset-jsonld');
+    if (!el) return;
+    var md = (comp && comp.metadata) || {};
+    var ymd = (typeof md.last_updated === 'string' && md.last_updated)
+        || (comp && typeof comp.last_updated === 'string' && comp.last_updated)
+        || (typeof md.last_dq_repair === 'string' && md.last_dq_repair)
+        || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return;
+    try { JSON.parse(el.textContent); } catch (e) { return; }
+    var updated = el.textContent.replace(
+        /("dateModified"\s*:\s*")[^"]*(")/, '$1' + ymd + '$2');
+    if (updated !== el.textContent) el.textContent = updated;
 }
 
 // === Header Subtitle Fiscal Year ===
