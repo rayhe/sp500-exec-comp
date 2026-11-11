@@ -26,9 +26,9 @@ itself is the remediation, so the exit code is unaffected). The
 Sharded mode (--shard INDEX COUNT): the full suite (226 guards, ~15 min
 of guard time) no longer fits inside a single scheduled exec (~15 min
 ceiling), so a full run dies mid-suite and writes no state at all. A
-shard runs only its round-robin slice (guards[i::COUNT]) and merges the
-fresh verdicts into the shared state file, preserving the other shards'
-recorded verdicts. last_run_utc only advances once EVERY discovered
+shard runs only its stable-hash slice (sha256(name) mod COUNT) and merges
+the fresh verdicts into the shared state file, preserving the other
+shards' recorded verdicts. last_run_utc only advances once EVERY discovered
 guard carries a fresh (<= STALE_HOURS) run_utc, so the freshness guard
 keeps its honest fail-closed meaning: a half-re-baselined suite never
 claims to be fresh. Run the shards in any order across scheduled runs;
@@ -64,8 +64,16 @@ the pre-commit hook.
     with a traceback and no state write. Malformed entries are now
     coerced to an "infra" verdict with no run_utc, so the merge stays
     incomplete and fail-closed instead of crashing.
+  2026-11-10 21:15 - stable-hash sharding (418th review): positional
+    round-robin reshuffled every shard after the sort position of any
+    newly added guard, so the 417th run's shard 2 re-ran most of
+    shard 1's guards and the re-baseline stalled at 60/228 fresh.
+    partition_guards now assigns by sha256(name) mod count: a guard's
+    shard depends only on its own name, so roster changes never move
+    another guard. Balance is approximate (bounded, not exact).
 """
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -114,18 +122,29 @@ def discover_guards():
     ]
 
 
-def partition_guards(guards, index, count):
-    """Round-robin shard of the discovered guard list (1-based index).
+def _guard_shard(name, count):
+    """Stable shard slot for one guard name: sha256(name) mod count."""
+    digest = hashlib.sha256(name.encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "big") % count
 
-    Guards are already in sorted order from discover_guards(); slice
-    [index-1::count] is stable under appends (a newly added guard shifts
-    only the shards after its sort position) and evenly sized. Raises
-    ValueError on an out-of-range shard spec.
+
+def partition_guards(guards, index, count):
+    """Stable-hash shard of the discovered guard list (1-based index).
+
+    A guard's shard is sha256(name) mod count, so it depends only on
+    the guard's own name: adding or removing a guard never moves any
+    other guard to a different shard. (418th review: the old positional
+    round-robin reshuffled every shard after the sort position of any
+    newly added guard, so shard 2 of the 417th run re-ran most of
+    shard 1's guards and the re-baseline stalled at 60/228 fresh.)
+    Balance is approximate, not exact: shard sizes vary by hash luck,
+    bounded by the sharding guard (no shard over 2x the mean, every
+    shard non-empty). Raises ValueError on an out-of-range shard spec.
     """
     if count < 2 or index < 1 or index > count:
         raise ValueError("shard %d of %d out of range (need 1 <= index "
                          "<= count, count >= 2)" % (index, count))
-    return guards[index - 1::count]
+    return [g for g in guards if _guard_shard(g[0], count) == index - 1]
 
 
 def _parse_run_utc(value):

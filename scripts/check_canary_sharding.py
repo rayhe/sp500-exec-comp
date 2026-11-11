@@ -38,6 +38,10 @@ History:
   2026-11-10 18:30 - created (416th review). Pins the --shard merge
     contract added the same run: partition coverage, last_run_utc
     advance-only-on-complete, shard-without-state refusal.
+  2026-11-10 21:15 - S1 balance bound relaxed (418th review): stable-hash
+    assignment replaces positional round-robin, so exact +/-1 balance
+    no longer holds; the bound is now every-shard-non-empty and no
+    shard over 2x the mean.
 """
 import datetime
 import json
@@ -73,6 +77,10 @@ def _fake_result(status="pass", hours_ago=0):
 
 def main(argv):
     # S1: partition covers all discovered guards exactly once.
+    # Balance is approximate under stable-hash assignment (418th
+    # review): every shard must be non-empty and no shard may exceed
+    # 2x the mean size, so no shard's runtime can blow the exec
+    # ceiling while the others sit idle.
     discovered = [n for n, _, _ in dc.discover_guards()]
     s1_ok = True
     s1_detail = ""
@@ -86,12 +94,16 @@ def main(argv):
                 count, len(seen), len(discovered))
             break
         sizes = [len(s) for s in shards]
-        if max(sizes) - min(sizes) > 1:
+        mean = len(discovered) / count
+        if min(sizes) < 1 or max(sizes) > 2 * -(-len(discovered) // count):
             s1_ok = False
-            s1_detail = "count=%d: unbalanced shards %s" % (count, sizes)
+            s1_detail = "count=%d: unbalanced shards %s (mean %.1f)" % (
+                count, sizes, mean)
             break
     if s1_ok:
-        s1_detail = "%d guards, counts 2-6 partition exactly once, sizes differ by <=1" % len(discovered)
+        s1_detail = ("%d guards, counts 2-6 partition exactly once, "
+                     "every shard non-empty, none over 2x the mean"
+                     % len(discovered))
     check("canary-shard-partition", s1_ok, s1_detail)
 
     # S2: merge advances last_run_utc only on complete fresh coverage.
