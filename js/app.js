@@ -10095,12 +10095,20 @@ function setupDetailPanel(companies) {
                 else if (company._ceoStockPct >= 70) structParts.push('heavily equity-weighted (' + Math.round(company._ceoStockPct) + '% stock/options)');
                 else if (company._ceoStockPct >= 40) structParts.push(Math.round(company._ceoStockPct) + '% equity');
                 else if (company._ceoStockPct > 0) structParts.push('only ' + Math.round(company._ceoStockPct) + '% equity, unusually salary-heavy');
-                else structParts.push('no equity awards reported');
+                // 424th review: 'no equity awards reported' is a bare clause, not a
+                // complement of the sentence's 'Pay is ' lead-in, so 27 zero-equity
+                // CEOs rendered 'Pay is no equity awards reported.' -- reword to a
+                // complement phrase that also keeps the filing fact visible.
+                else structParts.push('entirely cash-based (no equity awards reported)');
             }
             if (company._ceoConcPct != null) {
                 if (company._ceoConcPct >= 55) structParts.push('CEO takes ' + company._ceoConcPct.toFixed(0) + '% of total NEO pay (highly concentrated)');
                 else if (company._ceoConcPct >= 40) structParts.push('CEO takes ' + company._ceoConcPct.toFixed(0) + '% of NEO pay');
-                else if (company._ceoConcPct < 25) structParts.push('pay is distributed broadly (' + company._ceoConcPct.toFixed(0) + '% CEO share)');
+                // 424th review: same complement rule -- 'pay is distributed broadly'
+                // repeated the sentence subject after the semicolon ('Pay is ...;
+                // pay is distributed broadly ...'); the bare participle phrase
+                // reads cleanly in both first-part and second-part position.
+                else if (company._ceoConcPct < 25) structParts.push('broadly distributed (' + company._ceoConcPct.toFixed(0) + '% CEO share)');
             }
             if (structParts.length > 0) {
                 sentences.push('Pay is ' + structParts.join('; ') + '.');
