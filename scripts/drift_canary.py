@@ -16,6 +16,20 @@ Usage:
     python3 scripts/drift_canary.py --shard 1 4  # run shard 1 of 4, merge
                                                  # into the shared state
                                                  # (chunked re-baseline)
+    python3 scripts/drift_canary.py --log-dir DIR # override the per-run
+                                                 # log directory (default:
+                                                 # same dir as the state
+                                                 # file)
+    python3 scripts/drift_canary.py --no-log      # run, do not write a
+                                                 # per-run log file
+
+Every run (full or shard) writes a per-run log file
+(canary_YYYYMMDD_HHMM_shardNofM.log / canary_YYYYMMDD_HHMM_full.log) next
+to the state file, capturing every printed line, so a re-baseline is
+auditable without the state file (the 419th/420th reviews found only the
+hand-saved shard-1 logs existed; shards 2-4 left no trace). A log-write
+failure never fails the run: it prints a warning and the canary verdict
+stands. The read-only --check-stale poll writes no log (nothing ran).
 
 A full canary run also reads the previous state first: if the last full
 run was more than STALE_HOURS ago, it prints a STALE warning (the run
@@ -71,6 +85,11 @@ the pre-commit hook.
     partition_guards now assigns by sha256(name) mod count: a guard's
     shard depends only on its own name, so roster changes never move
     another guard. Balance is approximate (bounded, not exact).
+  2026-11-11 02:30 - per-run log file (421st review): the 419th/420th
+    reviews found the re-baseline auditable only via the hand-saved
+    shard-1 logs -- shards 2-4 ran but left no per-run trace, so the
+    state file was the only evidence. Every run now writes its own
+    log (shard_log_name / write_run_log) next to the state file.
 """
 import datetime
 import hashlib
@@ -288,18 +307,66 @@ def stale_hours(state_path):
         return None
 
 
+def shard_log_name(start_dt, shard):
+    """Per-run log filename for a canary run starting at start_dt (UTC).
+
+    Shard runs: canary_YYYYMMDD_HHMM_shardNofM.log; full runs:
+    canary_YYYYMMDD_HHMM_full.log. Same naming the 416th review used
+    for its hand-saved shard-1 logs (canary_20261110_1830_shard1of4.log),
+    so old and new logs sort together. Pure function (no I/O) so the
+    shard-log guard can test it directly.
+    """
+    stamp = start_dt.strftime("%Y%m%d_%H%M")
+    if shard is None:
+        return "canary_%s_full.log" % stamp
+    return "canary_%s_shard%dof%d.log" % (stamp, shard[0], shard[1])
+
+
+def write_run_log(log_dir, name, lines):
+    """Write one per-run log file; return its path, or None on failure.
+
+    Creates the directory (parents included). Fail-soft by design: a
+    log-write failure must never fail the canary run itself -- the
+    caller prints a warning and the canary verdict stands. Pure I/O
+    helper, tested directly by the shard-log guard.
+    """
+    path = os.path.join(log_dir, name)
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+    except OSError:
+        return None
+    return path
+
+
 def main(argv):
     write_state = True
+    write_log = True
     check_stale_only = False
     state_path = DEFAULT_STATE
+    log_dir = None  # None = same directory as the state file
     shard = None
+    start_dt = datetime.datetime.now(datetime.timezone.utc)
+    # Every printed line is also collected for the per-run log file
+    # (421st review): the run's own audit trail, written at the end.
+    log_lines = []
+
+    def emit(msg):
+        print(msg, flush=True)
+        log_lines.append(msg)
+
     for i, a in enumerate(argv):
         if a == "--no-state":
             write_state = False
+        elif a == "--no-log":
+            write_log = False
         elif a == "--check-stale":
             check_stale_only = True
         elif a == "--state" and i + 1 < len(argv):
             state_path = argv[i + 1]
+        elif a == "--log-dir" and i + 1 < len(argv):
+            log_dir = argv[i + 1]
         elif a == "--shard" and i + 2 < len(argv):
             try:
                 shard = (int(argv[i + 1]), int(argv[i + 2]))
@@ -324,8 +391,8 @@ def main(argv):
     prev_hrs = stale_hours(state_path)
     if prev_hrs is not None and prev_hrs > STALE_HOURS:
         # Warning only: this full run IS the remediation.
-        print("canary: STALE - last full run was %.1fh ago (threshold %dh); "
-              "drift window exceeded, re-running now" % (prev_hrs, STALE_HOURS))
+        emit("canary: STALE - last full run was %.1fh ago (threshold %dh); "
+             "drift window exceeded, re-running now" % (prev_hrs, STALE_HOURS))
 
     try:
         commit = subprocess.run(
@@ -347,36 +414,36 @@ def main(argv):
             with open(state_path) as f:
                 prev_state = json.load(f)
         except (OSError, ValueError) as e:
-            print("canary: INFRA - shard mode needs a prior canary state "
-                  "at %s (%s); run a full canary first" % (state_path, e))
+            emit("canary: INFRA - shard mode needs a prior canary state "
+                 "at %s (%s); run a full canary first" % (state_path, e))
             return 2
         if not isinstance(prev_state.get("guards"), dict) \
                 or not prev_state["guards"]:
-            print("canary: INFRA - prior canary state at %s carries no "
-                  "guard verdicts; run a full canary first" % state_path)
+            emit("canary: INFRA - prior canary state at %s carries no "
+                 "guard verdicts; run a full canary first" % state_path)
             return 2
         try:
             guards = partition_guards(all_guards, shard[0], shard[1])
         except ValueError as e:
-            print("canary: INFRA - %s" % e)
+            emit("canary: INFRA - %s" % e)
             return 2
         prev_commit = prev_state.get("commit")
         if prev_commit and prev_commit != commit:
-            print("canary: WARN - merging shard verdicts recorded at HEAD "
-                  "%s with prior state at %s; re-baseline completes when "
-                  "every shard has run against the current HEAD"
-                  % (commit[:7], prev_commit[:7]))
-        print("canary: shard %d of %d (%d of %d guards)"
-              % (shard[0], shard[1], len(guards), len(all_guards)))
+            emit("canary: WARN - merging shard verdicts recorded at HEAD "
+                 "%s with prior state at %s; re-baseline completes when "
+                 "every shard has run against the current HEAD"
+                 % (commit[:7], prev_commit[:7]))
+        emit("canary: shard %d of %d (%d of %d guards)"
+             % (shard[0], shard[1], len(guards), len(all_guards)))
     else:
         guards = all_guards
 
     results = {}
     for name, script, timeout in guards:
-        print("canary: running %s ..." % name, flush=True)
+        emit("canary: running %s ..." % name)
         results[name] = run_guard(name, script, timeout)
         r = results[name]
-        print("canary: %-18s %-5s exit=%s %ss" % (
+        emit("canary: %-18s %-5s exit=%s %ss" % (
             name, r["status"].upper(), r["exit"], r["seconds"]))
 
     if shard is not None:
@@ -384,13 +451,13 @@ def main(argv):
             prev_state, results,
             [n for n, _, _ in all_guards], commit)
         cov = state["coverage"]
-        print("canary: shard %d of %d merged - recorded %d/%d guards, "
-              "%d fresh, complete=%s"
-              % (shard[0], shard[1], cov["recorded"], cov["discovered"],
-                 cov["fresh"], cov["complete"]))
+        emit("canary: shard %d of %d merged - recorded %d/%d guards, "
+             "%d fresh, complete=%s"
+             % (shard[0], shard[1], cov["recorded"], cov["discovered"],
+                cov["fresh"], cov["complete"]))
         if not cov["complete"]:
-            print("canary: last_run_utc stays %s until every discovered "
-                  "guard is fresh" % state["last_run_utc"])
+            emit("canary: last_run_utc stays %s until every discovered "
+                 "guard is fresh" % state["last_run_utc"])
     else:
         statuses = {r["status"] for r in results.values()}
         overall = ("pass" if statuses == {"pass"}
@@ -414,15 +481,30 @@ def main(argv):
             os.makedirs(os.path.dirname(state_path), exist_ok=True)
             with open(state_path, "w") as f:
                 json.dump(state, f, indent=2)
-            print("canary: state written to %s" % state_path)
+            emit("canary: state written to %s" % state_path)
         except OSError as e:
-            print("canary: INFRA - could not write state: %s" % e)
+            emit("canary: INFRA - could not write state: %s" % e)
             overall = "infra"
 
-    print("canary: overall %s (%s)" % (
+    emit("canary: overall %s (%s)" % (
         overall.upper(),
         ", ".join("%s=%s" % (k, v["status"]) for k, v in
                   state["guards"].items())))
+
+    # Per-run audit log (421st review): the run's own trace, written
+    # next to the state file so a re-baseline is auditable without it.
+    # Fail-soft: a log-write failure warns and never changes the
+    # canary verdict.
+    if write_log:
+        target_dir = log_dir or os.path.dirname(state_path) or "."
+        log_path = write_run_log(
+            target_dir, shard_log_name(start_dt, shard), log_lines)
+        if log_path is None:
+            print("canary: WARN - could not write per-run log to %s"
+                  % target_dir)
+        else:
+            print("canary: log written to %s" % log_path)
+
     return {"pass": 0, "fail": 1, "infra": 2}[overall]
 
 
