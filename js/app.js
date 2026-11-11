@@ -7304,8 +7304,17 @@ function renderSummaryBar(filtered, allCompanies) {
         // combined badge (chip-wording parity, 396th/402nd/403rd/
         // 408th reviews) renders here too, from the same hoisted
         // parts as the normal path.
+        // 423rd review: the 410th fix kept the normal path's
+        // filterDims >= 2 gate here, so a LONE dim that yields zero
+        // rows (e.g. a search term with no matches, or a single
+        // empty position filter) still showed only the bare message
+        // -- the chips in table-controls named it and the announce
+        // named it, but the bar itself did not. The normal path
+        // keeps >= 2 (a lone dim's stats line already names it via
+        // the sector/count text), but the zero-row state has no
+        // stats at all, so any active dim gets the badge here.
         var emptyHtml = '';
-        if (filterDims >= 2) emptyHtml += combinedFilterBadgeHtml(filterParts);
+        if (filterDims >= 1) emptyHtml += combinedFilterBadgeHtml(filterParts);
         emptyHtml += '<span class="summary-stat"><span class="summary-stat-label">No companies match current filters</span></span>';
         bar.innerHTML = emptyHtml;
         return;
