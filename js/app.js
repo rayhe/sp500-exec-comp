@@ -7183,6 +7183,24 @@ function positionFilterLabel(pf) {
     return pf.label + suffix;
 }
 
+// 420th review: the concentration tier carries tag + label, and the
+// two origins disagree on whether they differ -- chart-origin tiers
+// name the tier ('Concentrated') and range it ('50-60%'), while
+// AF-origin tiers store the same display string in both fields
+// (handleConc sets tag and label to tagMap[val], e.g. '50-60%'), so
+// the inline form tag + ' (' + label + ')' read '50-60% (50-60%)'
+// on the chip and in the combined-filter badge for every AF pick.
+// One helper, used by the chip, the badge and the announcement (the
+// shared-helper shape the 408th review established for position and
+// board): when the two fields agree the label is the tag alone,
+// otherwise tag + range. Old hash links carrying tag == label render
+// collapsed too, since the collapse is in the renderers, not the
+// stored state.
+function concFilterLabel(ct) {
+    if (!ct) return '';
+    return (ct.tag && ct.tag === ct.label) ? ct.tag : ct.tag + ' (' + ct.label + ')';
+}
+
 // 410th review: the combined-filter badge HTML, shared by the normal
 // path and the zero-row path in renderSummaryBar below. Each part
 // renders in its own span so the part boundary is structural, not
@@ -7247,7 +7265,7 @@ function renderSummaryBar(filtered, allCompanies) {
     // shared boardFilterLabel helper).
     if (window._activeBoardFilter) { filterDims++; filterParts.push(boardFilterLabel(window._activeBoardFilter.mode)); }
     if (searchTerm) { filterDims++; filterParts.push('"' + searchTerm + '"'); }
-    if (window._activeConcTier) { filterDims++; filterParts.push(window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'); }
+    if (window._activeConcTier) { filterDims++; filterParts.push(concFilterLabel(window._activeConcTier)); }
     if (window._activeCeoCfoBucket) { filterDims++; filterParts.push('CEO/CFO: ' + window._activeCeoCfoBucket.label); }
     if (window._activeCeoTransitionFilter) { filterDims++; filterParts.push('CEO Transitions'); }
     if (window._activePvpOnlyFilter) { filterDims++; filterParts.push('PvP-covered'); }
@@ -8326,7 +8344,12 @@ function renderTable(companies, options) {
     // announcement named every other dim, never board.
     if (window._activeBoardFilter) announceMsg += ', board independence: ' + boardFilterLabel(window._activeBoardFilter.mode);
     if (window._activeDistFilter) announceMsg += ', ' + window._activeDistFilter.label;
-    if (window._activeConcTier) announceMsg += ', concentration: ' + window._activeConcTier.tag;
+    // 420th review: the announcement used the bare tag, so a
+    // chart-origin tier announced 'concentration: Concentrated' with
+    // no range while the chip and badge read 'Concentrated (50-60%)'
+    // -- the 415th-review ratio class. The shared helper carries the
+    // range, and collapses an AF-origin tier to its tag alone.
+    if (window._activeConcTier) announceMsg += ', concentration: ' + concFilterLabel(window._activeConcTier);
     if (window._activeCeoCfoBucket) announceMsg += ', CEO/CFO premium: ' + window._activeCeoCfoBucket.label;
     if (window._activeCeoTransitionFilter) announceMsg += ', CEO transitions only';
     if (window._activePvpOnlyFilter) announceMsg += ', Pay vs Performance covered only';
@@ -15223,7 +15246,11 @@ function setupDualSparklineTooltips() {
             // ' × ' + that dim label, so it reads 'Information
             // Technology × Concentrated (>=50%)' and agrees with the
             // lone chip, the badge part and the announce.
-            var dimLabel = ct.tag + ' (' + ct.label + ')';
+            // 420th review: the dim label is the shared concFilterLabel
+            // helper -- an AF-origin tier stores the same string in
+            // tag and label ('50-60%'), so the inline tag + ' (' +
+            // label + ')' form read '50-60% (50-60%)' on this chip.
+            var dimLabel = concFilterLabel(ct);
             var chipLabel = isCombined ? activeSector + ' × ' + dimLabel : dimLabel;
             var tierColor = ct.min >= 50 ? '#ef476f' : (ct.min >= 35 ? '#ffd166' : '#06d6a0');
             var chip = document.createElement('button');

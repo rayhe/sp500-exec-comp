@@ -25,18 +25,30 @@ no new wording. The announce already carries the range
 ('Filtered to Concentrated CEO concentration (>=50%)'), so the chip
 now agrees with all three surfaces.
 
+420th review (2026-11-11): the dim label is now the shared
+concFilterLabel(ct) helper (js/app.js) -- an AF-origin tier stores
+the same string in tag and label, so the inline form read
+'50-60% (50-60%)' on this chip. The helper collapses tag == label
+to the tag alone and keeps tag + ' (' + label + ')' otherwise, so
+this guard's static pins moved from the inline form to the helper
+call; the rendered text for chart-origin tiers is unchanged, and
+the table-summary announcement now carries the range too via the
+same helper (previously the bare tag -- the 415th ratio class).
+The new guard scripts/check_conc_filter_label.py pins the helper
+and the AF-origin collapse directly.
+
 Checks (static - file reads, <1s):
   C1  HARD FAIL: the combined label carries the parenthetical
-      (sector + ' x ' + tag + ' (' + label + ')') in
+      (sector + ' x ' + the shared conc label) in
       updateConcFilterIndicator.
-  C2  HARD FAIL: the lone label is unchanged
-      (ct.tag + ' (' + ct.label + ')').
+  C2  HARD FAIL: the lone label is the shared helper
+      (dimLabel = concFilterLabel(ct)), and the helper returns
+      tag + ' (' + label + ')' when the fields differ.
   C3  HARD FAIL: the old combined form (sector + ' x ' + ct.tag
       with no parenthetical) still appears in the updater.
   C4  HARD FAIL: exactly one conc chip construction site in app.js
       (chip.id = 'conc-filter-chip' appears once).
-  C5  HARD FAIL: the badge part is unchanged
-      (tag + ' (' + label + ')').
+  C5  HARD FAIL: the badge part uses the shared helper.
   C6  HARD FAIL: the close-button x span is still appended in the
       updater.
 Render (headless Chromium, d3 shim from the goal hidden_files cache):
@@ -110,20 +122,27 @@ def static_checks():
             check(name, False, "updateConcFilterIndicator not found")
         return 0
 
-    # C1: the combined label carries the parenthetical -- either the
-    # factored dimLabel form or the inline ternary form.
+    # C1: the combined label carries the parenthetical -- the factored
+    # dimLabel form, now the shared helper (420th review).
     ok_c1 = (("activeSector + ' \u00d7 ' + dimLabel" in fn
-             and "dimLabel = ct.tag + ' (' + ct.label + ')'" in fn)
-             or "activeSector + ' \u00d7 ' + ct.tag + ' (' + ct.label + ')'" in fn)
+             and "dimLabel = concFilterLabel(ct)" in fn)
+             or "activeSector + ' \u00d7 ' + concFilterLabel(ct)" in fn)
     check("C1 conc chip combined label keeps the range parenthetical",
           ok_c1,
           "combined label drops the ' (label)' range" if not ok_c1 else "")
 
-    # C2: the lone label is unchanged.
-    ok_c2 = ("ct.tag + ' (' + ct.label + ')'" in fn)
-    check("C2 conc chip lone label unchanged (tag + ' (label)')",
+    # C2: the lone label is the shared helper, and the helper returns
+    # tag + ' (' + label + ')' when the fields differ.
+    helper_m = re.search(r"function concFilterLabel\(ct\) \{", app)
+    helper = ""
+    if helper_m:
+        hend = app.find("\n}\n", helper_m.start())
+        helper = app[helper_m.start():hend if hend != -1 else len(app)]
+    ok_c2 = ("dimLabel = concFilterLabel(ct)" in fn
+             and "ct.tag + ' (' + ct.label + ')'" in helper)
+    check("C2 conc chip lone label is the shared helper (range form intact)",
           ok_c2,
-          "lone label changed or missing" if not ok_c2 else "")
+          "lone label changed or helper lost the range form" if not ok_c2 else "")
 
     # C3: the old combined form (sector + ' x ' + bare tag, no
     # parenthetical) is gone. The fixed line contains the substring
@@ -140,9 +159,9 @@ def static_checks():
           n_chip == 1,
           "%d conc chip sites" % n_chip if n_chip != 1 else "")
 
-    # C5: the badge part still carries the range parenthetical.
-    badge = "window._activeConcTier.tag + ' (' + window._activeConcTier.label + ')'"
-    check("C5 badge part still carries the range parenthetical",
+    # C5: the badge part uses the shared helper (420th review).
+    badge = "filterParts.push(concFilterLabel(window._activeConcTier))"
+    check("C5 badge part uses the shared conc helper",
           badge in app,
           "badge part changed or missing" if badge not in app else "")
 

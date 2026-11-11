@@ -583,6 +583,15 @@
         var max = parts[1] === '100' ? Infinity : parseFloat(parts[1]);
         var tagMap = { '0-30':'Low <30%', '30-40':'30–40%', '40-50':'40–50%', '50-60':'50–60%', '60-100':'High 60%+' };
         window._activeConcTier = { min: min, max: max, tag: tagMap[val] || val, label: tagMap[val] || val, _isAf: true };
+        // 420th review: refresh the app.js-owned chip at set time, the
+        // call every sibling handler makes (tenure 334th, gov, board,
+        // vol, sop) -- conc was the lone set branch missing it (its
+        // clear branch already had it, 335th). Without this the table
+        // filtered and the badge named the tier, but no dismiss chip
+        // appeared until an unrelated sector change refreshed the
+        // indicators, so an AF conc pick could only be cleared from
+        // the AF panel itself.
+        if (typeof window._updateConcFilterIndicator === 'function') window._updateConcFilterIndicator();
         // 355th review: highlight the chart buckets the AF band overlaps
         // (rangesOverlap in charts.js) -- the AF conc bands (0-30 /
         // 30-40 / ...) differ from the chart buckets (0-25 / 25-30 /
