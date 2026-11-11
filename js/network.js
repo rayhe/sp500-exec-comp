@@ -7139,6 +7139,21 @@ function initNetwork(peerData) {
     var pfFromTicker = null;
     var pfToTicker = null;
 
+    // 422nd review: the toggle is a disclosure control for
+    // #path-finder-bar, like #network-overflow-toggle is for its menu
+    // and the minimap toggle is for its canvas -- it must carry
+    // aria-expanded so assistive tech reports the bar's state. Three
+    // sites open or close the bar (click toggle, pfPrefill,
+    // findNetworkPath); all three route through this helper so the
+    // attribute cannot drift from the .visible class again.
+    function pfSetBarOpen(open) {
+        if (pfBar) pfBar.classList.toggle('visible', open);
+        if (pfToggle) {
+            pfToggle.classList.toggle('active', open);
+            pfToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+    }
+
     function pfMatchNodes(query) {
         var q = query.trim().toLowerCase();
         if (q.length === 0) return [];
@@ -7812,8 +7827,7 @@ function initNetwork(peerData) {
     function pfPrefill(ticker, slot) {
         // Open path finder bar if not already open
         if (pfToggle && pfBar && !pfBar.classList.contains('visible')) {
-            pfBar.classList.add('visible');
-            pfToggle.classList.add('active');
+            pfSetBarOpen(true);
         }
         if (slot === 'from') {
             pfFromTicker = ticker;
@@ -7856,12 +7870,10 @@ function initNetwork(peerData) {
         pfToggle.addEventListener('click', function() {
             var isOpen = pfBar && pfBar.classList.contains('visible');
             if (isOpen) {
-                pfBar.classList.remove('visible');
-                pfToggle.classList.remove('active');
+                pfSetBarOpen(false);
                 pfClearPath();
             } else {
-                pfBar.classList.add('visible');
-                pfToggle.classList.add('active');
+                pfSetBarOpen(true);
                 if (pfFromInput) pfFromInput.focus();
             }
         });
@@ -7943,8 +7955,7 @@ function initNetwork(peerData) {
     // Expose path finder API for external use (e.g., from detail panel)
     window.findNetworkPath = function(fromTicker, toTicker) {
         if (!pfToggle || !pfBar) return false;
-        pfToggle.classList.add('active');
-        pfBar.classList.add('visible');
+        pfSetBarOpen(true);
         // Coverage-gap check: the caller may pass a ticker for an S&P 500
         // company with no peer-network node (guard section 10
         // KNOWN_COVERAGE_GAPS: AOS, CPRT - no extractable DEF 14A peer-group
