@@ -58,6 +58,12 @@ the pre-commit hook.
     guards, commit 9e33fec) went 41h stale with 21 newer guards never
     full-run. --shard INDEX COUNT + merge keeps the freshness contract
     honest (last_run_utc advances only on full coverage).
+  2026-11-10 21:00 - merge robustness (417th review): merge_shard_results
+    crashed with KeyError 'status' (or AttributeError on a non-dict
+    entry) when a recorded entry lacked "status", killing a shard run
+    with a traceback and no state write. Malformed entries are now
+    coerced to an "infra" verdict with no run_utc, so the merge stays
+    incomplete and fail-closed instead of crashing.
 """
 import datetime
 import json
@@ -156,6 +162,30 @@ def merge_shard_results(prev_state, fresh_results, discovered_names,
             guards[name] = fresh_results[name]
         elif name in prev_guards:
             guards[name] = prev_guards[name]
+    # Defensive normalization (417th review): a recorded entry is only
+    # trusted if it is a dict carrying a "status". A hand-edited state
+    # file, or one written by an older canary version, can hold an entry
+    # missing "status" (or not a dict at all); the old code crashed the
+    # merge with KeyError/AttributeError, so a shard run died with a
+    # traceback and wrote no state. A malformed entry is coerced to an
+    # "infra" verdict with no run_utc: it can never claim freshness, the
+    # merge stays incomplete, last_run_utc does not advance, and the
+    # normalized form is written back so the next merge cannot crash
+    # on the same entry again.
+    for name, entry in list(guards.items()):
+        if not isinstance(entry, dict):
+            guards[name] = {"exit": 2, "status": "infra", "seconds": 0.0,
+                            "run_utc": None,
+                            "note": "malformed recorded entry (not a dict)"}
+        elif "status" not in entry:
+            fixed = dict(entry)
+            fixed["status"] = "infra"
+            # Drop the recorded timestamp too: a malformed entry's
+            # run_utc is untrustworthy, and keeping a fresh one would
+            # let the merge claim complete freshness while carrying
+            # an infra verdict it never actually ran.
+            fixed["run_utc"] = None
+            guards[name] = fixed
     fresh_count = 0
     oldest = None
     for r in guards.values():
