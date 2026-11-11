@@ -46,12 +46,25 @@ Render (headless Chromium, d3 shim from the goal hidden_files cache):
       nodes, so the check fails on the pre-fix tree.
   R2  zero page errors across the render half.
 
+Render-half retry (427th review, 2026-11-11): the 427th canary
+shard 2 run recorded this guard FAIL with stdout ending at C5 after
+45.3s -- the render half raised (most likely the 30s
+wait_for_selector timeout under load) before R1/R2 printed, so the
+uncaught exception read as drift (exit 1) even though the static
+checks passed and the guard passes standalone in ~8s (reproduced
+3x clean). main() now retries the render half once when the
+exception strikes before any R-check is recorded; a second
+exception records a FAIL and exits 1, so a genuinely broken page
+still fails loudly instead of passing as infra.
+
 Usage:
   scripts/check_badge_part_spans.py
   scripts/check_badge_part_spans.py --static-only
 
 Exit: 0 = consistent; 1 = drift (loud); 2 = infra (JS unreadable,
 playwright missing, d3 shim unavailable, server would not start).
+A render-half exception retries once, then fails (exit 1) if it
+recurs -- see the render-half retry note above.
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
@@ -244,6 +257,29 @@ def render_checks():
         server.terminate()
 
 
+def _render_with_retry():
+    """Run the render half, retrying once on an exception that strikes
+    before any R-check is recorded (427th review: a load stall can
+    time out the table-row wait, which used to surface as an uncaught
+    exception -> exit 1 with stdout ending at C5, i.e. fake drift).
+    A second exception, or one after an R-check was recorded, is a
+    real failure: record a FAIL and return False so the guard still
+    fails loudly on a genuinely broken page."""
+    for attempt in (1, 2):
+        try:
+            return render_checks()
+        except Exception as exc:  # noqa: BLE001 - render infra is heterogeneous
+            rendered = [r for r in results if r[0].startswith("R")]
+            print("INFRA: render half attempt %d raised %s: %s"
+                  % (attempt, type(exc).__name__, exc))
+            if rendered or attempt == 2:
+                if not rendered:
+                    check("R1 render half raised on both attempts", False,
+                          "%s: %s" % (type(exc).__name__, exc))
+                return False
+    return False
+
+
 def main():
     rc = static_checks()
     if rc == 2:
@@ -252,7 +288,7 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = _render_with_retry()
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
