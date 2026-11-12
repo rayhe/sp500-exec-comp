@@ -12,6 +12,12 @@ check_badge_part_spans.py, check_quartile_hash_roundtrip.py,
 check_sector_chip_scope.py. The other 80 guards keep their local
 copies until a later iteration adopts them, one guard per run.
 
+430th review (2026-11-11): check_network_residual_keyboard.py
+adopted (slowest render guard, ~98.3s). Its pre-fix defect was worse
+than the 429th class: main() ignored render_checks()'s return value,
+so a missing d3 shim exited 0 with "ALL 6 CHECKS PASSED" while the
+render half never ran. 79 local get_d3_bytes copies remain.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -62,6 +68,7 @@ ADOPTERS = [
     "check_badge_part_spans.py",
     "check_quartile_hash_roundtrip.py",
     "check_sector_chip_scope.py",
+    "check_network_residual_keyboard.py",
 ]
 
 results = []

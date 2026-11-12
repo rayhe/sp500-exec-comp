@@ -38,6 +38,12 @@ moved here verbatim so future fixes land once instead of 83 times.
 Only the three guards named above adopt it this run; the other 80
 keep their local copies until a later iteration adopts them.
 
+430th review (2026-11-11): check_network_residual_keyboard.py
+adopted (slowest render guard, ~98.3s; its pre-fix main() ignored
+render_checks()'s return value, so a missing d3 shim exited 0 with
+"ALL 6 CHECKS PASSED" while the render half never ran -- a silent
+pass, worse than the exit-1 drift class). 79 local copies remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps
