@@ -97,6 +97,16 @@ Usage:
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
 
+432nd review (2026-11-12): adopted scripts/render_guard_common.py
+(the slowest remaining render guard, ~54.2s in the 2026-11-11 shard-4
+run). Its pre-fix main() ignored render_checks()'s return value, so a
+missing d3 shim exited 0 with "ALL 6 CHECKS PASSED" while the render
+half never ran -- the silent-pass variant the 430th review found in
+check_network_residual_keyboard.py and the 431st in
+check_minimap_toggle.py, proved in-process before the fix
+(~/workspace/pre432_proof.py: exit 0, 0 R-checks). 77 local
+get_d3_bytes copies remain.
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 """
@@ -105,8 +115,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -166,21 +178,6 @@ def static_checks():
           s6, "" if s6 else "exposure missing: compare sort clicks would throw")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -198,7 +195,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -405,21 +402,28 @@ def render_checks():
     finally:
         server.terminate()
         server.wait(timeout=10)
+    return True
 
 
 def main():
+    static_checks()
     if "--static-only" in sys.argv:
-        static_checks()
-    else:
-        static_checks()
-        rc = render_checks()
-        if rc is None:
-            print("SKIP: render checks unavailable; static checks decide")
-    fails = [n for n, ok, _ in results if not ok]
-    if fails:
-        print("\n%d check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [r for r in results if not r[1]]
+        return 1 if failed else 0
+    failed = [r for r in results if not r[1]]
+    if failed or not ok:
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
         return 1
-    print("\nALL %d CHECKS PASSED" % len(results))
+    print("%d/%d checks passed" % (len(results), len(results)))
     return 0
 
 

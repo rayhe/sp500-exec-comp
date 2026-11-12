@@ -24,6 +24,16 @@ remaining render guard, ~69.9s). Same silent-pass variant as the
 exited 0 with "7/7 checks passed" on a missing d3 shim, proved
 in-process before the fix. 78 local get_d3_bytes copies remain.
 
+432nd review (2026-11-12): check_compare_bridge_keyboard.py adopted
+(slowest remaining render guard, ~54.2s). Same silent-pass variant:
+pre-fix main() ignored render_checks()'s return value and exited 0
+with "ALL 6 CHECKS PASSED" on a missing d3 shim, proved in-process
+before the fix (~/workspace/pre432_proof.py: exit 0, 0 R-checks). The
+pre-adoption grep across the remaining guards found the silent-pass
+signature in 77 of the 78 unadopted guards; the lone exception is
+check_crosstab_keyboard.py, whose main() already maps a False render
+return to exit 2. 77 local get_d3_bytes copies remain.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -76,6 +86,7 @@ ADOPTERS = [
     "check_sector_chip_scope.py",
     "check_network_residual_keyboard.py",
     "check_minimap_toggle.py",
+    "check_compare_bridge_keyboard.py",
 ]
 
 results = []

@@ -49,6 +49,12 @@ pass, worse than the exit-1 drift class). 79 local copies remain.
 pre-fix main() exited 0 with "7/7 checks passed" on a missing d3
 shim, proved in-process before the fix). 78 local copies remain.
 
+432nd review (2026-11-12): check_compare_bridge_keyboard.py adopted
+(slowest remaining render guard, ~54.2s in the 2026-11-11 shard-4
+run; same silent-pass variant -- pre-fix main() exited 0 with
+"ALL 6 CHECKS PASSED" on a missing d3 shim, proved in-process before
+the fix). 77 local copies remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps
