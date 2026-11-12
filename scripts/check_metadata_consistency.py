@@ -245,6 +245,10 @@ LABEL_TO_KEY = {
     "def14a_verified_20260927": "def14a_verified_20260927",
     "def14a_verified_20260928": "def14a_verified_20260928",
     "def14a_verified_20261007": "def14a_verified_20261007",
+    # 2026-11-12 (433rd review): DEF 14A enrichment batch - 44 NEO rows
+    # re-verified vs primary DEF 14A SCTs (TSLA 2026-10-19, EA 2025-06-24,
+    # TECH 2025-09-19, K 2024-03-04 proxies).
+    "def14a_verified_20261112": "def14a_verified_20261112",
     "component_mismatch": "component_mismatch",
 }
 # Canonicalize a record-level _total_source label to its metadata bucket key.

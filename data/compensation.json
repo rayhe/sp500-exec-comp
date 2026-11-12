@@ -179,7 +179,7 @@
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
-   "def14a_verified_20260910": 105,
+   "def14a_verified_20260910": 104,
    "def14a_verified_20260912": 22,
    "def14a_verified_20260916": 117,
    "def14a_verified_20260917": 131,
@@ -191,10 +191,11 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5859,
+   "verified": 5816,
    "rounding": 0,
    "verified_total": 7274,
-   "last_audit": "2026-09-28"
+   "last_audit": "2026-09-28",
+   "def14a_verified_20261112": 44
   },
   "median_ceo_pay": 17188658,
   "mean_ceo_pay": 329481099,
@@ -233,7 +234,7 @@
    "def14a_verified_20260907": 63,
    "def14a_verified_20260908": 12,
    "def14a_verified_20260909": 217,
-   "def14a_verified_20260910": 105,
+   "def14a_verified_20260910": 104,
    "def14a_verified_20260912": 22,
    "def14a_verified_20260916": 117,
    "def14a_verified_20260917": 131,
@@ -245,10 +246,11 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5859,
+   "verified": 5816,
    "rounding": 0,
    "verified_total": 7274,
-   "last_audit": "2026-09-28"
+   "last_audit": "2026-09-28",
+   "def14a_verified_20261112": 44
   },
   "companies_with_executives": 517,
   "board_independence_any": 499,
@@ -285,7 +287,7 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-11-06",
+  "last_dq_repair": "2026-11-12",
   "verified_total": 7274,
   "total_neos": 7318,
   "phantom_removed": {
@@ -36490,7 +36492,7 @@
      "pension_nqdc": 0,
      "all_other": 678858,
      "total": 30529835,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36504,7 +36506,7 @@
      "pension_nqdc": 0,
      "all_other": 503560,
      "total": 25643093,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36518,7 +36520,7 @@
      "pension_nqdc": 0,
      "all_other": 179958,
      "total": 20659002,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36532,7 +36534,7 @@
      "pension_nqdc": 0,
      "all_other": 12975,
      "total": 9115202,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36546,13 +36548,13 @@
      "pension_nqdc": 0,
      "all_other": 18259,
      "total": 6476777,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
     {
      "name": "Laura Miele",
-     "title": "President, EA Entertainment",
+     "title": "President, EA Entertainment & Central Development",
      "year": 2025,
      "salary": 825000,
      "stock_awards": 10941743,
@@ -36560,13 +36562,13 @@
      "pension_nqdc": 0,
      "all_other": 13164,
      "total": 12579907,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
     {
      "name": "Laura Miele",
-     "title": "President, EA Entertainment",
+     "title": "President, EA Entertainment & Central Development",
      "year": 2024,
      "salary": 820385,
      "stock_awards": 10056580,
@@ -36574,13 +36576,13 @@
      "pension_nqdc": 0,
      "all_other": 18152,
      "total": 12095117,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
     {
      "name": "Laura Miele",
-     "title": "President, EA Entertainment",
+     "title": "President, EA Entertainment & Central Development",
      "year": 2023,
      "salary": 800000,
      "stock_awards": 9091870,
@@ -36588,7 +36590,7 @@
      "pension_nqdc": 0,
      "all_other": 12025,
      "total": 10803895,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36602,7 +36604,7 @@
      "pension_nqdc": 0,
      "all_other": 24690,
      "total": 7664899,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36616,7 +36618,7 @@
      "pension_nqdc": 0,
      "all_other": 17702,
      "total": 6966719,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36630,7 +36632,7 @@
      "pension_nqdc": 0,
      "all_other": 11927,
      "total": 5941602,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36644,7 +36646,7 @@
      "pension_nqdc": 0,
      "all_other": 28448,
      "total": 7668657,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -36658,7 +36660,7 @@
      "pension_nqdc": 0,
      "all_other": 17607,
      "total": 6916624,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "option_awards": 0
     },
@@ -62787,7 +62789,7 @@
      "all_other": 350276,
      "total": 17038641,
      "title": "Chairman, President and Chief Executive Officer",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62817,7 +62819,7 @@
      "all_other": 245449,
      "total": 10678337,
      "title": "Chairman, President and Chief Executive Officer",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62831,7 +62833,7 @@
      "all_other": 153761,
      "total": 5791051,
      "title": "Vice Chairman and Chief Financial Officer",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62861,7 +62863,7 @@
      "all_other": 172113,
      "total": 4011586,
      "title": "Vice Chairman and Chief Financial Officer",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62875,7 +62877,7 @@
      "all_other": 176195,
      "total": 5740019,
      "title": "Senior Vice President & President, Kellanova North America",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62905,7 +62907,7 @@
      "all_other": 178435,
      "total": 4192390,
      "title": "Senior Vice President & President, Kellanova North America",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62920,22 +62922,22 @@
      "all_other": 215241,
      "total": 4117062,
      "title": "Senior Vice President & President, Kellanova Europe",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0
     },
     {
      "name": "David Lawlor",
      "year": 2022,
      "salary": 571759,
-     "bonus": 1700642,
-     "option_awards": 688213,
+     "bonus": 0,
+     "option_awards": 0,
      "pension_nqdc": 0,
      "total": 3156458,
      "title": "Senior Vice President & President, Kellanova Europe",
-     "_total_source": "def14a_verified_20260910",
+     "_total_source": "def14a_verified_20261112",
      "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $569,737 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
-     "stock_awards": 0,
-     "non_equity_incentive": 0,
+     "stock_awards": 1700642,
+     "non_equity_incentive": 688213,
      "all_other": 195844
     },
     {
@@ -62948,7 +62950,7 @@
      "all_other": 218000,
      "total": 3542639,
      "title": "Senior Vice President & President, Kellanova AMEA",
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "bonus": 0,
      "pension_nqdc": 0
     },
@@ -62961,7 +62963,7 @@
      "pension_nqdc": 456000,
      "all_other": 152897,
      "total": 4882692,
-     "title": "Vice Chairman",
+     "title": "Former Vice Chairman and Chief Legal Officer",
      "_total_source": "def14a_verified_20260910",
      "bonus": 0,
      "stock_awards": 2406967,
@@ -62975,7 +62977,7 @@
      "option_awards": 0,
      "pension_nqdc": 0,
      "total": 4022641,
-     "title": "Vice Chairman",
+     "title": "Former Vice Chairman and Chief Legal Officer",
      "_total_source": "def14a_verified_20260910",
      "_parse_note": "Relabeled rounding -> bloated_component 2026-09-09: components over filing-printed total by $790,978 (exceeds the $25K taxonomy threshold) | Re-verified 2026-09-10 06:00 PT vs FY2023 DEF 14A SCT (k-20240303.htm); prior parse misaligned continuation rows (stock->options, non-equity->pension); Pilnick 2023 footnote-split bonus cell had dropped all_other $152,897; Pilnick 2021 was missing all_other $180,780.",
      "stock_awards": 1900173,
@@ -62990,7 +62992,7 @@
      "option_awards": 296955,
      "non_equity_incentive": 760884,
      "total": 3595884,
-     "title": "Vice Chairman",
+     "title": "Former Vice Chairman and Chief Legal Officer",
      "_total_source": "def14a_verified_20260910",
      "bonus": 0,
      "pension_nqdc": 0,
@@ -105531,7 +105533,7 @@
      "title": "President and CEO",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Kim Kelderman",
@@ -105545,7 +105547,7 @@
      "title": "President and CEO",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "James Hippel",
@@ -105559,7 +105561,7 @@
      "title": "Executive Vice President and CFO",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "James Hippel",
@@ -105573,7 +105575,7 @@
      "title": "Executive Vice President and CFO",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "James Hippel",
@@ -105587,7 +105589,7 @@
      "title": "Executive Vice President and CFO",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "William Geist",
@@ -105601,7 +105603,7 @@
      "title": "President, Protein Sciences",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "William Geist",
@@ -105615,7 +105617,7 @@
      "title": "President, Protein Sciences",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "William Geist",
@@ -105629,7 +105631,7 @@
      "title": "President, Protein Sciences",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Matthew McManus",
@@ -105643,7 +105645,7 @@
      "title": "President, Diagnostics and Spatial Biology",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Matthew McManus",
@@ -105657,7 +105659,7 @@
      "title": "President, Diagnostics and Spatial Biology",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Shane Bohnen",
@@ -105671,7 +105673,7 @@
      "title": "Senior Vice President and General Counsel",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Shane Bohnen",
@@ -105685,7 +105687,7 @@
      "title": "Senior Vice President and General Counsel",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Shane Bohnen",
@@ -105699,7 +105701,7 @@
      "title": "Senior Vice President and General Counsel",
      "bonus": 0,
      "pension_nqdc": 0,
-     "_total_source": "verified"
+     "_total_source": "def14a_verified_20261112"
     },
     {
      "name": "Kim Kelderman",
@@ -109332,7 +109334,7 @@
      "non_equity_incentive": 0,
      "all_other": 0,
      "total": 0,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109346,7 +109348,7 @@
      "non_equity_incentive": 0,
      "all_other": 0,
      "total": 0,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109374,7 +109376,7 @@
      "non_equity_incentive": 0,
      "all_other": 3000,
      "total": 139472935,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109388,7 +109390,7 @@
      "non_equity_incentive": 0,
      "all_other": 3000,
      "total": 278000,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109402,7 +109404,7 @@
      "non_equity_incentive": 0,
      "all_other": 168250,
      "total": 518250,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109416,7 +109418,7 @@
      "non_equity_incentive": 0,
      "all_other": 545868,
      "total": 32568838,
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "pension_nqdc": 0
     },
     {
@@ -109448,7 +109450,7 @@
      "_total_source": "verified"
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "name": "Elon Musk",
      "stock_awards": 158359009867,
      "title": "Technoking of Tesla and Chief Executive Officer",
@@ -109464,7 +109466,7 @@
      "_reverify_20260929_1400": "Digit-by-digit re-read of the 2026 10-K/A Item 11 SCT (acc. 0001104659-26-053166); Musk 2025 row filing-verbatim; $158.36B is the filing's accounting-driven 2025 CEO Performance Award valuation, not a parse error."
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "all_other": 3000,
      "name": "Vaibhav Taneja",
      "salary": 400000,
@@ -109476,7 +109478,7 @@
      "pension_nqdc": 0
     },
     {
-     "_total_source": "verified",
+     "_total_source": "def14a_verified_20261112",
      "all_other": 11984,
      "name": "Tom Zhu",
      "salary": 364338,
@@ -125153,5 +125155,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions). Re-checked 2026-11-03: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR submissions window still ends 2026-09-24, latest filings 3/A and 144; no post-merger proxy expected before the spring 2027 proxy season. Re-checked 2026-11-05: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings today 2026-11-05 are a 144 and an 8-K only). Re-checked 2026-11-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings 2026-11-05 are a 144 and an 8-K, and 2026-11-06 a 144 only, acc. 0001959173-26-007823). EDGAR DEF 14A sweep Nov 1-6 (42 filings) and 10-K/A sweep Nov 1-6 (19 filings) found zero roster matches, so no FY2026 proxy enrichment this week. Re-checked 2026-11-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 8-K 2026-11-05). Remains queued for enrichment when first proxy files. Re-checked 2026-11-10: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 10-Q 2026-11-09, acc. 0001193125-26-453735, plus 8-K 2026-11-05 and 144s). Remains queued for enrichment when first proxy files."
   }
  ],
- "last_updated": "2026-11-06"
+ "last_updated": "2026-11-12"
 }
