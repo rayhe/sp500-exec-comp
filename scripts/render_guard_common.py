@@ -90,6 +90,17 @@ proved in-process before the fix (~/workspace/pre436_proof.py: rc=1,
 match the grep after this adoption (74 unadopted guards + the
 contract guard's S1e string literal, which is not a definition).
 
+437th review (2026-11-12): check_vol_board_hash_roundtrip.py adopted
+(slowest remaining render guard, ~32.5s max in the 2026-11-12 shard
+runs; re-profiled from the freshest drift_canary_state.json entries
+this run, per the 432nd note). Same 429th-review class as the 436th:
+main() checked render_checks()'s return value, but a missing d3 shim
+made render_checks() return False, which main() folded into exit 1
+(drift) although the docstring promises exit 2 (infra) -- proved
+in-process before the fix (~/workspace/pre437_proof.py: rc=1, "13/13
+checks passed" printed, 0 R-checks recorded; the 13 static checks
+pass, the 8 render checks never run). 73 local copies remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps
