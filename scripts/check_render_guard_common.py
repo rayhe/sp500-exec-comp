@@ -18,6 +18,12 @@ than the 429th class: main() ignored render_checks()'s return value,
 so a missing d3 shim exited 0 with "ALL 6 CHECKS PASSED" while the
 render half never ran. 79 local get_d3_bytes copies remain.
 
+431st review (2026-11-11): check_minimap_toggle.py adopted (slowest
+remaining render guard, ~69.9s). Same silent-pass variant as the
+430th: pre-fix main() ignored render_checks()'s return value and
+exited 0 with "7/7 checks passed" on a missing d3 shim, proved
+in-process before the fix. 78 local get_d3_bytes copies remain.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -69,6 +75,7 @@ ADOPTERS = [
     "check_quartile_hash_roundtrip.py",
     "check_sector_chip_scope.py",
     "check_network_residual_keyboard.py",
+    "check_minimap_toggle.py",
 ]
 
 results = []

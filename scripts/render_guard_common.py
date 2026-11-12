@@ -44,6 +44,11 @@ render_checks()'s return value, so a missing d3 shim exited 0 with
 "ALL 6 CHECKS PASSED" while the render half never ran -- a silent
 pass, worse than the exit-1 drift class). 79 local copies remain.
 
+431st review (2026-11-11): check_minimap_toggle.py adopted
+(slowest remaining render guard, ~69.9s; same silent-pass variant --
+pre-fix main() exited 0 with "7/7 checks passed" on a missing d3
+shim, proved in-process before the fix). 78 local copies remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps
