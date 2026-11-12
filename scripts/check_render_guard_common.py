@@ -44,6 +44,18 @@ promises exit 2 (infra) -- proved in-process before the fix
 (/tmp/pre434_proof.py: rc=1, "11/11 checks passed" printed, 0
 R-checks recorded). 76 local get_d3_bytes copies remain.
 
+435th review (2026-11-12): check_scrollspy_nav.py adopted (slowest
+remaining render guard, ~43.9s max in the 2026-11-12 shard runs).
+Same silent-pass variant as the 430th-432nd: pre-fix main() ignored
+render_checks()'s return value and exited 0 with "OK: scroll-spy
+nav guard (static)" on a missing d3 shim, proved in-process before
+the fix (~/workspace/pre435_proof.py: rc=0, "checks: 7 pass, 0
+fail", 0 R-checks recorded). Count correction: 77 unadopted guards
+carried a local get_d3_bytes before this run, not the 76 the 434th
+note stated (the 432nd note's own "77 of the 78 unadopted guards"
+already put the unadopted count at 78; the 434th adoption took it
+to 77). 76 local get_d3_bytes copies remain after this adoption.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -98,6 +110,7 @@ ADOPTERS = [
     "check_minimap_toggle.py",
     "check_compare_bridge_keyboard.py",
     "check_remaining_chip_sweeps.py",
+    "check_scrollspy_nav.py",
 ]
 
 results = []

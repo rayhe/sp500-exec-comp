@@ -25,6 +25,19 @@ Usage:
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
 
+435th review (2026-11-12): adopted scripts/render_guard_common.py
+(slowest remaining render guard, ~43.9s max in the 2026-11-12 shard
+runs). Its pre-fix defect was the 430th-432nd silent-pass variant:
+main() ignored render_checks()'s return value, so a missing d3 shim
+exited 0 with "OK: scroll-spy nav guard (static)" while the render
+half never ran (0 R-checks) -- proved in-process before the fix
+(~/workspace/pre435_proof.py: rc=0, "checks: 7 pass, 0 fail", 0
+R-checks recorded). Count correction: 77 unadopted guards carried a
+local get_d3_bytes before this run, not the 76 the 434th note stated
+(the 432nd note's own "77 of the 78 unadopted guards" already put
+the unadopted count at 78; the 434th adoption took it to 77). 76
+local get_d3_bytes copies remain after this adoption.
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 """
@@ -33,9 +46,11 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(REPO, "index.html")
@@ -121,22 +136,6 @@ def static_checks():
           bool(region) and last_wins and not min_top, a7_detail)
 
 
-def get_d3_bytes():
-    # Same cached copy as check_methodology_buttons.py (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -154,7 +153,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -262,15 +261,21 @@ def main():
     static_only = "--static-only" in sys.argv
     static_checks()
     if not static_only:
-        render_checks()
+        ok = run_render_with_retry(render_checks, results, check)
+        if ok is INFRA:
+            print("render checks infra (d3 shim unavailable)")
+            return 2
+        if ok is None:
+            print("render checks skipped")
     fails = [r for r in results if not r[1]]
     print("----")
     print("checks: %d pass, %d fail" % (len(results) - len(fails), len(fails)))
     if fails:
         print("GUARD FAILED")
-        sys.exit(1)
+        return 1
     print("OK: scroll-spy nav guard (static%s)" % ("" if not static_only else "-only"))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
