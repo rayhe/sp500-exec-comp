@@ -56,6 +56,19 @@ note stated (the 432nd note's own "77 of the 78 unadopted guards"
 already put the unadopted count at 78; the 434th adoption took it
 to 77). 76 local get_d3_bytes copies remain after this adoption.
 
+436th review (2026-11-12): check_insight_action_labels.py adopted
+(slowest remaining render guard, ~40.4s max in the 2026-11-12 shard
+runs; re-profiled from the freshest drift_canary_state.json entries
+this run, per the 432nd note). Its pre-fix defect was the
+429th-review class, not the silent-pass variant: main() checked
+render_checks()'s return value, but a missing d3 shim made
+render_checks() return False, which main() folded into exit 1
+(drift) although the guard's docstring promises exit 2 (infra) --
+proved in-process before the fix (~/workspace/pre436_proof.py: rc=1,
+"19/19 checks passed" printed, 0 R-checks recorded). 75 files still
+match the grep after this adoption (74 unadopted guards + the
+contract guard's S1e string literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -111,6 +124,7 @@ ADOPTERS = [
     "check_compare_bridge_keyboard.py",
     "check_remaining_chip_sweeps.py",
     "check_scrollspy_nav.py",
+    "check_insight_action_labels.py",
 ]
 
 results = []
