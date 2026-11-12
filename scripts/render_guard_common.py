@@ -55,6 +55,16 @@ run; same silent-pass variant -- pre-fix main() exited 0 with
 "ALL 6 CHECKS PASSED" on a missing d3 shim, proved in-process before
 the fix). 77 local copies remain.
 
+434th review (2026-11-12): check_remaining_chip_sweeps.py adopted
+(slowest remaining render guard, ~49.1s in the 2026-11-12 shard
+runs). Its pre-fix defect was the 429th-review class, not the
+silent-pass variant: main() checked render_checks()'s return value,
+but a missing d3 shim returned False, which main() folded into exit 1
+(drift) although the guard's docstring promises exit 2 (infra) --
+proved in-process before the fix (/tmp/pre434_proof.py: rc=1,
+"11/11 checks passed" printed, 0 R-checks recorded). 76 local copies
+remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps

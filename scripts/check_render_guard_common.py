@@ -34,6 +34,16 @@ signature in 77 of the 78 unadopted guards; the lone exception is
 check_crosstab_keyboard.py, whose main() already maps a False render
 return to exit 2. 77 local get_d3_bytes copies remain.
 
+434th review (2026-11-12): check_remaining_chip_sweeps.py adopted
+(slowest remaining render guard, ~49.1s in the 2026-11-12 shard
+runs). Its pre-fix defect was the 429th-review class, not the
+silent-pass variant: main() checked render_checks()'s return value,
+but a missing d3 shim made render_checks() return False, which
+main() folded into exit 1 (drift) although the guard's docstring
+promises exit 2 (infra) -- proved in-process before the fix
+(/tmp/pre434_proof.py: rc=1, "11/11 checks passed" printed, 0
+R-checks recorded). 76 local get_d3_bytes copies remain.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -87,6 +97,7 @@ ADOPTERS = [
     "check_network_residual_keyboard.py",
     "check_minimap_toggle.py",
     "check_compare_bridge_keyboard.py",
+    "check_remaining_chip_sweeps.py",
 ]
 
 results = []
