@@ -90,6 +90,18 @@ Usage:
 Exit: 0 = consistent; 1 = drift (loud); 2 = infra (JS unreadable,
 playwright missing, d3 shim unavailable).
 
+Render-half retry (429th review, 2026-11-11): this guard's render
+half runs ~87.5s (the slowest in the suite), so a load stall that
+far in is the most expensive to lose -- an uncaught exception used
+to read as drift (exit 1) with stdout ending at the last static
+check. main() now runs the render half through the shared
+run_render_with_retry() (scripts/render_guard_common.py): one retry
+when the exception strikes before any R-check is recorded, then a
+loud FAIL. The d3 fetcher is the shared get_d3_bytes() and a shim
+that cannot be obtained returns the INFRA sentinel, mapped to exit
+2 here -- the old code returned False (exit 1 drift) although this
+docstring already promised exit 2 for infra.
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 
@@ -101,8 +113,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -239,21 +253,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -271,7 +270,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -528,7 +527,10 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
