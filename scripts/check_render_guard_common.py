@@ -181,6 +181,7 @@ ADOPTERS = [
     "check_narrative_sentence2_grammar.py",
     "check_announce_seven_dims.py",
     "check_sort_aria_sort.py",
+    "check_quartile_position_sector_prefix.py",
 ]
 
 results = []
