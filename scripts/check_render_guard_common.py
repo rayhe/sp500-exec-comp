@@ -185,6 +185,7 @@ ADOPTERS = [
     "check_scroll_hint.py",
     "check_stockpct_chip_combined_label.py",
     "check_position_hash_roundtrip.py",
+    "check_kbd_hint_header.py",
 ]
 
 results = []

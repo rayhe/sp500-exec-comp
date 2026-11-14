@@ -25,6 +25,21 @@ Usage:
   scripts/check_kbd_hint_header.py              # static + render
   scripts/check_kbd_hint_header.py --static-only
 
+456th review (2026-11-13): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 2, 19.6s fresh shard-2
+verdict; re-profiled with the canary's exact shard function, per the
+455th note (17)). Pre-fix defect is the 429th-review class #1 only
+(no retry wrapper): a transient render exception raised before any
+R-check is recorded was uncaught -- traceback, exit 1, 0 R-checks,
+no FAIL verdict -- proved in-process before the fix
+(~/workspace/sp500-456/pre456_proof.py: UNCATCHED RuntimeError on a
+simulated transient Chromium launch stall). The 429th-review class
+#2 (missing-d3 exit-code mismatch) does NOT apply here: this guard's
+main() already mapped the missing-d3 False to exit 2 when the statics
+pass (proof Test A: rc=2 pre-fix). The adoption still converts main()
+to return its exit code (not sys.exit) so the contract guard's S4
+harness can observe the INFRA mapping. 65 unadopted guards remain.
+
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
 
@@ -36,8 +51,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HTML = os.path.join(REPO, "index.html")
@@ -92,21 +109,6 @@ def static_checks():
     check("S5 js/app.js wires #kbd-hint click to showKbdModal", s5, "")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -124,7 +126,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -182,14 +184,20 @@ def main():
     static_checks()
     static_ok = all(ok for _, ok, _ in results)
     if "--static-only" in sys.argv:
-        sys.exit(0 if static_ok else 1)
-    render_ok = render_checks()
-    if render_ok is None:
-        sys.exit(0 if static_ok else 1)
-    if render_ok is False and not any(not ok for _, ok, _ in results):
-        sys.exit(2)
-    sys.exit(0 if static_ok and render_ok else 1)
+        return 0 if static_ok else 1
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        return 0 if static_ok else 1
+    failed = [r for r in results if not r[1]]
+    if failed or not ok:
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
