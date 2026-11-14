@@ -187,6 +187,7 @@ ADOPTERS = [
     "check_position_hash_roundtrip.py",
     "check_kbd_hint_header.py",
     "check_community_hash_roundtrip.py",
+    "check_radar_label_keyboard.py",
 ]
 
 results = []
