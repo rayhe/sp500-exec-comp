@@ -206,6 +206,7 @@ ADOPTERS = [
     "check_community_hash_roundtrip.py",
     "check_radar_label_keyboard.py",
     "check_pvp_alignment_card.py",
+    "check_methodology_buttons.py",
 ]
 
 results = []

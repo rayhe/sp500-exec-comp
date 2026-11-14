@@ -24,15 +24,40 @@ Usage:
 
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
+
+460th review (2026-11-14): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 2, 18.9s fresh standalone
+verdict vs 15.6s for the runner-up check_residual_clicks_keyboard;
+state seconds 15.3s vs 15.0s from the 2026-11-14T06:31Z shard-2 run;
+re-profiled with the canary's exact shard function, per the 455th
+note (17) -- the ranking held exactly). Pre-fix defects were BOTH
+429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit 1,
+0 R-checks, no FAIL verdict; (#2, silent-pass variant) main() ignored
+render_checks()'s return value entirely, so a render half returning
+INFRA exited 0 with "checks: 6 pass, 0 fail" while the render half
+never ran -- and unlike the 459th guard the live missing-d3 path
+returns False (not sys.exit(2)) from inside render_checks(), so the
+live silent pass was NOT masked. Proved in-process before the fix
+(~/workspace/sp500-460/pre460_proof.py: Test A rc=0 with "checks: 6
+pass, 0 fail" printed and 0 R-checks recorded; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption also converts main() to return its exit code (not sys.exit)
+so the contract guard's S4 harness can observe the INFRA mapping.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 61
+unadopted guards remain.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JS_FILES = ["js/charts.js", "js/network.js", "js/app.js", "js/advanced-filters.js"]
@@ -103,23 +128,6 @@ def static_checks():
           "%d missing" % no_aria if no_aria else "")
 
 
-def get_d3_bytes():
-    # Prefer the cached copy; else fetch via curl (VM Chromium egress is
-    # blocked but curl through the proxy works - d3 is a build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -137,7 +145,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -229,18 +237,27 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
+    if "--static-only" in sys.argv:
+        static_checks()
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
     static_checks()
-    if not static_only:
-        render_checks()
-    fails = [r for r in results if not r[1]]
-    print("----")
-    print("checks: %d pass, %d fail" % (len(results) - len(fails), len(fails)))
-    if fails:
-        print("GUARD FAILED")
-        sys.exit(1)
-    print("OK: methodology buttons guard (static%s)" % ("" if not static_only else "-only"))
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [r for r in results if not r[1]]
+        return 1 if failed else 0
+    failed = [r for r in results if not r[1]]
+    if failed or not ok:
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
