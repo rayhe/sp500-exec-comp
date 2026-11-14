@@ -125,6 +125,22 @@ folded into exit 1 (drift) although the docstring promises exit 2
 R-checks recorded; the 3 static checks pass, the 3 render checks never
 run). 71 local copies remain.
 
+459th review (2026-11-14): check_pvp_alignment_card.py adopted
+(slowest unadopted render guard, 24.1s fresh shard-3 verdict in the
+2026-11-14T05:02:05Z canary run; re-profiled from the freshest
+drift_canary_state.json entries this run, per the 432nd note). Its
+pre-fix defects were BOTH 429th-review classes: main() ignored
+render_checks()'s return value, so a render half returning INFRA
+exited 0 with "4/4 checks passed" while the render half never ran
+(the 430th-review silent-pass variant, in the S4-harness form -- the
+live missing-d3 path sys.exit(2)'d from inside render_checks, so the
+live silent pass was masked), and a transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-459/pre459_proof.py:
+Test A rc=0, "4/4 checks passed", 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). 62
+local copies remain.
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps

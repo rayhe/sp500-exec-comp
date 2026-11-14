@@ -121,6 +121,23 @@ R-checks recorded; the 5 static checks pass, the 5 render checks never
 run). 71 files still match the grep after this adoption (70 unadopted
 guards + the contract guard's S1e string literal).
 
+459th review (2026-11-14): check_pvp_alignment_card.py adopted (slowest
+unadopted render guard, 24.1s fresh shard-3 verdict in the
+2026-11-14T05:02:05Z canary run; re-profiled from the freshest
+drift_canary_state.json entries this run, per the 432nd note). Same
+silent-pass variant as the 430th-432nd, in the S4-harness form:
+main() ignored render_checks()'s return value, so a render half
+returning INFRA exited 0 with "4/4 checks passed" while the render
+half never ran -- proved in-process before the fix
+(~/workspace/sp500-459/pre459_proof.py: Test A rc=0, "4/4 checks
+passed", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The live missing-d3 path called
+sys.exit(2) from inside render_checks(), so the live silent pass was
+masked -- but the return-value contract was still broken and the S4
+harness could not observe the INFRA mapping. 64 files still match the
+grep after this adoption (62 unadopted guards + the shared module's
+own definition + the contract guard's S1e string literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -188,6 +205,7 @@ ADOPTERS = [
     "check_kbd_hint_header.py",
     "check_community_hash_roundtrip.py",
     "check_radar_label_keyboard.py",
+    "check_pvp_alignment_card.py",
 ]
 
 results = []
