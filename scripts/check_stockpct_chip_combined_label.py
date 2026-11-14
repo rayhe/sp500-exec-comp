@@ -26,6 +26,23 @@ lone chip already shows; no relabel, no new wording. The announce
 already names the tag ('Filtered to Equity-dominant (80-100%)'),
 so the chip now agrees with all three surfaces.
 
+454th review (2026-11-13): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 1, 24.2s fresh shard-1
+verdict in the 2026-11-13 20:58 UTC shard-1 run; re-profiled from
+that per-run log this run, per the 432nd note -- the slower shard-1
+guards are not render guards or already adopted: sort aria-sort
+42.1s adopted in the 451st, guard exit consistency 48.4s /
+remaining chip sweeps 41.1s adopted in the 434th / scrollspy nav
+39.5s adopted in the 435th are not local-get_d3_bytes render
+guards). 429th-review class, not silent-pass: main() checked
+render_checks()'s return value, but a missing d3 shim returned
+False, folded into exit 1 (drift) although the docstring promises
+exit 2 (infra) -- proved in-process before the fix
+(~/workspace/sp500-454/pre454_proof.py: rc=1, "6/6 checks passed"
+printed, 0 R-checks recorded). 67 unadopted guards remain (68 before
+this adoption, minus this one; the grep count drops to 68 files =
+67 unadopted + the contract guard's S1e string literal).
+
 Checks (static - file reads, <1s):
   C1  HARD FAIL: the combined label carries the tag (sector +
       ' x ' + dimLabel where dimLabel = sp.tag + ' (' + sp.label
@@ -70,8 +87,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -169,21 +188,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -201,7 +205,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -291,7 +295,10 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]

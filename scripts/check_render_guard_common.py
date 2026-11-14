@@ -183,6 +183,7 @@ ADOPTERS = [
     "check_sort_aria_sort.py",
     "check_quartile_position_sector_prefix.py",
     "check_scroll_hint.py",
+    "check_stockpct_chip_combined_label.py",
 ]
 
 results = []
