@@ -158,6 +158,24 @@ docstring note here (ADOPTERS line only); this note restores the
 per-review log, the 460th adoption itself is recorded in its guard's
 docstring and the iteration log.
 
+462nd review (2026-11-14): check_card_interior_keyboard.py adopted
+(slowest unadopted render guard in shard 1, 10.9s state seconds from
+the 2026-11-14T10:30Z shard-1 run; re-profiled with the canary's exact
+shard function, per the 432nd note). Its pre-fix defects were BOTH
+429th-review classes: main() ignored render_checks()'s return value,
+so a missing d3 shim exited 0 with "ALL 7 CHECKS PASSED" while the
+render half never ran (the 460th-review unmasked silent-pass shape),
+and the INFRA sentinel itself is truthy, so a render half returning
+INFRA would have exited 0 the same way (latent silent pass, S4 form);
+a transient render exception raised before any R-check was uncaught
+-- proved in-process before the fix (~/workspace/sp500-462/
+pre462_proof.py: Test A-live rc=0, "ALL 7 CHECKS PASSED", 0 R-checks;
+Test A2 rc=0, "ALL 7 CHECKS PASSED", 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). 61
+files still match the grep after this adoption (59 unadopted guards +
+the shared module's own definition + the contract guard's S1e string
+literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -228,6 +246,7 @@ ADOPTERS = [
     "check_pvp_alignment_card.py",
     "check_methodology_buttons.py",
     "check_position_chip_lone_text.py",
+    "check_card_interior_keyboard.py",
 ]
 
 results = []
