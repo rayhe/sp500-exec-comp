@@ -184,6 +184,7 @@ ADOPTERS = [
     "check_quartile_position_sector_prefix.py",
     "check_scroll_hint.py",
     "check_stockpct_chip_combined_label.py",
+    "check_position_hash_roundtrip.py",
 ]
 
 results = []
