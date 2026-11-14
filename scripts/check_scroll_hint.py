@@ -12,6 +12,20 @@ keyframe. There is no JS replay timer - the whole contract rides on the
 display toggle and CSS animation ordering, so this guard pins the observable
 behavior instead of the implementation.
 
+453rd review (2026-11-13): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 4, 23.5s fresh shard-4 verdict
+in this run; re-profiled from the freshest drift_canary_state.json entries
+this run, per the 432nd note -- the slowest overall, check_position_hash_roundtrip
+at 26.9s, is shard 3, so this guard is the one the shard-4 re-baseline
+exercises in this run). Silent-pass variant, worse than the 429th-review
+class: pre-fix main() ignored render_checks()'s return value, so a missing
+d3 shim exited 0 with "7/7 checks passed" while the render half never ran --
+proved in-process before the fix (~/workspace/sp500-453/pre453_proof.py:
+rc=0, "7/7 checks passed" printed, 0 R-checks recorded; the 7 static
+checks pass, the 5 render checks never run). 69 files still match the grep
+after this adoption (68 unadopted guards + the contract guard's S1e string
+literal).
+
 This guard has two halves:
   A. Static: the hint element lives inside #table-wrapper; base rule hides it;
      .has-scroll-right shows it; .scroll-end/.scroll-started hide it; the hide
@@ -39,8 +53,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HTML = os.path.join(REPO, "index.html")
@@ -121,22 +137,6 @@ def static_checks():
           not missing, "missing: %s" % missing if missing else "%d/%d bits" % (len(js_bits), len(js_bits)))
 
 
-def get_d3_bytes():
-    # Same cached copy as check_minimap_toggle.py (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -183,7 +183,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -262,17 +262,25 @@ def render_checks():
 def main():
     static_only = "--static-only" in sys.argv
     static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
-    fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    if static_only:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [r for r in results if not r[1]]
+        return 1 if failed else 0
+    failed = [r for r in results if not r[1]]
+    if failed or not ok:
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
