@@ -138,6 +138,26 @@ harness could not observe the INFRA mapping. 64 files still match the
 grep after this adoption (62 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+461st review (2026-11-14): check_position_chip_lone_text.py adopted
+(slowest unadopted render guard overall and in shard 4, 38.2s fresh
+standalone verdict vs 32.7s for the runner-up check_neo_scroll_hint;
+state seconds 21.0s vs 19.6s from the 2026-11-14T09:00Z shard-4 run;
+re-profiled with the canary's exact shard function, per the 432nd
+note). Same 429th-review class as the 436th/437th/438th/442nd/451st/
+457th: main() read render_checks()'s return value, but a missing d3
+shim made render_checks() return False, which main() folded into exit
+1 (drift) although the docstring promises exit 2 (infra) -- proved
+in-process before the fix (~/workspace/sp500-461/pre461_proof.py:
+Test A-live rc=1, "10/10 checks passed" printed, 0 R-checks; Test A2
+rc=0 on the INFRA-stub form, the truthy sentinel folding to success;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall). 62 files still match the grep after this adoption
+(60 unadopted guards + the shared module's own definition + the
+contract guard's S1e string literal). Note: the 460th review added no
+docstring note here (ADOPTERS line only); this note restores the
+per-review log, the 460th adoption itself is recorded in its guard's
+docstring and the iteration log.
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -207,6 +227,7 @@ ADOPTERS = [
     "check_radar_label_keyboard.py",
     "check_pvp_alignment_card.py",
     "check_methodology_buttons.py",
+    "check_position_chip_lone_text.py",
 ]
 
 results = []

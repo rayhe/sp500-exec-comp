@@ -73,6 +73,31 @@ Usage:
 Exit: 0 = consistent; 1 = drift (loud); 2 = infra (JS unreadable,
 playwright missing, d3 shim unavailable, server would not start).
 
+461st review (2026-11-14): adopted scripts/render_guard_common.py
+(slowest unadopted render guard overall and in shard 4, 38.2s fresh
+standalone verdict vs 32.7s for the runner-up check_neo_scroll_hint;
+state seconds 21.0s vs 19.6s from the 2026-11-14T09:00Z shard-4 run;
+re-profiled with the canary's exact shard function, per the 455th
+note (17) -- the ranking held exactly). Pre-fix defects were BOTH
+429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit 1,
+0 R-checks, no FAIL verdict; (#2, exit-1 drift) main() read
+render_checks()'s return value, but a missing d3 shim made
+render_checks() return False, which main() folded into exit 1 (drift)
+although the docstring promises exit 2 (infra) -- and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 with "10/10 checks passed" (latent silent pass, S4
+form). Proved in-process before the fix
+(~/workspace/sp500-461/pre461_proof.py: Test A-live rc=1 with
+"10/10 checks passed" printed and 0 R-checks recorded; Test A2 rc=0
+with "10/10 checks passed" and 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption also converts main() to return its exit code (not sys.exit)
+so the contract guard's S4 harness can observe the INFRA mapping.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 60
+unadopted guards remain.
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 
@@ -84,17 +109,16 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
 NET_JS = os.path.join(REPO, "js", "network.js")
 GUARD_393 = os.path.join(
     REPO, "scripts", "check_combined_chip_sector_prefix.py")
-D3_CACHE = os.path.expanduser(
-    "~/workspace/goals/s-p-500-executive-compensation-tracker/"
-    "hidden_files/methbtn-20261005/d3.min.js")
 
 results = []
 
@@ -226,19 +250,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    if os.path.exists(D3_CACHE):
-        return open(D3_CACHE, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -256,7 +267,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -427,7 +438,10 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
