@@ -354,6 +354,37 @@ needed (458th note (27) checked). 53 files still match the grep after
 this adoption (51 unadopted guards + the shared module's own
 definition + the contract guard's S1e string literal).
 
+474th review (2026-11-15): check_quartile_chip_lone_styling.py adopted
+(slowest unadopted render guard in shard 1 by the freshest state --
+12.0s from the 2026-11-15T10:37:29Z shard-1 run -- and effectively
+tied on the re-profile, 9.74s standalone vs ger 10.65s and
+sector_gov 9.94s, within load noise, so the pick stands on the queued
+order and the multi-run history: the older state sample was 28.7s for
+this guard vs 21.3s ger, per the 469th note (68) rule that the
+evidence base is the multi-run history plus the re-profile, not one
+state reading). Its pre-fix defects were BOTH 429th-review classes:
+(#1, no retry wrapper) a transient render exception raised before
+any R-check was uncaught -- traceback, exit 1, 0 R-checks, no FAIL
+verdict; (#2, exit-1 mismatch) main() checked render_checks()'s
+return value, but a missing d3 shim returned False, which main()
+folded into exit 1 (drift) although the docstring promises exit 2
+(infra) -- and the pass line printed "6/6 checks passed" alongside
+rc=1, the misleading shape the 434th/436th/437th/438th/442nd reviews
+fixed; and the INFRA sentinel itself is truthy, so a render half
+returning INFRA would have exited 0 the same way (latent silent
+pass, S4 form). Proved in-process before the fix
+(~/workspace/sp500-474/pre474_proof.py: Test A-live code=1, "6/6
+checks passed", 0 R-checks; Test A2 code=0, "6/6 checks passed", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's
+existing "N/N checks passed" summary format. render_checks() already
+returned an explicit bool on success, so no None-on-success fix was
+needed (458th note (27) checked). 49 files still match the grep
+after this adoption (47 unadopted guards + the shared module's own
+definition + the contract guard's S1e string literal).
+
 473rd review (2026-11-15): check_neo_scroll_hint.py adopted
 (slowest unadopted render guard in shard 4 by the freshest state --
 20.5s from the 2026-11-15T09:09:58Z shard-4 run,
@@ -558,6 +589,7 @@ ADOPTERS = [
     "check_scatter_brush_keyboard.py",
     "check_ratio_chip_combined_label.py",
     "check_neo_scroll_hint.py",
+    "check_quartile_chip_lone_styling.py",
 ]
 
 results = []

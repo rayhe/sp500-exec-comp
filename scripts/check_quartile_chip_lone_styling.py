@@ -61,6 +61,38 @@ playwright missing, d3 shim unavailable, server would not start).
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 
+474th review (2026-11-15): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects were BOTH 429th-review
+classes: main() checked render_checks()'s return value, but a
+missing d3 shim returned False, which main() folded into exit 1
+(drift) although the docstring promises exit 2 (infra) -- and the
+pass line printed "6/6 checks passed" alongside rc=1, the
+misleading shape the 434th/436th/437th/438th/442nd reviews fixed;
+and the INFRA sentinel itself is truthy, so a render half returning
+INFRA would have exited 0 the same way (latent silent pass, S4
+form); and a transient render exception raised before any R-check
+was uncaught (no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-474/pre474_proof.py: Test A-live code=1, "6/6
+checks passed", 0 R-checks; Test A2 code=0, "6/6 checks passed", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). Slowest unadopted render guard in shard 1
+by the freshest state (12.0s, 2026-11-15T10:37:29Z shard-1 run) and
+effectively tied on the re-profile (9.74s standalone, vs ger 10.65s
+and sector_gov 9.94s -- within load noise, so the pick stands on the
+queued order and the multi-run history: the older state sample was
+28.7s for this guard vs 21.3s ger / 40.8s sector_gov, the last of
+which is the load-inflated sample the 466th run flagged, do not
+re-baseline), per the 469th note (68) rule that the evidence base is
+the multi-run history plus the re-profile, not one state reading. No
+None-on-success fix was needed here (458th note (27) checked):
+render_checks() already returns r1_ok and r2_ok and r3_ok
+explicitly. 49 lines over 48 check_*.py files still match the grep
+after this adoption (47 unadopted guards + the contract guard's S1e
+string literal, which occurs twice in that file).
+
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
 """
@@ -69,8 +101,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 NET_JS = os.path.join(REPO, "js", "network.js")
@@ -166,21 +200,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -198,7 +217,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -295,7 +314,10 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
