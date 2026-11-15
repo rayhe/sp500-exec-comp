@@ -43,6 +43,34 @@ Usage:
   scripts/check_position_empty_count_label.py
   scripts/check_position_empty_count_label.py --static-only
 
+466th review (2026-11-14): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 1, 11.2s state seconds from
+the 462nd shard-1 run; re-profiled with the canary's exact shard
+function, per the 455th note (17) -- the ranking held exactly:
+check_quartile_chip_lone_styling at 11.0s state is the runner-up,
+and the fresh standalone re-profile held it too, 47.8s vs 29.7s --
+both inflated by the Saturday-evening cron-wave load, same family as
+the 465th note (53)). Pre-fix defects were BOTH 429th-review classes:
+(#1, no retry wrapper) a transient render exception raised before
+any R-check was uncaught -- traceback, exit 1, 0 R-checks, no FAIL
+verdict; (#2, exit-1 mismatch, the 461st-review shape) main() read
+render_checks()'s return value, but a missing d3 shim returned False,
+which main() folded into exit 1 although the docstring promises exit
+2 -- and the INFRA sentinel itself is truthy, so a render half
+returning INFRA would have exited 0 the same way (latent silent pass,
+S4 form). Proved in-process before the fix
+(~/workspace/sp500-466/pre466_proof.py: Test A-live rc=1, "5/5 checks
+passed", 0 R-checks, INFRA line present; Test A2 rc=0, "5/5 checks
+passed", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The adoption restructures main()
+around run_render_with_retry with the INFRA-to-exit-2 mapping (main()
+already returned its exit code, so no sys.exit-to-return conversion
+was needed -- the S4 harness observes the returned rc either way),
+and adds the "ALL N CHECKS PASSED" summary line on the all-pass path.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked).
+55 unadopted guards remain.
+
 Exit: 0 = consistent; 1 = drift (loud); 2 = infra (JS unreadable,
 playwright missing, d3 shim unavailable, server would not start).
 
@@ -57,8 +85,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -111,21 +141,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -143,7 +158,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -260,7 +275,10 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
@@ -269,7 +287,7 @@ def main():
     if failed or not ok:
         print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
         return 1
-    print("%d/%d checks passed" % (len(results), len(results)))
+    print("ALL %d CHECKS PASSED" % len(results))
     return 0
 
 
