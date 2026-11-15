@@ -263,6 +263,37 @@ still match the grep after this adoption (55 unadopted guards + the
 shared module's own definition + the contract guard's S1e string
 literal).
 
+467th review (2026-11-14): check_keyboard_seg_pilot.py adopted
+(slowest unadopted render guard in shard 3 -- the freshest state
+ranking (18.3s for check_inline_onclick_keyboard vs 17.9s here, from
+the 463rd shard-3 run, canary_20261114_2102_shard3of4.log) pointed at
+inline_onclick by 0.4s, but the multi-run history reverses it: seg
+pilot was slower in 8 of the last 9 shard-3 runs (medians ~11.6s vs
+~9.4s), and two fresh standalone re-profiles this run held the same
+way (13.1s vs 10.5s; 10.2s vs 8.4s) -- the 18.3s/17.9s pair is a
+single load-inflated sample (both ~2x their medians, same family as
+the 466th note's Saturday-evening cron-wave inflation). inline_onclick
+is the presumptive next shard-3 adoption). Its pre-fix defects were
+BOTH 429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit 1,
+0 R-checks, no FAIL verdict; (#2, silent pass, the 430th-review shape)
+main() ignored render_checks()'s return value, so a missing d3 shim
+exited 0 with the 7 static checks passed while the render half never
+ran -- and the INFRA sentinel itself is truthy, so a render half
+returning INFRA would have exited 0 the same way (latent silent pass,
+S4 form). Proved in-process before the fix
+(~/workspace/sp500-467/pre467_proof.py: Test A-live rc=0, "INFRA:
+could not obtain d3.min.js shim" last line, 0 R-checks; Test A2 rc=0,
+"PASS: S7 ..." last line, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The adoption
+restructures main() around run_render_with_retry with the INFRA-to-exit-2
+mapping, and adds the "ALL N CHECKS PASSED" summary line on the
+all-pass path. render_checks() already returned an explicit bool on
+success, so no None-on-success fix was needed (458th note (27)
+checked). 56 files still match the grep after this adoption (54
+unadopted guards + the shared module's own definition + the contract
+guard's S1e string literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -338,6 +369,7 @@ ADOPTERS = [
     "check_residual_clicks_keyboard.py",
     "check_insight_card_keyboard.py",
     "check_position_empty_count_label.py",
+    "check_keyboard_seg_pilot.py",
 ]
 
 results = []
