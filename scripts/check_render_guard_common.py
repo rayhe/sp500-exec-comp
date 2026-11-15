@@ -354,6 +354,35 @@ needed (458th note (27) checked). 53 files still match the grep after
 this adoption (51 unadopted guards + the shared module's own
 definition + the contract guard's S1e string literal).
 
+473rd review (2026-11-15): check_neo_scroll_hint.py adopted
+(slowest unadopted render guard in shard 4 by the freshest state --
+20.5s from the 2026-11-15T09:09:58Z shard-4 run,
+canary_20261115_0909_shard4of4.log -- and by the re-profile, 23.15s
+standalone, ahead of combined_chip_sector_prefix 16.57s and
+network_edge_overlay 16.91s; the older shard-4 runs showed 32.6-33.5s
+for this guard, so the lead holds across the multi-run history, per
+the 469th note (68) rule that the evidence base is the multi-run
+history plus the re-profile, not one state reading). Its pre-fix
+defects were BOTH 429th-review classes: (#1, no retry wrapper) a
+transient render exception raised before any R-check was uncaught --
+traceback, exit 1, 0 R-checks, no FAIL verdict; (#2, silent pass, the
+430th-review shape) main() ignored render_checks()'s return value, so
+a missing d3 shim exited 0 with "6/6 checks passed" while the render
+half never ran -- and the INFRA sentinel itself is truthy, so a render
+half returning INFRA would have exited 0 the same way (latent silent
+pass, S4 form). Proved in-process before the fix
+(~/workspace/sp500-473/pre473_proof.py: Test A-live code=0, "6/6 checks
+passed", 0 R-checks; Test A2 code=0, "6/6 checks passed", 0 R-checks;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall). The adoption restructures main() around run_render_with_retry
+with the INFRA-to-exit-2 mapping; the static-only and
+playwright-missing branches keep the guard's existing
+"N/N checks passed" summary format. render_checks() already returned
+an explicit bool on success, so no None-on-success fix was needed
+(458th note (27) checked). 50 files still match the grep after this
+adoption (48 unadopted guards + the shared module's own definition +
+the contract guard's S1e string literal).
+
 472nd review (2026-11-15): check_ratio_chip_combined_label.py adopted
 (slowest unadopted render guard in shard 2 by the freshest state --
 32.6s from the 468th shard-2 run, canary_20261115_0645_shard2of4.log
@@ -528,6 +557,7 @@ ADOPTERS = [
     "check_tenure_growth_keyboard.py",
     "check_scatter_brush_keyboard.py",
     "check_ratio_chip_combined_label.py",
+    "check_neo_scroll_hint.py",
 ]
 
 results = []
