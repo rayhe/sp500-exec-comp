@@ -354,6 +354,35 @@ needed (458th note (27) checked). 53 files still match the grep after
 this adoption (51 unadopted guards + the shared module's own
 definition + the contract guard's S1e string literal).
 
+472nd review (2026-11-15): check_ratio_chip_combined_label.py adopted
+(slowest unadopted render guard in shard 2 by the freshest state --
+32.6s from the 468th shard-2 run, canary_20261115_0645_shard2of4.log
+-- the 470th note flagged the 32.6s figure as load-inflated against
+an 8.2s earlier state sample, so this run re-profiled the top three
+shard-2 candidates standalone: ratio 14.98s,
+keyboard_pilot_extension 12.37s, pctile 10.72s -- ratio stays first by
+the queued order and the re-profile lead, per the 469th note (68)
+rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading). Its pre-fix defects were BOTH
+429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit 1,
+0 R-checks, no FAIL verdict; (#2, exit-1 mismatch) main() checked
+render_checks()'s return value, but a missing d3 shim returned False,
+which main() folded into exit 1 (drift) although the docstring
+promises exit 2 (infra) -- and the pass line printed "6/6 checks
+passed" alongside rc=1, the misleading shape the 434th/436th/437th/
+438th/442nd reviews fixed. Proved in-process before the fix
+(~/workspace/sp500-472/pre472_proof.py: Test A rc=1, "6/6 checks
+passed", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The adoption restructures main()
+around run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's existing
+"N/N checks passed" summary format. No None-on-success fix was needed
+here (458th note (27) checked): render_checks() already returns
+r1_ok and r2_ok and r3_ok explicitly. 51 files still match the grep
+after this adoption (49 unadopted guards + the shared module's own
+definition + the contract guard's S1e string literal).
+
 471st review (2026-11-15): check_scatter_brush_keyboard.py adopted
 (slowest unadopted render guard in shard 3 by the freshest state --
 16.9s from the 467th shard-3 run, canary_20261115_0502_shard3of4.log
@@ -498,6 +527,7 @@ ADOPTERS = [
     "check_network_keyboard.py",
     "check_tenure_growth_keyboard.py",
     "check_scatter_brush_keyboard.py",
+    "check_ratio_chip_combined_label.py",
 ]
 
 results = []
