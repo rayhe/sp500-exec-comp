@@ -51,6 +51,33 @@ Usage:
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
 
+465th review (2026-11-14): adopted scripts/render_guard_common.py
+(slowest unadopted render guard in shard 4, 37.2s state seconds from
+the 2026-11-14T17:14Z shard-4 run; re-profiled with the canary's exact
+shard function, per the 455th note (17) -- the ranking held exactly:
+check_keyboard_scatter_dots_pilot at 33.9s is the runner-up; the
+in-shard order held it too, 37.2s vs 33.9s). Pre-fix defects were BOTH
+429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit 1,
+0 R-checks, no FAIL verdict; (#2, unmasked silent pass, the 460th-review
+shape) main() ignored render_checks()'s return value except for the
+None/skip print, so a missing d3 shim exited 0 with all 5 static
+checks passed while the render half never ran -- and the INFRA sentinel
+itself is truthy, so a render half returning INFRA would have exited 0
+the same way (latent silent pass, S4 form). Proved in-process before
+the fix (~/workspace/sp500-465/pre465_proof.py: Test A-live rc=0,
+"INFRA: could not obtain d3.min.js shim" last line, 0 R-checks;
+Test A2 rc=0, "PASS: S5 ..." last line, 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping (main() already returned its exit code, so no
+sys.exit-to-return conversion was needed -- the S4 harness observes
+the returned rc either way), and adds the "ALL N CHECKS PASSED" /
+"N/N checks passed" summary lines this guard never printed.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked).
+56 unadopted guards remain.
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 """
@@ -59,8 +86,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -127,21 +156,6 @@ def static_checks():
           s5, "" if s5 else "innerHTML found in the action block")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -159,7 +173,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -260,17 +274,25 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
     static_checks()
-    if static_only:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+    if "--static-only" in sys.argv:
+        failed = [n for n, ok, _ in results if not ok]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [n for n, ok, _ in results if not ok]
+        return 1 if failed else 0
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or not ok:
+        print("%d/%d checks passed" % (len(results) - len(fails), len(results)))
+        return 1
+    print("ALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":

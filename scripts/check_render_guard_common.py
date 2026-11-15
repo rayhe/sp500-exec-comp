@@ -212,6 +212,27 @@ files still match the grep after this adoption (57 unadopted guards +
 the shared module's own definition + the contract guard's S1e string
 literal).
 
+465th review (2026-11-14): check_insight_card_keyboard.py adopted
+(slowest unadopted render guard in shard 4, 37.2s state seconds from
+the 2026-11-14T17:14Z shard-4 run; re-profiled with the canary's exact
+shard function, per the 432nd note). Its pre-fix defects were BOTH
+429th-review classes: main() ignored render_checks()'s return value,
+so a missing d3 shim exited 0 with all 5 static checks passed while
+the render half never ran (the 460th-review unmasked silent-pass
+shape -- this guard printed no summary line, so the proof's tell is
+the INFRA line as the last output line), and the INFRA sentinel itself
+is truthy, so a render half returning INFRA would have exited 0 the
+same way (latent silent pass, S4 form); a transient render exception
+raised before any R-check was uncaught -- proved in-process before
+the fix (~/workspace/sp500-465/pre465_proof.py: Test A-live rc=0,
+"INFRA: could not obtain d3.min.js shim" last line, 0 R-checks;
+Test A2 rc=0, "PASS: S5 ..." last line, 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption also adds the "ALL N CHECKS PASSED" / "N/N checks passed"
+summary lines this guard never printed. 58 files still match the
+grep after this adoption (56 unadopted guards + the shared module's
+own definition + the contract guard's S1e string literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -285,6 +306,7 @@ ADOPTERS = [
     "check_card_interior_keyboard.py",
     "check_network_legend_keyboard.py",
     "check_residual_clicks_keyboard.py",
+    "check_insight_card_keyboard.py",
 ]
 
 results = []
