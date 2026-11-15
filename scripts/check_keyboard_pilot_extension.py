@@ -55,14 +55,46 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+476th review (2026-11-15): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects were BOTH 429th-review
+classes: main() checked render_checks()'s return value only for None
+and otherwise decided on the results list, so a missing d3 shim
+exited 0 with no R-checks recorded while the render half never ran
+(the 430th-review silent-pass variant -- the guard prints no summary
+line at all pre-fix, so the pass was silent in both senses); and the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have exited 0 the same way (latent silent pass, S4 form); and
+a transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-476/pre476_proof.py: Test A-live code=0, 0
+R-checks; Test A2 code=0, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). Slowest adoptable
+shard-2 render guard by the multi-run history plus the re-profile:
+12.37s standalone (472nd) and 8.64s standalone (this run) vs pctile
+10.72s / 7.48s; in-shard 9.9s (468th) and 12.0s (472nd) vs pctile
+7.9s / 12.5s -- keyboard leads 3 of 5 readings, both clean
+standalone re-profiles, and carries the worse defect class. Board
+re-profiled slowest overall (12.39s standalone this run; 26.4s /
+15.0s in-shard) but is NOT adoptable under the current contract: it
+carries no local get_d3_bytes (its render half aborts all d3
+requests and never needs the shim), so there is no honest INFRA
+return site for it -- a shim fetch there would be a false INFRA
+probe. The adopted main() gains the uniform "\nALL N CHECKS PASSED"
+summary line; the guard printed no summary pre-fix.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
@@ -151,21 +183,6 @@ def static_checks():
           s6, "" if s6 else "focus ring missing or off-convention")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -183,7 +200,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -285,14 +302,30 @@ def main():
     static_only = "--static-only" in sys.argv
     static_checks()
     if static_only:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+        failed = [n for n, ok, _ in results if not ok]
+        if failed:
+            print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
+            return 1
+        print("\nALL %d CHECKS PASSED" % len(results))
+        return 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [n for n, ok, _ in results if not ok]
+        if failed:
+            print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
+            return 1
+        print("\nALL %d CHECKS PASSED" % len(results))
+        return 0
+    failed = [n for n, ok, _ in results if not ok]
+    if failed or not ok:
+        print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
+        return 1
+    print("\nALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":

@@ -412,6 +412,45 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+476th review (2026-11-15): check_keyboard_pilot_extension.py adopted
+(slowest adoptable shard-2 render guard by the multi-run history
+plus the re-profile: 12.37s standalone (472nd) and 8.64s standalone
+(this run) vs pctile 10.72s / 7.48s; in-shard 9.9s (468th) and 12.0s
+(472nd) vs pctile 7.9s / 12.5s -- keyboard leads 3 of 5 readings,
+both clean standalone re-profiles, and carries the worse defect
+class, per the 469th note (68) rule that the evidence base is the
+multi-run history plus the re-profile, not one state reading).
+Board re-profiled slowest overall (12.39s standalone this run;
+26.4s / 15.0s in-shard) but is NOT adoptable under the current
+contract: it carries no local fetcher (its render half aborts all d3
+requests and never needs the shim), so there is no honest INFRA
+return site for it -- a shim fetch there would be a false INFRA
+probe; a retry-only adoption would need a contract extension. Its
+pre-fix defects were BOTH 429th-review classes: (#1, no retry
+wrapper) a transient render exception raised before any R-check was
+uncaught -- traceback, exit 1, 0 R-checks, no FAIL verdict; (#2,
+silent pass, the 430th-review shape) main() decided on the results
+list alone (render_checks()'s return value checked only for None),
+so a missing d3 shim exited 0 with no R-checks recorded while the
+render half never ran -- and the INFRA sentinel itself is truthy, so
+a render half returning INFRA would have exited 0 the same way
+(latent silent pass, S4 form). Proved in-process before the fix
+(~/workspace/sp500-476/pre476_proof.py: Test A-live code=0, 0
+R-checks; Test A2 code=0, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The adoption
+restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping; the guard printed no summary line pre-fix,
+so the adopted main() gains the uniform "ALL N CHECKS PASSED"
+summary format rather than preserving one. render_checks() already
+returned an explicit bool on success, so no None-on-success fix was
+needed (458th note (27) checked). 46 check_*.py files still match
+the source-only grep after this adoption (45 unadopted guards + the
+contract guard's S1e string literal, which occurs twice in that file,
+so 47 matching lines); the recursive scripts/ grep adds the shared
+module's own definition (48 lines over 47 .py files) plus one stale
+__pycache__ .pyc (the 472nd note (76) trap -- quote the source-only
+count going forward).
+
 473rd review (2026-11-15): check_neo_scroll_hint.py adopted
 (slowest unadopted render guard in shard 4 by the freshest state --
 20.5s from the 2026-11-15T09:09:58Z shard-4 run,
@@ -618,6 +657,7 @@ ADOPTERS = [
     "check_neo_scroll_hint.py",
     "check_quartile_chip_lone_styling.py",
     "check_roving_keyboard.py",
+    "check_keyboard_pilot_extension.py",
 ]
 
 results = []
