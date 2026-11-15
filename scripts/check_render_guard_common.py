@@ -294,6 +294,36 @@ checked). 56 files still match the grep after this adoption (54
 unadopted guards + the shared module's own definition + the contract
 guard's S1e string literal).
 
+468th review (2026-11-14): check_community_chip_combined_label.py
+adopted (slowest unadopted render guard in shard 2, 9.9s state seconds
+from the 464th shard-2 run, tied with check_keyboard_pilot_extension
+at 9.9s -- the fresh standalone re-profile this run broke the tie
+exactly: 39.8s vs 25.4s, both inflated by the Saturday-evening
+cron-wave load, same family as the 466th note (55); the 13.3s state
+runner-up check_board_chip_survival was not adopted: its render half
+aborts d3 requests and never fetches the shim, so the INFRA mapping
+would be a fake dependency -- the campaign targets guards with a local
+get_d3_bytes, and this guard is the slowest such guard in shard 2).
+Its pre-fix defects were BOTH 429th-review classes: (#1, no retry
+wrapper) a transient render exception raised before any R-check was
+uncaught -- traceback, exit 1, 0 R-checks, no FAIL verdict; (#2,
+exit-1 mismatch, the 461st-review shape) main() read render_checks()'s
+return value, but a missing d3 shim returned False, which main() folded
+into exit 1 although the docstring promises exit 2 -- and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would have
+exited 0 the same way (latent silent pass, S4 form). Proved in-process
+before the fix (~/workspace/sp500-468/pre468_proof.py: Test A-live rc=1,
+"6/6 checks passed", 0 R-checks; Test A2 rc=0, "6/6 checks passed",
+0 R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping, and adds the
+"ALL N CHECKS PASSED" summary line on the all-pass path.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 55 files
+still match the grep after this adoption (53 unadopted guards + the
+shared module's own definition + the contract guard's S1e string
+literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -370,6 +400,7 @@ ADOPTERS = [
     "check_insight_card_keyboard.py",
     "check_position_empty_count_label.py",
     "check_keyboard_seg_pilot.py",
+    "check_community_chip_combined_label.py",
 ]
 
 results = []
