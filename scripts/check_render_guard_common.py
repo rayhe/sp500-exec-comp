@@ -617,6 +617,7 @@ ADOPTERS = [
     "check_ratio_chip_combined_label.py",
     "check_neo_scroll_hint.py",
     "check_quartile_chip_lone_styling.py",
+    "check_roving_keyboard.py",
 ]
 
 results = []
