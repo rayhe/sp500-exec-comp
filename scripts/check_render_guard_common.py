@@ -385,6 +385,33 @@ needed (458th note (27) checked). 49 files still match the grep
 after this adoption (47 unadopted guards + the shared module's own
 definition + the contract guard's S1e string literal).
 
+475th review (2026-11-15): check_roving_keyboard.py adopted
+(slowest unadopted render guard in shard 3 by the freshest state --
+17.0s from the 2026-11-15T13:11:31Z shard-3 run -- and by the
+re-profile, 26.5s standalone, ahead of crosstab 16.8s and anomaly
+14.3s, so the lead holds on both readings, per the 469th note (68)
+rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading). Its pre-fix defects were BOTH
+429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit
+1, 0 R-checks, no FAIL verdict; (#2, silent pass, the 430th-review
+shape) main() ignored render_checks()'s return value, so a missing
+d3 shim exited 0 with "ALL 6 CHECKS PASSED" while the render half
+never ran -- and the INFRA sentinel itself is truthy, so a render
+half returning INFRA would have exited 0 the same way (latent silent
+pass, S4 form). Proved in-process before the fix
+(~/workspace/sp500-475/pre475_proof.py: Test A-live code=0, "ALL 6
+CHECKS PASSED", 0 R-checks; Test A2 code=0, "ALL 6 CHECKS PASSED", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's
+existing "ALL N CHECKS PASSED" summary format. render_checks()
+already returned an explicit bool on success, so no None-on-success
+fix was needed (458th note (27) checked). 48 files still match the
+grep after this adoption (46 unadopted guards + the shared module's
+own definition + the contract guard's S1e string literal).
+
 473rd review (2026-11-15): check_neo_scroll_hint.py adopted
 (slowest unadopted render guard in shard 4 by the freshest state --
 20.5s from the 2026-11-15T09:09:58Z shard-4 run,
