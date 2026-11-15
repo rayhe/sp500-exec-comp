@@ -354,6 +354,37 @@ needed (458th note (27) checked). 53 files still match the grep after
 this adoption (51 unadopted guards + the shared module's own
 definition + the contract guard's S1e string literal).
 
+471st review (2026-11-15): check_scatter_brush_keyboard.py adopted
+(slowest unadopted render guard in shard 3 by the freshest state --
+16.9s from the 467th shard-3 run, canary_20261115_0502_shard3of4.log
+-- the multi-run history agrees (15.6s, 16.0s, 17.3s, 22.9s across
+the last five shard-3 runs; the runner-up
+check_detail_peer_nav_keyboard sits at 9.0-15.6s); two fresh
+standalone re-profiles this run held the same way (25.89s vs 11.60s),
+so scatter_brush stays first by the queued order and the re-profile
+lead, per the 469th note (68) rule that the evidence base is the
+multi-run history plus the re-profile, not one state reading). Its
+pre-fix defects were BOTH 429th-review classes: (#1, no retry
+wrapper) a transient render exception raised before any R-check was
+uncaught -- traceback, exit 1, 0 R-checks, no FAIL verdict; (#2,
+silent pass, the 430th-review shape) main() ignored
+render_checks()'s return value, so a missing d3 shim exited 0 with
+"ALL 6 CHECKS PASSED" while the render half never ran -- and the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have exited 0 the same way (latent silent pass, S4 form).
+Proved in-process before the fix
+(~/workspace/sp500-471/pre471_proof.py: Test A rc=0, "ALL 6 CHECKS
+PASSED", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The adoption restructures main()
+around run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's existing
+"ALL N CHECKS PASSED" summary format. A None-on-success fix was
+needed here (458th note (27) checked): render_checks() returned None
+implicitly on success, so it now returns all(ok ...) after the last
+R-check. 52 files still match the grep after this adoption (50
+unadopted guards + the shared module's own definition + the contract
+guard's S1e string literal).
+
 469th review (2026-11-15): check_network_keyboard.py adopted
 (slowest unadopted render guard in shard 4 -- the freshest state
 ranking (38.2s for check_zero_row_single_dim_badge vs 37.3s here,
@@ -466,6 +497,7 @@ ADOPTERS = [
     "check_community_chip_combined_label.py",
     "check_network_keyboard.py",
     "check_tenure_growth_keyboard.py",
+    "check_scatter_brush_keyboard.py",
 ]
 
 results = []
