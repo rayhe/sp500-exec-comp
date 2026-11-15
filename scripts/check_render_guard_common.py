@@ -324,6 +324,39 @@ still match the grep after this adoption (53 unadopted guards + the
 shared module's own definition + the contract guard's S1e string
 literal).
 
+469th review (2026-11-15): check_network_keyboard.py adopted
+(slowest unadopted render guard in shard 4 -- the freshest state
+ranking (38.2s for check_zero_row_single_dim_badge vs 37.3s here,
+from the 465th shard-4 run, canary_20261115_0113_shard4of4.log)
+pointed at zero_row by 0.9s, but the multi-run history reverses it:
+network keyboard was slower in 8 of the last 10 shard-4 runs
+(medians 17.8s vs 14.2s), and two fresh standalone re-profiles this
+run held the same way (15.6s vs 11.7s; 14.6s vs 12.9s) -- the
+38.2s/37.3s pair is a single load-inflated sample (both ~2-3x their
+medians, same family as the 466th note's Saturday-evening cron-wave
+inflation, per the 467th precedent). check_zero_row_single_dim_badge
+is the presumptive next shard-4 adoption). Its pre-fix defects were
+BOTH 429th-review classes: (#1, no retry wrapper) a transient render
+exception raised before any R-check was uncaught -- traceback, exit
+1, 0 R-checks, no FAIL verdict; (#2, silent pass, the 430th-review
+shape) main() ignored render_checks()'s return value, so a missing
+d3 shim exited 0 with the 9 static checks passed while the render
+half never ran -- and the INFRA sentinel itself is truthy, so a
+render half returning INFRA would have exited 0 the same way (latent
+silent pass, S4 form). Proved in-process before the fix
+(~/workspace/sp500-469/pre469_proof.py: Test A-live rc=0, "INFRA:
+could not obtain d3.min.js shim" last line, 0 R-checks; Test A2 rc=0,
+"PASS: S9 ..." last line, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The adoption
+restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping, and adds the "ALL N CHECKS PASSED" summary
+line on the all-pass path (this guard printed no summary line
+before). render_checks() already returned an explicit bool on
+success, so no None-on-success fix was needed (458th note (27)
+checked). 54 files still match the grep after this adoption (52
+unadopted guards + the shared module's own definition + the contract
+guard's S1e string literal).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -401,6 +434,7 @@ ADOPTERS = [
     "check_position_empty_count_label.py",
     "check_keyboard_seg_pilot.py",
     "check_community_chip_combined_label.py",
+    "check_network_keyboard.py",
 ]
 
 results = []
