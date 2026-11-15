@@ -324,6 +324,36 @@ still match the grep after this adoption (53 unadopted guards + the
 shared module's own definition + the contract guard's S1e string
 literal).
 
+470th review (2026-11-15): check_tenure_growth_keyboard.py adopted
+(slowest unadopted render guard in shard 1 by the freshest state --
+49.1s from the 466th shard-1 run, canary_20261115_0238_shard1of4.log
+-- but the multi-run history shows both it and the 40.8s runner-up
+(check_sector_gov_keyboard) as load-inflated single samples (both
+~8-9s in older shard-1 runs, e.g. tenure 8.4s, sector_gov 9.0s /
+8.1s / 7.8s); two fresh standalone re-profiles this run held the
+same way (9.78s vs 9.04s), so tenure stays first by the queued order
+and the narrow re-profile lead, per the 469th note (68) rule that the
+evidence base is the multi-run history plus the re-profile, not one
+state reading). Its pre-fix defects were BOTH 429th-review classes:
+(#1, no retry wrapper) a transient render exception raised before any
+R-check was uncaught -- traceback, exit 1, 0 R-checks, no FAIL
+verdict; (#2, silent pass, the 430th-review shape) main() ignored
+render_checks()'s return value, so a missing d3 shim exited 0 with
+"ALL 7 CHECKS PASSED" while the render half never ran -- and the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have exited 0 the same way (latent silent pass, S4 form).
+Proved in-process before the fix
+(~/workspace/sp500-470/pre470_proof.py: Test A rc=0, "ALL 7 CHECKS
+PASSED", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The adoption restructures main()
+around run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's existing
+"ALL N CHECKS PASSED" summary format. render_checks() already
+returned an explicit bool on success, so no None-on-success fix was
+needed (458th note (27) checked). 53 files still match the grep after
+this adoption (51 unadopted guards + the shared module's own
+definition + the contract guard's S1e string literal).
+
 469th review (2026-11-15): check_network_keyboard.py adopted
 (slowest unadopted render guard in shard 4 -- the freshest state
 ranking (38.2s for check_zero_row_single_dim_badge vs 37.3s here,
@@ -435,6 +465,7 @@ ADOPTERS = [
     "check_keyboard_seg_pilot.py",
     "check_community_chip_combined_label.py",
     "check_network_keyboard.py",
+    "check_tenure_growth_keyboard.py",
 ]
 
 results = []
