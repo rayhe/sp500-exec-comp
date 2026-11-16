@@ -72,14 +72,50 @@ and contains the literal "--static-only" in sys.argv.
 
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
+
+482nd review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects were BOTH 429th-review
+classes: main() checked render_checks()'s return value, but a
+missing d3 shim returned False, which main() folded into exit 1
+(drift) although the docstring promises exit 2 (infra) -- and the
+pass line printed "6/6 checks passed" alongside rc=1, the
+misleading shape the 434th/436th/437th/438th/442nd/472nd/474th/
+479th reviews fixed (the exit-1-mismatch form); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-482/pre482_proof.py: Test A-live code=1,
+"6/6 checks passed", 0 R-checks; Test A2 code=0, "6/6 checks
+passed", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). Slowest adoptable shard-2 render
+guard by the multi-run history plus the re-profile: in-shard
+median 10.4s (13.4s / 10.4s / 8.1s across the 479th / 476th /
+464th shard-2 runs) and 7.96s standalone (this run; 9.50s at the
+479th) vs composition_fy_detail 7.4s median / 7.57s standalone
+(its 21.6s freshest-state reading is a load outlier against
+6.4s / 7.4s), median_pay 9.1s median / 6.17s standalone,
+sector_trend 7.9s median / 5.35s standalone -- conc leads the
+in-shard median, the freshest state, and both standalone
+re-profiles, per the 469th note (68) rule that the evidence base
+is the multi-run history plus the re-profile, not one state
+reading. The static-only and playwright-missing branches keep the
+guard's existing "N/N checks passed" summary format.
+render_checks() already returns an explicit bool on success, so
+no None-on-success fix was needed (458th note (27) checked).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -176,21 +212,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -208,7 +229,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -284,7 +305,9 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]

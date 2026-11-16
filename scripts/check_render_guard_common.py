@@ -412,6 +412,44 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+482nd review (2026-11-16): check_conc_chip_combined_label.py adopted
+(slowest adoptable shard-2 render guard by the multi-run history plus
+the re-profile: in-shard median 10.4s (13.4s / 10.4s / 8.1s across
+the 479th / 476th / 464th shard-2 runs) and 7.96s standalone (this
+run; 9.50s at the 479th) vs composition_fy_detail 7.4s median /
+7.57s standalone (its 21.6s freshest-state reading is a load outlier
+against 6.4s / 7.4s), median_pay 9.1s median / 6.17s standalone,
+sector_trend 7.9s median / 5.35s standalone -- conc leads the
+in-shard median, the freshest state, and both standalone
+re-profiles, per the 469th note (68) rule that the evidence base is
+the multi-run history plus the re-profile, not one state reading).
+Its pre-fix defects were BOTH 429th-review classes: main() checked
+render_checks()'s return value, but a missing d3 shim returned
+False, which main() folded into exit 1 (drift) although the
+docstring promises exit 2 (infra) -- and the pass line printed
+"6/6 checks passed" alongside rc=1, the misleading shape the
+434th/436th/437th/438th/442nd/472nd/474th/479th reviews fixed (the
+exit-1-mismatch form); and the INFRA sentinel itself is truthy, so
+a render half returning INFRA would have exited 0 the same way
+(latent silent pass, S4 form); and a transient render exception
+raised before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-482/pre482_proof.py:
+Test A-live code=1, "6/6 checks passed", 0 R-checks; Test A2
+code=0, "6/6 checks passed", 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping; the static-only and playwright-missing
+branches keep the guard's existing "N/N checks passed" summary
+format. render_checks() already returned an explicit bool on
+success, so no None-on-success fix was needed (458th note (27)
+checked). 40 check_*.py files still match the source-only grep
+after this adoption (39 unadopted guards + the contract guard's
+S1e string literal, which occurs twice in that file, so 41
+matching lines); the recursive scripts/ grep adds the shared
+module's own definition (42 lines over 41 .py files) plus one
+stale __pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 481st review (2026-11-16): check_network_edge_overlay.py adopted
 (slowest adoptable shard-4 render guard by the multi-run history plus
 the re-profile: median 16.9s over the last 6 shard-4 runs (16.3s
@@ -826,6 +864,7 @@ ADOPTERS = [
     "check_pctile_chip_combined_label.py",
     "check_pathfinder_toggle_aria.py",
     "check_network_edge_overlay.py",
+    "check_conc_chip_combined_label.py",
 ]
 
 results = []
