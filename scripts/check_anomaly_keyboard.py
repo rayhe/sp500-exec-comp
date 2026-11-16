@@ -66,14 +66,55 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+483rd review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects: main() ignored
+render_checks()'s return value entirely, so a missing d3 shim exited
+0 with "ALL 8 CHECKS PASSED" while the render half never ran (the
+430th-review silent-pass variant, although the docstring promises
+exit 2 for a d3 shim that cannot be obtained); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-483/pre483_proof.py: Test A-live code=0, "ALL 8
+CHECKS PASSED", 0 R-checks; Test A2 code=0, "ALL 8 CHECKS PASSED",
+0 R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's
+existing "SKIP: render checks unavailable; static checks decide"
+shape and the "ALL N CHECKS PASSED" summary format.
+render_checks() already returns an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). Slowest
+adoptable shard-3 render guard by the multi-run history plus the
+re-profile: median 12.8s over the last 14 shard-3 runs (16.4s
+freshest state) and 11.15s standalone (this run) vs crosstab 12.8s
+median / 16.0s fresh / 10.80s standalone, trend_trail 11.6s median /
+23.4s fresh / 10.41s standalone, scatter_path 11.1s median / 23.9s
+fresh / 9.93s standalone, inline_onclick 11.2s median / 16.1s fresh /
+8.46s standalone -- anomaly leads the 14-run median (tied with
+crosstab) and the standalone re-profile; trend_trail/scatter_path
+lead the freshest state only, and their fresh readings are load
+outliers against lower medians and standalones, per the 469th note
+(68) rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading. Shard 3 is also the stalest shard
+(last run 05:21 UTC vs shard 1 09:09, shard 2 10:36, shard 4 06:45),
+continuing the re-baseline sequence 480th shard 4, 481st shard 1,
+482nd shard 2.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -197,21 +238,6 @@ def static_checks():
           r.returncode == 0, r.stderr.strip()[:300] if r.returncode else "")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -229,7 +255,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -331,8 +357,10 @@ def main():
         static_checks()
     else:
         static_checks()
-        rc = render_checks()
-        if rc is None:
+        ok = run_render_with_retry(render_checks, results, check)
+        if ok is INFRA:
+            return 2
+        if ok is None:
             print("SKIP: render checks unavailable; static checks decide")
     fails = [n for n, ok, _ in results if not ok]
     if fails:

@@ -412,6 +412,47 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+483rd review (2026-11-16): check_anomaly_keyboard.py adopted
+(slowest adoptable shard-3 render guard by the multi-run history plus
+the re-profile: median 12.8s over the last 14 shard-3 runs (16.4s
+freshest state) and 11.15s standalone (this run) vs crosstab 12.8s
+median / 16.0s fresh / 10.80s standalone, trend_trail 11.6s median /
+23.4s fresh / 10.41s standalone, scatter_path 11.1s median / 23.9s
+fresh / 9.93s standalone, inline_onclick 11.2s median / 16.1s fresh /
+8.46s standalone -- anomaly leads the 14-run median (tied with
+crosstab) and the standalone re-profile; trend_trail/scatter_path
+lead the freshest state only, and their fresh readings are load
+outliers against lower medians and standalones, per the 469th note
+(68) rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading. Shard 3 is also the stalest shard
+(last run 05:21 UTC vs shard 1 09:09, shard 2 10:36, shard 4 06:45),
+continuing the re-baseline sequence 480th shard 4, 481st shard 1,
+482nd shard 2). Its pre-fix defects: main() ignored
+render_checks()'s return value entirely, so a missing d3 shim exited
+0 with "ALL 8 CHECKS PASSED" while the render half never ran (the
+430th-review silent-pass variant, although the docstring promises
+exit 2 for a d3 shim that cannot be obtained); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-483/pre483_proof.py: Test A-live code=0, "ALL 8
+CHECKS PASSED", 0 R-checks; Test A2 code=0, "ALL 8 CHECKS PASSED",
+0 R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping; the
+static-only and playwright-missing branches keep the guard's
+existing "SKIP: render checks unavailable; static checks decide"
+shape and the "ALL N CHECKS PASSED" summary format.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 39
+check_*.py files still match the source-only grep after this
+adoption (38 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 40 matching lines);
+the recursive scripts/ grep adds the shared module's own definition
+(41 lines over 40 .py files) plus one stale __pycache__ .pyc (the
+472nd note (76) trap -- quote the source-only count going forward).
+
 482nd review (2026-11-16): check_conc_chip_combined_label.py adopted
 (slowest adoptable shard-2 render guard by the multi-run history plus
 the re-profile: in-shard median 10.4s (13.4s / 10.4s / 8.1s across
@@ -865,6 +906,7 @@ ADOPTERS = [
     "check_pathfinder_toggle_aria.py",
     "check_network_edge_overlay.py",
     "check_conc_chip_combined_label.py",
+    "check_anomaly_keyboard.py",
 ]
 
 results = []
