@@ -412,6 +412,64 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+485th review (2026-11-16): check_ceocfo_chip_combined_label.py
+adopted (slowest adoptable shard-1 render guard by the multi-run
+history plus the re-profile: freshest state 12.6s
+(2026-11-16T09:03Z shard-1 run) and 23.29s standalone (this run,
+under the live canary's load) vs yoy_chip_combined_label 12.4s
+fresh / 18.41s standalone and sector_gov_keyboard 11.4s fresh /
+17.81s standalone -- ceocfo leads the freshest state and the
+standalone re-profile; its 2-run median (12.0s: 11.4s Nov 15,
+12.6s Nov 16) trails yoy (12.2s) only, per the 469th note (68)
+rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading. Pre-decision 3-reading medians:
+ceocfo 12.6s (11.4s Nov 15, 12.6s Nov 16, 23.29s standalone under
+load), yoy 12.4s, sector_gov 12.1s. The 484th entry's shard-1
+shortlist ("yoy vs sector_gov") omitted ceocfo although the 481st
+entry lists it first at 12.6s -- the omission is corrected here;
+the re-profile confirms ceocfo is the pick, not just the state
+leader. The standalone timings are load-inflated by the
+concurrent canary and are used only relatively, never as
+baselines. Post-hoc check: a clean second re-profile after the
+canary finished (ceocfo 14.68s, yoy 15.07s, sector_gov 17.11s)
+flips the order to sector_gov, and the in-shard run read
+sector_gov 24.9s vs ceocfo 17.6s vs yoy 15.0s -- the three guards
+are within noise of each other (all-readings medians 14.68s /
+15.0s / 14.96s), so the pick stands on the freshest pre-run
+state plus the pre-decision re-profile, and sector_gov stays
+queued next for shard 1). Its pre-fix defects were BOTH 429th-review classes:
+main() checked render_checks()'s return value, but a missing d3
+shim returned False, which main() folded into exit 1 (drift)
+although the docstring promises exit 2 (infra) -- and the pass
+line printed "6/6 checks passed" alongside rc=1 with 0 R-checks,
+the misleading shape the 434th/436th/437th/438th/442nd/472nd/
+474th/479th/482nd/484th reviews fixed (the exit-1-mismatch form);
+and the INFRA sentinel itself is truthy, so a render half
+returning INFRA would have exited 0 with "6/6 checks passed" the
+same way (latent silent pass, S4 form); and a transient render
+exception raised before any R-check was uncaught (no retry
+wrapper) -- proved in-process before the fix
+(~/workspace/sp500-485/pre485_proof.py: Test A-live rc=1, "6/6
+checks passed", 0 R-checks; Test A2 rc=0, "6/6 checks passed", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The proof monkeypatches get_d3_bytes to
+None rather than moving the d3 cache aside, because the canary
+shard-1 run was live concurrently and the cache move would have
+flipped its guards to INFRA. main() already returned the exit
+code, so no sys.exit() conversion was needed. The local fetcher
+was cache-first with a curl fallback, byte-identical to the shared
+one. The static-only and playwright-missing branches keep the
+guard's existing "%d/%d checks passed" summary format.
+render_checks() already returned an explicit bool on success, so
+no None-on-success fix was needed (458th note (27) checked). 37
+check_*.py files still match the source-only grep after this
+adoption (36 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 38 matching lines);
+the recursive scripts/ grep adds the shared module's own
+definition (39 lines over 38 .py files) plus one stale
+__pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 484th review (2026-11-16): check_sector_vocab_bridge.py adopted
 (slowest adoptable shard-4 render guard by the multi-run history plus
 the re-profile: freshest state 13.1s (2026-11-16T06:38Z shard-4 run)
@@ -956,6 +1014,7 @@ ADOPTERS = [
     "check_conc_chip_combined_label.py",
     "check_anomaly_keyboard.py",
     "check_sector_vocab_bridge.py",
+    "check_ceocfo_chip_combined_label.py",
 ]
 
 results = []

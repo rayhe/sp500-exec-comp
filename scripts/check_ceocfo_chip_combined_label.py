@@ -62,14 +62,70 @@ and contains the literal "--static-only" in sys.argv.
 
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
+
+485th review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping. Pre-fix
+defects were BOTH 429th-review classes: main() checked
+render_checks()'s return value, but a missing d3 shim returned
+False, which main() folded into exit 1 (drift) although the
+docstring promises exit 2 (infra) -- and the pass line printed
+"6/6 checks passed" alongside rc=1 with 0 R-checks, the misleading
+shape the 434th/436th/437th/438th/442nd/472nd/474th/479th/482nd/
+484th reviews fixed (the exit-1-mismatch form); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 with "6/6 checks passed" the same way (latent silent
+pass, S4 form); and a transient render exception raised before any
+R-check was uncaught (no retry wrapper) -- proved in-process
+before the fix (~/workspace/sp500-485/pre485_proof.py: Test A-live
+rc=1, "6/6 checks passed", 0 R-checks; Test A2 rc=0, "6/6 checks
+passed", 0 R-checks; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). The proof monkeypatches
+get_d3_bytes to None rather than moving the d3 cache aside, because
+the canary shard-1 run was live concurrently and the cache move
+would have flipped its guards to INFRA. main() already returned
+the exit code (no sys.exit() conversion needed). The static-only
+and playwright-missing branches keep the guard's existing "%d/%d
+checks passed" summary format. render_checks() already returns an
+explicit bool on success, so no None-on-success fix was needed
+(458th note (27) checked). Slowest adoptable shard-1 render guard
+by the multi-run history plus the re-profile: freshest state 12.6s
+(2026-11-16T09:03Z shard-1 run) and 23.29s standalone (this run,
+under the live canary's load) vs yoy_chip_combined_label 12.4s
+fresh / 18.41s standalone and sector_gov_keyboard 11.4s fresh /
+17.81s standalone -- ceocfo leads the freshest state and the
+standalone re-profile; its 2-run median (12.0s: 11.4s Nov 15,
+12.6s Nov 16) trails yoy (12.2s) only, per the 469th note (68)
+rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading. Pre-decision 3-reading medians:
+ceocfo 12.6s (11.4s Nov 15, 12.6s Nov 16, 23.29s standalone under
+load), yoy 12.4s, sector_gov 12.1s. The 484th entry's shard-1
+shortlist ("yoy vs sector_gov") omitted ceocfo although the 481st
+entry lists it first at 12.6s -- the omission is corrected here;
+the re-profile confirms ceocfo is the pick, not just the state
+leader. The three standalone timings above are load-inflated by
+the concurrent canary and are used only relatively, never as
+baselines. Post-hoc check: a clean second re-profile after the
+canary finished (ceocfo 14.68s, yoy 15.07s, sector_gov 17.11s)
+flips the order to sector_gov, and the in-shard run read
+sector_gov 24.9s vs ceocfo 17.6s vs yoy 15.0s -- the three guards
+are within noise of each other (all-readings medians 14.68s /
+15.0s / 14.96s), so the pick stands on the freshest pre-run
+state plus the pre-decision re-profile, and sector_gov stays
+queued next for shard 1.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -160,21 +216,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -192,7 +233,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -280,7 +321,9 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
     if ok is None:
         print("render checks skipped")
         failed = [r for r in results if not r[1]]
