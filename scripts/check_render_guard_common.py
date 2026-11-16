@@ -511,6 +511,55 @@ definition (37 lines over 36 .py files) plus one stale
 __pycache__ .pyc (the 472nd note (76) trap -- quote the
 source-only count going forward).
 
+488th review (2026-11-16): check_top10_comp_desc.py adopted
+(slowest unadopted shard-4 render guard by the multi-run history
+plus the re-profile: freshest state 13.9s (2026-11-16T14:43Z
+shard-4 run, tied with vol_tenure_keyboard) and multi-run median
+11.7s vs vol_tenure_keyboard 13.9s fresh / 11.1s median and
+zero_row_single_dim_badge 13.2s fresh / 11.2s median -- top10
+leads the freshest state (tied) and the multi-run median; the
+standalone re-profile this run flips the order (zero_row 11.61s
+vs top10 11.33s vs vol_tenure 10.63s), but the three guards are
+within noise of each other, so the pick stands on the freshest
+pre-run state plus the multi-run median, per the 486th
+precedent; vol_tenure_keyboard stays queued next for shard 4).
+Its pre-fix defects: main() ignored render_checks()'s return
+value entirely, so a missing d3 shim exited 0 with the 5 static
+PASS lines and 0 R-checks while the render half never ran (the
+silent-pass variant; this guard prints no "N/N checks passed"
+summary line, so the silence is the tell, although the docstring
+promises exit 2 for a missing shim); a missing playwright
+install exited 0 the same way (the None branch returned
+1-if-bad-else-0 on the statics alone); and the INFRA sentinel
+itself is truthy, so a render half returning INFRA would have
+exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-488/pre488_proof.py: Test A-live rc=0, 0
+R-checks; Test A2 rc=0, 0 R-checks; Test A3 rc=0, 0 R-checks;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall). The proof monkeypatches get_d3_bytes to None and
+stubs sys.modules['playwright.sync_api'] to None (ImportError)
+rather than moving the d3 cache aside (no canary live
+concurrently this run; the monkeypatch touches no shared state).
+main() already returned the exit code, so no sys.exit()
+conversion was needed. The adopted main adds the "----" +
+"%d/%d checks passed" summary the guard previously lacked (the
+static-only and playwright-missing branches print it too,
+matching the adopted siblings); the playwright-missing branch
+keeps its skip shape (rc=0 on passing statics) and the
+docstring's exit-2 promise for that branch is unchanged from the
+pre-fix guard, per the 486th/487th precedent.
+render_checks() already returns an explicit bool on success, so
+no None-on-success fix was needed (458th note (27) checked). 34
+check_*.py files still match the source-only grep after this
+adoption (33 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 35 matching lines);
+the recursive scripts/ grep adds the shared module's own
+definition (36 lines over 35 .py files) plus one stale
+__pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 486th review (2026-11-16): check_median_pay_fy_label.py adopted
 (slowest unadopted shard-2 render guard by the multi-run history
 plus the re-profile: freshest state 9.0s (2026-11-16T10:32Z
@@ -1099,6 +1148,7 @@ ADOPTERS = [
     "check_ceocfo_chip_combined_label.py",
     "check_median_pay_fy_label.py",
     "check_crosstab_keyboard.py",
+    "check_top10_comp_desc.py",
 ]
 
 results = []
