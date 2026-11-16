@@ -36,6 +36,51 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+484th review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects were BOTH 429th-review
+classes: main() checked render_checks()'s return value, but a
+missing d3 shim returned False, which main() folded into exit 1
+(drift) although the docstring promises exit 2 (infra) -- and the
+pass line printed "RESULT: FAIL" alongside rc=1 with 0 R-checks,
+the misleading shape the 434th/436th/437th/438th/442nd/472nd/474th/
+479th/482nd reviews fixed (the exit-1-mismatch form); and the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have exited 0 with "RESULT: PASS" the same way (latent
+silent pass, S4 form); and a transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-484/pre484_proof.py:
+Test A-live rc=1, "RESULT: FAIL", 0 R-checks (d3 cache moved aside
+for the run, restored after); Test A2 code=0, "RESULT: PASS", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). main() also converts from sys.exit() inside
+to returning the exit code (sys.exit(main()) in __main__), so the
+contract guard's S4 harness can call it in-process. The local
+fetcher was cache-only (no curl fallback); the shared one adds the
+curl fallback. The static-only and playwright-missing branches keep
+the guard's existing "RESULT: PASS/FAIL" summary format.
+render_checks() already returns an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). Slowest
+adoptable shard-4 render guard by the multi-run history plus the
+re-profile: freshest state 13.1s (2026-11-16T06:38Z shard-4 run)
+and 9.50s standalone (this run) vs top10_comp_desc 12.9s fresh /
+9.42s standalone, vol_tenure_keyboard 12.1s fresh / 8.35s
+standalone, zero_row_single_dim_badge 12.0s fresh / 8.57s
+standalone -- sector_vocab leads the freshest state and the
+standalone re-profile; its 4-run median (8.85s) trails top10
+(9.55s) and zero_row (9.65s) only, per the 469th note (68) rule
+that the evidence base is the multi-run history plus the
+re-profile, not one state reading. The three slower shard-4
+render guards are NOT adoptable under the current contract:
+combined_chip_sector_prefix (15.5s fresh / 19.1s-27.9s history),
+payband_chip_survival (13.8s), and sop_combined_badge (13.8s)
+all abort every d3 request and carry no local fetcher, so there
+is no honest INFRA return site for them -- a shim fetch there
+would be a false INFRA probe (476th-review board precedent; a
+retry-only adoption would need a contract extension).
 """
 import json
 import os
@@ -44,6 +89,9 @@ import socket
 import subprocess
 import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
@@ -149,15 +197,6 @@ def static_checks():
           "d._compSector === sectorName" in src)
 
 
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    return None
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -175,7 +214,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -247,12 +286,16 @@ def main():
     if static_only:
         rc = all(ok for _, ok, _ in results)
     else:
-        rc = render_checks()
-        if rc is None:
+        ok = run_render_with_retry(render_checks, results, check)
+        if ok is INFRA:
+            return 2
+        if ok is None:
             rc = all(ok for _, ok, _ in results)
+        else:
+            rc = ok
     print("RESULT:", "PASS" if rc else "FAIL")
-    sys.exit(0 if rc else 1)
+    return 0 if rc else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

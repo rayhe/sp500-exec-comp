@@ -412,6 +412,54 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+484th review (2026-11-16): check_sector_vocab_bridge.py adopted
+(slowest adoptable shard-4 render guard by the multi-run history plus
+the re-profile: freshest state 13.1s (2026-11-16T06:38Z shard-4 run)
+and 9.50s standalone (this run) vs top10_comp_desc 12.9s fresh /
+9.42s standalone, vol_tenure_keyboard 12.1s fresh / 8.35s
+standalone, zero_row_single_dim_badge 12.0s fresh / 8.57s
+standalone -- sector_vocab leads the freshest state and the
+standalone re-profile; its 4-run median (8.85s) trails top10
+(9.55s) and zero_row (9.65s) only, per the 469th note (68) rule
+that the evidence base is the multi-run history plus the
+re-profile, not one state reading. The three slower shard-4
+render guards are NOT adoptable under the current contract:
+combined_chip_sector_prefix (15.5s fresh / 19.1s-27.9s history),
+payband_chip_survival (13.8s), and sop_combined_badge (13.8s)
+all abort every d3 request and carry no local fetcher, so there
+is no honest INFRA return site for them -- a shim fetch there
+would be a false INFRA probe (476th-review board precedent; a
+retry-only adoption would need a contract extension). Its pre-fix
+defects were BOTH 429th-review classes: main() checked
+render_checks()'s return value, but a missing d3 shim returned
+False, which main() folded into exit 1 (drift) although the
+docstring promises exit 2 (infra) -- and the pass line printed
+"RESULT: FAIL" alongside rc=1 with 0 R-checks, the misleading
+shape the 434th/436th/437th/438th/442nd/472nd/474th/479th/482nd
+reviews fixed (the exit-1-mismatch form); and the INFRA sentinel
+itself is truthy, so a render half returning INFRA would have
+exited 0 with "RESULT: PASS" the same way (latent silent pass,
+S4 form); and a transient render exception raised before any
+R-check was uncaught (no retry wrapper) -- proved in-process
+before the fix (~/workspace/sp500-484/pre484_proof.py: Test
+A-live rc=1, "RESULT: FAIL", 0 R-checks; Test A2 code=0,
+"RESULT: PASS", 0 R-checks; Test B UNCATCHED RuntimeError on a
+simulated transient Chromium launch stall). main() also converts
+from sys.exit() inside to returning the exit code (sys.exit(main())
+in __main__), so the contract guard's S4 harness can call it
+in-process. The local fetcher was cache-only (no curl fallback);
+the shared one adds the curl fallback. The static-only and
+playwright-missing branches keep the guard's existing "RESULT:
+PASS/FAIL" summary format. render_checks() already returned an
+explicit bool on success, so no None-on-success fix was needed
+(458th note (27) checked). 38 check_*.py files still match the
+source-only grep after this adoption (37 unadopted guards + the
+contract guard's S1e string literal, which occurs twice in that
+file, so 39 matching lines); the recursive scripts/ grep adds the
+shared module's own definition (40 lines over 39 .py files) plus
+one stale __pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 483rd review (2026-11-16): check_anomaly_keyboard.py adopted
 (slowest adoptable shard-3 render guard by the multi-run history plus
 the re-profile: median 12.8s over the last 14 shard-3 runs (16.4s
@@ -907,6 +955,7 @@ ADOPTERS = [
     "check_network_edge_overlay.py",
     "check_conc_chip_combined_label.py",
     "check_anomaly_keyboard.py",
+    "check_sector_vocab_bridge.py",
 ]
 
 results = []
