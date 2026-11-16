@@ -40,14 +40,39 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+480th review (2026-11-15): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (and the
+now-unused tempfile import), the render half returns the INFRA
+sentinel when the shim is unavailable, and main() is restructured
+around run_render_with_retry with the INFRA-to-exit-2 mapping.
+Pre-fix defects were BOTH 429th-review classes: main() ignored
+render_checks()'s return value entirely, so a missing d3 shim exited
+0 with "3/3 checks passed" while the render half never ran (the
+430th-review silent-pass variant); and the INFRA sentinel itself is
+truthy, so a render half returning INFRA would have exited 0 the same
+way (latent silent pass, S4 form); and a transient render exception
+raised before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-480/pre480_proof.py:
+Test A-live code=0, "3/3 checks passed", 0 R-checks; Test A2 code=0;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall). Slowest adoptable shard-3 render guard by the multi-run
+history plus the re-profile: 18.1s in-shard (479th state) and 11s
+standalone (this run) vs inline-onclick 16.1s in-shard and 8s
+standalone, crosstab 16.0s in-shard and 10s standalone -- pathfinder
+leads both readings, per the 469th note (68) rule that the evidence
+base is the multi-run history plus the re-profile, not one state
+reading.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NETWORK_JS = os.path.join(REPO, "js", "network.js")
@@ -100,23 +125,6 @@ def static_checks():
           ("raw mutation left: %s" % raw) if raw else ("pfSetBarOpen occurrences: %d" % callers))
 
 
-def get_d3_bytes():
-    # Same cached copy as check_scrollspy_nav.py / check_methodology_buttons.py
-    # (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -147,7 +155,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -218,14 +226,18 @@ def main():
     static_only = "--static-only" in sys.argv
     static_checks()
     if not static_only:
-        render_checks()
+        ok = run_render_with_retry(render_checks, results, check)
+        if ok is INFRA:
+            return 2
+        if ok is None:
+            print("render checks skipped")
     failed = [r for r in results if not r[1]]
     if failed:
         print("\n%d/%d checks FAILED" % (len(failed), len(results)))
-        sys.exit(1)
+        return 1
     print("\n%d/%d checks passed" % (len(results), len(results)))
-    sys.exit(0)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

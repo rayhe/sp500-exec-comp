@@ -762,6 +762,7 @@ ADOPTERS = [
     "check_detail_peer_nav_keyboard.py",
     "check_ger_keyboard.py",
     "check_pctile_chip_combined_label.py",
+    "check_pathfinder_toggle_aria.py",
 ]
 
 results = []
