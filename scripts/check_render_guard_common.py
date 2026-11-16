@@ -412,6 +412,40 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+477th review (2026-11-15): check_detail_peer_nav_keyboard.py adopted
+(slowest adoptable shard-3 render guard by the multi-run history
+plus the re-profile: 15.6s / 15.4s / 35.2s in-shard (0502 / 1307 /
+2102 shard-3 runs) and 32.31s standalone (this run) vs crosstab
+13.7s / 16.9s / 34.2s and 28.29s standalone, pathfinder 11.5s /
+16.1s / 30.2s and 26.21s standalone, inline-onclick 11.1s / 11.5s /
+31.2s and 21.66s standalone -- detail-peer-nav leads all four
+readings, per the 469th note (68) rule that the evidence base is the
+multi-run history plus the re-profile, not one state reading).
+Its pre-fix defects were BOTH 429th-review classes: (#1, no retry
+wrapper) a transient render exception raised before any R-check was
+uncaught -- traceback, exit 1, 0 R-checks, no FAIL verdict; (#2,
+silent pass, the 430th-review shape) main() ignored
+render_checks()'s return value entirely, so a missing d3 shim
+exited 0 with "TOTAL: 4/4 passed" while the render half never ran --
+and the INFRA sentinel itself is truthy, so a render half returning
+INFRA would have exited 0 the same way (latent silent pass, S4
+form). Proved in-process before the fix
+(~/workspace/sp500-477/pre477_proof.py: Test A-live code=0, 0
+R-checks; Test A2 code=0, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The adoption
+restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping; the adopted main() gains the uniform
+"ALL N CHECKS PASSED" summary line, replacing the pre-fix
+"TOTAL: n/n passed" / "STATIC-ONLY: n/n passed" lines.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 45
+check_*.py files still match the source-only grep after this
+adoption (44 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 46 matching lines);
+the recursive scripts/ grep adds the shared module's own definition
+(47 lines over 46 .py files) plus one stale __pycache__ .pyc (the
+472nd note (76) trap -- quote the source-only count going forward).
+
 476th review (2026-11-15): check_keyboard_pilot_extension.py adopted
 (slowest adoptable shard-2 render guard by the multi-run history
 plus the re-profile: 12.37s standalone (472nd) and 8.64s standalone
@@ -658,6 +692,7 @@ ADOPTERS = [
     "check_quartile_chip_lone_styling.py",
     "check_roving_keyboard.py",
     "check_keyboard_pilot_extension.py",
+    "check_detail_peer_nav_keyboard.py",
 ]
 
 results = []
