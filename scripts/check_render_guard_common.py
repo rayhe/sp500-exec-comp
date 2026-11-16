@@ -412,6 +412,68 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+481st review (2026-11-16): check_network_edge_overlay.py adopted
+(slowest adoptable shard-4 render guard by the multi-run history plus
+the re-profile: median 16.9s over the last 6 shard-4 runs (16.3s
+freshest state) and 19.13s standalone (this run) vs inline-onclick
+17.2s median / 14.31s standalone and crosstab 16.4s median /
+14.82s standalone -- network-edge leads the freshest state by a hair
+and the re-profile by a wide margin, trailing inline by 0.3s on the
+6-run median only, and takes the shard-4 slot in the 1-2-3 rotation
+(478th shard 1, 479th shard 2, 480th shard 3), per the 469th note
+(68) rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading). Its pre-fix defects:
+(#1, no retry wrapper) a transient render exception raised before any
+R-check was uncaught -- traceback, exit 1, 0 R-checks, no FAIL
+verdict; (#2, latent silent pass, S4 form) main() already mapped a
+False render return to exit 2 (the 432nd-note crosstab exception
+class -- the live missing-shim exit was correct, code 2), but the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have fallen through the False check into "0 if static_ok and
+render_ok" and exited 0 with 0 R-checks while the render half never
+ran. Proved in-process before the fix
+(~/workspace/sp500-481/pre481_proof.py: Test A-live code=2, "INFRA:
+could not obtain d3.min.js shim", 0 R-checks; Test A2 code=0, 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The adoption restructures main() around
+run_render_with_retry with the INFRA-to-exit-2 mapping (sys.exit
+calls become returns, and the all-pass path gains the uniform "ALL N
+CHECKS PASSED" summary line this guard never printed); the
+static-only and playwright-missing branches keep the guard's
+existing SKIP-fall-through shape. render_checks() already returned
+an explicit bool on success, so no None-on-success fix was needed
+(458th note (27) checked). 41 check_*.py files still match the
+source-only grep after this adoption (40 unadopted guards + the
+contract guard's S1e string literal, which occurs twice in that
+file, so 42 matching lines); the recursive scripts/ grep adds the
+shared module's own definition (43 lines over 42 .py files) plus one
+stale __pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
+480th review (2026-11-15): check_pathfinder_toggle_aria.py adopted.
+(The 480th run recorded its note only in the adopted guard's
+docstring; restored here by the 481st run so the common history
+stays complete.) Slowest adoptable shard-3 render guard by the
+multi-run history plus the re-profile: 18.1s in-shard (479th state)
+and 11s standalone (this run) vs inline-onclick 16.1s in-shard and
+8s standalone, crosstab 16.0s in-shard and 10s standalone --
+pathfinder leads both readings, per the 469th note (68) rule that
+the evidence base is the multi-run history plus the re-profile, not
+one state reading. Pre-fix defects were BOTH 429th-review classes:
+main() ignored render_checks()'s return value entirely, so a
+missing d3 shim exited 0 with "3/3 checks passed" while the render
+half never ran (the 430th-review silent-pass variant); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-480/pre480_proof.py: Test A-live code=0, "3/3
+checks passed", 0 R-checks; Test A2 code=0; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). 42
+check_*.py files still match the source-only grep after this
+adoption (41 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 43 matching lines).
+
 479th review (2026-11-15): check_pctile_chip_combined_label.py adopted
 (slowest adoptable shard-2 render guard by the multi-run history plus
 the re-profile: 18.3s fresh in-shard (476th state) and 9.58s standalone
@@ -763,6 +825,7 @@ ADOPTERS = [
     "check_ger_keyboard.py",
     "check_pctile_chip_combined_label.py",
     "check_pathfinder_toggle_aria.py",
+    "check_network_edge_overlay.py",
 ]
 
 results = []

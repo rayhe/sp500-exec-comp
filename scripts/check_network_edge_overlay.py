@@ -35,14 +35,46 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+481st review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (and the
+now-unused tempfile import), the render half returns the INFRA
+sentinel when the shim is unavailable, and main() is restructured
+around run_render_with_retry with the INFRA-to-exit-2 mapping (its
+sys.exit calls become returns, and the all-pass path gains the uniform
+"ALL N CHECKS PASSED" summary line this guard never printed). Pre-fix
+defects: (#1, no retry wrapper) a transient render exception raised
+before any R-check was uncaught -- traceback, exit 1, 0 R-checks, no
+FAIL verdict; (#2, latent silent pass, S4 form) main() already mapped
+a False render return to exit 2 (the 432nd-note crosstab exception
+class -- the live missing-shim exit was correct, code 2), but the
+INFRA sentinel itself is truthy, so a render half returning INFRA
+would have fallen through the False check into "0 if static_ok and
+render_ok" and exited 0 with 0 R-checks while the render half never
+ran -- proved in-process before the fix
+(~/workspace/sp500-481/pre481_proof.py: Test A-live code=2, "INFRA:
+could not obtain d3.min.js shim", 0 R-checks; Test A2 code=0, 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). Slowest adoptable shard-4 render guard by the
+multi-run history plus the re-profile: median 16.9s over the last 6
+shard-4 runs (16.3s freshest state) and 19.13s standalone (this run)
+vs inline-onclick 17.2s median / 14.31s standalone and crosstab 16.4s
+median / 14.82s standalone -- network-edge leads the freshest state
+by a hair and the re-profile by a wide margin, trailing inline by
+0.3s on the 6-run median only, and takes the shard-4 slot in the
+1-2-3 rotation (478th shard 1, 479th shard 2, 480th shard 3), per the
+469th note (68) rule that the evidence base is the multi-run history
+plus the re-profile, not one state reading.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NETWORK_JS = os.path.join(REPO, "js", "network.js")
@@ -89,21 +121,6 @@ def static_checks():
     check("S5 helper keeps GER-threshold edge filter", has_ger, "")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -121,7 +138,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -185,14 +202,19 @@ def main():
     static_checks()
     static_ok = all(ok for _, ok, _ in results)
     if "--static-only" in sys.argv:
-        sys.exit(0 if static_ok else 1)
-    render_ok = render_checks()
-    if render_ok is None:
-        sys.exit(0 if static_ok else 1)
-    if render_ok is False and not any(not ok for _, ok, _ in results):
-        sys.exit(2)
-    sys.exit(0 if static_ok and render_ok else 1)
+        return 0 if static_ok else 1
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+    failed = [r for r in results if not r[1]]
+    if failed:
+        print("\n%d check(s) FAILED" % len(failed))
+        return 1
+    print("\nALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
