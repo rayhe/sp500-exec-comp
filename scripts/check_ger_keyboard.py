@@ -62,14 +62,41 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+478th review (2026-11-15): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted, the
+render half returns the INFRA sentinel when the shim is unavailable,
+and main() is restructured around run_render_with_retry with the
+INFRA-to-exit-2 mapping. Pre-fix defects were BOTH 429th-review
+classes: main() ignored render_checks()'s return value (only the
+None/SKIP branch was checked), so a missing d3 shim exited 0 with
+"ALL 8 CHECKS PASSED" while the render half never ran (the
+430th-review silent-pass variant); and the INFRA sentinel itself is
+truthy, so a render half returning INFRA would have exited 0 the same
+way (latent silent pass, S4 form); and a transient render exception
+raised before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-478/pre478_proof.py:
+Test A-live code=0, 0 R-checks; Test A2 code=0, 0 R-checks; Test B
+UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall). Slowest adoptable shard-1 render guard by the multi-run
+history plus the re-profile: 13.3s fresh in-shard (477th state) and
+83.91s standalone (this run; load-inflated vs 10.65s standalone at
+the 474th) vs yoy 11.7s fresh in-shard and 30.51s standalone this
+run -- ger leads both readings, per the 469th note (68) rule that
+the evidence base is the multi-run history plus the re-profile, not
+one state reading. The adopted main() gains the uniform
+"ALL N CHECKS PASSED" summary line, replacing the pre-fix
+"ALL n CHECKS PASSED" / SKIP-fall-through shape.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -147,21 +174,6 @@ def static_checks():
           s8, "" if s8 else "class/datum wiring missing at creation")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -179,7 +191,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -299,16 +311,30 @@ def render_checks():
 
 
 def main():
-    if "--static-only" in sys.argv:
-        static_checks()
-    else:
-        static_checks()
-        rc = render_checks()
-        if rc is None:
-            print("SKIP: render checks unavailable; static checks decide")
-    fails = [n for n, ok, _ in results if not ok]
-    if fails:
-        print("\n%d check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+    static_only = "--static-only" in sys.argv
+    static_checks()
+    if static_only:
+        failed = [n for n, ok, _ in results if not ok]
+        if failed:
+            print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
+            return 1
+        print("\nALL %d CHECKS PASSED" % len(results))
+        return 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        print("render checks infra (d3 shim unavailable)")
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [n for n, ok, _ in results if not ok]
+        if failed:
+            print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
+            return 1
+        print("\nALL %d CHECKS PASSED" % len(results))
+        return 0
+    failed = [n for n, ok, _ in results if not ok]
+    if failed or not ok:
+        print("\n%d check(s) FAILED: %s" % (len(failed), ", ".join(failed)))
         return 1
     print("\nALL %d CHECKS PASSED" % len(results))
     return 0

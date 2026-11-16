@@ -412,6 +412,38 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+478th review (2026-11-15): check_ger_keyboard.py adopted (slowest
+adoptable shard-1 render guard by the multi-run history plus the
+re-profile: 13.3s fresh in-shard (477th state) and 83.91s standalone
+(this run; load-inflated vs 10.65s standalone at the 474th) vs yoy
+11.7s fresh in-shard and 30.51s standalone this run -- ger leads
+both readings, per the 469th note (68) rule that the evidence base
+is the multi-run history plus the re-profile, not one state
+reading). Its pre-fix defects were BOTH 429th-review classes:
+(#1, no retry wrapper) a transient render exception raised before
+any R-check was uncaught -- traceback, exit 1, 0 R-checks, no FAIL
+verdict; (#2, silent pass, the 430th-review shape) main() ignored
+render_checks()'s return value (only the None/SKIP branch was
+checked), so a missing d3 shim exited 0 with "ALL 8 CHECKS PASSED"
+while the render half never ran -- and the INFRA sentinel itself is
+truthy, so a render half returning INFRA would have exited 0 the
+same way (latent silent pass, S4 form). Proved in-process before
+the fix (~/workspace/sp500-478/pre478_proof.py: Test A-live code=0,
+0 R-checks; Test A2 code=0, 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+adoption restructures main() around run_render_with_retry with the
+INFRA-to-exit-2 mapping; the adopted main() gains the uniform
+"ALL N CHECKS PASSED" summary line, replacing the pre-fix
+"ALL n CHECKS PASSED" / SKIP-fall-through shape.
+render_checks() already returned an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). 44
+check_*.py files still match the source-only grep after this
+adoption (43 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 45 matching lines);
+the recursive scripts/ grep adds the shared module's own definition
+(46 lines over 45 .py files) plus one stale __pycache__ .pyc (the
+472nd note (76) trap -- quote the source-only count going forward).
+
 477th review (2026-11-15): check_detail_peer_nav_keyboard.py adopted
 (slowest adoptable shard-3 render guard by the multi-run history
 plus the re-profile: 15.6s / 15.4s / 35.2s in-shard (0502 / 1307 /
@@ -693,6 +725,7 @@ ADOPTERS = [
     "check_roving_keyboard.py",
     "check_keyboard_pilot_extension.py",
     "check_detail_peer_nav_keyboard.py",
+    "check_ger_keyboard.py",
 ]
 
 results = []
