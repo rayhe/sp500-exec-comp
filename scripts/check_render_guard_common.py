@@ -470,6 +470,47 @@ definition (39 lines over 38 .py files) plus one stale
 __pycache__ .pyc (the 472nd note (76) trap -- quote the
 source-only count going forward).
 
+487th review (2026-11-16): check_crosstab_keyboard.py adopted
+(slowest unadopted shard-3 render guard by the multi-run history
+plus the re-profile: freshest state 15.2s (2026-11-16T13:07Z
+shard-3 run) and multi-run median 16.4s vs
+inline_onclick_keyboard 14.8s fresh / 15.5s median and
+correlation_keyboard 13.1s fresh / 13.6s median -- crosstab leads
+the freshest state, the multi-run median, and the standalone
+re-profile this run (26.01s vs inline_onclick 16.46s vs
+correlation 16.73s); inline_onclick_keyboard stays queued next
+for shard 3). Its pre-fix defects: the d3-missing path already
+exited 2 (main() mapped the False return), so that class is a
+contract-form fix only (render_checks() returned False where the
+shared contract requires the INFRA sentinel, S1h); but a missing
+playwright install exited 0 with "7/7 checks passed" while the
+render half never ran (the silent-pass variant, although the
+docstring promises exit 2); and the INFRA sentinel itself is
+truthy, so a render half returning INFRA would have exited 0 the
+same way (latent silent pass, S4 form); and a transient render
+exception raised before any R-check was uncaught (no retry
+wrapper) -- proved in-process before the fix
+(~/workspace/sp500-487/pre487_proof.py: Test A-live rc=2, 0
+R-checks; Test A2 rc=0, "7/7 checks passed", 0 R-checks; Test A3
+rc=0, "7/7 checks passed", 0 R-checks; Test B UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall). The
+proof monkeypatches get_d3_bytes to None and stubs
+sys.modules['playwright.sync_api'] to None (ImportError) rather
+than moving the d3 cache aside (no canary live concurrently this
+run; the monkeypatch touches no shared state). main() already
+returned the exit code, so no sys.exit() conversion was needed.
+The static-only and playwright-missing branches keep the guard's
+existing "----" + "%d/%d checks passed" summary format.
+render_checks() already returned an explicit bool on success, so
+no None-on-success fix was needed (458th note (27) checked). 35
+check_*.py files still match the source-only grep after this
+adoption (34 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 36 matching lines);
+the recursive scripts/ grep adds the shared module's own
+definition (37 lines over 36 .py files) plus one stale
+__pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 486th review (2026-11-16): check_median_pay_fy_label.py adopted
 (slowest unadopted shard-2 render guard by the multi-run history
 plus the re-profile: freshest state 9.0s (2026-11-16T10:32Z
@@ -1057,6 +1098,7 @@ ADOPTERS = [
     "check_sector_vocab_bridge.py",
     "check_ceocfo_chip_combined_label.py",
     "check_median_pay_fy_label.py",
+    "check_crosstab_keyboard.py",
 ]
 
 results = []
