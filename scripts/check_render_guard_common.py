@@ -412,6 +412,41 @@ fix was needed (458th note (27) checked). 48 files still match the
 grep after this adoption (46 unadopted guards + the shared module's
 own definition + the contract guard's S1e string literal).
 
+479th review (2026-11-15): check_pctile_chip_combined_label.py adopted
+(slowest adoptable shard-2 render guard by the multi-run history plus
+the re-profile: 18.3s fresh in-shard (476th state) and 9.58s standalone
+(this run) vs conc 10.4s fresh in-shard and 9.50s standalone,
+median_pay 9.1s fresh in-shard and 9.05s standalone -- pctile leads
+the freshest state and the two largest in-shard samples (29.7s vs
+19.4s at 0638, 18.3s vs 10.4s at 2246) and the re-profile by a hair,
+per the 469th note (68) rule that the evidence base is the multi-run
+history plus the re-profile, not one state reading). Its pre-fix
+defects were BOTH 429th-review classes: (#1, no retry wrapper) a
+transient render exception raised before any R-check was uncaught --
+traceback, exit 1, 0 R-checks, no FAIL verdict; (#2, exit-1 mismatch)
+main() checked render_checks()'s return value, but a missing d3 shim
+returned False, which main() folded into exit 1 (drift) although the
+docstring promises exit 2 (infra) -- and the pass line printed "6/6
+checks passed" alongside rc=1, the misleading shape the 434th/436th/
+437th/438th/442nd/472nd/474th reviews fixed; and the INFRA sentinel
+itself is truthy, so a render half returning INFRA would have exited
+0 the same way (latent silent pass, S4 form). Proved in-process
+before the fix (~/workspace/sp500-479/pre479_proof.py: Test A-live
+code=1, "6/6 checks passed", 0 R-checks; Test A2 code=0, 0 R-checks;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall). The adoption restructures main() around run_render_with_retry
+with the INFRA-to-exit-2 mapping; the static-only and
+playwright-missing branches keep the guard's existing "N/N checks
+passed" summary format. render_checks() already returns an explicit
+bool on success, so no None-on-success fix was needed (458th note
+(27) checked). 43 check_*.py files still match the source-only grep
+after this adoption (42 unadopted guards + the contract guard's S1e
+string literal, which occurs twice in that file, so 44 matching
+lines); the recursive scripts/ grep adds the shared module's own
+definition (45 lines over 44 .py files) plus one stale __pycache__
+.pyc (the 472nd note (76) trap -- quote the source-only count going
+forward).
+
 478th review (2026-11-15): check_ger_keyboard.py adopted (slowest
 adoptable shard-1 render guard by the multi-run history plus the
 re-profile: 13.3s fresh in-shard (477th state) and 83.91s standalone
@@ -726,6 +761,7 @@ ADOPTERS = [
     "check_keyboard_pilot_extension.py",
     "check_detail_peer_nav_keyboard.py",
     "check_ger_keyboard.py",
+    "check_pctile_chip_combined_label.py",
 ]
 
 results = []
