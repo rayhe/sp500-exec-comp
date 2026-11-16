@@ -470,6 +470,47 @@ definition (39 lines over 38 .py files) plus one stale
 __pycache__ .pyc (the 472nd note (76) trap -- quote the
 source-only count going forward).
 
+486th review (2026-11-16): check_median_pay_fy_label.py adopted
+(slowest unadopted shard-2 render guard by the multi-run history
+plus the re-profile: freshest state 9.0s (2026-11-16T10:32Z
+shard-2 run) and multi-run median 9.1s vs sector_trend_fy_label
+7.2s fresh / 7.9s median and composition_fy_detail 6.6s fresh /
+7.4s median -- median_pay leads the freshest state and the
+multi-run median; the standalone re-profile this run flips the
+order (composition 10.72s vs median_pay 10.01s vs sector_trend
+7.93s), but the three guards are within noise of each other
+(all-readings medians 9.1s / 7.9s / 7.4s), so the pick stands on
+the freshest pre-run state plus the multi-run median, and
+composition_fy_detail stays queued next for shard 2). Its pre-fix
+defects were BOTH 429th-review classes: main() ignored
+render_checks()'s return value, so a missing d3 shim exited 0
+with "5/5 checks passed" while the render half never ran (the
+silent-pass variant, 430th-review shape); and the INFRA sentinel
+itself is truthy, so a render half returning INFRA would have
+exited 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-486/pre486_proof.py: Test A-live rc=0, "5/5
+checks passed", 0 R-checks; Test A2 rc=0, "5/5 checks passed", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The proof monkeypatches get_d3_bytes to
+None rather than moving the d3 cache aside (no canary live
+concurrently this run; the monkeypatch touches no shared state).
+main() previously called sys.exit() directly, so the restructure
+also converts it to return the exit code. The local fetcher was
+cache-first with a curl fallback, byte-identical to the shared
+one. The static-only and playwright-missing branches keep the
+guard's existing "%d/%d checks passed" summary format.
+render_checks() already returned an explicit bool on success, so
+no None-on-success fix was needed (458th note (27) checked). 36
+check_*.py files still match the source-only grep after this
+adoption (35 unadopted guards + the contract guard's S1e string
+literal, which occurs twice in that file, so 37 matching lines);
+the recursive scripts/ grep adds the shared module's own
+definition (38 lines over 37 .py files) plus one stale
+__pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 484th review (2026-11-16): check_sector_vocab_bridge.py adopted
 (slowest adoptable shard-4 render guard by the multi-run history plus
 the re-profile: freshest state 13.1s (2026-11-16T06:38Z shard-4 run)
@@ -1015,6 +1056,7 @@ ADOPTERS = [
     "check_anomaly_keyboard.py",
     "check_sector_vocab_bridge.py",
     "check_ceocfo_chip_combined_label.py",
+    "check_median_pay_fy_label.py",
 ]
 
 results = []

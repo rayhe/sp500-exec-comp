@@ -34,6 +34,44 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+486th review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping. Pre-fix
+defects were BOTH 429th-review classes: main() ignored
+render_checks()'s return value, so a missing d3 shim exited 0 with
+"5/5 checks passed" while the render half never ran (the silent-pass
+variant, 430th-review shape); and the INFRA sentinel itself is
+truthy, so a render half returning INFRA would have exited 0 the
+same way (latent silent pass, S4 form); and a transient render
+exception raised before any R-check was uncaught (no retry wrapper)
+-- proved in-process before the fix
+(~/workspace/sp500-486/pre486_proof.py: Test A-live rc=0, "5/5
+checks passed", 0 R-checks; Test A2 rc=0, "5/5 checks passed", 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The proof monkeypatches get_d3_bytes to
+None rather than moving the d3 cache aside (no canary live
+concurrently this run; the monkeypatch touches no shared state).
+main() previously called sys.exit() directly, so the restructure
+also converts it to return the exit code. The static-only and
+playwright-missing branches keep the guard's existing "%d/%d checks
+passed" summary format. render_checks() already returns an explicit
+bool on success, so no None-on-success fix was needed (458th note
+(27) checked). Slowest unadopted shard-2 render guard by the
+multi-run history plus the re-profile: freshest state 9.0s
+(2026-11-16T10:32Z shard-2 run) and multi-run median 9.1s vs
+sector_trend_fy_label 7.2s fresh / 7.9s median and
+composition_fy_detail 6.6s fresh / 7.4s median -- median_pay leads
+the freshest state and the multi-run median; the standalone
+re-profile this run flips the order (composition 10.72s vs
+median_pay 10.01s vs sector_trend 7.93s), but the three guards are
+within noise of each other (all-readings medians 9.1s / 7.9s /
+7.4s), so the pick stands on the freshest pre-run state plus the
+multi-run median, and composition_fy_detail stays queued next for
+shard 2.
 """
 import json
 import os
@@ -41,8 +79,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -62,7 +102,11 @@ def live_primary_fy():
 
 
 def static_checks():
-    src = open(APP_JS, encoding="utf-8").read()
+    try:
+        src = open(APP_JS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read js/app.js: %s" % exc)
+        return 2
 
     # S1: helper exists and derives the label from its fiscal-year argument.
     s1 = ("function _medianPayFYLabel(fy)" in src
@@ -91,21 +135,7 @@ def static_checks():
     check("S5 setupReactiveMetrics captures primaryFY from comp.metadata",
           s5, "" if s5 else "primaryFY not captured in _sp500Metrics")
 
-
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -125,7 +155,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     expected = "S&P 500, FY%d" % live_primary_fy()
 
@@ -186,19 +216,27 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
-    fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+        failed = [r for r in results if not r[1]]
+        return 1 if failed else 0
+    failed = [r for r in results if not r[1]]
+    if failed or not ok:
+        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
