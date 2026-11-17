@@ -1200,6 +1200,7 @@ ADOPTERS = [
     "check_top10_comp_desc.py",
     "check_sector_gov_keyboard.py",
     "check_sector_comp_desc.py",
+    "check_inline_onclick_keyboard.py",
 ]
 
 results = []
