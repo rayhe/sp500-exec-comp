@@ -1202,6 +1202,7 @@ ADOPTERS = [
     "check_sector_comp_desc.py",
     "check_inline_onclick_keyboard.py",
     "check_vol_tenure_keyboard.py",
+    "check_yoy_chip_combined_label.py",
 ]
 
 results = []
