@@ -1201,6 +1201,7 @@ ADOPTERS = [
     "check_sector_gov_keyboard.py",
     "check_sector_comp_desc.py",
     "check_inline_onclick_keyboard.py",
+    "check_vol_tenure_keyboard.py",
 ]
 
 results = []

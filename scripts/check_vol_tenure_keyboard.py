@@ -74,14 +74,56 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+492nd review (2026-11-16): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping. Pre-fix
+defects: main() ignored render_checks()'s return value except the
+None case, so a missing d3 shim returned 0 with "ALL 7 CHECKS
+PASSED" while the render half never ran (the silent-pass variant,
+430th-review shape, although the docstring promises exit 2 for a
+missing shim); a missing playwright install returned 0 the same way
+(the None branch printed "SKIP: render checks unavailable; static
+checks decide" and decided on the statics alone); and the INFRA
+sentinel itself is truthy, so a render half returning INFRA would
+have returned 0 the same way (latent silent pass, S4 form); and a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-492/pre492_proof.py: Test A-live rc=0, "ALL 7
+CHECKS PASSED", 0 R-checks; Test A2 rc=0, "ALL 7 CHECKS PASSED",
+0 R-checks; Test A3 rc=0, "ALL 7 CHECKS PASSED", 0 R-checks;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall). static_checks() gains the OSError-to-return-2 path
+(488th template). The adopted main also closes the late-raise hole
+the 483rd shape leaves open: a render half returning False with no
+FAIL recorded (exception after passing R-checks) now returns 1 with
+"render half failed (see INFRA lines above)" instead of printing
+"ALL 7 CHECKS PASSED" and returning 0 -- the 489th shape, preferred
+over the 486th-488th one (see the 489th note (107)).
+render_checks() already returns an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). Slowest
+unadopted shard-4 render guard by the multi-run history plus the
+re-profile: 16 shard-4 runs: median 11.7s / max 42.5s, and 11.87s
+standalone (this run, clean, before the canary) vs
+zero_row_single_dim_badge median 12.6s / max 38.2s and 9.26s
+standalone -- vol-tenure leads the clean re-profile and the
+all-time max; zero-row's only leads are the multi-run median and
+the freshest state reading (11.5s vs 10.7s), per the 469th note (68)
+rule that the evidence base is the multi-run history plus the
+re-profile, not one state reading.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -109,8 +151,12 @@ def pilot_block(charts, sel):
 
 
 def static_checks():
-    charts = open(CHARTS_JS, encoding="utf-8").read()
-    css = open(CSS, encoding="utf-8").read()
+    try:
+        charts = open(CHARTS_JS, encoding="utf-8").read()
+        css = open(CSS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read a source file: %s" % exc)
+        return 2
 
     bar_blk = pilot_block(charts, BAR_SEL)
     check("S1 vol-tenure pilot present for .vol-tenure-bar",
@@ -164,21 +210,6 @@ def static_checks():
           r.returncode == 0, r.stderr.strip()[:300] if r.returncode else "")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -194,9 +225,9 @@ def render_checks():
         print("SKIP: render checks need playwright (pip install playwright)")
         return None
     d3 = get_d3_bytes()
-    if not d3:
+    if d3 is None:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -304,16 +335,28 @@ def render_checks():
 
 
 def main():
+    rc = static_checks()
+    if rc == 2:
+        return 2
     if "--static-only" in sys.argv:
-        static_checks()
-    else:
-        static_checks()
-        rc = render_checks()
-        if rc is None:
-            print("SKIP: render checks unavailable; static checks decide")
+        print("static-only: skipping render checks")
+        fails = [n for n, ok, _ in results if not ok]
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+            return 1
+        print("\nALL %d CHECKS PASSED" % len(results))
+        return 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    if fails:
-        print("\n%d check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("\nALL %d CHECKS PASSED" % len(results))
     return 0
