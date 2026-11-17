@@ -1208,6 +1208,7 @@ ADOPTERS = [
     "check_zero_row_single_dim_badge.py",
     "check_crosstab_chip_combined_label.py",
     "check_keyboard_scatter_dots_pilot.py",
+    "check_scatter_path_keyboard.py",
 ]
 
 results = []
