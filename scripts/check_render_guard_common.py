@@ -1199,6 +1199,7 @@ ADOPTERS = [
     "check_crosstab_keyboard.py",
     "check_top10_comp_desc.py",
     "check_sector_gov_keyboard.py",
+    "check_sector_comp_desc.py",
 ]
 
 results = []
