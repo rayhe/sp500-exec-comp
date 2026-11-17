@@ -1205,6 +1205,7 @@ ADOPTERS = [
     "check_yoy_chip_combined_label.py",
     "check_jsonld_datemodified.py",
     "check_trend_trail_keyboard.py",
+    "check_zero_row_single_dim_badge.py",
 ]
 
 results = []
