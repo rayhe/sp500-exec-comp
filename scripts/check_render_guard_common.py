@@ -1203,6 +1203,7 @@ ADOPTERS = [
     "check_inline_onclick_keyboard.py",
     "check_vol_tenure_keyboard.py",
     "check_yoy_chip_combined_label.py",
+    "check_jsonld_datemodified.py",
 ]
 
 results = []

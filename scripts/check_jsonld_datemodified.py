@@ -32,6 +32,43 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+494th review (2026-11-17): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of printing "6/6
+checks passed" and returning 0). static_checks() gains the
+OSError-to-return-2 path (488th template). Pre-fix defects, both
+429th-review classes in one guard (459th-review shape): main()
+ignored render_checks()'s return value, so a missing d3 shim
+exited 0 with "6/6 checks passed" while the render half never ran
+(the silent-pass variant, 430th-review shape, although the
+docstring promises exit 2 for a missing shim); a missing
+playwright install likewise exited 0 with "6/6 checks passed" on
+the statics alone (the silent-pass variant, although the docstring
+promises exit 2 for playwright missing); and a transient render
+exception raised before any R-check was uncaught (no retry
+wrapper) -- proved in-process before the fix
+(~/workspace/sp500-494/pre494_proof.py: Test A-live rc=0, "6/6
+checks passed", 0 R-checks; Test A2 rc=0, "6/6 checks passed",
+0 R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). Slowest unadopted shard-2 render guard by
+the multi-run history plus the re-profile: 20 shard-2 runs:
+jsonld median 6.30s / max 18.00s / mean 6.99s vs
+sector_trend_fy_label median 7.00s / max 20.30s / mean 7.58s vs
+composition_fy_detail median 6.50s / max 21.60s / mean 8.25s;
+freshest state reading jsonld 6.6s vs composition 7.0s vs
+sector_trend 7.8s; clean standalone re-profile this run jsonld
+5.78s rc=0 8/8 vs sector_trend 4.86s vs composition 4.41s -- the
+single re-profile reading inverts the order (all three within
+1.4s, load-sensitive), so the pick stands on the multi-run
+history + freshest state per the 469th note (68) rule, and matches
+the 493rd run's queued pick for shard 2.
 """
 import json
 import os
@@ -39,8 +76,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -74,9 +113,13 @@ def extract_jsonld(html):
 
 
 def static_checks():
-    src = open(APP_JS, encoding="utf-8").read()
-    html = open(INDEX_HTML, encoding="utf-8").read()
-    ymd = live_last_updated()
+    try:
+        src = open(APP_JS, encoding="utf-8").read()
+        html = open(INDEX_HTML, encoding="utf-8").read()
+        ymd = live_last_updated()
+    except OSError as exc:
+        print("INFRA: cannot read a source file: %s" % exc)
+        return 2
 
     # S1: JSON-LD parses, is a Dataset, dateModified is a valid YYYY-MM-DD.
     data, err = extract_jsonld(html)
@@ -124,21 +167,7 @@ def static_checks():
     check("S6 JSON-LD script tag carries id=\"dataset-jsonld\"",
           s6, "" if s6 else "helper lookup id missing from index.html")
 
-
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -156,9 +185,9 @@ def render_checks():
         print("SKIP: render checks need playwright (pip install playwright)")
         return None
     d3 = get_d3_bytes()
-    if not d3:
+    if d3 is None:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     ymd = live_last_updated()
     port = free_port()
@@ -209,19 +238,32 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        print("static-only: skipping render checks")
+        fails = [n for n, ok, _ in results if not ok]
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+            return 1
+        print("%d/%d checks passed" % (len(results), len(results)))
+        return 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
