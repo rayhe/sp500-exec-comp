@@ -64,14 +64,63 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+500th review (2026-11-17): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of printing "ALL 6
+CHECKS PASSED" and returning 0). static_checks() gains the
+OSError-to-return-2 path (488th template). Pre-fix defects, both
+429th-review classes in one guard: main() ignored render_checks()'s
+return value, so a missing d3 shim exited 0 with "ALL 6 CHECKS
+PASSED" while the render half never ran (the silent-pass variant,
+430th-review shape, although the docstring promises exit 2 for a
+missing shim); a missing playwright install exited 0 the same way
+(the silent-pass variant, although the docstring promises exit 2
+for playwright missing); and a transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-500/pre500_proof.py:
+Test A-live rc=0, "ALL 6 CHECKS PASSED", 0 R-checks; Test A2 rc=0,
+"ALL 6 CHECKS PASSED", 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The proof
+monkeypatches get_d3_bytes to None and stubs
+sys.modules['playwright.sync_api'] to None (ImportError) rather
+than moving the d3 cache aside (the canary shard 4 is live
+concurrently this run at proof time; the monkeypatch touches no
+shared state). The playwright-missing branch keeps its skip shape
+(rc=0 on passing statics) and the docstring's exit-2 promise for
+that branch is unchanged from the pre-fix guard, per the
+486th/487th precedent. render_checks() already returns an explicit
+bool on success (458th note (27) checked). Slowest unadopted
+shard-4 render guard by the multi-run history plus the re-profile:
+18 shard-4 runs: hist_bar median 12.2s / mean 14.6s / max 33.2s
+vs realized_note_ref median 12.1s / mean 13.9s / max 35.8s vs
+voltenure_chip_part_spans median 11.7s / mean 14.0s / max 42.1s
+vs keyboard_treemap_pilot median 11.5s / mean 15.1s / max 37.7s;
+freshest state reading tenure_chip 16.7s vs realized 14.3s vs
+peerdist 13.9s vs treemap 12.7s vs voltenure 12.5s vs hist_bar
+12.5s; the standalone re-profile this run inverts the order
+(voltenure 12.40s vs realized 16.27s vs treemap 16.33s vs
+hist_bar 20.41s) but ran under concurrent canary load, so it is
+not clean evidence -- the pick stands on the multi-run median
+lead plus the 499th run's explicit shard-4 queue, per the 469th
+note (68) rule. Shard verified with drift_canary.partition_guards
+(432nd note): hist_bar in shard 4 (57 guards).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -109,8 +158,12 @@ def pilot_block(charts, chart_id):
 
 
 def static_checks():
-    charts = open(CHARTS_JS, encoding="utf-8").read()
-    css = open(CSS, encoding="utf-8").read()
+    try:
+        charts = open(CHARTS_JS, encoding="utf-8").read()
+        css = open(CSS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read js/charts.js or css/style.css: %s" % exc)
+        return 2
 
     missing = []
     bad_sel = []
@@ -176,20 +229,7 @@ def static_checks():
     check("S6 node --check js/charts.js is green",
           r.returncode == 0, r.stderr.strip()[:300] if r.returncode else "")
 
-
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -207,9 +247,9 @@ def render_checks():
         print("SKIP: render checks need playwright (pip install playwright)")
         return None
     d3 = get_d3_bytes()
-    if not d3:
+    if d3 is None:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -334,18 +374,26 @@ def render_checks():
 
 
 def main():
+    rc = static_checks()
+    if rc == 2:
+        return 2
     if "--static-only" in sys.argv:
-        static_checks()
-    else:
-        static_checks()
-        rc = render_checks()
-        if rc is None:
-            print("SKIP: render checks unavailable; static checks decide")
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    if fails:
-        print("\n%d check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
-    print("\nALL %d CHECKS PASSED" % len(results))
+    print("%d/%d checks passed" % (len(results), len(results)))
     return 0
 
 
