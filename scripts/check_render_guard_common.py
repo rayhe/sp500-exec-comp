@@ -1207,6 +1207,7 @@ ADOPTERS = [
     "check_trend_trail_keyboard.py",
     "check_zero_row_single_dim_badge.py",
     "check_crosstab_chip_combined_label.py",
+    "check_keyboard_scatter_dots_pilot.py",
 ]
 
 results = []
