@@ -48,7 +48,11 @@ Checks:
         broken or site down)
      F4 transport failure (timeout, DNS, connection reset, proxy error)
         -> exit 2 INFRA advisory, non-blocking (the egress proxy flakes;
-        wedging a commit over a proxy hiccup is the wrong trade)
+        wedging a commit over a proxy hiccup is the wrong trade). A
+        mid-body IncompleteRead retries the fetch once first (491st
+        review -- the egress proxy truncates the 3.9MB body; a second
+        truncation still exits 2 INFRA, so a genuinely broken deploy
+        is not masked).
 
 Usage:
   scripts/check_live_deploy_currency.py                 # full mode
@@ -73,8 +77,18 @@ History:
     404 from server -> rc=1 FAIL; connection refused -> rc=2 INFRA;
     --static-only on the real tree -> rc=0 with the canary-only SKIP;
     --static-only with missing --local file -> rc=1 FAIL.
+  2026-11-16 21:00 - retry once on IncompleteRead (491st review): the
+    live 3.9MB body truncated mid-read through the egress proxy on
+    three consecutive canary runs (489th: 229,376 bytes read of
+    3,874,207 expected; 490th: 48,433 bytes; 491st shard-3 state still
+    carrying the 489th entry) -- the guard exited 2 INFRA every time
+    with zero FAILs, so the canary's overall stayed INFRA on an
+    advisory flake. full_mode() now retries the fetch once on that
+    specific failure; a second truncation still exits 2, HTTP errors
+    still FAIL without retry, and a hash mismatch still FAILs.
 """
 import hashlib
+import http.client
 import json
 import os
 import sys
@@ -173,19 +187,36 @@ def full_mode(local_path, live_url):
     # non-blocking): the egress proxy flakes and wedging a canary over a
     # proxy hiccup is the wrong trade. Clean HTTP errors are FAIL: the
     # origin answered and the deploy is broken or the site is down.
+    # 491st review: the 3.9MB body truncates mid-read through the egress
+    # proxy (IncompleteRead, three consecutive canary runs) -- retry the
+    # fetch once on that specific failure; a second truncation still
+    # exits 2 INFRA, and a hash mismatch still FAILs, so a genuinely
+    # broken deploy is not masked. Other transport errors do not retry:
+    # only the truncation class has evidence behind it.
     req = urllib.request.Request(live_url, headers={"User-Agent": "Kit/1.0"})
-    try:
-        with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
-            status = resp.status
-            live_bytes = resp.read()
-    except urllib.error.HTTPError as e:
-        print("FAIL: live-deploy-currency - live fetch HTTP %s (%s); "
-              "deploy broken or site down" % (e.code, live_url))
-        return 1
-    except Exception as e:  # URLError, TimeoutError, socket/OSError, proxy errors
-        print("INFRA: live-deploy-currency - could not reach %s: %s "
-              "(advisory only; egress/proxy flake suspected)" % (live_url, e))
-        return 2
+    live_bytes = None
+    for attempt in (1, 2):
+        try:
+            with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+                status = resp.status
+                live_bytes = resp.read()
+            break
+        except urllib.error.HTTPError as e:
+            print("FAIL: live-deploy-currency - live fetch HTTP %s (%s); "
+                  "deploy broken or site down" % (e.code, live_url))
+            return 1
+        except http.client.IncompleteRead as e:
+            if attempt == 2:
+                print("INFRA: live-deploy-currency - could not reach %s: %s "
+                      "(advisory only; egress/proxy flake suspected)"
+                      % (live_url, e))
+                return 2
+            print("INFRA: live-deploy-currency - IncompleteRead on attempt 1 "
+                  "(%s); retrying the live fetch once" % e)
+        except Exception as e:  # URLError, TimeoutError, socket/OSError, proxy errors
+            print("INFRA: live-deploy-currency - could not reach %s: %s "
+                  "(advisory only; egress/proxy flake suspected)" % (live_url, e))
+            return 2
 
     live_hash = hashlib.sha256(live_bytes).hexdigest()
     if live_hash == local_hash:
