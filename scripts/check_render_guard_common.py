@@ -1219,6 +1219,7 @@ ADOPTERS = [
     "check_correlation_keyboard.py",
     "check_voltenure_chip_part_spans.py",
     "check_tenure_chip_combined_label.py",
+    "check_gender_bar_keyboard.py",
 ]
 
 results = []
