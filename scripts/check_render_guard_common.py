@@ -1220,6 +1220,7 @@ ADOPTERS = [
     "check_voltenure_chip_part_spans.py",
     "check_tenure_chip_combined_label.py",
     "check_gender_bar_keyboard.py",
+    "check_conc_filter_label.py",
 ]
 
 results = []

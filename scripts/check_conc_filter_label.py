@@ -72,14 +72,64 @@ and contains the literal "--static-only" in sys.argv.
 
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
+
+511th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of printing the
+misleading "%d/%d checks passed" line alongside rc=1). Pre-fix
+defects, both 429th-review classes in one guard: a missing d3 shim
+made render_checks() return False, which main() folded into exit 1
+(drift) although the docstring promises exit 2 for a missing shim --
+and printed "7/7 checks passed" while the render half never ran
+(434th class); a transient render exception raised before any
+R-check was uncaught (no retry wrapper) -- proved in-process before
+the fix (~/workspace/sp500-511/pre511_proof.py: Test A rc=1, "7/7
+checks passed", 0 R-checks; Test A2 rc=0 skip-on-statics; Test B
+UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall), and corroborated live by this guard itself FAILing the
+2026-11-18T14:34Z shard-4 canary with exit 1 and 0 R-checks (48.0s),
+then PASSing standalone minutes later and PASSing the 17:07Z
+shard-4 re-baseline at 19.1s -- the transient-stall class, no retry
+wrapper to absorb it. The proof monkeypatches get_d3_bytes to None
+and stubs sys.modules['playwright.sync_api'] to None (ImportError)
+rather than moving the d3 cache aside (the monkeypatch touches no
+shared state). There is no Test A3: the pre-fix guard has no INFRA
+sentinel at all, so no truthy-sentinel form applies (unlike the
+505th guard's latent S4 form). The playwright-missing branch keeps
+its skip shape (rc=0 on passing statics) and the docstring's exit-2
+promise for that branch is unchanged from the pre-fix guard, per
+the 486th/487th precedent. render_checks() already returns an
+explicit bool on success (458th note (27) checked). Slowest
+unadopted render guard by all three readings this run: freshest
+in-canary 19.1s vs keyboard_treemap_pilot 18.1s in the
+2026-11-18T17:07Z shard-4 run (canary_20261118_1707_shard4of4.log),
+3-run median 19.1s vs 18.1s (06:32Z / 14:34Z-artifact / 17:07Z),
+and the fresh standalone re-profile this run 12.08s vs 10.43s --
+resolving the 510th note (170) split, where freshest+median favored
+conc but the 510th re-profile favored treemap (10.21s vs 9.49s);
+the fresh re-profile flips to conc, so the pick rests on the
+freshest in-canary time plus the median plus the re-profile, per
+the 469th note (68) rule that the evidence base is the multi-run
+history plus the re-profile, not one state reading. Shard verified
+with drift_canary._guard_shard (432nd note): conc_filter_label in
+shard 4 (with the full check_ name; see note (157) for the bare-name
+trap and note (161) for the .py-suffix trap).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -197,21 +247,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -229,7 +264,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -321,14 +356,17 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
     if ok is None:
         print("render checks skipped")
-        failed = [r for r in results if not r[1]]
-        return 1 if failed else 0
-    failed = [r for r in results if not r[1]]
-    if failed or not ok:
-        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("%d/%d checks passed" % (len(results), len(results)))
     return 0
