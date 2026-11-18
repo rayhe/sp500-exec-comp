@@ -1218,6 +1218,7 @@ ADOPTERS = [
     "check_composition_fy_detail.py",
     "check_correlation_keyboard.py",
     "check_voltenure_chip_part_spans.py",
+    "check_tenure_chip_combined_label.py",
 ]
 
 results = []
