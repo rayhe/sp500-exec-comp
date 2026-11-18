@@ -1210,6 +1210,7 @@ ADOPTERS = [
     "check_keyboard_scatter_dots_pilot.py",
     "check_scatter_path_keyboard.py",
     "check_hist_bar_keyboard.py",
+    "check_sop_chip_combined_label.py",
 ]
 
 results = []
