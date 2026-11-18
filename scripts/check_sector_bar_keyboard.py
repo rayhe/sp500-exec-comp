@@ -37,14 +37,60 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+503rd review (2026-11-17): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of exiting 0 with no
+R-checks at all), and gains the "%d/%d checks passed" summary line
+this guard never printed. static_checks() gains the
+OSError-to-return-2 path (488th template). Pre-fix defects, both
+429th-review classes in one guard: a missing d3 shim made
+render_checks() return False, which main() ignored entirely, so it
+exited 0 (the silent-pass variant, 430th shape, although the
+docstring promises exit 2 for a missing shim) -- and printed no
+summary line at all while the render half never ran; a missing
+playwright install exited 0 the same way (the silent-pass variant,
+although the docstring promises exit 2 for playwright missing);
+and a transient render exception raised before any R-check was
+uncaught (no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-503/pre503_proof.py: Test A-live rc=0,
+0 R-checks; Test A2 rc=0, 0 R-checks; Test B UNCATCHED RuntimeError
+on a simulated transient Chromium launch stall). The proof
+monkeypatches get_d3_bytes to None and stubs
+sys.modules['playwright.sync_api'] to None (ImportError) rather
+than moving the d3 cache aside (the monkeypatch touches no shared
+state). The playwright-missing branch keeps its skip shape (rc=0
+on passing statics) and the docstring's exit-2 promise for that
+branch is unchanged from the pre-fix guard, per the 486th/487th
+precedent. render_checks() already returns an explicit bool on
+success (458th note (27) checked). Slowest unadopted shard-3
+render guard by the multi-run history plus a clean standalone
+re-profile before the canary (501st note (152) rule): sector_bar
+median 13.9s / mean 15.2s / max 29.3s over 10 shard-3 runs
+(Nov 15-17), freshest 11.9s, 9.38s standalone this run vs
+correlation_keyboard median 13.6s / freshest 9.3s / 11.42s
+standalone and summary_bar_keyboard median 13.1s / freshest 11.4s
+/ 9.49s standalone -- the pick stands on the median lead plus the
+freshest-state lead, per the 469th note (68) rule; correlation
+leads only the standalone re-profile, within noise. Shard verified
+with drift_canary._guard_shard (432nd note): sector_bar in shard 3
+(61 guards).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
@@ -68,9 +114,13 @@ def bar_join_block():
 
 
 def static_checks():
-    charts = open(CHARTS_JS, encoding="utf-8").read()
-    css = open(CSS, encoding="utf-8").read()
-    block = bar_join_block()
+    try:
+        charts = open(CHARTS_JS, encoding="utf-8").read()
+        css = open(CSS, encoding="utf-8").read()
+        block = bar_join_block()
+    except OSError as exc:
+        print("INFRA: cannot read guard inputs: %s" % exc)
+        return 2
 
     s1 = (block is not None
           and ".attr('tabindex', '0')" in block
@@ -101,21 +151,6 @@ def static_checks():
           s4, "" if s4 else "innerHTML found in the .bar join block")
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -131,9 +166,9 @@ def render_checks():
         print("SKIP: render checks need playwright (pip install playwright)")
         return None
     d3 = get_d3_bytes()
-    if not d3:
+    if d3 is None:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -206,17 +241,27 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if static_only:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":

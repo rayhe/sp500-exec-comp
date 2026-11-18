@@ -1212,6 +1212,7 @@ ADOPTERS = [
     "check_hist_bar_keyboard.py",
     "check_sop_chip_combined_label.py",
     "check_sector_trend_fy_label.py",
+    "check_sector_bar_keyboard.py",
 ]
 
 results = []
