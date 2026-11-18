@@ -1221,6 +1221,7 @@ ADOPTERS = [
     "check_tenure_chip_combined_label.py",
     "check_gender_bar_keyboard.py",
     "check_conc_filter_label.py",
+    "check_keyboard_treemap_pilot.py",
 ]
 
 results = []

@@ -52,14 +52,57 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+512th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects, both 429th-review classes in one guard: a missing d3
+shim made render_checks() return False, which main() folded into the
+statics bad-list -- empty, because the statics pass -- so the guard
+exited 0 (silent pass) although the docstring promises exit 2 for a
+missing shim, and the render half never ran; this guard prints no
+summary line at all pre-fix, so unlike the conc guard's "7/7 checks
+passed" alongside rc=1 (511th), the pass here is fully silent (the
+483rd-shape silent-pass form). A transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-512/pre512_proof.py:
+Test A rc=0, INFRA line, 0 R-checks; Test A2 rc=0 skip-on-statics;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall). No live corroboration claimed for this guard: no
+treemap canary failure is on record this cycle (unlike conc, 511th).
+The playwright-missing branch keeps its skip shape (rc=0 on passing
+statics) and the docstring's exit-2 promise for that branch is
+unchanged from the pre-fix guard, per the 486th/487th precedent.
+render_checks() already returns an explicit bool on success (458th
+note (27) checked). Slowest unadopted render guard by all three
+readings this run: freshest in-canary 18.1s vs header_subtitle_fy
+17.2s in the 2026-11-18T17:07Z shard-4 run
+(canary_20261118_1707_shard4of4.log), 3-run median 18.1s vs 17.2s
+(06:32Z 10.3s / 14:34Z 34.7s / 17:07Z 18.1s for treemap; 6.7s /
+65.5s FAIL artifact / 17.2s for header), and the fresh standalone
+re-profile this run 16.55s vs 8.52s -- all three readings agree on
+treemap, so the pick is clean per the 469th note (68) rule that the
+evidence base is the multi-run history plus the re-profile, not one
+state reading. Shard verified with drift_canary._guard_shard
+(432nd note): keyboard_treemap_pilot in shard 4 (with the full
+check_ name; see note (157) for the bare-name trap and note (161)
+for the .py-suffix trap).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
@@ -83,8 +126,16 @@ def leaf_block(charts):
 
 
 def static_checks():
-    charts = open(CHARTS_JS, encoding="utf-8").read()
-    css = open(CSS, encoding="utf-8").read()
+    try:
+        charts = open(CHARTS_JS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read js/charts.js: %s" % exc)
+        return 2
+    try:
+        css = open(CSS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read css/style.css: %s" % exc)
+        return 2
     block = leaf_block(charts)
 
     s1 = (block is not None
@@ -131,21 +182,7 @@ def static_checks():
     s5 = (block is not None and "innerHTML" not in block)
     check("S5 keyboard additions are attribute-bound (no innerHTML)",
           s5, "" if s5 else "innerHTML found in the treemap-leaf block")
-
-
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -165,7 +202,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -284,17 +321,27 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if static_only:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
