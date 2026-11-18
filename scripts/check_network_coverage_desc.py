@@ -32,6 +32,60 @@ Usage:
 Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 (playwright missing, d3 shim unavailable, server would not start).
 
+505th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of exiting 0 with no
+R-checks at all). static_checks() gains the OSError-to-return-2
+path (488th template), covering the network.js / index.html reads
+and the live_coverage() data reads. Pre-fix defects, both
+429th-review classes in one guard: a missing d3 shim made
+render_checks() return False, which main() ignored entirely, so it
+exited 0 (the silent-pass variant, 430th shape, although the
+docstring promises exit 2 for a missing shim) -- and printed
+"5/5 checks passed" while the render half never ran; a missing
+playwright install exited 0 the same way (the silent-pass variant,
+although the docstring promises exit 2 for playwright missing);
+and the INFRA sentinel itself is truthy, so a render half
+returning INFRA would have exited 0 the same way (latent silent
+pass, S4 form); and a transient render exception raised before
+any R-check was uncaught (no retry wrapper) -- proved in-process
+before the fix (~/workspace/sp500-505/pre505_proof.py: Test A-live
+rc=0, 0 R-checks; Test A2 rc=0, 0 R-checks; Test A3 rc=0, 0
+R-checks; Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall). The proof monkeypatches get_d3_bytes to
+None and stubs sys.modules['playwright.sync_api'] to None
+(ImportError) rather than moving the d3 cache aside (the shard-1
+canary is live concurrently; the monkeypatch touches no shared
+state). The playwright-missing branch keeps its skip shape (rc=0
+on passing statics) and the docstring's exit-2 promise for that
+branch is unchanged from the pre-fix guard, per the 486th/487th
+precedent. render_checks() already returns an explicit bool on
+success (458th note (27) checked). Sole unadopted shard-1 render
+guard by the canary's exact shard function, so no slowest-guard
+comparison applies; the multi-run history plus the standalone
+re-profile this run (500th note (152) rule): network_coverage
+median 7.7s / mean 9.8s / max 26.0s over the last 20 shard-1 runs,
+freshest 4.7s, 18.73s standalone under the live canary's load
+(inflated; used only as a relative check, per the 485th
+precedent). Shard verified with drift_canary._guard_shard (432nd
+note): network_coverage_desc in shard 1 (with the full check_
+name). The shard-1 canary for this review was re-launched after
+the first attempt was killed by a runtime restart at ~3m45s with
+no state written; the re-baseline is the completed re-run against
+d7592fc. 17 check_*.py files still match the source-only grep
+after this adoption (16 unadopted guards + the contract guard's
+S1e string literal, which occurs twice in that file, so 18
+matching lines); the recursive scripts/ grep adds the shared
+module's own definition (19 lines over 18 .py files) plus one
+stale __pycache__ .pyc (the 472nd note (76) trap -- quote the
+source-only count going forward).
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 """
@@ -41,8 +95,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NETWORK_JS = os.path.join(REPO, "js", "network.js")
@@ -68,9 +124,13 @@ def live_coverage():
 
 
 def static_checks():
-    src = open(NETWORK_JS, encoding="utf-8").read()
-    html = open(INDEX_HTML, encoding="utf-8").read()
-    total, covered, uncovered = live_coverage()
+    try:
+        src = open(NETWORK_JS, encoding="utf-8").read()
+        html = open(INDEX_HTML, encoding="utf-8").read()
+        total, covered, uncovered = live_coverage()
+    except OSError as exc:
+        print("INFRA: cannot read guard inputs: %s" % exc)
+        return 2
 
     # S1: helper exists and derives covered/total from the node list + comp lookup.
     s1 = ("function renderNetworkCoverage()" in src
@@ -113,22 +173,6 @@ def static_checks():
           s5, "" if s5 else "stale hard-coded coverage clause still present")
 
 
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -144,9 +188,9 @@ def render_checks():
         print("SKIP: render checks need playwright (pip install playwright)")
         return None
     d3 = get_d3_bytes()
-    if not d3:
+    if d3 is None:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     total, covered, uncovered = live_coverage()
     # Mirror the JS join contract: "a, b, and c" for 3+, "a and b" for 2.
@@ -205,19 +249,28 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

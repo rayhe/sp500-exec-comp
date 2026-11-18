@@ -1214,6 +1214,7 @@ ADOPTERS = [
     "check_sector_trend_fy_label.py",
     "check_sector_bar_keyboard.py",
     "check_realized_note_ref.py",
+    "check_network_coverage_desc.py",
 ]
 
 results = []
