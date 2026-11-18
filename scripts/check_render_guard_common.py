@@ -1215,6 +1215,7 @@ ADOPTERS = [
     "check_sector_bar_keyboard.py",
     "check_realized_note_ref.py",
     "check_network_coverage_desc.py",
+    "check_composition_fy_detail.py",
 ]
 
 results = []
