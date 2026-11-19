@@ -1224,6 +1224,7 @@ ADOPTERS = [
     "check_keyboard_treemap_pilot.py",
     "check_header_subtitle_fy.py",
     "check_vol_sector_keyboard.py",
+    "check_summary_bar_keyboard.py",
 ]
 
 results = []
