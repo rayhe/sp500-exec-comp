@@ -63,14 +63,44 @@ and contains the literal "--static-only" in sys.argv.
 
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
+
+517th review (2026-11-19): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects, both 429th-review classes in one guard: a missing d3
+shim made render_checks() return False, which main() folded into
+exit 1 (drift) although the docstring promises exit 2 (infra) --
+proved in-process before the fix (~/workspace/sp500-517/
+pre517_proof.py: Test A rc=1, "6/6 checks passed", 0 R-checks); and
+a transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix (Test B
+UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall, Popen calls=1). The playwright-missing branch keeps its skip
+shape (rc=0 on passing statics) -- Test A2 control, unchanged.
+Slowest unadopted render guard by the controlled reading this run:
+fresh standalone re-profile 11.99s vs metric_spark_labels 8.07s
+(next). The freshest in-canary readings split: 8.4s in the
+2026-11-19T09:00Z shard-4 run vs network_orphan_desc 9.8s in the
+same run -- but that guard was 4.8s in the 2026-11-19T01:06Z shard-4
+run and 5.32s standalone this run, so the 9.8s is a single noisy
+reading under canary load; peerdist was also the slowest in-canary
+in the prior run (7.4s vs network_orphan_desc 4.8s).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -165,21 +195,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -197,7 +212,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -298,16 +313,19 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
     if ok is None:
         print("render checks skipped")
-        failed = [r for r in results if not r[1]]
-        return 1 if failed else 0
-    failed = [r for r in results if not r[1]]
-    if failed or not ok:
-        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
-    print("%d/%d checks passed" % (len(results), len(results)))
+    print("ALL %d CHECKS PASSED" % len(results))
     return 0
 
 

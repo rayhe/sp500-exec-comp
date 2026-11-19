@@ -1226,6 +1226,7 @@ ADOPTERS = [
     "check_vol_sector_keyboard.py",
     "check_summary_bar_keyboard.py",
     "check_voltenure_badge_prefix.py",
+    "check_peerdist_chip_combined_label.py",
 ]
 
 results = []
