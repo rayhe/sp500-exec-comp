@@ -560,6 +560,41 @@ definition (36 lines over 35 .py files) plus one stale
 __pycache__ .pyc (the 472nd note (76) trap -- quote the
 source-only count going forward).
 
+522nd review (2026-11-19): the retry-only adoption form lands
+for the d3-aborting class (486th note (102)): guards whose render
+half aborts every d3 request with pg.route instead of fetching a
+shim never carried a local fetcher and have no honest INFRA site,
+so the full adoption form (S1d-S1h + S4) cannot apply to them.
+The contract gains RETRY_ONLY_ADOPTERS with S1r/S4r variants:
+S1r1 the single-helper import line, S1r2 no local fetcher, S1r3
+the wrapper call in main, S1r4 the late-raise "render half
+failed" branch, S1r5 the d3-abort route as the reason no INFRA
+site exists, S1r6 the absence of any INFRA-return site and any
+INFRA branch; S4r1 a transient raise retries once then exits 1
+with the synthetic FAIL, S4r2 a False render with no FAIL
+recorded exits 1 with "render half failed", S4r3 a late raise
+after an R-check exits 1 with no retry and no traceback, S4r4 a
+None render (playwright missing) skips at exit 0. The S4r
+harness clears the module results list before each of its four
+main() calls on the one module object -- without the clear, the
+S4r1 synthetic FAIL would leak into S4r2-S4r4 and the late-raise
+branch would never print (the 522nd run caught this in review
+before running the guard: the first S4r draft had no clears).
+First retry-only adopter: check_combined_chip_sector_prefix.py,
+slowest of the class at 20.7s in the 2026-11-19T18:35Z shard-4
+run (pre-fix form) vs payband_chip_survival 16.5s,
+board_chip_survival 15.9s, d3_outage_table_filters 15.1s,
+sop_combined_badge 14.7s, board_combined_badge 12.0s. Contract
+guard now runs 519 checks (509 at the 521st + 6 S1r + 4 S4r).
+The full-adopter count stays 84; the retry-only list starts at
+1, with five d3-aborting guards remaining
+(payband_chip_survival, sop_combined_badge, board_combined_badge,
+board_chip_survival, d3_outage_table_filters). The S1e string
+literal now occurs three times in this file (S1b, S1e, S1r2) --
+the 472nd note (76) trap, updated: quote the source-only
+definition count (zero local fetchers remain anywhere), never
+the grep line count.
+
 489th review (2026-11-16): check_sector_gov_keyboard.py adopted
 (slowest unadopted shard-1 render guard by the multi-run history
 plus the re-profile: freshest state 24.9s (2026-11-16T17:00Z
@@ -1233,6 +1268,16 @@ ADOPTERS = [
     "check_role_comp_desc.py",
 ]
 
+# Retry-only adopters (522nd review): guards whose render half
+# aborts every d3 request instead of fetching a shim (the
+# d3-aborting class, 486th note (102)). They import only
+# run_render_with_retry -- no shim import, no INFRA name, no
+# INFRA-return site -- and are pinned by the S1r/S4r variants
+# below instead of S1d-S1h + S4.
+RETRY_ONLY_ADOPTERS = [
+    "check_combined_chip_sector_prefix.py",
+]
+
 results = []
 
 
@@ -1285,6 +1330,35 @@ def s1_adoption_static():
             ok = "def _render_with_retry(" not in gsrc
             check("S1i badge guard defines no local _render_with_retry", ok,
                   "" if ok else "badge guard still carries a local _render_with_retry")
+    for name in RETRY_ONLY_ADOPTERS:
+        path = os.path.join(SCRIPTS, name)
+        try:
+            gsrc = open(path, encoding="utf-8").read()
+        except OSError as exc:
+            print("INFRA: cannot read %s: %s" % (name, exc))
+            return None
+        short = name[:-3]
+        ok = ("from render_guard_common import run_render_with_retry"
+              in gsrc)
+        check("S1r1 %s imports run_render_with_retry alone (retry-only form)"
+              % short, ok,
+              "" if ok else "%s does not import the shared retry helper" % name)
+        ok = "def get_d3_bytes(" not in gsrc
+        check("S1r2 %s defines no local get_d3_bytes" % short, ok,
+              "" if ok else "%s carries a local get_d3_bytes" % name)
+        ok = "run_render_with_retry(render_checks, results, check)" in gsrc
+        check("S1r3 %s calls run_render_with_retry in main" % short, ok,
+              "" if ok else "%s main() does not use the shared retry" % name)
+        ok = "render half failed" in gsrc
+        check("S1r4 %s has the late-raise 'render half failed' branch" % short, ok,
+              "" if ok else "%s main() has no late-raise branch" % name)
+        ok = '"**/d3' in gsrc and "abort()" in gsrc
+        check("S1r5 %s aborts d3 requests (the reason no INFRA site exists)"
+              % short, ok,
+              "" if ok else "%s has no d3-abort route" % name)
+        ok = "return INFRA" not in gsrc and "if ok is INFRA:" not in gsrc
+        check("S1r6 %s has no INFRA-return site and no INFRA branch" % short, ok,
+              "" if ok else "%s fakes an INFRA site" % name)
     return all(r[1] for r in results if r[0].startswith("S1"))
 
 
@@ -1411,6 +1485,105 @@ def s4_infra_exit_mapping():
     return all(r[1] for r in results if r[0].startswith("S4"))
 
 
+def s4_retry_only_exit_mapping():
+    for name in RETRY_ONLY_ADOPTERS:
+        short = name[:-3]
+        path = os.path.join(SCRIPTS, name)
+        spec = importlib.util.spec_from_file_location("sp500_" + short, path)
+        mod = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(mod)
+        except Exception as exc:  # noqa: BLE001 - import failure is a guard input
+            check("S4r %s imports for the retry-only harness" % short, False,
+                  "%s: %s" % (type(exc).__name__, exc))
+            continue
+        if hasattr(mod, "INFRA"):
+            check("S4r %s imports no INFRA (retry-only adoption)" % short, False,
+                  "%s has an INFRA name" % name)
+            continue
+        old_argv = sys.argv
+        # S4r1: a transient raise on both attempts -> rc 1, one
+        # synthetic FAIL, no traceback.
+        calls = {"n": 0}
+
+        def always_raise():
+            calls["n"] += 1
+            raise RuntimeError("boom")
+
+        mod.render_checks = always_raise
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4r1 %s transient raise retries once then rc 1 with synthetic FAIL"
+              % short,
+              rc == 1 and calls["n"] == 2
+              and "R1 render half raised on both attempts" in out
+              and "Traceback" not in out,
+              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        # S4r2: render False with no FAIL recorded -> rc 1 with the
+        # late-raise line, no pass line.
+        mod.render_checks = lambda: False
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4r2 %s render False with no FAIL returns 1, 'render half failed', "
+              "no pass line" % short,
+              rc == 1 and "render half failed" in out
+              and "CHECKS PASSED" not in out,
+              "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
+        # S4r3: a late raise after a passing R-check -> rc 1, no
+        # retry, the late-raise line, no traceback, no pass line.
+        calls = {"n": 0}
+
+        def late_raise():
+            calls["n"] += 1
+            mod.check("R1 late-raise probe", True)
+            raise RuntimeError("boom")
+
+        mod.render_checks = late_raise
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4r3 %s late raise after an R-check returns 1, no retry, "
+              "'render half failed'" % short,
+              rc == 1 and calls["n"] == 1 and "render half failed" in out
+              and "Traceback" not in out and "CHECKS PASSED" not in out,
+              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        # S4r4: render None (playwright missing) -> rc 0 skip.
+        mod.render_checks = lambda: None
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4r4 %s render None skips at rc 0" % short,
+              rc == 0 and "render checks skipped" in out,
+              "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
+    return all(r[1] for r in results if r[0].startswith("S4r"))
+
+
 def main():
     # Pure-Python guard: identical checks in both modes. The literal
     # "--static-only" in sys.argv below is the hook-discovery opt-in
@@ -1422,6 +1595,7 @@ def main():
     s2 = s2_retry_harness()
     s3 = s3_d3_bytes()
     s4 = s4_infra_exit_mapping()
+    s4r = s4_retry_only_exit_mapping()
     failed = [r for r in results if not r[1]]
     print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
     return 1 if failed else 0

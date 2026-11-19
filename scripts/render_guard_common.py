@@ -153,6 +153,14 @@ Contract for adopters:
     `if ok is INFRA: return 2` before the None (skip) / False (fail)
     handling. INFRA is a module-level singleton: compare with `is`.
 
+Retry-only adopters (522nd review): a guard whose render half
+aborts every d3 request (the d3-aborting class) has no shim to
+fetch and no honest INFRA site, so it imports run_render_with_retry
+alone, has no INFRA branch and no INFRA-return site, and keeps the
+493rd shape otherwise (including the late-raise "render half
+failed" branch). The S1r/S4r variants pinning this form live in
+check_render_guard_common.py (RETRY_ONLY_ADOPTERS).
+
 This module is NOT a guard (not named check_*.py), so the pre-commit
 hook does not run it directly; it is covered by
 scripts/check_render_guard_common.py (static + harness, no browser).
