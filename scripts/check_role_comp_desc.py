@@ -31,6 +31,42 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+521st review (2026-11-19): adopts the shared render helpers
+(render_guard_common) -- the LAST unadopted render guard: the local
+d3-shim fetcher is deleted (it was cache-first with a curl fallback,
+byte-identical to the shared one), the render half returns the INFRA
+sentinel when the shim is unavailable, and main() is restructured
+around run_render_with_retry with the INFRA-to-exit-2 mapping, in
+the 493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects: this guard's class is the SILENT-PASS variant --
+main() captured render_checks()'s return value but only tested the
+None case (the playwright-missing skip), so a missing d3 shim made
+render_checks() return False, which main() ignored and exited 0 with
+"5/5 checks passed" on the 5 static checks alone although the
+docstring promises exit 2 (infra) -- proved in-process before the
+fix (~/workspace/sp500-521/pre521_proof.py: Test A rc=0, 0 R-checks,
+INFRA line present, tail "5/5 checks passed"); and a transient render
+exception raised before any R-check was uncaught (no retry wrapper)
+-- proved in-process before the fix (Test B UNCATCHED RuntimeError on
+a simulated transient Chromium launch stall, Popen calls=1). The
+playwright-missing branch keeps its skip shape (rc=0 on passing
+statics) -- Test A2 control, unchanged. main() previously sys.exit()'d
+directly, so the contract guard's S4 harness (which observes the
+returned rc) could not have run this guard at all; the restructure
+to return ints fixes that too. The adoption also adds the "ALL N
+CHECKS PASSED" / "FAILED: ..." summary lines this guard never
+printed (488th precedent). render_checks() already returns an
+explicit bool on success, so no None-on-success fix was needed
+(458th note (27) checked). After this adoption, no check_*.py file
+carries a local d3-shim fetcher: only the contract guard's S1e
+string literal and the shared module's own definition remain (the
+472nd note (76) trap -- quote the source-only count going forward).
+The adoption campaign is complete at 84 adopters; the next reviews
+need a new improvement class -- the retry-wrapper extension
+candidate and the d3-aborting class carried from the 516th list.
 """
 import json
 import os
@@ -38,8 +74,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -105,22 +143,6 @@ def static_checks():
           s5, "" if s5 else "duplicate or id-less sentence present")
 
 
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -138,7 +160,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     rows, n = live_counts()
     expected = ("S&P 500 median total compensation by executive role \u2014 "
@@ -193,17 +215,24 @@ def render_checks():
 def main():
     static_only = "--static-only" in sys.argv
     static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
+    if static_only:
+        bad = [n for n, ok, _ in results if not ok]
+        return 1 if bad else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("ALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

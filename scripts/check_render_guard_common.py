@@ -1230,6 +1230,7 @@ ADOPTERS = [
     "check_metric_spark_labels.py",
     "check_network_orphan_desc.py",
     "check_sector_median_fy_key.py",
+    "check_role_comp_desc.py",
 ]
 
 results = []
