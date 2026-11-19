@@ -59,6 +59,48 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+520th review (2026-11-19): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects: this guard's class is the SILENT-PASS variant --
+main() captured render_checks()'s return value but only tested the
+None case (the playwright-missing skip), so a missing d3 shim made
+render_checks() return False, which main() ignored and exited 0 on
+the 5 static checks alone although the docstring promises exit 2
+(infra) -- proved in-process before the fix
+(~/workspace/sp500-520/pre520_proof.py: Test A rc=0, 0 R-checks,
+INFRA line present as the last output line, this guard printing no
+summary line); and a transient render exception raised before any
+R-check was uncaught (no retry wrapper) -- proved in-process before
+the fix (Test B UNCATCHED RuntimeError on a simulated transient
+Chromium launch stall, Popen calls=1). The playwright-missing branch
+keeps its skip shape (rc=0 on passing statics) -- Test A2 control,
+unchanged. Slowest remaining unadopted render guard by the
+controlled readings: the 519th two-sample standalone averages
+(sector_median_fy_key 8.92s vs role_comp_desc 7.26s) and this run's
+clean sample-2 re-profile (sector 15.50s vs role 13.73s; sample 1
+sector 45.01s is a load outlier -- the VM service restarted
+mid-run, and the 519th note warned the same way about load
+artifacts); freshest in-canary agrees on the order (sector 6.2s vs
+role 4.7s in the 2026-11-19T06:31Z shard-3 run, per the 519th
+note). The adoption also adds the "ALL N CHECKS PASSED" /
+"FAILED: ..." summary lines this guard never printed (488th
+precedent). render_checks() already returned an explicit bool on
+success, so no None-on-success fix was needed (458th note (27)
+checked). Only 2 check_*.py files still match the source-only
+get_d3_bytes grep after this adoption (1 unadopted guard,
+check_role_comp_desc.py, + the contract guard's S1e string literal,
+which occurs twice in that file, so 3 matching lines); the recursive
+scripts/ grep adds the shared module's own definition (4 lines over
+3 .py files) plus one stale __pycache__ .pyc (the 472nd note (76)
+trap -- quote the source-only count going forward).
 """
 import json
 import os
@@ -66,8 +108,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARTS_JS = os.path.join(REPO, "js", "charts.js")
@@ -169,22 +213,6 @@ def static_checks():
           s5, "" if s5 else "median override missing or placed after sort")
 
 
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -202,7 +230,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     trends = json.load(open(TRENDS_JSON, encoding="utf-8"))
     key = live_sector_edition()
@@ -282,12 +310,20 @@ def main():
     if static_only:
         bad = [n for n, ok, _ in results if not ok]
         return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("ALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":
