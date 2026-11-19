@@ -48,14 +48,40 @@ and contains the literal "--static-only" in sys.argv.
 
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
+
+516th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects, both 429th-review classes in one guard: a missing d3
+shim made render_checks() return False, which main() folded into
+exit 1 (drift) although the docstring promises exit 2 (infra) --
+proved in-process before the fix (~/workspace/sp500-516/
+pre516_proof.py: Test A rc=1, "3/3 checks passed", 0 R-checks); and
+a transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix (Test B
+UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall, Popen calls=1). The playwright-missing branch keeps its skip
+shape (rc=0 on passing statics) -- Test A2 control, unchanged.
+Slowest unadopted render guard by every fresh reading this run:
+fresh standalone re-profile 10.47s vs peerdist_chip_combined_label
+8.25s (next), and freshest in-canary 8.1s in the 2026-11-19T06:31Z
+shard-3 run vs peerdist 7.4s in the 2026-11-18T22:41Z shard-3 run.
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -101,21 +127,6 @@ def static_checks():
     return 0
 
 
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -133,7 +144,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -229,16 +240,19 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
     if ok is None:
         print("render checks skipped")
-        failed = [r for r in results if not r[1]]
-        return 1 if failed else 0
-    failed = [r for r in results if not r[1]]
-    if failed or not ok:
-        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
-    print("%d/%d checks passed" % (len(results), len(results)))
+    print("ALL %d CHECKS PASSED" % len(results))
     return 0
 
 

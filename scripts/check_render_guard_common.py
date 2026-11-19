@@ -1225,6 +1225,7 @@ ADOPTERS = [
     "check_header_subtitle_fy.py",
     "check_vol_sector_keyboard.py",
     "check_summary_bar_keyboard.py",
+    "check_voltenure_badge_prefix.py",
 ]
 
 results = []
