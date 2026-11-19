@@ -37,6 +37,38 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+519th review (2026-11-19): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects: this guard's class is the SILENT-PASS variant, not
+the drift variant -- a missing d3 shim made render_checks() return
+False, which main() ignored entirely (it never checked the return
+value), so the guard exited 0 with "5/5 checks passed" although the
+docstring promises exit 2 (infra) -- proved in-process before the
+fix (~/workspace/sp500-519/pre519_proof.py: Test A rc=0, 0 R-checks);
+and a transient render exception raised before any R-check was
+uncaught (no retry wrapper) -- proved in-process before the fix
+(Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall, Popen calls=1). The playwright-missing branch keeps
+its skip shape (rc=0 on passing statics) -- Test A2 control,
+unchanged. Slowest remaining unadopted render guard by the
+controlled readings this run: two-sample standalone averages
+network_orphan_desc 9.99s vs sector_median_fy_key 8.92s vs
+role_comp_desc 7.26s (sample 1: 10.54s / 7.55s / 6.22s; sample 2:
+9.44s / 10.28s / 8.29s); freshest in-canary agrees on the order
+(network 9.8s in the 2026-11-19T09:04Z shard-4 run vs sector 6.2s
+and role 4.7s in the 06:31Z shard-3 run). The 518th load-inflated
+order (role 65.70s > sector 61.30s > network 38.90s under load
+average 7-14) was a load artifact -- the 518th note warned to
+re-profile before picking, and the quiet-box re-profiles reverse
+it; the pick follows the controlled readings, per the 516th note.
 """
 import json
 import os
@@ -44,8 +76,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NETWORK_JS = os.path.join(REPO, "js", "network.js")
@@ -130,22 +164,6 @@ def static_checks():
           s5, "" if s5 else "stale hard-coded orphan clause still present")
 
 
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
-
-
 def free_port():
     s = socket.socket()
     s.bind(("127.0.0.1", 0))
@@ -163,7 +181,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     expected = live_copy(live_orphans())
 
@@ -215,17 +233,24 @@ def render_checks():
 def main():
     static_only = "--static-only" in sys.argv
     static_checks()
-    if not static_only:
-        rc = render_checks()
-        if rc is None:
-            print("render checks skipped")
+    if static_only:
+        bad = [n for n, ok, _ in results if not ok]
+        return 1 if bad else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    print("\n%d/%d checks passed" % (len(results) - len(fails), len(results)))
-    if fails:
-        print("FAILED: " + ", ".join(fails))
-        sys.exit(1)
-    sys.exit(0)
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("ALL %d CHECKS PASSED" % len(results))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

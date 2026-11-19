@@ -1228,6 +1228,7 @@ ADOPTERS = [
     "check_voltenure_badge_prefix.py",
     "check_peerdist_chip_combined_label.py",
     "check_metric_spark_labels.py",
+    "check_network_orphan_desc.py",
 ]
 
 results = []
