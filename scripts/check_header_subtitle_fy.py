@@ -36,6 +36,52 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+513th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects, both 429th-review classes in one guard: a missing d3
+shim made render_checks() return False, which main() folded into the
+statics bad-list -- empty, because the statics pass -- so the guard
+exited 0 (silent pass) although the docstring promises exit 2 for a
+missing shim, and the render half never ran; this guard prints no
+summary line at all pre-fix, so the pass is fully silent (the
+483rd-shape silent-pass form). A transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-513/pre513_proof.py:
+Test A rc=0, 0 R-checks, no summary line; Test A2 rc=0 skip-on-statics;
+Test B UNCATCHED RuntimeError on a simulated transient Chromium
+launch stall). Live corroboration, mechanism only: the 14:34Z shard-4
+run recorded this guard FAIL at 65.5s while the 06:32Z (6.7s) and
+17:07Z (17.2s) runs passed -- a missing-d3 silent pass would have
+exited 0, not 1, so the FAIL is consistent with an uncaught render
+exception under load, but the canary log carries no guard output, so
+the exact mechanism is not provable from the log alone.
+The playwright-missing branch keeps its skip shape (rc=0 on passing
+statics) and the docstring's exit-2 promise for that branch is
+unchanged from the pre-fix guard, per the 486th/487th precedent.
+render_checks() already returns an explicit bool on success (458th
+note (27) checked). Slowest unadopted render guard by the canary
+readings this run: freshest in-canary 17.2s vs network_orphan_desc
+14.0s vs peerdist_chip_combined_label 12.4s in the
+2026-11-18T17:07Z shard-4 run, 3-run median 17.2s vs 14.0s vs 12.4s
+(06:32Z 6.7s / 14:34Z 65.5s FAIL / 17:07Z 17.2s for header; 6.3s /
+16.7s / 14.0s for orphan; 7.6s / 29.0s / 12.4s for peerdist); the
+fresh standalone re-profile this run disagrees on one fast reading
+(peerdist 7.55s vs header 6.72s vs orphan 5.27s), but the two canary
+readings and the median agree on header, and header is the only
+candidate with a FAIL in this cycle, so the pick is header per the
+469th note (68) rule that the evidence base is the multi-run history
+plus the re-profile, not one state reading. Shard verified with
+drift_canary._guard_shard (432nd note): header_subtitle_fy in shard 4
+(with the full check_ name; see note (157) for the bare-name trap and
+note (161) for the .py-suffix trap).
 """
 import json
 import os
@@ -43,8 +89,10 @@ import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -65,9 +113,21 @@ def live_primary_fy():
 
 
 def static_checks():
-    src = open(APP_JS, encoding="utf-8").read()
-    html = open(INDEX_HTML, encoding="utf-8").read()
-    fy = live_primary_fy()
+    try:
+        src = open(APP_JS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read js/app.js: %s" % exc)
+        return 2
+    try:
+        html = open(INDEX_HTML, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read index.html: %s" % exc)
+        return 2
+    try:
+        fy = live_primary_fy()
+    except OSError as exc:
+        print("INFRA: cannot read data/compensation.json: %s" % exc)
+        return 2
     expected = "Executive compensation data from SEC DEF 14A proxy statements, FY%d" % fy
 
     # S1: helper exists and derives the year from the live metadata path
@@ -105,22 +165,7 @@ def static_checks():
           and html.count('id="header-subtitle"') == 1)
     check("S5 index.html #header-subtitle fallback == live copy '%s'" % expected,
           s5, ("got %r" % (m.group(1) if m else None)) if not s5 else "")
-
-
-def get_d3_bytes():
-    # Same cached copy as the other render guards (build-time shim only).
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -140,7 +185,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     expected = "Executive compensation data from SEC DEF 14A proxy statements, FY%d" % live_primary_fy()
 
@@ -187,17 +232,27 @@ def render_checks():
 
 
 def main():
-    static_only = "--static-only" in sys.argv
-    static_checks()
-    if static_only:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    rc = render_checks()
-    if rc is None:
-        bad = [n for n, ok, _ in results if not ok]
-        return 1 if bad else 0
-    bad = [n for n, ok, _ in results if not ok]
-    return 1 if bad else 0
+    rc = static_checks()
+    if rc == 2:
+        return 2
+    if "--static-only" in sys.argv:
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
+        return 1
+    print("%d/%d checks passed" % (len(results), len(results)))
+    return 0
 
 
 if __name__ == "__main__":
