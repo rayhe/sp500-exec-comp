@@ -68,14 +68,54 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+514th review (2026-11-18): adopts the shared render helpers
+(render_guard_common): the local d3-shim fetcher is deleted (it was
+cache-first with a curl fallback, byte-identical to the shared one),
+the render half returns the INFRA sentinel when the shim is
+unavailable, and main() is restructured around
+run_render_with_retry with the INFRA-to-exit-2 mapping, in the
+493rd shape (including the late-raise hole fix: a render half
+returning False with no FAIL recorded now returns 1 with "render
+half failed (see INFRA lines above)" instead of silently passing).
+Pre-fix defects, both 429th-review classes in one guard: a missing d3
+shim made render_checks() return False, which main() ignored -- only
+the None (playwright-missing) branch was handled -- so the guard
+exited 0 with "ALL 7 CHECKS PASSED" although the docstring promises
+exit 2 for a missing shim, and the render half never ran (the
+483rd-shape silent-pass form; the 7/7 count itself is the tell, the
+4 render checks never run). A transient render exception raised
+before any R-check was uncaught (no retry wrapper) -- proved
+in-process before the fix (~/workspace/sp500-514/pre514_proof.py:
+Test A rc=0, "ALL 7 CHECKS PASSED", 0 R-checks; Test A2 rc=0
+skip-on-statics; Test B UNCATCHED RuntimeError on a simulated
+transient Chromium launch stall). No live corroboration claimed for
+this guard: no vol-sector canary failure is on record this cycle
+(unlike header, 513th). The playwright-missing branch keeps its skip
+shape (rc=0 on passing statics) and the docstring's exit-2 promise
+for that branch is unchanged from the pre-fix guard, per the
+486th/487th precedent. static_checks() now returns 2 on an
+unreadable js/charts.js or css/style.css (the 493rd shape's rc
+check). Slowest unadopted render guard by both readings this run:
+freshest in-canary 8.5s vs summary_bar_keyboard 8.2s vs
+voltenure_badge_prefix 7.9s in the 2026-11-18T22:46Z shard-3 run,
+and the fresh standalone re-profile this run 14.70s vs 11.42s vs
+11.10s -- both readings agree on vol-sector, so the pick is clean
+per the 469th note (68) rule that the evidence base is the
+multi-run history plus the re-profile, not one state reading. Shard
+verified with drift_canary._guard_shard (432nd note):
+vol_sector_keyboard in shard 3 (with the full check_ name; see note
+(157) for the bare-name trap and note (161) for the .py-suffix trap).
 """
 import os
 import re
 import socket
 import subprocess
 import sys
-import tempfile
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import INFRA, get_d3_bytes, run_render_with_retry  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -103,8 +143,16 @@ def pilot_block(charts, sel):
 
 
 def static_checks():
-    charts = open(CHARTS_JS, encoding="utf-8").read()
-    css = open(CSS, encoding="utf-8").read()
+    try:
+        charts = open(CHARTS_JS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read js/charts.js: %s" % exc)
+        return 2
+    try:
+        css = open(CSS, encoding="utf-8").read()
+    except OSError as exc:
+        print("INFRA: cannot read css/style.css: %s" % exc)
+        return 2
 
     bar_blk = pilot_block(charts, BAR_SEL)
     check("S1 vol-sector pilot present for .vol-sector-bar",
@@ -151,21 +199,7 @@ def static_checks():
                        capture_output=True, text=True, timeout=60)
     check("S7 node --check js/charts.js is green",
           r.returncode == 0, r.stderr.strip()[:300] if r.returncode else "")
-
-
-def get_d3_bytes():
-    cache = os.path.expanduser(
-        "~/workspace/goals/s-p-500-executive-compensation-tracker/hidden_files/methbtn-20261005/d3.min.js")
-    if os.path.exists(cache):
-        return open(cache, "rb").read()
-    tmp = tempfile.NamedTemporaryFile(suffix=".js", delete=False).name
-    r = subprocess.run(
-        ["curl", "-sL", "--http1.1", "-A", "Kit/1.0 (factoryfactorykit@gmail.com)",
-         "https://cdn.jsdelivr.net/npm/d3@7", "-o", tmp],
-        timeout=60)
-    if r.returncode != 0 or os.path.getsize(tmp) < 100000:
-        return None
-    return open(tmp, "rb").read()
+    return 0
 
 
 def free_port():
@@ -185,7 +219,7 @@ def render_checks():
     d3 = get_d3_bytes()
     if not d3:
         print("INFRA: could not obtain d3.min.js shim")
-        return False
+        return INFRA
 
     port = free_port()
     server = subprocess.Popen(
@@ -292,18 +326,26 @@ def render_checks():
 
 
 def main():
+    rc = static_checks()
+    if rc == 2:
+        return 2
     if "--static-only" in sys.argv:
-        static_checks()
-    else:
-        static_checks()
-        rc = render_checks()
-        if rc is None:
-            print("SKIP: render checks unavailable; static checks decide")
+        failed = [r for r in results if not r[1]]
+        print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
+        return 1 if failed else 0
+    ok = run_render_with_retry(render_checks, results, check)
+    if ok is INFRA:
+        return 2
+    if ok is None:
+        print("render checks skipped")
     fails = [n for n, ok, _ in results if not ok]
-    if fails:
-        print("\n%d check(s) FAILED: %s" % (len(fails), ", ".join(fails)))
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
-    print("\nALL %d CHECKS PASSED" % len(results))
+    print("ALL %d CHECKS PASSED" % len(results))
     return 0
 
 

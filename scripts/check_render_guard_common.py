@@ -1223,6 +1223,7 @@ ADOPTERS = [
     "check_conc_filter_label.py",
     "check_keyboard_treemap_pilot.py",
     "check_header_subtitle_fy.py",
+    "check_vol_sector_keyboard.py",
 ]
 
 results = []
