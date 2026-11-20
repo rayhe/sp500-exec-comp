@@ -720,6 +720,23 @@ covers the S4f2/S4f3 harness runs). Contract guard now runs 585
 checks (581 at the 530th + 4 S4f for the new pinned guard). The
 class is now complete: all four full adopters pinned, none remain.
 
+533rd review (2026-11-20): the SEVENTH retry-only adopter:
+check_d3_outage_fallback.py -- and a correction to the 527th
+review's "fully adopted, zero remaining" claim: the d3-aborting
+class holds eight guards, not six. The two d3-outage guards were
+never surveyed into the class: both abort every d3 request with
+pg.route and call render_checks() raw, so they carried the same
+two 429th-review defects as the six adopted guards (uncaught
+transient raise; uncaught late raise). This guard is the slower of
+the two by the freshest in-canary reading at pick time (8.0s in the
+2026-11-20T14:32:14Z shard-1 run, pre-fix form) vs
+chart_outage_bare_containers 7.8s. Contract guard now runs 595
+checks (585 at the 531st + 6 S1r + 4 S4r). The full-adopter count
+stays 84; the retry-only list is now 7, with one d3-aborting guard
+remaining (check_chart_outage_bare_containers). No harness change:
+the S4r results-clear (522nd note (187)) already covers the new
+adopter.
+
 527th review (2026-11-19): the SIXTH and LAST retry-only adopter:
 check_board_combined_badge.py, the last remaining d3-aborting
 guard by the freshest in-canary reading at pick time (9.7s in the
@@ -1445,6 +1462,7 @@ RETRY_ONLY_ADOPTERS = [
     "check_sop_combined_badge.py",
     "check_payband_chip_survival.py",
     "check_board_combined_badge.py",
+    "check_d3_outage_fallback.py",
 ]
 
 # Late-raise-pinned full adopters (528th review): full adopters
