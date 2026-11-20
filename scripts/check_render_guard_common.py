@@ -626,6 +626,20 @@ sop_combined_badge, board_combined_badge). No harness change:
 the S4r results-clear (522nd note (187)) already covers the new
 adopter.
 
+525th review (2026-11-19): the FOURTH retry-only adopter:
+check_sop_combined_badge.py, slowest of the remaining
+d3-aborting class by the freshest in-canary reading at pick time
+(14.0s in the 2026-11-19T18:40Z shard-4 run, pre-fix form) vs
+payband_chip_survival 12.2s, board_combined_badge 9.8s. The pick
+rests on the freshest pre-run state; shard 4 is also this run's
+canary rotation slot, so the class is re-profiled mid-run.
+Contract guard now runs 549 checks (539 at the 524th + 6 S1r +
+4 S4r). The full-adopter count stays 84; the retry-only list is
+now 4, with two d3-aborting guards remaining
+(payband_chip_survival, board_combined_badge). No harness change:
+the S4r results-clear (522nd note (187)) already covers the new
+adopter.
+
 489th review (2026-11-16): check_sector_gov_keyboard.py adopted
 (slowest unadopted shard-1 render guard by the multi-run history
 plus the re-profile: freshest state 24.9s (2026-11-16T17:00Z
@@ -1309,6 +1323,7 @@ RETRY_ONLY_ADOPTERS = [
     "check_combined_chip_sector_prefix.py",
     "check_board_chip_survival.py",
     "check_d3_outage_table_filters.py",
+    "check_sop_combined_badge.py",
 ]
 
 results = []
