@@ -63,6 +63,28 @@ standalone, crosstab 16.0s in-shard and 10s standalone -- pathfinder
 leads both readings, per the 469th note (68) rule that the evidence
 base is the multi-run history plus the re-profile, not one state
 reading.
+
+531st review (2026-11-20): late-raise silent pass closed -- main()
+ignored a False return from run_render_with_retry, so a render half
+that raised after an R-check was recorded (or returned False with no
+FAIL recorded) exited 0 with "N/N checks passed" while the render
+half never completed. main() now checks ok is False after the fails
+list and returns 1 with "render half failed (see INFRA lines above)"
+when no FAIL was recorded, keeping the guard's counted summary
+format and the playwright-missing skip shape. Fourth and last of
+the four full adopters in this class by the freshest in-canary
+reading at pick time (17.2s in the 2026-11-20T09:09:16Z shard-3 run,
+pre-fix form) vs check_scrollspy_nav.py 81.0s (pinned 528th),
+check_sort_aria_sort.py 77.9s (pinned 529th) and
+check_network_edge_overlay.py 17.8s (pinned 530th). Pinned in the
+LATE_RAISE_PINNED contract list (check_render_guard_common.py S4f
+variants). Pre-fix defects proved in-process before the fix
+(~/workspace/sp500-531/pre531_proof.py): Test A late raise after R1
+rc=0 with "4/4 checks passed"; Test B render False rc=0 with "3/3
+checks passed"; Test A0 transient raise already rc=1 via the
+synthetic FAIL; Test A2 playwright-missing rc=0 skip unchanged.
+render_checks() already returns an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked).
 """
 import os
 import re
@@ -232,8 +254,11 @@ def main():
         if ok is None:
             print("render checks skipped")
     failed = [r for r in results if not r[1]]
-    if failed:
-        print("\n%d/%d checks FAILED" % (len(failed), len(results)))
+    if failed or (not static_only and ok is False):
+        if failed:
+            print("\n%d/%d checks FAILED" % (len(failed), len(results)))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("\n%d/%d checks passed" % (len(results), len(results)))
     return 0
