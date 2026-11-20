@@ -71,6 +71,31 @@ R-checks recorded; the 5 static checks pass, the 5 render checks never
 run). 71 files still match the grep after this adoption (70 unadopted
 guards + the contract guard's S1e string literal).
 
+529th review (2026-11-20): late-raise silent pass closed -- main()
+ignored a False return from run_render_with_retry, so a render half
+that raised after an R-check was recorded (or returned False with no
+FAIL recorded) exited 0 with "OK: sort aria-sort guard" while the
+render half never completed. The 451st adoption closed the
+missing-shim variant via the INFRA branch, but the False path fell
+through to the fails-only tail. main() now checks ok is False after
+the fails list and returns 1 with "render half failed (see INFRA
+lines above)" when no FAIL was recorded, keeping the guard's
+existing summary format and the playwright-missing skip shape.
+Second of the four full adopters in this class by the freshest
+in-canary reading at pick time (77.9s in the 2026-11-20T05:15:24Z
+shard-4 run, pre-fix form) vs check_scrollspy_nav.py 81.0s (pinned
+528th), check_network_edge_overlay 17.6s and
+check_pathfinder_toggle_aria 16.7s remaining. Pinned in the
+LATE_RAISE_PINNED contract list (check_render_guard_common.py S4f
+variants). Pre-fix defects proved in-process before the fix
+(~/workspace/sp500-529/pre529_proof.py): Test A late raise after R1
+rc=0 with the OK line (6 pass, 0 fail); Test B render False rc=0
+with the OK line and "5 pass, 0 fail"; Test A0 transient raise
+already rc=1 via the synthetic FAIL; Test A2 playwright-missing
+rc=0 skip unchanged. render_checks() already returns an explicit
+bool on success, so no None-on-success fix was needed (458th note
+(27) checked).
+
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 
@@ -327,8 +352,11 @@ def main():
     fails = [r for r in results if not r[1]]
     print("----")
     print("checks: %d pass, %d fail" % (len(results) - len(fails), len(fails)))
-    if fails:
-        print("GUARD FAILED")
+    if fails or (not static_only and ok is False):
+        if fails:
+            print("GUARD FAILED")
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("OK: sort aria-sort guard (static%s)" % ("" if not static_only else "-only"))
     return 0
