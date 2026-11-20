@@ -26,6 +26,39 @@ Exit: 0 = all checks pass; 1 = a check failed; 2 = infra problem
 
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
+
+534th review (2026-11-20): the EIGHTH and LAST retry-only adoption of
+the shared render helpers (render_guard_common) -- the d3-aborting
+class is now complete. This guard is the second of the two d3-outage
+guards the 527th survey missed (the 533rd review adopted the first,
+check_d3_outage_fallback.py at 8.0s freshest in-canary; this one is
+7.8s in the same shard-1 run). Like its sibling it aborts every d3
+request with pg.route instead of fetching a shim, so it never carried
+a local fetcher and there is no honest infra site for a missing shim,
+but it still called render_checks() raw in main(). The adoption
+therefore imports only run_render_with_retry (no shim import, no
+INFRA name) and restructures main() around it in the 493rd shape
+minus the exit-2 branch: the static-only and playwright-missing
+branches keep the guard's existing summary format, and the late-raise
+hole fix is included (a render half returning False with no FAIL
+recorded now returns 1 with "render half failed (see INFRA lines
+above)" instead of "N/N checks passed" alongside rc=1). The
+retry-only form is pinned by the contract guard's S1r/S4r variants
+(RETRY_ONLY_ADOPTERS). Pre-fix defects, both 429th-review classes
+in one guard: a transient render exception raised before any
+R-check was uncaught (no retry wrapper) -- proved in-process
+before the fix (~/workspace/sp500-534/pre534_proof.py: Test A
+UNCATCHED RuntimeError on a simulated transient Chromium launch
+stall); and a late raise after an R-check was recorded was likewise
+uncaught -- proved in-process before the fix (Test B UNCATCHED
+RuntimeError on a simulated teardown-phase crash after R1, 1
+R-check recorded). Test C proved the summary-line variant: render
+False with no FAIL recorded returned rc=1 but printed the
+"N/N checks passed" line with no "render half failed" line. The
+playwright-missing branch keeps its skip shape (rc=0 on passing
+statics) -- Test A2 control, unchanged. render_checks() already
+returns an explicit bool on success, so no None-on-success fix was
+needed (458th note (27) checked).
 """
 import os
 import re
@@ -33,6 +66,9 @@ import socket
 import subprocess
 import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import run_render_with_retry  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -179,14 +215,15 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
     if ok is None:
         print("render checks skipped")
-        failed = [r for r in results if not r[1]]
-        return 1 if failed else 0
-    failed = [r for r in results if not r[1]]
-    if failed or not ok:
-        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("%d/%d checks passed" % (len(results), len(results)))
     return 0

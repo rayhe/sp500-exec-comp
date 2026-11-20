@@ -1463,6 +1463,7 @@ RETRY_ONLY_ADOPTERS = [
     "check_payband_chip_survival.py",
     "check_board_combined_badge.py",
     "check_d3_outage_fallback.py",
+    "check_chart_outage_bare_containers.py",
 ]
 
 # Late-raise-pinned full adopters (528th review): full adopters
