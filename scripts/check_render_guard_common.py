@@ -626,6 +626,34 @@ sop_combined_badge, board_combined_badge). No harness change:
 the S4r results-clear (522nd note (187)) already covers the new
 adopter.
 
+528th review (2026-11-20): the late-raise silent pass closes for
+its slowest guard, and the fix is pinned in the shared contract.
+Four full adopters carried the 483rd-shape tail: main() mapped
+INFRA to exit 2 and handled the None skip, but ignored a False
+return from run_render_with_retry, so a render half that raised
+after an R-check was recorded (or returned False with no FAIL
+recorded) exited 0 with the guard's pass line -- the 430th-432nd
+silent-pass variant in its late-raise form, which the S4 harness
+never tested for full adopters (S4 covers only the INFRA mapping).
+check_scrollspy_nav.py is fixed first (81.0s freshest in-canary
+reading at pick time, 2026-11-20T05:15:24Z shard-4 run, pre-fix
+form) vs check_sort_aria_sort 77.9s, check_network_edge_overlay
+17.6s, check_pathfinder_toggle_aria 16.7s; the contract gains
+LATE_RAISE_PINNED with S4f1-S4f4 variants (transient raise retries
+once then rc 1 with the synthetic FAIL; render False returns 1
+with "render half failed" and no pass line; late raise after an
+R-check returns 1 with no retry, no traceback, no pass line;
+render None skips at rc 0). The remaining three guards stay
+unpinned until their own reviews land them in the list. Contract
+guard now runs 573 checks (569 at the 527th + 4 S4f).
+(check_sector_vocab_bridge surveyed out of the class: its main()
+assigns rc = ok, so False already propagates to rc 1. The
+site-visible remainder from the 360th list -- the three dead
+sibling calls in resetAllFilters -- is already closed: the 370th
+review deleted the peer-dist and position calls, and the repo
+carries zero occurrences of clearPeerDistHighlight or
+clearPositionHighlight anywhere.)
+
 527th review (2026-11-19): the SIXTH and LAST retry-only adopter:
 check_board_combined_badge.py, the last remaining d3-aborting
 guard by the freshest in-canary reading at pick time (9.7s in the
@@ -1353,6 +1381,31 @@ RETRY_ONLY_ADOPTERS = [
     "check_board_combined_badge.py",
 ]
 
+# Late-raise-pinned full adopters (528th review): full adopters
+# whose main() maps a False return from run_render_with_retry to
+# exit 1 with the "render half failed" line instead of falling
+# through to a fails-only tail that prints the pass line alongside
+# rc 0 -- the 430th-432nd silent-pass variant in its late-raise
+# form (a render half that raises after an R-check is recorded, or
+# returns False with no FAIL recorded). The S4 harness covers only
+# the INFRA mapping for full adopters, so this class survived every
+# adoption wave untested; the S4f variants below pin it. The list
+# grows one guard per review, like RETRY_ONLY_ADOPTERS did: the
+# class holds four guards, check_scrollspy_nav.py first (81.0s
+# freshest in-canary reading), with check_sort_aria_sort (77.9s),
+# check_network_edge_overlay (17.6s) and check_pathfinder_toggle_
+# aria (16.7s) remaining. PASS_LINES maps each pinned guard to its
+# own pass verdict line, which S4f2/S4f3 assert is absent -- the
+# guards do not share one summary format, so the line cannot be
+# derived from the name.
+LATE_RAISE_PINNED = [
+    "check_scrollspy_nav.py",
+]
+
+LATE_RAISE_PASS_LINES = {
+    "check_scrollspy_nav.py": "OK: scroll-spy nav guard",
+}
+
 results = []
 
 
@@ -1659,6 +1712,102 @@ def s4_retry_only_exit_mapping():
     return all(r[1] for r in results if r[0].startswith("S4r"))
 
 
+def s4_late_raise_exit_mapping():
+    for name in LATE_RAISE_PINNED:
+        short = name[:-3]
+        path = os.path.join(SCRIPTS, name)
+        spec = importlib.util.spec_from_file_location("sp500_" + short, path)
+        mod = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(mod)
+        except Exception as exc:  # noqa: BLE001 - import failure is a guard input
+            check("S4f %s imports for the late-raise harness" % short, False,
+                  "%s: %s" % (type(exc).__name__, exc))
+            continue
+        pass_line = LATE_RAISE_PASS_LINES[name]
+        old_argv = sys.argv
+        # S4f1: a transient raise on both attempts -> rc 1, one
+        # synthetic FAIL, no traceback.
+        calls = {"n": 0}
+
+        def always_raise():
+            calls["n"] += 1
+            raise RuntimeError("boom")
+
+        mod.render_checks = always_raise
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4f1 %s transient raise retries once then rc 1 with synthetic FAIL"
+              % short,
+              rc == 1 and calls["n"] == 2
+              and "R1 render half raised on both attempts" in out
+              and "Traceback" not in out,
+              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        # S4f2: render False with no FAIL recorded -> rc 1 with the
+        # late-raise line, no pass line.
+        mod.render_checks = lambda: False
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4f2 %s render False with no FAIL returns 1, 'render half failed', "
+              "no pass line" % short,
+              rc == 1 and "render half failed" in out
+              and pass_line not in out,
+              "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
+        # S4f3: a late raise after a passing R-check -> rc 1, no
+        # retry, the late-raise line, no traceback, no pass line.
+        calls = {"n": 0}
+
+        def late_raise():
+            calls["n"] += 1
+            mod.check("R1 late-raise probe", True)
+            raise RuntimeError("boom")
+
+        mod.render_checks = late_raise
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4f3 %s late raise after an R-check returns 1, no retry, "
+              "'render half failed'" % short,
+              rc == 1 and calls["n"] == 1 and "render half failed" in out
+              and "Traceback" not in out and pass_line not in out,
+              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        # S4f4: render None (playwright missing) -> rc 0 skip.
+        mod.render_checks = lambda: None
+        mod.results.clear()
+        sys.argv = [name]
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            sys.argv = old_argv
+        out = buf.getvalue()
+        check("S4f4 %s render None skips at rc 0" % short,
+              rc == 0 and "render checks skipped" in out,
+              "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
+    return all(r[1] for r in results if r[0].startswith("S4f"))
+
+
 def main():
     # Pure-Python guard: identical checks in both modes. The literal
     # "--static-only" in sys.argv below is the hook-discovery opt-in
@@ -1671,6 +1820,7 @@ def main():
     s3 = s3_d3_bytes()
     s4 = s4_infra_exit_mapping()
     s4r = s4_retry_only_exit_mapping()
+    s4f = s4_late_raise_exit_mapping()
     failed = [r for r in results if not r[1]]
     print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
     return 1 if failed else 0
