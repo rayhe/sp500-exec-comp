@@ -48,6 +48,42 @@ playwright missing, server would not start).
 Honors the pre-commit auto-discovery CONTRACT: named scripts/check_<thing>.py
 and contains the literal "--static-only" in sys.argv.
 
+527th review (2026-11-19): the SIXTH and LAST retry-only adopter of
+the shared render helpers (render_guard_common) -- this guard is in
+the d3-aborting class (486th note (102)): its render half aborts
+every d3 request with pg.route instead of fetching a shim, so it
+never carried a local fetcher and there is no honest INFRA site
+for a missing shim. The adoption therefore imports only
+run_render_with_retry (no shim import, no INFRA name) and
+restructures main() around it in the 493rd shape minus the
+INFRA-to-exit-2 branch: the static-only and playwright-missing
+branches keep the guard's existing summary format, and the
+late-raise hole fix is included (a render half returning False
+with no FAIL recorded now returns 1 with "render half failed
+(see INFRA lines above)" instead of "4/4 checks passed"
+alongside rc=1). The retry-only form is pinned by the contract
+guard's S1r/S4r variants (RETRY_ONLY_ADOPTERS). Last of the
+d3-aborting class by the freshest in-canary reading at pick time:
+9.7s in the 2026-11-20T02:34:59Z shard-4 run (the 526th run's own
+re-profile, pre-fix form). With this adoption the d3-aborting
+class is fully adopted; the full-adopter count stays 84.
+Pre-fix defects, both 429th-review classes in one guard: a
+transient render exception raised before any R-check was uncaught
+(no retry wrapper) -- proved in-process before the fix
+(~/workspace/sp500-527/pre527_proof.py: Test A UNCATCHED
+RuntimeError on a simulated transient Chromium launch stall,
+Popen calls=1); and a late raise after an R-check was recorded
+was likewise uncaught -- proved in-process before the fix (Test B
+UNCATCHED RuntimeError on a simulated teardown-phase crash after
+R1, 1 R-check recorded). The render-False misleading-output shape
+was proved directly as well (Test C: "4/4 checks passed" printed
+alongside rc=1). The playwright-missing branch keeps its skip
+shape (rc=0 on passing statics) -- Test A2 control, unchanged.
+render_checks() already returns an explicit bool on success, so no
+None-on-success fix was needed (458th note (27) checked). No
+harness change: the S4r results-clear (522nd note (187)) already
+covers the new adopter.
+
 Test hook: SP500_REPO env var overrides the repo path (used only to
 prove the guard FAILS on a pre-fix tree).
 """
@@ -57,6 +93,9 @@ import socket
 import subprocess
 import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from render_guard_common import run_render_with_retry  # noqa: E402
 
 REPO = os.environ.get("SP500_REPO", "/home/hatch/repos/sp500-exec-comp")
 APP_JS = os.path.join(REPO, "js", "app.js")
@@ -265,16 +304,17 @@ def main():
         failed = [r for r in results if not r[1]]
         print("%d/%d static checks passed" % (len(results) - len(failed), len(results)))
         return 1 if failed else 0
-    ok = render_checks()
+    ok = run_render_with_retry(render_checks, results, check)
     if ok is None:
         print("render checks skipped")
-        failed = [r for r in results if not r[1]]
-        return 1 if failed else 0
-    failed = [r for r in results if not r[1]]
-    if failed or not ok:
-        print("%d/%d checks passed" % (len(results) - len(failed), len(results)))
+    fails = [n for n, ok, _ in results if not ok]
+    if fails or ok is False:
+        if fails:
+            print("FAILED: " + ", ".join(fails))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
-    print("%d/%d checks passed" % (len(results), len(results)))
+    print("ALL %d CHECKS PASSED" % len(results))
     return 0
 
 
