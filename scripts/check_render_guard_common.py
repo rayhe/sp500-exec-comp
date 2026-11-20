@@ -673,6 +673,29 @@ the new pinned guard). Two guards remain in the class:
 check_network_edge_overlay (17.6s) and check_pathfinder_toggle_
 aria (16.7s).
 
+530th review (2026-11-20): the late-raise pin lands on its third
+guard, check_network_edge_overlay.py (17.8s freshest in-canary
+reading at pick time, 2026-11-20T10:36:09Z shard-4 run, pre-fix
+form) vs check_pathfinder_toggle_aria 17.2s remaining. Same defect
+as the 528th/529th fixes: main() ignored a False return from
+run_render_with_retry, so a render half that raised after an
+R-check was recorded (or returned False with no FAIL recorded)
+exited 0 with "ALL N CHECKS PASSED". main() now checks ok is
+False after the fails list and returns 1 with "render half failed
+(see INFRA lines above)" when no FAIL was recorded, keeping the
+guard's counted summary format and the playwright-missing skip
+shape. Pre-fix defects proved in-process before the fix
+(~/workspace/sp500-530/pre530_proof.py): Test A late raise after
+R1 rc=0 with "ALL 6 CHECKS PASSED"; Test B render False rc=0
+with "ALL 5 CHECKS PASSED"; Test A0 transient raise already rc=1
+via the synthetic FAIL; Test A2 playwright-missing rc=0 skip
+unchanged. The pinned pass line is the stable "CHECKS PASSED"
+substring (the guard's pass line carries a result count, so no
+single full line covers the S4f2/S4f3 harness runs). Contract
+guard now runs 581 checks (577 at the 529th + 4 S4f for the new
+pinned guard). One guard remains in the class:
+check_pathfinder_toggle_aria (17.2s).
+
 527th review (2026-11-19): the SIXTH and LAST retry-only adopter:
 check_board_combined_badge.py, the last remaining d3-aborting
 guard by the freshest in-canary reading at pick time (9.7s in the
@@ -1411,21 +1434,26 @@ RETRY_ONLY_ADOPTERS = [
 # adoption wave untested; the S4f variants below pin it. The list
 # grows one guard per review, like RETRY_ONLY_ADOPTERS did: the
 # class holds four guards, check_scrollspy_nav.py first (81.0s
-# freshest in-canary reading) and check_sort_aria_sort second
-# (77.9s, pinned 529th review), with check_network_edge_overlay
-# (17.6s) and check_pathfinder_toggle_aria (16.7s) remaining.
+# freshest in-canary reading), check_sort_aria_sort second (77.9s,
+# pinned 529th review) and check_network_edge_overlay third (17.8s,
+# pinned 530th review), with check_pathfinder_toggle_aria (17.2s)
+# remaining.
 # PASS_LINES maps each pinned guard to its
 # own pass verdict line, which S4f2/S4f3 assert is absent -- the
 # guards do not share one summary format, so the line cannot be
-# derived from the name.
+# derived from the name. network_edge_overlay prints a counted
+# "ALL N CHECKS PASSED" line, so its entry is the stable "CHECKS
+# PASSED" substring rather than a full line.
 LATE_RAISE_PINNED = [
     "check_scrollspy_nav.py",
     "check_sort_aria_sort.py",
+    "check_network_edge_overlay.py",
 ]
 
 LATE_RAISE_PASS_LINES = {
     "check_scrollspy_nav.py": "OK: scroll-spy nav guard",
     "check_sort_aria_sort.py": "OK: sort aria-sort guard",
+    "check_network_edge_overlay.py": "CHECKS PASSED",
 }
 
 results = []

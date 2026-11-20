@@ -65,6 +65,28 @@ by a hair and the re-profile by a wide margin, trailing inline by
 1-2-3 rotation (478th shard 1, 479th shard 2, 480th shard 3), per the
 469th note (68) rule that the evidence base is the multi-run history
 plus the re-profile, not one state reading.
+
+530th review (2026-11-20): late-raise silent pass closed -- main()
+ignored a False return from run_render_with_retry, so a render half
+that raised after an R-check was recorded (or returned False with no
+FAIL recorded) exited 0 with "ALL N CHECKS PASSED" while the render
+half never completed. main() now checks ok is False after the fails
+list and returns 1 with "render half failed (see INFRA lines above)"
+when no FAIL was recorded, keeping the guard's existing summary
+format and the playwright-missing skip shape. Third of the four full
+adopters in this class by the freshest in-canary reading at pick time
+(17.8s in the 2026-11-20T10:36:09Z shard-4 run, pre-fix form) vs
+check_scrollspy_nav.py 81.0s (pinned 528th), check_sort_aria_sort.py
+77.9s (pinned 529th) and check_pathfinder_toggle_aria 17.2s
+remaining. Pinned in the LATE_RAISE_PINNED contract list
+(check_render_guard_common.py S4f variants). Pre-fix defects proved
+in-process before the fix (~/workspace/sp500-530/pre530_proof.py):
+Test A late raise after R1 rc=0 with "ALL 6 CHECKS PASSED"; Test B
+render False rc=0 with "ALL 5 CHECKS PASSED"; Test A0 transient
+raise already rc=1 via the synthetic FAIL; Test A2
+playwright-missing rc=0 skip unchanged. render_checks() already
+returns an explicit bool on success, so no None-on-success fix was
+needed (458th note (27) checked).
 """
 import os
 import re
@@ -209,8 +231,11 @@ def main():
     if ok is None:
         print("render checks skipped")
     failed = [r for r in results if not r[1]]
-    if failed:
-        print("\n%d check(s) FAILED" % len(failed))
+    if failed or (ok is False):
+        if failed:
+            print("\n%d check(s) FAILED" % len(failed))
+        else:
+            print("render half failed (see INFRA lines above)")
         return 1
     print("\nALL %d CHECKS PASSED" % len(results))
     return 0
