@@ -30,7 +30,11 @@ Checks (all static - one local file read, no network):
      pre-commit contract; a deleted log must not wedge commits)
   S2 the latest full "## ... - Iteration" entry is found (excluding
      [AUTO-STUB] headers, so a trailing bare stub never becomes the audit
-     target - same convention as check_log_prose_numbers.py)
+     target - same convention as check_log_prose_numbers.py). "Latest"
+     means the max parsed header datetime, not the last match in file
+     order: the log splices a prepend region (newest first) with an
+     append region (older entries after), so entries[-1] is the 527th
+     entry (2026-11-19 22:42), not the latest (532nd).
      (no full entry -> exit 2 INFRA advisory)
   S3 every line in that entry carrying a "last checked" / "last search"
      recheck assertion carries a parseable PT timestamp within
@@ -80,6 +84,19 @@ History:
     markers -> rc=0 WARN; future timestamp -> rc=0 with future-WARN; shared-line
     fixture with the SECOND watch stale -> rc=1 (per-marker segmentation);
     stub-tailed log audits the full entry before the stub.
+  2026-11-20 10:30 - fixed (532nd): S2 took entries[-1] as the latest
+    entry, but the log splices a prepend region with an append region,
+    so entries[-1] is the 527th (2026-11-19 22:42), not the latest
+    (531st, 2026-11-20 09:16) - S3 audited an entry asserting no
+    re-verifications while the latest entry's "last checked 2026-11-19
+    ~21:02 PT" assertion went unaudited, and a fixture with the newest
+    entry stale and an older entry fresh passed rc=0 (silent pass).
+    S2 now takes the entry with the max parsed header datetime
+    (latest_entry), falling back to entries[-1] only when no header
+    parses. Negative tests (in ~/workspace/sp500-532/post532_proof.py,
+    real tree untouched): stale-newest fixture -> rc=1 naming the stale
+    watch; fresh-newest fixture -> rc=0; real log -> S2 names 2026-11-20
+    and S3 audits the 531st entry's assertion.
 """
 import datetime
 import os
@@ -105,6 +122,8 @@ WATCH_STALE_HOURS = 24  # the loop runs 5+ iterations/day; October is
 ENTRY_RE = re.compile(
     r"^## \d{4}-\d{2}-\d{2} \d{2}:\d{2} [A-Z]+ - Iteration (?!\[AUTO-STUB\])",
     re.M)
+ENTRY_DT_RE = re.compile(
+    r"^## (\d{4}-\d{2}-\d{2}) (\d{2}):(\d{2})", re.M)
 ENTRY_DATE_RE = re.compile(
     r"^## (\d{4}-\d{2}-\d{2}) \d{2}:\d{2} [A-Z]+ - Iteration", re.M)
 MARKER_RE = re.compile(r"last\s+(?:checked|search)", re.I)
@@ -131,6 +150,38 @@ def resolve_log():
     if override:
         return override
     return os.path.join(os.environ.get("HOME", ""), REL_LOG)
+
+
+def entry_dt(match):
+    """Parse the header datetime of one ENTRY_RE match, or None.
+
+    The log splices a prepend region (newest entries first) with an
+    append region (older entries after), so file order is not
+    chronological: the latest entry is the one with the max parsed
+    header datetime, not entries[-1] (532nd).
+    """
+    dm = ENTRY_DT_RE.match(match.group(0))
+    if not dm:
+        return None
+    try:
+        return datetime.datetime.strptime(
+            "%s %s:%s" % dm.groups(), "%Y-%m-%d %H:%M")
+    except ValueError:
+        return None
+
+
+def latest_entry(entries):
+    """Return the ENTRY_RE match with the max parsed header datetime.
+
+    Falls back to entries[-1] when no header parses (defensive only:
+    ENTRY_RE guarantees the date/time shape, so this path is
+    unreachable on a well-formed log).
+    """
+    dated = [(entry_dt(m), m) for m in entries]
+    dated = [(d, m) for d, m in dated if d is not None]
+    if not dated:
+        return entries[-1]
+    return max(dated, key=lambda t: t[0])[1]
 
 
 def parse_watch_ts(line, entry_date):
@@ -182,13 +233,16 @@ def main(argv):
         return 2
     check("S1 canonical log readable", True, log_path)
 
-    # S2: latest full entry found (stub headers excluded)
+    # S2: latest full entry found (stub headers excluded). The latest
+    # entry is the max parsed header datetime, NOT entries[-1]: the log
+    # splices a prepend region with an append region, so entries[-1] is
+    # the 527th (2026-11-19 22:42), not the latest (532nd).
     entries = list(ENTRY_RE.finditer(log_text))
     if not entries:
         print("INFRA: no full iteration entry found in %s "
               "(advisory only)" % log_path)
         return 2
-    last = entries[-1]
+    last = latest_entry(entries)
     end = log_text.find("\n## ", last.start() + 1)
     entry_text = log_text[last.start():] if end == -1 else log_text[last.start():end]
     date_m = ENTRY_DATE_RE.match(entry_text)
