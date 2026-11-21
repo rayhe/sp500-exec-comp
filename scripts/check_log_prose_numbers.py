@@ -67,7 +67,33 @@ History:
     audit trail lie with no verifier. Verified green on the true tree
     (latest full entry's 7 claim types all parse and match) and
     negative-tested in /tmp.
+  2026-11-20 17:07 - fixed (535th): S3 took starts[-1] as the latest
+    entry, but the log splices a prepend region with an append region,
+    so starts[-1] is the 527th (2026-11-19 22:42), not the latest
+    (535th, 2026-11-20 17:07) - S3 audited an entry with no "- Data:"
+    bullet and WARN-passed with "nothing to verify" on every run,
+    while the 18 "Recomputed from data files" claims in the prepend
+    region went entirely unverified. Same entries[-1] class the 532nd
+    fixed in check_watch_freshness.py, here in the dormant form (silent
+    non-verification, not a stale pass). S3 now takes the entry with
+    the max parsed header datetime (latest_entry), falling back to
+    starts[-1] only when no header parses, and bounds the audited
+    segment to that entry's own text (next "## " header) instead of
+    the old 8000-char window, which could span into the next entry
+    now that the latest entry sits first in the prepend region
+    (caught by the post-535 Test C fixture). Negative tests (in
+    ~/workspace/sp500-535/pre535_proof.py, real tree untouched):
+    wrong-numbers newest fixture -> pre-fix rc=0 with the no-bullet
+    WARN (defect proved); real log -> pre-fix S3 audits the 527th.
+    Post-fix proof (~/workspace/sp500-535/post535_proof.py): Test A wrong
+    fixture -> rc=1 naming all 7 drifted claims; Test A0 correct fixture ->
+    rc=0 with 7/7 claims PASS; Test B real log -> S3 audits the 535th
+    entry and verifies its 7 recompute claims green; Test C newest-entry
+    bullet-less fixture -> rc=0 with the no-bullet WARN (WARN path
+    preserved; this fixture first caught the 8000-char window spanning
+    into the next entry, fixed by the entry-boundary segment).
 """
+import datetime
 import json
 import os
 import re
@@ -88,8 +114,43 @@ DATA_FILES = {
 ENTRY_RE = re.compile(
     r"^## \d{4}-\d{2}-\d{2} \d{2}:\d{2} [A-Z]+ - Iteration (?!\[AUTO-STUB\])",
     re.M)
+ENTRY_DT_RE = re.compile(
+    r"^## (\d{4}-\d{2}-\d{2}) (\d{2}):(\d{2})", re.M)
 DATA_BULLET_RE = re.compile(r"^- Data: (.*)$", re.M)
 RECOMPUTE_MARKER = "Recomputed from data files"
+
+
+def entry_dt(match):
+    """Parse the header datetime of one ENTRY_RE match, or None.
+
+    The log splices a prepend region (newest entries first) with an
+    append region (older entries after), so file order is not
+    chronological: the latest entry is the one with the max parsed
+    header datetime, not entries[-1] (535th; same class as the 532nd
+    in check_watch_freshness.py).
+    """
+    dm = ENTRY_DT_RE.match(match.group(0))
+    if not dm:
+        return None
+    try:
+        return datetime.datetime.strptime(
+            "%s %s:%s" % dm.groups(), "%Y-%m-%d %H:%M")
+    except ValueError:
+        return None
+
+
+def latest_entry(entries):
+    """Return the ENTRY_RE match with the max parsed header datetime.
+
+    Falls back to entries[-1] when no header parses (defensive only:
+    ENTRY_RE guarantees the date/time shape, so this path is
+    unreachable on a well-formed log).
+    """
+    dated = [(entry_dt(m), m) for m in entries]
+    dated = [(d, m) for d, m in dated if d is not None]
+    if not dated:
+        return entries[-1]
+    return max(dated, key=lambda t: t[0])[1]
 
 
 def resolve_log():
@@ -151,13 +212,25 @@ peer_nodes = peer_meta.get("node_count") or len(peer_doc.get("nodes", []))
 peer_edges = peer_meta.get("edge_count") or len(peer_doc.get("edges", []))
 
 # S3: latest full entry's Data bullet claims match the data files
-starts = [m.start() for m in ENTRY_RE.finditer(log_text)]
-if not starts:
+# The latest entry is the max parsed header datetime, NOT entries[-1]:
+# the log splices a prepend region with an append region, so entries[-1]
+# is the 527th (2026-11-19 22:42), not the latest (535th) -- the same
+# entries[-1] class the 532nd fixed in check_watch_freshness.py.
+entries = list(ENTRY_RE.finditer(log_text))
+if not entries:
     print("WARN: no full (non-stub) iteration entries found in the log; "
           "nothing to verify")
     sys.exit(0)
 
-seg = log_text[starts[-1]:starts[-1] + 8000]
+latest = latest_entry(entries)
+# Bound the segment to this entry's own text (the next "## " header):
+# the latest entry sits FIRST in the prepend region, so the old
+# 8000-char window could span into the next entry and audit ITS Data
+# bullet when the latest entry has none (caught by the post-535 Test C
+# fixture: newest entry bullet-less, tail entry wrong-numbered -> the
+# window found the tail's bullet and failed on the wrong entry).
+end = log_text.find("\n## ", latest.start() + 1)
+seg = log_text[latest.start():] if end == -1 else log_text[latest.start():end]
 bullet_m = DATA_BULLET_RE.search(seg)
 if not bullet_m:
     print("WARN: latest full iteration entry has no '- Data:' bullet; "
