@@ -141,6 +141,26 @@ Test A rc=0, "4/4 checks passed", 0 R-checks; Test B UNCATCHED
 RuntimeError on a simulated transient Chromium launch stall). 62
 local copies remain.
 
+536th review (2026-11-20): the retry-wrapper extension candidate
+from the 483rd review lands in the shared helper itself.
+run_render_with_retry used to return False without retrying once
+any R-check was recorded, so a transient crash after the last
+R-check (e.g. teardown-phase waits) wasted the attempt and every
+adopter failed the same way -- the S2c pin even codified it
+("raise-after-an-R-check returns False after 1 call, no retry").
+The helper now retries that crash once too, rolling the failed
+attempt's recorded entries back first (del results[n_before:])
+so the retry starts clean: without the rollback the retry would
+re-record the same R-checks and the guard would count duplicates.
+On the second attempt the old behavior stands (return False; the
+synthetic FAIL only when that attempt recorded no R-check). The
+change reaches all 92 callers at once (84 full adopters + 8
+retry-only) with no per-guard edit. Proved in-process before the
+fix (~/workspace/sp500-536/pre536_proof.py: Test A transient
+teardown stall after R1 -> False after 1 call; Test B late raise
+on both attempts after R1 -> False after 1 call; Test C control
+raise-before-R then True -> True after 2 calls).
+
 Contract for adopters:
   - import with the sys.path insert used by check_metadata_consistency
     (scripts/ is sys.path[0] when run as a script, but the insert keeps
@@ -202,27 +222,36 @@ def get_d3_bytes(cache=None):
 
 
 def run_render_with_retry(render_fn, results, record_fail):
-    """Run render_fn(), retrying once on an exception that strikes before
-    any R-check is recorded (427th review: a load stall can time out the
-    table-row wait, which used to surface as an uncaught exception ->
-    exit 1 with stdout ending at the last static check, i.e. fake drift).
-    Returns render_fn()'s value unchanged (True/False/None/INFRA), except:
-    a second exception, or one after an R-check was recorded, records a
-    FAIL via record_fail and returns False, so a genuinely broken page
-    still fails loudly instead of passing as infra. An INFRA return
-    passes through without retry (deterministic: retrying a missing d3
-    shim cannot help). `results` is the guard's own results list;
-    `record_fail` is its check() helper."""
+    """Run render_fn(), retrying once on an exception -- including one
+    that strikes after R-checks were recorded (536th review: the
+    483rd-review extension candidate; a crash after the last R-check,
+    e.g. teardown-phase waits, is as likely transient as a launch
+    stall, and the old code returned False without retrying, wasting
+    the attempt). The failed attempt's recorded entries are rolled
+    back first (del results[n_before:]) so the retry starts clean:
+    without the rollback the retry would re-record the same R-checks
+    and the guard would count duplicates. Returns render_fn()'s value
+    unchanged (True/False/None/INFRA), except: a second exception
+    records a FAIL via record_fail only when that attempt recorded no
+    R-check (the synthetic "raised on both attempts" FAIL), and
+    returns False, so a genuinely broken page still fails loudly
+    instead of passing as infra. An INFRA return passes through
+    without retry (deterministic: retrying a missing d3 shim cannot
+    help). `results` is the guard's own results list; `record_fail`
+    is its check() helper."""
     for attempt in (1, 2):
+        n_before = len(results)
         try:
             return render_fn()
         except Exception as exc:  # noqa: BLE001 - render infra is heterogeneous
-            rendered = [r for r in results if r[0].startswith("R")]
             print("INFRA: render half attempt %d raised %s: %s"
                   % (attempt, type(exc).__name__, exc))
-            if rendered or attempt == 2:
+            if attempt == 2:
+                rendered = [r for r in results[n_before:]
+                            if r[0].startswith("R")]
                 if not rendered:
                     record_fail("R1 render half raised on both attempts", False,
                                 "%s: %s" % (type(exc).__name__, exc))
                 return False
+            del results[n_before:]
     return False

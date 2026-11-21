@@ -1317,6 +1317,28 @@ checked). 54 files still match the grep after this adoption (52
 unadopted guards + the shared module's own definition + the contract
 guard's S1e string literal).
 
+536th review (2026-11-20): the retry-wrapper extension candidate
+from the 483rd review lands in the shared helper
+(render_guard_common.py): run_render_with_retry now retries a
+crash that strikes after R-checks were recorded, rolling the
+failed attempt's entries back first so the retry starts clean and
+no R-check is counted twice. The pins move with it: S2c is
+rewritten (flaky-after-R returns True after 2 calls with exactly
+one R1) and gains S2c2 (late raise on both attempts returns False
+after 2 calls with exactly one R1 and no synthetic FAIL) and S2c3
+(a raise with a pre-recorded R-check and no new R-checks retries
+once, then returns False with one synthetic FAIL -- the synthetic
+FAIL decision now looks at the attempt's own entries only, not the
+whole list). S4r3 and S4f3 move from "no retry, 1 call" to
+"retries once, 2 calls" and assert exactly one R1 survives the
+rollback. Contract guard now runs 607 checks (605 at the 534th +
+S2c2 + S2c3). No adopter edit: the change reaches all 92 callers
+through the shared helper. Pre-fix defects proved in-process
+(~/workspace/sp500-536/pre536_proof.py: Test A transient teardown
+stall after R1 -> False after 1 call; Test B late raise on both
+attempts after R1 -> False after 1 call; Test C control
+raise-before-R then True -> True after 2 calls).
+
 Checks (all pure Python, no browser; <2s):
   S1  the shared module defines INFRA, get_d3_bytes and
       run_render_with_retry; each adopted guard imports all three
@@ -1327,9 +1349,13 @@ Checks (all pure Python, no browser; <2s):
   S2  harness for run_render_with_retry: raise-once-then-True returns
       True after 2 calls with no FAIL recorded; raise-twice returns
       False with exactly one synthetic FAIL recorded; raise-after-an-
-      R-check returns False after 1 call with no synthetic FAIL;
-      an INFRA return passes through after 1 call; a None return
-      passes through after 1 call.
+      R-check retries once with the partial attempt rolled back, so a
+      flaky render returns True after 2 calls with exactly one R1 and
+      a late raise on both attempts returns False after 2 calls with
+      exactly one R1 and no synthetic FAIL; a raise with a
+      pre-recorded R-check and no new R-checks retries once then
+      returns False with one synthetic FAIL; an INFRA return passes
+      through after 1 call; a None return passes through after 1 call.
   S3  get_d3_bytes(): the real cache returns >= 100KB; a missing
       cache + a failing curl returns None (curl stubbed in-process,
       no network).
@@ -1472,7 +1498,10 @@ RETRY_ONLY_ADOPTERS = [
 # through to a fails-only tail that prints the pass line alongside
 # rc 0 -- the 430th-432nd silent-pass variant in its late-raise
 # form (a render half that raises after an R-check is recorded, or
-# returns False with no FAIL recorded). The S4 harness covers only
+# returns False with no FAIL recorded). 536th review: the raise case
+# now retries once inside the helper (with rollback) before main()
+# sees the False, so S4f3 pins 2 calls and exactly one surviving
+# R1; the "render half failed" line itself is unchanged. The S4 harness covers only
 # the INFRA mapping for full adopters, so this class survived every
 # adoption wave untested; the S4f variants below pin it. The list
 # grows one guard per review, like RETRY_ONLY_ADOPTERS did: the
@@ -1622,6 +1651,40 @@ def s2_retry_harness():
 
     recorded.clear()
     calls["n"] = 0
+    res = []
+
+    def flaky_after_r():
+        calls["n"] += 1
+        if calls["n"] == 1:
+            res.append(("R1 probe", True, "attempt 1"))
+            raise TimeoutError("teardown stall")
+        res.append(("R1 probe", True, "attempt 2"))
+        return True
+
+    out = rgc.run_render_with_retry(flaky_after_r, res, record_fail)
+    check("S2c raise-after-an-R-check retries once with rollback, returns True, one R1",
+          out is True and calls["n"] == 2 and len(res) == 1
+          and res[0][0] == "R1 probe" and res[0][1] is True
+          and recorded == [],
+          "out=%r calls=%d res=%r recorded=%r" % (out, calls["n"], res, recorded))
+
+    recorded.clear()
+    calls["n"] = 0
+    res = []
+
+    def late_raise_both():
+        calls["n"] += 1
+        res.append(("R1 probe", True, "attempt %d" % calls["n"]))
+        raise RuntimeError("boom")
+
+    out = rgc.run_render_with_retry(late_raise_both, res, record_fail)
+    check("S2c2 late raise on both attempts returns False after 2 calls, one R1, no synthetic FAIL",
+          out is False and calls["n"] == 2 and len(res) == 1
+          and res[0][0] == "R1 probe" and recorded == [],
+          "out=%r calls=%d res=%r recorded=%r" % (out, calls["n"], res, recorded))
+
+    recorded.clear()
+    calls["n"] = 0
     prior = [("R1 something", False, "pre-recorded")]
 
     def late_raise():
@@ -1629,9 +1692,12 @@ def s2_retry_harness():
         raise RuntimeError("boom")
 
     out = rgc.run_render_with_retry(late_raise, prior, record_fail)
-    check("S2c raise-after-an-R-check returns False after 1 call, no retry",
-          out is False and calls["n"] == 1 and prior == [("R1 something", False, "pre-recorded")]
-          and recorded == [],
+    synth = [r for r in recorded
+             if r[0] == "R1 render half raised on both attempts" and not r[1]]
+    check("S2c3 raise with a pre-recorded R-check and no new R-checks retries once, one synthetic FAIL",
+          out is False and calls["n"] == 2
+          and prior == [("R1 something", False, "pre-recorded")]
+          and len(synth) == 1 and len(recorded) == 1,
           "out=%r calls=%d prior=%r recorded=%r" % (out, calls["n"], prior, recorded))
 
     calls["n"] = 0
@@ -1769,8 +1835,9 @@ def s4_retry_only_exit_mapping():
               rc == 1 and "render half failed" in out
               and "CHECKS PASSED" not in out,
               "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
-        # S4r3: a late raise after a passing R-check -> rc 1, no
-        # retry, the late-raise line, no traceback, no pass line.
+        # S4r3: a late raise after a passing R-check -> the 536th-review
+        # helper retries once with rollback, then rc 1 with the
+        # late-raise line, no traceback, no pass line, exactly one R1.
         calls = {"n": 0}
 
         def late_raise():
@@ -1788,11 +1855,14 @@ def s4_retry_only_exit_mapping():
         finally:
             sys.argv = old_argv
         out = buf.getvalue()
-        check("S4r3 %s late raise after an R-check returns 1, no retry, "
-              "'render half failed'" % short,
-              rc == 1 and calls["n"] == 1 and "render half failed" in out
-              and "Traceback" not in out and "CHECKS PASSED" not in out,
-              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        r_entries = [r for r in mod.results if r[0].startswith("R")]
+        check("S4r3 %s late raise after an R-check retries once then returns 1, "
+              "'render half failed', one R1" % short,
+              rc == 1 and calls["n"] == 2 and "render half failed" in out
+              and "Traceback" not in out and "CHECKS PASSED" not in out
+              and len(r_entries) == 1 and r_entries[0][0] == "R1 late-raise probe",
+              "rc=%s calls=%d tail=%r r_entries=%r"
+              % (rc, calls["n"], out.strip().splitlines()[-3:], r_entries))
         # S4r4: render None (playwright missing) -> rc 0 skip.
         mod.render_checks = lambda: None
         mod.results.clear()
@@ -1865,8 +1935,9 @@ def s4_late_raise_exit_mapping():
               rc == 1 and "render half failed" in out
               and pass_line not in out,
               "rc=%s tail=%r" % (rc, out.strip().splitlines()[-3:]))
-        # S4f3: a late raise after a passing R-check -> rc 1, no
-        # retry, the late-raise line, no traceback, no pass line.
+        # S4f3: a late raise after a passing R-check -> the 536th-review
+        # helper retries once with rollback, then rc 1 with the
+        # late-raise line, no traceback, no pass line, exactly one R1.
         calls = {"n": 0}
 
         def late_raise():
@@ -1884,11 +1955,14 @@ def s4_late_raise_exit_mapping():
         finally:
             sys.argv = old_argv
         out = buf.getvalue()
-        check("S4f3 %s late raise after an R-check returns 1, no retry, "
-              "'render half failed'" % short,
-              rc == 1 and calls["n"] == 1 and "render half failed" in out
-              and "Traceback" not in out and pass_line not in out,
-              "rc=%s calls=%d tail=%r" % (rc, calls["n"], out.strip().splitlines()[-3:]))
+        r_entries = [r for r in mod.results if r[0].startswith("R")]
+        check("S4f3 %s late raise after an R-check retries once then returns 1, "
+              "'render half failed', one R1" % short,
+              rc == 1 and calls["n"] == 2 and "render half failed" in out
+              and "Traceback" not in out and pass_line not in out
+              and len(r_entries) == 1 and r_entries[0][0] == "R1 late-raise probe",
+              "rc=%s calls=%d tail=%r r_entries=%r"
+              % (rc, calls["n"], out.strip().splitlines()[-3:], r_entries))
         # S4f4: render None (playwright missing) -> rc 0 skip.
         mod.render_checks = lambda: None
         mod.results.clear()
