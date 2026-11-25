@@ -175,9 +175,16 @@ def static_checks():
     # restoration added 8 verified rows (Allen x2, Carter x3, Lenz x3,
     # filing-verbatim from the 2024 DEF 14A SCT) -> 7308->7316 rows,
     # verified_total 7264->7272, mismatch unchanged at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7318 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7274)
-    check("S3 counts unchanged (518 / 7318 / mismatch 44 / verified 7274)",
+    # S3 baseline moved 2026-11-24 (582nd review): Micron FY2026 SCT
+    # (2026 DEF 14A) added 5 verified FY2026 rows (Mehrotra
+    # $39,723,944; Murphy; Bhatia; DeBoer; Sadana - FY2026 NEO sum
+    # $95,066,015) plus 2 restored FY2023 rows (Sadana, Murphy - the
+    # 2023 row previously carried Sadana's name on Mehrotra's SCT
+    # figures, re-attributed filing-verbatim) -> 7318->7325 rows,
+    # verified_total 7274->7281, mismatch unchanged at 44.
+    s3 = (len(d["companies"]) == 518 and total == 7325 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7281)
+    check("S3 counts unchanged (518 / 7325 / mismatch 44 / verified 7281)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 

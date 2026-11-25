@@ -1,7 +1,7 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "518 companies, 7318 NEO records, 517 companies enriched",
+  "description": "518 companies, 7325 NEO records, 517 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -51,10 +51,10 @@
    "total_companies": 518,
    "companies_with_pay_ratio": 515,
    "median_ceo_pay": 17499399,
-   "mean_ceo_pay": 331068843,
+   "mean_ceo_pay": 331085833,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
-   "median_worker_pay": 82463,
+   "median_worker_pay": 82819,
    "median_pay_ratio": 198
   },
   "sector_medians": {
@@ -171,9 +171,9 @@
   },
   "edgar_coverage": 517,
   "total_companies": 518,
-  "last_updated": "2026-11-06",
-  "total_neo_records": 7318,
-  "title_coverage": "7318/7318",
+  "last_updated": "2026-11-24",
+  "total_neo_records": 7325,
+  "title_coverage": "7325/7325",
   "data_quality": {
    "component_mismatch": 44,
    "def14a_verified_20260907": 63,
@@ -191,11 +191,11 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5816,
+   "def14a_verified_20261112": 44,
+   "verified": 5823,
    "rounding": 0,
-   "verified_total": 7274,
-   "last_audit": "2026-09-28",
-   "def14a_verified_20261112": 44
+   "verified_total": 7281,
+   "last_audit": "2026-09-28"
   },
   "median_ceo_pay": 17188658,
   "mean_ceo_pay": 329481099,
@@ -246,18 +246,18 @@
    "def14a_verified_20260927": 73,
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
-   "verified": 5816,
+   "def14a_verified_20261112": 44,
+   "verified": 5823,
    "rounding": 0,
-   "verified_total": 7274,
-   "last_audit": "2026-09-28",
-   "def14a_verified_20261112": 44
+   "verified_total": 7281,
+   "last_audit": "2026-09-28"
   },
   "companies_with_executives": 517,
   "board_independence_any": 499,
   "median_worker_pay": 82463,
   "median_pay_ratio": 198,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 7318,
+  "total_executives": 7325,
   "board_independence_count": 499,
   "board_independence_full": 499,
   "last_audit": "2026-09-18",
@@ -287,16 +287,16 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-11-12",
-  "verified_total": 7274,
-  "total_neos": 7318,
+  "last_dq_repair": "2026-11-24",
+  "verified_total": 7281,
+  "total_neos": 7325,
   "phantom_removed": {
-   "cumulative": -949494816,
+   "cumulative": -1062196464,
    "gross_removed": 3064095898,
-   "restored": 4013590714,
-   "batches": 92,
+   "restored": 4126292362,
+   "batches": 93,
    "since": "2026-09-12",
-   "last_updated": "2026-11-02 18:30 PT",
+   "last_updated": "2026-11-24 21:00 PT",
    "method": "Sum over the 63 DQ-labeled data-repair commits (2026-09-12 to 2026-09-27) of (parent exec-total sum minus commit exec-total sum), computed per git blob. Parser-invented compensation removed counts positive; genuine missing-NEO rows restored filing-verbatim count negative. See goal hidden_files/phantom-counter/cumulative.json for the per-batch table."
   }
  },
@@ -79506,11 +79506,11 @@
    "ticker": "MU",
    "company_name": "Micron Technology Inc",
    "ceo_name": "Sanjay Mehrotra",
-   "total_compensation": 30940146,
-   "fiscal_year": 2025,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 64042,
-   "pay_ratio": 469,
+   "total_compensation": 39723944,
+   "fiscal_year": 2026,
+   "source": "SEC DEF 14A 2026 — FY2026 CEO",
+   "median_worker_pay": 105482,
+   "pay_ratio": 377,
    "sector": "Information Technology",
    "executives": [
     {
@@ -79542,8 +79542,8 @@
      "_total_source": "verified"
     },
     {
-     "name": "Sumit Sadana",
-     "title": "EVP and Chief Business Officer",
+     "name": "Sanjay Mehrotra",
+     "title": "Chairman, President and Chief Executive Officer",
      "year": 2023,
      "salary": 1255476,
      "bonus": 0,
@@ -79694,15 +79694,114 @@
      "all_other": 17250,
      "total": 11640210,
      "_total_source": "verified"
+    },
+    {
+     "name": "Sanjay Mehrotra",
+     "title": "Chairman and Chief Executive Officer",
+     "year": 2026,
+     "salary": 1477885,
+     "bonus": 0,
+     "stock_awards": 30000144,
+     "option_awards": 0,
+     "non_equity_incentive": 6380000,
+     "pension_nqdc": 0,
+     "all_other": 1865915,
+     "total": 39723944,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Mark Murphy",
+     "title": "Executive Vice President and Chief Financial Officer",
+     "year": 2026,
+     "salary": 873476,
+     "bonus": 0,
+     "stock_awards": 9999857,
+     "option_awards": 0,
+     "non_equity_incentive": 2328953,
+     "pension_nqdc": 0,
+     "all_other": 304077,
+     "total": 13506363,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Manish Bhatia",
+     "title": "President and Chief Operating Officer",
+     "year": 2026,
+     "salary": 901652,
+     "bonus": 0,
+     "stock_awards": 11000018,
+     "option_awards": 0,
+     "non_equity_incentive": 2493120,
+     "pension_nqdc": 0,
+     "all_other": 258876,
+     "total": 14653666,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Scott DeBoer",
+     "title": "President and Chief Technology and Products Officer",
+     "year": 2026,
+     "salary": 810490,
+     "bonus": 0,
+     "stock_awards": 9249964,
+     "option_awards": 0,
+     "non_equity_incentive": 2083536,
+     "pension_nqdc": 0,
+     "all_other": 221634,
+     "total": 12365624,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Sumit Sadana",
+     "title": "Former Executive Vice President and Chief Business Officer",
+     "year": 2026,
+     "salary": 921057,
+     "bonus": 0,
+     "stock_awards": 11000018,
+     "option_awards": 0,
+     "non_equity_incentive": 2546776,
+     "pension_nqdc": 0,
+     "all_other": 348567,
+     "total": 14816418,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Sumit Sadana",
+     "title": "Executive Vice President and Chief Business Officer",
+     "year": 2023,
+     "salary": 715007,
+     "bonus": 0,
+     "stock_awards": 8500024,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 16500,
+     "total": 9231531,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Mark Murphy",
+     "title": "Executive Vice President and Chief Financial Officer",
+     "year": 2023,
+     "salary": 639827,
+     "bonus": 0,
+     "stock_awards": 7749991,
+     "option_awards": 0,
+     "non_equity_incentive": 0,
+     "pension_nqdc": 0,
+     "all_other": 14284,
+     "total": 8404102,
+     "_total_source": "verified"
     }
    ],
    "cik": "0000723125",
-   "filing_date": "2025-11-25",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000038/mu-20251125.htm",
-   "total_neo_compensation": 75857604,
+   "filing_date": "2026-11-24",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312526000034/mu-20261124.htm",
+   "total_neo_compensation": 95066015,
    "neo_count": 5,
-   "proxy_fiscal_year": 2025,
+   "proxy_fiscal_year": 2026,
    "available_years": [
+    2026,
     2025,
     2024,
     2023
@@ -125155,5 +125254,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions). Re-checked 2026-11-03: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR submissions window still ends 2026-09-24, latest filings 3/A and 144; no post-merger proxy expected before the spring 2027 proxy season. Re-checked 2026-11-05: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings today 2026-11-05 are a 144 and an 8-K only). Re-checked 2026-11-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings 2026-11-05 are a 144 and an 8-K, and 2026-11-06 a 144 only, acc. 0001959173-26-007823). EDGAR DEF 14A sweep Nov 1-6 (42 filings) and 10-K/A sweep Nov 1-6 (19 filings) found zero roster matches, so no FY2026 proxy enrichment this week. Re-checked 2026-11-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 8-K 2026-11-05). Remains queued for enrichment when first proxy files. Re-checked 2026-11-10: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 10-Q 2026-11-09, acc. 0001193125-26-453735, plus 8-K 2026-11-05 and 144s). Remains queued for enrichment when first proxy files. Re-checked 2026-11-20: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings since 2026-11-10: SCHEDULE 13G/A 2026-11-12, 8-Ks 2026-11-13/16/20, Form 4s 2026-11-13/17/18, 144s 2026-11-10/13/16; no DEF 14A). Remains queued for enrichment when first proxy files (first proxy expected spring 2027 proxy season)."
   }
  ],
- "last_updated": "2026-11-20"
+ "last_updated": "2026-11-24"
 }
