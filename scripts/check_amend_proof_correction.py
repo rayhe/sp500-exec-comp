@@ -73,6 +73,12 @@ History:
     defect in the guard-run-proof mechanism (074c8cf needed a hand
     backfill); the fixture simulation also caught the bare-rev-parse
     corrupt-marker class, fixed with --verify in the same review (C7).
+  2026-11-26 05:00 - fixture hooks moved out of .git/hooks into a
+    fixture hookdir + -c core.hooksPath (593rd review). The runtime git
+    wrapper forces hooksPath=/dev/null and moves non-sample .git/hooks
+    aside, so the simulation's hooks never fired and the guard went
+    INFRA (no ledger line after the first commit); caller -c wins over
+    the wrapper, restoring the live simulation.
 """
 import json
 import os
@@ -193,8 +199,19 @@ def _git(fixture, *args, extra_env=None):
     env["ITERATION_LOG"] = os.path.join(fixture, "iteration-log.md")
     if extra_env:
         env.update(extra_env)
+    # core.hooksPath points at the fixture's own hookdir (outside .git):
+    # the runtime git wrapper forces core.hooksPath=/dev/null and moves
+    # any non-sample .git/hooks aside before git starts, so hooks installed
+    # under .git/hooks never run in the fixture (observed 593rd review:
+    # the post-commit hook never fired, no ledger line, FileNotFoundError
+    # in _ledger_lines). A caller -c wins over the wrapper's
+    # GIT_CONFIG_PARAMETERS (the wrapper documents this), and a hookdir
+    # outside .git is never moved aside, so the simulation exercises the
+    # real hook again. This only affects the fixture's own git calls.
+    hookdir = os.path.join(fixture, "hookdir")
     p = subprocess.run(
         ["git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com",
+         "-c", "core.hooksPath=" + hookdir,
          "-C", fixture] + list(args),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, timeout=60)
     return p.returncode, p.stdout.decode("utf-8", "replace")
@@ -230,7 +247,8 @@ def full_simulation():
         if rc != 0:
             print("INFRA: git init failed in fixture: %s" % out)
             return 2
-        hooks = os.path.join(fixture, ".git", "hooks")
+        hooks = os.path.join(fixture, "hookdir")
+        os.makedirs(hooks, exist_ok=True)
         shutil.copy(POSTCOMMIT, os.path.join(hooks, "post-commit"))
         with open(os.path.join(hooks, "pre-commit"), "w") as f:
             f.write(STUB_PRECOMMIT)
