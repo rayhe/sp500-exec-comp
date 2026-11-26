@@ -182,9 +182,15 @@ def static_checks():
     # 2023 row previously carried Sadana's name on Mehrotra's SCT
     # figures, re-attributed filing-verbatim) -> 7318->7325 rows,
     # verified_total 7274->7281, mismatch unchanged at 44.
-    s3 = (len(d["companies"]) == 518 and total == 7325 and mismatch == 44
-          and d["metadata"]["data_quality"]["verified_total"] == 7281)
-    check("S3 counts unchanged (518 / 7325 / mismatch 44 / verified 7281)",
+    # S3 baseline moved 2026-11-26 (595th review): Intuit FY2026 SCT
+    # (2026 DEF 14A, filed 2026-11-25) added 5 verified FY2026 rows
+    # (Goodarzi $36,784,881; Aujla; Hanebrink; Hilliard; Hotz - FY2026
+    # NEO sum $89,428,891; 4 overlap rows filing-verbatim, 0 deltas)
+    # -> 7325->7330 rows, verified_total 7281->7286, mismatch
+    # unchanged at 44.
+    s3 = (len(d["companies"]) == 518 and total == 7330 and mismatch == 44
+          and d["metadata"]["data_quality"]["verified_total"] == 7286)
+    check("S3 counts unchanged (518 / 7330 / mismatch 44 / verified 7286)",
           s3, "" if s3 else "counts drifted: %d companies, %d rows, %d mismatch"
           % (len(d["companies"]), total, mismatch))
 

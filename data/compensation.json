@@ -1,7 +1,7 @@
 {
  "metadata": {
   "title": "S&P 500 Executive Compensation Data",
-  "description": "518 companies, 7325 NEO records, 517 companies enriched",
+  "description": "518 companies, 7330 NEO records, 517 companies enriched",
   "sources": [
    "SEC EDGAR DEF 14A Proxy Statements (primary)",
    "AFL-CIO Executive Paywatch 2025 (CEO totals, median pay, pay ratios)"
@@ -51,7 +51,7 @@
    "total_companies": 518,
    "companies_with_pay_ratio": 515,
    "median_ceo_pay": 17499399,
-   "mean_ceo_pay": 331085833,
+   "mean_ceo_pay": 331085716,
    "max_ceo_pay": 158359009867,
    "min_ceo_pay": 2.75,
    "median_worker_pay": 82819,
@@ -171,9 +171,9 @@
   },
   "edgar_coverage": 517,
   "total_companies": 518,
-  "last_updated": "2026-11-24",
-  "total_neo_records": 7325,
-  "title_coverage": "7325/7325",
+  "last_updated": "2026-11-25",
+  "total_neo_records": 7330,
+  "title_coverage": "7330/7330",
   "data_quality": {
    "component_mismatch": 44,
    "def14a_verified_20260907": 63,
@@ -192,9 +192,9 @@
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
    "def14a_verified_20261112": 44,
-   "verified": 5823,
+   "verified": 5828,
    "rounding": 0,
-   "verified_total": 7281,
+   "verified_total": 7286,
    "last_audit": "2026-09-28"
   },
   "median_ceo_pay": 17188658,
@@ -247,9 +247,9 @@
    "def14a_verified_20260928": 44,
    "def14a_verified_20261007": 1,
    "def14a_verified_20261112": 44,
-   "verified": 5823,
+   "verified": 5828,
    "rounding": 0,
-   "verified_total": 7281,
+   "verified_total": 7286,
    "last_audit": "2026-09-28"
   },
   "companies_with_executives": 517,
@@ -257,7 +257,7 @@
   "median_worker_pay": 82463,
   "median_pay_ratio": 198,
   "last_verified": "2026-09-01T09:08:43Z",
-  "total_executives": 7325,
+  "total_executives": 7330,
   "board_independence_count": 499,
   "board_independence_full": 499,
   "last_audit": "2026-09-18",
@@ -287,16 +287,16 @@
    ],
    "note": "BX 3yr complete from 10-K Part III Item 11 SCTs (no DEF 14A ever filed; 2025 10-K 2026-02-27 / 2024 10-K 2024-02-23); FY2023 cross-verified identical across both filings; component-sum verified; last 1yr company resolved"
   },
-  "last_dq_repair": "2026-11-24",
-  "verified_total": 7281,
-  "total_neos": 7325,
+  "last_dq_repair": "2026-11-25",
+  "verified_total": 7286,
+  "total_neos": 7330,
   "phantom_removed": {
-   "cumulative": -1062196464,
+   "cumulative": -1151625355,
    "gross_removed": 3064095898,
-   "restored": 4126292362,
-   "batches": 93,
+   "restored": 4215721253,
+   "batches": 94,
    "since": "2026-09-12",
-   "last_updated": "2026-11-24 21:00 PT",
+   "last_updated": "2026-11-26 01:00 PT",
    "method": "Sum over the 63 DQ-labeled data-repair commits (2026-09-12 to 2026-09-27) of (parent exec-total sum minus commit exec-total sum), computed per git blob. Parser-invented compensation removed counts positive; genuine missing-NEO rows restored filing-verbatim count negative. See goal hidden_files/phantom-counter/cumulative.json for the per-batch table."
   }
  },
@@ -58304,15 +58304,15 @@
    "ticker": "INTU",
    "company_name": "Intuit Inc",
    "ceo_name": "Sasan K. Goodarzi",
-   "total_compensation": 36845552,
-   "fiscal_year": 2025,
-   "source": "SEC DEF 14A 2025 — FY2025 CEO",
-   "median_worker_pay": 200562,
-   "pay_ratio": 182,
+   "total_compensation": 36784881,
+   "fiscal_year": 2026,
+   "source": "SEC DEF 14A 2026 — FY2026 CEO",
+   "median_worker_pay": 232335,
+   "pay_ratio": 158,
    "sector": "Information Technology",
    "cik": "0000896878",
-   "filing_date": "2025-11-26",
-   "filing_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687825000057/intu-20251126.htm",
+   "filing_date": "2026-11-25",
+   "filing_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687826000053/intu-20261125.htm",
    "executives": [
     {
      "name": "Sasan K. Goodarzi",
@@ -58476,16 +58476,87 @@
      "total": 16218225,
      "_total_source": "def14a_verified_20260917",
      "_repair_note_20260917_1400": "2026-09-17: salary-cell-drop column-shift repair from FY2025 DEF 14A SCT (intu-20251126.htm). Values filing-verbatim; totals foot exactly."
+    },
+    {
+     "name": "Sasan K. Goodarzi",
+     "title": "Chairman and Chief Executive Officer",
+     "year": 2026,
+     "salary": 1400000,
+     "bonus": 0,
+     "stock_awards": 24202293,
+     "option_awards": 8650088,
+     "non_equity_incentive": 2520000,
+     "pension_nqdc": 0,
+     "all_other": 12500,
+     "total": 36784881,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Sandeep S. Aujla",
+     "title": "Executive Vice President and Chief Financial Officer",
+     "year": 2026,
+     "salary": 800000,
+     "bonus": 0,
+     "stock_awards": 18503840,
+     "option_awards": 0,
+     "non_equity_incentive": 864000,
+     "pension_nqdc": 0,
+     "all_other": 13800,
+     "total": 20181640,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Anton Hanebrink",
+     "title": "Executive Vice President and Chief Corporate Strategy & Development Officer",
+     "year": 2026,
+     "salary": 725000,
+     "bonus": 0,
+     "stock_awards": 9798922,
+     "option_awards": 0,
+     "non_equity_incentive": 652500,
+     "pension_nqdc": 0,
+     "all_other": 15100,
+     "total": 11191522,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Caryl Hilliard",
+     "title": "Executive Vice President and Chief People & Places Officer",
+     "year": 2026,
+     "salary": 675000,
+     "bonus": 0,
+     "stock_awards": 8669715,
+     "option_awards": 0,
+     "non_equity_incentive": 607500,
+     "pension_nqdc": 0,
+     "all_other": 13800,
+     "total": 9966015,
+     "_total_source": "verified"
+    },
+    {
+     "name": "Lauren Hotz",
+     "title": "Senior Vice President and Chief Accounting Officer",
+     "year": 2026,
+     "salary": 567788,
+     "bonus": 0,
+     "stock_awards": 10263217,
+     "option_awards": 0,
+     "non_equity_incentive": 461328,
+     "pension_nqdc": 0,
+     "all_other": 12500,
+     "total": 11304833,
+     "_total_source": "verified"
     }
    ],
    "neo_count": 5,
    "available_years": [
+    2026,
     2025,
     2024,
     2023
    ],
-   "total_neo_compensation": 101562985,
-   "proxy_fiscal_year": 2025,
+   "total_neo_compensation": 89428891,
+   "proxy_fiscal_year": 2026,
    "data_source": "SEC EDGAR DEF 14A + AFL-CIO",
    "say_on_pay": {
     "approval_pct": 93.15,
@@ -58505,13 +58576,13 @@
     ]
    },
    "board_independence": {
-    "total_directors": 10,
-    "independent_directors": 9,
-    "independence_pct": 90.0,
-    "chair_independent": true,
-    "lead_independent_director": false,
-    "source": "DEF 14A 2024-11-26 / 2025-11-26, all non-employee directors independent (9 of 10, CEO non-independent)",
-    "source_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687825000057/intu-20251126.htm"
+    "total_directors": 12,
+    "independent_directors": 11,
+    "independence_pct": 91.7,
+    "chair_independent": false,
+    "lead_independent_director": true,
+    "source": "DEF 14A 2026-11-25, 11 of 12 independent; Goodarzi Chair+CEO since 2026, Prabhu Lead Independent Director",
+    "source_url": "https://www.sec.gov/Archives/edgar/data/896878/000089687826000053/intu-20261125.htm"
    }
   },
   {
@@ -125254,5 +125325,5 @@
    "_index_note": "Added 2026-09-21 (Sept quarterly rebalance; merger of equals of AvalonBay Communities and Equity Residential closed 2026-08-17). Re-checked EDGAR submissions for CIK 906107 on 2026-09-30: no post-merger Vivmark DEF 14A yet (latest DEF 14A on the CIK is the EQR 2026 pre-merger proxy, filed 2026-04-14, accession 0001193125-26-155007). Queued for enrichment when first proxy files. Re-checked 2026-10-04: still no post-merger Vivmark DEF 14A (CIK 906107 shows only Sept 2026 8-Ks and insider forms; no DEF 14A). Remains queued for enrichment when first proxy files. Re-checked 2026-10-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 8-K/144/3/A/4 only). Re-checked 2026-10-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-25: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007). Re-checked 2026-10-26: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR now lists the registrant as VIVMARK RESIDENTIAL, ticker VMRK). Re-checked 2026-10-27: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K only). Re-checked 2026-10-28: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; most recent filings 2026-09-24 3/A and 144, no filings after that date in EDGAR submissions). Re-checked 2026-10-29: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 3/A, 144, 8-K, 4 only). Re-checked 2026-10-31: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; recent filings 2026-09-24 3/A and 144, 2026-09-17/16 8-K, no filings after 2026-09-24 in EDGAR submissions). Re-checked 2026-11-03: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; EDGAR submissions window still ends 2026-09-24, latest filings 3/A and 144; no post-merger proxy expected before the spring 2027 proxy season. Re-checked 2026-11-05: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings today 2026-11-05 are a 144 and an 8-K only). Re-checked 2026-11-06: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings 2026-11-05 are a 144 and an 8-K, and 2026-11-06 a 144 only, acc. 0001959173-26-007823). EDGAR DEF 14A sweep Nov 1-6 (42 filings) and 10-K/A sweep Nov 1-6 (19 filings) found zero roster matches, so no FY2026 proxy enrichment this week. Re-checked 2026-11-07: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 8-K 2026-11-05). Remains queued for enrichment when first proxy files. Re-checked 2026-11-10: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; latest filing 10-Q 2026-11-09, acc. 0001193125-26-453735, plus 8-K 2026-11-05 and 144s). Remains queued for enrichment when first proxy files. Re-checked 2026-11-20: still no post-merger Vivmark DEF 14A (CIK 906107 latest DEF 14A remains the 2026-04-14 pre-merger EQR proxy, acc. 0001193125-26-155007; new filings since 2026-11-10: SCHEDULE 13G/A 2026-11-12, 8-Ks 2026-11-13/16/20, Form 4s 2026-11-13/17/18, 144s 2026-11-10/13/16; no DEF 14A). Remains queued for enrichment when first proxy files (first proxy expected spring 2027 proxy season)."
   }
  ],
- "last_updated": "2026-11-24"
+ "last_updated": "2026-11-25"
 }
