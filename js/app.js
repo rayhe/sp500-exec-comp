@@ -9052,23 +9052,22 @@ var _PVP_GAP_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Ei
 function _pvpMethodCoverageClause() {
     var pvpMd = (typeof pvpData !== 'undefined' && pvpData && pvpData.metadata) ? pvpData.metadata : {};
     var compMd = (typeof compData !== 'undefined' && compData && compData.metadata) ? compData.metadata : {};
-    // Fallback literals are the wave-38 shipped values; the guard fails the
+    // Fallback literals are the wave-39 shipped values; the guard fails the
     // build if the data moves and these are not re-vintaged.
-    var covered = (typeof pvpMd.companies === 'number' && pvpMd.companies > 0) ? pvpMd.companies : 498; // wave 38 (2026-09-30); guard-sync'd
-    var companyYears = (typeof pvpMd.company_years === 'number' && pvpMd.company_years > 0) ? pvpMd.company_years : 2466; // wave 38 (2026-09-30); guard-sync'd
+    var covered = (typeof pvpMd.companies === 'number' && pvpMd.companies > 0) ? pvpMd.companies : 498; // wave 39 (2026-11-28); guard-sync'd
+    var companyYears = (typeof pvpMd.company_years === 'number' && pvpMd.company_years > 0) ? pvpMd.company_years : 2469; // wave 39 (2026-11-28); guard-sync'd
     var roster = (typeof compMd.total_companies === 'number' && compMd.total_companies > 0) ? compMd.total_companies : 518; // 2026-09-30 roster; guard-sync'd
     var wave = null;
     if (pvpMd.coverage_note) {
         var wm = String(pvpMd.coverage_note).match(/[Ww]ave (\d+)(?!.*[Ww]ave \d+)/s);
         if (wm) wave = parseInt(wm[1], 10);
     }
-    if (wave == null || !(wave > 0)) wave = 38; // wave 38 (2026-09-30); guard-sync'd to coverage_note's latest Wave marker
+    if (wave == null || !(wave > 0)) wave = 39; // wave 39 (2026-11-28); guard-sync'd to coverage_note's latest Wave marker
     var gaps = roster - covered;
     var gapWord = (gaps >= 0 && gaps < _PVP_GAP_WORDS.length) ? _PVP_GAP_WORDS[gaps] : String(gaps);
     return 'Coverage: ' + covered + ' of ' + roster + ' roster companies ('
-        + companyYears.toLocaleString('en-US') + ' company-years; 2026-09-30 wave ' + wave
-        + ' shipped the Sep-2026 roster adds ARES, RDDT, XYZ \u2014 RDDT 2 company-years only, '
-        + 'IPO 2024-03-21; XYZ has no company-selected measure per the filer). '
+        + companyYears.toLocaleString('en-US') + ' company-years; 2026-11-28 wave ' + wave
+        + ' appended FY2026 Item 402(v) rows for MU, MSFT, INTU). '
         + gapWord + ' roster companies are not covered: ';
 }
 function renderPvpComparison() {

@@ -47,10 +47,12 @@ Checks (static - local file reads, <1s):
   S4  HARD FAIL: the VMRK deferral clause names CIK 906107 and the
       2026-04-14 pre-merger EQR proxy, so the deferral is
       filing-grounded, not bare.
-  S5  HARD FAIL: the latest "Wave N" marker in the note is still 38 -
-      the appended normalization clause introduces no new wave marker,
-      so the wave-38 pins in check_pvp_method_coverage_sync.py and
-      check_readme_pvp_vintage.py keep passing.
+  S5  HARD FAIL: the latest "Wave N" marker in the note is 39 - the pin
+      moves with each wave shipment (same convention as the
+      method-coverage and README-vintage pins); its tripwire purpose is
+      a normalization clause minting a wave marker without a shipment,
+      not freezing the wave number. Re-pinned 38 -> 39 by the 619th
+      review (wave 39 shipped 2026-11-28).
 
 Usage:
   scripts/check_pvp_note_gap_sync.py
@@ -126,12 +128,12 @@ def static_checks():
           s4,
           "VMRK deferral missing or not filing-grounded" if not s4 else "")
 
-    # S5: the appended clause adds no new wave marker (latest stays 38).
+    # S5: the latest wave marker is the current wave (re-pinned per wave).
     waves = [int(w) for w in re.findall(r"[Ww]ave (\d+)", note or "")]
     latest = max(waves) if waves else None
-    check("S5 latest Wave marker in the note is still 38",
-          latest == 38,
-          "latest wave is %s" % latest if latest != 38 else "")
+    check("S5 latest Wave marker in the note is 39",
+          latest == 39,
+          "latest wave is %s" % latest if latest != 39 else "")
 
     return 0
 
